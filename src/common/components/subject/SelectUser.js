@@ -45,11 +45,7 @@ const SelectUser = function({ users, errorMessage, onSelectedUser }) {
       </Typography>
 
       {users && users.length !== 0 ? (
-        <Table
-          className={classes.tableContainer}
-          aria-labelledby="tableTitle"
-          aria-label="enhanced table"
-        >
+        <Table className={classes.tableContainer} aria-labelledby="tableTitle" aria-label="enhanced table">
           <TableHead>
             <TableRow>
               <TableCell />

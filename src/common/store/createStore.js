@@ -32,14 +32,7 @@ const configureStore = initialState => {
   const store = createStore(
     rootReducer,
     initialState,
-    composeEnhancers(
-      applyMiddleware(
-        thunkMiddleware,
-        sagaMiddleware,
-        formMiddleware,
-        routerMiddleware(adminHistory, appDesignerHistory)
-      )
-    )
+    composeEnhancers(applyMiddleware(thunkMiddleware, sagaMiddleware, formMiddleware, routerMiddleware(adminHistory, appDesignerHistory)))
   );
 
   if (!isTestEnv) {

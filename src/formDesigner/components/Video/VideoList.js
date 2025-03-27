@@ -19,8 +19,7 @@ function hasEditPrivilege(userInfo) {
 const columns = [
   {
     title: "Name",
-    render: rowData =>
-      !rowData.voided && <a href={`#/appDesigner/video/${rowData.id}/show`}>{rowData.title}</a>
+    render: rowData => !rowData.voided && <a href={`#/appDesigner/video/${rowData.id}/show`}>{rowData.title}</a>
   },
   {
     title: "Description",

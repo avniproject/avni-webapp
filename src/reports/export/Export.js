@@ -18,12 +18,7 @@ import Radio from "../../dataEntryApp/components/Radio";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import AddressLevelsByType from "../../common/components/AddressLevelsByType";
 import { reportSideBarOptions } from "../Common";
-import {
-  applicableOptions,
-  ExportReducer,
-  getRequestBody,
-  initialState
-} from "./reducer/ExportReducer";
+import { applicableOptions, ExportReducer, getRequestBody, initialState } from "./reducer/ExportReducer";
 import { RegistrationType } from "../components/export/RegistrationType";
 import { EnrolmentType } from "../components/export/EnrolmentType";
 import { EncounterType } from "../components/export/EncounterType";
@@ -46,13 +41,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Export = ({
-  operationalModules,
-  getOperationalModules,
-  getUploadStatuses,
-  exportJobStatuses,
-  userInfo
-}) => {
+const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, exportJobStatuses, userInfo }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -75,10 +64,7 @@ const Export = ({
   } = exportRequest;
   const dispatch = (type, payload) => dispatchFun({ type, payload });
   const subjectTypes = _.get(operationalModules, "subjectTypes");
-  const { programOptions, encounterTypeOptions } = applicableOptions(
-    operationalModules,
-    exportRequest
-  );
+  const { programOptions, encounterTypeOptions } = applicableOptions(operationalModules, exportRequest);
 
   const onStartExportHandler = async () => {
     const [ok, error] = await api.startExportJob(getRequestBody(exportRequest));
@@ -133,13 +119,7 @@ const Export = ({
           {ReportTypes.names.map(type => (
             <FormControlLabel
               key={type.name}
-              control={
-                <Radio
-                  checked={type.name === reportType.name}
-                  onChange={() => onReportTypeChange(type)}
-                  value={type.name}
-                />
-              }
+              control={<Radio checked={type.name === reportType.name} onChange={() => onReportTypeChange(type)} value={type.name} />}
               label={type.name}
             />
           ))}
@@ -151,9 +131,7 @@ const Export = ({
   const commonProps = { dispatch, startDate, endDate, subjectType, subjectTypes, setEnableExport };
   const reportTypeMap = {
     [reportTypes.Registration]: <RegistrationType {...commonProps} />,
-    [reportTypes.Enrolment]: (
-      <EnrolmentType {...commonProps} programOptions={programOptions} program={program} />
-    ),
+    [reportTypes.Enrolment]: <EnrolmentType {...commonProps} programOptions={programOptions} program={program} />,
     [reportTypes.Encounter]: (
       <EncounterType
         {...commonProps}
@@ -173,11 +151,7 @@ const Export = ({
   const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 
   return (
-    <ScreenWithAppBar
-      appbarTitle={`Longitudinal Export`}
-      enableLeftMenuButton={true}
-      sidebarOptions={reportSideBarOptions}
-    >
+    <ScreenWithAppBar appbarTitle={`Longitudinal Export`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
       {operationalModules && (
         <div>
           <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
@@ -211,10 +185,7 @@ const Export = ({
           </Box>
           <Grid item>
             <Paper style={{ marginBottom: 100 }}>
-              <JobStatus
-                exportJobStatuses={exportJobStatuses}
-                operationalModules={operationalModules}
-              />
+              <JobStatus exportJobStatuses={exportJobStatuses} operationalModules={operationalModules} />
             </Paper>
           </Grid>
         </div>

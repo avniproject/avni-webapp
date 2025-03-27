@@ -15,8 +15,7 @@ class AdminMenuItem extends MenuItem {
 
   validate() {
     const errors = new Map();
-    if (_.isEmpty(this.displayKey))
-      errors.set(AdminMenuItem.VAL_DISPLAY_KEY, "Display key is mandatory");
+    if (_.isEmpty(this.displayKey)) errors.set(AdminMenuItem.VAL_DISPLAY_KEY, "Display key is mandatory");
     if (_.isEmpty(this.group)) errors.set(AdminMenuItem.VAL_GROUP, "Group is mandatory");
     if (_.isEmpty(this.type)) errors.set(AdminMenuItem.VAL_TYPE, "Type is mandatory");
     return errors;

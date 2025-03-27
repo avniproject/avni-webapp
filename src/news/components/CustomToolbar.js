@@ -21,12 +21,7 @@ export const CustomToolbar = ({ totalNews, setOpenCreate }) => {
         </Typography>
       </div>
       <div style={{ display: "flex" }}>
-        <ActionButton
-          onClick={() => setOpenCreate(true)}
-          variant="contained"
-          style={{ paddingHorizontal: 10 }}
-          size="medium"
-        >
+        <ActionButton onClick={() => setOpenCreate(true)} variant="contained" style={{ paddingHorizontal: 10 }} size="medium">
           {"Create a New Broadcast"}
         </ActionButton>
       </div>

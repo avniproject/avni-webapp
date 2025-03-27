@@ -13,13 +13,7 @@ const useStyles = makeStyles(theme => ({
 const IconButton = ({ onClick, Icon, label, disabled }) => {
   const classes = useStyles();
   return (
-    <Button
-      color="primary"
-      size="small"
-      className={classes.root}
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <Button color="primary" size="small" className={classes.root} onClick={onClick} disabled={disabled}>
       <Icon style={{ marginRight: 8 }} /> {label}
     </Button>
   );

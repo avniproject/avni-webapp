@@ -175,8 +175,7 @@ function FormElementGroup(props) {
           onSaveInlineConcept: props.onSaveInlineConcept,
           handleInlineNumericAttributes: props.handleInlineNumericAttributes,
           handleInlineCodedConceptAnswers: props.handleInlineCodedConceptAnswers,
-          onToggleInlineConceptCodedAnswerAttribute:
-            props.onToggleInlineConceptCodedAnswerAttribute,
+          onToggleInlineConceptCodedAnswerAttribute: props.onToggleInlineConceptCodedAnswerAttribute,
           onDeleteInlineConceptCodedAnswerDelete: props.onDeleteInlineConceptCodedAnswerDelete,
           onMoveUp: props.onMoveUp,
           onMoveDown: props.onMoveDown,
@@ -200,10 +199,7 @@ function FormElementGroup(props) {
           >
             {provided => (
               <div {...provided.draggableProps} ref={provided.innerRef}>
-                <FormElementWithAddButton
-                  {...propsElement}
-                  dragHandleProps={provided.dragHandleProps}
-                />
+                <FormElementWithAddButton {...propsElement} dragHandleProps={provided.dragHandleProps} />
               </div>
             )}
           </Draggable>
@@ -225,12 +221,7 @@ function FormElementGroup(props) {
   );
 
   return (
-    <Draggable
-      key={"Element" + props.index}
-      draggableId={"Element" + props.index}
-      index={props.index}
-      isDragDisabled={disableGroup}
-    >
+    <Draggable key={"Element" + props.index} draggableId={"Element" + props.index} index={props.index} isDragDisabled={disableGroup}>
       {provided => (
         <div
           {...provided.draggableProps}
@@ -244,15 +235,9 @@ function FormElementGroup(props) {
               TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
               expanded={props.groupData.expanded}
               className={props.groupData.error ? classes.rootError : classes.root}
-              onChange={event =>
-                props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)
-              }
+              onChange={event => props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)}
             >
-              <ExpansionPanelSummary
-                aria-controls={panel + "bh-content"}
-                id={panel + "bh-header"}
-                {...provided.dragHandleProps}
-              >
+              <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"} {...provided.dragHandleProps}>
                 <Grid container direction={"row"}>
                   <Grid container item alignItems={"center"} justify={"center"}>
                     <DragHandler />
@@ -274,9 +259,7 @@ function FormElementGroup(props) {
                           <div style={{ color: "red" }}>Please enter Page name.</div>
                         )}
                         {get(props.groupData, "errorMessage.ruleError") && (
-                          <div style={{ color: "red" }}>
-                            Please check the rule validation errors
-                          </div>
+                          <div style={{ color: "red" }}>Please check the rule validation errors</div>
                         )}
                         <FormControl fullWidth>
                           <Input
@@ -303,13 +286,7 @@ function FormElementGroup(props) {
                               value={props.groupData.startTime}
                               InputProps={{ disableUnderline: true }}
                               onClick={stopPropagation}
-                              onChange={event =>
-                                props.handleGroupElementChange(
-                                  props.index,
-                                  "startTime",
-                                  event.target.value
-                                )
-                              }
+                              onChange={event => props.handleGroupElementChange(props.index, "startTime", event.target.value)}
                               autoComplete="off"
                               disabled={disableGroup}
                             />
@@ -321,13 +298,7 @@ function FormElementGroup(props) {
                               value={props.groupData.stayTime}
                               InputProps={{ disableUnderline: true }}
                               onClick={stopPropagation}
-                              onChange={event =>
-                                props.handleGroupElementChange(
-                                  props.index,
-                                  "stayTime",
-                                  event.target.value
-                                )
-                              }
+                              onChange={event => props.handleGroupElementChange(props.index, "stayTime", event.target.value)}
                               autoComplete="off"
                               disabled={disableGroup}
                             />
@@ -341,18 +312,10 @@ function FormElementGroup(props) {
                       </Typography>
                     </Grid>
                     <Grid item sm={1}>
-                      <IconButton
-                        aria-label="delete"
-                        onClick={handleDelete}
-                        disabled={disableGroup}
-                      >
+                      <IconButton aria-label="delete" onClick={handleDelete} disabled={disableGroup}>
                         <DeleteIcon />
                       </IconButton>
-                      <ToolTip
-                        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"}
-                        onHover
-                        displayPosition={"bottom"}
-                      />
+                      <ToolTip toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"} onHover displayPosition={"bottom"} />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -374,10 +337,7 @@ function FormElementGroup(props) {
                     <Tab label="Details" classes={{ root: classes.tab }} />
                     <Tab label="Rules" classes={{ root: classes.tab }} />
                   </Tabs>
-                  <Grid
-                    hidden={tabIndex !== 0}
-                    style={{ width: "100%", alignContent: "center", marginBottom: 8 }}
-                  >
+                  <Grid hidden={tabIndex !== 0} style={{ width: "100%", alignContent: "center", marginBottom: 8 }}>
                     <Typography component={"span"} className={classes.root}>
                       <Droppable droppableId={"Group" + props.index} type="task">
                         {provided => (
@@ -390,12 +350,7 @@ function FormElementGroup(props) {
 
                       {questionCount === 0 && (
                         <FormControl fullWidth>
-                          <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={separateAddElement}
-                            disabled={disableGroup}
-                          >
+                          <Button variant="contained" color="secondary" onClick={separateAddElement} disabled={disableGroup}>
                             Add Question
                           </Button>
                         </FormControl>
@@ -408,13 +363,7 @@ function FormElementGroup(props) {
                               <Checkbox
                                 id="isTimed"
                                 checked={props.groupData.timed}
-                                onChange={event =>
-                                  props.handleGroupElementChange(
-                                    props.index,
-                                    "timed",
-                                    event.target.checked
-                                  )
-                                }
+                                onChange={event => props.handleGroupElementChange(props.index, "timed", event.target.checked)}
                               />
                             }
                             label="Timed Page"
@@ -424,9 +373,7 @@ function FormElementGroup(props) {
                           <ColourStyle
                             label={"Text colour"}
                             colour={props.groupData.textColour}
-                            onChange={colour =>
-                              props.handleGroupElementChange(props.index, "textColour", colour)
-                            }
+                            onChange={colour => props.handleGroupElementChange(props.index, "textColour", colour)}
                             toolTipKey={"APP_DESIGNER_GROUP_TEXT_COLOUR"}
                           />
                         </div>
@@ -434,13 +381,7 @@ function FormElementGroup(props) {
                           <ColourStyle
                             label={"Background colour"}
                             colour={props.groupData.backgroundColour}
-                            onChange={colour =>
-                              props.handleGroupElementChange(
-                                props.index,
-                                "backgroundColour",
-                                colour
-                              )
-                            }
+                            onChange={colour => props.handleGroupElementChange(props.index, "backgroundColour", colour)}
                             toolTipKey={"APP_DESIGNER_GROUP_BACKGROUND_COLOUR"}
                           />
                         </div>
@@ -448,11 +389,7 @@ function FormElementGroup(props) {
                     </Typography>
                   </Grid>
                   <Grid hidden={tabIndex !== 1}>
-                    <FormElementGroupRule
-                      groupData={props.groupData}
-                      disable={disableGroup}
-                      {...props}
-                    />
+                    <FormElementGroupRule groupData={props.groupData} disable={disableGroup} {...props} />
                   </Grid>
                 </Grid>
               </MuiExpansionPanelDetails>

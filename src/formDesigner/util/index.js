@@ -7,8 +7,7 @@ export const findOrDefault = (collection, predicate, defaultValue) => {
 };
 
 export const confirmBeforeRuleEdit = (ruleJson, updateRuleFunc, resetDeclarativeRuleFunc) => {
-  const warningMessage =
-    "Editing the rule will reset the declarative rule. Are you sure you want to edit it?";
+  const warningMessage = "Editing the rule will reset the declarative rule. Are you sure you want to edit it?";
   const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(ruleJson);
   if (declarativeRuleHolder.isEmpty()) {
     updateRuleFunc();

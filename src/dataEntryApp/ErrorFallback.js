@@ -111,10 +111,7 @@ export function ErrorFallback({ error, onClose }) {
           <Button
             onClick={() =>
               navigator.clipboard.writeText(
-                `Message: ${_.get(error, "message")}\n\nStack: ${_.get(
-                  error,
-                  "stack"
-                )}\n\nSaga Stack: ${_.get(error, "sagaStack")}`
+                `Message: ${_.get(error, "message")}\n\nStack: ${_.get(error, "stack")}\n\nSaga Stack: ${_.get(error, "sagaStack")}`
               )
             }
             variant={"contained"}
@@ -125,9 +122,7 @@ export function ErrorFallback({ error, onClose }) {
         <div style={{ display: showError ? "block" : "none" }} className={classes.errorContainer}>
           <ErrorItem fieldName="Message" fieldValue={error.message} />
           <ErrorItem fieldName="Error Stack" fieldValue={error.stack} />
-          {error["sagaStack"] && (
-            <ErrorItem fieldName="Saga Stack" fieldValue={error["sagaStack"]} />
-          )}
+          {error["sagaStack"] && <ErrorItem fieldName="Saga Stack" fieldValue={error["sagaStack"]} />}
         </div>
         <div className={classes.buttonContainer}>
           <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={appHome}>

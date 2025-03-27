@@ -3,21 +3,13 @@ import { types, setCompletedVisits, setEncounterTypes } from "../reducers/comple
 import { setProgramEnrolment } from "../reducers/programEncounterReducer";
 
 import api from "../api";
-import {
-  selectProgramEncounterTypes,
-  selectGeneralEncounterTypes
-} from "dataEntryApp/sagas/selectors";
+import { selectProgramEncounterTypes, selectGeneralEncounterTypes } from "dataEntryApp/sagas/selectors";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile } from "./selectors";
 
 export default function*() {
   yield all(
-    [
-      loadProgramEncountersWatcher,
-      loadEncountersWatcher,
-      getCompletedEncountersWatcher,
-      getCompletedProgramEncountersWatcher
-    ].map(fork)
+    [loadProgramEncountersWatcher, loadEncountersWatcher, getCompletedEncountersWatcher, getCompletedProgramEncountersWatcher].map(fork)
   );
 }
 
@@ -29,9 +21,7 @@ export function* loadProgramEncountersWorker({ enrolmentUuid, filterQueryString 
   yield put.resolve(setLoad(false));
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
   const subjectProfile = yield select(selectSubjectProfile);
-  const encounterTypes = yield select(
-    selectProgramEncounterTypes(subjectProfile.subjectType.uuid, programEnrolment.program.uuid)
-  );
+  const encounterTypes = yield select(selectProgramEncounterTypes(subjectProfile.subjectType.uuid, programEnrolment.program.uuid));
   yield put(setEncounterTypes(encounterTypes));
   yield put(setProgramEnrolment(programEnrolment));
   yield put.resolve(setLoad(true));
@@ -55,11 +45,7 @@ export function* getCompletedProgramEncountersWatcher() {
 
 export function* getCompletedProgramEncountersWorker({ enrolmentUuid, filterQueryString }) {
   yield put.resolve(setLoad(false));
-  const completedVisits = yield call(
-    api.fetchCompletedProgramEncounters,
-    enrolmentUuid,
-    filterQueryString
-  );
+  const completedVisits = yield call(api.fetchCompletedProgramEncounters, enrolmentUuid, filterQueryString);
   yield put(setCompletedVisits(completedVisits));
   yield put.resolve(setLoad(true));
 }

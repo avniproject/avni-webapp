@@ -8,7 +8,6 @@ export const locationNameRenderer = location => {
   }
   let retVal = `${locName} (${locType})`;
   let lineageParts = location.titleLineage.split(", ");
-  if (lineageParts.length > 1)
-    retVal += ` in ${lineageParts.slice(0, lineageParts.length - 1).join(" > ")}`;
+  if (lineageParts.length > 1) retVal += ` in ${lineageParts.slice(0, lineageParts.length - 1).join(" > ")}`;
   return retVal;
 };

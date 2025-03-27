@@ -24,10 +24,7 @@ const ScheduledVisitsTable = ({ visitSchedules }) => {
 
   const { t } = useTranslation();
   return (
-    <Table
-      className={`${classes.tableContainer} ${classes.highlightBackground}`}
-      aria-label="caption table"
-    >
+    <Table className={`${classes.tableContainer} ${classes.highlightBackground}`} aria-label="caption table">
       <TableHead>
         <TableRow>
           <TableCell align="left">{t("visitName")}</TableCell>

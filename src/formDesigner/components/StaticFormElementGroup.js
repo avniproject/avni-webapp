@@ -52,11 +52,7 @@ const StaticFormElementGroup = ({ name, formElements, ...props }) => {
               <Tooltip title={"Grouped Questions"}>
                 <GroupIcon style={{ marginLeft: 12, marginRight: 4 }} />
               </Tooltip>
-              {expanded ? (
-                <ExpandLessIcon classes={{ root: classes.icon }} />
-              ) : (
-                <ExpandMoreIcon classes={{ root: classes.icon }} />
-              )}
+              {expanded ? <ExpandLessIcon classes={{ root: classes.icon }} /> : <ExpandMoreIcon classes={{ root: classes.icon }} />}
             </Grid>
             <Grid item sm={6}>
               <Typography className={classes.heading}>
@@ -79,11 +75,7 @@ const StaticFormElementGroup = ({ name, formElements, ...props }) => {
               </Typography>
             </Grid>
             <Grid item sm={1}>
-              <ToolTip
-                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"}
-                onHover
-                displayPosition={"bottom"}
-              />
+              <ToolTip toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"} onHover displayPosition={"bottom"} />
             </Grid>
           </Grid>
         </ExpansionPanelSummary>

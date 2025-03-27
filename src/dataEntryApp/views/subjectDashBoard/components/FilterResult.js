@@ -148,25 +148,14 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
   const content = (
     <DialogContent>
       <Grid container direction="row" justify="flex-end" alignItems="flex-start">
-        <IconButton
-          color="secondary"
-          className={classes.resetButton}
-          onClick={resetClick}
-          aria-label="add an alarm"
-        >
+        <IconButton color="secondary" className={classes.resetButton} onClick={resetClick} aria-label="add an alarm">
           <CancelIcon className={classes.cancelIcon} /> {t("resetAll")}
         </IconButton>
       </Grid>
       <form className={classes.form} noValidate>
         <FormControl className={classes.formControl}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid
-              container
-              direction="row"
-              spacing={3}
-              justify="flex-start"
-              alignItems="flex-start"
-            >
+            <Grid container direction="row" spacing={3} justify="flex-start" alignItems="flex-start">
               <Grid item xs={6}>
                 <KeyboardDatePicker
                   allowKeyboardControl
@@ -182,10 +171,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                     color: "primary"
                   }}
                   error={!isEmpty(filterDateErrors["SCHEDULED_DATE"])}
-                  helperText={
-                    !isEmpty(filterDateErrors["SCHEDULED_DATE"]) &&
-                    t(filterDateErrors["SCHEDULED_DATE"])
-                  }
+                  helperText={!isEmpty(filterDateErrors["SCHEDULED_DATE"]) && t(filterDateErrors["SCHEDULED_DATE"])}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -199,10 +185,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                   value={selectedCompletedDate}
                   onChange={completedDateChange}
                   error={!isEmpty(filterDateErrors["COMPLETED_DATE"])}
-                  helperText={
-                    !isEmpty(filterDateErrors["COMPLETED_DATE"]) &&
-                    t(filterDateErrors["COMPLETED_DATE"])
-                  }
+                  helperText={!isEmpty(filterDateErrors["COMPLETED_DATE"]) && t(filterDateErrors["COMPLETED_DATE"])}
                   KeyboardButtonProps={{
                     "aria-label": "change date",
                     color: "primary"
@@ -250,9 +233,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
           classes: classes.btnCustom,
           redirectTo: `/app/completeVisit`,
           click: applyClick,
-          disabled:
-            !isEmpty(filterDateErrors["COMPLETED_DATE"]) ||
-            !isEmpty(filterDateErrors["SCHEDULED_DATE"])
+          disabled: !isEmpty(filterDateErrors["COMPLETED_DATE"]) || !isEmpty(filterDateErrors["SCHEDULED_DATE"])
         },
         {
           buttonType: "cancelButton",

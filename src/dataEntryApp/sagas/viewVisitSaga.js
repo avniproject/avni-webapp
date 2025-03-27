@@ -23,10 +23,7 @@ export function* programEncounterFetchWorker({ encounterUuid }) {
   const programEncounter = mapProgramEncounter(programEncounterJson);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, programEncounterJson.subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
-  const programEnrolmentJson = yield call(
-    api.fetchProgramEnrolments,
-    programEncounterJson.enrolmentUUID
-  );
+  const programEnrolmentJson = yield call(api.fetchProgramEnrolments, programEncounterJson.enrolmentUUID);
 
   const formMapping = yield select(
     selectFormMappingForProgramEncounter(
@@ -55,9 +52,7 @@ export function* encounterFetchWorker({ encounterUuid }) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
 
-  const formMapping = yield select(
-    selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
-  );
+  const formMapping = yield select(selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid));
   const encounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const encounterForm = mapForm(encounterFormJson);
 

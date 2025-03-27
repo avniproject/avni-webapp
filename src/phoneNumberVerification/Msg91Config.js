@@ -115,10 +115,7 @@ const Msg91Config = () => {
               </Grid>
 
               <Grid item xs={2}>
-                <div
-                  className="container"
-                  style={{ alignItems: "left", float: "left", width: "100%" }}
-                >
+                <div className="container" style={{ alignItems: "left", float: "left", width: "100%" }}>
                   {!authKeyChanged ? (
                     <IconButton onClick={() => setEditMode()}>
                       <Edit />
@@ -164,11 +161,7 @@ const Msg91Config = () => {
               />
             </Grid>
             <Grid item xs={10}>
-              <SaveComponent
-                name="save"
-                onSubmit={onSubmit}
-                disabledFlag={authKeyChanged ? !authKeyVerified : !dataChanged}
-              />
+              <SaveComponent name="save" onSubmit={onSubmit} disabledFlag={authKeyChanged ? !authKeyVerified : !dataChanged} />
             </Grid>
           </Grid>
           {messageStatus.display && (

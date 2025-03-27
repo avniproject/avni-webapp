@@ -72,9 +72,7 @@ const Extensions = ({ userInfo }) => {
         })
         .catch(error => {
           setLoad(false);
-          const errorMessage = `${get(error, "response.data") ||
-            get(error, "message") ||
-            "unknown error"}`;
+          const errorMessage = `${get(error, "response.data") || get(error, "message") || "unknown error"}`;
           alert(`Error while uploading the data\n ${errorMessage}`);
           console.error(error);
         });

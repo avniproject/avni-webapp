@@ -16,15 +16,8 @@ const ConditionComponent = ({ condition, index, declarativeRuleIndex, ...props }
 
   return (
     <Fragment>
-      <CompoundRuleComponent
-        compoundRule={compoundRule}
-        conditionIndex={index}
-        declarativeRuleIndex={declarativeRuleIndex}
-      />
-      <ConditionConjunctionComponent
-        onConjunctionChange={onConjunctionChange}
-        value={conjunction}
-      />
+      <CompoundRuleComponent compoundRule={compoundRule} conditionIndex={index} declarativeRuleIndex={declarativeRuleIndex} />
+      <ConditionConjunctionComponent onConjunctionChange={onConjunctionChange} value={conjunction} />
     </Fragment>
   );
 };

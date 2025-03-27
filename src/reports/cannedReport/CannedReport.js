@@ -24,13 +24,7 @@ function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-      {...other}
-    >
+    <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`} {...other}>
       {value === index && (
         <div>
           <Box>{children}</Box>
@@ -44,12 +38,7 @@ function renderCannedReport(classes, value, setValue) {
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Tabs
-          value={value}
-          onChange={(event, newValue) => setValue(newValue)}
-          aria-label="report-tabs"
-          variant="fullWidth"
-        >
+        <Tabs value={value} onChange={(event, newValue) => setValue(newValue)} aria-label="report-tabs" variant="fullWidth">
           <Tab label="Activity Report" icon={<FormatListNumberedIcon />} />
           <Tab label="Aggregate Report" icon={<EqualizerIcon />} />
         </Tabs>
@@ -72,20 +61,14 @@ function renderComingSoon() {
   );
 }
 
-const displayCannedReport = some(["localhost", "staging"], env =>
-  window.location.href.includes(env)
-);
+const displayCannedReport = some(["localhost", "staging"], env => window.location.href.includes(env));
 
 const CannedReport = () => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
   return (
-    <ScreenWithAppBar
-      appbarTitle={`Aggregate reports`}
-      enableLeftMenuButton={true}
-      sidebarOptions={reportSideBarOptions}
-    >
+    <ScreenWithAppBar appbarTitle={`Aggregate reports`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
       {displayCannedReport ? renderCannedReport(classes, value, setValue) : renderComingSoon()}
     </ScreenWithAppBar>
   );

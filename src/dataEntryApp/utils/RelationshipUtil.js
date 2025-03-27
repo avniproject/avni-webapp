@@ -25,8 +25,7 @@ export const validateRelative = (relative, individual, selectedRelation, existin
   const isRelativeAlreadyAdded = !!find(
     existingRelatives,
     existingRelative =>
-      get(existingRelative, "individualB.uuid") === relative.uuid ||
-      get(existingRelative, "individualA.uuid") === relative.uuid
+      get(existingRelative, "individualB.uuid") === relative.uuid || get(existingRelative, "individualA.uuid") === relative.uuid
   );
   if (isRelativeAlreadyAdded) {
     return "relativeAlreadyAdded";
@@ -49,8 +48,7 @@ export const getRelationshipType = (individual, relationUUID, relationshipTypes)
   const filteredRelationshipTypes = filter(
     relationshipTypes,
     ({ individualAIsToBRelation, individualBIsToARelation }) =>
-      individualAIsToBRelation.uuid === relationUUID ||
-      individualBIsToARelation.uuid === relationUUID
+      individualAIsToBRelation.uuid === relationUUID || individualBIsToARelation.uuid === relationUUID
   );
   if (filteredRelationshipTypes.length === 1) {
     return filteredRelationshipTypes[0];

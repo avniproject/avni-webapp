@@ -71,13 +71,7 @@ const ProgramEnrol = ({
   const formType = match.queryParams.formType;
   const subjectTypeName = match.queryParams.subjectTypeName;
   useEffect(() => {
-    onLoad(
-      subjectTypeName,
-      match.queryParams.programName,
-      formType,
-      match.queryParams.programEnrolmentUuid,
-      match.queryParams.uuid
-    );
+    onLoad(subjectTypeName, match.queryParams.programName, formType, match.queryParams.programEnrolmentUuid, match.queryParams.uuid);
   }, []);
 
   return load ? (
@@ -91,10 +85,7 @@ const ProgramEnrol = ({
           <Grid justifyContent="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
               {enrolForm && programEnrolment && formType === "ProgramEnrolment" ? (
-                <ProgramEnrolmentForm
-                  formType={formType}
-                  fetchRulesResponse={fetchEnrolmentRulesResponse}
-                >
+                <ProgramEnrolmentForm formType={formType} fetchRulesResponse={fetchEnrolmentRulesResponse}>
                   <DateFormElement
                     uuid={ProgramEnrolment.validationKeys.ENROLMENT_DATE}
                     formElement={new StaticFormElement("Enrolment Date", true, true)}
@@ -105,10 +96,7 @@ const ProgramEnrol = ({
                   <LineBreak num={3} />
                 </ProgramEnrolmentForm>
               ) : enrolForm && programEnrolment && formType === "ProgramExit" ? (
-                <ProgramExitEnrolmentForm
-                  formType={formType}
-                  fetchRulesResponse={fetchEnrolmentRulesResponse}
-                >
+                <ProgramExitEnrolmentForm formType={formType} fetchRulesResponse={fetchEnrolmentRulesResponse}>
                   <DateFormElement
                     uuid={ProgramEnrolment.validationKeys.EXIT_DATE}
                     formElement={new StaticFormElement("Exit Enrolment Date", true, true)}

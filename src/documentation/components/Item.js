@@ -47,8 +47,7 @@ export const Item = ({ name, onAdd, onDelete, level, disabled, onToggle, isSelec
         height: 30,
         paddingLeft,
         position: "relative",
-        backgroundColor:
-          showIcons || isSelected ? "rgba(145,145,145,0.37)" : "rgba(248,248,248,0.37)",
+        backgroundColor: showIcons || isSelected ? "rgba(145,145,145,0.37)" : "rgba(248,248,248,0.37)",
         whiteSpace: "nowrap",
         width: window.innerWidth / 5
       }}

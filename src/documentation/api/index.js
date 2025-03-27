@@ -3,8 +3,7 @@ import { get } from "lodash";
 
 export default {
   getDocumentation: () => http.fetchJson("/web/documentation").then(response => response.json),
-  getOrganisationConfig: () =>
-    http.fetchJson("/web/organisationConfig").then(response => response.json),
+  getOrganisationConfig: () => http.fetchJson("/web/organisationConfig").then(response => response.json),
   saveDocumentation: documentation =>
     http
       .postJson("/web/documentation", documentation)

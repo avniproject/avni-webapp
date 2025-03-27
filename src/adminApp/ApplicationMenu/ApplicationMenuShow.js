@@ -19,9 +19,7 @@ const ApplicationMenuShow = props => {
   const [editAlert, setEditAlert] = useState(false);
 
   useEffect(() => {
-    ApplicationMenuService.getMenuItem(props.match.params.id).then(menuItem =>
-      setApplicationMenu(menuItem)
-    );
+    ApplicationMenuService.getMenuItem(props.match.params.id).then(menuItem => setApplicationMenu(menuItem));
   }, []);
 
   return (

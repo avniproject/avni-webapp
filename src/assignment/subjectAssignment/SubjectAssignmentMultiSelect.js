@@ -4,9 +4,7 @@ import { updateUserAssignmentToSubject } from "./SubjectAssignmentData";
 import _, { debounce, isEqual } from "lodash";
 
 const SubjectAssignmentMultiSelect = props => {
-  const [selectedOptions, setSelectedOptions] = useState(
-    getSortedDropdownList(props.selectedOptions)
-  );
+  const [selectedOptions, setSelectedOptions] = useState(getSortedDropdownList(props.selectedOptions));
 
   useEffect(() => {
     setSelectedOptions(getSortedDropdownList(props.selectedOptions));
@@ -37,9 +35,7 @@ const SubjectAssignmentMultiSelect = props => {
       return placeholderButtonLabel;
     }
 
-    let labelDenotingAssignedUsers = `${value.length} user(s): ${value
-      .map(entry => entry.label)
-      .join(", ")}`;
+    let labelDenotingAssignedUsers = `${value.length} user(s): ${value.map(entry => entry.label).join(", ")}`;
 
     let truncatedLabel = _.truncate(labelDenotingAssignedUsers, { length: 50 });
     return truncatedLabel;

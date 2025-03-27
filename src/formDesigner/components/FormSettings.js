@@ -48,13 +48,7 @@ class FormSettings extends Component {
   }
 
   static addEncounterTypeErrorIfMissing(errorsList, formMap, index) {
-    FormSettings.addErrorIfMissing(
-      errorsList,
-      formMap,
-      "encounterTypeUuid",
-      index,
-      "encounter type"
-    );
+    FormSettings.addErrorIfMissing(errorsList, formMap, "encounterTypeUuid", index, "encounter type");
   }
 
   static addErrorIfMissing(errorsList, formMap, fieldKey, index, fieldName) {
@@ -241,10 +235,7 @@ class FormSettings extends Component {
   programNameElement(index) {
     return (
       <FormControl fullWidth margin="dense">
-        <AvniFormLabel
-          label={"Program Name"}
-          toolTipKey={"APP_DESIGNER_FORM_MAPPING_PROGRAM_NAME"}
-        />
+        <AvniFormLabel label={"Program Name"} toolTipKey={"APP_DESIGNER_FORM_MAPPING_PROGRAM_NAME"} />
         <Select
           name="programUuid"
           value={this.state.formMappings[index].programUuid}
@@ -297,10 +288,7 @@ class FormSettings extends Component {
   subjectTypeElement(index) {
     return (
       <FormControl fullWidth margin="dense">
-        <AvniFormLabel
-          label={"Subject Type"}
-          toolTipKey={"APP_DESIGNER_FORM_MAPPING_SUBJECT_TYPE"}
-        />
+        <AvniFormLabel label={"Subject Type"} toolTipKey={"APP_DESIGNER_FORM_MAPPING_SUBJECT_TYPE"} />
         <Select
           name="subjectTypeUuid"
           value={this.state.formMappings[index].subjectTypeUuid}
@@ -332,16 +320,11 @@ class FormSettings extends Component {
     return (
       <FormControl fullWidth margin="dense">
         <>
-          <AvniFormLabel
-            label={"Encounter Type"}
-            toolTipKey={"APP_DESIGNER_FORM_MAPPING_ENCOUNTER_TYPE"}
-          />
+          <AvniFormLabel label={"Encounter Type"} toolTipKey={"APP_DESIGNER_FORM_MAPPING_ENCOUNTER_TYPE"} />
           <Select
             name="encounterTypeUuid"
             value={this.state.formMappings[index].encounterTypeUuid}
-            onChange={event =>
-              this.handleMappingChange(index, "encounterTypeUuid", event.target.value)
-            }
+            onChange={event => this.handleMappingChange(index, "encounterTypeUuid", event.target.value)}
           >
             {this.state.data.encounterTypes != null &&
               this.state.data.encounterTypes.map(encounterType => (
@@ -361,9 +344,7 @@ class FormSettings extends Component {
     return (
       this.state.errors.hasOwnProperty("unselectedData") &&
       this.state.errors["unselectedData"].hasOwnProperty(propertyName + index) && (
-        <FormHelperText error>
-          {this.state.errors["unselectedData"][propertyName + index]}
-        </FormHelperText>
+        <FormHelperText error>{this.state.errors["unselectedData"][propertyName + index]}</FormHelperText>
       )
     );
   }
@@ -421,29 +402,14 @@ class FormSettings extends Component {
                 </CopyToClipboard>
               </FormControl>
             )}
-            <AvniFormLabel
-              label={"Form name"}
-              style={{ fontSize: "12px" }}
-              toolTipKey={"APP_DESIGNER_FORM_MAPPING_FORM_NAME"}
-            />
+            <AvniFormLabel label={"Form name"} style={{ fontSize: "12px" }} toolTipKey={"APP_DESIGNER_FORM_MAPPING_FORM_NAME"} />
             {this.state.name}
             <FormControl fullWidth margin="dense">
-              <AvniFormLabel
-                label={"Form Type"}
-                toolTipKey={"APP_DESIGNER_FORM_MAPPING_FORM_TYPE"}
-              />
-              <Select
-                id="formType"
-                name="formType"
-                value={this.state.formTypeInfo}
-                onChange={this.onChangeField.bind(this)}
-                required
-              >
+              <AvniFormLabel label={"Form Type"} toolTipKey={"APP_DESIGNER_FORM_MAPPING_FORM_TYPE"} />
+              <Select id="formType" name="formType" value={this.state.formTypeInfo} onChange={this.onChangeField.bind(this)} required>
                 {this.formTypes()}
               </Select>
-              {this.state.errors.formTypeInfo && (
-                <FormHelperText error>{this.state.errors.formTypeInfo.formType}</FormHelperText>
-              )}
+              {this.state.errors.formTypeInfo && <FormHelperText error>{this.state.errors.formTypeInfo.formType}</FormHelperText>}
             </FormControl>
 
             {notChecklistItemBased &&
@@ -476,47 +442,30 @@ class FormSettings extends Component {
                           <Grid item sm={3} style={{ marginTop: 40 }}>
                             <AvniSwitch
                               checked={this.state.formMappings[index].enableApproval}
-                              onChange={event =>
-                                this.handleMappingChange(
-                                  index,
-                                  "enableApproval",
-                                  event.target.checked
-                                )
-                              }
+                              onChange={event => this.handleMappingChange(index, "enableApproval", event.target.checked)}
                               name="Enable Approval"
                               toolTipKey={"APP_DESIGNER_ENABLE_APPROVAL"}
                             />
                           </Grid>
                         )}
                         <Grid item sm={1}>
-                          <IconButton
-                            aria-label="delete"
-                            onClick={event => this.removeMapping(index)}
-                            style={{ marginTop: 10 }}
-                          >
+                          <IconButton aria-label="delete" onClick={event => this.removeMapping(index)} style={{ marginTop: 10 }}>
                             <DeleteIcon fontSize="inherit" />
                           </IconButton>
                         </Grid>
                       </Grid>
-                      {this.state.errors.hasOwnProperty("existingMapping") &&
-                        this.state.errors["existingMapping"].hasOwnProperty(index) && (
-                          <FormControl fullWidth margin="dense">
-                            <FormHelperText error>
-                              {this.state.errors["existingMapping"][index]}
-                            </FormHelperText>
-                          </FormControl>
-                        )}
+                      {this.state.errors.hasOwnProperty("existingMapping") && this.state.errors["existingMapping"].hasOwnProperty(index) && (
+                        <FormControl fullWidth margin="dense">
+                          <FormHelperText error>{this.state.errors["existingMapping"][index]}</FormHelperText>
+                        </FormControl>
+                      )}
                     </div>
                   )
                 );
               })}
           </form>
           {notChecklistItemBased && (
-            <Button
-              color="primary"
-              onClick={event => this.addMapping(programBased, encounterTypes)}
-              style={{ marginTop: 10 }}
-            >
+            <Button color="primary" onClick={event => this.addMapping(programBased, encounterTypes)} style={{ marginTop: 10 }}>
               Add mapping
             </Button>
           )}

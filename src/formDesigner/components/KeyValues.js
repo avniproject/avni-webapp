@@ -28,14 +28,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function KeyValues({
-  keyValues,
-  onKeyValueChange,
-  onAddNewKeyValue,
-  onDeleteKeyValue,
-  error,
-  readOnlyKeys = []
-}) {
+export default function KeyValues({ keyValues, onKeyValueChange, onAddNewKeyValue, onDeleteKeyValue, error, readOnlyKeys = [] }) {
   const classes = useStyles();
   return (
     <Box mt={5}>
@@ -89,12 +82,7 @@ export default function KeyValues({
       ))}
       {error && <FormHelperText error>Key-Value can't be blank</FormHelperText>}
       <Grid container>
-        <Button
-          type="button"
-          className={useStyles.button}
-          color="primary"
-          onClick={onAddNewKeyValue}
-        >
+        <Button type="button" className={useStyles.button} color="primary" onClick={onAddNewKeyValue}>
           Add New Key-Value
         </Button>
         <Grid item xs={4}>

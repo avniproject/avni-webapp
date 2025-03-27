@@ -50,10 +50,7 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
 
   useEffect(() => {
     http.get("/organisationConfig").then(res => {
-      const settings = _.filter(
-        res.data["_embedded"].organisationConfig,
-        config => config.organisationId === organisation.id
-      );
+      const settings = _.filter(res.data["_embedded"].organisationConfig, config => config.organisationId === organisation.id);
       const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
       res.data["_embedded"].organisationConfig[0] &&

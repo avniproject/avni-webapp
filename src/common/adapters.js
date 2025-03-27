@@ -34,11 +34,7 @@ export const mapConcept = json => {
   return concept;
 };
 
-export const mapFormElement = (
-  formElementResource,
-  formElementGroup,
-  questionGroupFormElements = new Map()
-) => {
+export const mapFormElement = (formElementResource, formElementGroup, questionGroupFormElements = new Map()) => {
   const formElement = General.assignFields(
     formElementResource,
     new WebFormElement(),
@@ -52,10 +48,7 @@ export const mapFormElement = (
   if (formElementResource.group) {
     formElement.groupUuid = formElementResource.group.uuid;
     if (!questionGroupFormElements.has(formElement.groupUuid))
-      questionGroupFormElements.set(
-        formElement.groupUuid,
-        mapFormElement(formElementResource.group, formElementGroup)
-      );
+      questionGroupFormElements.set(formElement.groupUuid, mapFormElement(formElementResource.group, formElementGroup));
 
     formElement.group = questionGroupFormElements.get(formElement.groupUuid);
   }
@@ -81,9 +74,7 @@ export const mapFormElementGroup = (json, form) => {
 
 export const mapForm = json => {
   let form = General.assignFields(json, new WebForm(), ["uuid", "name", "formType"]);
-  form.formElementGroups = map(json.formElementGroups, fegJson =>
-    mapFormElementGroup(fegJson, form)
-  );
+  form.formElementGroups = map(json.formElementGroups, fegJson => mapFormElementGroup(fegJson, form));
   return form;
 };
 
@@ -107,11 +98,8 @@ export const mapProgram = json => {
   program.name = json.name;
   program.operationalProgramName = json.operationalProgramName;
   program.colour = isNil(json.colour) ? Program.randomColour() : json.colour;
-  program.displayName = isEmpty(program.operationalProgramName)
-    ? program.name
-    : program.operationalProgramName;
-  program.programSubjectLabel =
-    json.programSubjectLabel || json.operationalProgramName || program.name;
+  program.displayName = isEmpty(program.operationalProgramName) ? program.name : program.operationalProgramName;
+  program.programSubjectLabel = json.programSubjectLabel || json.operationalProgramName || program.name;
   return program;
 };
 

@@ -32,13 +32,7 @@ export const OrganisationGroupList = props => (
       <TextField label="DB User" source="dbUser" />
       <TextField source="schemaName" label="Schema name" />
       <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" />
-      <ReferenceField
-        resource="account"
-        source="accountId"
-        reference="account"
-        label="Account Name"
-        allowEmpty
-      >
+      <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" allowEmpty>
         <TextField source="name" />
       </ReferenceField>
       <ReferenceArrayField label="Organisations" reference="organisation" source="organisationIds">
@@ -57,13 +51,7 @@ export const OrganisationGroupShow = props => (
       <TextField source="dbUser" label="DB User" />
       <TextField source="schemaName" label="Schema name" />
       <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" />
-      <ReferenceField
-        resource="account"
-        source="accountId"
-        reference="account"
-        label="Account Name"
-        allowEmpty
-      >
+      <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" allowEmpty>
         <TextField source="name" />
       </ReferenceField>
       <ReferenceArrayField label="Organisations" reference="organisation" source="organisationIds">

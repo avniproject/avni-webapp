@@ -8,7 +8,9 @@ export const AvniFormLabel = ({ label, toolTipKey, style, position, ...props }) 
   copy.value = _.isNil(copy.value) ? "" : copy.value;
   return (
     <ToolTipContainer toolTipKey={toolTipKey} styles={{ paddingTop: 10 }} position={position}>
-      <FormLabel style={style || {}} {...copy}>{label} </FormLabel>
+      <FormLabel style={style || {}} {...copy}>
+        {label}{" "}
+      </FormLabel>
     </ToolTipContainer>
   );
 };

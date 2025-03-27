@@ -14,17 +14,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const AvniImageUpload = ({
-  toolTipKey,
-  label,
-  onSelect,
-  width,
-  height,
-  oldImgUrl,
-  allowUpload,
-  onDelete,
-  displayDelete
-}) => {
+export const AvniImageUpload = ({ toolTipKey, label, onSelect, width, height, oldImgUrl, allowUpload, onDelete, displayDelete }) => {
   const classes = useStyles();
 
   const [value, setValue] = React.useState("");

@@ -31,9 +31,8 @@ class CognitoWebClient extends BaseIdp {
 
   static isAuthenticatedWithCognito() {
     return (
-      !_.isNil(
-        LocalStorageLocator.getLocalStorage().getItem(CognitoWebClient.AuthStateLocalStorageKey)
-      ) && !_.isNil(LocalStorageLocator.getLocalStorage().getItem(IdpDetails.AuthTokenName))
+      !_.isNil(LocalStorageLocator.getLocalStorage().getItem(CognitoWebClient.AuthStateLocalStorageKey)) &&
+      !_.isNil(LocalStorageLocator.getLocalStorage().getItem(IdpDetails.AuthTokenName))
     );
   }
 }

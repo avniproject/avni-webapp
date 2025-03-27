@@ -6,9 +6,7 @@ const userEndpoint = "/user",
 class UserService {
   static searchUsers(name, phoneNumber, email) {
     return http
-      .fetchJson(
-        `${userSearchEndpoint}?name=${name}&phoneNumber=${phoneNumber}&email=${email}&page=${0}&size=${30}`
-      )
+      .fetchJson(`${userSearchEndpoint}?name=${name}&phoneNumber=${phoneNumber}&email=${email}&page=${0}&size=${30}`)
       .then(response => response.json);
   }
   static searchUserById(id) {

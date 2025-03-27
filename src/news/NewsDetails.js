@@ -67,18 +67,8 @@ export default function NewsDetails({ history, ...props }) {
           edit={true}
           existingNews={news}
         />
-        <PublishBroadcast
-          open={publishAlert}
-          setOpen={setPublishAlert}
-          setRedirect={setRedirectToListing}
-          news={news}
-        />
-        <DeleteBroadcast
-          open={deleteAlert}
-          setOpen={setDeleteAlert}
-          setRedirect={setRedirectToListing}
-          news={news}
-        />
+        <PublishBroadcast open={publishAlert} setOpen={setPublishAlert} setRedirect={setRedirectToListing} news={news} />
+        <DeleteBroadcast open={deleteAlert} setOpen={setDeleteAlert} setRedirect={setRedirectToListing} news={news} />
       </div>
       {redirectToListing && <Redirect to="/broadcast/news" />}
     </ScreenWithAppBar>

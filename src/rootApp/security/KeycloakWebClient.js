@@ -45,8 +45,7 @@ class KeycloakWebClient extends BaseIdp {
 
   static isAuthenticatedWithKeycloak() {
     return (
-      !_.isNil(LocalStorageLocator.getLocalStorage().getItem(IdpDetails.AuthTokenName)) &&
-      !CognitoWebClient.isAuthenticatedWithCognito()
+      !_.isNil(LocalStorageLocator.getLocalStorage().getItem(IdpDetails.AuthTokenName)) && !CognitoWebClient.isAuthenticatedWithCognito()
     );
   }
 }

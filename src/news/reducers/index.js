@@ -12,11 +12,8 @@ export const NewsReducer = (news, action) => {
     case "editorState":
       return { ...news, editorState: action.payload };
     case "setData":
-      const convertRawToEditorState = raw =>
-        EditorState.createWithContent(convertFromRaw(JSON.parse(raw)));
-      const editorState = isEmpty(action.payload.content)
-        ? EditorState.createEmpty()
-        : convertRawToEditorState(action.payload.content);
+      const convertRawToEditorState = raw => EditorState.createWithContent(convertFromRaw(JSON.parse(raw)));
+      const editorState = isEmpty(action.payload.content) ? EditorState.createEmpty() : convertRawToEditorState(action.payload.content);
       return {
         ...news,
         title: action.payload.title,

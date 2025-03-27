@@ -34,9 +34,7 @@ export const ExtensionReducer = (extension, action) => {
       const errors = filter(extension.errors, ({ key }) => key !== "EMPTY_FILE");
       return { ...extension, file: action.payload, errors };
     case "setData":
-      const extensionSettings = isEmpty(action.payload)
-        ? [{ label: "", fileName: "" }]
-        : action.payload;
+      const extensionSettings = isEmpty(action.payload) ? [{ label: "", fileName: "" }] : action.payload;
       return { ...extension, labelFileNames: extensionSettings };
     case "setScopeOptions":
       const { subjectTypes, programs } = action.payload;
@@ -67,13 +65,7 @@ export const ExtensionReducer = (extension, action) => {
       };
       return {
         ...extension,
-        scopeOptions: [
-          ...dashboardOptions,
-          ...programOptions,
-          searchResultOption,
-          fieldAppHomeScreenOption,
-          genericOption
-        ]
+        scopeOptions: [...dashboardOptions, ...programOptions, searchResultOption, fieldAppHomeScreenOption, genericOption]
       };
     default:
       return extension;
@@ -89,8 +81,7 @@ export const checkForErrors = extension => {
   }
   const isLabelFileEmpty = some(
     extension.labelFileNames,
-    ({ label, fileName, extensionScope }) =>
-      isEmpty(label) || isNil(fileName) || isEmpty(extensionScope)
+    ({ label, fileName, extensionScope }) => isEmpty(label) || isNil(fileName) || isEmpty(extensionScope)
   );
   if (isLabelFileEmpty) {
     errors.push({

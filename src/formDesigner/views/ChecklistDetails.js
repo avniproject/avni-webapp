@@ -40,17 +40,14 @@ const ChecklistDetails = ({ userInfo }) => {
     }
   };
 
-  const getValidationErrorByKey = errorKey =>
-    _.find(validationErrors, ({ key }) => key === errorKey);
+  const getValidationErrorByKey = errorKey => _.find(validationErrors, ({ key }) => key === errorKey);
 
   const onSave = async () => {
     if (!_.isEmpty(getValidationErrorByKey("JSON_ERROR"))) {
       return;
     }
     const [status, error] = await api.saveChecklistDetails(JSON.parse(checklistDetails));
-    !_.isNil(error)
-      ? setValidationErrors([{ key: "SERVER_ERROR", message: error }])
-      : setValidationErrors([]);
+    !_.isNil(error) ? setValidationErrors([{ key: "SERVER_ERROR", message: error }]) : setValidationErrors([]);
     if (status === 201) {
       setSuccess(true);
       setFoldCard(true);

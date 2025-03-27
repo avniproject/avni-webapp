@@ -32,23 +32,11 @@ const GroupMessageTab = ({ contactGroupId }) => {
   return (
     <div className="container">
       <ErrorMessage error={error} />
-      <SendMessage
-        receiverId={contactGroupId}
-        receiverType={ReceiverType.Group}
-        onComposedMessage={onComposedMessage}
-      />
+      <SendMessage receiverId={contactGroupId} receiverType={ReceiverType.Group} onComposedMessage={onComposedMessage} />
       <Box style={{ marginTop: 20 }} />
-      <GroupSentMessagesTable
-        messages={sentMessages}
-        title={"Sent Messages"}
-        showDeliveryDetails={true}
-      />
+      <GroupSentMessagesTable messages={sentMessages} title={"Sent Messages"} showDeliveryDetails={true} />
       <Box style={{ marginTop: 20 }} />
-      <GroupSentMessagesTable
-        messages={unsentMessages}
-        title={"Scheduled Messages"}
-        showDeliveryDetails={false}
-      />
+      <GroupSentMessagesTable messages={unsentMessages} title={"Scheduled Messages"} showDeliveryDetails={false} />
     </div>
   );
 };

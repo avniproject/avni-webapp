@@ -27,11 +27,9 @@ class FilterProcessor {
 
     let basePath = "search";
     const endingIdPattern = /Id$/;
-    const extractEntityName = str =>
-      _.upperFirst(str.replace(endingIdPattern, ""));
+    const extractEntityName = str => _.upperFirst(str.replace(endingIdPattern, ""));
 
-    if (filter.hasOwnProperty("searchURI"))
-      return `${basePath}/${filter.searchURI}`;
+    if (filter.hasOwnProperty("searchURI")) return `${basePath}/${filter.searchURI}`;
     if (_.keys(filter).length === 1 && _.keys(filter)[0].match(endingIdPattern))
       return `${basePath}/findBy${extractEntityName(_.keys(filter)[0])}`;
 
@@ -50,10 +48,7 @@ class UrlPartsGenerator {
     let paginationPart = stringifyPagination(params.pagination, params.sort);
     let filter = params.filter;
     let path = FilterProcessor.getPath(filter);
-    let queryString = _.trim(
-      [FilterProcessor.stringifyFilter(filter), paginationPart].join("&"),
-      "&"
-    );
+    let queryString = _.trim([FilterProcessor.stringifyFilter(filter), paginationPart].join("&"), "&");
     return `${path}?${queryString}`;
   }
 

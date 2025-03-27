@@ -16,10 +16,7 @@ import { Privilege } from "openchs-models";
 function ImplementationBundle({ organisation, userInfo }) {
   const [loading, setLoading] = React.useState(false);
   const [includeLocations, setIncludeLocations] = React.useState(false);
-  const hasDownloadPrivilege = UserInfo.hasPrivilege(
-    userInfo,
-    Privilege.PrivilegeType.DownloadBundle
-  );
+  const hasDownloadPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.DownloadBundle);
 
   function onDownloadHandler() {
     setLoading(true);
@@ -35,9 +32,7 @@ function ImplementationBundle({ organisation, userInfo }) {
       })
       .catch(error => {
         setLoading(false);
-        const errorMessage = `${get(error, "response.data") ||
-          get(error, "message") ||
-          "unknown error"}`;
+        const errorMessage = `${get(error, "response.data") || get(error, "message") || "unknown error"}`;
         alert(errorMessage);
       });
   }
@@ -51,11 +46,7 @@ function ImplementationBundle({ organisation, userInfo }) {
             <p>Download Implementation Bundle</p>
             <FormControlLabel
               control={
-                <Checkbox
-                  checked={includeLocations}
-                  onChange={event => setIncludeLocations(event.target.checked)}
-                  name="location"
-                />
+                <Checkbox checked={includeLocations} onChange={event => setIncludeLocations(event.target.checked)} name="location" />
               }
               label="Include Locations"
             />

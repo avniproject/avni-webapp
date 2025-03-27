@@ -33,11 +33,7 @@ const AddContactGroupUser = ({ contactGroupId, onClose, onUserAdd }) => {
       fullScreen
       style={{ backgroundColor: "black", color: "white" }}
     >
-      <DialogTitle
-        id="customized-dialog-title"
-        onClose={onCloseHandler}
-        style={{ backgroundColor: "black", color: "white" }}
-      >
+      <DialogTitle id="customized-dialog-title" onClose={onCloseHandler} style={{ backgroundColor: "black", color: "white" }}>
         Search users to add
       </DialogTitle>
       <DialogActions>

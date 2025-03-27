@@ -29,14 +29,10 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedCo
     <Fragment key={searchFilterForms.uuid}>
       <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) => {
-          const selectedValue = _.head(
-            selectedConcepts.filter(c => c.conceptUUID === searchFilterForm.conceptUUID)
-          );
+          const selectedValue = _.head(selectedConcepts.filter(c => c.conceptUUID === searchFilterForm.conceptUUID));
           let selected = {};
-          selectedValue &&
-            _.forEach(selectedValue.values, sv => _.assign(selected, { [sv]: true }));
-          return searchFilterForm.type === "Concept" &&
-            searchFilterForm.conceptDataType === "Coded" ? (
+          selectedValue && _.forEach(selectedValue.values, sv => _.assign(selected, { [sv]: true }));
+          return searchFilterForm.type === "Concept" && searchFilterForm.conceptDataType === "Coded" ? (
             <Grid item xs={12} key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
@@ -48,11 +44,7 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedCo
                         <FormControlLabel
                           control={
                             <Checkbox
-                              checked={
-                                selected != null
-                                  ? selected[conceptAnswer.answerConcept.uuid]
-                                  : false
-                              }
+                              checked={selected != null ? selected[conceptAnswer.answerConcept.uuid] : false}
                               onChange={event => onChange(event, searchFilterForm)}
                               name={conceptAnswer.answerConcept.uuid}
                               color="primary"

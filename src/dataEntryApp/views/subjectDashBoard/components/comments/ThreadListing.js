@@ -48,14 +48,7 @@ const useStyles = makeStyles(theme => ({
     flexWrap: "wrap"
   }
 }));
-export const ThreadListing = ({
-  commentThreads,
-  dispatch,
-  setOpen,
-  newCommentText,
-  onCommentChange,
-  subjectUUID
-}) => {
+export const ThreadListing = ({ commentThreads, dispatch, setOpen, newCommentText, onCommentChange, subjectUUID }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [openCommentThread, setOpenCommentThread] = useState(false);
@@ -67,11 +60,7 @@ export const ThreadListing = ({
           <Typography style={{ color: "#fff" }}>{t("commentThreads")}</Typography>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <Button
-            className={classes.commentButton}
-            style={{ textTransform: "none" }}
-            onClick={() => setOpenCommentThread(true)}
-          >
+          <Button className={classes.commentButton} style={{ textTransform: "none" }} onClick={() => setOpenCommentThread(true)}>
             {t("addComment")}
           </Button>
           <div className={classes.iconContainer}>

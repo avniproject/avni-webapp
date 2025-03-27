@@ -59,12 +59,7 @@ const RelationshipShow = props => {
               {genders.map(gender => {
                 return (
                   <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={relationshipGenders.includes(gender.name) ? true : false}
-                        name={gender.name}
-                      />
-                    }
+                    control={<Checkbox checked={relationshipGenders.includes(gender.name) ? true : false} name={gender.name} />}
                     label={gender.name}
                     key={gender.uuid}
                     disabled={true}

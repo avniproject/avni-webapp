@@ -75,9 +75,7 @@ export function* resolveThreadWorker() {
   yield put.resolve(setLoadCommentListing(false));
   const state = yield select(selectCommentState);
   const resolvedThread = yield call(API.resolveThread, get(state, "activeThread.id"));
-  const commentThreads = map(state.commentThreads, thread =>
-    thread.uuid === resolvedThread.uuid ? resolvedThread : thread
-  );
+  const commentThreads = map(state.commentThreads, thread => (thread.uuid === resolvedThread.uuid ? resolvedThread : thread));
   yield put(setCommentThreads(commentThreads));
 }
 

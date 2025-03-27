@@ -23,13 +23,7 @@ const Forms = props => {
           <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
             <CreateComponent onSubmit={openNewFormDialog} name="New Form" />
           </div>
-          <Dialog
-            fullWidth
-            maxWidth="xs"
-            onClose={closeNewFormDialog}
-            aria-labelledby="customized-dialog-title"
-            open={showNewFormDialog}
-          >
+          <Dialog fullWidth maxWidth="xs" onClose={closeNewFormDialog} aria-labelledby="customized-dialog-title" open={showNewFormDialog}>
             <DialogTitle id="customized-dialog-title" onClose={closeNewFormDialog}>
               New Form
               <IconButton style={{ float: "right" }} onClick={closeNewFormDialog}>

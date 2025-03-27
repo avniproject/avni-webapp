@@ -21,13 +21,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const ExtensionOption = ({
-  subjectUUIDs,
-  typeUUID,
-  typeName,
-  scopeType,
-  configExtensions
-}) => {
+export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType, configExtensions }) => {
   const classes = useStyles();
   const [extensions, setExtensions] = React.useState([]);
 
@@ -42,15 +36,12 @@ export const ExtensionOption = ({
     }
   }, []);
   const isSearchScope = (scopeType, extensionScope) =>
-    scopeType === extensionScopeTypes.searchResults &&
-    extensionScope === extensionScopeTypes.searchResults;
+    scopeType === extensionScopeTypes.searchResults && extensionScope === extensionScopeTypes.searchResults;
   const filteredSettings = filter(
     extensions,
     ({ extensionScope }) =>
       isSearchScope(scopeType, extensionScope.scopeType) ||
-      (typeUUID === extensionScope.uuid &&
-        typeName === extensionScope.name &&
-        scopeType === extensionScope.scopeType)
+      (typeUUID === extensionScope.uuid && typeName === extensionScope.name && scopeType === extensionScope.scopeType)
   );
   const serverURL = isDevEnv ? "http://localhost:8021" : window.location.origin;
 

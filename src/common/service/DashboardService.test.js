@@ -25,10 +25,7 @@ it("should map server dashboard response", function() {
   const operationalModules = OperationalModulesFactory.create({
     subjectTypes: [SubjectTypeFactory.create({ uuid: "ST1" })]
   });
-  const dashboard = DashboardService.mapDashboardFromResource(
-    dashboardResponse,
-    operationalModules
-  );
+  const dashboard = DashboardService.mapDashboardFromResource(dashboardResponse, operationalModules);
   const filterConfig = dashboard.filters[0].filterConfig;
   assert.equal(filterConfig.subjectType.uuid, "ST1");
   assert.equal(filterConfig.type, "Gender");

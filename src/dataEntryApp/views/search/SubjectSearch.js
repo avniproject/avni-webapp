@@ -70,13 +70,7 @@ const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfi
 
   return (
     <Paper className={classes.searchBox}>
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        alignItems="baseline"
-        style={{ marginBottom: "1%" }}
-      >
+      <Grid container direction="row" justify="space-between" alignItems="baseline" style={{ marginBottom: "1%" }}>
         <Typography
           component={"span"}
           style={{

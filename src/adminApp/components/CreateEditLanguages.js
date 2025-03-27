@@ -20,9 +20,7 @@ export const CreateEditLanguages = props => {
 
   const setting = props.history.location.state.settings;
   const worklistUpdationRule = props.history.location.state.worklistUpdationRule;
-  const [lang, setLang] = useState(
-    options.filter(l => setting.settings.languages.includes(l.value))
-  );
+  const [lang, setLang] = useState(options.filter(l => setting.settings.languages.includes(l.value)));
   const [messageStatus, setMessageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 

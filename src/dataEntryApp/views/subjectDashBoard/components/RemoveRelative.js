@@ -74,8 +74,7 @@ const RemoveRelative = props => {
     <DialogContent style={{ width: 600, height: "auto" }}>
       <Grid container direction="row" justify="flex-end" alignItems="flex-start">
         <Typography variant="subtitle1" gutterBottom>
-          Do you want to remove the relationship between {props.relationAname} and{" "}
-          {props.relationBname}?
+          Do you want to remove the relationship between {props.relationAname} and {props.relationBname}?
         </Typography>
       </Grid>
     </DialogContent>

@@ -8,16 +8,9 @@ import { NewVisitLinkButton } from "./NewVisitLinkButton";
 export const NewGeneralEncounterButton = ({ subjectUuid }) => {
   const newEncounterBaseURL = "/app/subject/encounter";
   const dispatch = useDispatch();
-  const eligibleEncounters = useSelector(
-    state => state.dataEntry.encounterReducer.eligibleEncounters
-  );
-  const encounterTypes = useSelector(
-    state => state.dataEntry.metadata.operationalModules.encounterTypes
-  );
-  const { scheduledEncounters, unplannedEncounters } = getNewEligibleEncounters(
-    encounterTypes,
-    eligibleEncounters
-  );
+  const eligibleEncounters = useSelector(state => state.dataEntry.encounterReducer.eligibleEncounters);
+  const encounterTypes = useSelector(state => state.dataEntry.metadata.operationalModules.encounterTypes);
+  const { scheduledEncounters, unplannedEncounters } = getNewEligibleEncounters(encounterTypes, eligibleEncounters);
 
   useEffect(() => {
     dispatch(resetState());
@@ -34,10 +27,5 @@ export const NewGeneralEncounterButton = ({ subjectUuid }) => {
         : `${newEncounterBaseURL}?subjectUuid=${subjectUuid}&uuid=${encounter.encounterType.uuid}`;
     return <NewVisitLinkButton label={encounter.encounterType.name} to={newVisitURL} />;
   }
-  return (
-    <NewVisitLinkButton
-      label={"newGeneralVisit"}
-      to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`}
-    />
-  );
+  return <NewVisitLinkButton label={"newGeneralVisit"} to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`} />;
 };

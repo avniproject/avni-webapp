@@ -18,25 +18,16 @@ class SearchResultFieldState {
   }
 
   getFieldsForSelectedSubjectType() {
-    const searchResultField = find(
-      this.searchResultFields,
-      ({ subjectTypeUUID }) => subjectTypeUUID === this.selectedSubjectTypeUUID
-    );
+    const searchResultField = find(this.searchResultFields, ({ subjectTypeUUID }) => subjectTypeUUID === this.selectedSubjectTypeUUID);
     return get(searchResultField, "searchResultConcepts", []);
   }
 
   getSearchResultField() {
-    const searchResultField = find(
-      this.searchResultFields,
-      ({ subjectTypeUUID }) => subjectTypeUUID === this.selectedSubjectTypeUUID
-    );
+    const searchResultField = find(this.searchResultFields, ({ subjectTypeUUID }) => subjectTypeUUID === this.selectedSubjectTypeUUID);
     if (searchResultField) {
       return searchResultField;
     } else {
-      const { subjectType } = find(
-        this.subjectTypeMetadata,
-        ({ subjectType }) => subjectType.uuid === this.selectedSubjectTypeUUID
-      );
+      const { subjectType } = find(this.subjectTypeMetadata, ({ subjectType }) => subjectType.uuid === this.selectedSubjectTypeUUID);
       const searchResultField = new SearchResultField(subjectType.name, subjectType.uuid);
       this.searchResultFields.push(searchResultField);
       return searchResultField;
@@ -71,9 +62,7 @@ class SearchResultField {
 
   reOrderConceptDetails(newConceptDetails) {
     this.searchResultConcepts = [];
-    map(newConceptDetails, ({ name, uuid }, index) =>
-      this.addConceptDetails(name, uuid, index + 1)
-    );
+    map(newConceptDetails, ({ name, uuid }, index) => this.addConceptDetails(name, uuid, index + 1));
   }
 
   push(name, uuid) {

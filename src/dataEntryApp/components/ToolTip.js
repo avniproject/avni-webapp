@@ -61,10 +61,7 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
     return (
       <ClickAwayListener onClickAway={handleClickAway}>
         <div style={styles.root}>
-          <HelpIcon
-            onClick={handleClick}
-            style={{ fontSize: "18px", color: "#a19d9d", cursor: "pointer" }}
-          />
+          <HelpIcon onClick={handleClick} style={{ fontSize: "18px", color: "#a19d9d", cursor: "pointer" }} />
           {open ? displayMarkup() : null}
         </div>
       </ClickAwayListener>

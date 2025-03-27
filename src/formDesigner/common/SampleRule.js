@@ -118,9 +118,7 @@ export const sampleDecisionRule = entityName => {
 ({params, imports}) => {
     const ${entityName} = params.entity;
     const decisions = params.decisions;
-    //create complicationBuilder using ${entityName} and then push to ${decisionType(
-    entityName
-  )} array.
+    //create complicationBuilder using ${entityName} and then push to ${decisionType(entityName)} array.
     return decisions;
 };`;
 };

@@ -21,15 +21,13 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(3, 2),
     margin: theme.spacing(1, 3),
     flexGrow: 1,
-    boxShadow:
-      "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   innerPaper: {
     padding: theme.spacing(2, 2),
     margin: theme.spacing(1, 1),
     flexGrow: 1,
-    boxShadow:
-      "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   mainHeading: {
     fontSize: "20px",
@@ -80,9 +78,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
       : `/app/subject/completedProgramEncounters?uuid=${encounter.enrolmentUuid}`;
   }
   useEffect(() => {
-    isViewEncounter
-      ? getEncounter(match.queryParams.uuid)
-      : getProgramEncounter(match.queryParams.uuid);
+    isViewEncounter ? getEncounter(match.queryParams.uuid) : getProgramEncounter(match.queryParams.uuid);
   }, []);
   return encounter ? (
     <Fragment>

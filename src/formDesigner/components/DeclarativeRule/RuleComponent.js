@@ -12,26 +12,13 @@ import MiddleText from "./MiddleText";
 
 const RuleComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
-  const onRuleDelete = () =>
-    dispatch({ type: "deleteRule", payload: { declarativeRuleIndex, ruleIndex, conditionIndex } });
+  const onRuleDelete = () => dispatch({ type: "deleteRule", payload: { declarativeRuleIndex, ruleIndex, conditionIndex } });
 
   return (
-    <Box
-      p={2}
-      mb={1}
-      border={1}
-      display="flex"
-      alignItems="flex-start"
-      style={{ borderStyle: "dotted" }}
-    >
+    <Box p={2} mb={1} border={1} display="flex" alignItems="flex-start" style={{ borderStyle: "dotted" }}>
       <Grid item container spacing={1} direction={"row"} alignItems={"center"} xs={12}>
         <MiddleText text={"The value of"} />
-        <LHSComponent
-          rule={rule}
-          ruleIndex={ruleIndex}
-          conditionIndex={conditionIndex}
-          declarativeRuleIndex={declarativeRuleIndex}
-        />
+        <LHSComponent rule={rule} ruleIndex={ruleIndex} conditionIndex={conditionIndex} declarativeRuleIndex={declarativeRuleIndex} />
         {rule.isOperatorRequired() && (
           <OperatorComponent
             rule={rule}
@@ -41,12 +28,7 @@ const RuleComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, 
           />
         )}
         {rule.isRhsRequired() && (
-          <RHSComponent
-            rule={rule}
-            ruleIndex={ruleIndex}
-            conditionIndex={conditionIndex}
-            declarativeRuleIndex={declarativeRuleIndex}
-          />
+          <RHSComponent rule={rule} ruleIndex={ruleIndex} conditionIndex={conditionIndex} declarativeRuleIndex={declarativeRuleIndex} />
         )}
       </Grid>
       <Box>

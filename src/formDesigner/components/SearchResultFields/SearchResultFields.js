@@ -12,14 +12,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import commonApi from "../../../common/service";
 import Select from "react-select";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
-import {
-  IconButton,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  Typography
-} from "@material-ui/core";
+import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import CustomizedSnackbar from "../CustomizedSnackbar";
@@ -40,22 +33,11 @@ const reorder = (list, startIndex, endIndex) => {
 const SearchResultFields = ({ userInfo }) => {
   const [state, dispatch] = useReducer(SearchFieldReducer, new SearchResultFieldState());
   const orgConfigKey = "searchResultFields";
-  const {
-    selectedSubjectTypeUUID,
-    loadApp,
-    subjectTypeMetadata,
-    searchResultFields,
-    feedbackMessage
-  } = state;
-  const selectedSubjectTypeMetadata = find(
-    subjectTypeMetadata,
-    ({ subjectType }) => subjectType.uuid === selectedSubjectTypeUUID
-  );
+  const { selectedSubjectTypeUUID, loadApp, subjectTypeMetadata, searchResultFields, feedbackMessage } = state;
+  const selectedSubjectTypeMetadata = find(subjectTypeMetadata, ({ subjectType }) => subjectType.uuid === selectedSubjectTypeUUID);
   const selectedCustomFields = state.getFieldsForSelectedSubjectType();
   const allowedDataTypes = ["Numeric", "Text", "Coded", "Id", "Date"];
-  const allConcepts = filter(get(selectedSubjectTypeMetadata, "concepts", []), ({ dataType }) =>
-    includes(allowedDataTypes, dataType)
-  );
+  const allConcepts = filter(get(selectedSubjectTypeMetadata, "concepts", []), ({ dataType }) => includes(allowedDataTypes, dataType));
   const possibleOptions = differenceBy(allConcepts, selectedCustomFields, "uuid");
 
   useEffect(() => {
@@ -92,11 +74,7 @@ const SearchResultFields = ({ userInfo }) => {
     if (!result.destination) {
       return;
     }
-    const searchResultConcepts = reorder(
-      selectedCustomFields,
-      result.source.index,
-      result.destination.index
-    );
+    const searchResultConcepts = reorder(selectedCustomFields, result.source.index, result.destination.index);
 
     dispatch({ type: "changeOrder", payload: { searchResultConcepts } });
   };
@@ -131,9 +109,7 @@ const SearchResultFields = ({ userInfo }) => {
         <ListItem>
           <ListItemText primary={concept.name} />
           <ListItemSecondaryAction>
-            <IconButton
-              onClick={() => dispatch({ type: "deleteField", payload: { uuid: concept.uuid } })}
-            >
+            <IconButton onClick={() => dispatch({ type: "deleteField", payload: { uuid: concept.uuid } })}>
               <DeleteIcon />
             </IconButton>
           </ListItemSecondaryAction>
@@ -179,10 +155,9 @@ const SearchResultFields = ({ userInfo }) => {
             </Typography>
             {isEmpty(selectedCustomFields) ? renderNotConfiguredMessage() : renderDraggableFields()}
           </Box>
-          {UserInfo.hasPrivilege(
-            userInfo,
-            Privilege.PrivilegeType.EditOfflineDashboardAndReportCard
-          ) && <SaveComponent name="Save" onSubmit={onSave} />}
+          {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOfflineDashboardAndReportCard) && (
+            <SaveComponent name="Save" onSubmit={onSave} />
+          )}
         </DocumentationContainer>
       )}
       {!isEmpty(feedbackMessage) && (

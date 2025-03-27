@@ -45,9 +45,7 @@ export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
             const value = e.target.value.replace(/[^0-9.]/g, "");
             handleChange(groupIndex, "allowedMaxSize", value, index);
           }}
-          onBlur={() =>
-            handleChange(groupIndex, "allowedMaxSize", toNumber(keyValues.allowedMaxSize), index)
-          }
+          onBlur={() => handleChange(groupIndex, "allowedMaxSize", toNumber(keyValues.allowedMaxSize), index)}
         />
       </FormControl>
     </Fragment>

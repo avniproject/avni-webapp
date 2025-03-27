@@ -58,9 +58,7 @@ export const WorklistUpdationRule = () => {
       setSettings(orgSettings);
       res.data._embedded.organisationConfig[0] &&
         setWorklistUpdationRule(
-          res.data._embedded.organisationConfig[0].worklistUpdationRule
-            ? res.data._embedded.organisationConfig[0].worklistUpdationRule
-            : ""
+          res.data._embedded.organisationConfig[0].worklistUpdationRule ? res.data._embedded.organisationConfig[0].worklistUpdationRule : ""
         );
     });
   }, []);
@@ -89,9 +87,7 @@ export const WorklistUpdationRule = () => {
         <DocumentationContainer filename={"WorklistUpdationRule.md"}>
           <ExpansionPanel expanded={true}>
             <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header">
-              <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>
-                Worklist Updation Rule
-              </span>
+              <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>Worklist Updation Rule</span>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <JSEditor

@@ -70,9 +70,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                   onChange={minDate =>
                     onDateChange(
                       minDate,
-                      selectedDate[`${searchFilterForm.type}`].maxValue !== null
-                        ? selectedDate[`${searchFilterForm.type}`].maxValue
-                        : null,
+                      selectedDate[`${searchFilterForm.type}`].maxValue !== null ? selectedDate[`${searchFilterForm.type}`].maxValue : null,
                       searchFilterForm.type
                     )
                   }
@@ -89,9 +87,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                   value={selectedDate[`${searchFilterForm.type}`].maxValue}
                   onChange={maxDate =>
                     onDateChange(
-                      selectedDate[`${searchFilterForm.type}`].minValue !== null
-                        ? selectedDate[`${searchFilterForm.type}`].minValue
-                        : null,
+                      selectedDate[`${searchFilterForm.type}`].minValue !== null ? selectedDate[`${searchFilterForm.type}`].minValue : null,
                       maxDate,
                       searchFilterForm.type
                     )

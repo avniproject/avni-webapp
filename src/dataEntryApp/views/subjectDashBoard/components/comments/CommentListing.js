@@ -1,13 +1,7 @@
 import { get, isEmpty, map, sortBy } from "lodash";
 import { Box, makeStyles, Paper, Typography } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
-import {
-  addNewComment,
-  getCommentThreads,
-  onCommentEdit,
-  onThreadResolve,
-  selectCommentState
-} from "../../../../reducers/CommentReducer";
+import { addNewComment, getCommentThreads, onCommentEdit, onThreadResolve, selectCommentState } from "../../../../reducers/CommentReducer";
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
@@ -67,14 +61,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const CommentListing = ({
-  comments,
-  dispatch,
-  newCommentText,
-  onCommentChange,
-  subjectUUID,
-  setOpen
-}) => {
+export const CommentListing = ({ comments, dispatch, newCommentText, onCommentChange, subjectUUID, setOpen }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const { activeThread } = useSelector(selectCommentState);
@@ -120,19 +107,9 @@ export const CommentListing = ({
       <Paper elevation={0} className={classes.root}>
         {map(sortBy(comments, "createdDateTime"), (comment, index) => {
           return (
-            <Box
-              display="flex"
-              justifyContent={index === 0 ? "flex-start" : "center"}
-              alignItems="center"
-              mb={2}
-            >
+            <Box display="flex" justifyContent={index === 0 ? "flex-start" : "center"} alignItems="center" mb={2}>
               <Paper elevation={0} className={index === 0 ? classes.firstComment : classes.comment}>
-                <CommentCard
-                  displayMenu
-                  comment={comment}
-                  dispatch={dispatch}
-                  setCommentToEdit={setCommentToEdit}
-                />
+                <CommentCard displayMenu comment={comment} dispatch={dispatch} setCommentToEdit={setCommentToEdit} />
               </Paper>
             </Box>
           );

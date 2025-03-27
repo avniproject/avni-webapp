@@ -11,12 +11,7 @@ import Colors from "../../../dataEntryApp/Colors";
 import Button from "@material-ui/core/Button";
 import Chip from "@material-ui/core/Chip";
 
-const CompoundRuleComponent = ({
-  compoundRule,
-  conditionIndex,
-  declarativeRuleIndex,
-  ...props
-}) => {
+const CompoundRuleComponent = ({ compoundRule, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const { conjunction, rules } = compoundRule;
 
@@ -28,16 +23,12 @@ const CompoundRuleComponent = ({
     });
   };
 
-  const onConditionDelete = () =>
-    dispatch({ type: "deleteCondition", payload: { declarativeRuleIndex, conditionIndex } });
+  const onConditionDelete = () => dispatch({ type: "deleteCondition", payload: { declarativeRuleIndex, conditionIndex } });
 
   return (
     <Box m={1} border={1} p={2}>
       <Box display="flex" alignItems="flex-start" justifyContent={"space-between"}>
-        <CompoundRuleConjunctionComponent
-          onConjunctionChange={onCompoundRuleConjunctionChange}
-          value={conjunction}
-        />
+        <CompoundRuleConjunctionComponent onConjunctionChange={onCompoundRuleConjunctionChange} value={conjunction} />
         <Box>
           <Button size="small" onClick={onConditionDelete}>
             <DeleteIcon style={{ color: Colors.ValidationError }} />
@@ -49,28 +40,17 @@ const CompoundRuleComponent = ({
           <Grid item container direction={"column"} spacing={1} key={index}>
             {index !== 0 && (
               <Grid item container justify={"center"}>
-                <Chip
-                  style={{ marginTop: "10px", marginBottom: "10px" }}
-                  color="primary"
-                  label={toUpper(compoundRule.conjunction)}
-                />
+                <Chip style={{ marginTop: "10px", marginBottom: "10px" }} color="primary" label={toUpper(compoundRule.conjunction)} />
               </Grid>
             )}
-            <RuleComponent
-              rule={rule}
-              ruleIndex={index}
-              conditionIndex={conditionIndex}
-              declarativeRuleIndex={declarativeRuleIndex}
-            />
+            <RuleComponent rule={rule} ruleIndex={index} conditionIndex={conditionIndex} declarativeRuleIndex={declarativeRuleIndex} />
           </Grid>
         ))}
       </Grid>
       <IconButton
         Icon={AddCircleIcon}
         label={"Add new rule"}
-        onClick={() =>
-          dispatch({ type: "addNewRule", payload: { declarativeRuleIndex, conditionIndex } })
-        }
+        onClick={() => dispatch({ type: "addNewRule", payload: { declarativeRuleIndex, conditionIndex } })}
         disabled={isEmpty(conjunction)}
       />
     </Box>

@@ -54,13 +54,7 @@ export const ExpansionPanelSummary = withStyles({
   }
 })(MuiExpansionPanelSummary);
 
-export const DragNDropComponent = ({
-  onDragEnd,
-  renderOtherSummary,
-  renderDetails,
-  dataList,
-  summaryDirection
-}) => {
+export const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetails, dataList, summaryDirection }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = panel => (event, isExpanded) => {
@@ -84,12 +78,7 @@ export const DragNDropComponent = ({
           <RootRef rootRef={provided.innerRef}>
             <div style={getListStyle(snapshot.isDraggingOver)}>
               {map(orderBy(dataList, "displayOrder"), (data, index) => (
-                <Draggable
-                  isDragDisabled={expanded !== false}
-                  key={data.uuid}
-                  draggableId={data.uuid}
-                  index={index}
-                >
+                <Draggable isDragDisabled={expanded !== false} key={data.uuid} draggableId={data.uuid} index={index}>
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
@@ -97,11 +86,7 @@ export const DragNDropComponent = ({
                       {...provided.dragHandleProps}
                       style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                     >
-                      <ExpansionPanel
-                        key={index}
-                        expanded={expanded === "panel" + index}
-                        onChange={handleChange("panel" + index)}
-                      >
+                      <ExpansionPanel key={index} expanded={expanded === "panel" + index} onChange={handleChange("panel" + index)}>
                         <ExpansionPanelSummary
                           aria-controls={"panel" + index + "bh-content"}
                           id={"panel" + index + "bh-header"}
@@ -114,11 +99,7 @@ export const DragNDropComponent = ({
                             {renderOtherSummary(data, index, expanded)}
                           </Grid>
                         </ExpansionPanelSummary>
-                        {renderDetails && (
-                          <ExpansionPanelDetails>
-                            {renderDetails(data, index, expanded)}
-                          </ExpansionPanelDetails>
-                        )}
+                        {renderDetails && <ExpansionPanelDetails>{renderDetails(data, index, expanded)}</ExpansionPanelDetails>}
                       </ExpansionPanel>
                     </div>
                   )}

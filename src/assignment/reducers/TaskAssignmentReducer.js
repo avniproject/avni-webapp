@@ -74,9 +74,7 @@ export const TaskAssignmentReducer = (state, action) => {
       newState.displayAction = display;
       newState.assignmentCriteria["taskIds"] = selectedIds;
       newState.applyableTaskStatuses =
-        selectedTaskTypeNames.length === 1
-          ? TaskMetadata.getTaskStatusesMatching(newState.taskMetadata, selectedTaskTypeNames[0])
-          : [];
+        selectedTaskTypeNames.length === 1 ? TaskMetadata.getTaskStatusesMatching(newState.taskMetadata, selectedTaskTypeNames[0]) : [];
       return newState;
     }
     case "hideAction": {
@@ -104,8 +102,7 @@ export const getMetadataOptions = (taskMetadata, filterCriteria) => {
   const userOptions = map(taskMetadata.users, ({ name, id }) => labelValue(name, id));
   const applicableTaskStatuses = filter(
     taskMetadata.taskStatuses,
-    ({ taskTypeId }) =>
-      taskTypeId === get(filterCriteria.taskType, "value") || isNil(filterCriteria.taskType)
+    ({ taskTypeId }) => taskTypeId === get(filterCriteria.taskType, "value") || isNil(filterCriteria.taskType)
   );
   const taskStatusOptions = map(applicableTaskStatuses, ({ name, id }) => labelValue(name, id));
   return { taskTypeOptions, userOptions, taskStatusOptions };

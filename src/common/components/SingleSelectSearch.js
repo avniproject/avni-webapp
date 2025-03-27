@@ -7,13 +7,7 @@ const SingleSelectSearch = ({ title, placeholder, value, options, onChange }) =>
   return (
     <FormControl fullWidth component="fieldset">
       <FormLabel component="legend">{title}</FormLabel>
-      <Select
-        isSearchable
-        placeholder={placeholder}
-        value={value}
-        options={options}
-        onChange={event => onChange(event)}
-      />
+      <Select isSearchable placeholder={placeholder} value={value} options={options} onChange={event => onChange(event)} />
     </FormControl>
   );
 };

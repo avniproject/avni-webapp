@@ -6,29 +6,14 @@ import Radio from "@material-ui/core/Radio";
 
 const CompoundRuleConjunctionComponent = ({ onConjunctionChange, value, ...props }) => {
   const Conjunction = ({ value, label, onChange }) => {
-    return (
-      <FormControlLabel
-        control={<Radio color="primary" />}
-        value={value}
-        label={label}
-        onChange={onChange}
-      />
-    );
+    return <FormControlLabel control={<Radio color="primary" />} value={value} label={label} onChange={onChange} />;
   };
 
   return (
     <RadioGroup row aria-label="position" name="position">
       <RadioGroup row aria-label="conjunction" value={value || ""}>
-        <Conjunction
-          label={"Match all of the below"}
-          value={CompoundRule.conjunctions.And}
-          onChange={onConjunctionChange}
-        />
-        <Conjunction
-          label={"Match any of the below"}
-          value={CompoundRule.conjunctions.Or}
-          onChange={onConjunctionChange}
-        />
+        <Conjunction label={"Match all of the below"} value={CompoundRule.conjunctions.And} onChange={onConjunctionChange} />
+        <Conjunction label={"Match any of the below"} value={CompoundRule.conjunctions.Or} onChange={onConjunctionChange} />
       </RadioGroup>
     </RadioGroup>
   );

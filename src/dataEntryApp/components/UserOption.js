@@ -123,10 +123,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
     }
   };
 
-  const hasUploadPrivilege = UserInfo.hasPrivilege(
-    userInfo,
-    Privilege.PrivilegeType.UploadMetadataAndData
-  );
+  const hasUploadPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.UploadMetadataAndData);
 
   return (
     <div style={{ float: "right", boxShadow: "3px 3px 5px #aaaaaa", marginRight: "300px" }}>
@@ -136,11 +133,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
         className={classes.root}
         style={{ boxShadow: "3px 3px 5px #aaaaaa", padding: "1%" }}
       >
-        <ListItem
-          button
-          onClick={toggleSettingsMenu}
-          style={{ paddingTop: "5px", paddingBottom: "5px" }}
-        >
+        <ListItem button onClick={toggleSettingsMenu} style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <SettingsIcon style={{ color: "blue" }} />
           </ListItemIcon>
@@ -154,12 +147,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
             style={{ fontSize: "12px", marginTop: "20px", marginLeft: "85px" }}
           >
             <FormLabel component="legend">{t("language")}</FormLabel>
-            <RadioGroup
-              aria-label="language"
-              name="language"
-              value={get(userInfo, "settings.locale", "en")}
-              onChange={handleChange}
-            >
+            <RadioGroup aria-label="language" name="language" value={get(userInfo, "settings.locale", "en")} onChange={handleChange}>
               {orgConfig
                 ? orgConfig.map((element, index) => (
                     <FormControlLabel
@@ -180,11 +168,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
         </Collapse>
         <hr className={classes.horizontalLine} />
         {hasUploadPrivilege && (
-          <ListItem
-            onClick={() => history.push(`/admin/upload`)}
-            button
-            style={{ paddingTop: "5px", paddingBottom: "5px" }}
-          >
+          <ListItem onClick={() => history.push(`/admin/upload`)} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
             <ListItemIcon>
               <ArrowUpwardIcon style={{ color: "blue" }} />
             </ListItemIcon>
@@ -208,10 +192,7 @@ const mapStateToProps = state => ({
     ? state.translationsReducer.orgConfig._embedded.organisationConfig[0].settings.languages
     : "",
   userInfo: state.app.userInfo,
-  defaultLanguage:
-    state.app.userInfo.settings && state.app.userInfo.settings.locale
-      ? state.app.userInfo.settings.locale
-      : "en"
+  defaultLanguage: state.app.userInfo.settings && state.app.userInfo.settings.locale ? state.app.userInfo.settings.locale : "en"
 });
 
 const mapDispatchToProps = dispatch => ({

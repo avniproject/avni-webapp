@@ -13,15 +13,7 @@ import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-const NewsDetailsCard = ({
-  history,
-  news,
-  setDeleteAlert,
-  setOpenEdit,
-  setPublishAlert,
-  displayActions,
-  userInfo
-}) => {
+const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublishAlert, displayActions, userInfo }) => {
   const canEditNews = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditNews);
 
   return (
@@ -29,11 +21,7 @@ const NewsDetailsCard = ({
       <Grid container direction="row" alignItems={"center"}>
         <Grid item container xs={6} direction={"column"}>
           <Grid item>
-            <Button
-              color="primary"
-              onClick={history.goBack}
-              style={{ textTransform: "none", backgroundColor: "transparent" }}
-            >
+            <Button color="primary" onClick={history.goBack} style={{ textTransform: "none", backgroundColor: "transparent" }}>
               <Typography variant="h6" gutterBottom>
                 {"< Back"}
               </Typography>

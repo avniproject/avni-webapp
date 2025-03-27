@@ -30,13 +30,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewExport = ({
-  operationalModules,
-  getOperationalModules,
-  getUploadStatuses,
-  exportJobStatuses,
-  userInfo
-}) => {
+const NewExport = ({ operationalModules, getOperationalModules, getUploadStatuses, exportJobStatuses, userInfo }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -69,21 +63,13 @@ const NewExport = ({
   };
   const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
   return (
-    <ScreenWithAppBar
-      appbarTitle={`New Longitudinal Export`}
-      enableLeftMenuButton={true}
-      sidebarOptions={reportSideBarOptions}
-    >
+    <ScreenWithAppBar appbarTitle={`New Longitudinal Export`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
       {operationalModules && (
         <div>
           <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
             <DocumentationContainer filename={"Report.md"}>
               {allowReportGeneration && (
-                <ExportRequestBody
-                  dispatch={setCustomRequest}
-                  customRequest={customRequest}
-                  exportRequest={exportRequest}
-                />
+                <ExportRequestBody dispatch={setCustomRequest} customRequest={customRequest} exportRequest={exportRequest} />
               )}
               {allowReportGeneration && (
                 <Grid container direction="row" justify="flex-start" alignItems="baseline">
@@ -106,10 +92,7 @@ const NewExport = ({
           </Box>
           <Grid item>
             <Paper style={{ marginBottom: 100 }}>
-              <JobStatus
-                exportJobStatuses={exportJobStatuses}
-                operationalModules={operationalModules}
-              />
+              <JobStatus exportJobStatuses={exportJobStatuses} operationalModules={operationalModules} />
             </Paper>
           </Grid>
         </div>

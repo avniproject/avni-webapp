@@ -20,12 +20,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProgramTab = ({
-  program,
-  handleUpdateComponent,
-  subjectTypeUuid,
-  subjectVoided
-}) => {
+const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, subjectTypeUuid, subjectVoided }) => {
   let flagActive = false;
   let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -71,12 +66,7 @@ const SubjectDashboardProgramTab = ({
           <Grid container spacing={1}>
             {flagActive ? (
               <Fragment>
-                <Program
-                  type="active"
-                  program={program}
-                  selectedTab={selectedTab}
-                  handleTabChange={handleTabChange}
-                />
+                <Program type="active" program={program} selectedTab={selectedTab} handleTabChange={handleTabChange} />
                 <Grid item style={{ width: "60px" }} />
               </Fragment>
             ) : (
@@ -84,12 +74,7 @@ const SubjectDashboardProgramTab = ({
             )}
 
             {flagExited ? (
-              <Program
-                type="exited"
-                program={program}
-                selectedTab={selectedTabExited}
-                handleTabChange={handleTabChangeExited}
-              />
+              <Program type="exited" program={program} selectedTab={selectedTabExited} handleTabChange={handleTabChangeExited} />
             ) : (
               ""
             )}

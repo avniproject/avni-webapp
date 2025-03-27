@@ -5,16 +5,10 @@ export const selectFormMappingForSubjectType = (subjectTypeUuid, programUuid) =>
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
     fm =>
       !isNil(fm.programUUID) &&
-      (fm.subjectTypeUUID === subjectTypeUuid &&
-        fm.programUUID === programUuid &&
-        fm.formType === "ProgramEncounter")
+      (fm.subjectTypeUUID === subjectTypeUuid && fm.programUUID === programUuid && fm.formType === "ProgramEncounter")
   );
 
-export const selectFormMappingForProgramEncounter = (
-  encounterTypeUuid,
-  programUuid,
-  subjectTypeUuid
-) => state =>
+export const selectFormMappingForProgramEncounter = (encounterTypeUuid, programUuid, subjectTypeUuid) => state =>
   find(
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
     fm =>
@@ -25,11 +19,7 @@ export const selectFormMappingForProgramEncounter = (
         fm.formType === "ProgramEncounter")
   );
 
-export const selectFormMappingForCancelProgramEncounter = (
-  encounterTypeUuid,
-  programUuid,
-  subjectTypeUuid
-) => state =>
+export const selectFormMappingForCancelProgramEncounter = (encounterTypeUuid, programUuid, subjectTypeUuid) => state =>
   find(
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
     fm =>

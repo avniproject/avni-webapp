@@ -9,8 +9,7 @@ import { AvniTextField } from "../../common/components/AvniTextField";
 export const EncounterConcept = props => {
   const [keyValues, setKeyValues] = React.useState(get(props, "keyValues", []));
 
-  const getValueOfKey = keyToSearch =>
-    get(find(keyValues, ({ key }) => key === keyToSearch), "value");
+  const getValueOfKey = keyToSearch => get(find(keyValues, ({ key }) => key === keyToSearch), "value");
   const encounterTypeOptions = get(props.operationalModules, "encounterTypes", []);
   const encounterScopeOptions = [{ name: "Within Subject", uuid: "Within Subject" }];
   const selectedEncounterTypeUUID = getValueOfKey("encounterTypeUUID");

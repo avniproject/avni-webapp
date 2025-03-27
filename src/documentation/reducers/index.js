@@ -22,10 +22,7 @@ export const DocumentationReducer = (state, action) => {
       newState.documentations = documentations;
       newState.languages = languages;
       if (documentationUUID) {
-        newState.selectedDocumentation = find(
-          newState.documentations,
-          ({ uuid }) => uuid === documentationUUID
-        );
+        newState.selectedDocumentation = find(newState.documentations, ({ uuid }) => uuid === documentationUUID);
       }
       return newState;
     }
@@ -58,10 +55,7 @@ export const DocumentationReducer = (state, action) => {
     case "editorState": {
       const { language, selectedDocumentation, editorState, documentationItem } = action.payload;
       const currentDocumentation = find(documentations, d => d.uuid === selectedDocumentation.uuid);
-      const currentDocumentationItem = find(
-        currentDocumentation.documentationItems,
-        i => i.uuid === documentationItem.uuid
-      );
+      const currentDocumentationItem = find(currentDocumentation.documentationItems, i => i.uuid === documentationItem.uuid);
       currentDocumentationItem.editorState = editorState;
       currentDocumentationItem.language = language;
       return newState;
@@ -109,9 +103,7 @@ const createNewDocumentationItem = (documentationUUID, language) => ({
 });
 
 const convertRawToEditorState = raw =>
-  isEmpty(raw)
-    ? EditorState.createEmpty()
-    : EditorState.createWithContent(convertFromRaw(JSON.parse(raw)));
+  isEmpty(raw) ? EditorState.createEmpty() : EditorState.createWithContent(convertFromRaw(JSON.parse(raw)));
 
 const convertEditorStateToRaw = editorState => {
   const rawContent = convertToRaw(editorState.getCurrentContent());

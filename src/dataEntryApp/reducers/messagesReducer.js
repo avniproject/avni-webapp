@@ -78,7 +78,6 @@ export default function(state = initialState, action) {
 }
 
 export const selectIsMsgsSentAvailable = state => state.dataEntry.msgs.isMsgsSentAvailable;
-export const selectIsMsgsNotYetSentAvailable = state =>
-  state.dataEntry.msgs.isMsgsNotYetSentAvailable;
+export const selectIsMsgsNotYetSentAvailable = state => state.dataEntry.msgs.isMsgsNotYetSentAvailable;
 export const selectMsgsSent = state => state.dataEntry.msgs.msgsSent;
 export const selectMsgsNotYetSent = state => state.dataEntry.msgs.msgsNotYetSent;

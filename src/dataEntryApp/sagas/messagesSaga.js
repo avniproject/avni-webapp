@@ -1,11 +1,5 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import {
-  types,
-  setMsgsSent,
-  setMsgsSentAvailable,
-  setMsgsNotYetSent,
-  setMsgsNotYetSentAvailable
-} from "../reducers/messagesReducer";
+import { types, setMsgsSent, setMsgsSentAvailable, setMsgsNotYetSent, setMsgsNotYetSentAvailable } from "../reducers/messagesReducer";
 import API from "../api";
 import { orderBy, size } from "lodash";
 

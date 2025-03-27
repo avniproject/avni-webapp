@@ -8,10 +8,7 @@ import reportSagas from "../reports/sagas";
 import userGroupsSagas from "../userGroups/sagas";
 import { organisationConfigWatcher } from "../i18nTranslations/TranslationSaga";
 
-import {
-  authProvider,
-  dataProvider as springDataProvider
-} from "../adminApp/react-admin-config/index";
+import { authProvider, dataProvider as springDataProvider } from "../adminApp/react-admin-config/index";
 
 import { getAdminOrgsWatcher, logoutWatcher, onSetAuthSession, userInfoWatcher } from "./saga";
 

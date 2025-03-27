@@ -80,9 +80,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
           <AvniSelect
             label="Select Member Subject *"
             value={memberSubjectType || ""}
-            onChange={event =>
-              dispatch({ type: "householdMemberSubject", payload: event.target.value })
-            }
+            onChange={event => dispatch({ type: "householdMemberSubject", payload: event.target.value })}
             style={{ width: "200px", marginBottom: 5 }}
             required
             options={
@@ -107,9 +105,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               variant="outlined"
               value={groupRole.role || ""}
               InputProps={{ classes: { input: classes.boxHeight } }}
-              onChange={event =>
-                onGroupRoleChange({ ...groupRole, role: event.target.value }, index)
-              }
+              onChange={event => onGroupRoleChange({ ...groupRole, role: event.target.value }, index)}
             />
             <TextField
               disabled={Types.isHousehold(type)}
@@ -141,9 +137,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               id="minimum-number-of-members"
               label="Minimum members"
               variant="outlined"
-              value={
-                groupRole.minimumNumberOfMembers === "" ? "" : groupRole.minimumNumberOfMembers
-              }
+              value={groupRole.minimumNumberOfMembers === "" ? "" : groupRole.minimumNumberOfMembers}
               InputProps={{ classes: { input: classes.boxHeight } }}
               onChange={event =>
                 onGroupRoleChange(
@@ -160,9 +154,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               id="maximum-number-of-members"
               label="Maximum members"
               variant="outlined"
-              value={
-                groupRole.maximumNumberOfMembers === "" ? "" : groupRole.maximumNumberOfMembers
-              }
+              value={groupRole.maximumNumberOfMembers === "" ? "" : groupRole.maximumNumberOfMembers}
               InputProps={{ classes: { input: classes.boxHeight } }}
               onChange={event =>
                 onGroupRoleChange(
@@ -176,11 +168,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
             />
           </Box>
           {!Types.isHousehold(type) && (
-            <IconButton
-              aria-label="delete"
-              onClick={() => onDeleteGroupRole(index, groupRole, edit)}
-              style={{ marginTop: 10 }}
-            >
+            <IconButton aria-label="delete" onClick={() => onDeleteGroupRole(index, groupRole, edit)} style={{ marginTop: 10 }}>
               <DeleteIcon fontSize="inherit" />
             </IconButton>
           )}
@@ -188,12 +176,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
       ))}
       {error && <FormHelperText error>Group fields can not be blank</FormHelperText>}
       {!Types.isHousehold(type) && (
-        <Button
-          type="button"
-          className={classes.button}
-          color="primary"
-          onClick={onAddNewGroupRole}
-        >
+        <Button type="button" className={classes.button} color="primary" onClick={onAddNewGroupRole}>
           Add Role
         </Button>
       )}

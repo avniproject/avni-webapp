@@ -20,10 +20,8 @@ export const TaskAssignmentFilter = ({
 }) => {
   const classes = useStyle();
   const allUserOptions = [labelValue("Unassigned", 0), ...userOptions];
-  const onFilterChange = (filter, value) =>
-    dispatch({ type: "setFilter", payload: { filter, value } });
-  const onMetadataFilterChange = (filter, value) =>
-    dispatch({ type: "setMetadataFilter", payload: { filter, value } });
+  const onFilterChange = (filter, value) => dispatch({ type: "setFilter", payload: { filter, value } });
+  const onMetadataFilterChange = (filter, value) => dispatch({ type: "setMetadataFilter", payload: { filter, value } });
 
   return (
     <Fragment>
