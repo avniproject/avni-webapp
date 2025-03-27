@@ -3,8 +3,8 @@ import { Form, Privilege } from "openchs-models";
 
 //todo: this should be loaded from the server
 const privilegeTypes = new Map([
-  [Form.formTypes.ChecklistItem, Privilege.PrivilegeType.EditChecklist],
-  [Form.formTypes.Encounter, Privilege.PrivilegeType.EditChecklist],
+  [Form.formTypes.ChecklistItem, Privilege.PrivilegeType.EditChecklistConfiguration],
+  [Form.formTypes.Encounter, Privilege.PrivilegeType.EditEncounterType],
   [Form.formTypes.IndividualEncounterCancellation, Privilege.PrivilegeType.EditEncounterType],
   [Form.formTypes.IndividualProfile, Privilege.PrivilegeType.EditSubjectType],
   [Form.formTypes.ManualProgramEnrolmentEligibility, Privilege.PrivilegeType.EditProgram],

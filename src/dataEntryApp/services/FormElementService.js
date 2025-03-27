@@ -1,5 +1,5 @@
-import { Concept, ValidationResult, QuestionGroup } from "avni-models";
-import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
+import { Concept, QuestionGroup, ValidationResult } from "avni-models";
+import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove, some } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
@@ -144,6 +144,15 @@ const addPreviousValidationErrors = (ruleValidationErrors, validationResult, pre
 export const filterFormElements = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
   return formElementGroup.filterElements(formElementStatuses);
+};
+
+export const filterFormElementStatusesAndConvertToValidationResults = (formElementGroup, entity) => {
+  let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
+  const filteredFE = formElementGroup.filterElements(formElementStatuses);
+  const filteredFeStatuses = filter(formElementStatuses, status =>
+    some(filteredFE && filteredFE.map(fe => fe.uuid), feUUID => status.uuid === feUUID)
+  );
+  return getRuleValidationErrors(filteredFeStatuses);
 };
 
 export function getNonNestedFormElements(formElements) {
