@@ -1,4 +1,5 @@
 import { subjectProfileService } from "./SubjectProfileService";
+import { subjectService } from "./SubjectService";
 
 const notSupportedMessage =
   "Not supported. Please see  https://avni.readme.io/docs/writing-rules#types-of-rules-and-their-supportavailability-in-data-entry-app";
@@ -14,7 +15,17 @@ class IndividualService {
    * @param uuid
    * @returns {*}
    */
-  getSubjectByUUID(uuid) {
+  getSubjectByUUID(uuid, returnFromSearchResultCache = false) {
+    /**
+     * This is to be used, only in-case there are quick validations to be done
+     * as part of a SubjectSelectFormElement rule, on following fields:
+     *
+     * id,uuid,firstName,middleName,lastName,fullName,profilePicture,addressLevel(titleLineageString)
+     *
+     */
+    if (returnFromSearchResultCache) {
+      return subjectService.findByUUID(uuid);
+    }
     // Makes an async call to upsert the subjectProfile entity stored in subjectProfileService
     subjectProfileService.getDebouncedFetchSubjectByUUIDFunc(uuid);
     // Attempts to fetch the subjectProfile value that might have been previously cached

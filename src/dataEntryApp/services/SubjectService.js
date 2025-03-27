@@ -2,21 +2,21 @@ import _ from "lodash";
 
 class SubjectService {
   constructor() {
-    this.subjects = [];
+    this.subjects = new Map();
   }
 
   findByUUID(subjectUuid) {
     if (!_.isNil(subjectUuid)) {
-      return this.subjects.find(x => x.uuid === subjectUuid);
+      return this.subjects.get(subjectUuid);
     }
   }
 
   addSubject(subject) {
-    this.subjects.push(subject);
+    this.subjects.set(subject.uuid, subject);
   }
 
   addSubjects(subjects) {
-    this.subjects.push(...subjects);
+    subjects.reduce((acc, subject) => acc.set(subject.uuid, subject), this.subjects);
   }
 }
 
