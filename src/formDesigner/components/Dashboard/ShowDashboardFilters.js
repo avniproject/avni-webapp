@@ -35,11 +35,19 @@ function getFilterColumns(operationalModules) {
 }
 
 const ShowDashboardFilters = ({ filters, editAction, deleteAction, operationalModules }) => {
+  if (!filters) return null;
+
+  const activeFilters = filters.filter(filter => !filter.voided);
+
+  const handleDeleteFilter = filter => {
+    const updatedFilter = { ...filter, voided: false };
+    deleteAction(updatedFilter);
+  };
   return (
     <MaterialTable
       icons={materialTableIcons}
       columns={getFilterColumns(operationalModules)}
-      data={filters}
+      data={activeFilters}
       options={{
         headerStyle: {
           zIndex: 1
@@ -62,7 +70,7 @@ const ShowDashboardFilters = ({ filters, editAction, deleteAction, operationalMo
                 icon: () => <Delete />,
                 tooltip: "Delete",
                 onClick: (event, filter) => {
-                  deleteAction(filter);
+                  handleDeleteFilter(filter);
                 }
               }
             ]
