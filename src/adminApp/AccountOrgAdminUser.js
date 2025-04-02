@@ -33,7 +33,8 @@ import {
   PasswordTextField,
   UserFilter,
   UserTitle,
-  validateEmail
+  validateEmail,
+  validateUserName
 } from "./UserHelper";
 import { TitleChip } from "./components/TitleChip";
 import OrganisationService from "../common/service/OrganisationService";
@@ -138,13 +139,11 @@ const UserForm = ({ edit, user, region, ...props }) => {
               return (
                 <Fragment>
                   <TextInput
-                    source="ignored"
-                    validate={isRequired}
+                    source="username"
+                    validate={validateUserName}
                     label={"Login ID (username)"}
-                    onChange={(e, newVal) =>
-                      !isEmpty(newVal) && dispatch(change(REDUX_FORM_NAME, "username", newVal + getSuffixIfApplicable))
-                    }
-                    {...rest}
+                    format={value => (value ? value.replace(/\s+/g, "") : "")}
+                    parse={value => (value ? value.replace(/\s+/g, "") + getSuffixIfApplicable : "")}
                   />
                   <span>{getSuffixIfApplicable}</span>
                 </Fragment>
