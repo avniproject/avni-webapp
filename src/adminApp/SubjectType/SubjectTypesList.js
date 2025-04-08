@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import http from "common/utils/httpClient";
-import { get, isEmpty, isEqual } from "lodash";
+import { get, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -20,8 +20,29 @@ function hasEditPrivilege(userInfo) {
 
 const SubjectTypesList = ({ history, userInfo }) => {
   const [formMappings, setFormMappings] = useState([]);
+  const [allData, setAllData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [redirect, setRedirect] = useState(false);
 
   useFormMappings(setFormMappings);
+
+  useEffect(() => {
+    http.get("/web/subjectType?size=10000").then(response => {
+      const subjectTypes = response.data._embedded.subjectType || [];
+      setAllData(subjectTypes);
+      setFilteredData(subjectTypes);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredData(allData);
+    } else {
+      const filtered = allData.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      setFilteredData(filtered);
+    }
+  }, [searchTerm, allData]);
 
   const columns = [
     {
@@ -47,31 +68,7 @@ const SubjectTypesList = ({ history, userInfo }) => {
     { title: "Organisation Id", field: "organisationId", type: "numeric" }
   ];
 
-  const [redirect, setRedirect] = useState(false);
-
-  const tableRef = React.createRef();
-  const refreshTable = ref => ref.current && ref.current.onQueryChange();
-
-  const fetchData = query =>
-    new Promise(resolve => {
-      let apiUrl = "/web/subjectType?";
-      apiUrl += "size=" + query.pageSize;
-      apiUrl += "&page=" + query.page;
-      if (!isEmpty(query.search)) apiUrl += `&name=${query.search}`;
-      if (!isEmpty(query.orderBy.field)) {
-        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
-      }
-      http
-        .get(apiUrl)
-        .then(response => response.data)
-        .then(result => {
-          resolve({
-            data: result._embedded ? result._embedded.subjectType : [],
-            page: result.page.number,
-            totalCount: result.page.totalElements
-          });
-        });
-    });
+  const tableRef = useRef();
 
   const addNewConcept = () => {
     setRedirect(true);
@@ -80,19 +77,20 @@ const SubjectTypesList = ({ history, userInfo }) => {
   const editSubjectType = rowData => ({
     icon: () => <Edit />,
     tooltip: "Edit subject type",
-    onClick: event => history.push(`/appDesigner/subjectType/${rowData.id}`),
+    onClick: () => history.push(`/appDesigner/subjectType/${rowData.id}`),
     disabled: rowData.voided
   });
 
   const voidSubjectType = rowData => ({
     icon: () => <Delete />,
     tooltip: "Delete subject type",
-    onClick: (event, rowData) => {
+    onClick: () => {
       const voidedMessage = "Do you really want to delete the subject type " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http.delete("/web/subjectType/" + rowData.id).then(response => {
           if (response.status === 200) {
-            refreshTable(tableRef);
+            const updated = allData.filter(item => item.id !== rowData.id);
+            setAllData(updated);
           }
         });
       }
@@ -103,26 +101,39 @@ const SubjectTypesList = ({ history, userInfo }) => {
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title="Subject Types" />
-
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
               {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={addNewConcept} name="New Subject type" />}
             </div>
 
+            <div style={{ marginBottom: "5px", width: 300 }}>
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  fontSize: "14px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px"
+                }}
+              />
+            </div>
+
             <AvniMaterialTable
               title=""
               ref={tableRef}
               columns={columns}
-              fetchData={fetchData}
+              data={filteredData}
               options={{
                 pageSize: 10,
                 addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,
-                search: true,
-                searchFieldAlignment: "left",
-                searchFieldStyle: { width: "100%", marginLeft: "-8%" },
+                search: false,
                 rowStyle: rowData => ({
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
