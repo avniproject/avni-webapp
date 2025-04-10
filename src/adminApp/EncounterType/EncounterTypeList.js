@@ -89,6 +89,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
       let apiUrl = "/web/encounterType?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
+      if (!_.isEmpty(query.search)) apiUrl += `&name=${query.search}`;
       if (!_.isEmpty(query.orderBy.field)) apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
         .get(apiUrl)
@@ -148,7 +149,9 @@ const EncounterTypeList = ({ history, userInfo }) => {
                 addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,
-                search: false,
+                search: true,
+                searchFieldAlignment: "left",
+                searchFieldStyle: { width: "100%", marginLeft: "-8%" },
                 rowStyle: rowData => ({
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
