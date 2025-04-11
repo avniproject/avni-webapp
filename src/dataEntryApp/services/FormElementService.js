@@ -1,4 +1,4 @@
-import { Concept, QuestionGroup, ValidationResult } from "avni-models";
+import { Concept, ValidationResult } from "avni-models";
 import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove, some } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
@@ -10,18 +10,7 @@ export default {
       } else {
         observationsHolder.updateGroupQuestion(formElement, childFormElement, value);
       }
-      const questionGroupTypeObservation = observationsHolder.findQuestionGroupObservation(
-        formElement.concept,
-        formElement,
-        questionGroupIndex
-      );
-      let questionGroup;
-      if (questionGroupTypeObservation) {
-        questionGroup = questionGroupTypeObservation.getValueWrapper();
-      } else {
-        questionGroup = new QuestionGroup();
-      }
-      const childObs = questionGroup.findObservation(childFormElement.concept);
+      const childObs = observationsHolder.findQuestionGroupObservation(childFormElement.concept, formElement, questionGroupIndex);
       if (childFormElement.concept.isPrimitive() && isNil(childFormElement.durationOptions)) {
         return value;
       } else {
@@ -64,8 +53,9 @@ export default {
   },
 
   validate(formElement, value, observations, validationResults, formElementStatuses, childFormElement) {
-    const validationResult = formElement.validate(value);
     const isChildFormElement = !isNil(childFormElement) && childFormElement.groupUuid === formElement.uuid;
+    const validationResult = isChildFormElement ? childFormElement.validate(value) : formElement.validate(value);
+    isChildFormElement && validationResult.addQuestionGroupIndex(childFormElement.questionGroupIndex);
     remove(
       validationResults,
       existingValidationResult =>
