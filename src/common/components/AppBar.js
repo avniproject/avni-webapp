@@ -102,13 +102,7 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
           <div className={classes.toolbar}>
             <div className={classes.options}>
               {props.enableLeftMenuButton && (
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={props.handleDrawer}
-                  edge="start"
-                  style={{ outline: "none" }}
-                >
+                <IconButton color="inherit" aria-label="open drawer" onClick={props.handleDrawer} edge="start" style={{ outline: "none" }}>
                   <MenuIcon />
                 </IconButton>
               )}
@@ -127,31 +121,17 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
                   history={history}
                   organisations={organisations}
                 />
-                <div style={{ marginTop: "2%" }}>
+                <div style={{ marginTop: "2%", fontSize: "15px" }}>
                   <b>{props.organisation.name} </b> ({props.user.username})
                 </div>
                 <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit">
                   <HomeIcon />
                 </IconButton>
-                <IconButton
-                  aria-label="Profile"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  onClick={handleClick}
-                >
+                <IconButton aria-label="Profile" aria-controls="long-menu" aria-haspopup="true" onClick={handleClick}>
                   <UserIcon className={classes.profileButton} />
                 </IconButton>
-                <Menu
-                  id="long-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={!!anchorEl}
-                  onClose={handleClose}
-                >
-                  <LogoutButton
-                    onChangePassword={() => setShowChangePassword(true)}
-                    lastSessionTimeMillis={userInfo.lastSessionTime}
-                  />
+                <Menu id="long-menu" anchorEl={anchorEl} keepMounted open={!!anchorEl} onClose={handleClose}>
+                  <LogoutButton onChangePassword={() => setShowChangePassword(true)} lastSessionTimeMillis={userInfo.lastSessionTime} />
                 </Menu>
               </div>
             </div>
