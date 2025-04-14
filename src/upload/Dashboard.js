@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+// eslint-disable-next-line
 import _, { concat, get, isEmpty, isNil } from "lodash";
 import Status from "./Status";
 import Paper from "@material-ui/core/Paper";
@@ -19,12 +20,12 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { LocationModes } from "./LocationModes";
+import EncounterModes, { MODES } from "./EncounterModes";
 import Tooltip from "@material-ui/core/Tooltip";
 import { LocationHierarchy } from "./LocationHierarchy";
 import Typography from "@material-ui/core/Typography";
 import { Box } from "@material-ui/core";
 import MetadataDiff from "./MetadataDiff";
-/* eslint-disable-next-line no-unused-vars */
 import CompareMetadataService from "../adminApp/service/CompareMetadataService";
 
 const useStyles = makeStyles(theme => ({
@@ -46,8 +47,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-/* eslint-disable-next-line no-unused-vars */
-class ReviewStatusStatus {
+const UPLOAD_TYPES = {
+  LOCATIONS: "Locations"
+};
+
+const LOCATION_MODES = {
+  CREATE: "CREATE"
+};
+
+const ENCOUNTER_PREFIXES = {
+  ENCOUNTER: "Encounter---",
+  PROGRAM_ENCOUNTER: "ProgramEncounter---"
+};
+class ReviewStatus {
   constructor(loading, response, error) {
     this.loading = loading;
     this.response = response;
@@ -56,94 +68,161 @@ class ReviewStatusStatus {
 }
 
 const isMetadataDiffReviewEnabled = true;
-const Dashboard = ({
-  getStatuses,
-  getUploadTypes,
-  uploadTypes = new UploadTypes(),
-  /* eslint-disable-next-line no-unused-vars */
-  userRoles
-}) => {
+
+const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
   const classes = useStyles();
-  const [uploadType, setUploadType] = React.useState("");
-  const [entityForDownload, setEntityForDownload] = React.useState("");
-  const [file, setFile] = React.useState();
-  const [autoApprove, setAutoApprove] = React.useState(false);
-  const [mode, setMode] = React.useState("CREATE");
-  const [hierarchy, setHierarchy] = React.useState();
-  const [configuredHierarchies, setConfiguredHierarchies] = React.useState([]);
-  const [reviewStatus, setReviewStatus] = React.useState(null);
 
-  console.log("file", file);
-  const selectFile = (content, userfile) => setFile(userfile);
-  const getUploadTypeCode = name =>
-    staticTypesWithStaticDownload.getCode(name) || staticTypesWithDynamicDownload.getCode(name) || uploadTypes.getCode(name);
+  const [uploadType, setUploadType] = useState("");
+  const [entityForDownload, setEntityForDownload] = useState("");
+  const [file, setFile] = useState(null);
+  const [autoApprove, setAutoApprove] = useState(false);
+  const [mode, setMode] = useState("");
+  const [hierarchy, setHierarchy] = useState(null);
+  const [configuredHierarchies, setConfiguredHierarchies] = useState([]);
+  const [reviewStatus, setReviewStatus] = useState(null);
 
-  const uploadFile = async () => {
-    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove, mode, hierarchy || 0);
-    if (!ok && error) {
-      if (error === "Double extension file detected") {
-        alert("Please rename " + file.name + " to have a single extension and try again.");
-      } else {
-        alert(error);
-      }
-    }
-    setFile();
-    setUploadType("");
-    setEntityForDownload("");
-    setTimeout(() => {
-      getStatuses(0);
-    }, 1000);
-  };
+  const getUploadTypeCode = useCallback(
+    name => staticTypesWithStaticDownload.getCode(name) || staticTypesWithDynamicDownload.getCode(name) || uploadTypes.getCode(name),
+    [uploadTypes]
+  );
 
-  const downloadSampleFile = async () => {
-    let uploadType;
-    if (staticTypesWithStaticDownload.getCode(entityForDownload)) {
-      await api.downloadSample(staticTypesWithStaticDownload.getCode(entityForDownload));
-    } else if (
-      !_.isUndefined((uploadType = uploadTypes.getCode(entityForDownload) || staticTypesWithDynamicDownload.getCode(entityForDownload)))
-    ) {
-      if (uploadType === "locations") {
-        await api.downloadLocationsSample(uploadType, mode, hierarchy);
-      } else {
-        await api.downloadDynamicSample(uploadType);
-      }
-    }
-  };
+  const isEncounterType = useCallback(
+    type => {
+      const internalUploadType = getUploadTypeCode(type);
+      return (
+        internalUploadType &&
+        (internalUploadType.startsWith(ENCOUNTER_PREFIXES.ENCOUNTER) || internalUploadType.startsWith(ENCOUNTER_PREFIXES.PROGRAM_ENCOUNTER))
+      );
+    },
+    [getUploadTypeCode]
+  );
 
-  React.useEffect(() => {
-    getUploadTypes();
-    api.fetchLocationHierarchies().then(locHierarchies => {
-      setHierarchy(get(locHierarchies[0], "value"));
-      setConfiguredHierarchies(locHierarchies);
-    });
+  const uploadAndDownloadOptions = useMemo(
+    () => concat(staticTypesWithStaticDownload.names, staticTypesWithDynamicDownload.names, uploadTypes.names),
+    [uploadTypes.names]
+  );
+
+  const handleFileSelect = useCallback((content, userFile) => {
+    setFile(userFile);
   }, []);
 
-  const uploadAndDownloadOptions = () =>
-    concat(staticTypesWithStaticDownload.names, staticTypesWithDynamicDownload.names, uploadTypes.names);
+  const handleDropdownChange = useCallback(
+    option => {
+      setAutoApprove(false);
+      setMode(isEncounterType(option) ? MODES.SCHEDULE : option === UPLOAD_TYPES.LOCATIONS ? LOCATION_MODES.CREATE : "");
+      setUploadType(option);
+      if (option !== staticTypesWithStaticDownload.getName("metadataZip")) {
+        setEntityForDownload(option);
+      }
+    },
+    [isEncounterType]
+  );
 
-  const dropdownHandler = option => {
-    setAutoApprove(false);
-    setMode("CREATE");
-    setUploadType(option);
-    option !== staticTypesWithStaticDownload.getName("metadataZip") && setEntityForDownload(option);
-  };
-
-  const isSampleDownloadDisallowed =
-    isEmpty(entityForDownload) ||
-    (uploadType === "Locations" && isEmpty(mode)) ||
-    (uploadType === "Locations" && mode === "CREATE" && isEmpty(hierarchy));
-
-  const handleReviewClick = async () => {
+  const handleUploadFile = useCallback(async () => {
     try {
-      CompareMetadataService.compare(file).then(filteredData => {
-        setReviewStatus(new ReviewStatusStatus(false, filteredData, null));
-      });
-      setReviewStatus(new ReviewStatusStatus(true, null, null));
+      const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove, mode, hierarchy || 0);
+      if (!ok && error) {
+        if (error === "Double extension file detected") {
+          alert(`Please rename ${file.name} to have a single extension and try again.`);
+        } else {
+          alert(`Upload failed: ${error}`);
+        }
+        return;
+      }
+
+      setFile(null);
+      setUploadType("");
+      setEntityForDownload("");
+      setMode("");
+      setHierarchy(null);
+      setTimeout(() => getStatuses(0), 1000);
     } catch (err) {
-      setReviewStatus(new ReviewStatusStatus(true, null, "An error occurred while comparing metadata."));
-      console.error(err);
+      alert(`Upload error: ${err.message || "Unknown error"}`);
     }
-  };
+  }, [file, uploadType, autoApprove, mode, hierarchy, getUploadTypeCode, getStatuses]);
+
+  const downloadStaticSample = useCallback(async code => {
+    await api.downloadSample(code);
+  }, []);
+
+  const downloadLocationSample = useCallback(async (code, mode, hierarchy) => {
+    await api.downloadLocationsSample(code, mode, hierarchy);
+  }, []);
+
+  const downloadEncounterSample = useCallback(async (code, mode) => {
+    await api.downloadEncounterSample(code, mode);
+  }, []);
+
+  const downloadDynamicSample = useCallback(async code => {
+    await api.downloadDynamicSample(code);
+  }, []);
+
+  const handleDownloadSample = useCallback(async () => {
+    try {
+      const code = getUploadTypeCode(entityForDownload);
+
+      if (staticTypesWithStaticDownload.getCode(entityForDownload)) {
+        await downloadStaticSample(code);
+      } else if (code === "locations") {
+        if (isEmpty(mode) || (mode === LOCATION_MODES.CREATE && isEmpty(hierarchy))) {
+          alert("Please select a valid mode and hierarchy for location sample.");
+          return;
+        }
+        await downloadLocationSample(code, mode, hierarchy);
+      } else if (isEncounterType(entityForDownload)) {
+        if (isEmpty(mode)) {
+          alert("Please select an encounter mode.");
+          return;
+        }
+        await downloadEncounterSample(code, mode);
+      } else {
+        await downloadDynamicSample(code);
+      }
+    } catch (error) {
+      alert(`Failed to download sample: ${error.message || "Unknown error"}`);
+    }
+  }, [
+    entityForDownload,
+    mode,
+    hierarchy,
+    getUploadTypeCode,
+    isEncounterType,
+    downloadStaticSample,
+    downloadLocationSample,
+    downloadEncounterSample,
+    downloadDynamicSample
+  ]);
+
+  const handleReviewClick = useCallback(async () => {
+    setReviewStatus(new ReviewStatus(true, null, null));
+    try {
+      const filteredData = await CompareMetadataService.compare(file);
+      setReviewStatus(new ReviewStatus(false, filteredData, null));
+    } catch (err) {
+      setReviewStatus(new ReviewStatus(false, null, "An error occurred while comparing metadata."));
+      console.error("Review error:", err);
+    }
+  }, [file]);
+
+  const isSampleDownloadDisallowed = useMemo(
+    () =>
+      isEmpty(entityForDownload) ||
+      (uploadType === UPLOAD_TYPES.LOCATIONS && isEmpty(mode)) ||
+      (uploadType === UPLOAD_TYPES.LOCATIONS && mode === LOCATION_MODES.CREATE && isEmpty(hierarchy)) ||
+      (isEncounterType(uploadType) && isEmpty(mode)),
+    [entityForDownload, uploadType, mode, hierarchy, isEncounterType]
+  );
+
+  useEffect(() => {
+    getUploadTypes();
+    api.fetchLocationHierarchies().then(locHierarchies => {
+      const firstHierarchy = get(locHierarchies, "[0].value", null);
+      setHierarchy(firstHierarchy);
+      setConfiguredHierarchies(locHierarchies);
+    });
+  }, [getUploadTypes]);
+
+  console.log("file:", file);
 
   if (reviewStatus) {
     return (
@@ -158,22 +237,24 @@ const Dashboard = ({
 
   return (
     <Grid container spacing={2} className={classes.root}>
-      <Title title={"Upload"} />
+      <Title title="Upload" />
       <Grid item xs={12} style={{ minWidth: 1200, maxWidth: 1400 }}>
         <Paper className={classes.uploadDownloadSection}>
-          <DocumentationContainer filename={"Upload.md"}>
+          <DocumentationContainer filename="Upload.md">
             <Grid container item spacing={2}>
               <Grid container item>
                 Upload
               </Grid>
               <Grid container item>
                 <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
-                  <DropDown name="Type" value={uploadType} onChange={dropdownHandler} options={uploadAndDownloadOptions()} />
+                  <DropDown name="Type" value={uploadType} onChange={handleDropdownChange} options={uploadAndDownloadOptions} />
                   <Tooltip title="Download Sample file for selected Upload type" placement="bottom-start" arrow>
-                    <Button color="primary" onClick={downloadSampleFile} disabled={isSampleDownloadDisallowed}>
-                      <CloudDownload disabled={isSampleDownloadDisallowed} />
-                      <span style={{ marginLeft: "1em" }}>Download Sample</span>
-                    </Button>
+                    <span>
+                      <Button color="primary" onClick={handleDownloadSample} disabled={isSampleDownloadDisallowed}>
+                        <CloudDownload disabled={isSampleDownloadDisallowed} />
+                        <span style={{ marginLeft: "1em" }}>Download Sample</span>
+                      </Button>
+                    </span>
                   </Tooltip>
                 </Grid>
                 {isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
@@ -185,7 +266,12 @@ const Dashboard = ({
                 )}
                 <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
                   <Grid item>
-                    <FileUpload canSelect={!isEmpty(uploadType)} canUpload={!isNil(file)} onSelect={selectFile} onUpload={uploadFile} />
+                    <FileUpload
+                      canSelect={!isEmpty(uploadType)}
+                      canUpload={!isNil(file)}
+                      onSelect={handleFileSelect}
+                      onUpload={handleUploadFile}
+                    />
                   </Grid>
                   <Grid item>
                     <span style={{ marginLeft: "1em" }}>Selected File: {get(file, "name", "")}</span>
@@ -205,17 +291,18 @@ const Dashboard = ({
                         color="primary"
                       />
                     }
-                    label={"Approve automatically"}
+                    label="Approve automatically"
                   />
                 )}
               </Grid>
               <Grid container item>
-                {uploadType === "Locations" && <LocationModes mode={mode} setMode={setMode} />}
+                {uploadType === UPLOAD_TYPES.LOCATIONS && <LocationModes mode={mode} setMode={setMode} />}
+                {isEncounterType(uploadType) && <EncounterModes mode={mode} setMode={setMode} />}
               </Grid>
               <Grid container item>
-                {uploadType === "Locations" &&
-                  mode === "CREATE" &&
-                  (configuredHierarchies && configuredHierarchies.length > 0 ? (
+                {uploadType === UPLOAD_TYPES.LOCATIONS &&
+                  mode === LOCATION_MODES.CREATE &&
+                  (configuredHierarchies.length > 0 ? (
                     <LocationHierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} configuredHierarchies={configuredHierarchies} />
                   ) : (
                     <Box>
@@ -229,7 +316,7 @@ const Dashboard = ({
           </DocumentationContainer>
         </Paper>
       </Grid>
-      <Grid item>
+      <Grid item xs={12}>
         <Paper style={{ marginBottom: 100 }}>
           <Status />
         </Paper>
@@ -237,6 +324,7 @@ const Dashboard = ({
     </Grid>
   );
 };
+
 const mapStateToProps = state => ({
   statuses: state.bulkUpload.statuses,
   uploadTypes: state.bulkUpload.uploadTypes,
