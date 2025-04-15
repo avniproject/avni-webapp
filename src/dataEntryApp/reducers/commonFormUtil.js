@@ -1,4 +1,4 @@
-import _, { filter, find, findIndex, isEmpty, isNil, remove, some, sortBy, union, unionBy } from "lodash";
+import _, { filter, find, findIndex, get, isEmpty, isNil, remove, some, sortBy, union, unionBy } from "lodash";
 import formElementService, {
   filterFormElements,
   filterFormElementStatusesAndConvertToValidationResults,
@@ -125,6 +125,171 @@ const getIdValidationErrors = (filteredFormElements, obsHolder) => {
   );
 };
 
+const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
+  let formElementStatuses = [];
+
+  // Check if filteredFormElements is null or empty
+  if (isNil(filteredFormElements) || isEmpty(filteredFormElements)) {
+    return [];
+  }
+
+  // Separate standalone form elements from those that are part of question groups
+  const standaloneFormElements = filter(filteredFormElements, fe => !isNil(fe) && !isNil(fe.concept) && isNil(fe.group));
+
+  // Get all unique question groups
+  const questionGroupElements = filter(
+    filteredFormElements,
+    fe => !isNil(fe) && !isNil(fe.concept) && fe.concept.datatype === Concept.dataType.QuestionGroup
+  );
+
+  // Collect all validation results
+  let allValidationResults = [];
+
+  // Process standalone form elements
+  standaloneFormElements.forEach(formElement => {
+    const obsValue = obsHolder.findObservation(formElement.concept);
+    const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+      formElement,
+      obsValue,
+      obsHolder.observations,
+      [], // Empty array for each validation
+      formElementStatuses,
+      null
+    );
+    allValidationResults = [...allValidationResults, ...results];
+  });
+
+  // Process question groups
+  questionGroupElements.forEach(formElement => {
+    const obsValue = obsHolder.findObservation(formElement.concept);
+
+    // If observation doesn't exist, validate the empty value
+    if (isNil(obsValue)) {
+      const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+        formElement,
+        obsValue,
+        obsHolder.observations,
+        [], // Empty array for each validation
+        formElementStatuses,
+        null
+      );
+      allValidationResults = [...allValidationResults, ...results];
+      return;
+    }
+
+    // Get the question group wrapper
+    const questionGroupWrapper = obsValue.getValueWrapper();
+
+    // Check if questionGroupWrapper is null
+    if (isNil(questionGroupWrapper)) {
+      return;
+    }
+
+    // For repeatable question groups, validate each group
+    if (formElement.repeatable) {
+      // Get the number of groups
+      const groupCount = questionGroupWrapper.size();
+
+      // Check if groupCount is valid
+      if (isNil(groupCount) || groupCount <= 0) {
+        return;
+      }
+
+      // Validate each group in the repeatable question group
+      for (let i = 0; i < groupCount; i++) {
+        const groupObservation = questionGroupWrapper.getGroupObservationAtIndex(i);
+
+        // Check if groupObservation is null
+        if (isNil(groupObservation)) {
+          continue;
+        }
+
+        // Find child form elements for this group
+        const childFormElements = filter(
+          filteredFormElements,
+          ffe =>
+            !isNil(ffe) && !isNil(ffe.group) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided && ffe.questionGroupIndex === i
+        );
+
+        // Validate each child form element
+        childFormElements.forEach(childFormElement => {
+          // Check if childFormElement or childFormElement.concept is null
+          if (isNil(childFormElement) || isNil(childFormElement.concept)) {
+            return;
+          }
+
+          const childObsValue = groupObservation.getObservation(childFormElement.concept);
+          const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+            formElement,
+            childObsValue,
+            obsHolder.observations,
+            [], // Empty array for each validation
+            formElementStatuses,
+            childFormElement
+          );
+          allValidationResults = [...allValidationResults, ...results];
+        });
+      }
+    } else {
+      // For non-repeatable question groups
+      // Find child form elements
+      const childFormElements = filter(
+        filteredFormElements,
+        ffe => !isNil(ffe) && !isNil(ffe.group) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided
+      );
+
+      // Validate each child form element
+      childFormElements.forEach(childFormElement => {
+        // Check if childFormElement or childFormElement.concept is null
+        if (isNil(childFormElement) || isNil(childFormElement.concept)) {
+          return;
+        }
+
+        const childObsValue = questionGroupWrapper.getObservation(childFormElement.concept);
+        const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+          formElement,
+          childObsValue,
+          obsHolder.observations,
+          [], // Empty array for each validation
+          formElementStatuses,
+          childFormElement
+        );
+        allValidationResults = [...allValidationResults, ...results];
+      });
+    }
+  });
+
+  // Process child form elements that might not be processed through their parent groups
+  const childFormElements = filter(filteredFormElements, fe => !isNil(fe) && !isNil(fe.concept) && !isNil(fe.group));
+
+  childFormElements.forEach(childFormElement => {
+    // Skip if already processed through parent
+    const alreadyProcessed = some(allValidationResults, vr => vr.formIdentifier === childFormElement.uuid);
+    if (alreadyProcessed) {
+      return;
+    }
+
+    // Find parent group
+    const parentGroup = find(questionGroupElements, qg => qg.uuid === get(childFormElement, "group.uuid"));
+
+    if (isNil(parentGroup)) {
+      // If parent not found, validate as standalone
+      const obsValue = obsHolder.findObservation(childFormElement.concept);
+      const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+        childFormElement,
+        obsValue,
+        obsHolder.observations,
+        [], // Empty array for each validation
+        formElementStatuses,
+        null
+      );
+      allValidationResults = [...allValidationResults, ...results];
+    }
+  });
+
+  return allValidationResults;
+};
+
 const onNext = ({
   formElementGroup,
   observations,
@@ -138,11 +303,12 @@ const onNext = ({
   const obsHolder = new ObservationsHolder(observations);
 
   const idValidationErrors = getIdValidationErrors(filteredFormElements, obsHolder);
-
+  const dataValidationErrors = getFEDataValidationErrors(filteredFormElements, obsHolder);
   const ruleValidationErrors = filterFormElementStatusesAndConvertToValidationResults(formElementGroup, entity);
 
   const allRuleValidationResults = unionBy(
     errors(idValidationErrors),
+    errors(dataValidationErrors),
     errors(ruleValidationErrors),
     errors(validationResults),
     errors(entityValidations),
@@ -282,10 +448,36 @@ function addNewQuestionGroup(entity, formElement, observations) {
   return getFormElementStatuses(entity, formElement.formElementGroup, new ObservationsHolder(observations));
 }
 
-function removeQuestionGroup(entity, formElement, observations, index) {
+function removeQuestionGroup(entity, formElement, observations, existingValidationResults, index) {
   const repeatableQuestionGroup = getRepeatableQuestionGroup(observations, formElement.concept);
+
+  // Remove validation results for the question group being removed
+  let updatedValidationResults = existingValidationResults || [];
+  if (existingValidationResults && existingValidationResults.length > 0) {
+    // Filter out validation results that belong to the question group being removed
+    updatedValidationResults = existingValidationResults.filter(
+      validationResult =>
+        !(
+          validationResult.questionGroupIndex === index &&
+          formElement.formElementGroup.getFormElements().some(fe => fe.uuid === validationResult.formIdentifier)
+        )
+    );
+  }
+
+  // Remove the question group
   repeatableQuestionGroup.removeQuestionGroup(index);
-  return getFormElementStatuses(entity, formElement.formElementGroup, new ObservationsHolder(observations));
+
+  // Get updated form element statuses
+  const { formElementStatuses, filteredFormElements } = getFormElementStatuses(
+    entity,
+    formElement.formElementGroup,
+    new ObservationsHolder(observations)
+  );
+
+  return {
+    filteredFormElements,
+    validationResults: updatedValidationResults
+  };
 }
 
 const getValidationResult = (validationResults, formElementIdentifier) =>
@@ -299,5 +491,6 @@ export default {
   updateObservations,
   getValidationResult,
   addNewQuestionGroup,
-  removeQuestionGroup
+  removeQuestionGroup,
+  getFEDataValidationErrors
 };

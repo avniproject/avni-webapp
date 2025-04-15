@@ -74,6 +74,40 @@ export default {
       hiddenFormElementStatus,
       (a, b) => a.formIdentifier === b.uuid && a.questionGroupIndex === b.questionGroupIndex
     );
+  },
+
+  validateForMandatoryFieldIsEmptyOrNullOnly(formElement, value, observations, validationResults, formElementStatuses, childFormElement) {
+    const isChildFormElement = !isNil(childFormElement) && childFormElement.groupUuid === formElement.uuid;
+    const validationResult = isChildFormElement
+      ? this.validateIfIsMandatoryAndValueEmptyOrNull(childFormElement, value)
+      : this.validateIfIsMandatoryAndValueEmptyOrNull(formElement, value);
+    isChildFormElement && validationResult.addQuestionGroupIndex(childFormElement.questionGroupIndex);
+    remove(
+      validationResults,
+      existingValidationResult =>
+        existingValidationResult.formIdentifier === validationResult.formIdentifier ||
+        (isChildFormElement &&
+          existingValidationResult.formIdentifier === childFormElement.uuid &&
+          existingValidationResult.questionGroupIndex === childFormElement.questionGroupIndex)
+    );
+    validationResults.push(validationResult);
+    const hiddenFormElementStatus = filter(formElementStatuses, status => status.visibility === false);
+    const ruleErrorsAdded = addPreviousValidationErrors([], validationResult, validationResults);
+    remove(ruleErrorsAdded, result => result.success);
+    return differenceWith(
+      ruleErrorsAdded,
+      hiddenFormElementStatus,
+      (a, b) => a.formIdentifier === b.uuid && a.questionGroupIndex === b.questionGroupIndex
+    );
+  },
+
+  validateIfIsMandatoryAndValueEmptyOrNull(formElement, value) {
+    console.log(" validateIfIsMandatoryAndValueEmptyOrNull ->> value", formElement, value);
+    if (formElement && formElement.mandatory && isEmpty(value)) {
+      return ValidationResult.failureForEmpty(formElement.uuid);
+    } else {
+      return ValidationResult.successful(formElement.uuid);
+    }
   }
 };
 
@@ -122,13 +156,20 @@ const addPreviousValidationErrors = (ruleValidationErrors, validationResult, pre
   const validationResultsThatNeedToBePreserved = previousErrors.filter(
     ({ validationType }) => validationType !== ValidationResult.ValidationTypes.Rule
   );
-  const otherFEFailedStatuses = validationResultsThatNeedToBePreserved.filter(
-    ({ formIdentifier, success, questionGroupIndex }) =>
-      validationResult.formIdentifier !== formIdentifier &&
-      !success &&
-      (isNil(questionGroupIndex) || questionGroupIndex !== validationResult.questionGroupIndex)
+
+  // Filter out the current validationResult from previousErrors to avoid duplicates
+  const filteredPreviousErrors = validationResultsThatNeedToBePreserved.filter(
+    ({ formIdentifier, questionGroupIndex }) =>
+      formIdentifier !== validationResult.formIdentifier ||
+      (questionGroupIndex !== validationResult.questionGroupIndex && !isNil(questionGroupIndex))
   );
-  return [...checkValidationResult(ruleValidationErrors, validationResult), ...otherFEFailedStatuses];
+
+  // Handle case where ruleValidationErrors is empty and validationResult.success is false
+  if (isEmpty(ruleValidationErrors) && validationResult && validationResult.success === false) {
+    return [...filteredPreviousErrors, validationResult];
+  }
+
+  return [...checkValidationResult(ruleValidationErrors, validationResult), ...filteredPreviousErrors];
 };
 
 export const filterFormElements = (formElementGroup, entity) => {
