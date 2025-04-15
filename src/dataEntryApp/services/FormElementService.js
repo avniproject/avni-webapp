@@ -1,5 +1,5 @@
 import { Concept, ValidationResult } from "avni-models";
-import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove, some } from "lodash";
+import { differenceWith, find, filter, flatMap, head, isEmpty, isNil, map, remove, some } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
@@ -180,9 +180,24 @@ export const filterFormElements = (formElementGroup, entity) => {
 export const filterFormElementStatusesAndConvertToValidationResults = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
   const filteredFE = formElementGroup.filterElements(formElementStatuses);
-  const filteredFeStatuses = filter(formElementStatuses, status =>
-    some(filteredFE && filteredFE.map(fe => fe.uuid), feUUID => status.uuid === feUUID)
-  );
+
+  // Filter form element statuses to only include those that are visible and whose parents are visible
+  const filteredFeStatuses = filter(formElementStatuses, status => {
+    // Check if the current form element is in the filtered list
+    const isVisible = some(filteredFE && filteredFE.map(fe => fe.uuid), feUUID => status.uuid === feUUID);
+
+    if (!isVisible) return false;
+
+    // Check if parent is visible (if there is a parent)
+    const correspondingFormElement = find(formElementGroup.getFormElements(), fe => fe.uuid === status.uuid);
+    if (correspondingFormElement && correspondingFormElement.groupUuid) {
+      const parentStatus = find(formElementStatuses, s => s.uuid === correspondingFormElement.groupUuid);
+      return parentStatus ? parentStatus.visibility !== false : true;
+    }
+
+    return true; // Include if no parent (top-level form element)
+  });
+
   return getRuleValidationErrors(filteredFeStatuses);
 };
 
