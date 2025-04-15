@@ -1,4 +1,4 @@
-import _, { filter, find, findIndex, get, isEmpty, isNil, remove, some, sortBy, union, unionBy } from "lodash";
+import _, { filter, find, findIndex, get, isEmpty, isNil, remove, some, sortBy, union, unionBy, intersectionBy } from "lodash";
 import formElementService, {
   filterFormElements,
   filterFormElementStatusesAndConvertToValidationResults,
@@ -302,16 +302,26 @@ const onNext = ({
 }) => {
   const obsHolder = new ObservationsHolder(observations);
 
-  const idValidationErrors = getIdValidationErrors(filteredFormElements, obsHolder);
-  const dataValidationErrors = getFEDataValidationErrors(filteredFormElements, obsHolder);
+  // Get rule validation errors first - these determine which form elements are visible
   const ruleValidationErrors = filterFormElementStatusesAndConvertToValidationResults(formElementGroup, entity);
 
+  // Get validation errors
+  const idValidationErrors = getIdValidationErrors(filteredFormElements, obsHolder);
+  const dataValidationErrors = getFEDataValidationErrors(filteredFormElements, obsHolder);
+
+  // Filter validation errors using intersectionBy to only include those that match form elements in ruleValidationErrors
+  const filteredIdValidationErrors = intersectionBy(idValidationErrors, ruleValidationErrors, "formIdentifier");
+  const filteredDataValidationErrors = intersectionBy(dataValidationErrors, ruleValidationErrors, "formIdentifier");
+  const filteredValidationResults = intersectionBy(validationResults || [], ruleValidationErrors, "formIdentifier");
+  const filteredEntityValidations = intersectionBy(entityValidations || [], ruleValidationErrors, "formIdentifier");
+
+  // Combine all validation results using unionBy
   const allRuleValidationResults = unionBy(
-    errors(idValidationErrors),
-    errors(dataValidationErrors),
     errors(ruleValidationErrors),
-    errors(validationResults),
-    errors(entityValidations),
+    errors(filteredIdValidationErrors),
+    errors(filteredDataValidationErrors),
+    errors(filteredValidationResults),
+    errors(filteredEntityValidations),
     "formIdentifier"
   );
 
