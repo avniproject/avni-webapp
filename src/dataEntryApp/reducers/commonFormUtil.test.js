@@ -94,7 +94,7 @@ describe("question group and repeatable question groups", () => {
     assert.equal(true, _.some(filteredFormElements, x => x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 0));
     assert.equal(true, _.some(filteredFormElements, x => x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 1));
 
-    filteredFormElements = commonFormUtil.removeQuestionGroup(subject, qgFormElement, observationsHolder.observations, 1)
+    filteredFormElements = commonFormUtil.removeQuestionGroup(subject, qgFormElement, observationsHolder.observations, [], 1)
       .filteredFormElements;
     assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0));
     assert.equal(false, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1));
@@ -104,9 +104,13 @@ describe("question group and repeatable question groups", () => {
     assert.equal("b", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0).getValue());
     assert.equal("c", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 1).getValue());
 
-    filteredFormElements = commonFormUtil.removeQuestionGroup(subject, qgFormElement, observationsHolder.observations, 1)
+    filteredFormElements = commonFormUtil.removeQuestionGroup(subject, qgFormElement, observationsHolder.observations, [], 1)
       .filteredFormElements;
     assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0));
     assert.equal(false, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1));
+
+    // After removing the question group at index 1, we should only have the observation at index 0
+    assert.equal("b", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0).getValue());
+    // We should not try to access the removed question group's observations
   });
 });
