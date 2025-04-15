@@ -1,4 +1,4 @@
-import _, { filter, find, findIndex, get, isEmpty, isNil, remove, some, sortBy, union, unionBy, intersectionBy } from "lodash";
+import _, { filter, find, findIndex, get, intersectionBy, isEmpty, isNil, remove, some, sortBy, union, unionBy } from "lodash";
 import formElementService, {
   filterFormElements,
   filterFormElementStatusesAndConvertToValidationResults,
@@ -37,11 +37,14 @@ const getUpdatedNextFilteredFormElements = (formElementStatuses, nextGroup, enti
 
 // We need to re-fetch the statuses to make sure any hidden form element due to empty values shows up this time.
 const hasQuestionGroupWithValueInElementStatus = (formElementStatuses, allFormElements) => {
-  return _.some(formElementStatuses, ({ uuid, value }) => {
+  const checkFormElement = ({ uuid, value }) => {
     if (value) {
       return _.get(_.find(allFormElements, fe => fe.uuid === uuid), "concept.datatype") === Concept.dataType.QuestionGroup;
     }
-  });
+    return false;
+  };
+
+  return _.some(formElementStatuses, checkFormElement);
 };
 
 const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false, isImmutable = false) => {
@@ -117,12 +120,14 @@ function nextState(formElementGroup, filteredFormElements, validationResults, ob
   };
 }
 
-const errors = validationResults => filter(validationResults, result => !result.success);
+const isFailedValidation = result => !result.success;
+const errors = validationResults => filter(validationResults, isFailedValidation);
 
 const getIdValidationErrors = (filteredFormElements, obsHolder) => {
-  return filter(filteredFormElements, fe => fe.getType() === Concept.dataType.Id && isNil(obsHolder.findObservation(fe.concept))).map(fe =>
-    ValidationResult.failure(fe.uuid, "ranOutOfIds")
-  );
+  const isIdFieldWithoutObservation = fe => fe.getType() === Concept.dataType.Id && isNil(obsHolder.findObservation(fe.concept));
+  const createValidationResult = fe => ValidationResult.failure(fe.uuid, "ranOutOfIds");
+
+  return filter(filteredFormElements, isIdFieldWithoutObservation).map(createValidationResult);
 };
 
 const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
@@ -464,14 +469,16 @@ function removeQuestionGroup(entity, formElement, observations, existingValidati
   // Remove validation results for the question group being removed
   let updatedValidationResults = existingValidationResults || [];
   if (existingValidationResults && existingValidationResults.length > 0) {
+    // Create a function outside the filter loop
+    const shouldKeepValidationResult = validationResult => {
+      return !(
+        validationResult.questionGroupIndex === index &&
+        formElement.formElementGroup.getFormElements().some(fe => fe.uuid === validationResult.formIdentifier)
+      );
+    };
+
     // Filter out validation results that belong to the question group being removed
-    updatedValidationResults = existingValidationResults.filter(
-      validationResult =>
-        !(
-          validationResult.questionGroupIndex === index &&
-          formElement.formElementGroup.getFormElements().some(fe => fe.uuid === validationResult.formIdentifier)
-        )
-    );
+    updatedValidationResults = existingValidationResults.filter(shouldKeepValidationResult);
   }
 
   // Remove the question group
