@@ -31,14 +31,14 @@ make deps
 
 There are two possible ways to setup Avni Webapp for development:
 
-1. Connect to the Hosted API Server: This is the easiest and fastest way to get started. You don’t need to set up a local PostgreSQL database or Java API server. This method is lightweight and ideal for contributors who want to focus on the webapp without worrying about backend dependencies.
-2. Set Up a Local Development Environment: This involves setting up a local PostgreSQL database and running the Java API server locally. It’s more resource-intensive and complex but may be necessary for certain testing.
+1. Connect to the Hosted API Server: This is the easiest and fastest way to get started. You don't need to set up a local PostgreSQL database or Java API server. This method is lightweight and ideal for contributors who want to focus on the webapp without worrying about backend dependencies.
+2. Set Up a Local Development Environment: This involves setting up a local PostgreSQL database and running the Java API server locally. It's more resource-intensive and complex but may be necessary for certain testing.
 
 ### 1. Setup to connect to hosted API Server (Samanvay hosted staging server)
 
 1. Run `make start-with-staging`
 2. Use the credentials : Username : `dummy@osc` and Password : `dummy@123`
-3. After logging in please create a new user for yourself and use that .
+3. After logging in please create a new user for yourself and use that.
 
 ### 2. Setup to connect to your local API Server
 
@@ -79,6 +79,21 @@ make cy-run        # Run Cypress tests
 make prettier-all  # Format all files
 ```
 
+## Project Structure
+
+### Apps in Repository
+
+- **Admin**: Allow admins to do admin work like creating organisations, users, locations
+- **App Designer**: Allow admins to design the app
+- **Reports**: Allow admins to download longitudinal reports
+- **Translations**: Allow admins to upload translations
+- **Data Entry App**: Allow users to do data entry using web based app
+
+### Organization
+
+- Folders per route/feature ([Learn more](https://marmelab.com/blog/2015/12/17/react-directory-structure.html))
+- Reducers and actions in 'ducks' structure ([Learn more](https://github.com/erikras/ducks-modular-redux)). Not applicable for App Designer as it does not use Redux.
+
 ## Contributing
 
 ### Before Creating a Pull Request
@@ -109,29 +124,19 @@ git commit -m "descriptive commit message"
 git push origin feature/your-feature-name
 ```
 
-#### Pull requests
+### Pull Request Guidelines
 
-- Please make sure that your code follows guidelines given in https://avni.readme.io/v2.0/docs/contribution-guide.
+- Follow the guidelines in https://avni.readme.io/v2.0/docs/contribution-guide
 - Ensure all tests pass
 - Update documentation if needed
 - Add screenshots for UI changes
 
-#### File/folder structure
+### Code Style
 
-- There are multiple apps inside this repository
-  - Admin (Allow admins to do admin work like creating organisations, users, locations)
-  - App Designer (Allow admins to design the app)
-  - Reports (Allow admins to download longitudnal reports)
-  - Translations (Allow admins to upload translations)
-  - Data Entry App (Allow users to do data entry using web based app)
-- Folders per route/feature
-  (See https://marmelab.com/blog/2015/12/17/react-directory-structure.html)
-- Reducers and actions in 'ducks' structure (See https://github.com/erikras/ducks-modular-redux). This is not applicable for App Designer as it does not use Redux.
+- We use Prettier for javascript/jsx formatting
+- Use IDE/Editor Plugin for Prettier or run `make prettier-all`
+- Git precommit hook formats staged files using prettier
 
-#### Code Style
+### Continuous Integration
 
-- We use Prettier for javascript/jsx formatting. You can use your IDE/Editor specific Plugin to format code using Prettier. Alternatively there is also a command `make prettier-all` that will format all files in src folder using Prettier. And there also is a git precommit hook that formats staged files using prettier before commiting.
-
-#### Continuous Integration
-
-All commits are built and tested and deployed to staging if tests succeed. Build status can be seen at https://circleci.com/gh/OpenCHS/openchs-webapp. Please run tests using `make test` before you push your code so you don't end up breaking things unnecessarily.
+All commits are built, tested and deployed to staging if tests succeed. Build status can be seen at https://circleci.com/gh/avniproject/avni-webapp. Run `make test` before pushing code to avoid breaking the build.
