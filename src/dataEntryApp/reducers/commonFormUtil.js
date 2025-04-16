@@ -78,10 +78,8 @@ const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false, 
 
   if (isNil(firstGroupWithAtLeastOneVisibleElement)) {
     const staticFEG = new StaticFormElementGroup(form);
-    const nextFEG = staticFEG.next();
     return {
-      //for the individual subject types first group is displayed with static group so moving it to next group.
-      formElementGroup: isIndividualRegistration && nextFEG ? nextFEG : staticFEG,
+      formElementGroup: staticFEG,
       filteredFormElements: [],
       onSummaryPage: false,
       wizard: new Wizard(1),
@@ -398,7 +396,11 @@ const onNext = ({
 };
 
 const onPrevious = ({ formElementGroup, observations, entity, filteredFormElements, validationResults, onSummaryPage, wizard }) => {
-  const previousGroup = !onSummaryPage ? formElementGroup.previous() : formElementGroup;
+  const previousGroup = wizard.isFirstFormPage()
+    ? new StaticFormElementGroup(formElementGroup.form)
+    : !onSummaryPage
+    ? formElementGroup.previous()
+    : formElementGroup;
 
   if (isEmpty(previousGroup)) {
     return nextState(formElementGroup, filteredFormElements, validationResults, observations, entity, false, wizard);

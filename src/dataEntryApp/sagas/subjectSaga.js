@@ -24,7 +24,7 @@ import {
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
-import { find, isNil, sortBy, keys } from "lodash";
+import { find, isNil, keys, sortBy } from "lodash";
 import { mapProfile } from "common/subjectModelMapper";
 import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
@@ -140,50 +140,28 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
 }
 
 export function* setRegistrationOnLoadState(registrationForm, subject, identifierAssignments) {
-  if (subject.subjectType.isPerson()) {
-    const formElementGroup = new StaticFormElementGroup(registrationForm);
-    const wizard = new Wizard(isNil(registrationForm) ? 1 : registrationForm.numberOfPages + 1, 2);
-    const filteredFormElements = [];
-    const onSummaryPage = false;
-    const firstGroupWithAtLeastOneVisibleElement = find(
-      sortBy(registrationForm.nonVoidedFormElementGroups(), "displayOrder"),
-      formElementGroup => filterFormElements(formElementGroup, subject).length !== 0
-    );
-    const isFormEmpty = isNil(firstGroupWithAtLeastOneVisibleElement);
+  const formElementGroup = new StaticFormElementGroup(registrationForm);
+  const wizard = new Wizard(isNil(registrationForm) ? 1 : registrationForm.numberOfPages + 1, 2);
+  const filteredFormElements = [];
+  const onSummaryPage = false;
+  const firstGroupWithAtLeastOneVisibleElement = find(
+    sortBy(registrationForm.nonVoidedFormElementGroups(), "displayOrder"),
+    formElementGroup => filterFormElements(formElementGroup, subject).length !== 0
+  );
+  const isFormEmpty = isNil(firstGroupWithAtLeastOneVisibleElement);
 
-    yield put.resolve(
-      onLoadSuccess(
-        subject,
-        registrationForm,
-        formElementGroup,
-        filteredFormElements,
-        onSummaryPage,
-        wizard,
-        isFormEmpty,
-        identifierAssignments
-      )
-    );
-  } else {
-    const { formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty } = commonFormUtil.onLoad(
-      registrationForm,
+  yield put.resolve(
+    onLoadSuccess(
       subject,
-      true,
-      true
-    );
-
-    yield put.resolve(
-      onLoadSuccess(
-        subject,
-        registrationForm,
-        formElementGroup,
-        filteredFormElements,
-        onSummaryPage,
-        wizard,
-        isFormEmpty,
-        identifierAssignments
-      )
-    );
-  }
+      registrationForm,
+      formElementGroup,
+      filteredFormElements,
+      onSummaryPage,
+      wizard,
+      isFormEmpty,
+      identifierAssignments
+    )
+  );
 }
 
 function* updateObsWatcher() {
@@ -294,10 +272,10 @@ export function* registrationWizardWorkerPrev() {
 
   const previousGroup = state.formElementGroup.previous();
 
-  //The previousGroup is going to be null only when we are going to the static page for the person subject type.
+  //The previousGroup is going to be null when we are going to the static page for any subject type.
   //In that case we need to set formElementGroup as static FEG and filteredFormElements as empty.
-  const shouldGoToStaticPageForPersonSubjectType = isNil(previousGroup) && subject.subjectType.isPerson() && !state.onSummaryPage;
-  if (shouldGoToStaticPageForPersonSubjectType) {
+  const shouldGoToStaticPageForAllSubjectTypes = isNil(previousGroup) && !state.onSummaryPage;
+  if (shouldGoToStaticPageForAllSubjectTypes) {
     const wizard = state.wizard.clone();
     wizard.movePrevious();
     const nextState = {
