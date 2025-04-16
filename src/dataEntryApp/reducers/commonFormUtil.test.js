@@ -411,3 +411,305 @@ describe("Form Navigation Tests", () => {
     assert.equal(result.wizard.currentPage, 3);
   });
 });
+
+describe("Form Element Filtering Tests", () => {
+  let form;
+  let formElementGroup;
+  let textFormElement;
+  let numericFormElement;
+  let codedFormElement;
+  let hiddenFormElement;
+  let subject;
+  let observationsHolder;
+  let textConcept;
+  let numericConcept;
+  let codedConcept;
+  let hiddenConcept;
+  let answerConcept1;
+  let answerConcept2;
+
+  beforeEach(() => {
+    // Create a form with a form element group
+    form = EntityFactory.createForm2({ uuid: "form-filter-1" });
+
+    formElementGroup = EntityFactory.createFormElementGroup2({
+      uuid: "feg-filter-1",
+      form: form,
+      displayOrder: 1
+    });
+
+    form.addFormElementGroup(formElementGroup);
+
+    // Create concepts for form elements
+    textConcept = EntityFactory.createConcept2({
+      uuid: "c-filter-text",
+      name: "c-filter-text",
+      dataType: Concept.dataType.Text
+    });
+
+    numericConcept = EntityFactory.createConcept2({
+      uuid: "c-filter-numeric",
+      name: "c-filter-numeric",
+      dataType: Concept.dataType.Numeric
+    });
+
+    answerConcept1 = EntityFactory.createConcept2({
+      uuid: "ac-filter-1",
+      name: "ac-filter-1",
+      dataType: Concept.dataType.NA
+    });
+
+    answerConcept2 = EntityFactory.createConcept2({
+      uuid: "ac-filter-2",
+      name: "ac-filter-2",
+      dataType: Concept.dataType.NA
+    });
+
+    codedConcept = EntityFactory.createConcept2({
+      uuid: "c-filter-coded",
+      name: "c-filter-coded",
+      dataType: Concept.dataType.Coded,
+      answers: [answerConcept1, answerConcept2]
+    });
+
+    hiddenConcept = EntityFactory.createConcept2({
+      uuid: "c-filter-hidden",
+      name: "c-filter-hidden",
+      dataType: Concept.dataType.Text
+    });
+
+    // Create form elements
+    textFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-filter-text",
+      formElementGroup: formElementGroup,
+      concept: textConcept,
+      displayOrder: 1,
+      mandatory: true
+    });
+
+    numericFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-filter-numeric",
+      formElementGroup: formElementGroup,
+      concept: numericConcept,
+      displayOrder: 2,
+      mandatory: false
+    });
+
+    codedFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-filter-coded",
+      formElementGroup: formElementGroup,
+      concept: codedConcept,
+      displayOrder: 3,
+      mandatory: false
+    });
+
+    hiddenFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-filter-hidden",
+      formElementGroup: formElementGroup,
+      concept: hiddenConcept,
+      displayOrder: 4,
+      mandatory: false
+    });
+
+    // Add form elements to form element group
+    formElementGroup.addFormElement(textFormElement);
+    formElementGroup.addFormElement(numericFormElement);
+    formElementGroup.addFormElement(codedFormElement);
+    formElementGroup.addFormElement(hiddenFormElement);
+
+    // Create subject and observations holder
+    subject = EntityFactory.createSubject({});
+    observationsHolder = new ObservationsHolder(subject.observations);
+
+    // Initialize observations with values
+    commonFormUtil.updateObservations(textFormElement, "test text", subject, observationsHolder, []);
+    commonFormUtil.updateObservations(numericFormElement, 42, subject, observationsHolder, []);
+    commonFormUtil.updateObservations(codedFormElement, answerConcept1.uuid, subject, observationsHolder, []);
+
+    // Update the subject's observations
+    subject.observations = observationsHolder.observations;
+  });
+
+  it("should update observations and handle validation", function() {
+    // Start with empty validation results
+    const initialValidationResults = [];
+
+    // Update an observation
+    const result = commonFormUtil.updateObservations(
+      textFormElement,
+      "updated text value",
+      subject,
+      observationsHolder,
+      initialValidationResults
+    );
+
+    // Verify the function returns the expected structure
+    assert.isObject(result);
+    assert.property(result, "filteredFormElements");
+    assert.property(result, "validationResults");
+    assert.isArray(result.filteredFormElements);
+    assert.isArray(result.validationResults);
+  });
+
+  it("should handle validation results correctly", function() {
+    // Create validation results
+    const existingValidationResults = [
+      {
+        formIdentifier: textFormElement.uuid,
+        success: false,
+        messageKey: "REQUIRED_FIELD"
+      },
+      {
+        formIdentifier: numericFormElement.uuid,
+        success: true
+      }
+    ];
+
+    // Create new validation results
+    const newValidationResults = [
+      {
+        formIdentifier: textFormElement.uuid,
+        success: true
+      },
+      {
+        formIdentifier: codedFormElement.uuid,
+        success: false,
+        messageKey: "INVALID_CODED_VALUE"
+      }
+    ];
+
+    // Handle the validation results
+    const updatedValidationResults = commonFormUtil.handleValidationResult(newValidationResults, existingValidationResults);
+
+    // Verify that the validation results were properly merged
+    // The result should contain:
+    // 1. No entry for textFormElement (now successful)
+    // 2. An entry for codedFormElement (failed)
+    // 3. An entry for numericFormElement (existing successful validation is preserved)
+
+    // Check if codedFormElement's validation is included
+    const codedValidation = updatedValidationResults.find(vr => vr.formIdentifier === codedFormElement.uuid);
+    assert.isDefined(codedValidation, "Should include validation for codedFormElement");
+    assert.equal(codedValidation.messageKey, "INVALID_CODED_VALUE");
+    assert.isFalse(codedValidation.success);
+
+    // Verify that the now-successful validation was removed
+    assert.isFalse(
+      updatedValidationResults.some(vr => vr.formIdentifier === textFormElement.uuid),
+      "Text form element should be removed as it's now successful"
+    );
+
+    // Verify that the existing successful validation is preserved
+    // The function only removes validations for elements that are in newValidationResults
+    const numericValidation = updatedValidationResults.find(vr => vr.formIdentifier === numericFormElement.uuid);
+    assert.isDefined(numericValidation, "Should preserve existing validation for numericFormElement");
+    assert.isTrue(numericValidation.success);
+  });
+
+  it("should preserve existing validation failures not present in new results", function() {
+    // Create existing validation results with failures for multiple elements
+    const existingValidationResults = [
+      {
+        formIdentifier: textFormElement.uuid,
+        success: false,
+        messageKey: "REQUIRED_FIELD"
+      },
+      {
+        formIdentifier: numericFormElement.uuid,
+        success: false,
+        messageKey: "INVALID_NUMERIC"
+      },
+      {
+        formIdentifier: hiddenFormElement.uuid,
+        success: true
+      }
+    ];
+
+    // Create new validation results that only address some of the elements
+    const newValidationResults = [
+      {
+        formIdentifier: textFormElement.uuid,
+        success: true // This one becomes successful
+      }
+      // Note: No results for numericFormElement or hiddenFormElement
+    ];
+
+    // Handle the validation results
+    const updatedValidationResults = commonFormUtil.handleValidationResult(newValidationResults, existingValidationResults);
+
+    // Verify that the validation results were properly merged
+    // The result should:
+    // 1. Remove textFormElement (now successful)
+    // 2. Preserve numericFormElement (still failed, not in new results)
+    // 3. Preserve hiddenFormElement (was successful, not in new results)
+
+    // Verify that the fixed validation was removed
+    assert.isFalse(
+      updatedValidationResults.some(vr => vr.formIdentifier === textFormElement.uuid),
+      "Text form element should be removed as it's now successful"
+    );
+
+    // Verify that the existing failed validation is preserved
+    const numericValidation = updatedValidationResults.find(vr => vr.formIdentifier === numericFormElement.uuid);
+    assert.isDefined(numericValidation, "Should preserve existing validation for numericFormElement");
+    assert.equal(numericValidation.messageKey, "INVALID_NUMERIC");
+    assert.isFalse(numericValidation.success);
+
+    // Verify that the existing successful validation is preserved
+    const hiddenValidation = updatedValidationResults.find(vr => vr.formIdentifier === hiddenFormElement.uuid);
+    assert.isDefined(hiddenValidation, "Should preserve existing validation for hiddenFormElement");
+    assert.isTrue(hiddenValidation.success);
+  });
+
+  it("should get validation result for a specific form element", function() {
+    // Create validation results
+    const validationResults = [
+      {
+        formIdentifier: textFormElement.uuid,
+        success: false,
+        messageKey: "REQUIRED_FIELD"
+      },
+      {
+        formIdentifier: numericFormElement.uuid,
+        success: true
+      }
+    ];
+
+    // Get validation result for text form element
+    const textValidationResult = commonFormUtil.getValidationResult(validationResults, textFormElement.uuid);
+
+    // Verify the validation result
+    assert.equal(textValidationResult.formIdentifier, textFormElement.uuid);
+    assert.equal(textValidationResult.messageKey, "REQUIRED_FIELD");
+    assert.isFalse(textValidationResult.success);
+
+    // Get validation result for coded form element (should be undefined)
+    const codedValidationResult = commonFormUtil.getValidationResult(validationResults, codedFormElement.uuid);
+
+    // Verify the validation result
+    assert.isUndefined(codedValidationResult);
+  });
+
+  it("should validate form element data", function() {
+    // Create a form element with mandatory flag
+    const mandatoryFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-filter-mandatory",
+      formElementGroup: formElementGroup,
+      concept: textConcept,
+      displayOrder: 5,
+      mandatory: true
+    });
+
+    // Create an observations holder with no value for the mandatory field
+    const emptyObsHolder = new ObservationsHolder([]);
+
+    // Get validation errors
+    const validationErrors = commonFormUtil.getFEDataValidationErrors([mandatoryFormElement], emptyObsHolder);
+
+    // Verify that validation errors include the mandatory field error
+    assert.isArray(validationErrors);
+    const mandatoryError = validationErrors.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+    assert.isDefined(mandatoryError);
+    assert.isFalse(mandatoryError.success);
+  });
+});
