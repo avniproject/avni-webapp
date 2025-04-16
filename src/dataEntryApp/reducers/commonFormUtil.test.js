@@ -1,9 +1,10 @@
 import commonFormUtil from "./commonFormUtil";
-import { Concept, ObservationsHolder } from "openchs-models";
+import { Concept, ObservationsHolder, StaticFormElementGroup } from "openchs-models";
 import EntityFactory from "../test/EntityFactory";
 import { assert } from "chai";
 import TestKeyValueFactory from "../test/TestKeyValueFactory";
 import _ from "lodash";
+import Wizard from "../state/Wizard";
 
 describe("question group and repeatable question groups", () => {
   let qgFormElement;
@@ -112,5 +113,301 @@ describe("question group and repeatable question groups", () => {
     // After removing the question group at index 1, we should only have the observation at index 0
     assert.equal("b", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0).getValue());
     // We should not try to access the removed question group's observations
+    assert.isFalse(observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 1));
+  });
+});
+
+describe("Form Navigation Tests", () => {
+  let form;
+  let formElementGroup1;
+  let formElementGroup2;
+  let formElementGroup3;
+  let textFormElement1;
+  let textFormElement2;
+  let textFormElement3;
+  let subject;
+  let observationsHolder;
+  let textConcept1;
+  let textConcept2;
+  let textConcept3;
+
+  beforeEach(() => {
+    // Create a form with multiple form element groups
+    form = EntityFactory.createForm2({ uuid: "form-nav-1" });
+
+    // Create form element groups with different display orders
+    formElementGroup1 = EntityFactory.createFormElementGroup2({
+      uuid: "feg-nav-1",
+      form: form,
+      displayOrder: 1
+    });
+
+    formElementGroup2 = EntityFactory.createFormElementGroup2({
+      uuid: "feg-nav-2",
+      form: form,
+      displayOrder: 2
+    });
+
+    formElementGroup3 = EntityFactory.createFormElementGroup2({
+      uuid: "feg-nav-3",
+      form: form,
+      displayOrder: 3
+    });
+
+    // Add form element groups to form
+    form.addFormElementGroup(formElementGroup1);
+    form.addFormElementGroup(formElementGroup2);
+    form.addFormElementGroup(formElementGroup3);
+
+    // Set up the next/previous relationships between form element groups
+    formElementGroup1.next = () => formElementGroup2;
+    formElementGroup1.previous = () => null;
+
+    formElementGroup2.next = () => formElementGroup3;
+    formElementGroup2.previous = () => formElementGroup1;
+
+    formElementGroup3.next = () => null; // This is crucial - last group returns null for next
+    formElementGroup3.previous = () => formElementGroup2;
+
+    // Create concepts for form elements
+    textConcept1 = EntityFactory.createConcept2({
+      uuid: "c-nav-1",
+      name: "c-nav-1",
+      dataType: Concept.dataType.Text
+    });
+
+    textConcept2 = EntityFactory.createConcept2({
+      uuid: "c-nav-2",
+      name: "c-nav-2",
+      dataType: Concept.dataType.Text
+    });
+
+    textConcept3 = EntityFactory.createConcept2({
+      uuid: "c-nav-3",
+      name: "c-nav-3",
+      dataType: Concept.dataType.Text
+    });
+
+    // Create form elements
+    textFormElement1 = EntityFactory.createFormElement2({
+      uuid: "fe-nav-1",
+      formElementGroup: formElementGroup1,
+      concept: textConcept1,
+      displayOrder: 1,
+      mandatory: true
+    });
+
+    textFormElement2 = EntityFactory.createFormElement2({
+      uuid: "fe-nav-2",
+      formElementGroup: formElementGroup2,
+      concept: textConcept2,
+      displayOrder: 1,
+      mandatory: true
+    });
+
+    textFormElement3 = EntityFactory.createFormElement2({
+      uuid: "fe-nav-3",
+      formElementGroup: formElementGroup3,
+      concept: textConcept3,
+      displayOrder: 1,
+      mandatory: true
+    });
+
+    // Add form elements to form element groups
+    formElementGroup1.addFormElement(textFormElement1);
+    formElementGroup2.addFormElement(textFormElement2);
+    formElementGroup3.addFormElement(textFormElement3);
+
+    // Create subject and observations holder
+    subject = EntityFactory.createSubject({});
+    observationsHolder = new ObservationsHolder(subject.observations);
+
+    // Initialize observations with values to prevent validation errors
+    commonFormUtil.updateObservations(textFormElement1, "test value 1", subject, observationsHolder, []);
+    commonFormUtil.updateObservations(textFormElement2, "test value 2", subject, observationsHolder, []);
+    commonFormUtil.updateObservations(textFormElement3, "test value 3", subject, observationsHolder, []);
+
+    // Update the subject's observations
+    subject.observations = observationsHolder.observations;
+  });
+
+  it("should load the first form element group on onLoad", function() {
+    const result = commonFormUtil.onLoad(form, subject);
+
+    assert.equal(result.formElementGroup.uuid, formElementGroup1.uuid);
+    assert.isArray(result.filteredFormElements);
+    assert.isFalse(result.onSummaryPage);
+    assert.instanceOf(result.wizard, Wizard);
+    assert.equal(result.wizard.currentPage, 1);
+    assert.isUndefined(result.isFormEmpty);
+  });
+
+  it("should load a static form element group when no visible elements exist", function() {
+    // Create a form with no visible elements
+    const emptyForm = EntityFactory.createForm2({ uuid: "empty-form" });
+    const result = commonFormUtil.onLoad(emptyForm, subject);
+
+    assert.instanceOf(result.formElementGroup, StaticFormElementGroup);
+    assert.isArray(result.filteredFormElements);
+    assert.equal(result.filteredFormElements.length, 0);
+    assert.isFalse(result.onSummaryPage);
+    assert.instanceOf(result.wizard, Wizard);
+    assert.equal(result.wizard.currentPage, 1);
+    assert.isTrue(result.isFormEmpty);
+  });
+
+  it("should load the next form element group for individual registration", function() {
+    // Create a form with a static first group
+    const individualForm = EntityFactory.createForm2({ uuid: "individual-form" });
+    const feg = EntityFactory.createFormElementGroup2({
+      uuid: "individual-feg",
+      form: individualForm,
+      displayOrder: 1
+    });
+    individualForm.addFormElementGroup(feg);
+
+    const result = commonFormUtil.onLoad(individualForm, subject, true);
+
+    // Should skip the static group and move to the next group
+    assert.equal(result.formElementGroup.uuid, feg.uuid);
+    assert.isFalse(result.onSummaryPage);
+  });
+
+  it("should navigate to the next form element group with onNext", function() {
+    // Start with the first form element group
+    const initialState = {
+      formElementGroup: formElementGroup1,
+      observations: subject.observations,
+      entity: subject,
+      filteredFormElements: [textFormElement1],
+      validationResults: [],
+      wizard: new Wizard(3, 1, 1),
+      entityValidations: []
+    };
+
+    // Save the original wizard page
+    const originalPage = initialState.wizard.currentPage;
+
+    const result = commonFormUtil.onNext(initialState);
+
+    // Verify the result has the correct form element group
+    assert.equal(result.formElementGroup.uuid, formElementGroup2.uuid);
+    assert.isArray(result.filteredFormElements);
+    assert.isFalse(result.onSummaryPage);
+
+    // Verify the wizard in the result has been updated
+    assert.instanceOf(result.wizard, Wizard);
+    assert.equal(initialState.wizard.currentPage, originalPage + 1);
+  });
+
+  it("should navigate to the previous form element group with onPrevious", function() {
+    // Start with the second form element group
+    const initialState = {
+      formElementGroup: formElementGroup2,
+      observations: subject.observations,
+      entity: subject,
+      filteredFormElements: [textFormElement2],
+      validationResults: [],
+      wizard: new Wizard(3, 1, 2),
+      onSummaryPage: false
+    };
+
+    // Save the original wizard page
+    const originalPage = initialState.wizard.currentPage;
+
+    const result = commonFormUtil.onPrevious(initialState);
+
+    // Verify the result has the correct form element group
+    assert.equal(result.formElementGroup.uuid, formElementGroup1.uuid);
+    assert.isArray(result.filteredFormElements);
+    assert.isFalse(result.onSummaryPage);
+
+    // Verify the wizard in the result is a new instance with updated page
+    assert.instanceOf(result.wizard, Wizard);
+    assert.equal(result.wizard.currentPage, originalPage - 1);
+  });
+
+  it("should handle validation errors and not proceed to next group", function() {
+    // Create a clean subject without observations for this test
+    const emptySubject = EntityFactory.createSubject({});
+    const emptyObservationsHolder = new ObservationsHolder(emptySubject.observations);
+
+    // Create a validation result with error
+    const validationResult = {
+      success: false,
+      formIdentifier: textFormElement1.uuid,
+      messageKey: "REQUIRED_FIELD"
+    };
+
+    // Start with the first form element group with validation error
+    const initialState = {
+      formElementGroup: formElementGroup1,
+      observations: emptySubject.observations,
+      entity: emptySubject,
+      filteredFormElements: [textFormElement1],
+      validationResults: [validationResult],
+      wizard: new Wizard(3, 1, 1),
+      entityValidations: []
+    };
+
+    const result = commonFormUtil.onNext(initialState);
+
+    // Should stay on the same group due to validation error
+    assert.equal(result.formElementGroup.uuid, formElementGroup1.uuid);
+    assert.isArray(result.filteredFormElements);
+    assert.isFalse(result.onSummaryPage);
+    assert.instanceOf(result.wizard, Wizard);
+    assert.equal(result.wizard.currentPage, 1);
+    assert.isArray(result.validationResults);
+    assert.equal(result.validationResults.length, 1);
+  });
+
+  it("should navigate to summary page after last form element group", function() {
+    // Start with the last form element group
+    const initialState = {
+      formElementGroup: formElementGroup3,
+      observations: subject.observations,
+      entity: subject,
+      filteredFormElements: [textFormElement3],
+      validationResults: [],
+      wizard: new Wizard(3, 1, 3),
+      entityValidations: [],
+      onSummaryPage: false
+    };
+
+    // Verify that formElementGroup3.next() returns null
+    assert.isNull(formElementGroup3.next());
+
+    const result = commonFormUtil.onNext(initialState);
+
+    // Should move to summary page
+    assert.isTrue(result.onSummaryPage);
+    assert.instanceOf(result.wizard, Wizard);
+    // The wizard page doesn't change when moving to summary page
+    // since we're already at the last page (3)
+    assert.equal(result.wizard.currentPage, 3);
+  });
+
+  it("should navigate from summary page to last form element group with onPrevious", function() {
+    // Start on the summary page
+    const initialState = {
+      formElementGroup: formElementGroup3,
+      observations: subject.observations,
+      entity: subject,
+      filteredFormElements: [textFormElement3],
+      validationResults: [],
+      wizard: new Wizard(3, 1, 3),
+      onSummaryPage: true
+    };
+
+    const result = commonFormUtil.onPrevious(initialState);
+
+    // Should move back to the last form element group
+    assert.equal(result.formElementGroup.uuid, formElementGroup3.uuid);
+    assert.isArray(result.filteredFormElements);
+    assert.isFalse(result.onSummaryPage);
+    assert.instanceOf(result.wizard, Wizard);
+    // The wizard page doesn't change when moving from summary page back to the last form
+    assert.equal(result.wizard.currentPage, 3);
   });
 });
