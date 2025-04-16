@@ -51,7 +51,6 @@ const SubjectFormElement = props => {
       //empty check required as backspace on empty control triggers an onChange
       const changedSubjectUuid = toggledSubject.value.uuid;
       props.update(changedSubjectUuid);
-      subjectService.addSubject(toggledSubject.value);
       setSelectedSubjects(event);
     }
   };
@@ -68,9 +67,8 @@ const SubjectFormElement = props => {
               ? selectedSubjects.map(selectedSubject => selectedSubject.value.uuid).indexOf(subject.uuid) === -1
               : true
           )
-          .map(subject => ({
-            label: constructSubjectLabel(subject, true),
-            value: {
+          .map(subject => {
+            const value = {
               id: subject.id,
               uuid: subject.uuid,
               firstName: subject.firstName,
@@ -79,8 +77,13 @@ const SubjectFormElement = props => {
               fullName: subject.fullName,
               profilePicture: subject.profilePicture,
               addressLevel: subject.addressLevel
-            }
-          }))
+            };
+            subjectService.addSubject(value);
+            return {
+              label: constructSubjectLabel(subject, true),
+              value: value
+            };
+          })
       )
       .then(callback);
   };

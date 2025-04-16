@@ -31,14 +31,14 @@ make deps
 
 There are two possible ways to setup Avni Webapp for development:
 
-1. You can setup the webapp in a way that it directly connects to the hosted API server so you don't have to setup local postgres database and Java API server. This is an easy way to get started as you don't have to worry about having to install Java and API Server. Also this will consume less resources on your system as you are not running API server.
-2. You can setup local postgres database and API server also locally and connect the webapp to that server. This is more difficult as it involves having to install Postgres, Java and running Java API Server.
+1. Connect to the Hosted API Server: This is the easiest and fastest way to get started. You don’t need to set up a local PostgreSQL database or Java API server. This method is lightweight and ideal for contributors who want to focus on the webapp without worrying about backend dependencies.
+2. Set Up a Local Development Environment: This involves setting up a local PostgreSQL database and running the Java API server locally. It’s more resource-intensive and complex but may be necessary for certain testing.
 
 ### 1. Setup to connect to hosted API Server (Samanvay hosted staging server)
 
-```bash
-make start-with-staging
-```
+1. Run `make start-with-staging`
+2. Use the credentials : Username : `dummy@osc` and Password : `dummy@123`
+3. After logging in please create a new user for yourself and use that .
 
 ### 2. Setup to connect to your local API Server
 

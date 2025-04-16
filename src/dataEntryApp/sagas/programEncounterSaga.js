@@ -172,23 +172,25 @@ export function* addNewQuestionGroupWorker({ formElement }) {
 }
 
 function* removeQuestionGroupWatcher() {
-  yield takeEvery(types.REMOVE_QG, removeNewQuestionGroupWorker);
+  yield takeEvery(types.REMOVE_QG, removeQuestionGroupWorker);
 }
 
-export function* removeNewQuestionGroupWorker({ formElement, questionGroupIndex }) {
+export function* removeQuestionGroupWorker({ formElement, questionGroupIndex }) {
   const state = yield select(selectProgramEncounterState);
   const programEncounter = state.programEncounter.cloneForEdit();
-  const { filteredFormElements } = commonFormUtil.removeQuestionGroup(
+  const { filteredFormElements, validationResults } = commonFormUtil.removeQuestionGroup(
     programEncounter,
     formElement,
     programEncounter.observations,
+    state.validationResults,
     questionGroupIndex
   );
   yield put(
     setState({
       ...state,
       programEncounter,
-      filteredFormElements
+      filteredFormElements,
+      validationResults
     })
   );
 }
@@ -246,7 +248,8 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
     programEncounterForm,
     programEncounter,
     false,
-    isEdit
+    isEdit,
+    programEncounter.encounterType.immutable
   );
 
   yield put.resolve(

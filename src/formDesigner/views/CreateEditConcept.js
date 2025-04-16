@@ -29,6 +29,7 @@ import { SubjectConcept } from "../components/SubjectConcept";
 import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
 import { EncounterConcept } from "../components/EncounterConcept";
 import { connect } from "react-redux";
+import { ImageV2Concept } from "../components/ImageV2Concept";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -125,6 +126,7 @@ class CreateEditConcept extends Component {
         "highestAddressLevelTypeUUID",
         "subjectTypeUUID",
         "verifyPhoneNumber",
+        "captureLocationInformation",
         "encounterTypeUUID",
         "encounterScope",
         "encounterIdentifier"
@@ -683,6 +685,18 @@ class CreateEditConcept extends Component {
         this.setState(prevState => ({
           ...prevState,
           keyValues: [{ key: "verifyPhoneNumber", value: false }]
+        }));
+      }
+    }
+
+    if (this.state.dataType === "ImageV2") {
+      const locationInformationKey = find(this.state.keyValues, ({ key, value }) => key === "captureLocationInformation");
+      if (locationInformationKey) {
+        dataType = <ImageV2Concept onKeyValueChange={this.onKeyValueChange} checked={locationInformationKey.value} />;
+      } else {
+        this.setState(prevState => ({
+          ...prevState,
+          keyValues: [{ key: "captureLocationInformation", value: false }]
         }));
       }
     }

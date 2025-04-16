@@ -2,23 +2,24 @@ import _ from "lodash";
 import httpClient from "../../common/utils/httpClient";
 
 export const CHANGE_TYPE = {
-  ADDED: "added",
-  REMOVED: "removed",
-  MODIFIED: "modified",
-  NO_MODIFICATION: "noModification"
+  ADDED: "Added",
+  MISSING: "Missing",
+  MODIFIED: "Modified",
+  VOIDED: "Voided",
+  NO_CHANGE: "NoChange"
 };
 
-const isNoModification = function(obj) {
+const isNoChange = function(obj) {
   if (!_.isObject(obj)) return false;
-  if (obj.changeType === CHANGE_TYPE.NO_MODIFICATION) return true;
-  return _.some(obj, value => isNoModification(value));
+  if (obj.changeType === CHANGE_TYPE.NO_CHANGE) return true;
+  return _.every(obj, value => isNoChange(value));
 };
 
 const filterForms = function(data) {
   const filteredData = _.reduce(
     data,
     (acc, formData, formName) => {
-      if (!isNoModification(formData) && formName !== "formMappings.json") {
+      if (!isNoChange(formData) && formName !== "formMappings.json") {
         acc[formName] = formData;
       }
       return acc;
@@ -39,7 +40,7 @@ const filterForms = function(data) {
 class CompareMetadataService {
   static async compare(file) {
     const formData = new FormData();
-    formData.append("incumbentBundle", file);
+    formData.append("candidateBundle", file);
     const response = await httpClient.post("/web/bundle/findChanges", formData);
     return filterForms(response.data);
   }

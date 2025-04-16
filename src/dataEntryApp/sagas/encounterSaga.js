@@ -164,12 +164,19 @@ function* removeQuestionGroupWatcher() {
 export function* removeQuestionGroupWorker({ formElement, questionGroupIndex }) {
   const state = yield select(selectEncounterState);
   const encounter = state.encounter.cloneForEdit();
-  const { filteredFormElements } = commonFormUtil.removeQuestionGroup(encounter, formElement, encounter.observations, questionGroupIndex);
+  const { filteredFormElements, validationResults } = commonFormUtil.removeQuestionGroup(
+    encounter,
+    formElement,
+    encounter.observations,
+    state.validationResults,
+    questionGroupIndex
+  );
   yield put(
     setState({
       ...state,
       encounter,
-      filteredFormElements
+      filteredFormElements,
+      validationResults
     })
   );
 }
@@ -215,7 +222,8 @@ export function* setEncounterDetails(encounter, subjectProfileJson, isEdit = fal
     encounterForm,
     encounter,
     false,
-    isEdit
+    isEdit,
+    encounter.encounterType.immutable
   );
 
   yield put.resolve(onLoadSuccess(encounter, encounterForm, formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty));

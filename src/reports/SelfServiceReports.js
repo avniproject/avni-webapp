@@ -4,13 +4,16 @@ import { reportSideBarOptions } from "./Common";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { Box, makeStyles } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import MetabaseSVG from "./Metabase_icon.svg";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { debounce } from "lodash";
+import DeleteIcon from "@material-ui/icons/Delete";
+import httpClient from "../common/utils/httpClient";
+import MetabaseSetupStatus from "./domain/MetabaseSetupStatus";
+import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
 
 const useStyles = makeStyles({
   root: {
@@ -32,7 +35,8 @@ const useStyles = makeStyles({
     right: 20,
     display: "flex",
     alignItems: "center",
-    gap: "10px"
+    gap: "10px",
+    marginRight: 10
   },
   setupButton: {
     backgroundColor: "#4995ec",
@@ -54,7 +58,8 @@ const useStyles = makeStyles({
     marginTop: "30px",
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
+    marginRight: 10
   },
   refreshButton: {
     backgroundColor: "#4995ec",
@@ -88,211 +93,192 @@ const useStyles = makeStyles({
   }
 });
 
+async function getStatusResponse() {
+  const statusResponse = (await httpClient.get("/web/metabase/status")).data;
+  return MetabaseSetupStatus.fromStatusResponse(statusResponse);
+}
+
+// not sure why useState didn't work for maintaining this state
+let intervalId = null;
+
 const SelfServiceReports = () => {
   const classes = useStyles();
 
-  const [state, setState] = useState({
-    setupLoading: false,
-    setupDone: false,
-    allowSetup: false,
-    errorMessage: "",
-    loadingRefresh: false
-  });
+  const [statusResponse, setStatusResponse] = useState(MetabaseSetupStatus.createUnknownStatus());
+  const [isBusyCallingCreateQuestionOnly, setIsBusyCallingCreateQuestionOnly] = useState(false);
+  const [isBusyCallingSetup, setIsBusyCallingSetup] = useState(false);
+  const [isBusyCallingTearDown, setIsBusyCallingTearDown] = useState(false);
 
   useEffect(() => {
-    fetchSetupStatus();
+    updateStatus().then(status => {
+      if (status.isAnyJobInProgress()) {
+        pollSetupStatus();
+      }
+    });
   }, []);
 
-  const fetchSetupStatus = async () => {
-    try {
-      const response = await fetch("/api/metabase/setup-status");
-      if (response.ok) {
-        const data = await response.json();
-        setState(prevState => ({
-          ...prevState,
-          allowSetup: true,
-          setupDone: data.setupEnabled
-        }));
-      } else {
-        const errorResponse = await response.text();
-        setState(prevState => ({
-          ...prevState,
-          errorMessage: errorResponse.includes("424 FAILED_DEPENDENCY")
-            ? "Metabase Self-service is not enabled"
-            : "Failed to fetch setup status.",
-          setupDone: false
-        }));
-      }
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        errorMessage: `Error fetching setup status: ${error.message}`,
-        setupDone: false
-      }));
-    }
-  };
+  async function performAction(url) {
+    await httpClient.post(url);
+    pollSetupStatus();
+  }
 
-  const resetMessages = () => {
-    setState(prevState => ({
-      ...prevState,
-      errorMessage: ""
-    }));
-  };
+  // have to return statusResponse and use it in the caller to get the latest status as the state update is still waiting to happen
+  async function updateStatus() {
+    const statusResponse = await getStatusResponse();
+    setStatusResponse(statusResponse);
+    return statusResponse;
+  }
 
-  const setupReports = async () => {
-    resetMessages();
-    setState(prevState => ({ ...prevState, setupLoading: true }));
-    const attemptSetup = async () => {
-      try {
-        const response = await fetch(`/api/metabase/setup`, {
-          method: "POST"
-        });
-
-        if (response.ok) {
-          const createQuestionsResponse = await fetch("/api/metabase/create-questions", {
-            method: "POST"
-          });
-
-          if (createQuestionsResponse.ok) {
-            setState(prevState => ({
-              ...prevState,
-              setupLoading: false,
-              setupDone: true
-            }));
-          } else {
-            throw new Error("Failed to create questions.");
-          }
-        } else {
-          throw new Error("Failed to setup reports.");
+  const pollSetupStatus = debounce(async () => {
+    intervalId = setInterval(() => {
+      updateStatus().then(status => {
+        if (!status.isAnyJobInProgress() && intervalId) {
+          clearInterval(intervalId);
+          setIsBusyCallingCreateQuestionOnly(false);
+          setIsBusyCallingSetup(false);
+          setIsBusyCallingTearDown(false);
+          intervalId = null;
         }
-      } catch (error) {
-        setState(prevState => ({
-          ...prevState,
-          setupLoading: false,
-          errorMessage: error.message
-        }));
-      }
-    };
-    attemptSetup();
-  };
+      });
+    }, 5000);
+  }, 500);
+
+  const tearDownMetabase = debounce(async () => {
+    setIsBusyCallingTearDown(true);
+    await performAction("/web/metabase/teardown");
+  }, 500);
+
+  const setupReports = debounce(async () => {
+    setIsBusyCallingSetup(true);
+    await performAction("/web/metabase/setup");
+  }, 500);
 
   const refreshReports = debounce(async () => {
-    setState(prevState => ({
-      ...prevState,
-      loadingRefresh: true,
-      errorMessage: ""
-    }));
-    try {
-      const syncStatusResponse = await fetch("/api/metabase/sync-status", {
-        method: "GET"
-      });
-
-      if (syncStatusResponse.ok) {
-        const syncStatus = await syncStatusResponse.json();
-        if (syncStatus === "INCOMPLETE") {
-          setState(prevState => ({
-            ...prevState,
-            loadingRefresh: false,
-            errorMessage: "Database sync is incomplete. Please try again later."
-          }));
-        } else if (syncStatus === "NOT_STARTED") {
-          setState(prevState => ({
-            ...prevState,
-            loadingRefresh: false,
-            errorMessage: "Metabase setup has not been enabled. Please enable Metabase."
-          }));
-        } else {
-          const response = await fetch("/api/metabase/create-questions", {
-            method: "POST"
-          });
-
-          if (response.ok) {
-            setState(prevState => ({
-              ...prevState,
-              loadingRefresh: false,
-              errorMessage: ""
-            }));
-          } else {
-            setState(prevState => ({
-              ...prevState,
-              loadingRefresh: false,
-              errorMessage: "Failed to refresh reports."
-            }));
-          }
-        }
-      }
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        loadingRefresh: false,
-        errorMessage: `Error during refresh: ${error.message}`
-      }));
-    }
+    setIsBusyCallingCreateQuestionOnly(true);
+    await performAction("/web/metabase/update-questions");
   }, 500);
+
+  if (statusResponse.status === MetabaseSetupStatus.Unknown) {
+    return <>Loading...</>;
+  }
+
+  const isBusyCallingAnyAction = isBusyCallingCreateQuestionOnly || isBusyCallingSetup || isBusyCallingTearDown;
+
+  const showSetupButton = statusResponse.canStartSetup() && !isBusyCallingAnyAction;
+  const showDisabledSetupButton = isBusyCallingSetup;
+
+  const showDeleteButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
+  const showDisabledDeleteButton = isBusyCallingTearDown;
+
+  const showRefreshButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
+  const showDisabledRefreshButton = isBusyCallingCreateQuestionOnly;
+
+  const showExploreButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
+
+  const showProgressSpinner = statusResponse.isAnyJobInProgress() || isBusyCallingAnyAction;
+  const showErrorMessage = statusResponse.hasErrorMessage();
 
   return (
     <ScreenWithAppBar appbarTitle="Self Service Reports" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
-      <Grid container alignItems="center" spacing={3}>
-        <Grid item xs={12} sm={12} md={8} lg={8} xl={8}>
-          <Card className={classes.root}>
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item container direction="row" spacing={1}>
-                  <Grid item>
-                    <img src={MetabaseSVG} alt="Metabase logo" style={{ height: 50, width: 50 }} />
-                  </Grid>
-                  <Grid item xs={10}>
-                    <div className={classes.metabaseHeader}>
-                      <Typography variant="h4" component="h4" className={classes.metabaseTitle}>
-                        Metabase
-                      </Typography>
-                      <a href="https://metabase.com" target="_blank" rel="noopener noreferrer" className={classes.metabaseLink}>
-                        metabase.com
-                        <OpenInNewIcon className={classes.redirectIcon} />
-                      </a>
-                    </div>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                      Metabase provides a graphical interface to create business intelligence and analytics graphs in minutes. Avni
-                      integrates with Metabase to support ad hoc and self-serviced reports.
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-
-              {!state.setupDone ? (
+      <Card className={classes.root}>
+        <CardContent>
+          <Box style={{ display: "flex", flexDirection: "column" }}>
+            <Box style={{ display: "flex", flexDirection: "row" }}>
+              <img src={MetabaseSVG} alt="Metabase logo" style={{ height: 50, width: 50 }} />
+              <div className={classes.metabaseHeader}>
+                <Typography variant="h4" component="h4" className={classes.metabaseTitle}>
+                  Metabase
+                </Typography>
+                <a href="https://metabase.com" target="_blank" rel="noopener noreferrer" className={classes.metabaseLink}>
+                  metabase.com
+                  <OpenInNewIcon className={classes.redirectIcon} />
+                </a>
+              </div>
+              {showSetupButton && (
                 <div className={classes.setupButtonContainer}>
-                  <Button className={classes.setupButton} onClick={setupReports} disabled={state.setupLoading || !state.allowSetup}>
+                  <Button className={classes.setupButton} onClick={setupReports} disabled={statusResponse.isSetupInProgress()}>
                     Setup Reports
                   </Button>
-                  {state.setupLoading && <CircularProgress size={24} />}
                 </div>
-              ) : (
-                <div className={classes.setupDoneLabel}>Setup done</div>
               )}
-            </CardContent>
-
-            {state.allowSetup && state.setupDone && (
-              <div className={classes.buttonsContainer}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <Button className={classes.refreshButton} onClick={refreshReports} disabled={state.loadingRefresh}>
+              {showDisabledSetupButton && (
+                <div className={classes.setupButtonContainer}>
+                  <Button className={classes.setupButton} disabled={true}>
+                    Setup Reports
+                  </Button>
+                </div>
+              )}
+            </Box>
+            <Typography variant="body2" color="textSecondary" component="p">
+              Metabase provides a graphical interface to create business intelligence and analytics graphs in minutes. Avni integrates with
+              Metabase to support ad hoc and self-serviced reports.
+            </Typography>
+            <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
+              {showDeleteButton && (
+                <div className={classes.buttonsContainer}>
+                  <Button
+                    style={{
+                      float: "right",
+                      color: "red"
+                    }}
+                    onClick={() => tearDownMetabase()}
+                  >
+                    <DeleteIcon /> Delete
+                  </Button>
+                </div>
+              )}
+              {showDisabledDeleteButton && (
+                <div className={classes.buttonsContainer}>
+                  <Button disabled={true}>
+                    <DeleteIcon /> Delete
+                  </Button>
+                </div>
+              )}
+              {showRefreshButton && (
+                <div className={classes.setupButtonContainer}>
+                  <Button className={classes.refreshButton} onClick={refreshReports}>
                     Refresh Reports
                   </Button>
-                  {state.loadingRefresh && <CircularProgress size={24} />}
                 </div>
-                <Button className={classes.exploreButton} href="https://reporting-green.avniproject.org" target="_blank">
-                  Explore Your Data
-                </Button>
-              </div>
+              )}
+              {showDisabledRefreshButton && (
+                <div className={classes.setupButtonContainer}>
+                  <Button className={classes.refreshButton} disabled={true}>
+                    Refresh Reports
+                  </Button>
+                </div>
+              )}
+              {showExploreButton && (
+                <div className={classes.buttonsContainer}>
+                  <Button className={classes.exploreButton} href="https://reporting.avniproject.org" target="_blank">
+                    Explore Your Data
+                  </Button>
+                </div>
+              )}
+              {showProgressSpinner && (
+                <div className={classes.buttonsContainer}>
+                  <CircularProgress size={24} />
+                  <Box />
+                </div>
+              )}
+            </Box>
+            {showErrorMessage && (
+              <>
+                <Typography variant="h6" color="error">
+                  Last attempt failed with error
+                </Typography>
+                <Typography variant="body2" color="error">
+                  {statusResponse.getShortErrorMessage()}
+                </Typography>
+                <br />
+                <CopyToClipboard text={statusResponse.getErrorMessage()}>
+                  <button>Copy error to clipboard</button>
+                </CopyToClipboard>
+              </>
             )}
-
-            {state.errorMessage && (
-              <Typography variant="body2" color="error">
-                {state.errorMessage}
-              </Typography>
-            )}
-          </Card>
-        </Grid>
-      </Grid>
+          </Box>
+        </CardContent>
+      </Card>
     </ScreenWithAppBar>
   );
 };

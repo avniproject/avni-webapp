@@ -32,5 +32,11 @@ export default {
       `/web/importSample?uploadType=${type}&locationUploadMode=${locationUploadMode}&locationHierarchy=${locationHierarchy}`,
       `sample-${type}.csv`
     );
+  },
+  downloadEncounterSample: (type, encounterUploadMode) => {
+    return http.downloadFile(
+      `/web/importSample?uploadType=${type}&encounterUploadMode=${encodeURIComponent(encounterUploadMode)}`,
+      `sample-${type}.csv`
+    );
   }
 };

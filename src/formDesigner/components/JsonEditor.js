@@ -3,10 +3,11 @@ import React from "react";
 import Editor from "react-simple-code-editor";
 import { ValidationError } from "./ValidationError";
 
-export const JsonEditor = ({ value, onChange, validationError }) => {
+export const JsonEditor = ({ value, onChange, validationError, readOnly = false }) => {
   return (
     <>
       <Editor
+        readOnly={readOnly}
         value={value ? value : ""}
         onValueChange={event => onChange(event)}
         highlight={code => highlight(code, languages.js)}

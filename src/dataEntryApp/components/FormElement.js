@@ -32,6 +32,7 @@ const elements = {
   Notes: NotesFormElement,
   NA: div,
   Image: MediaFormElement,
+  ImageV2: MediaFormElement,
   Video: MediaFormElement,
   Audio: MediaFormElement,
   File: MediaFormElement,

@@ -196,8 +196,8 @@ export function* updateEnrolmentObsWorker({ formElement, value, childFormElement
   yield put(
     setProgramEnrolmentState({
       ...state,
-      filteredFormElements,
       programEnrolment,
+      filteredFormElements,
       validationResults
     })
   );
@@ -227,17 +227,19 @@ function* removeQuestionGroupWatcher() {
 export function* removeQuestionGroupWorker({ formElement, questionGroupIndex }) {
   const state = yield select(selectProgramEnrolmentState);
   const programEnrolment = state.programEnrolment.cloneForEdit();
-  const { filteredFormElements } = commonFormUtil.removeQuestionGroup(
+  const { filteredFormElements, validationResults } = commonFormUtil.removeQuestionGroup(
     programEnrolment,
     formElement,
     programEnrolment.observations,
+    state.validationResults,
     questionGroupIndex
   );
   yield put(
     setProgramEnrolmentState({
       ...state,
       programEnrolment,
-      filteredFormElements
+      filteredFormElements,
+      validationResults
     })
   );
 }

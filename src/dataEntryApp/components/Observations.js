@@ -4,14 +4,14 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
-import { Concept, Observation, Individual } from "avni-models";
+import { Concept, findMediaObservations, Individual, Observation } from "avni-models";
 import { conceptService, i18n } from "../services/ConceptService";
 import { addressLevelService } from "../services/AddressLevelService";
 import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import { find, includes, isEmpty, isNil, lowerCase, map } from "lodash";
+import _, { find, isEmpty, isNil, lowerCase, map } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
@@ -20,11 +20,10 @@ import http from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import ReportProblemIcon from "@material-ui/icons/ReportProblem";
-import _ from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import { Grid, Collapse, IconButton, styled } from "@material-ui/core";
+import { Collapse, Grid, IconButton, styled } from "@material-ui/core";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
@@ -110,20 +109,19 @@ function renderSingleQuestionGroup(valueWrapper, index, customKey, t, observatio
 }
 
 function initMediaObservations(observations) {
-  const mediaObservations = [
-    ...observations.filter(obs => includes([Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File], obs.concept.datatype))
-  ];
+  let mediaObservations = findMediaObservations(observations);
   observations
     .filter(obs => obs.concept.isQuestionGroup())
     .forEach(qgObservation => {
       if (qgObservation.valueJSON.repeatableObservations) {
-        qgObservation.valueJSON.repeatableObservations.forEach(
-          rqg => rqg.groupObservations && mediaObservations.push(...rqg.groupObservations)
-        );
+        qgObservation.valueJSON.repeatableObservations.forEach(rqg => {
+          mediaObservations.push(...findMediaObservations(rqg.groupObservations));
+        });
       } else {
-        qgObservation.valueJSON.groupObservations && mediaObservations.push(...qgObservation.valueJSON.groupObservations);
+        mediaObservations.push(...findMediaObservations(qgObservation.valueJSON.groupObservations));
       }
     });
+
   return mediaObservations;
 }
 

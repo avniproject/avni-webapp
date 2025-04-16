@@ -1,11 +1,6 @@
 import moment from "moment";
 
-export const modifiedAudit = ({
-  lastModifiedBy,
-  lastModifiedDateTime,
-  lastModifiedByUserName,
-  modifiedDateTime
-}) => {
+export const modifiedAudit = ({ lastModifiedBy, lastModifiedDateTime, lastModifiedByUserName, modifiedDateTime }) => {
   const [date, time] = getFormattedDateTime(lastModifiedDateTime || modifiedDateTime);
   return `By ${lastModifiedBy || lastModifiedByUserName} at ${time}, ${date}`;
 };
@@ -22,9 +17,15 @@ export const createdAudit = ({ createdBy, createdDateTime, createdByUserName }) 
   return `By ${createdBy || createdByUserName} at ${time}, ${date}`;
 };
 
+export const activatedAudit = ({ lastActivatedDateTime }) => {
+  const [date, time] = getFormattedDateTime(lastActivatedDateTime);
+  return `At ${time}, ${date}`;
+};
+
 export function mapAuditFields(source, destination) {
   destination.createdBy = source.createdBy;
   destination.lastModifiedBy = source.lastModifiedBy;
   destination.createdDateTime = source.createdDateTime;
   destination.lastModifiedDateTime = source.lastModifiedDateTime;
+  destination.lastActivatedDateTime = source.lastActivatedDateTime;
 }
