@@ -361,6 +361,8 @@
     "notDirectlyAssignedToThisUser": "इस उपयोगकर्ता को सीधे नहीं असाइन किया गया है",
     "notInThisUsersCatchment": "इस उपयोगकर्ता के कैचमेंट में नहीं है",
     "userSyncAttributeNotConfigured": "उपयोगकर्ता सिंक विशेषता कॉन्फ़िगर नहीं है",
-    "syncAttributeForUserNotValidForUpdate": "उपयोगकर्ता के लिए सिंक विशेषता अपडेट के लिए वैध नहीं है"
+    "syncAttributeForUserNotValidForUpdate": "उपयोगकर्ता के लिए सिंक विशेषता अपडेट के लिए वैध नहीं है",
+    "selectAllLabel": "सबका चयन करें",
+    "unselectAllLabel": "सभी को अचयनित करें"
   }
 }

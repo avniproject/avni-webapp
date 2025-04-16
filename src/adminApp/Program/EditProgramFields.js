@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import _ from "lodash";
@@ -21,13 +21,18 @@ import { PopoverColorPicker } from "../../common/components/PopoverColorPicker";
 
 const EditProgramFields = props => {
   const { program, errors, subjectTypes, formList, dispatch, onSubjectTypeChange, subjectType } = props;
-
+  const [showGrowthChart, setShowGrowthChart] = useState(!!program.showGrowthChart);
   const isNew = _.isNil(program.uuid);
+  const isChildOrPhulwari = programName =>
+    programName && (programName.toLowerCase() === "child" || programName.toLowerCase() === "phulwari");
+
   useEffect(() => {
-    if (isNew && program.name && program.name.toLowerCase() === "child" && program.showGrowthChart !== true) {
+    if (isNew && isChildOrPhulwari(program.name) && !showGrowthChart) {
+      setShowGrowthChart(true);
       dispatch({ type: "showGrowthChart", payload: true });
     }
-  }, [isNew, program.name, program.showGrowthChart, dispatch]);
+  }, [program.name, showGrowthChart]);
+
   return (
     <>
       <AvniTextField
@@ -130,9 +135,13 @@ const EditProgramFields = props => {
       />
 
       <AvniSwitch
-        checked={program.showGrowthChart}
-        onChange={event => dispatch({ type: "showGrowthChart", payload: event.target.checked })}
+        checked={showGrowthChart}
+        onChange={event => {
+          setShowGrowthChart(event.target.checked);
+          dispatch({ type: "showGrowthChart", payload: event.target.checked });
+        }}
         name="Show growth chart"
+        disabled={isChildOrPhulwari(program.name)}
         toolTipKey={"APP_DESIGNER_PROGRAM_SHOW_GROWTH_CHART"}
       />
       <br />

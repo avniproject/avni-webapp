@@ -326,6 +326,8 @@
     "notDirectlyAssignedToThisUser": "આ વપરાશકર્તા સીધી રીતે આવરીત નથી",
     "notInThisUsersCatchment": "આ વપરાશકર્તાની કેચમેન્ટ માં નથી",
     "userSyncAttributeNotConfigured": "વપરાશકર્તા સમન્વયન ગુણક રૂપરેખિત નથી",
-    "syncAttributeForUserNotValidForUpdate": "વપરાશકર્તા માટે સમન્વયન ગુણક અપડેટ માટે માન્ય નથી"
+    "syncAttributeForUserNotValidForUpdate": "વપરાશકર્તા માટે સમન્વયન ગુણક અપડેટ માટે માન્ય નથી",
+    "selectAllLabel": "બધા સિલેક્ટ કરો",
+    "unselectAllLabel": "બધા અનસિલેક્ટ કરો"
   }
 }
