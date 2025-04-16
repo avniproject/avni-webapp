@@ -536,5 +536,6 @@ export default {
   getValidationResult,
   addNewQuestionGroup,
   removeQuestionGroup,
-  getFEDataValidationErrors
+  getFEDataValidationErrors,
+  getIdValidationErrors
 };
