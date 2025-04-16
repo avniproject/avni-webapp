@@ -101,7 +101,7 @@ export const organisationGroupEdit = props => (
   <Edit undoable={false} title={<Title title={"Edit account"} />} {...props}>
     <SimpleForm redirect="list">
       <TextInput source="name" validate={required("Name cannot be empty")} parse={normalizeInput} />
-      <DisabledInput source="dbUser" />
+      <TextInput source="dbUser" validate={required("DB user cannot be empty")} parse={normalizeInput} />
       <TextInput source="schemaName" validate={required("Schema name cannot be empty")} parse={normalizeInput} />
       <BooleanField source="analyticsDataSyncActive" />
       <ToggleAnalyticsButton />
