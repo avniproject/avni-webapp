@@ -239,7 +239,7 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
         const childFormElements = filter(
           filteredFormElements,
           ffe =>
-            !isNil(ffe) && !isNil(ffe.group) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided && ffe.questionGroupIndex === i
+            !isNil(ffe) && !isNil(ffe.concept) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided && ffe.questionGroupIndex === i
         );
 
         // Validate each child form element
@@ -272,48 +272,85 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
   const validateRemainingChildFormElement = childFormElement => {
     // Skip if already processed through parent
     const alreadyProcessed = some(allValidationResults, vr => vr.formIdentifier === childFormElement.uuid);
-    if (alreadyProcessed) {
-      return;
-    }
 
-    // Find parent group
-    const parentGroup = find(questionGroupElements, qg => qg.uuid === get(childFormElement, "group.uuid"));
+    // For repeatable question groups, also check if the specific questionGroupIndex was processed
+    const isInRepeatableGroup = !isNil(childFormElement.group) && childFormElement.group.repeatable;
+    const hasQuestionGroupIndex = !isNil(childFormElement.questionGroupIndex);
 
-    if (isNil(parentGroup)) {
-      return;
-    }
+    // If this is a child of a repeatable group with an index, check if that specific index was processed
+    if (isInRepeatableGroup && hasQuestionGroupIndex && !alreadyProcessed) {
+      const indexProcessed = some(
+        allValidationResults,
+        vr => vr.formIdentifier === childFormElement.uuid && vr.questionGroupIndex === childFormElement.questionGroupIndex
+      );
 
-    const parentObsValue = obsHolder.findObservation(parentGroup.concept);
-    if (isNil(parentObsValue)) {
-      return;
-    }
+      // If this specific index wasn't processed, validate it
+      if (!indexProcessed) {
+        const parentFormElement = childFormElement.group;
+        const obsValue = obsHolder.findObservation(parentFormElement.concept);
 
-    const questionGroupWrapper = parentObsValue.getValueWrapper();
-    if (isNil(questionGroupWrapper)) {
-      return;
-    }
+        // If there's no observation for the parent, validate with empty value
+        if (isNil(obsValue)) {
+          const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+            parentFormElement,
+            undefined, // Empty value
+            obsHolder.observations,
+            [], // Empty array for each validation
+            formElementStatuses,
+            childFormElement
+          );
+          allValidationResults.push(...results);
+          return;
+        }
 
-    let childObsValue;
-    if (parentGroup.repeatable) {
-      if (!isNil(childFormElement.questionGroupIndex)) {
-        const groupObservation = questionGroupWrapper.getGroupObservationAtIndex(childFormElement.questionGroupIndex);
-        if (!isNil(groupObservation)) {
-          childObsValue = groupObservation.getObservation(childFormElement.concept);
+        // If there is an observation, try to get the specific group
+        const questionGroupWrapper = obsValue.getValueWrapper();
+        if (!isNil(questionGroupWrapper)) {
+          const groupObservation = questionGroupWrapper.getGroupObservationAtIndex(childFormElement.questionGroupIndex);
+
+          // If there's no observation for this specific index, validate with empty value
+          if (isNil(groupObservation)) {
+            const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+              parentFormElement,
+              undefined, // Empty value
+              obsHolder.observations,
+              [], // Empty array for each validation
+              formElementStatuses,
+              childFormElement
+            );
+            allValidationResults.push(...results);
+            return;
+          }
+
+          // If there is an observation for this index, validate with the actual value
+          const childObsValue = groupObservation.getObservation(childFormElement.concept);
+          const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+            parentFormElement,
+            childObsValue,
+            obsHolder.observations,
+            [], // Empty array for each validation
+            formElementStatuses,
+            childFormElement
+          );
+          allValidationResults.push(...results);
+          return;
         }
       }
-    } else {
-      childObsValue = questionGroupWrapper.getObservation(childFormElement.concept);
     }
 
-    const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
-      parentGroup,
-      childObsValue,
-      obsHolder.observations,
-      [],
-      formElementStatuses,
-      childFormElement
-    );
-    allValidationResults.push(...results);
+    // For non-repeatable groups or if not already processed
+    if (!alreadyProcessed) {
+      const obsValue = obsHolder.findObservation(childFormElement.concept);
+      const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+        childFormElement,
+        obsValue,
+        obsHolder.observations,
+        [], // Empty array for each validation
+        formElementStatuses,
+        null
+      );
+      allValidationResults.push(...results);
+    }
   };
 
   // Process remaining child form elements

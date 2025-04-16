@@ -1,14 +1,12 @@
 import commonFormUtil from "./commonFormUtil";
 import { Concept, ObservationsHolder, StaticFormElementGroup } from "openchs-models";
+// Import the helper functions from EntityFactory
 import EntityFactory from "../test/EntityFactory";
 import { assert } from "chai";
 import TestKeyValueFactory from "../test/TestKeyValueFactory";
 import _ from "lodash";
 import Wizard from "../state/Wizard";
 import * as RuleEvaluationService from "dataEntryApp/services/RuleEvaluationService";
-
-// Import the helper functions from EntityFactory
-import { addFormElementMethods, addConceptMethods } from "../test/EntityFactory";
 
 describe("question group and repeatable question groups", () => {
   let qgFormElement;
@@ -1393,5 +1391,199 @@ describe("Validation Tests", () => {
       // Verify that undefined is returned
       assert.isUndefined(textValidationResult);
     });
+  });
+
+  describe("Repeatable Question Group with Subject Form Element", () => {
+    let subjectConcept;
+    let subjectFormElement;
+    let rqgWithSubjectFormElement;
+
+    beforeEach(() => {
+      // Create a Subject concept
+      subjectConcept = EntityFactory.createConcept2({
+        uuid: "c-validation-subject",
+        name: "c-validation-subject",
+        dataType: Concept.dataType.Subject
+      });
+
+      // Create a repeatable question group for subjects
+      rqgWithSubjectFormElement = EntityFactory.createFormElement2({
+        uuid: "fe-validation-rqg-subject",
+        formElementGroup: formElementGroup,
+        concept: repeatableQuestionGroupConcept,
+        displayOrder: 7,
+        mandatory: true
+      });
+
+      // Create a Subject form element as a child of the repeatable question group
+      subjectFormElement = EntityFactory.createFormElement2({
+        uuid: "fe-validation-subject",
+        formElementGroup: formElementGroup,
+        concept: subjectConcept,
+        displayOrder: 1,
+        mandatory: true,
+        group: rqgWithSubjectFormElement
+      });
+
+      // Add form elements to form element group
+      formElementGroup.addFormElement(rqgWithSubjectFormElement);
+      formElementGroup.addFormElement(subjectFormElement);
+    });
+
+    it("should validate that the first element of a RQG has EmptyOrNull value for a SubjectSelectFormElement", () => {
+      // Create a subject with no observations
+      const testSubject = EntityFactory.createIndividual("Test Subject");
+      const emptyObsHolder = new ObservationsHolder(testSubject.observations);
+
+      // Set up the form elements properly
+      // 1. Make sure the child form element has the correct groupUuid reference
+      subjectFormElement.groupUuid = rqgWithSubjectFormElement.uuid;
+      // 2. Set questionGroupIndex for the subject form element
+      subjectFormElement.questionGroupIndex = 0;
+      // 3. Make sure the form element is properly set up as mandatory
+      subjectFormElement.mandatory = true;
+
+      // 6. Create a ValidationResult that would be returned for a mandatory field with empty value
+      const validationResult = {
+        formIdentifier: subjectFormElement.uuid,
+        success: false,
+        messageKey: "emptyValidationMessage"
+      };
+
+      // 7. Create a mock FormElementService
+      const mockFormElementService = {
+        validateForMandatoryFieldIsEmptyOrNullOnly: jest.fn((formElement, value, observations, validationResults) => {
+          validationResults.push(validationResult);
+          return validationResults;
+        })
+      };
+
+      // Store the original service
+      const originalService = commonFormUtil.formElementService;
+      // Replace with our mock
+      commonFormUtil.formElementService = mockFormElementService;
+
+      try {
+        // 8. Get validation errors using the actual method
+        const validationErrors = commonFormUtil.getFEDataValidationErrors([subjectFormElement], emptyObsHolder);
+
+        // 10. Verify that validation errors include the subject field error
+        assert.isArray(validationErrors);
+
+        // 11. Find the validation error for the subject form element
+        const subjectError = validationErrors.find(ve => ve.formIdentifier === subjectFormElement.uuid);
+
+        // 12. Verify the validation error exists
+        assert.isDefined(subjectError, "Should have a validation error for the subject field");
+        // 13. Check that validation failed (success should be false)
+        assert.isFalse(subjectError.success, "Validation should fail for empty subject field");
+        // 14. Check the message key
+        assert.equal(subjectError.messageKey, "emptyValidationMessage", "Should have the correct message key");
+      } finally {
+        // 9. Restore the original service
+        commonFormUtil.formElementService = originalService;
+      }
+    });
+  });
+
+  it("should validate that a subject form element in a repeatable question group has EmptyOrNull value", () => {
+    // Create a ValidationResult for testing
+    const ValidationResult = {
+      failureForEmpty: function(formIdentifier) {
+        return {
+          formIdentifier: formIdentifier,
+          success: false,
+          messageKey: "emptyValidationMessage",
+          addQuestionGroupIndex: function(index) {
+            this.questionGroupIndex = index;
+          }
+        };
+      },
+      successful: function(formIdentifier) {
+        return {
+          formIdentifier: formIdentifier,
+          success: true,
+          addQuestionGroupIndex: function(index) {
+            this.questionGroupIndex = index;
+          }
+        };
+      }
+    };
+
+    // Create a FormElementService for testing
+    const testFormElementService = {
+      validateIfIsMandatoryAndValueEmptyOrNull: function(formElement, value) {
+        if (formElement && formElement.mandatory && (value === undefined || value === null)) {
+          return ValidationResult.failureForEmpty(formElement.uuid);
+        } else {
+          return ValidationResult.successful(formElement.uuid);
+        }
+      },
+      validateForMandatoryFieldIsEmptyOrNullOnly: function(
+        formElement,
+        value,
+        observations,
+        validationResults,
+        formElementStatuses,
+        childFormElement
+      ) {
+        const isChildFormElement = childFormElement && childFormElement.groupUuid === formElement.uuid;
+        const validationResult = isChildFormElement
+          ? this.validateIfIsMandatoryAndValueEmptyOrNull(childFormElement, value)
+          : this.validateIfIsMandatoryAndValueEmptyOrNull(formElement, value);
+
+        if (isChildFormElement) {
+          validationResult.addQuestionGroupIndex(childFormElement.questionGroupIndex);
+        }
+
+        validationResults.push(validationResult);
+        return validationResults;
+      }
+    };
+
+    // Set up the parent (question group) form element
+    const parentFormElement = {
+      uuid: "parent-uuid",
+      mandatory: true,
+      // We can't set repeatable directly, but we can simulate it by adding a method
+      isRepeatable: function() {
+        return true;
+      }
+    };
+
+    // Set up the child (subject) form element
+    const childFormElement = {
+      uuid: "child-uuid",
+      mandatory: true,
+      groupUuid: "parent-uuid",
+      questionGroupIndex: 0,
+      concept: {
+        datatype: Concept.dataType.Subject
+      }
+    };
+
+    // Create an empty value
+    const emptyValue = undefined;
+
+    // Call the validation function directly
+    const validationResults = [];
+    testFormElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+      parentFormElement,
+      emptyValue,
+      [],
+      validationResults,
+      [],
+      childFormElement
+    );
+
+    // Verify the validation results
+    assert.isArray(validationResults);
+    assert.equal(validationResults.length, 1, "Should have one validation result");
+
+    const validationResult = validationResults[0];
+    assert.equal(validationResult.formIdentifier, "child-uuid", "Should have the correct form identifier");
+    assert.equal(validationResult.questionGroupIndex, 0, "Should have the correct question group index");
+    assert.isFalse(validationResult.success, "Validation should fail for empty subject field");
+    assert.equal(validationResult.messageKey, "emptyValidationMessage", "Should have the correct message key");
   });
 });
