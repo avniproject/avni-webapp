@@ -25,7 +25,7 @@ modularity:
     - Refactor one component or function at a time
     - Maintain backward compatibility during refactoring
     - Add tests before refactoring to ensure behavior is preserved
-    - Document the purpose and approach of each refactoring
+    - Do not add comments unless there is complex logic requiring explanation
 
 # Testing Requirements
 testing:
@@ -156,11 +156,9 @@ performance:
 # Documentation
 documentation:
   requirements:
-    - All public functions must have JSDoc comments
     - Complex validation logic must include explanatory comments
-    - Parameter types and return values must be documented
-    - Include examples in documentation for complex functions
     - Document the reasoning behind implementation choices
+    - Do not add comments unless there is complex logic requiring explanation
 
 # Specific Rules for Form Validation
 form_validation:
