@@ -1,0 +1,77 @@
+class WebConcept {
+  name: string;
+  uuid: string;
+  dataType: string;
+  keyValues: any[];
+  answers: any[];
+  active: boolean;
+  mediaUrl: string;
+  lowAbsolute: number;
+  highAbsolute: number;
+  lowNormal: number;
+  highNormal: number;
+  unit: string;
+  createdBy: string;
+  lastModifiedBy: string;
+  creationDateTime: string;
+  lastModifiedDateTime: string;
+}
+
+class WebConceptAnswer {
+  uuid: string;
+  name: string;
+  unique: boolean;
+  abnormal: boolean;
+  editable: boolean;
+  voided: boolean;
+  order: number;
+  mediaUrl: string;
+}
+
+export class WebConceptView extends WebConcept {
+  mediaFile: File;
+  answerUIViews: WebConceptAnswerView[];
+
+  static emptyConcept() {
+    const webConceptView = new WebConceptView();
+    webConceptView.name = "";
+    webConceptView.uuid = "";
+    webConceptView.dataType = "";
+    webConceptView.createdBy = "";
+    webConceptView.lastModifiedBy = "";
+    webConceptView.creationDateTime = "";
+    webConceptView.lastModifiedDateTime = "";
+    webConceptView.keyValues = [];
+    webConceptView.answers = [WebConceptAnswerView.emptyAnswer()];
+    return webConceptView;
+  }
+}
+
+export class ConceptAnswerError {
+  isErrored: boolean;
+  type: string;
+
+  static inError(type: string) {
+    return { isErrored: true, type: type };
+  }
+}
+
+export class WebConceptAnswerView extends WebConceptAnswer {
+  mediaFile: File;
+  isAnswerHavingError: ConceptAnswerError;
+
+  static emptyAnswer() {
+    const webConceptAnswerView = new WebConceptAnswerView();
+    webConceptAnswerView.uuid = "";
+    webConceptAnswerView.name = "";
+    webConceptAnswerView.unique = false;
+    webConceptAnswerView.abnormal = false;
+    webConceptAnswerView.editable = true;
+    webConceptAnswerView.voided = false;
+    webConceptAnswerView.order = 0;
+    webConceptAnswerView.isAnswerHavingError = ConceptAnswerError.inError("");
+    return webConceptAnswerView;
+  }
+}
+
+export default WebConcept;

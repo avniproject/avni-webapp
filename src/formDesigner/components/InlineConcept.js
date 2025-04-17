@@ -111,6 +111,7 @@ function InlineConcept(props) {
                   inlineConcept={true}
                   key={index}
                   totalAnswers={size(props.formElementData.inlineCodedAnswers)}
+                  onSelectAnswerMedia={() => props.onSelectAnswerMedia(answer)}
                 />
               </Grid>
             );

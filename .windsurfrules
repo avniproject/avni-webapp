@@ -14,18 +14,13 @@ style:
 # Code Structure and Modularity
 modularity:
   principles:
-    - Create small, focused functions with a single responsibility
     - Limit function size to improve readability and testability
     - Extract complex logic into separate utility functions
     - Use pure functions wherever possible
     - Avoid deep nesting of functions and control structures
   
   refactoring:
-    - Make incremental, targeted changes rather than large rewrites
-    - Refactor one component or function at a time
-    - Maintain backward compatibility during refactoring
     - Add tests before refactoring to ensure behavior is preserved
-    - Document the purpose and approach of each refactoring
 
 # Testing Requirements
 testing:
@@ -37,10 +32,7 @@ testing:
       - "**/*.test.js"
   
   requirements:
-    - All validation functions must have corresponding test cases
     - Tests must cover both success and failure scenarios
-    - Question group validation must test both repeatable and non-repeatable groups
-    - Edge cases (null values, empty arrays) must be tested
   
   # Test Structure and Organization
   structure:
@@ -102,7 +94,6 @@ quality:
     functional:
       prefer: true
       rules:
-        - Prefer pure functions over stateful classes
         - Use immutable data structures
         - Avoid side effects in validation functions
         - Use composition over inheritance
@@ -129,6 +120,24 @@ package_management:
     - Document new dependencies in README or documentation
     - Regularly update dependencies for security fixes
 
+# Tech Stack
+- project uses React, MUI, JavaScript, axios
+
+# Language usage
+- Do not put null checks unless asked
+- Do not add comments unless asked
+
+# Building blocks (or where to put which type of code)
+- Building blocks View, Component, Service, and Domain
+- Views can have Private or Project components. Private components are pure functions inside
+- use service classes to call server
+
+# Other
+- When catching server error calls in the view, always rethrow the error
+
+# Functional
+- My project is a front end for low code platform which allows for app designer, data management for end users filling data, and master data management.
+
 # Performance
 performance:
   rules:
@@ -137,22 +146,3 @@ performance:
     - Use early returns for validation failures
     - Cache validation results when appropriate
     - Write performance-sensitive tests separately with appropriate timeouts
-
-# Documentation
-documentation:
-  requirements:
-    - All public functions must have JSDoc comments
-    - Complex validation logic must include explanatory comments
-    - Parameter types and return values must be documented
-    - Include examples in documentation for complex functions
-    - Document the reasoning behind implementation choices
-
-# Specific Rules for Form Validation
-form_validation:
-  rules:
-    - Validation functions should be pure and return new validation results
-    - Question group validation should handle both repeatable and non-repeatable groups
-    - Null checks must be performed before accessing properties
-    - Form element validation must respect the mandatory flag
-    - Validation error messages should be clear and actionable
-    - Validation functions should handle edge cases gracefully

@@ -30,6 +30,9 @@ import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
 import { EncounterConcept } from "../components/EncounterConcept";
 import { connect } from "react-redux";
 import { ImageV2Concept } from "../components/ImageV2Concept";
+import { AvniImageUpload } from "../../common/components/AvniImageUpload";
+import ConceptService from "../../common/service/ConceptService";
+import { ConceptAnswerError, WebConceptView, WebConceptAnswerView } from "../../common/model/WebConcept";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -69,7 +72,7 @@ const checkForEmptyAnswerNames = answers => {
   answers
     .filter(answer => answer.name.trim() === "")
     .forEach(answer => {
-      answer["isAnswerHavingError"] = { isErrored: true, type: "required" };
+      answer["isAnswerHavingError"] = ConceptAnswerError.inError("required");
     });
 };
 
@@ -79,7 +82,7 @@ const checkForDuplicateAnswers = answers => {
     .filter(answer => answer && !answer.voided)
     .forEach(answer => {
       if (uniqueCodedAnswerNames.size === uniqueCodedAnswerNames.add(answer.name).size) {
-        answer["isAnswerHavingError"] = { isErrored: true, type: "duplicate" };
+        answer.isAnswerHavingError = ConceptAnswerError.inError("duplicate");
       }
     });
 };
@@ -87,36 +90,13 @@ const checkForDuplicateAnswers = answers => {
 class CreateEditConcept extends Component {
   constructor(props) {
     super(props);
+    const emptyConcept = WebConceptView.emptyConcept();
     this.state = {
-      dataTypes: [],
-      name: "",
-      uuid: "",
-      dataType: "",
-      lowAbsolute: null,
-      highAbsolute: null,
-      lowNormal: null,
-      highNormal: null,
-      unit: null,
-      createdBy: "",
-      lastModifiedBy: "",
-      creationDateTime: "",
-      lastModifiedDateTime: "",
-      answers: [
-        {
-          name: "",
-          uuid: "",
-          unique: false,
-          abnormal: false,
-          editable: true,
-          voided: false,
-          order: 0,
-          isAnswerHavingError: { isErrored: false, type: "" }
-        }
-      ],
+      ...emptyConcept,
       conceptCreationAlert: false,
       error: {},
+      dataTypes: [],
       defaultSnackbarStatus: true,
-      keyValues: [],
       redirectShow: false,
       redirectOnDelete: false,
       active: false,
@@ -142,38 +122,9 @@ class CreateEditConcept extends Component {
         });
       });
     } else {
-      http.get("/web/concept/" + this.props.match.params.uuid).then(response => {
-        let answers = [];
-        if (response.data.dataType === "Coded" && response.data.conceptAnswers) {
-          answers = response.data.conceptAnswers.map(conceptAnswer => ({
-            name: conceptAnswer.answerConcept.name,
-            uuid: conceptAnswer.answerConcept.uuid,
-            unique: conceptAnswer.unique,
-            abnormal: conceptAnswer.abnormal,
-            order: conceptAnswer.order,
-            voided: conceptAnswer.voided
-          }));
-          answers.sort(function(conceptOrder1, conceptOrder2) {
-            return conceptOrder1.order - conceptOrder2.order;
-          });
-        }
-
+      ConceptService.getConcept(this.props.match.params.uuid).then(concept => {
         this.setState({
-          name: response.data.name,
-          uuid: response.data.uuid,
-          dataType: response.data.dataType,
-          active: response.data.active,
-          lowAbsolute: response.data.lowAbsolute,
-          highAbsolute: response.data.highAbsolute,
-          lowNormal: response.data.lowNormal,
-          highNormal: response.data.highNormal,
-          unit: response.data.unit,
-          createdBy: response.data.createdBy,
-          lastModifiedBy: response.data.lastModifiedBy,
-          creationDateTime: response.data.createdDateTime,
-          lastModifiedDateTime: response.data.lastModifiedDateTime,
-          keyValues: response.data.keyValues,
-          answers
+          ...concept
         });
       });
     }
@@ -195,66 +146,22 @@ class CreateEditConcept extends Component {
 
   onDeleteAnswer = index => {
     const answers = [...this.state.answers];
-    if (!isEmpty(answers[index].name) && !isEmpty(answers[index].uuid)) {
-      answers[index].voided = true;
-      const encodedURL = `/web/concept?name=${encodeURIComponent(answers[index].name)}`;
-
-      http
-        .get(encodedURL)
-        .then(response => {
-          this.removeDuplicateNonVoidedAnswers(answers, index, answers[index].name);
-          this.setState({
-            answers
-          });
-        })
-        .catch(error => {
-          answers.splice(index, 1);
-          this.setState({
-            answers
-          });
-        });
-    } else {
-      answers.splice(index, 1);
-      this.setState({
-        answers
-      });
-    }
+    answers.splice(index, 1);
+    this.setState({ answers });
   };
 
   onAddAnswer = () => {
     this.setState({
-      answers: [
-        ...this.state.answers,
-        {
-          name: "",
-          uuid: "",
-          unique: false,
-          abnormal: false,
-          editable: true,
-          voided: false,
-          order: 0,
-          isAnswerHavingError: { isErrored: false, type: "" }
-        }
-      ]
+      answers: [...this.state.answers, WebConceptAnswerView.emptyAnswer()]
     });
   };
 
-  onChangeAnswerName = (answerName, index) => {
+  onChangeAnswer = (answer, index) => {
     const answers = [...this.state.answers];
-    answers[index].name = answerName;
-    this.removeDuplicateVoidedAnswers(answers, index, answerName);
     this.setState({
       answers
     });
   };
-
-  removeDuplicateVoidedAnswers(answers, index, answerName) {
-    remove(answers, (answer, idx) => idx !== index && answer.voided && answer.name === answerName);
-  }
-
-  removeDuplicateNonVoidedAnswers(answers, index, answerName) {
-    remove(answers, (answer, idx) => idx !== index && !answer.voided && answer.name === answerName);
-  }
 
   onMoveUp = index => {
     this.setState({
@@ -295,51 +202,6 @@ class CreateEditConcept extends Component {
     }
   }
 
-  postCodedData(answers) {
-    answers.map(function(answer, index) {
-      return (answer.order = index);
-    });
-
-    this.setState(
-      {
-        answers: answers
-      },
-      () => {
-        const Uuid = UUID.v4();
-        http
-          .post("/concepts", [
-            {
-              name: this.state.name,
-              uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
-              dataType: this.state.dataType,
-              keyValues: this.state.keyValues,
-              answers: this.state.answers,
-              active: this.props.isCreatePage ? true : this.state.active
-            }
-          ])
-          .then(response => {
-            if (response.status === 200) {
-              this.setState({
-                conceptCreationAlert: true,
-                name: this.props.isCreatePage ? "" : this.state.name,
-                uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
-                dataType: this.props.isCreatePage ? "" : this.state.dataType,
-                keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
-                lowAbsolute: null,
-                highAbsolute: null,
-                lowNormal: null,
-                highNormal: null,
-                unit: null,
-                answers: this.props.isCreatePage ? [] : this.state.answers,
-                defaultSnackbarStatus: true,
-                redirectShow: true
-              });
-            }
-          });
-      }
-    );
-  }
-
   validateKeyValues = (error, key, errorKey) => {
     const keyValue = this.state.keyValues.find(keyValue => keyValue.key === key);
     if (keyValue === undefined || keyValue.value === "") {
@@ -351,88 +213,59 @@ class CreateEditConcept extends Component {
     const conceptName = this.state.name;
     let error = {};
     const answers = this.state.answers;
-    var promise = new Promise((resolve, reject) => {
-      http
-        .get(`/web/concept?name=${encodeURIComponent(conceptName)}`)
-        .then(response => {
-          if (response.status === 200 && this.props.isCreatePage) {
-            error["nameError"] = true;
-          }
-          if (response.status === 200 && response.data.uuid !== this.state.uuid && !this.props.isCreatePage) {
-            error["nameError"] = true;
-          }
+    if (this.state.dataType === "") {
+      error["dataTypeSelectionAlert"] = true;
+    }
+    if (this.state.name.trim() === "") {
+      error["isEmptyName"] = true;
+    }
+    if (this.state.dataType === "Numeric" && parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute)) {
+      error["absoluteValidation"] = true;
+    }
+    if (this.state.dataType === "Numeric" && parseInt(this.state.lowNormal) > parseInt(this.state.highNormal)) {
+      error["normalValidation"] = true;
+    }
 
-          resolve("Promise resolved ");
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            resolve("Promise resolved ");
-          } else {
-            reject(Error("Promise rejected"));
-          }
-        });
+    if (this.state.dataType === "Coded") {
+      validateCodedConceptAnswers(answers);
+      if (answers.some(answer => answer["isAnswerHavingError"].isErrored)) {
+        error["isAnswerHavingError"] = true;
+      }
+    }
+
+    if (this.state.dataType === "Location") {
+      const lowestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs");
+      if (lowestLevelKeyValue === undefined || lowestLevelKeyValue.value.length === 0) {
+        error["lowestAddressLevelRequired"] = true;
+      }
+
+      const highestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID");
+      if (highestLevelKeyValue !== undefined && highestLevelKeyValue.value === "") {
+        error["highestAddressLevelRequired"] = true;
+      }
+    }
+
+    if (this.state.dataType === "Subject") {
+      this.validateKeyValues(error, "subjectTypeUUID", "subjectTypeRequired");
+    }
+
+    if (this.state.dataType === "Encounter") {
+      this.validateKeyValues(error, "encounterTypeUUID", "encounterTypeRequired");
+      this.validateKeyValues(error, "encounterScope", "encounterScopeRequired");
+      this.validateKeyValues(error, "encounterIdentifier", "encounterIdentifierRequired");
+    }
+
+    const emptyKeyValues = filter(this.state.keyValues, ({ key, value }) => key === "" || value === "");
+    if (emptyKeyValues.length > 0) {
+      error["keyValueError"] = true;
+    }
+
+    this.setState({
+      error: error,
+      answers: answers
     });
 
-    promise.then(
-      result => {
-        if (this.state.dataType === "") {
-          error["dataTypeSelectionAlert"] = true;
-        }
-        if (this.state.name.trim() === "") {
-          error["isEmptyName"] = true;
-        }
-        if (parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute)) {
-          error["absoluteValidation"] = true;
-        }
-        if (parseInt(this.state.lowNormal) > parseInt(this.state.highNormal)) {
-          error["normalValidation"] = true;
-        }
-
-        if (this.state.dataType === "Coded") {
-          validateCodedConceptAnswers(answers);
-          if (answers.some(answer => answer["isAnswerHavingError"].isErrored)) {
-            error["isAnswerHavingError"] = true;
-          }
-        }
-
-        if (this.state.dataType === "Location") {
-          const lowestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs");
-          if (lowestLevelKeyValue === undefined || lowestLevelKeyValue.value.length === 0) {
-            error["lowestAddressLevelRequired"] = true;
-          }
-
-          const highestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID");
-          if (highestLevelKeyValue !== undefined && highestLevelKeyValue.value === "") {
-            this.onDeleteKeyValue(2);
-          }
-        }
-
-        if (this.state.dataType === "Subject") {
-          this.validateKeyValues(error, "subjectTypeUUID", "subjectTypeRequired");
-        }
-
-        if (this.state.dataType === "Encounter") {
-          this.validateKeyValues(error, "encounterTypeUUID", "encounterTypeRequired");
-          this.validateKeyValues(error, "encounterScope", "encounterScopeRequired");
-          this.validateKeyValues(error, "encounterIdentifier", "encounterIdentifierRequired");
-        }
-
-        const emptyKeyValues = filter(this.state.keyValues, ({ key, value }) => key === "" || value === "");
-        if (emptyKeyValues.length > 0) {
-          error["keyValueError"] = true;
-        }
-
-        this.setState({
-          error: error,
-          answers: answers
-        });
-
-        Object.keys(error).length === 0 && this.afterSuccessfullValidation();
-      },
-      function(error) {
-        console.log(error);
-      }
-    );
+    Object.keys(error).length === 0 && this.afterSuccessfulValidation();
   };
 
   handleSubmit = e => {
@@ -441,60 +274,45 @@ class CreateEditConcept extends Component {
     this.formValidation();
   };
 
-  afterSuccessfullValidation = () => {
+  handleSubmit = e => {
+    e.preventDefault();
+
+    this.formValidation();
+  };
+
+  afterSuccessfulValidation = async () => {
+    const concept = await ConceptService.saveConcept(
+      this.state.name,
+      this.state.uuid,
+      this.state.dataType,
+      this.state.keyValues,
+      this.state.answers,
+      this.state.active,
+      this.state.mediaFile,
+      this.state.lowAbsolute,
+      this.state.highAbsolute,
+      this.state.lowNormal,
+      this.state.highNormal,
+      this.state.unit
+    );
+    this.setState({
+      conceptCreationAlert: true,
+      defaultSnackbarStatus: true,
+      redirectShow: true,
+      name: this.props.isCreatePage ? "" : concept.name,
+      uuid: this.props.isCreatePage ? "" : concept.uuid,
+      dataType: this.props.isCreatePage ? "" : concept.dataType,
+      keyValues: this.props.isCreatePage ? [] : concept.keyValues,
+      lowAbsolute: this.props.isCreatePage ? "" : concept.lowAbsolute,
+      highAbsolute: this.props.isCreatePage ? "" : concept.highAbsolute,
+      lowNormal: this.props.isCreatePage ? "" : concept.lowNormal,
+      highNormal: this.props.isCreatePage ? "" : concept.highNormal,
+      unit: this.props.isCreatePage ? "" : concept.unit,
+      answers: this.props.isCreatePage ? [] : concept.answers
+    });
+
     if (this.state.dataType === "Coded") {
-      const answers = this.state.answers;
-      const length = answers.length;
-
-      let index = 0;
-      if (length !== 0) {
-        answers.forEach(answer => {
-          return http
-            .get(`/web/concept?name=${encodeURIComponent(answer.name)}`)
-            .then(response => {
-              if (response.status === 200) {
-                answer.uuid = response.data.uuid;
-                answer.keyValues = response.data.keyValues;
-                index = index + 1;
-                if (index === length) {
-                  this.postCodedData(answers);
-                }
-              }
-            })
-            .catch(error => {
-              if (error.response.status === 404) {
-                answer.uuid = UUID.v4();
-                http
-                  .post("/concepts", [
-                    {
-                      name: answer.name,
-                      uuid: answer.uuid,
-                      dataType: "NA",
-                      lowAbsolute: null,
-                      highAbsolute: null,
-                      lowNormal: null,
-                      highNormal: null,
-                      unit: null
-                    }
-                  ])
-                  .then(response => {
-                    if (response.status === 200) {
-                      console.log("Dynamic concept added through Coded", response);
-
-                      index = index + 1;
-                      if (index === length) {
-                        this.postCodedData(answers);
-                      }
-                    }
-                  });
-              } else {
-                console.log(error);
-              }
-            });
-        });
-      } else {
-        this.postCodedData(answers);
-      }
+      this.saveCodedAnswers(this.state.answers);
     } else {
       if (!this.state.error.absoluteValidation || !this.state.error.normalValidation) {
         const Uuid = UUID.v4();
@@ -515,20 +333,6 @@ class CreateEditConcept extends Component {
           ])
           .then(response => {
             if (response.status === 200) {
-              this.setState({
-                conceptCreationAlert: true,
-                defaultSnackbarStatus: true,
-                name: this.props.isCreatePage ? "" : this.state.name,
-                uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
-                dataType: this.props.isCreatePage ? "" : this.state.dataType,
-                keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
-                lowAbsolute: this.props.isCreatePage ? "" : this.state.lowAbsolute,
-                highAbsolute: this.props.isCreatePage ? "" : this.state.highAbsolute,
-                lowNormal: this.props.isCreatePage ? "" : this.state.lowNormal,
-                highNormal: this.props.isCreatePage ? "" : this.state.highNormal,
-                unit: this.props.isCreatePage ? "" : this.state.unit,
-                redirectShow: true
-              });
             }
           });
       }
@@ -576,6 +380,10 @@ class CreateEditConcept extends Component {
     this.setState({
       active: event.target.checked
     });
+  };
+
+  handleMediaSelect = (mediaFile, index) => {
+    this.setState({ ...this.state, mediaFile });
   };
 
   onDeleteConcept = () => {
@@ -630,11 +438,12 @@ class CreateEditConcept extends Component {
           answers={this.state.answers}
           onDeleteAnswer={this.onDeleteAnswer}
           onAddAnswer={this.onAddAnswer}
-          onChangeAnswerName={this.onChangeAnswerName}
+          onChangeAnswerName={this.onChangeAnswer}
           onToggleAnswerField={this.onToggleAnswerField}
           onMoveUp={this.onMoveUp}
           onMoveDown={this.onMoveDown}
           onAlphabeticalSort={this.onAlphabeticalSort}
+          onSelectAnswerMedia={this.onSelectAnswerMedia}
         />
       );
     }
@@ -773,6 +582,7 @@ class CreateEditConcept extends Component {
             )}
 
             {dataType}
+            <AvniImageUpload height={20} width={20} allowUpload={true} onSelect={this.handleMediaSelect} />
             <KeyValues
               keyValues={this.state.keyValues}
               onKeyValueChange={this.onKeyValueChange}

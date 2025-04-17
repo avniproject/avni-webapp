@@ -11,6 +11,7 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { get, size } from "lodash";
+import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -47,6 +48,9 @@ export const CodedConceptUI = props => {
           <FormHelperText error>Answer is required.</FormHelperText>
         )}
         {isDuplicateAnswerValue && <FormHelperText error>Duplicate answer specified</FormHelperText>}
+      </Grid>
+      <Grid item>
+        <AvniImageUpload width={20} height={20} allowUpload={true} onSelect={props.onSelectAnswerMedia} />
       </Grid>
       <Grid item>
         <FormControlLabel
@@ -138,6 +142,7 @@ export default function CodedConcept(props) {
                   onMoveDown={props.onMoveDown}
                   totalAnswers={size(props.answers)}
                   key={index}
+                  onSelectAnswerMedia={() => props.onSelectAnswerMedia(answer)}
                 />
               </Grid>
             )

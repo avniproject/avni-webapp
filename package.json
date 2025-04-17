@@ -33,6 +33,7 @@
     "jquery": "^3.3.1",
     "js-file-download": "^0.4.8",
     "jszip": "^3.2.2",
+    "libphonenumber-js": "^1.11.1",
     "lodash": "^4.17.19",
     "material-table": "1.43.0",
     "moment": "^2.22.2",
@@ -74,8 +75,7 @@
     "redux-saga": "0.16.2",
     "redux-thunk": "^2.3.0",
     "rules-config": "github:avniproject/rules-config#64d53e8a5100437ac7b571647bd096786eba14da",
-    "uuid": "^3.3.2",
-    "libphonenumber-js": "^1.11.1"
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
@@ -108,6 +108,8 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@babel/helper-environment-visitor": "7.22.20",
+    "@babel/helper-string-parser": "7.22.5",
     "@fortawesome/fontawesome-free": "^5.1.0",
     "@types/jest": "^26.0.19",
     "chai": "^4.2.0",
@@ -115,12 +117,11 @@
     "html-webpack-plugin": "^3.2.0",
     "http-proxy-middleware": "2.0.6",
     "husky": "^3.0.1",
+    "picocolors": "1.1.0",
     "prettier": "1.17.1",
     "pretty-quick": "^1.11.1",
     "redux-saga-test-plan": "^3.7.0",
     "source-map-explorer": "^2.0.1",
-    "@babel/helper-environment-visitor": "7.22.20",
-    "@babel/helper-string-parser": "7.22.5",
-    "picocolors": "1.1.0"
+    "typescript": "^5.8.3"
   }
 }
