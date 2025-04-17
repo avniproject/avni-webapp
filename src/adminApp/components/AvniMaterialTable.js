@@ -4,56 +4,54 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { useHistory, useLocation } from "react-router-dom";
 import MaterialTableIcons from "../../common/material-table/MaterialTableIcons";
 
-const AvniMaterialTable = forwardRef(
-  ({ fetchData, options, components, route, ...props }, tableRef) => {
-    const [initialPage, setInitialPage] = useState(0);
-    const { search } = useLocation();
-    const query = new URLSearchParams(search);
-    const tablePage = Number(query.get("page"));
+const AvniMaterialTable = forwardRef(({ fetchData, options, components, route, ...props }, tableRef) => {
+  const [initialPage, setInitialPage] = useState(0);
+  const { search } = useLocation();
+  const query = new URLSearchParams(search);
+  const tablePage = Number(query.get("page"));
 
-    const history = useHistory();
+  const history = useHistory();
 
-    const handleFetchData = query => {
-      return fetchData({ ...query, page: initialPage });
-    };
+  const handleFetchData = query => {
+    return fetchData({ ...query, page: initialPage });
+  };
 
-    useEffect(() => {
-      if (tableRef.current) {
-        tableRef.current.onChangePage({}, tablePage);
-      }
-      setInitialPage(tablePage);
-    }, [tablePage]);
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.onChangePage({}, tablePage);
+    }
+    setInitialPage(tablePage);
+  }, [tablePage]);
 
-    return (
-      <>
-        <MaterialTable
-          icons={MaterialTableIcons}
-          tableRef={tableRef}
-          data={typeof fetchData === "function" ? handleFetchData : fetchData}
-          components={{
-            Container: props => <Fragment>{props.children}</Fragment>,
-            Pagination: paginationProps => {
-              const { ActionsComponent, onChangePage, ...tablePaginationProps } = paginationProps;
-              return (
-                <TablePagination
-                  {...tablePaginationProps}
-                  onChangePage={(event, page) => {
-                    history.push(`${route}?page=${page}`);
-                    setInitialPage(Number(page));
-                    onChangePage(event, page);
-                  }}
-                  ActionsComponent={subprops => <ActionsComponent {...subprops} />}
-                />
-              );
-            },
-            ...components
-          }}
-          options={{ ...options, initialPage }}
-          {...props}
-        />
-      </>
-    );
-  }
-);
+  return (
+    <>
+      <MaterialTable
+        icons={MaterialTableIcons}
+        tableRef={tableRef}
+        data={typeof fetchData === "function" ? handleFetchData : fetchData}
+        components={{
+          Container: props => <Fragment>{props.children}</Fragment>,
+          Pagination: paginationProps => {
+            const { ActionsComponent, onChangePage, ...tablePaginationProps } = paginationProps;
+            return (
+              <TablePagination
+                {...tablePaginationProps}
+                onChangePage={(event, page) => {
+                  history.push(`${route}?page=${page}`);
+                  setInitialPage(Number(page));
+                  onChangePage(event, page);
+                }}
+                ActionsComponent={subprops => <ActionsComponent {...subprops} />}
+              />
+            );
+          },
+          ...components
+        }}
+        options={{ ...options, initialPage, emptyRowsWhenPaging: false }}
+        {...props}
+      />
+    </>
+  );
+});
 
 export default AvniMaterialTable;
