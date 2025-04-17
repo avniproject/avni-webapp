@@ -112,6 +112,21 @@ quality:
       - Validation functions should be prefixed with 'validate'
       - Helper functions should be named descriptively
       - Test files should be named with .test.js suffix
+  
+  # Code Cleanliness
+  cleanliness:
+    - Remove unused variables, imports, and functions
+    - Avoid commented-out code; use version control instead
+    - Keep files focused on a single responsibility
+    - Maintain consistent formatting throughout the codebase
+  
+  # Common Pitfalls to Avoid
+  avoid:
+    - Never declare functions within loops
+    - Avoid modifying function parameters
+    - Don't use global variables for component state
+    - Avoid complex nested ternary expressions
+    - Don't use magic numbers or strings without constants
 
 # Yarn Package Management
 package_management:
