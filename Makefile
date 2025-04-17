@@ -32,6 +32,8 @@ test-only:
 
 test: build-app test-only
 
+build: build-app
+
 build-app:
 	yarn run build
 

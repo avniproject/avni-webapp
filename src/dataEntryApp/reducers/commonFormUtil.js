@@ -210,16 +210,17 @@ const validateRepeatableQuestionGroup = ({
     );
 
     // Validate each child form element
-    childFormElements.forEach(childElement => {
-      results = validateElement({
-        formElement: childElement,
-        parentElement: formElement,
-        groupObservation,
-        obsHolder,
-        formElementStatuses,
-        validationResults: results
-      });
-    });
+    const validationParams = {
+      parentElement: formElement,
+      groupObservation,
+      obsHolder,
+      formElementStatuses,
+      validationResults: results
+    };
+    for (let j = 0; j < childFormElements.length; j++) {
+      const childElement = childFormElements[j];
+      results = validateElement({ ...validationParams, formElement: childElement });
+    }
   }
 
   return results;
@@ -247,16 +248,18 @@ const validateNonRepeatableQuestionGroup = ({
   );
 
   // Validate each child form element
-  childFormElements.forEach(childElement => {
-    results = validateElement({
-      formElement: childElement,
-      parentElement: formElement,
-      groupObservation: questionGroupWrapper,
-      obsHolder,
-      formElementStatuses,
-      validationResults: results
-    });
-  });
+  const validationParams = {
+    parentElement: formElement,
+    groupObservation: questionGroupWrapper,
+    obsHolder,
+    formElementStatuses,
+    validationResults: results
+  };
+
+  for (let i = 0; i < childFormElements.length; i++) {
+    const childElement = childFormElements[i];
+    results = validateElement({ ...validationParams, formElement: childElement });
+  }
 
   return results;
 };
