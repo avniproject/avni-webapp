@@ -128,58 +128,238 @@ const getIdValidationErrors = (filteredFormElements, obsHolder) => {
   return filter(filteredFormElements, isIdFieldWithoutObservation).map(createValidationResult);
 };
 
-const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
-  let formElementStatuses = [];
+// Utility functions for form element validation
+const getStandaloneElements = formElements => filter(formElements, fe => !isNil(fe) && !isNil(fe.concept) && isNil(fe.group));
 
-  // Check if filteredFormElements is null or empty
+const getQuestionGroupElements = formElements =>
+  filter(formElements, fe => !isNil(fe) && !isNil(fe.concept) && fe.concept.datatype === Concept.dataType.QuestionGroup);
+
+const getChildFormElements = formElements => filter(formElements, fe => !isNil(fe) && !isNil(fe.concept) && !isNil(fe.group));
+
+/**
+ * Validates a single form element
+ * @param {Object} params - Parameters for validation
+ * @returns {Array} Validation results
+ */
+const validateElement = ({
+  formElement,
+  parentElement = null,
+  groupObservation = null,
+  obsHolder,
+  formElementStatuses,
+  validationResults
+}) => {
+  if (isNil(formElement) || isNil(formElement.concept)) {
+    return validationResults;
+  }
+
+  const obsValue = groupObservation ? groupObservation.getObservation(formElement.concept) : obsHolder.findObservation(formElement.concept);
+
+  const targetElement = parentElement || formElement;
+  const childElement = parentElement ? formElement : null;
+
+  const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+    targetElement,
+    obsValue,
+    obsHolder.observations,
+    [],
+    formElementStatuses,
+    childElement
+  );
+
+  return [...validationResults, ...results];
+};
+
+/**
+ * Validates a repeatable question group
+ * @param {Object} params - Parameters for validation
+ * @returns {Array} Validation results
+ */
+const validateRepeatableQuestionGroup = ({
+  formElement,
+  questionGroupWrapper,
+  formElements,
+  obsHolder,
+  formElementStatuses,
+  validationResults
+}) => {
+  let results = [...validationResults];
+
+  // Get the number of groups
+  const groupCount = questionGroupWrapper.size();
+
+  // Check if groupCount is valid
+  if (isNil(groupCount) || groupCount <= 0) {
+    return results;
+  }
+
+  // Validate each group in the repeatable question group
+  for (let i = 0; i < groupCount; i++) {
+    const groupObservation = questionGroupWrapper.getGroupObservationAtIndex(i);
+
+    // Check if groupObservation is null
+    if (isNil(groupObservation)) {
+      continue;
+    }
+
+    // Find child form elements for this group
+    const childFormElements = filter(
+      formElements,
+      ffe =>
+        !isNil(ffe) && !isNil(ffe.concept) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided && ffe.questionGroupIndex === i
+    );
+
+    // Validate each child form element
+    childFormElements.forEach(childElement => {
+      results = validateElement({
+        formElement: childElement,
+        parentElement: formElement,
+        groupObservation,
+        obsHolder,
+        formElementStatuses,
+        validationResults: results
+      });
+    });
+  }
+
+  return results;
+};
+
+/**
+ * Validates a non-repeatable question group
+ * @param {Object} params - Parameters for validation
+ * @returns {Array} Validation results
+ */
+const validateNonRepeatableQuestionGroup = ({
+  formElement,
+  questionGroupWrapper,
+  formElements,
+  obsHolder,
+  formElementStatuses,
+  validationResults
+}) => {
+  let results = [...validationResults];
+
+  // Find child form elements
+  const childFormElements = filter(
+    formElements,
+    ffe => !isNil(ffe) && !isNil(ffe.group) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided
+  );
+
+  // Validate each child form element
+  childFormElements.forEach(childElement => {
+    results = validateElement({
+      formElement: childElement,
+      parentElement: formElement,
+      groupObservation: questionGroupWrapper,
+      obsHolder,
+      formElementStatuses,
+      validationResults: results
+    });
+  });
+
+  return results;
+};
+
+/**
+ * Validates a child element in a repeatable group
+ * @param {Object} params - Parameters for validation
+ * @returns {Array} Validation results
+ */
+const validateChildInRepeatableGroup = ({ childFormElement, obsHolder, formElementStatuses, validationResults }) => {
+  let results = [...validationResults];
+
+  const indexProcessed = some(
+    results,
+    vr => vr.formIdentifier === childFormElement.uuid && vr.questionGroupIndex === childFormElement.questionGroupIndex
+  );
+
+  // If this specific index wasn't processed, validate it
+  if (!indexProcessed) {
+    const parentFormElement = childFormElement.group;
+    const obsValue = obsHolder.findObservation(parentFormElement.concept);
+
+    // If there's no observation for the parent, validate with empty value
+    if (isNil(obsValue)) {
+      return validateElement({
+        formElement: childFormElement,
+        parentElement: parentFormElement,
+        obsHolder,
+        formElementStatuses,
+        validationResults: results
+      });
+    }
+
+    // If there is an observation, try to get the specific group
+    const questionGroupWrapper = obsValue.getValueWrapper();
+    if (!isNil(questionGroupWrapper)) {
+      const groupObservation = questionGroupWrapper.getGroupObservationAtIndex(childFormElement.questionGroupIndex);
+
+      // If there's no observation for this specific index, validate with empty value
+      if (isNil(groupObservation)) {
+        return validateElement({
+          formElement: childFormElement,
+          parentElement: parentFormElement,
+          obsHolder,
+          formElementStatuses,
+          validationResults: results
+        });
+      }
+
+      // If there is an observation for this index, validate with the actual value
+      return validateElement({
+        formElement: childFormElement,
+        parentElement: parentFormElement,
+        groupObservation,
+        obsHolder,
+        formElementStatuses,
+        validationResults: results
+      });
+    }
+  }
+
+  return results;
+};
+
+/**
+ * Validates form elements and returns validation results
+ * @param {Array} filteredFormElements - Form elements to validate
+ * @param {Object} obsHolder - Observations holder
+ * @returns {Array} Array of validation results
+ */
+const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
+  // Early return if no form elements to validate
   if (isNil(filteredFormElements) || isEmpty(filteredFormElements)) {
     return [];
   }
 
-  // Separate standalone form elements from those that are part of question groups
-  const standaloneFormElements = filter(filteredFormElements, fe => !isNil(fe) && !isNil(fe.concept) && isNil(fe.group));
-
-  // Get all unique question groups
-  const questionGroupElements = filter(
-    filteredFormElements,
-    fe => !isNil(fe) && !isNil(fe.concept) && fe.concept.datatype === Concept.dataType.QuestionGroup
-  );
-
-  // Collect all validation results
-  let allValidationResults = [];
-
-  // Define validation function for standalone form elements
-  const validateStandaloneFormElement = formElement => {
-    const obsValue = obsHolder.findObservation(formElement.concept);
-    const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
-      formElement,
-      obsValue,
-      obsHolder.observations,
-      [], // Empty array for each validation
-      formElementStatuses,
-      null
-    );
-    allValidationResults.push(...results);
-  };
+  let validationResults = [];
+  const formElementStatuses = [];
 
   // Process standalone form elements
-  standaloneFormElements.forEach(validateStandaloneFormElement);
+  const standaloneElements = getStandaloneElements(filteredFormElements);
+  standaloneElements.forEach(element => {
+    validationResults = validateElement({
+      formElement: element,
+      obsHolder,
+      formElementStatuses,
+      validationResults
+    });
+  });
 
-  // Define validation function for question groups
-  const validateQuestionGroup = formElement => {
+  // Process question groups
+  const questionGroups = getQuestionGroupElements(filteredFormElements);
+  questionGroups.forEach(formElement => {
     const obsValue = obsHolder.findObservation(formElement.concept);
 
     // If observation doesn't exist, validate the empty value
     if (isNil(obsValue)) {
-      const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+      validationResults = validateElement({
         formElement,
-        obsValue,
-        obsHolder.observations,
-        [], // Empty array for each validation
+        obsHolder,
         formElementStatuses,
-        null
-      );
-      allValidationResults.push(...results);
+        validationResults
+      });
       return;
     }
 
@@ -191,87 +371,33 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
       return;
     }
 
-    // Define the validation function outside both the if and else blocks
-    const validateChildFormElement = (
-      groupObservation,
-      parentFormElement,
-      obsHolder,
-      formElementStatuses,
-      validationResultsArray
-    ) => childFormElement => {
-      // Check if childFormElement or childFormElement.concept is null
-      if (isNil(childFormElement) || isNil(childFormElement.concept)) {
-        return;
-      }
-
-      const childObsValue = groupObservation.getObservation(childFormElement.concept);
-      const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
-        parentFormElement,
-        childObsValue,
-        obsHolder.observations,
-        [], // Empty array for each validation
-        formElementStatuses,
-        childFormElement
-      );
-      validationResultsArray.push(...results);
-    };
-
-    // For repeatable question groups, validate each group
+    // Handle repeatable vs non-repeatable groups differently
     if (formElement.repeatable) {
-      // Get the number of groups
-      const groupCount = questionGroupWrapper.size();
-
-      // Check if groupCount is valid
-      if (isNil(groupCount) || groupCount <= 0) {
-        return;
-      }
-
-      // Validate each group in the repeatable question group
-      for (let i = 0; i < groupCount; i++) {
-        const groupObservation = questionGroupWrapper.getGroupObservationAtIndex(i);
-
-        // Check if groupObservation is null
-        if (isNil(groupObservation)) {
-          continue;
-        }
-
-        // Find child form elements for this group
-        const childFormElements = filter(
-          filteredFormElements,
-          ffe =>
-            !isNil(ffe) && !isNil(ffe.concept) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided && ffe.questionGroupIndex === i
-        );
-
-        // Validate each child form element
-        childFormElements.forEach(
-          validateChildFormElement(groupObservation, formElement, obsHolder, formElementStatuses, allValidationResults)
-        );
-      }
+      validationResults = validateRepeatableQuestionGroup({
+        formElement,
+        questionGroupWrapper,
+        formElements: filteredFormElements,
+        obsHolder,
+        formElementStatuses,
+        validationResults
+      });
     } else {
-      // For non-repeatable question groups
-      // Find child form elements
-      const childFormElements = filter(
-        filteredFormElements,
-        ffe => !isNil(ffe) && !isNil(ffe.group) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided
-      );
-
-      // Validate each child form element
-      childFormElements.forEach(
-        validateChildFormElement(questionGroupWrapper, formElement, obsHolder, formElementStatuses, allValidationResults)
-      );
+      validationResults = validateNonRepeatableQuestionGroup({
+        formElement,
+        questionGroupWrapper,
+        formElements: filteredFormElements,
+        obsHolder,
+        formElementStatuses,
+        validationResults
+      });
     }
-  };
+  });
 
-  // Process question groups
-  questionGroupElements.forEach(validateQuestionGroup);
-
-  // Process child form elements that might not be processed through their parent groups
-  const childFormElements = filter(filteredFormElements, fe => !isNil(fe) && !isNil(fe.concept) && !isNil(fe.group));
-
-  // Define validation function for remaining child form elements
-  const validateRemainingChildFormElement = childFormElement => {
+  // Process remaining child elements that might not have been processed
+  const childElements = getChildFormElements(filteredFormElements);
+  childElements.forEach(childFormElement => {
     // Skip if already processed through parent
-    const alreadyProcessed = some(allValidationResults, vr => vr.formIdentifier === childFormElement.uuid);
+    const alreadyProcessed = some(validationResults, vr => vr.formIdentifier === childFormElement.uuid);
 
     // For repeatable question groups, also check if the specific questionGroupIndex was processed
     const isInRepeatableGroup = !isNil(childFormElement.group) && childFormElement.group.repeatable;
@@ -279,84 +405,25 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
 
     // If this is a child of a repeatable group with an index, check if that specific index was processed
     if (isInRepeatableGroup && hasQuestionGroupIndex && !alreadyProcessed) {
-      const indexProcessed = some(
-        allValidationResults,
-        vr => vr.formIdentifier === childFormElement.uuid && vr.questionGroupIndex === childFormElement.questionGroupIndex
-      );
-
-      // If this specific index wasn't processed, validate it
-      if (!indexProcessed) {
-        const parentFormElement = childFormElement.group;
-        const obsValue = obsHolder.findObservation(parentFormElement.concept);
-
-        // If there's no observation for the parent, validate with empty value
-        if (isNil(obsValue)) {
-          const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
-            parentFormElement,
-            undefined, // Empty value
-            obsHolder.observations,
-            [], // Empty array for each validation
-            formElementStatuses,
-            childFormElement
-          );
-          allValidationResults.push(...results);
-          return;
-        }
-
-        // If there is an observation, try to get the specific group
-        const questionGroupWrapper = obsValue.getValueWrapper();
-        if (!isNil(questionGroupWrapper)) {
-          const groupObservation = questionGroupWrapper.getGroupObservationAtIndex(childFormElement.questionGroupIndex);
-
-          // If there's no observation for this specific index, validate with empty value
-          if (isNil(groupObservation)) {
-            const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
-              parentFormElement,
-              undefined, // Empty value
-              obsHolder.observations,
-              [], // Empty array for each validation
-              formElementStatuses,
-              childFormElement
-            );
-            allValidationResults.push(...results);
-            return;
-          }
-
-          // If there is an observation for this index, validate with the actual value
-          const childObsValue = groupObservation.getObservation(childFormElement.concept);
-          const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
-            parentFormElement,
-            childObsValue,
-            obsHolder.observations,
-            [], // Empty array for each validation
-            formElementStatuses,
-            childFormElement
-          );
-          allValidationResults.push(...results);
-          return;
-        }
-      }
-    }
-
-    // For non-repeatable groups or if not already processed
-    if (!alreadyProcessed) {
-      const obsValue = obsHolder.findObservation(childFormElement.concept);
-      const results = formElementService.validateForMandatoryFieldIsEmptyOrNullOnly(
+      validationResults = validateChildInRepeatableGroup({
         childFormElement,
-        obsValue,
-        obsHolder.observations,
-        [], // Empty array for each validation
+        obsHolder,
         formElementStatuses,
-        null
-      );
-      allValidationResults.push(...results);
+        validationResults
+      });
     }
-  };
+    // For non-repeatable groups or if not already processed
+    else if (!alreadyProcessed) {
+      validationResults = validateElement({
+        formElement: childFormElement,
+        obsHolder,
+        formElementStatuses,
+        validationResults
+      });
+    }
+  });
 
-  // Process remaining child form elements
-  childFormElements.forEach(validateRemainingChildFormElement);
-
-  return allValidationResults;
+  return validationResults;
 };
 
 const onNext = ({
