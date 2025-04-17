@@ -35,7 +35,7 @@ test: build-app test-only
 build: build-app
 
 build-app:
-	yarn run build
+	CI=true yarn run build
 
 prettier-all:
 	yarn prettier-all
