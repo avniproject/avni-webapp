@@ -1,6 +1,6 @@
 import React from "react";
-import { AutocompleteInput } from "react-admin";
+import { SelectInput } from "react-admin";
 
 export const CatchmentSelectInput = props => {
-  return <AutocompleteInput {...props} choices={props.choices} optionText="name" />;
+  return <SelectInput {...props} choices={props.choices} optionText="name" />;
 };
