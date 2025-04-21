@@ -108,6 +108,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@babel/runtime": "^7.22.15",
     "@babel/helper-environment-visitor": "7.22.20",
     "@babel/helper-string-parser": "7.22.5",
     "@fortawesome/fontawesome-free": "^5.1.0",

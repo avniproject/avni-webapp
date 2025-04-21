@@ -35,3 +35,4 @@ cypress/screenshots
 package-lock.json
 *.iml
 /avni-webapp.tgz
+/src/react-app-env.d.ts

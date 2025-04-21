@@ -21,12 +21,7 @@ export default function NumericConcept(props) {
               style={classes}
               onChange={event =>
                 props.inlineConcept
-                  ? props.onNumericConceptAttributeAssignment(
-                      props.groupIndex,
-                      "lowAbsolute",
-                      event.target.value,
-                      props.index
-                    )
+                  ? props.onNumericConceptAttributeAssignment(props.groupIndex, "lowAbsolute", event.target.value, props.index)
                   : props.onNumericConceptAttributeAssignment(event)
               }
               InputProps={{ inputProps: { min: 0 } }}
@@ -43,19 +38,14 @@ export default function NumericConcept(props) {
               style={classes}
               onChange={event =>
                 props.inlineConcept
-                  ? props.onNumericConceptAttributeAssignment(
-                      props.groupIndex,
-                      "highAbsolute",
-                      event.target.value,
-                      props.index
-                    )
+                  ? props.onNumericConceptAttributeAssignment(props.groupIndex, "highAbsolute", event.target.value, props.index)
                   : props.onNumericConceptAttributeAssignment(event)
               }
               InputProps={{ inputProps: { min: 0 } }}
               defaultValue={props.numericDataTypeAttributes.highAbsolute}
             />
             {props.numericDataTypeAttributes.error.absoluteValidation && (
-              <FormHelperText error>High absolute must be greater than low absolute</FormHelperText>
+              <FormHelperText error>High absolute must be greater than low absolute and high normal</FormHelperText>
             )}
           </FormControl>
         </Grid>
@@ -70,12 +60,7 @@ export default function NumericConcept(props) {
               style={classes}
               onChange={event =>
                 props.inlineConcept
-                  ? props.onNumericConceptAttributeAssignment(
-                      props.groupIndex,
-                      "lowNormal",
-                      event.target.value,
-                      props.index
-                    )
+                  ? props.onNumericConceptAttributeAssignment(props.groupIndex, "lowNormal", event.target.value, props.index)
                   : props.onNumericConceptAttributeAssignment(event)
               }
               InputProps={{ inputProps: { min: 0 } }}
@@ -92,19 +77,14 @@ export default function NumericConcept(props) {
               style={classes}
               onChange={event =>
                 props.inlineConcept
-                  ? props.onNumericConceptAttributeAssignment(
-                      props.groupIndex,
-                      "highNormal",
-                      event.target.value,
-                      props.index
-                    )
+                  ? props.onNumericConceptAttributeAssignment(props.groupIndex, "highNormal", event.target.value, props.index)
                   : props.onNumericConceptAttributeAssignment(event)
               }
               InputProps={{ inputProps: { min: 0 } }}
               defaultValue={props.numericDataTypeAttributes.highNormal}
             />
             {props.numericDataTypeAttributes.error.normalValidation && (
-              <FormHelperText error>High normal must be greater than low normal</FormHelperText>
+              <FormHelperText error>High normal must be greater than low normal and low absolute</FormHelperText>
             )}
           </FormControl>
         </Grid>
@@ -117,12 +97,7 @@ export default function NumericConcept(props) {
             margin="normal"
             onChange={event =>
               props.inlineConcept
-                ? props.onNumericConceptAttributeAssignment(
-                    props.groupIndex,
-                    "unit",
-                    event.target.value,
-                    props.index
-                  )
+                ? props.onNumericConceptAttributeAssignment(props.groupIndex, "unit", event.target.value, props.index)
                 : props.onNumericConceptAttributeAssignment(event)
             }
             defaultValue={props.numericDataTypeAttributes.unit}

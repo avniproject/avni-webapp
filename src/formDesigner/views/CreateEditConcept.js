@@ -32,7 +32,7 @@ import { connect } from "react-redux";
 import { ImageV2Concept } from "../components/ImageV2Concept";
 import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 import ConceptService from "../../common/service/ConceptService";
-import { ConceptAnswerError, WebConceptView, WebConceptAnswerView } from "../../common/model/WebConcept";
+import { ConceptAnswerError, WebConceptView, WebConceptAnswerView, WebConcept } from "../../common/model/WebConcept";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -209,8 +209,7 @@ class CreateEditConcept extends Component {
     }
   };
 
-  formValidation = () => {
-    const conceptName = this.state.name;
+  formValidation = async () => {
     let error = {};
     const answers = this.state.answers;
     if (this.state.dataType === "") {
@@ -219,12 +218,10 @@ class CreateEditConcept extends Component {
     if (this.state.name.trim() === "") {
       error["isEmptyName"] = true;
     }
-    if (this.state.dataType === "Numeric" && parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute)) {
-      error["absoluteValidation"] = true;
-    }
-    if (this.state.dataType === "Numeric" && parseInt(this.state.lowNormal) > parseInt(this.state.highNormal)) {
-      error["normalValidation"] = true;
-    }
+
+    // Use WebConcept validation for numeric ranges
+    const numericRangeErrors = WebConcept.validateNumericRanges(this.state);
+    error = { ...error, ...numericRangeErrors };
 
     if (this.state.dataType === "Coded") {
       validateCodedConceptAnswers(answers);
@@ -265,36 +262,16 @@ class CreateEditConcept extends Component {
       answers: answers
     });
 
-    Object.keys(error).length === 0 && this.afterSuccessfulValidation();
+    if (Object.keys(error).length === 0) await this.afterSuccessfulValidation();
   };
 
   handleSubmit = e => {
     e.preventDefault();
-
-    this.formValidation();
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-
     this.formValidation();
   };
 
   afterSuccessfulValidation = async () => {
-    const concept = await ConceptService.saveConcept(
-      this.state.name,
-      this.state.uuid,
-      this.state.dataType,
-      this.state.keyValues,
-      this.state.answers,
-      this.state.active,
-      this.state.mediaFile,
-      this.state.lowAbsolute,
-      this.state.highAbsolute,
-      this.state.lowNormal,
-      this.state.highNormal,
-      this.state.unit
-    );
+    const concept = await ConceptService.saveConcept(this.state, this.state.mediaFile);
     this.setState({
       conceptCreationAlert: true,
       defaultSnackbarStatus: true,
@@ -310,33 +287,6 @@ class CreateEditConcept extends Component {
       unit: this.props.isCreatePage ? "" : concept.unit,
       answers: this.props.isCreatePage ? [] : concept.answers
     });
-
-    if (this.state.dataType === "Coded") {
-      this.saveCodedAnswers(this.state.answers);
-    } else {
-      if (!this.state.error.absoluteValidation || !this.state.error.normalValidation) {
-        const Uuid = UUID.v4();
-        http
-          .post("/concepts", [
-            {
-              name: this.state.name,
-              uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
-              dataType: this.state.dataType,
-              keyValues: this.state.keyValues,
-              lowAbsolute: this.state.lowAbsolute,
-              highAbsolute: this.state.highAbsolute,
-              lowNormal: this.state.lowNormal,
-              highNormal: this.state.highNormal,
-              unit: this.state.unit === "" ? null : this.state.unit,
-              active: this.props.isCreatePage ? true : this.state.active
-            }
-          ])
-          .then(response => {
-            if (response.status === 200) {
-            }
-          });
-      }
-    }
   };
   onNumericConceptAttributeAssignment = event => {
     this.setState({
@@ -345,12 +295,7 @@ class CreateEditConcept extends Component {
   };
 
   castValueToBooleanOrInt = ({ key, value }) => {
-    let castedValue;
-    try {
-      castedValue = JSON.parse(trim(value));
-    } catch (e) {
-      castedValue = trim(value);
-    }
+    let castedValue = JSON.parse(trim(value));
     return { key: trim(key), value: castedValue };
   };
 
@@ -582,7 +527,7 @@ class CreateEditConcept extends Component {
             )}
 
             {dataType}
-            <AvniImageUpload height={20} width={20} allowUpload={true} onSelect={this.handleMediaSelect} />
+            <AvniImageUpload height={20} width={20} allowUpload={true} onSelect={this.handleMediaSelect} label={"Image"} />
             <KeyValues
               keyValues={this.state.keyValues}
               onKeyValueChange={this.onKeyValueChange}

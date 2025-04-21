@@ -1,7 +1,7 @@
 import { deburr } from "lodash";
 import http from "../utils/httpClient";
 import { MediaFolder, uploadImage } from "../utils/S3Client";
-import { WebConceptAnswerView, WebConceptView } from "../model/WebConcept";
+import { ConceptMapper } from "../mapper/ConceptMapper";
 
 class ConceptService {
   static searchDashboardFilterConcepts(namePart) {
@@ -18,46 +18,13 @@ class ConceptService {
     if (mediaFile) {
       [s3FileKey, error] = await uploadImage(null, mediaFile, MediaFolder.METADATA);
     }
-    await http.post("/concepts", [concept]);
+    const response = await http.post("/concepts", concept);
+    return ConceptMapper.mapFromResponse(response.data);
   }
 
   static async getConcept(uuid) {
-    return http.get("/web/concept/" + uuid).then(response => {
-      let answers = [];
-      if (response.data.dataType === "Coded" && response.data.conceptAnswers) {
-        answers = response.data.conceptAnswers.map(conceptAnswer => {
-          const webConceptAnswerView = new WebConceptAnswerView();
-          webConceptAnswerView.name = conceptAnswer.answerConcept.name;
-          webConceptAnswerView.uuid = conceptAnswer.answerConcept.uuid;
-          webConceptAnswerView.unique = conceptAnswer.unique;
-          webConceptAnswerView.abnormal = conceptAnswer.abnormal;
-          webConceptAnswerView.order = conceptAnswer.order;
-          webConceptAnswerView.voided = conceptAnswer.voided;
-          return webConceptAnswerView;
-        });
-        answers.sort(function(conceptOrder1, conceptOrder2) {
-          return conceptOrder1.order - conceptOrder2.order;
-        });
-      }
-
-      const webConceptView = new WebConceptView();
-      webConceptView.name = response.data.name;
-      webConceptView.uuid = response.data.uuid;
-      webConceptView.dataType = response.data.dataType;
-      webConceptView.active = response.data.active;
-      webConceptView.lowAbsolute = response.data.lowAbsolute;
-      webConceptView.highAbsolute = response.data.highAbsolute;
-      webConceptView.lowNormal = response.data.lowNormal;
-      webConceptView.highNormal = response.data.highNormal;
-      webConceptView.unit = response.data.unit;
-      webConceptView.createdBy = response.data.createdBy;
-      webConceptView.lastModifiedBy = response.data.lastModifiedBy;
-      webConceptView.creationDateTime = response.data.createdDateTime;
-      webConceptView.lastModifiedDateTime = response.data.lastModifiedDateTime;
-      webConceptView.keyValues = response.data.keyValues;
-      webConceptView.answers = answers;
-      return webConceptView;
-    });
+    let response = await http.get("/web/concept/" + uuid);
+    return ConceptMapper.mapFromResponse(response.data);
   }
 }
 

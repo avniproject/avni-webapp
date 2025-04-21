@@ -1,4 +1,4 @@
-class WebConcept {
+export class WebConcept {
   name: string;
   uuid: string;
   dataType: string;
@@ -15,9 +15,46 @@ class WebConcept {
   lastModifiedBy: string;
   creationDateTime: string;
   lastModifiedDateTime: string;
+
+  static validateNumericRanges(concept: WebConcept) {
+    const error: {
+      absoluteValidation?: boolean;
+      normalValidation?: boolean;
+      absoluteEncapsulationValidation?: boolean;
+    } = {};
+    if (
+      concept.dataType === "Numeric" &&
+      parseInt(concept.lowAbsolute as any) >
+        parseInt(concept.highAbsolute as any)
+    ) {
+      error["absoluteValidation"] = true;
+    }
+    if (
+      concept.dataType === "Numeric" &&
+      parseInt(concept.lowNormal as any) > parseInt(concept.highNormal as any)
+    ) {
+      error["normalValidation"] = true;
+    }
+    if (
+      concept.dataType === "Numeric" &&
+      !(
+        parseInt(concept.lowAbsolute as any) <=
+          parseInt(concept.lowNormal as any) &&
+        parseInt(concept.lowNormal as any) <=
+          parseInt(concept.highNormal as any) &&
+        parseInt(concept.highNormal as any) <=
+          parseInt(concept.highAbsolute as any)
+      )
+    ) {
+      error["normalValidation"] = true;
+      error["absoluteValidation"] = true;
+    }
+
+    return error;
+  }
 }
 
-class WebConceptAnswer {
+export class WebConceptAnswer {
   uuid: string;
   name: string;
   unique: boolean;
