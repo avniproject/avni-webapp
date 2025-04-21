@@ -121,22 +121,22 @@ package_management:
     - Regularly update dependencies for security fixes
 
 # Tech Stack
-- project uses React, MUI, JavaScript, axios
+  - project uses React, MUI, JavaScript, axios
 
 # Language usage
-- Do not put null checks unless asked
-- Do not add comments unless asked
+  - Do not put null checks unless asked
+  - Do not add comments unless asked
 
 # Building blocks (or where to put which type of code)
-- Building blocks View, Component, Service, and Domain
-- Views can have Private or Project components. Private components are pure functions inside
-- use service classes to call server
+  - Building blocks View, Component, Service, and Domain
+  - Views can have Private or Project components. Private components are pure functions inside
+  - use service classes to call server
 
 # Other
-- When catching server error calls in the view, always rethrow the error
+  - When catching server error calls in the view, always rethrow the error
 
 # Functional
-- My project is a front end for low code platform which allows for app designer, data management for end users filling data, and master data management.
+  - My project is a front end for low code platform which allows for app designer, data management for end users filling data, and master data management.
 
 # Performance
 performance:
