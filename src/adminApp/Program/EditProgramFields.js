@@ -134,6 +134,7 @@ const EditProgramFields = props => {
         toolTipKey={"APP_DESIGNER_PROGRAM_MANUAL_ELIGIBILITY_CHECK_REQUIRED"}
       />
 
+      <br />
       <AvniSwitch
         checked={showGrowthChart}
         onChange={event => {
@@ -144,7 +145,6 @@ const EditProgramFields = props => {
         disabled={isChildOrPhulwari(program.name)}
         toolTipKey={"APP_DESIGNER_PROGRAM_SHOW_GROWTH_CHART"}
       />
-      <br />
 
       <br />
       <AvniFormLabel label={"Enrolment Summary Rule"} toolTipKey={"APP_DESIGNER_PROGRAM_SUMMARY_RULE"} />
