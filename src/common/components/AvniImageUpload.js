@@ -1,6 +1,6 @@
 import React from "react";
 import { isEmpty } from "lodash";
-import { Button, Grid, IconButton, Typography } from "@material-ui/core";
+import { Dialog, DialogContent, Grid, IconButton, Typography } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
 import FormControl from "@material-ui/core/FormControl";
 import AddAPhoto from "@material-ui/icons/AddAPhoto";
@@ -11,18 +11,18 @@ export const AvniImageUpload = ({
   toolTipKey,
   label,
   onSelect,
-  width,
-  height,
+  onDelete = () => {},
+  width = 80,
+  height = 80,
   oldImgUrl,
-  allowUpload,
-  onDelete,
-  displayDelete,
+  allowUpload = true,
   maxFileSize
 }) => {
   const [, setValue] = React.useState("");
   const [file, setFile] = React.useState();
   const [iconPreview, setIconPreview] = React.useState();
   const [fileSizeError, setFileSizeError] = React.useState("");
+  const [openPreview, setOpenPreview] = React.useState(false);
 
   React.useEffect(() => {
     if (!file) {
@@ -69,24 +69,43 @@ export const AvniImageUpload = ({
     onDelete();
   };
 
-  const renderPreview = () => {
+  const ImagePreview = ({ iconPreview, width, height, onDelete }) => {
     return (
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start" }}>
-        <img src={iconPreview} alt={"Preview"} width={width} height={height} />
-        {displayDelete && (
-          <Button style={{ float: "left", color: "red" }} onClick={deleteIcon}>
-            <CloseIcon />
-          </Button>
-        )}
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        <img
+          src={iconPreview}
+          alt={"Preview"}
+          width={width}
+          height={height}
+          style={{ cursor: "pointer" }}
+          onClick={() => setOpenPreview(true)}
+        />
+        <IconButton color="secondary" aria-label="remove image" onClick={deleteIcon} size="small" style={{ marginLeft: 4 }}>
+          <CloseIcon />
+        </IconButton>
+        <Dialog open={openPreview} onClose={() => setOpenPreview(false)} maxWidth="md">
+          <DialogContent style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 0 }}>
+            <img
+              src={iconPreview}
+              alt={"Full Preview"}
+              style={{
+                maxWidth: "90vw",
+                maxHeight: "90vh",
+                display: "block"
+              }}
+              onClick={() => setOpenPreview(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     );
   };
 
-  function renderUploadImage() {
+  function UploadImage() {
     return (
       <React.Fragment>
         <FormControl>
-          <Grid container direction="row" alignItems="center">
+          <Grid container direction="row" alignItems="center" spacing={1}>
             <Grid item>
               <Typography style={{ opacity: 0.5 }}>{label}</Typography>
             </Grid>
@@ -98,25 +117,35 @@ export const AvniImageUpload = ({
                     <AddAPhoto />
                   </IconButton>
                 </label>
-                {fileSizeError && (
-                  <FormControl error>
-                    <Typography variant="caption" color="error">
-                      {fileSizeError}
-                    </Typography>
-                  </FormControl>
-                )}
+              </Grid>
+            )}
+            {iconPreview && (
+              <Grid item>
+                <ImagePreview iconPreview={iconPreview} width={width} height={height} onDelete={deleteIcon} />
+              </Grid>
+            )}
+            {fileSizeError && (
+              <Grid item style={{ marginLeft: 8 }}>
+                <FormControl error>
+                  <Typography variant="caption" color="error">
+                    {fileSizeError}
+                  </Typography>
+                </FormControl>
               </Grid>
             )}
           </Grid>
         </FormControl>
-        <Grid item>{iconPreview && renderPreview()}</Grid>
       </React.Fragment>
     );
   }
 
-  function renderWithTooltip(toolTipKey) {
-    return <ToolTipContainer toolTipKey={toolTipKey}>{renderUploadImage()}</ToolTipContainer>;
+  function UploadImageWithTooltip({ toolTipKey }) {
+    return (
+      <ToolTipContainer toolTipKey={toolTipKey}>
+        <UploadImage />
+      </ToolTipContainer>
+    );
   }
 
-  return isEmpty(toolTipKey) ? renderUploadImage() : renderWithTooltip(toolTipKey);
+  return isEmpty(toolTipKey) ? <UploadImage /> : <UploadImageWithTooltip toolTipKey={toolTipKey} />;
 };

@@ -166,34 +166,20 @@ const SubjectRegister = props => {
 
   const loaded = props.loaded;
 
-  const dobError = commonFormUtil.getValidationResult(
-    props.validationResults,
-    Individual.validationKeys.DOB
-  );
+  const dobError = commonFormUtil.getValidationResult(props.validationResults, Individual.validationKeys.DOB);
 
-  const genderError = commonFormUtil.getValidationResult(
-    props.validationResults,
-    Individual.validationKeys.GENDER
-  );
+  const genderError = commonFormUtil.getValidationResult(props.validationResults, Individual.validationKeys.GENDER);
 
   function renderAddress() {
-    const {
-      customRegistrationLocations = {},
-      addressLevelTypes,
-      subject: { subjectType: { uuid } = null } = {}
-    } = props;
+    const { customRegistrationLocations = {}, addressLevelTypes, subject: { subjectType: { uuid } = null } = {} } = props;
     const customRegistrationLocation =
-      !isEmpty(customRegistrationLocations) &&
-      find(customRegistrationLocations, ({ subjectTypeUUID }) => subjectTypeUUID === uuid);
+      !isEmpty(customRegistrationLocations) && find(customRegistrationLocations, ({ subjectTypeUUID }) => subjectTypeUUID === uuid);
     const addressLevelTypesToRender =
       isEmpty(customRegistrationLocation) || isEmpty(customRegistrationLocation.addressLevels)
         ? addressLevelTypes
         : customRegistrationLocation.addressLevels;
 
-    const error = commonFormUtil.getValidationResult(
-      props.validationResults,
-      Individual.validationKeys.LOWEST_ADDRESS_LEVEL
-    );
+    const error = commonFormUtil.getValidationResult(props.validationResults, Individual.validationKeys.LOWEST_ADDRESS_LEVEL);
     const showRequired = props.subject.subjectType.allowEmptyLocation ? "" : "*";
     return (
       <>
@@ -262,7 +248,6 @@ const SubjectRegister = props => {
             width={75}
             height={75}
             oldImgUrl={props.subject.profilePicture}
-            allowUpload={true}
             onDelete={() => props.setRemoveProfilePicture(true)}
             displayDelete={true}
           />
@@ -318,13 +303,7 @@ const SubjectRegister = props => {
                     )}
                     <TextFormElement
                       uuid={Individual.validationKeys.LAST_NAME}
-                      formElement={
-                        new StaticFormElement(
-                          "lastName",
-                          !props.subject.subjectType.lastNameOptional,
-                          true
-                        )
-                      }
+                      formElement={new StaticFormElement("lastName", !props.subject.subjectType.lastNameOptional, true)}
                       value={props.subject.lastName}
                       validationResults={props.validationResults}
                       update={props.setLastName}
@@ -387,8 +366,7 @@ const mapStateToProps = state => {
     user: state.app.authSession,
     genders: state.dataEntry.metadata.genders,
     addressLevelTypes: state.dataEntry.metadata.operationalModules.addressLevelTypes,
-    customRegistrationLocations:
-      state.dataEntry.metadata.operationalModules.customRegistrationLocations,
+    customRegistrationLocations: state.dataEntry.metadata.operationalModules.customRegistrationLocations,
     subject: registrationState.subject,
     loaded: registrationState.loaded,
     saved: registrationState.saved,

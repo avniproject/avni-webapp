@@ -127,6 +127,9 @@ package_management:
   - Do not put null checks unless asked
   - Do not add comments unless asked
 
+# React
+  - Use components instead of functions returning JSX
+
 # Building blocks (or where to put which type of code)
   - Building blocks View, Component, Service, and Domain
   - Views can have Private or Project components. Private components are pure functions inside

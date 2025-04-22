@@ -113,22 +113,23 @@ class CreateEditConcept extends Component {
     };
   }
 
-  componentDidMount() {
+  async onLoad() {
     if (this.props.isCreatePage) {
-      http.get("/concept/dataTypes").then(response => {
-        this.setState({
-          dataTypes: sortBy(response.data)
-        });
+      const response = await http.get("/concept/dataTypes");
+      this.setState({
+        dataTypes: sortBy(response.data)
       });
     } else {
-      ConceptService.getConcept(this.props.match.params.uuid).then(concept => {
-        this.setState({ concept });
-      });
+      const concept = await ConceptService.getConcept(this.props.match.params.uuid);
+      this.setState({ concept });
     }
 
-    http.get("/web/operationalModules").then(response => {
-      this.setState(state => ({ ...state, operationalModules: response.data }));
-    });
+    const opModules = await http.get("/web/operationalModules");
+    this.setState(state => ({ ...state, operationalModules: opModules.data }));
+  }
+
+  componentDidMount() {
+    this.onLoad();
   }
 
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
@@ -157,6 +158,10 @@ class CreateEditConcept extends Component {
     const answers = [...this.state.concept.answers];
     answers[index].name = answer;
     this.setState({ concept: { ...this.state.concept, answers } });
+  };
+
+  handleMediaDelete = () => {
+    this.setState({ concept: { ...this.state.concept, mediaUrl: null, unSavedMediaFile: null } });
   };
 
   onMoveUp = index => {
@@ -265,22 +270,21 @@ class CreateEditConcept extends Component {
   };
 
   afterSuccessfulValidation = async () => {
-    const concept = await ConceptService.saveConcept(this.state.concept, this.state.concept.mediaFile);
-    this.setState({
+    const { concept, error } = await ConceptService.saveConcept(this.state.concept);
+    if (error) {
+      this.setState({
+        error: { mediaUploadFailed: true, message: error }
+      });
+      return;
+    }
+    const newState = {
       conceptCreationAlert: true,
       defaultSnackbarStatus: true,
       redirectShow: true,
-      name: this.props.isCreatePage ? "" : concept.name,
-      uuid: this.props.isCreatePage ? "" : concept.uuid,
-      dataType: this.props.isCreatePage ? "" : concept.dataType,
-      keyValues: this.props.isCreatePage ? [] : concept.keyValues,
-      lowAbsolute: this.props.isCreatePage ? "" : concept.lowAbsolute,
-      highAbsolute: this.props.isCreatePage ? "" : concept.highAbsolute,
-      lowNormal: this.props.isCreatePage ? "" : concept.lowNormal,
-      highNormal: this.props.isCreatePage ? "" : concept.highNormal,
-      unit: this.props.isCreatePage ? "" : concept.unit,
-      answers: this.props.isCreatePage ? [] : concept.answers
-    });
+      concept: this.props.isCreatePage ? WebConceptView.emptyConcept() : concept
+    };
+
+    this.setState(newState);
   };
   onNumericConceptAttributeAssignment = event => {
     this.setState({
@@ -327,8 +331,8 @@ class CreateEditConcept extends Component {
     });
   };
 
-  handleMediaSelect = (mediaFile, index) => {
-    this.setState({ concept: { ...this.state.concept, mediaFile } });
+  handleMediaSelect = mediaFile => {
+    this.setState({ concept: { ...this.state.concept, unSavedMediaFile: mediaFile } });
   };
 
   onDeleteConcept = () => {
@@ -388,7 +392,7 @@ class CreateEditConcept extends Component {
           onMoveUp={this.onMoveUp}
           onMoveDown={this.onMoveDown}
           onAlphabeticalSort={this.onAlphabeticalSort}
-          onSelectAnswerMedia={this.onSelectAnswerMedia}
+          onSelectAnswerMedia={() => {}}
         />
       );
     }
@@ -466,7 +470,7 @@ class CreateEditConcept extends Component {
               </Button>
             </Grid>
           )}
-          <Grid container direction="column" spacing={3}>
+          <Grid container direction="column" spacing={2}>
             <Grid item xs={12}>
               <AvniTextField
                 id="name"
@@ -525,16 +529,6 @@ class CreateEditConcept extends Component {
               {dataType}
             </Grid>
             <Grid item xs={12}>
-              <AvniImageUpload
-                height={20}
-                width={20}
-                allowUpload={true}
-                onSelect={this.handleMediaSelect}
-                label={"Image"}
-                maxFileSize={150 * 1024}
-              />
-            </Grid>
-            <Grid item xs={12}>
               <KeyValues
                 keyValues={concept.keyValues}
                 onKeyValueChange={this.onKeyValueChange}
@@ -543,6 +537,22 @@ class CreateEditConcept extends Component {
                 error={this.state.error.keyValueError}
                 readOnlyKeys={this.state.readOnlyKeys}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <AvniImageUpload
+                height={20}
+                width={20}
+                onSelect={this.handleMediaSelect}
+                label={"Image"}
+                maxFileSize={150 * 1024}
+                oldImgUrl={concept.mediaUrl}
+                onDelete={this.handleMediaDelete}
+              />
+              {this.state.error && this.state.error.mediaUploadFailed && (
+                <FormControl error style={{ marginTop: 4 }}>
+                  <FormHelperText error>{this.state.error.message}</FormHelperText>
+                </FormControl>
+              )}
             </Grid>
             <Grid item xs={12} container justifyContent="flex-end" alignItems="center" spacing={2}>
               <Grid item>

@@ -58,7 +58,6 @@ const EditSubjectTypeFields = props => {
         width={75}
         height={75}
         oldImgUrl={subjectType.iconFileS3Key}
-        allowUpload={true}
         onDelete={() => onRemoveFile(true)}
         displayDelete={true}
       />

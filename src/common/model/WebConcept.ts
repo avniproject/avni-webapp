@@ -72,7 +72,7 @@ export class WebConceptAnswer {
 }
 
 export class WebConceptView extends WebConcept {
-  mediaFile: File;
+  unSavedMediaFile: File;
   answerUIViews: WebConceptAnswerView[];
 
   static emptyConcept() {
@@ -100,7 +100,7 @@ export class ConceptAnswerError {
 }
 
 export class WebConceptAnswerView extends WebConceptAnswer {
-  mediaFile: File;
+  unSavedMediaFile: File;
   isAnswerHavingError: ConceptAnswerError;
 
   static emptyAnswer() {

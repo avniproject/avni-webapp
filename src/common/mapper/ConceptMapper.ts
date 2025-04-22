@@ -38,6 +38,7 @@ export class ConceptMapper {
     webConceptView.lastModifiedDateTime = conceptResponse.lastModifiedDateTime;
     webConceptView.keyValues = conceptResponse.keyValues;
     webConceptView.answers = answers;
+    webConceptView.mediaUrl = conceptResponse.mediaUrl;
     return webConceptView;
   }
 }

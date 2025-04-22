@@ -18,6 +18,7 @@ import { SystemInfo } from "./SystemInfo";
 import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
+import MediaService from "adminApp/service/MediaService";
 
 function ConceptDetails({ userInfo, ...props }) {
   const [editAlert, setEditAlert] = useState(false);
@@ -25,32 +26,38 @@ function ConceptDetails({ userInfo, ...props }) {
   const [usage, setUsage] = useState({});
   const [addressLevelTypes, setAddressLevelTypes] = useState([]);
   const [subjectTypeOptions, setSubjectTypeOptions] = React.useState([]);
-  useEffect(() => {
-    http.get("/web/concept/" + props.match.params.uuid).then(response => {
-      setData(response.data);
-      if (response.data.dataType === "Location") {
-        http.get("/addressLevelType?page=0&size=10&sort=level%2CDESC").then(response => {
-          if (response.status === 200) {
-            const addressLevelTypes = response.data.content.map(addressLevelType => ({
-              label: addressLevelType.name,
-              value: addressLevelType.uuid,
-              level: addressLevelType.level,
-              parent: addressLevelType.parent
-            }));
-            setAddressLevelTypes(addressLevelTypes);
-          }
-        });
-      }
+  const [mediaUrl, setMediaUrl] = useState(null);
 
-      if (response.data.dataType === "Subject") {
-        http.get("/web/operationalModules").then(response => {
-          setSubjectTypeOptions(response.data.subjectTypes);
-        });
+  async function onLoad() {
+    const conceptRes = await http.get("/web/concept/" + props.match.params.uuid);
+    setData(conceptRes.data);
+    if (conceptRes.data.dataType === "Location") {
+      const addressRes = await http.get("/addressLevelType?page=0&size=10&sort=level%2CDESC");
+      if (addressRes.status === 200) {
+        const addressLevelTypes = addressRes.data.content.map(addressLevelType => ({
+          label: addressLevelType.name,
+          value: addressLevelType.uuid,
+          level: addressLevelType.level,
+          parent: addressLevelType.parent
+        }));
+        setAddressLevelTypes(addressLevelTypes);
       }
-    });
-    http.get("/web/concept/usage/" + props.match.params.uuid).then(response => {
-      setUsage(response.data);
-    });
+    }
+    if (conceptRes.data.dataType === "Subject") {
+      const subjectRes = await http.get("/web/operationalModules");
+      setSubjectTypeOptions(subjectRes.data.subjectTypes);
+    }
+    const usageRes = await http.get("/web/concept/usage/" + props.match.params.uuid);
+    setUsage(usageRes.data);
+
+    if (conceptRes.data.mediaUrl) {
+      const mediaSignedUrl = await MediaService.getMedia(conceptRes.data.mediaUrl);
+      setMediaUrl(mediaSignedUrl);
+    }
+  }
+
+  useEffect(() => {
+    onLoad();
   }, [props.match.params.uuid]);
 
   const hasEditPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);
@@ -224,6 +231,15 @@ function ConceptDetails({ userInfo, ...props }) {
               })}
             {(isEmpty(data.keyValues) || data.keyValues === null) && <RemoveIcon />}
           </div>
+
+          <p />
+          {mediaUrl && (
+            <div>
+              <FormLabel style={{ fontSize: "13px" }}>{"Image"}</FormLabel>
+              <br />
+              <img src={mediaUrl} alt="Preview" />
+            </div>
+          )}
 
           <p />
 
