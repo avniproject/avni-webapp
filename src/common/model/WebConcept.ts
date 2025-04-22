@@ -16,6 +16,12 @@ export class WebConcept {
   creationDateTime: string;
   lastModifiedDateTime: string;
 
+  static adjustOrderOfAnswers(concept: WebConcept) {
+    concept.answers.forEach((answer, index) => {
+      answer.order = index + 1;
+    });
+  }
+
   static validateNumericRanges(concept: WebConcept) {
     const error: {
       absoluteValidation?: boolean;

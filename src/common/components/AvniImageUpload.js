@@ -23,13 +23,15 @@ export const AvniImageUpload = ({
   oldImgUrl,
   allowUpload,
   onDelete,
-  displayDelete
+  displayDelete,
+  maxFileSize
 }) => {
   const classes = useStyles();
 
   const [value, setValue] = React.useState("");
   const [file, setFile] = React.useState();
   const [iconPreview, setIconPreview] = React.useState();
+  const [fileSizeError, setFileSizeError] = React.useState("");
 
   React.useEffect(() => {
     if (!file) {
@@ -52,16 +54,23 @@ export const AvniImageUpload = ({
     }
   }, [oldImgUrl]);
 
-  const onSelectWrapper = event => {
-    const fileReader = new FileReader();
-    event.target.files[0] && fileReader.readAsText(event.target.files[0]);
-    setValue(event.target.value);
-    const file = event.target.files[0];
-    fileReader.onloadend = event => {
-      setFile(file);
-      const error = onSelect(file);
-      error && !error.type && alert(error);
-    };
+  const handleFileChange = event => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      if (maxFileSize && selectedFile.size > maxFileSize) {
+        setFileSizeError("File size exceeds the maximum allowed size.");
+        setFile(undefined);
+        setValue("");
+        return;
+      } else {
+        setFileSizeError("");
+      }
+      setFile(selectedFile);
+      setValue(selectedFile.name);
+      if (onSelect) {
+        onSelect(selectedFile);
+      }
+    }
   };
 
   const deleteIcon = () => {
@@ -92,18 +101,19 @@ export const AvniImageUpload = ({
             </Grid>
             {allowUpload && (
               <Grid item>
-                <input
-                  accept="image/*"
-                  className={classes.input}
-                  id="contained-button-file"
-                  type="file"
-                  value={value}
-                  onChange={onSelectWrapper}
-                  style={{ display: "none" }}
-                />
-                <IconButton variant="contained" component="label" htmlFor="contained-button-file">
-                  <AddAPhoto color="primary" />
-                </IconButton>
+                <input accept="image/*" style={{ display: "none" }} id="icon-button-file" type="file" onChange={handleFileChange} />
+                <label htmlFor="icon-button-file">
+                  <IconButton color="primary" aria-label="upload picture" component="span">
+                    <AddAPhoto />
+                  </IconButton>
+                </label>
+                {fileSizeError && (
+                  <FormControl error>
+                    <Typography variant="caption" color="error">
+                      {fileSizeError}
+                    </Typography>
+                  </FormControl>
+                )}
               </Grid>
             )}
           </Grid>

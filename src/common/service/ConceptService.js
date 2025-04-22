@@ -2,6 +2,7 @@ import { deburr } from "lodash";
 import http from "../utils/httpClient";
 import { MediaFolder, uploadImage } from "../utils/S3Client";
 import { ConceptMapper } from "../mapper/ConceptMapper";
+import WebConcept from "../model/WebConcept";
 
 class ConceptService {
   static searchDashboardFilterConcepts(namePart) {
@@ -18,6 +19,7 @@ class ConceptService {
     if (mediaFile) {
       [s3FileKey, error] = await uploadImage(null, mediaFile, MediaFolder.METADATA);
     }
+    WebConcept.adjustOrderOfAnswers(concept);
     const response = await http.post("/concepts", concept);
     return ConceptMapper.mapFromResponse(response.data);
   }

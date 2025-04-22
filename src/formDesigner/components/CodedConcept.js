@@ -31,7 +31,7 @@ export const CodedConceptUI = props => {
     get(props.answer, "isAnswerHavingError.isErrored") && props.answer.isAnswerHavingError.type === "duplicate";
   return (
     <Grid item container spacing={1} alignItems={"center"}>
-      <Grid item>
+      <Grid item xs={8} sm={3} md={4}>
         <AutoSuggestSingleSelection
           visibility={!props.answer.editable}
           showAnswer={props.answer}
