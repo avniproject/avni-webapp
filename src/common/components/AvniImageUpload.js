@@ -1,18 +1,11 @@
 import React from "react";
 import { isEmpty } from "lodash";
-import { makeStyles } from "@material-ui/core/styles";
 import { Button, Grid, IconButton, Typography } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
 import FormControl from "@material-ui/core/FormControl";
 import AddAPhoto from "@material-ui/icons/AddAPhoto";
 import CloseIcon from "@material-ui/icons/Close";
 import MediaService from "../../adminApp/service/MediaService";
-
-const useStyles = makeStyles(theme => ({
-  item: {
-    marginLeft: theme.spacing(2)
-  }
-}));
 
 export const AvniImageUpload = ({
   toolTipKey,
@@ -26,9 +19,7 @@ export const AvniImageUpload = ({
   displayDelete,
   maxFileSize
 }) => {
-  const classes = useStyles();
-
-  const [value, setValue] = React.useState("");
+  const [, setValue] = React.useState("");
   const [file, setFile] = React.useState();
   const [iconPreview, setIconPreview] = React.useState();
   const [fileSizeError, setFileSizeError] = React.useState("");

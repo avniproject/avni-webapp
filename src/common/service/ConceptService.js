@@ -15,9 +15,8 @@ class ConceptService {
   }
 
   static async saveConcept(concept, mediaFile) {
-    let s3FileKey, error;
     if (mediaFile) {
-      [s3FileKey, error] = await uploadImage(null, mediaFile, MediaFolder.METADATA);
+      await uploadImage(null, mediaFile, MediaFolder.METADATA);
     }
     WebConcept.adjustOrderOfAnswers(concept);
     const response = await http.post("/concepts", concept);
