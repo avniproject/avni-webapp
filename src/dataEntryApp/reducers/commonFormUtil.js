@@ -210,6 +210,7 @@ const validateRepeatableQuestionGroup = ({
     );
 
     // Validate each child form element
+    // eslint-disable-next-line no-loop-func
     childFormElements.forEach(childElement => {
       results = validateElement({
         formElement: childElement,
