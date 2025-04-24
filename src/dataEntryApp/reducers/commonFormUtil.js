@@ -7,6 +7,7 @@ import formElementService, {
 import { Concept, ObservationsHolder, StaticFormElementGroup, ValidationResult } from "openchs-models";
 import { getFormElementsStatuses } from "dataEntryApp/services/RuleEvaluationService";
 import Wizard from "dataEntryApp/state/Wizard";
+import WebFormElementGroup from "../../common/model/WebFormElementGroup";
 
 const filterFormElementsWithStatus = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
@@ -136,11 +137,12 @@ const onNext = ({
   const obsHolder = new ObservationsHolder(observations);
 
   const idValidationErrors = getIdValidationErrors(filteredFormElements, obsHolder);
-
+  const formElementGroupValidations = new WebFormElementGroup().validate(obsHolder, filterFormElements(formElementGroup, entity));
   const ruleValidationErrors = filterFormElementStatusesAndConvertToValidationResults(formElementGroup, entity);
 
   const allRuleValidationResults = unionBy(
     errors(idValidationErrors),
+    errors(formElementGroupValidations),
     errors(ruleValidationErrors),
     errors(validationResults),
     errors(entityValidations),
