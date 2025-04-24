@@ -22,11 +22,25 @@ class ConceptService {
         return { error };
       }
     }
-    WebConcept.adjustOrderOfAnswers(concept);
     if (concept.unSavedMediaFile) {
       concept.mediaUrl = s3FileKey;
     }
-    console.log("saveConcept", JSON.stringify(concept));
+
+    if (concept.dataType === "Coded") {
+      WebConcept.adjustOrderOfAnswers(concept);
+      for (const answer of concept.answers) {
+        if (answer.unSavedMediaFile) {
+          [s3FileKey, error] = await uploadImage(null, answer.unSavedMediaFile, MediaFolder.METADATA);
+          if (error) {
+            return { error };
+          }
+        }
+        if (answer.unSavedMediaFile) {
+          answer.mediaUrl = s3FileKey;
+        }
+      }
+    }
+
     const response = await http.post("/concepts", concept);
     return { concept: ConceptMapper.mapFromResponse(response.data) };
   }

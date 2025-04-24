@@ -164,6 +164,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           width={75}
           height={75}
           oldImgUrl={card.iconFileS3Key}
+          uniqueName={"concept"}
         />
         <p />
         <AvniSwitch

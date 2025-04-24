@@ -15,6 +15,7 @@ export class ConceptMapper {
         webConceptAnswerView.abnormal = conceptAnswer.abnormal;
         webConceptAnswerView.order = conceptAnswer.order;
         webConceptAnswerView.voided = conceptAnswer.voided;
+        webConceptAnswerView.mediaUrl = conceptAnswer.answerConcept.mediaUrl;
         return webConceptAnswerView;
       });
       answers.sort(function(conceptOrder1: any, conceptOrder2: any) {

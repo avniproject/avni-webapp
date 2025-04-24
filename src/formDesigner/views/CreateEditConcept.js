@@ -178,12 +178,25 @@ class CreateEditConcept extends Component {
 
   onAlphabeticalSort = () => {
     this.setState({
-      concept: { ...this.state.concept, answers: alphabeticalSort(this.state.answers) }
+      concept: { ...this.state.concept, answers: alphabeticalSort(this.state.concept.answers) }
     });
   };
 
+  onSelectAnswerMedia = (mediaFile, index) => {
+    const answers = [...this.state.concept.answers];
+    answers[index].unSavedMediaFile = mediaFile;
+    this.setState({ concept: { ...this.state.concept, answers } });
+  };
+
+  onRemoveAnswerMedia = index => {
+    const answers = [...this.state.concept.answers];
+    answers[index].unSavedMediaFile = null;
+    answers[index].mediaUrl = null;
+    this.setState({ concept: { ...this.state.concept, answers } });
+  };
+
   onToggleAnswerField = (event, index) => {
-    const answers = [...this.state.answers];
+    const answers = [...this.state.concept.answers];
     answers[index][event.target.id] = !answers[index][event.target.id];
     this.setState({
       concept: { ...this.state.concept, answers }
@@ -392,7 +405,8 @@ class CreateEditConcept extends Component {
           onMoveUp={this.onMoveUp}
           onMoveDown={this.onMoveDown}
           onAlphabeticalSort={this.onAlphabeticalSort}
-          onSelectAnswerMedia={() => {}}
+          onSelectAnswerMedia={this.onSelectAnswerMedia}
+          onRemoveAnswerMedia={this.onRemoveAnswerMedia}
         />
       );
     }
@@ -544,7 +558,7 @@ class CreateEditConcept extends Component {
                 width={20}
                 onSelect={this.handleMediaSelect}
                 label={"Image"}
-                maxFileSize={150 * 1024}
+                maxFileSize={WebConceptView.MaxFileSize}
                 oldImgUrl={concept.mediaUrl}
                 onDelete={this.handleMediaDelete}
               />

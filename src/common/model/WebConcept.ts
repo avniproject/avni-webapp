@@ -75,6 +75,8 @@ export class WebConceptView extends WebConcept {
   unSavedMediaFile: File;
   answerUIViews: WebConceptAnswerView[];
 
+  static MaxFileSize = 150 * 1024;
+
   static emptyConcept() {
     const webConceptView = new WebConceptView();
     webConceptView.name = "";

@@ -1,11 +1,47 @@
 import React from "react";
 import { isEmpty } from "lodash";
-import { Dialog, DialogContent, Grid, IconButton, Typography } from "@material-ui/core";
+import { Dialog, DialogContent, Grid, IconButton, Typography, Snackbar } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
 import FormControl from "@material-ui/core/FormControl";
 import AddAPhoto from "@material-ui/icons/AddAPhoto";
 import CloseIcon from "@material-ui/icons/Close";
 import MediaService from "../../adminApp/service/MediaService";
+
+export const ImagePreview = ({ iconPreview, width, height, onDelete }) => {
+  const [openPreview, setOpenPreview] = React.useState(false);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+      <img
+        src={iconPreview}
+        alt={"Preview"}
+        width={width}
+        height={height}
+        style={{ cursor: "pointer" }}
+        onClick={() => setOpenPreview(true)}
+      />
+      {onDelete && (
+        <IconButton color="secondary" aria-label="remove image" onClick={onDelete} size="small" style={{ marginLeft: 4 }}>
+          <CloseIcon />
+        </IconButton>
+      )}
+      <Dialog open={openPreview} onClose={() => setOpenPreview(false)} maxWidth="md">
+        <DialogContent style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 0 }}>
+          <img
+            src={iconPreview}
+            alt={"Full Preview"}
+            style={{
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              display: "block"
+            }}
+            onClick={() => setOpenPreview(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
 
 export const AvniImageUpload = ({
   toolTipKey,
@@ -16,13 +52,13 @@ export const AvniImageUpload = ({
   height = 80,
   oldImgUrl,
   allowUpload = true,
-  maxFileSize
+  maxFileSize,
+  uniqueName = "0"
 }) => {
   const [, setValue] = React.useState("");
   const [file, setFile] = React.useState();
   const [iconPreview, setIconPreview] = React.useState();
   const [fileSizeError, setFileSizeError] = React.useState("");
-  const [openPreview, setOpenPreview] = React.useState(false);
 
   React.useEffect(() => {
     if (!file) {
@@ -69,38 +105,6 @@ export const AvniImageUpload = ({
     onDelete();
   };
 
-  const ImagePreview = ({ iconPreview, width, height, onDelete }) => {
-    return (
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-        <img
-          src={iconPreview}
-          alt={"Preview"}
-          width={width}
-          height={height}
-          style={{ cursor: "pointer" }}
-          onClick={() => setOpenPreview(true)}
-        />
-        <IconButton color="secondary" aria-label="remove image" onClick={deleteIcon} size="small" style={{ marginLeft: 4 }}>
-          <CloseIcon />
-        </IconButton>
-        <Dialog open={openPreview} onClose={() => setOpenPreview(false)} maxWidth="md">
-          <DialogContent style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 0 }}>
-            <img
-              src={iconPreview}
-              alt={"Full Preview"}
-              style={{
-                maxWidth: "90vw",
-                maxHeight: "90vh",
-                display: "block"
-              }}
-              onClick={() => setOpenPreview(false)}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
-  };
-
   function UploadImage() {
     return (
       <React.Fragment>
@@ -111,8 +115,14 @@ export const AvniImageUpload = ({
             </Grid>
             {allowUpload && (
               <Grid item>
-                <input accept="image/*" style={{ display: "none" }} id="icon-button-file" type="file" onChange={handleFileChange} />
-                <label htmlFor="icon-button-file">
+                <input
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  id={`icon-button-file-${uniqueName}`}
+                  type="file"
+                  onChange={handleFileChange}
+                />
+                <label htmlFor={`icon-button-file-${uniqueName}`}>
                   <IconButton color="primary" aria-label="upload picture" component="span">
                     <AddAPhoto />
                   </IconButton>
@@ -124,17 +134,20 @@ export const AvniImageUpload = ({
                 <ImagePreview iconPreview={iconPreview} width={width} height={height} onDelete={deleteIcon} />
               </Grid>
             )}
-            {fileSizeError && (
-              <Grid item style={{ marginLeft: 8 }}>
-                <FormControl error>
-                  <Typography variant="caption" color="error">
-                    {fileSizeError}
-                  </Typography>
-                </FormControl>
-              </Grid>
-            )}
           </Grid>
         </FormControl>
+        <Snackbar
+          open={Boolean(fileSizeError)}
+          autoHideDuration={4000}
+          onClose={() => setFileSizeError("")}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <div style={{ background: "#fff", borderRadius: 4, padding: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.2)" }}>
+            <Typography variant="body2" style={{ color: "#d32f2f" }}>
+              {fileSizeError}
+            </Typography>
+          </div>
+        </Snackbar>
       </React.Fragment>
     );
   }
