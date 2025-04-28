@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 // eslint-disable-next-line
-import _, { concat, get, isEmpty, isNil } from "lodash";
+import { concat, get, isEmpty, isNil } from "lodash";
 import Status from "./Status";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -20,7 +20,7 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { LocationModes } from "./LocationModes";
-import EncounterModes, { MODES } from "./EncounterModes";
+import EncounterModes, { ENCOUNTER_MODES } from "./EncounterModes";
 import Tooltip from "@material-ui/core/Tooltip";
 import { LocationHierarchy } from "./LocationHierarchy";
 import Typography from "@material-ui/core/Typography";
@@ -76,7 +76,8 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [entityForDownload, setEntityForDownload] = useState("");
   const [file, setFile] = useState(null);
   const [autoApprove, setAutoApprove] = useState(false);
-  const [mode, setMode] = useState("");
+  const [locationUploadMode, setLocationUploadMode] = useState("");
+  const [encounterUploadMode, setEncounterUploadMode] = useState("");
   const [hierarchy, setHierarchy] = useState(null);
   const [configuredHierarchies, setConfiguredHierarchies] = useState([]);
   const [reviewStatus, setReviewStatus] = useState(null);
@@ -109,7 +110,8 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const handleDropdownChange = useCallback(
     option => {
       setAutoApprove(false);
-      setMode(isEncounterType(option) ? MODES.SCHEDULE : option === UPLOAD_TYPES.LOCATIONS ? LOCATION_MODES.CREATE : "");
+      setLocationUploadMode(option === UPLOAD_TYPES.LOCATIONS ? LOCATION_MODES.CREATE : "");
+      setEncounterUploadMode(isEncounterType(option) ? ENCOUNTER_MODES.SCHEDULE : "");
       setUploadType(option);
       if (option !== staticTypesWithStaticDownload.getName("metadataZip")) {
         setEntityForDownload(option);
@@ -120,7 +122,14 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
 
   const handleUploadFile = useCallback(async () => {
     try {
-      const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove, mode, hierarchy || 0);
+      const [ok, error] = await api.bulkUpload(
+        getUploadTypeCode(uploadType),
+        file,
+        autoApprove,
+        locationUploadMode,
+        hierarchy || 0,
+        encounterUploadMode
+      );
       if (!ok && error) {
         if (error === "Double extension file detected") {
           alert(`Please rename ${file.name} to have a single extension and try again.`);
@@ -133,13 +142,14 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
       setFile(null);
       setUploadType("");
       setEntityForDownload("");
-      setMode("");
+      setLocationUploadMode("");
+      setEncounterUploadMode("");
       setHierarchy(null);
       setTimeout(() => getStatuses(0), 1000);
     } catch (err) {
       alert(`Upload error: ${err.message || "Unknown error"}`);
     }
-  }, [file, uploadType, autoApprove, mode, hierarchy, getUploadTypeCode, getStatuses]);
+  }, [file, uploadType, autoApprove, locationUploadMode, hierarchy, getUploadTypeCode, getStatuses, encounterUploadMode]);
 
   const downloadStaticSample = useCallback(async code => {
     await api.downloadSample(code);
@@ -164,17 +174,17 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
       if (staticTypesWithStaticDownload.getCode(entityForDownload)) {
         await downloadStaticSample(code);
       } else if (code === "locations") {
-        if (isEmpty(mode) || (mode === LOCATION_MODES.CREATE && isEmpty(hierarchy))) {
-          alert("Please select a valid mode and hierarchy for location sample.");
+        if (isEmpty(locationUploadMode) || (locationUploadMode === LOCATION_MODES.CREATE && isEmpty(hierarchy))) {
+          alert("Please select a valid locationUploadMode and hierarchy for location sample.");
           return;
         }
-        await downloadLocationSample(code, mode, hierarchy);
+        await downloadLocationSample(code, locationUploadMode, hierarchy);
       } else if (isEncounterType(entityForDownload)) {
-        if (isEmpty(mode)) {
+        if (isEmpty(encounterUploadMode)) {
           alert("Please select an encounter mode.");
           return;
         }
-        await downloadEncounterSample(code, mode);
+        await downloadEncounterSample(code, encounterUploadMode);
       } else {
         await downloadDynamicSample(code);
       }
@@ -183,7 +193,8 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     }
   }, [
     entityForDownload,
-    mode,
+    locationUploadMode,
+    encounterUploadMode,
     hierarchy,
     getUploadTypeCode,
     isEncounterType,
@@ -207,10 +218,10 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const isSampleDownloadDisallowed = useMemo(
     () =>
       isEmpty(entityForDownload) ||
-      (uploadType === UPLOAD_TYPES.LOCATIONS && isEmpty(mode)) ||
-      (uploadType === UPLOAD_TYPES.LOCATIONS && mode === LOCATION_MODES.CREATE && isEmpty(hierarchy)) ||
-      (isEncounterType(uploadType) && isEmpty(mode)),
-    [entityForDownload, uploadType, mode, hierarchy, isEncounterType]
+      (uploadType === UPLOAD_TYPES.LOCATIONS && isEmpty(locationUploadMode)) ||
+      (uploadType === UPLOAD_TYPES.LOCATIONS && locationUploadMode === LOCATION_MODES.CREATE && isEmpty(hierarchy)) ||
+      (isEncounterType(uploadType) && isEmpty(encounterUploadMode)),
+    [entityForDownload, uploadType, locationUploadMode, hierarchy, isEncounterType, encounterUploadMode]
   );
 
   useEffect(() => {
@@ -296,12 +307,12 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                 )}
               </Grid>
               <Grid container item>
-                {uploadType === UPLOAD_TYPES.LOCATIONS && <LocationModes mode={mode} setMode={setMode} />}
-                {isEncounterType(uploadType) && <EncounterModes mode={mode} setMode={setMode} />}
+                {uploadType === UPLOAD_TYPES.LOCATIONS && <LocationModes mode={locationUploadMode} setMode={setLocationUploadMode} />}
+                {isEncounterType(uploadType) && <EncounterModes mode={encounterUploadMode} setMode={setEncounterUploadMode} />}
               </Grid>
               <Grid container item>
                 {uploadType === UPLOAD_TYPES.LOCATIONS &&
-                  mode === LOCATION_MODES.CREATE &&
+                  locationUploadMode === LOCATION_MODES.CREATE &&
                   (configuredHierarchies.length > 0 ? (
                     <LocationHierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} configuredHierarchies={configuredHierarchies} />
                   ) : (
