@@ -99,7 +99,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   );
 
   const uploadAndDownloadOptions = useMemo(
-    () => concat(staticTypesWithStaticDownload.names, staticTypesWithDynamicDownload.names, uploadTypes.names),
+    () => concat(staticTypesWithStaticDownload.names, staticTypesWithDynamicDownload.names, _.sortBy(uploadTypes.names, x => x.name)),
     [uploadTypes.names]
   );
 
