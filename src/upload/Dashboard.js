@@ -27,6 +27,7 @@ import Typography from "@material-ui/core/Typography";
 import { Box } from "@material-ui/core";
 import MetadataDiff from "./MetadataDiff";
 import CompareMetadataService from "../adminApp/service/CompareMetadataService";
+import httpClient from "../common/utils/httpClient";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -186,7 +187,9 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
         }
         await downloadEncounterSample(code, encounterUploadMode);
       } else {
-        await downloadDynamicSample(code);
+        const response = await httpClient.getData(`/web/importSampleDownloadable?uploadType=${code}`);
+        if (response.success) await api.downloadDynamicSample(code);
+        else alert(`Failed to download sample: ${response.message}`);
       }
     } catch (error) {
       alert(`Failed to download sample: ${error.message || "Unknown error"}`);
