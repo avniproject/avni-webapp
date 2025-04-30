@@ -11,6 +11,8 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { get, size } from "lodash";
+import { AvniImageUpload } from "../../common/components/AvniImageUpload";
+import { WebConceptView } from "common/model/WebConcept";
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -21,16 +23,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const CodedConceptUI = props => {
+export const CodedConceptAnswer = props => {
   const action = actionName => {
     props.inlineConcept ? props[actionName](props.groupIndex, props.elementIndex, props.index) : props[actionName](props.index);
   };
 
   const isDuplicateAnswerValue =
     get(props.answer, "isAnswerHavingError.isErrored") && props.answer.isAnswerHavingError.type === "duplicate";
+
   return (
-    <Grid item container spacing={1} alignItems={"center"}>
-      <Grid item>
+    <Grid item container spacing={0} alignItems={"center"}>
+      <Grid item xs={8} sm={3} md={4}>
         <AutoSuggestSingleSelection
           visibility={!props.answer.editable}
           showAnswer={props.answer}
@@ -103,14 +106,25 @@ export const CodedConceptUI = props => {
               <DeleteIcon fontSize={"small"} /> Remove
             </Button>
           </Grid>
-          <Grid item />
+          <Grid item>
+            <AvniImageUpload
+              width={20}
+              height={20}
+              allowUpload={true}
+              onSelect={mediaFile => props.onSelectAnswerMedia(mediaFile, props.index)}
+              maxFileSize={WebConceptView.MaxFileSize}
+              onDelete={() => props.onRemoveAnswerMedia(props.index)}
+              oldImgUrl={props.answer.mediaUrl}
+              uniqueName={"answer" + props.index}
+            />
+          </Grid>
         </Grid>
       </Grid>
     </Grid>
   );
 };
 
-CodedConceptUI.defaultProps = {
+CodedConceptAnswer.defaultProps = {
   inlineConcept: false,
   elementIndex: -1,
   groupIndex: -1
@@ -126,8 +140,8 @@ export default function CodedConcept(props) {
         {props.answers.map((answer, index) => {
           return (
             !answer.voided && (
-              <Grid container key={index}>
-                <CodedConceptUI
+              <Grid container key={`answer-${index}`}>
+                <CodedConceptAnswer
                   answer={answer}
                   index={index}
                   onDeleteAnswer={props.onDeleteAnswer}
@@ -137,7 +151,8 @@ export default function CodedConcept(props) {
                   onMoveUp={props.onMoveUp}
                   onMoveDown={props.onMoveDown}
                   totalAnswers={size(props.answers)}
-                  key={index}
+                  onSelectAnswerMedia={props.onSelectAnswerMedia}
+                  onRemoveAnswerMedia={props.onRemoveAnswerMedia}
                 />
               </Grid>
             )

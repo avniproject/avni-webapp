@@ -1,0 +1,151 @@
+# Avni WebApp Windsurf Rules
+version: 1.0.0
+
+# Code Style and Formatting
+style:
+  javascript:
+    indent: 2
+    quotes: double
+    semicolons: true
+    max_line_length: 120
+    trailing_comma: es5
+    arrow_parens: avoid
+    
+# Code Structure and Modularity
+modularity:
+  principles:
+    - Limit function size to improve readability and testability
+    - Extract complex logic into separate utility functions
+    - Use pure functions wherever possible
+    - Avoid deep nesting of functions and control structures
+  
+  refactoring:
+    - Add tests before refactoring to ensure behavior is preserved
+
+# Testing Requirements
+testing:
+  coverage:
+    minimum: 80
+    paths:
+      - src/dataEntryApp/reducers/
+    exclude:
+      - "**/*.test.js"
+  
+  requirements:
+    - Tests must cover both success and failure scenarios
+  
+  # Test Structure and Organization
+  structure:
+    - Use descriptive test names that explain what is being tested
+    - Group related tests using nested describe blocks
+    - Use beforeEach for common test setup
+    - Isolate tests to prevent state leakage between tests
+    - Follow the Arrange-Act-Assert pattern in test cases
+  
+  # Test Assertions
+  assertions:
+    - Use specific assertions (e.g., assert.equal instead of assert.isTrue)
+    - Include descriptive error messages in assertions
+    - Test one concept per test case
+    - Verify both positive and negative cases
+  
+  # Test Data and Dependencies
+  test_data:
+    - Prefer real objects and actual implementations over mocks
+    - Use factory methods to create consistent test data
+    - Initialize test objects with minimal required properties
+    - Create proper test fixtures that represent real-world scenarios
+    - When testing components that depend on others, use the actual dependencies
+  
+  # Avoiding Mocks
+  avoid_mocks:
+    - Do not use mocks unless absolutely necessary
+    - When testing interactions between components, use real implementations
+    - For external services, prefer controlled test instances over mocks
+    - If mocking is required, limit it to external system boundaries only
+    - Document any use of mocks with a clear justification
+  
+  # Running Tests
+  execution:
+    commands:
+      - "yarn test": Run all tests
+      - "yarn test --testNamePattern=\"pattern\"": Run tests matching pattern
+      - "yarn test src/path/to/file.test.js": Run tests in specific file
+      - "yarn test --watch": Run tests in watch mode
+    
+    best_practices:
+      - Run tests before committing changes
+      - Fix failing tests immediately
+      - Run focused tests during development
+      - Run the full test suite before submitting pull requests
+
+# Code Quality
+quality:
+  complexity:
+    max_cyclomatic_complexity: 15
+    max_cognitive_complexity: 20
+  
+  maintainability:
+    max_function_length: 50
+    max_parameter_count: 7
+    max_nesting_depth: 3
+  
+  patterns:
+    functional:
+      prefer: true
+      rules:
+        - Use immutable data structures
+        - Avoid side effects in validation functions
+        - Use composition over inheritance
+    
+    naming:
+      - Use descriptive function names that indicate purpose
+      - Validation functions should be prefixed with 'validate'
+      - Helper functions should be named descriptively
+      - Test files should be named with .test.js suffix
+
+# Yarn Package Management
+package_management:
+  commands:
+    - "yarn install": Install dependencies
+    - "yarn add <package>": Add a production dependency
+    - "yarn add <package> --dev": Add a development dependency
+    - "yarn remove <package>": Remove a dependency
+    - "yarn upgrade <package>": Upgrade a dependency
+  
+  best_practices:
+    - Keep yarn.lock in version control
+    - Run yarn install after pulling changes
+    - Use exact versions for critical dependencies
+    - Document new dependencies in README or documentation
+    - Regularly update dependencies for security fixes
+
+# Tech Stack
+  - project uses React, MUI, JavaScript, axios
+
+# Language usage
+  - Do not put null checks unless asked
+  - Do not add comments unless asked
+
+# React
+  - Use components instead of functions returning JSX
+
+# Building blocks (or where to put which type of code)
+  - Building blocks View, Component, Service, and Domain
+  - Views can have Private or Project components. Private components are pure functions inside
+  - use service classes to call server
+
+# Other
+  - When catching server error calls in the view, always rethrow the error
+
+# Functional
+  - My project is a front end for low code platform which allows for app designer, data management for end users filling data, and master data management.
+
+# Performance
+performance:
+  rules:
+    - Avoid deep nesting of loops in validation functions
+    - Minimize redundant validation checks
+    - Use early returns for validation failures
+    - Cache validation results when appropriate
+    - Write performance-sensitive tests separately with appropriate timeouts

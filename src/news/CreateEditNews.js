@@ -1,22 +1,22 @@
 import React from "react";
-import {convertToRaw} from "draft-js";
+import { convertToRaw } from "draft-js";
 import Dialog from "@material-ui/core/Dialog";
-import {Box, DialogContent, Grid, makeStyles, Typography} from "@material-ui/core";
+import { Box, DialogContent, Grid, makeStyles, Typography } from "@material-ui/core";
 import RichTextEditor from "./components/RichTextEditor";
-import {ActionButton} from "./components/ActionButton";
+import { ActionButton } from "./components/ActionButton";
 import TextField from "@material-ui/core/TextField";
-import {AvniImageUpload} from "../common/components/AvniImageUpload";
-import {isEmpty} from "lodash";
-import {MediaFolder, uploadImage} from "../common/utils/S3Client";
-import {newsInitialState, NewsReducer} from "./reducers";
-import {dispatchActionAndClearError, displayErrorForKey} from "./utils";
+import { AvniImageUpload } from "../common/components/AvniImageUpload";
+import { isEmpty } from "lodash";
+import { MediaFolder, uploadImage } from "../common/utils/S3Client";
+import { newsInitialState, NewsReducer } from "./reducers";
+import { dispatchActionAndClearError, displayErrorForKey } from "./utils";
 import draftToHtml from "draftjs-to-html";
 import DOMPurify from "dompurify";
-import {CustomDialogTitle} from "./components/CustomDialogTitle";
+import { CustomDialogTitle } from "./components/CustomDialogTitle";
 import CustomizedBackdrop from "../dataEntryApp/components/CustomizedBackdrop";
 import API from "./api";
 import MuiComponentHelper from "../common/utils/MuiComponentHelper";
-import {createServerError} from "../formDesigner/common/ErrorUtil";
+import { createServerError } from "../formDesigner/common/ErrorUtil";
 
 const useStyles = makeStyles(theme => ({
   dialogPaper: {
@@ -111,7 +111,6 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
               oldImgUrl={news.heroImage}
               height={"300"}
               width={"100%"}
-              allowUpload={true}
               renderButton={true}
             />
           </Grid>

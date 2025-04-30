@@ -2,7 +2,7 @@ import React from "react";
 import NumericConcept from "./NumericConcept";
 import { Button, FormControl, Input } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import { CodedConceptUI } from "./CodedConcept";
+import { CodedConceptAnswer } from "./CodedConcept";
 import MenuItem from "@material-ui/core/MenuItem";
 import { inlineConceptDataType } from "../common/constants";
 import { BackButton } from "./FormElementDetails";
@@ -98,7 +98,7 @@ function InlineConcept(props) {
           {props.formElementData.inlineCodedAnswers.map((answer, index) => {
             return (
               <Grid container key={index}>
-                <CodedConceptUI
+                <CodedConceptAnswer
                   answer={answer}
                   elementIndex={props.index}
                   index={index}
@@ -111,6 +111,7 @@ function InlineConcept(props) {
                   inlineConcept={true}
                   key={index}
                   totalAnswers={size(props.formElementData.inlineCodedAnswers)}
+                  onSelectAnswerMedia={() => props.onSelectAnswerMedia(answer)}
                 />
               </Grid>
             );

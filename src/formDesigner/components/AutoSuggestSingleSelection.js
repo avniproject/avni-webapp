@@ -83,13 +83,6 @@ export default function AutoSuggestSingleSelection(props) {
   });
   const [stateSuggestions, setSuggestions] = React.useState([]);
 
-  //  let defaultConcept = "";
-  //  if (props.visibility && props.showAnswer.name !== undefined) {
-  //    defaultConcept = props.showAnswer.name;
-  //  } else {
-  //    defaultConcept = state.single;
-  //  }
-
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
     const dataType = props.dataType;
@@ -105,9 +98,7 @@ export default function AutoSuggestSingleSelection(props) {
       });
       if (props.showSuggestionStartsWith) {
         const filteredSuggestions = suggestions.filter(suggestion => {
-          return (
-            !suggestion.voided && suggestion.name.slice(0, inputLength).toLowerCase() === inputValue
-          );
+          return !suggestion.voided && suggestion.name.slice(0, inputLength).toLowerCase() === inputValue;
         });
         setSuggestions(filteredSuggestions);
       } else {
@@ -122,8 +113,7 @@ export default function AutoSuggestSingleSelection(props) {
   const getSuggestionValue = suggestion => {
     if (props.finalReturn) {
       !props.inlineConcept && props.onChangeAnswerName(suggestion, props.index);
-      props.inlineConcept &&
-        props.onChangeAnswerName(suggestion, props.groupIndex, props.elementIndex, props.index);
+      props.inlineConcept && props.onChangeAnswerName(suggestion, props.groupIndex, props.elementIndex, props.index);
     }
     return suggestion;
   };
@@ -148,12 +138,7 @@ export default function AutoSuggestSingleSelection(props) {
     !props.inlineConcept && props.onChangeAnswerName(autoSuggestedName, props.index, false);
     props.inlineConcept &&
       props.inlineConcept &&
-      props.onChangeAnswerName(
-        autoSuggestedName,
-        props.groupIndex,
-        props.elementIndex,
-        props.index
-      );
+      props.onChangeAnswerName(autoSuggestedName, props.groupIndex, props.elementIndex, props.index);
 
     //    }
   };

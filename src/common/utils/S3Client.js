@@ -14,5 +14,6 @@ export const uploadImage = async (existingURL, file, folderName) => {
 export const MediaFolder = Object.freeze({
   PROFILE_PICS: "profile-pics",
   ICONS: "icons",
-  NEWS: "news"
+  NEWS: "news",
+  METADATA: "metadata"
 });
