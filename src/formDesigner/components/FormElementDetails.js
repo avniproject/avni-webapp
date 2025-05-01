@@ -539,7 +539,7 @@ function FormElementDetails({ userInfo, ...props }) {
                     props.handleGroupElementKeyValueChange(props.groupIndex, "imageQuality", toNumber(event.target.value), props.index)
                   }
                 >
-                  <MenuItem value="0">Low</MenuItem>
+                  <MenuItem value="0.5">Low</MenuItem>
                   <MenuItem value="1">High</MenuItem>
                 </Select>
               </FormControl>
