@@ -9,6 +9,14 @@ const CustomToolbar = props => (
   </Toolbar>
 );
 
+// Helper function To remove leading/trailing and normalize spaces into a single space between words
+const trimAndNormalizeWhitespaces = value => {
+  return value
+    .trim()
+    .split(/\s+/)
+    .join(" ");
+};
+
 export const AccountList = props => (
   <List {...props} bulkActions={false} filter={{ searchURI: "findAll" }}>
     <Datagrid rowClick="show">
@@ -30,8 +38,8 @@ export const AccountDetails = props => (
 export const AccountCreate = props => (
   <Create title="Add a new Account" {...props}>
     <SimpleForm redirect="list">
-      <TextInput source="name" />
-      <TextInput source="region" />
+      <TextInput source="name" parse={value => trimAndNormalizeWhitespaces(value)} />
+      <TextInput source="region" parse={value => trimAndNormalizeWhitespaces(value)} />
     </SimpleForm>
   </Create>
 );
@@ -39,8 +47,8 @@ export const AccountCreate = props => (
 export const AccountEdit = props => (
   <Edit undoable={false} title={<Title title={"Edit account"} />} {...props}>
     <SimpleForm toolbar={<CustomToolbar />} redirect="list">
-      <TextInput source="name" />
-      <TextInput source="region" />
+      <TextInput source="name" parse={value => trimAndNormalizeWhitespaces(value)} />
+      <TextInput source="region" parse={value => trimAndNormalizeWhitespaces(value)} />
     </SimpleForm>
   </Edit>
 );
