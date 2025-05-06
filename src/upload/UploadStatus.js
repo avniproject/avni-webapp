@@ -29,7 +29,7 @@ const createStyles = makeStyles(theme => ({
   }
 }));
 
-const Status = ({ viewVersion, statuses, getStatuses, page = 0, uploadTypes = new UploadTypes() }) => {
+const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadTypes = new UploadTypes() }) => {
   const classes = createStyles();
   React.useEffect(() => {
     getStatuses(0);
@@ -131,5 +131,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     { getStatuses }
-  )(Status)
+  )(UploadStatus)
 );

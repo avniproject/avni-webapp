@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 // eslint-disable-next-line
 import _, { concat, get, isEmpty, isNil } from "lodash";
-import Status from "./Status";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
@@ -28,6 +27,7 @@ import { Box } from "@material-ui/core";
 import MetadataDiff from "./MetadataDiff";
 import CompareMetadataService from "../adminApp/service/CompareMetadataService";
 import httpClient from "../common/utils/httpClient";
+import UploadStatus from "./UploadStatus";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -70,7 +70,7 @@ class ReviewStatus {
 
 const isMetadataDiffReviewEnabled = true;
 
-const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
+const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
   const classes = useStyles();
 
   const [uploadType, setUploadType] = useState("");
@@ -332,7 +332,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
       </Grid>
       <Grid item xs={12}>
         <Paper style={{ marginBottom: 100 }}>
-          <Status />
+          <UploadStatus />
         </Paper>
       </Grid>
     </Grid>
@@ -349,5 +349,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     { getUploadTypes, getStatuses }
-  )(Dashboard)
+  )(UploadDashboard)
 );
