@@ -13,12 +13,12 @@ import { capitalize, get, isNil, map, includes } from "lodash";
 import { staticTypesWithStaticDownload, staticTypesWithDynamicDownload } from "./Types";
 import moment from "moment";
 import FileDownloadButton from "../common/components/FileDownloadButton";
-
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import TablePagination from "@material-ui/core/TablePagination";
 import Button from "@material-ui/core/Button";
 import UploadTypes from "./UploadTypes";
+import http from "common/utils/httpClient";
 
 const createStyles = makeStyles(theme => ({
   filename: {
@@ -48,15 +48,16 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>File name</TableCell>
+            <TableCell style={{ minWidth: 160 }}>File name</TableCell>
+            <TableCell align="right">Download Input</TableCell>
             <TableCell align="right">Type</TableCell>
-            <TableCell align="right" style={{ minWidth: 180 }}>
+            <TableCell align="right" style={{ minWidth: 160 }}>
               Created at
             </TableCell>
-            <TableCell align="right" style={{ minWidth: 180 }}>
+            <TableCell align="right" style={{ minWidth: 160 }}>
               Started at
             </TableCell>
-            <TableCell align="right" style={{ minWidth: 180 }}>
+            <TableCell align="right" style={{ minWidth: 160 }}>
               Ended at
             </TableCell>
             <TableCell align="right">Status</TableCell>
@@ -69,11 +70,16 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
         <TableBody>
           {map(get(statuses, "content"), jobStatus => (
             <TableRow key={jobStatus.uuid}>
-              <Tooltip title={<span style={{ fontSize: "2em" }}>{jobStatus.fileName}</span>} placement="bottom">
-                <TableCell component="th" scope="jobStatus" className={classes.filename}>
-                  {jobStatus.fileName}
-                </TableCell>
-              </Tooltip>
+              <TableCell component="th" scope="jobStatus" className={classes.filename}>
+                {jobStatus.fileName}
+              </TableCell>
+              <TableCell align="right">
+                <FileDownloadButton
+                  url={`/import/inputFile?filePath=${jobStatus.s3Key}`}
+                  filename={jobStatus.fileName}
+                  disabled={includes(["STARTING"], jobStatus.status)}
+                />
+              </TableCell>
               <TableCell align="right">
                 {staticTypesWithStaticDownload.getName(jobStatus.type) ||
                   staticTypesWithDynamicDownload.getName(jobStatus.type) ||
