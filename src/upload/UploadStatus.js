@@ -46,6 +46,7 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
+            <TableCell align="right">Execution Id</TableCell>
             <TableCell style={{ minWidth: 160 }}>File name</TableCell>
             <TableCell align="right">Download Input</TableCell>
             <TableCell align="right">Type</TableCell>
@@ -68,6 +69,7 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
         <TableBody>
           {map(get(statuses, "content"), jobStatus => (
             <TableRow key={jobStatus.uuid}>
+              <TableCell align="right">{jobStatus.executionId}</TableCell>
               <TableCell component="th" scope="jobStatus" className={classes.filename}>
                 {jobStatus.fileName}
               </TableCell>
