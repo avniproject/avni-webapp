@@ -6,7 +6,6 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Tooltip from "@material-ui/core/Tooltip";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { getStatuses } from "./reducers";
 import { capitalize, get, isNil, map, includes } from "lodash";
@@ -18,7 +17,6 @@ import Box from "@material-ui/core/Box";
 import TablePagination from "@material-ui/core/TablePagination";
 import Button from "@material-ui/core/Button";
 import UploadTypes from "./UploadTypes";
-import http from "common/utils/httpClient";
 
 const createStyles = makeStyles(theme => ({
   filename: {
