@@ -276,17 +276,27 @@ const SelfServiceReports = () => {
               Metabase to support ad hoc and self-serviced reports.
             </Typography>
             <Box style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px", gap: "10px" }}>
-              {showRefreshButton && (
+              {/* Always maintain the same button order: Refresh, Explore, Delete */}
+              {/* Refresh Reports button - either enabled or disabled */}
+              {showRefreshButton ? (
                 <Button className={classes.refreshButton} onClick={refreshReports}>
                   Refresh Reports
                 </Button>
-              )}
+              ) : showDisabledRefreshButton ? (
+                <Button className={classes.refreshButton} disabled={true}>
+                  Refresh Reports
+                </Button>
+              ) : null}
+
+              {/* Explore Your Data button - only shown when enabled */}
               {showExploreButton && (
                 <Button className={classes.exploreButton} href="https://reporting.avniproject.org" target="_blank">
                   Explore Your Data
                 </Button>
               )}
-              {showDeleteButton && (
+
+              {/* Delete button - either enabled or disabled */}
+              {showDeleteButton ? (
                 <Button
                   style={{
                     color: "red"
@@ -295,17 +305,13 @@ const SelfServiceReports = () => {
                 >
                   <DeleteIcon /> Delete
                 </Button>
-              )}
-              {showDisabledDeleteButton && (
+              ) : showDisabledDeleteButton ? (
                 <Button disabled={true}>
                   <DeleteIcon /> Delete
                 </Button>
-              )}
-              {showDisabledRefreshButton && (
-                <Button className={classes.refreshButton} disabled={true}>
-                  Refresh Reports
-                </Button>
-              )}
+              ) : null}
+
+              {/* Progress spinner */}
               {showProgressSpinner && <CircularProgress size={24} style={{ marginLeft: "10px" }} />}
             </Box>
             {showErrorMessage && (
