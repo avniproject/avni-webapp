@@ -6,7 +6,14 @@ class MetabaseBatchJobStatus {
   endDateTime;
   exitMessage;
   exitCode;
-  syncStatus;
+
+  isRunning() {
+    if (!this.createDateTime) return false;
+    const thirtyMinutesInMs = 30 * 60 * 1000;
+    const now = new Date();
+    const timeSinceCreation = now - this.createDateTime;
+    return this.status === "STARTED" && timeSinceCreation <= thirtyMinutesInMs;
+  }
 
   static createFromResponse(batchJobResponse) {
     const metabaseBatchJobStatus = new MetabaseBatchJobStatus();
@@ -15,7 +22,6 @@ class MetabaseBatchJobStatus {
     metabaseBatchJobStatus.endDateTime = new Date(batchJobResponse.endDateTime);
     metabaseBatchJobStatus.exitMessage = batchJobResponse.exitMessage;
     metabaseBatchJobStatus.exitCode = batchJobResponse.exitCode;
-    metabaseBatchJobStatus.syncStatus = batchJobResponse.syncStatus || null;
     return metabaseBatchJobStatus;
   }
 
@@ -23,14 +29,6 @@ class MetabaseBatchJobStatus {
     const metabaseBatchJobStatus = new MetabaseBatchJobStatus();
     metabaseBatchJobStatus.status = "Unknown";
     return metabaseBatchJobStatus;
-  }
-
-  isRunning() {
-    if (!this.createDateTime) return false;
-    const tenMinutesInMs = 10 * 60 * 1000;
-    const now = new Date();
-    const timeSinceCreation = now - this.createDateTime;
-    return this.status === "STARTED" && timeSinceCreation <= tenMinutesInMs;
   }
 }
 
@@ -40,18 +38,13 @@ class MetabaseSetupStatus {
   NotSetup = "NotSetup";
   Setup = "Setup";
   EtlNotRun = "EtlNotRun";
-  // Sync status constants
-  static SyncStatusTimedOut = "TimedOut";
-  static SyncStatusAwaitingCompletion = "AwaitingManualSchemaSyncCompletion";
-  static SyncStatusComplete = "Complete";
-  AwaitingManualSchemaSyncCompletion = "AwaitingManualSchemaSyncCompletion";
-  TimedOut = "TimedOut";
 
   status;
   tearDownStatus;
   createQuestionOnlyStatus;
   setupStatus;
-  syncStatus;
+  avniEnvironment;
+  resources;
 
   static createUnknownStatus() {
     const metabaseSetupStatus = new MetabaseSetupStatus();
@@ -59,7 +52,7 @@ class MetabaseSetupStatus {
     metabaseSetupStatus.tearDownStatus = MetabaseBatchJobStatus.createUnknownStatus();
     metabaseSetupStatus.createQuestionOnlyStatus = MetabaseBatchJobStatus.createUnknownStatus();
     metabaseSetupStatus.setupStatus = MetabaseBatchJobStatus.createUnknownStatus();
-    metabaseSetupStatus.syncStatus = null;
+    metabaseSetupStatus.resources = [];
     return metabaseSetupStatus;
   }
 
@@ -72,17 +65,13 @@ class MetabaseSetupStatus {
       statusResponse.jobStatuses["CreateQuestionOnly"]
     );
     metabaseSetupStatus.setupStatus = MetabaseBatchJobStatus.createFromResponse(statusResponse.jobStatuses["Setup"]);
-
-    // Set the sync status if it exists in the response
-    if (statusResponse.metabaseSyncStatus) {
-      metabaseSetupStatus.syncStatus = statusResponse.metabaseSyncStatus;
-    }
-
+    metabaseSetupStatus.avniEnvironment = statusResponse.avniEnvironment;
+    metabaseSetupStatus.resources = statusResponse.resources;
     return metabaseSetupStatus;
   }
 
   canStartSetup() {
-    return this.status === this.NotSetup && !this.isAnyJobInProgress();
+    return (this.status === this.NotSetup || this.setupStatus.status !== "COMPLETED") && !this.isAnyJobInProgress();
   }
 
   isSetupInProgress() {
@@ -90,7 +79,7 @@ class MetabaseSetupStatus {
   }
 
   isSetupComplete() {
-    return this.status === this.Setup;
+    return this.status === this.Setup && this.setupStatus.status === "COMPLETED";
   }
 
   isAnyJobInProgress() {
@@ -99,43 +88,20 @@ class MetabaseSetupStatus {
 
   hasErrorMessage() {
     if (this.isAnyJobInProgress()) return false;
-    // Don't show error message if it's a timeout - we'll show a dedicated message for that
-    if (this.hasTimedOut()) return false;
-
     const recentJobStatus = _.maxBy(
-      [this.tearDownStatus, this.createQuestionOnlyStatus, this.setupStatus].filter(job => job && job.endDateTime),
+      [this.tearDownStatus, this.createQuestionOnlyStatus, this.setupStatus],
       jobStatus => jobStatus.endDateTime
     );
-
-    // Check if we have a valid job status before checking its status
-    return recentJobStatus && recentJobStatus.status === "FAILED";
+    return recentJobStatus.status === "FAILED";
   }
 
   getErrorMessage() {
     if (!this.hasErrorMessage()) return null;
-
-    // Handle timeout case first
-    if (this.hasTimedOut()) {
-      return "Setup was abandoned mid-way due to timeout while awaiting Metabase schema sync completion";
-    }
-
-    // Get the most recent job status with a valid endDateTime
     const recentJobStatus = _.maxBy(
-      [this.tearDownStatus, this.createQuestionOnlyStatus, this.setupStatus].filter(job => job && job.endDateTime),
+      [this.tearDownStatus, this.createQuestionOnlyStatus, this.setupStatus],
       jobStatus => jobStatus.endDateTime
     );
-
-    // Return the exit message if we have a valid job status
-    return recentJobStatus && recentJobStatus.exitMessage ? recentJobStatus.exitMessage : "Unknown error";
-  }
-
-  hasTimedOut() {
-    // Only return true if we explicitly have a TimedOut status
-    return this.syncStatus === MetabaseSetupStatus.SyncStatusTimedOut;
-  }
-
-  isAwaitingManualSchemaSyncCompletion() {
-    return this.syncStatus === MetabaseSetupStatus.SyncStatusAwaitingCompletion;
+    return recentJobStatus.exitMessage;
   }
 
   getShortErrorMessage() {
