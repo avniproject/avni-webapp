@@ -150,7 +150,8 @@ const MetadataDiff = ({ response, error, loading, endReview }) => {
               )}
             </>
           ) : (
-            !loading && (
+            !loading &&
+            !error && (
               <Typography variant="h5" gutterBottom>
                 No Changes
               </Typography>

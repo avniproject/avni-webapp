@@ -207,14 +207,18 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
     downloadDynamicSample
   ]);
 
+  const handleError = err => {
+    setReviewStatus(new ReviewStatus(false, null, "An error occurred while comparing metadata."));
+    console.error("Review error:", err);
+  };
   const handleReviewClick = useCallback(async () => {
     setReviewStatus(new ReviewStatus(true, null, null));
     try {
       const filteredData = await CompareMetadataService.compare(file);
-      setReviewStatus(new ReviewStatus(false, filteredData, null));
+      if (!_.isNil(filteredData.errors)) handleError(filteredData.errors);
+      else setReviewStatus(new ReviewStatus(false, filteredData, null));
     } catch (err) {
-      setReviewStatus(new ReviewStatus(false, null, "An error occurred while comparing metadata."));
-      console.error("Review error:", err);
+      handleError(err);
     }
   }, [file]);
 

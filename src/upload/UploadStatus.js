@@ -101,6 +101,7 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
                     url={`/import/errorfile?jobUuid=${jobStatus.uuid}`}
                     filename={`errors-${jobStatus.fileName.replace(".zip", ".csv")}`}
                     disabled={includes(["STARTING", "STARTED"], jobStatus.status)}
+                    buttonColor={"error"}
                   />
                 ) : (
                   <div />
