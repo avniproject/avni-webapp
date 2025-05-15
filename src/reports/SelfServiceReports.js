@@ -14,6 +14,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import httpClient from "../common/utils/httpClient";
 import MetabaseSetupStatus from "./domain/MetabaseSetupStatus";
 import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
+import Chip from "@material-ui/core/Chip";
 
 const useStyles = makeStyles({
   root: {
@@ -52,7 +53,8 @@ const useStyles = makeStyles({
     color: "green",
     border: "1px solid green",
     padding: "5px 10px",
-    borderRadius: "5px"
+    borderRadius: "5px",
+    zIndex: 10
   },
   buttonsContainer: {
     marginTop: "30px",
@@ -162,12 +164,14 @@ const SelfServiceReports = () => {
     return <>Loading...</>;
   }
 
+  const isTestEnvironment = ["prerelease", "staging"].includes(statusResponse.avniEnvironment);
+
   const isBusyCallingAnyAction = isBusyCallingCreateQuestionOnly || isBusyCallingSetup || isBusyCallingTearDown;
 
   const showSetupButton = statusResponse.canStartSetup() && !isBusyCallingAnyAction;
   const showDisabledSetupButton = isBusyCallingSetup;
 
-  const showDeleteButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
+  const showDeleteButton = (statusResponse.isSetupComplete() || isTestEnvironment) && !isBusyCallingAnyAction;
   const showDisabledDeleteButton = isBusyCallingTearDown;
 
   const showRefreshButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
@@ -212,6 +216,9 @@ const SelfServiceReports = () => {
             <Typography variant="body2" color="textSecondary" component="p">
               Metabase provides a graphical interface to create business intelligence and analytics graphs in minutes. Avni integrates with
               Metabase to support ad hoc and self-serviced reports.
+            </Typography>
+            <Typography variant="body1" color="textSecondary" component="p" style={{ marginTop: 20 }}>
+              {`Setup and Refresh reports may take upto ${statusResponse.getExpectedDurationInMinutes()} minutes`}
             </Typography>
             <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
               {showDeleteButton && (
@@ -274,6 +281,24 @@ const SelfServiceReports = () => {
                 <CopyToClipboard text={statusResponse.getErrorMessage()}>
                   <button>Copy error to clipboard</button>
                 </CopyToClipboard>
+              </>
+            )}
+            {isTestEnvironment && (
+              <>
+                <Typography variant="body1" style={{ marginTop: "30px" }}>
+                  Available Resources (note setup will run even after you see all three resources)
+                </Typography>
+                {statusResponse.resources.length > 0 ? (
+                  <Box display="flex" flexWrap="wrap" marginTop={"10px"}>
+                    {statusResponse.resources.map(r => (
+                      <Chip key={r} label={r} style={{ marginRight: "5px", marginBottom: "5px" }} />
+                    ))}
+                  </Box>
+                ) : (
+                  <Typography variant="body2" style={{ marginTop: "10px" }}>
+                    No resources present for this organisation.
+                  </Typography>
+                )}
               </>
             )}
           </Box>

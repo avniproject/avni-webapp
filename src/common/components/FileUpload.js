@@ -22,6 +22,10 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
     };
   };
 
+  const handleClick = event => {
+    event.target.value = null;
+  };
+
   const onUploadWrapper = () => {
     onUpload();
   };
@@ -30,7 +34,7 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
     <Grid container direction="row" justifyContent="flex-start" spacing={1}>
       <Button variant="contained" component="label" disabled={!canSelect} className={classes.item}>
         Choose File
-        <input type="file" onChange={onSelectWrapper} style={{ display: "none" }} />
+        <input type="file" onChange={onSelectWrapper} onClick={handleClick} style={{ display: "none" }} />
       </Button>
       <Button
         variant="contained"

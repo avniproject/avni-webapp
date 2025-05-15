@@ -7,6 +7,7 @@ import formElementService, {
 import { Concept, ObservationsHolder, StaticFormElementGroup, ValidationResult } from "openchs-models";
 import { getFormElementsStatuses } from "dataEntryApp/services/RuleEvaluationService";
 import Wizard from "dataEntryApp/state/Wizard";
+import WebFormElementGroup from "../../common/model/WebFormElementGroup";
 
 const filterFormElementsWithStatus = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
@@ -210,17 +211,17 @@ const validateRepeatableQuestionGroup = ({
     );
 
     // Validate each child form element
-    // eslint-disable-next-line no-loop-func
-    childFormElements.forEach(childElement => {
-      results = validateElement({
-        formElement: childElement,
-        parentElement: formElement,
-        groupObservation,
-        obsHolder,
-        formElementStatuses,
-        validationResults: results
-      });
-    });
+    const validationParams = {
+      parentElement: formElement,
+      groupObservation,
+      obsHolder,
+      formElementStatuses,
+      validationResults: results
+    };
+    for (let j = 0; j < childFormElements.length; j++) {
+      const childElement = childFormElements[j];
+      results = validateElement({ ...validationParams, formElement: childElement });
+    }
   }
 
   return results;
@@ -248,16 +249,18 @@ const validateNonRepeatableQuestionGroup = ({
   );
 
   // Validate each child form element
-  childFormElements.forEach(childElement => {
-    results = validateElement({
-      formElement: childElement,
-      parentElement: formElement,
-      groupObservation: questionGroupWrapper,
-      obsHolder,
-      formElementStatuses,
-      validationResults: results
-    });
-  });
+  const validationParams = {
+    parentElement: formElement,
+    groupObservation: questionGroupWrapper,
+    obsHolder,
+    formElementStatuses,
+    validationResults: results
+  };
+
+  for (let i = 0; i < childFormElements.length; i++) {
+    const childElement = childFormElements[i];
+    results = validateElement({ ...validationParams, formElement: childElement });
+  }
 
   return results;
 };
@@ -441,6 +444,7 @@ const onNext = ({
 
   // Get rule validation errors first - these determine which form elements are visible
   const ruleValidationErrors = filterFormElementStatusesAndConvertToValidationResults(formElementGroup, entity);
+  const formElementGroupValidations = new WebFormElementGroup().validate(obsHolder, filterFormElements(formElementGroup, entity));
 
   // Get validation errors
   const idValidationErrors = getIdValidationErrors(filteredFormElements, obsHolder);
@@ -454,6 +458,8 @@ const onNext = ({
 
   // Combine all validation results using unionBy
   const allRuleValidationResults = unionBy(
+    errors(idValidationErrors),
+    errors(formElementGroupValidations),
     errors(ruleValidationErrors),
     errors(filteredIdValidationErrors),
     errors(filteredDataValidationErrors),

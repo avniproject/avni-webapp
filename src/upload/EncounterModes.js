@@ -8,7 +8,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import Tooltip from "@material-ui/core/Tooltip";
 
-export const MODES = {
+export const ENCOUNTER_MODES = {
   SCHEDULE: "schedule_a_visit",
   UPLOAD: "upload_visit_details"
 };
@@ -31,10 +31,10 @@ const EncounterModes = ({ mode, setMode }) => {
       <FormLabel component="legend">Select Encounter Mode</FormLabel>
       <RadioGroup row aria-label="encounter-mode" name="encounter-mode" value={mode} onChange={handleChange}>
         <Tooltip title="Schedule a new visit" placement="bottom-start" arrow>
-          <FormControlLabel value={MODES.SCHEDULE} control={<Radio color="primary" />} label="Schedule a visit" />
+          <FormControlLabel value={ENCOUNTER_MODES.SCHEDULE} control={<Radio color="primary" />} label="Schedule a visit" />
         </Tooltip>
         <Tooltip title="Upload visit details" placement="bottom-start" arrow>
-          <FormControlLabel value={MODES.UPLOAD} control={<Radio color="primary" />} label="Upload visit details" />
+          <FormControlLabel value={ENCOUNTER_MODES.UPLOAD} control={<Radio color="primary" />} label="Upload visit details" />
         </Tooltip>
       </RadioGroup>
     </FormControl>
@@ -47,7 +47,7 @@ EncounterModes.propTypes = {
 };
 
 EncounterModes.defaultProps = {
-  mode: MODES.SCHEDULE
+  mode: ENCOUNTER_MODES.SCHEDULE
 };
 
 export default EncounterModes;

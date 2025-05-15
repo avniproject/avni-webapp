@@ -1,8 +1,12 @@
 import React from "react";
 import {
   AutocompleteArrayInput,
+  BooleanField,
+  BooleanInput,
   Create,
   Datagrid,
+  DisabledInput,
+  Edit,
   List,
   ReferenceArrayField,
   ReferenceArrayInput,
@@ -14,11 +18,7 @@ import {
   SimpleShowLayout,
   SingleFieldList,
   TextField,
-  TextInput,
-  Edit,
-  DisabledInput,
-  BooleanInput,
-  BooleanField
+  TextInput
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { TitleChip } from "./components/TitleChip";
@@ -27,6 +27,10 @@ import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
 
 const normalizeInput = value => {
   return value ? value.trim().replace(/\s+/g, " ") : value;
+};
+
+const normalizeInputAfterExcludingSpaces = value => {
+  return value ? value.trim().replace(/\s+/g, "") : value;
 };
 
 export const OrganisationGroupList = props => (
@@ -70,9 +74,19 @@ export const OrganisationGroupShow = props => (
 export const organisationGroupCreate = props => (
   <Create title="Add a new Account" {...props}>
     <SimpleForm redirect="list">
-      <TextInput source="name" validate={required("Name cannot be empty")} parse={normalizeInput} />
-      <TextInput source="dbUser" validate={required("DB user cannot be empty")} parse={normalizeInput} />
-      <TextInput source="schemaName" validate={required("Schema name cannot be empty")} parse={normalizeInput} />
+      <TextInput source="name" label="Name" validate={required("Name cannot be empty")} parse={normalizeInput} />
+      <TextInput
+        source="dbUser"
+        label="DB User"
+        validate={required("DB user cannot be empty")}
+        parse={normalizeInputAfterExcludingSpaces}
+      />
+      <TextInput
+        source="schemaName"
+        label="Schema name"
+        validate={required("Schema name cannot be empty")}
+        parse={normalizeInputAfterExcludingSpaces}
+      />
       <BooleanInput source="analyticsDataSyncActive" />
       <ReferenceInput
         resource="account"
@@ -91,7 +105,7 @@ export const organisationGroupCreate = props => (
         filterToQuery={searchText => ({ name: searchText })}
         validate={required("Please choose organisations")}
       >
-        <AutocompleteArrayInput {...props} />
+        <AutocompleteArrayInput {...props} options={{ label: "Organisations" }} />
       </ReferenceArrayInput>
     </SimpleForm>
   </Create>
@@ -100,9 +114,9 @@ export const organisationGroupCreate = props => (
 export const organisationGroupEdit = props => (
   <Edit undoable={false} title={<Title title={"Edit account"} />} {...props}>
     <SimpleForm redirect="list">
-      <TextInput source="name" validate={required("Name cannot be empty")} parse={normalizeInput} />
-      <DisabledInput source="dbUser" />
-      <TextInput source="schemaName" validate={required("Schema name cannot be empty")} parse={normalizeInput} />
+      <TextInput source="name" label="Name" validate={required("Name cannot be empty")} parse={normalizeInput} />
+      <DisabledInput source="dbUser" label="DB User" />
+      <DisabledInput source="schemaName" label="Schema name" />
       <BooleanField source="analyticsDataSyncActive" />
       <ToggleAnalyticsButton />
       <br />
@@ -123,7 +137,7 @@ export const organisationGroupEdit = props => (
         filterToQuery={searchText => ({ name: searchText })}
         validate={required("Please choose organisations")}
       >
-        <AutocompleteArrayInput {...props} />
+        <AutocompleteArrayInput {...props} options={{ label: "Organisations" }} />
       </ReferenceArrayInput>
     </SimpleForm>
   </Edit>

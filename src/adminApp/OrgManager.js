@@ -20,7 +20,7 @@ import {
 import OrganisationConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 
-import { Dashboard as UploadDashboard } from "../upload";
+import { UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
 import { getAdminOrgs } from "../rootApp/ducks";
