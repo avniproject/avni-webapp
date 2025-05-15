@@ -113,6 +113,10 @@ class MetabaseSetupStatus {
     if (!errorMessage) return null;
     return errorMessage.length > 100 ? errorMessage.substring(0, 100) + "..." : errorMessage;
   }
+
+  getExpectedDurationInMinutes() {
+    return Math.round(this.timeoutInMillis / (1000 * 60));
+  }
 }
 
 export default MetabaseSetupStatus;
