@@ -17,14 +17,29 @@ const RuleComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, 
 
   return (
     <Box
-      p={2}
-      mb={1}
-      border={1}
-      display="flex"
-      alignItems="flex-start"
-      style={{ borderStyle: "dotted" }}
-    >
-      <Grid item container spacing={1} direction={"row"} alignItems={"center"} xs={12}>
+  p={2}
+  mb={1}
+  border={1}
+  display="flex"
+  alignItems="flex-start"
+  style={{
+    borderStyle: "dotted",
+    overflowX: "auto", // scrolls horizontally if needed
+    maxWidth: "100%",  // prevents growing beyond the screen
+    flexWrap: "wrap",  // allows child elements to wrap
+  }}
+>
+
+      <Grid
+  item
+  container
+  spacing={1}
+  direction="row"
+  alignItems="center"
+  wrap="wrap"  // ✅ allow wrapping
+  xs={12}
+>
+
         <MiddleText text={"The value of"} />
         <LHSComponent
           rule={rule}
