@@ -85,7 +85,10 @@ export const AvniImageUpload = ({
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       if (maxFileSize && selectedFile.size > maxFileSize) {
-        setFileSizeError("File size exceeds the maximum allowed size.");
+        setFileSizeError(
+          `File size ${Math.round((selectedFile.size / 1024 + Number.EPSILON) * 10) /
+            10} KB exceeds the maximum allowed size of ${Math.round((maxFileSize / 1024 + Number.EPSILON) * 10) / 10} KB.`
+        );
         setFile(undefined);
         setValue("");
         return;
@@ -138,7 +141,7 @@ export const AvniImageUpload = ({
         </FormControl>
         <Snackbar
           open={Boolean(fileSizeError)}
-          autoHideDuration={4000}
+          autoHideDuration={6000}
           onClose={() => setFileSizeError("")}
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         >

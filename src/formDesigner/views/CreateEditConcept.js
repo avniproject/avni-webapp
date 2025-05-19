@@ -363,7 +363,7 @@ class CreateEditConcept extends Component {
   };
 
   render() {
-    let dataType;
+    let dataTypeComponent;
     const classes = {
       textField: {
         width: 400,
@@ -388,7 +388,7 @@ class CreateEditConcept extends Component {
     const concept = this.state.concept;
 
     if (concept.dataType === "Numeric") {
-      dataType = (
+      dataTypeComponent = (
         <NumericConcept
           onNumericConceptAttributeAssignment={this.onNumericConceptAttributeAssignment}
           numericDataTypeAttributes={concept}
@@ -396,7 +396,7 @@ class CreateEditConcept extends Component {
       );
     }
     if (concept.dataType === "Coded") {
-      dataType = (
+      dataTypeComponent = (
         <CodedConcept
           answers={concept.answers}
           onDeleteAnswer={this.onDeleteAnswer}
@@ -413,7 +413,7 @@ class CreateEditConcept extends Component {
     }
 
     if (concept.dataType === "Location") {
-      dataType = (
+      dataTypeComponent = (
         <LocationConcept
           updateConceptKeyValues={this.onKeyValueChange}
           keyValues={concept.keyValues}
@@ -425,7 +425,7 @@ class CreateEditConcept extends Component {
     }
 
     if (concept.dataType === "Subject") {
-      dataType = (
+      dataTypeComponent = (
         <SubjectConcept
           updateKeyValues={this.onKeyValueChange}
           keyValues={concept.keyValues}
@@ -438,7 +438,7 @@ class CreateEditConcept extends Component {
     }
 
     if (concept.dataType === "Encounter") {
-      dataType = (
+      dataTypeComponent = (
         <EncounterConcept
           updateKeyValues={this.onKeyValueChange}
           keyValues={concept.keyValues}
@@ -453,7 +453,7 @@ class CreateEditConcept extends Component {
     if (concept.dataType === "PhoneNumber") {
       const verificationKey = find(concept.keyValues, ({ key, value }) => key === "verifyPhoneNumber");
       if (verificationKey) {
-        dataType = <PhoneNumberConcept onKeyValueChange={this.onKeyValueChange} checked={verificationKey.value} />;
+        dataTypeComponent = <PhoneNumberConcept onKeyValueChange={this.onKeyValueChange} checked={verificationKey.value} />;
       } else {
         this.setState(prevState => ({
           ...prevState,
@@ -465,7 +465,7 @@ class CreateEditConcept extends Component {
     if (concept.dataType === "ImageV2") {
       const locationInformationKey = find(concept.keyValues, ({ key, value }) => key === "captureLocationInformation");
       if (locationInformationKey) {
-        dataType = <ImageV2Concept onKeyValueChange={this.onKeyValueChange} checked={locationInformationKey.value} />;
+        dataTypeComponent = <ImageV2Concept onKeyValueChange={this.onKeyValueChange} checked={locationInformationKey.value} />;
       } else {
         this.setState(prevState => ({
           ...prevState,
@@ -541,7 +541,23 @@ class CreateEditConcept extends Component {
               </Grid>
             )}
             <Grid item xs={12}>
-              {dataType}
+              <AvniImageUpload
+                height={20}
+                width={20}
+                onSelect={this.handleMediaSelect}
+                label={`Image (max ${Math.round((WebConceptView.MaxFileSize / 1024 + Number.EPSILON) * 10) / 10} KB)`}
+                maxFileSize={WebConceptView.MaxFileSize}
+                oldImgUrl={concept.mediaUrl}
+                onDelete={this.handleMediaDelete}
+              />
+              {this.state.error && this.state.error.mediaUploadFailed && (
+                <FormControl error style={{ marginTop: 4 }}>
+                  <FormHelperText error>{this.state.error.message}</FormHelperText>
+                </FormControl>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              {dataTypeComponent}
             </Grid>
             <Grid item xs={12}>
               <KeyValues
@@ -552,22 +568,6 @@ class CreateEditConcept extends Component {
                 error={this.state.error.keyValueError}
                 readOnlyKeys={this.state.readOnlyKeys}
               />
-            </Grid>
-            <Grid item xs={12}>
-              <AvniImageUpload
-                height={20}
-                width={20}
-                onSelect={this.handleMediaSelect}
-                label={"Image"}
-                maxFileSize={WebConceptView.MaxFileSize}
-                oldImgUrl={concept.mediaUrl}
-                onDelete={this.handleMediaDelete}
-              />
-              {this.state.error && this.state.error.mediaUploadFailed && (
-                <FormControl error style={{ marginTop: 4 }}>
-                  <FormHelperText error>{this.state.error.message}</FormHelperText>
-                </FormControl>
-              )}
             </Grid>
             <Grid item xs={12} container justifyContent="flex-end" alignItems="center" spacing={2}>
               <Grid item>
