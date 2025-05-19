@@ -36,15 +36,12 @@ export const FileDiff = ({ changeReports }) => {
         ? change.primitiveValueChange.oldValue
         : !_.isNil(change.objectChangeReport)
         ? change.objectChangeReport.oldValue
-        : _.map(change.collectionChangeReport, collReportItem => collReportItem.oldValue);
+        : null;
       const newValue = !_.isNil(change.primitiveValueChange)
         ? change.primitiveValueChange.newValue
         : !_.isNil(change.objectChangeReport)
-        ? change.objectChangeReport.newValue || renderFieldChanges(change.objectChangeReport.fieldChanges)
-        : _.map(
-            change.collectionChangeReport,
-            collReportItem => collReportItem.newValue || renderFieldChanges(collReportItem.fieldChanges)
-          );
+        ? change.objectChangeReport.newValue || change.objectChangeReport.fieldChanges
+        : getChangeForCollection(_.get(change.collectionChangeReport, "changeReports") || []);
       const changeDetail = {};
       changeDetail.fieldName = change.fieldName;
       if (change.changeType === CHANGE_TYPE.MISSING) {
@@ -55,29 +52,33 @@ export const FileDiff = ({ changeReports }) => {
       return changeDetail;
     });
   };
-  return _.map(changeReports, cr => {
-    const changedEntity = cr.oldValue || cr.newValue;
-    const entityName = changedEntity ? changedEntity.name || changedEntity.uuid : cr.uuid;
-    let entity = `${cr.changeType} ${entityName}`;
-    let change = null;
-    switch (cr.changeType) {
-      case CHANGE_TYPE.ADDED:
-        change = cr.newValue;
-        break;
-      case CHANGE_TYPE.MODIFIED:
-        change = !_.isNil(cr.newValue) ? cr.newValue : renderFieldChanges(cr.fieldChanges);
-        break;
-      case CHANGE_TYPE.VOIDED:
-        change = cr.newValue || renderFieldChanges(cr.fieldChanges);
-        break;
-      case CHANGE_TYPE.MISSING:
-        change = cr.oldValue;
-        break;
-      default:
-        change = null;
-    }
-    return !_.isNil(change) ? renderFieldChange(cr.changeType, entity, change) : null;
-  });
+  const renderChangeReports = changeReports => {
+    return _.map(changeReports, cr => {
+      const changedEntity = cr.oldValue || cr.newValue;
+      const entityName = changedEntity ? changedEntity.name || changedEntity.uuid : cr.uuid;
+      let entity = `${cr.changeType} ${entityName}`;
+      let change = null;
+      switch (cr.changeType) {
+        case CHANGE_TYPE.ADDED:
+          change = cr.newValue;
+          break;
+        case CHANGE_TYPE.MODIFIED:
+          change = !_.isNil(cr.newValue) ? cr.newValue : renderFieldChanges(cr.fieldChanges);
+          break;
+        case CHANGE_TYPE.VOIDED:
+          change = cr.newValue || renderFieldChanges(cr.fieldChanges);
+          break;
+        case CHANGE_TYPE.MISSING:
+          change = cr.oldValue;
+          break;
+        default:
+          change = null;
+      }
+      return !_.isNil(change) ? { changeType: cr.changeType, entity, change } : null;
+    });
+  };
+  const changes = renderChangeReports(changeReports);
+  return _.map(changes, c => !_.isNil(c) && renderFieldChange(c.changeType, c.entity, c.change));
 };
 
 const getColor = function(changeType) {
@@ -99,6 +100,10 @@ const getChangeSummaryForFile = (fileName, changeReports) => {
   const countsByChangeType = _.countBy(changeReports, cr => cr.changeType);
   const summary = _.map(countsByChangeType, (value, key) => `${value} ${key}`).join(", ");
   return `${fileName} - ${summary}`;
+};
+
+const getChangeForCollection = changeReports => {
+  return _.map(changeReports, cr => cr.changeType + " " + (_.get(cr.oldValue, "name") || _.get(cr.newValue, "name"))).join(", ");
 };
 
 const MetadataDiff = ({ response, error, loading, endReview }) => {
@@ -129,17 +134,21 @@ const MetadataDiff = ({ response, error, loading, endReview }) => {
                 <InputLabel>Select Form or Missing Files</InputLabel>
                 <Select value={selectedForm} onChange={handleFormChange} label="Select Form or Missing Files">
                   {!_.isNil(response.fileChangeReports) &&
-                    Object.entries(response.fileChangeReports).map(([key, value]) => (
-                      <MenuItem key={key} value={key}>
-                        {getChangeSummaryForFile(key, value.changeReports)}
-                      </MenuItem>
-                    ))}
+                    Object.entries(response.fileChangeReports)
+                      .sort()
+                      .map(([key, value]) => (
+                        <MenuItem key={key} value={key}>
+                          {getChangeSummaryForFile(key, value.changeReports)}
+                        </MenuItem>
+                      ))}
                   {!_.isNil(response.missingFilesInExisting) &&
-                    Object.entries(response.missingFilesInExisting).map(([key, value]) => (
-                      <MenuItem disabled key={key} value={value}>
-                        {`${value} - New`}
-                      </MenuItem>
-                    ))}
+                    Object.entries(response.missingFilesInExisting)
+                      .sort()
+                      .map(([key, value]) => (
+                        <MenuItem disabled key={key} value={value}>
+                          {`${value} - New`}
+                        </MenuItem>
+                      ))}
                 </Select>
               </FormControl>
               {selectedForm && response.fileChangeReports[selectedForm] && (
