@@ -7,12 +7,11 @@ class MetabaseBatchJobStatus {
   exitMessage;
   exitCode;
 
-  isRunning() {
+  isRunning(timeOut) {
     if (!this.createDateTime) return false;
-    const thirtyMinutesInMs = 30 * 60 * 1000;
     const now = new Date();
     const timeSinceCreation = now - this.createDateTime;
-    return this.status === "STARTED" && timeSinceCreation <= thirtyMinutesInMs;
+    return this.status === "STARTED" && timeSinceCreation <= timeOut;
   }
 
   static createFromResponse(batchJobResponse) {
@@ -45,6 +44,7 @@ class MetabaseSetupStatus {
   setupStatus;
   avniEnvironment;
   resources;
+  timeoutInMillis;
 
   static createUnknownStatus() {
     const metabaseSetupStatus = new MetabaseSetupStatus();
@@ -53,6 +53,7 @@ class MetabaseSetupStatus {
     metabaseSetupStatus.createQuestionOnlyStatus = MetabaseBatchJobStatus.createUnknownStatus();
     metabaseSetupStatus.setupStatus = MetabaseBatchJobStatus.createUnknownStatus();
     metabaseSetupStatus.resources = [];
+    metabaseSetupStatus.timeoutInMillis = 0;
     return metabaseSetupStatus;
   }
 
@@ -67,6 +68,7 @@ class MetabaseSetupStatus {
     metabaseSetupStatus.setupStatus = MetabaseBatchJobStatus.createFromResponse(statusResponse.jobStatuses["Setup"]);
     metabaseSetupStatus.avniEnvironment = statusResponse.avniEnvironment;
     metabaseSetupStatus.resources = statusResponse.resources;
+    metabaseSetupStatus.timeoutInMillis = statusResponse.timeoutInMillis;
     return metabaseSetupStatus;
   }
 
@@ -75,7 +77,7 @@ class MetabaseSetupStatus {
   }
 
   isSetupInProgress() {
-    return this.setupStatus.isRunning();
+    return this.setupStatus.isRunning(this.timeoutInMillis);
   }
 
   isSetupComplete() {
@@ -83,7 +85,9 @@ class MetabaseSetupStatus {
   }
 
   isAnyJobInProgress() {
-    return [this.tearDownStatus, this.createQuestionOnlyStatus, this.setupStatus].some(jobStatus => jobStatus.isRunning());
+    return [this.tearDownStatus, this.createQuestionOnlyStatus, this.setupStatus].some(jobStatus =>
+      jobStatus.isRunning(this.timeoutInMillis)
+    );
   }
 
   hasErrorMessage() {
@@ -108,6 +112,10 @@ class MetabaseSetupStatus {
     const errorMessage = this.getErrorMessage();
     if (!errorMessage) return null;
     return errorMessage.length > 100 ? errorMessage.substring(0, 100) + "..." : errorMessage;
+  }
+
+  getExpectedDurationInMinutes() {
+    return Math.round(this.timeoutInMillis / (1000 * 60));
   }
 }
 

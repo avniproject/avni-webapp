@@ -217,6 +217,9 @@ const SelfServiceReports = () => {
               Metabase provides a graphical interface to create business intelligence and analytics graphs in minutes. Avni integrates with
               Metabase to support ad hoc and self-serviced reports.
             </Typography>
+            <Typography variant="body1" color="textSecondary" component="p" style={{ marginTop: 20 }}>
+              {`Setup and Refresh reports may take upto ${statusResponse.getExpectedDurationInMinutes()} minutes`}
+            </Typography>
             <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
               {showDeleteButton && (
                 <div className={classes.buttonsContainer}>
@@ -282,11 +285,11 @@ const SelfServiceReports = () => {
             )}
             {isTestEnvironment && (
               <>
-                <Typography variant="h6" style={{ marginTop: "20px" }}>
+                <Typography variant="body1" style={{ marginTop: "30px" }}>
                   Available Resources (note setup will run even after you see all three resources)
                 </Typography>
                 {statusResponse.resources.length > 0 ? (
-                  <Box display="flex" flexWrap="wrap">
+                  <Box display="flex" flexWrap="wrap" marginTop={"10px"}>
                     {statusResponse.resources.map(r => (
                       <Chip key={r} label={r} style={{ marginRight: "5px", marginBottom: "5px" }} />
                     ))}
