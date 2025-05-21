@@ -22,7 +22,6 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
-import { SubjectTypeType } from "./Types";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
