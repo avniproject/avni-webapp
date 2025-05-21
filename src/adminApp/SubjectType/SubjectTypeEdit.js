@@ -161,13 +161,6 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
-          {subjectType.type === SubjectTypeType.User && (
-            <div>
-              <FormLabel style={{ fontSize: "13px" }}>Type</FormLabel>
-              <br />
-              <span style={{ fontSize: "15px" }}>{subjectType.type}</span>
-            </div>
-          )}
           <EditSubjectTypeFields
             subjectType={subjectType}
             onSetFile={setFile}
@@ -175,6 +168,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
             formList={formList}
             groupValidationError={groupValidationError}
             dispatch={dispatch}
+            source={"edit"}
           />
           {organisationConfig && organisationConfig.enableMessaging ? (
             <MessageRules

@@ -15,42 +15,40 @@ import PropTypes from "prop-types";
 import { JSEditor } from "../../common/components/JSEditor";
 
 const EditSubjectTypeFields = props => {
-  const { subjectType, onRemoveFile, onSetFile, formList, groupValidationError, dispatch } = props;
+  const { subjectType, onRemoveFile, onSetFile, formList, groupValidationError, dispatch, source } = props;
 
   const isUserSubjectType = subjectType.type === SubjectTypeType.User;
   return (
     <>
-      {!isUserSubjectType && (
-        <>
-          <AvniTextField
-            id="name"
-            label="Name"
-            autoComplete="off"
-            value={subjectType.name}
-            onChange={event => dispatch({ type: "name", payload: event.target.value })}
-            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
-          />
-          <p />
-        </>
-      )}
-      {!isUserSubjectType && (
-        <>
-          <AvniSelect
-            label="Select Type *"
-            value={_.isEmpty(subjectType.type) ? "" : subjectType.type}
-            onChange={event => dispatch({ type: "type", payload: event.target.value })}
-            style={{ width: "200px" }}
-            required
-            options={SubjectTypeType.getAll().map((type, index) => (
-              <MenuItem value={type} key={index}>
-                {type}
-              </MenuItem>
-            ))}
-            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
-          />
-          <p />
-        </>
-      )}
+      <>
+        <AvniTextField
+          id="name"
+          label="Name"
+          autoComplete="off"
+          disabled={isUserSubjectType && source === "edit"}
+          value={subjectType.name}
+          onChange={event => dispatch({ type: "name", payload: event.target.value })}
+          toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
+        />
+        <p />
+      </>
+      <>
+        <AvniSelect
+          label="Select Type *"
+          value={_.isEmpty(subjectType.type) ? "" : subjectType.type}
+          onChange={event => dispatch({ type: "type", payload: event.target.value })}
+          style={{ width: "200px" }}
+          required
+          disabled={isUserSubjectType && source === "edit"}
+          options={SubjectTypeType.getAll().map((type, index) => (
+            <MenuItem value={type} key={index}>
+              {type}
+            </MenuItem>
+          ))}
+          toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
+        />
+        <p />
+      </>
       <AvniImageUpload
         onSelect={onSetFile}
         label={"Icon"}
