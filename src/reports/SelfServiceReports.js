@@ -171,7 +171,9 @@ const SelfServiceReports = () => {
   const showSetupButton = statusResponse.canStartSetup() && !isBusyCallingAnyAction;
   const showDisabledSetupButton = isBusyCallingSetup;
 
-  const showDeleteButton = (statusResponse.isSetupComplete() || isTestEnvironment) && !isBusyCallingAnyAction;
+  // change for removing delete button from production
+  // const showDeleteButton = (statusResponse.isSetupComplete() || isTestEnvironment) && !isBusyCallingAnyAction;
+  const showDeleteButton = isTestEnvironment && !isBusyCallingAnyAction;
   const showDisabledDeleteButton = isBusyCallingTearDown;
 
   const showRefreshButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
