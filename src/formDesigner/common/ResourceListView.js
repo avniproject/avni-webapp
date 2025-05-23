@@ -16,6 +16,13 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
   const [result, setResult] = useState([]);
   const [resultFetched, setResultFetched] = useState(false);
   const tableRef = React.createRef();
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearchChange = e => {
+    setSearchText(e.target.value.toLowerCase());
+  };
+
+  const filteredResult = result.filter(({ name }) => name.toLowerCase().includes(searchText));
 
   useEffect(() => {
     http.get(`/web/${resourceName}`).then(response => {
@@ -54,6 +61,21 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={title} />
         <div className="container">
+          <div style={{ marginBottom: "2px", width: "300px" }}>
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={searchText}
+              onChange={handleSearchChange}
+              style={{
+                width: "100%",
+                padding: "10px",
+                fontSize: "16px",
+                borderRadius: "4px",
+                border: "1px solid #ccc"
+              }}
+            />
+          </div>
           {resultFetched && UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
               <CreateComponent onSubmit={() => setRedirect(true)} name={`New ${title}`} />
@@ -65,7 +87,7 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
               title=""
               ref={tableRef}
               columns={columns}
-              fetchData={result}
+              fetchData={filteredResult}
               options={{
                 addRowPosition: "first",
                 sorting: true,
