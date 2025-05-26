@@ -79,7 +79,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "BACKEND_URL=http://localhost:8021 react-scripts --max_old_space_size=2048  --openssl-legacy-provider start",
+    "start": "cross-env BACKEND_URL=http://localhost:8021 react-scripts --max_old_space_size=2048 --openssl-legacy-provider start",
     "start-with-staging": "BACKEND_URL=https://staging.avniproject.org react-scripts --max_old_space_size=2048 --openssl-legacy-provider start",
     "start-with-prerelease": "BACKEND_URL=https://prerelease.avniproject.org react-scripts --max_old_space_size=2048 --openssl-legacy-provider start",
     "start-with-prod": "BACKEND_URL=https://app.avniproject.org react-scripts --max_old_space_size=2048 --openssl-legacy-provider start",
@@ -108,12 +108,13 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@babel/runtime": "^7.22.15",
     "@babel/helper-environment-visitor": "7.22.20",
     "@babel/helper-string-parser": "7.22.5",
+    "@babel/runtime": "^7.22.15",
     "@fortawesome/fontawesome-free": "^5.1.0",
     "@types/jest": "^26.0.19",
     "chai": "^4.2.0",
+    "cross-env": "^7.0.3",
     "cypress": "^5.6.0",
     "html-webpack-plugin": "^3.2.0",
     "http-proxy-middleware": "2.0.6",

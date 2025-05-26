@@ -42,6 +42,10 @@ const useStyles = makeStyles(theme => ({
     border: "2px solid #d1d2d2",
     borderRadius: 5,
     marginTop: "10px"
+  },
+  errorTitle: {
+    color: "#d32f2f", // Red color for error title
+    marginBottom: theme.spacing(2)
   }
 }));
 
@@ -86,6 +90,10 @@ export function ErrorFallback({ error, onClose }) {
     appHome();
   };
 
+  // Get the friendly error information
+  const errorTitle = error.title || "Error";
+  const friendlyMessage = error.friendlyMessage || error.message;
+
   return (
     <div>
       <AppBar className={classes.appBar}>
@@ -96,25 +104,22 @@ export function ErrorFallback({ error, onClose }) {
         </Toolbar>
       </AppBar>
       <div className={classes.container}>
-        <Typography variant="h1" gutterBottom>
-          oops!
+        <Typography variant="h2" gutterBottom className={classes.errorTitle}>
+          {errorTitle}
         </Typography>
-        <Typography variant="h4" gutterBottom>
-          There was a problem when loading this page. Please contact administrator.
+        <Typography variant="h5" gutterBottom>
+          {friendlyMessage}
         </Typography>
         {!showError && (
           <Button onClick={() => setShowError(true)} variant={"contained"}>
-            Show error details
+            Show technical details
           </Button>
         )}
         {showError && (
           <Button
             onClick={() =>
               navigator.clipboard.writeText(
-                `Message: ${_.get(error, "message")}\n\nStack: ${_.get(
-                  error,
-                  "stack"
-                )}\n\nSaga Stack: ${_.get(error, "sagaStack")}`
+                `Message: ${_.get(error, "message")}\n\nStack: ${_.get(error, "stack")}\n\nSaga Stack: ${_.get(error, "sagaStack")}`
               )
             }
             variant={"contained"}
@@ -125,9 +130,7 @@ export function ErrorFallback({ error, onClose }) {
         <div style={{ display: showError ? "block" : "none" }} className={classes.errorContainer}>
           <ErrorItem fieldName="Message" fieldValue={error.message} />
           <ErrorItem fieldName="Error Stack" fieldValue={error.stack} />
-          {error["sagaStack"] && (
-            <ErrorItem fieldName="Saga Stack" fieldValue={error["sagaStack"]} />
-          )}
+          {error["sagaStack"] && <ErrorItem fieldName="Saga Stack" fieldValue={error["sagaStack"]} />}
         </div>
         <div className={classes.buttonContainer}>
           <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={appHome}>
