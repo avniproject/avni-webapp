@@ -120,7 +120,16 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
 
   const handleUploadFile = useCallback(async () => {
     try {
-      const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove, mode, hierarchy || 0);
+      const locationUploadModeValue = uploadType === UPLOAD_TYPES.LOCATIONS ? mode : "";
+      const encounterUploadModeValue = isEncounterType(uploadType) ? mode : "";
+      const [ok, error] = await api.bulkUpload(
+        getUploadTypeCode(uploadType),
+        file,
+        autoApprove,
+        locationUploadModeValue,
+        hierarchy || 0,
+        encounterUploadModeValue
+      );
       if (!ok && error) {
         if (error === "Double extension file detected") {
           alert(`Please rename ${file.name} to have a single extension and try again.`);

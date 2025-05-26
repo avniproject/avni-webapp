@@ -6,10 +6,9 @@ export default {
   fetchUploadJobStatuses: (params = {}) => {
     return http.fetchJson(http.withParams("/import/status", { size: 5, ...params })).then(r => r.json);
   },
-  bulkUpload: (type, file, autoApprove, locationUploadMode, locationHierarchy) =>
+  bulkUpload: (type, file, autoApprove, locationUploadMode, locationHierarchy, encounterUploadMode) =>
     http
-      .uploadFile(http.withParams("/import/new", { type, autoApprove, locationUploadMode, locationHierarchy }), file)
-      //returns [response, error]
+      .uploadFile(http.withParams("/import/new", { type, autoApprove, locationUploadMode, locationHierarchy, encounterUploadMode }), file)
       .then(r => [r.text, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   fetchUploadTypes: () => {
