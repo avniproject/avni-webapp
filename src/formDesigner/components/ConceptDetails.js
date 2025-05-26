@@ -329,6 +329,16 @@ function ConceptDetails({ userInfo, ...props }) {
             <br />
             <span style={{ fontSize: "15px" }}>{data.dataType}</span>
           </div>
+
+          <p />
+          {data.mediaUrl && (
+            <div>
+              <FormLabel style={{ fontSize: "13px" }}>{"Image"}</FormLabel>
+              <br />
+              <img src={data.mediaUrl} alt="Preview" />
+            </div>
+          )}
+
           <BooleanStatusInShow status={data.active} label={"Active"} />
 
           {data.dataType === "Numeric" && <NumericDetails data={data} />}
@@ -345,15 +355,6 @@ function ConceptDetails({ userInfo, ...props }) {
 
           <p />
           <KeyValueDetail keyValues={data.keyValues} />
-
-          <p />
-          {data.mediaUrl && (
-            <div>
-              <FormLabel style={{ fontSize: "13px" }}>{"Image"}</FormLabel>
-              <br />
-              <img src={data.mediaUrl} alt="Preview" />
-            </div>
-          )}
 
           <p />
 

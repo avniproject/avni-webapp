@@ -540,22 +540,24 @@ class CreateEditConcept extends Component {
                 <ConceptActiveSwitch active={concept.active} handleActive={this.handleActive} conceptUUID={concept.uuid} />
               </Grid>
             )}
-            <Grid item xs={12}>
-              <AvniImageUpload
-                height={20}
-                width={20}
-                onSelect={this.handleMediaSelect}
-                label={`Image (max ${Math.round((WebConceptView.MaxFileSize / 1024 + Number.EPSILON) * 10) / 10} KB)`}
-                maxFileSize={WebConceptView.MaxFileSize}
-                oldImgUrl={concept.mediaUrl}
-                onDelete={this.handleMediaDelete}
-              />
-              {this.state.error && this.state.error.mediaUploadFailed && (
-                <FormControl error style={{ marginTop: 4 }}>
-                  <FormHelperText error>{this.state.error.message}</FormHelperText>
-                </FormControl>
-              )}
-            </Grid>
+            {["Coded", "NA"].includes(concept.dataType) && (
+              <Grid item xs={12}>
+                <AvniImageUpload
+                  height={20}
+                  width={20}
+                  onSelect={this.handleMediaSelect}
+                  label={`Image (max ${Math.round((WebConceptView.MaxFileSize / 1024 + Number.EPSILON) * 10) / 10} KB)`}
+                  maxFileSize={WebConceptView.MaxFileSize}
+                  oldImgUrl={concept.mediaUrl}
+                  onDelete={this.handleMediaDelete}
+                />
+                {this.state.error && this.state.error.mediaUploadFailed && (
+                  <FormControl error style={{ marginTop: 4 }}>
+                    <FormHelperText error>{this.state.error.message}</FormHelperText>
+                  </FormControl>
+                )}
+              </Grid>
+            )}
             <Grid item xs={12}>
               {dataTypeComponent}
             </Grid>

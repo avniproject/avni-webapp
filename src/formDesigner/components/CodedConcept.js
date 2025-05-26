@@ -23,30 +23,40 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const CodedConceptAnswer = props => {
+export const CodedConceptAnswer = ({
+  answer,
+  index,
+  inlineConcept,
+  elementIndex,
+  groupIndex,
+  onChangeAnswerName,
+  onToggleAnswerField,
+  onSelectAnswerMedia,
+  onRemoveAnswerMedia,
+  totalAnswers
+}) => {
   const action = actionName => {
-    props.inlineConcept ? props[actionName](props.groupIndex, props.elementIndex, props.index) : props[actionName](props.index);
+    inlineConcept ? actionName(groupIndex, elementIndex, index) : actionName(index);
   };
 
-  const isDuplicateAnswerValue =
-    get(props.answer, "isAnswerHavingError.isErrored") && props.answer.isAnswerHavingError.type === "duplicate";
+  const isDuplicateAnswerValue = get(answer, "isAnswerHavingError.isErrored") && answer.isAnswerHavingError.type === "duplicate";
 
   return (
     <Grid item container spacing={0} alignItems={"center"}>
       <Grid item xs={8} sm={3} md={4}>
         <AutoSuggestSingleSelection
-          visibility={!props.answer.editable}
-          showAnswer={props.answer}
-          onChangeAnswerName={props.onChangeAnswerName}
-          index={props.index}
+          visibility={!answer.editable}
+          showAnswer={answer}
+          onChangeAnswerName={onChangeAnswerName}
+          index={index}
           showSuggestionStartsWith={true}
           placeholder="Enter answer"
           label="Answer"
-          inlineConcept={props.inlineConcept}
-          elementIndex={props.elementIndex}
-          groupIndex={props.groupIndex}
+          inlineConcept={inlineConcept}
+          elementIndex={elementIndex}
+          groupIndex={groupIndex}
         />
-        {get(props.answer, "isAnswerHavingError.isErrored") && props.answer.isAnswerHavingError.type === "required" && (
+        {get(answer, "isAnswerHavingError.isErrored") && answer.isAnswerHavingError.type === "required" && (
           <FormHelperText error>Answer is required.</FormHelperText>
         )}
         {isDuplicateAnswerValue && <FormHelperText error>Duplicate answer specified</FormHelperText>}
@@ -55,13 +65,11 @@ export const CodedConceptAnswer = props => {
         <FormControlLabel
           control={
             <Checkbox
-              checked={props.answer.abnormal}
+              checked={answer.abnormal}
               onChange={e =>
-                props.inlineConcept
-                  ? props.onToggleAnswerField("abnormal", props.groupIndex, props.elementIndex, props.index)
-                  : props.onToggleAnswerField(e, props.index)
+                inlineConcept ? onToggleAnswerField("abnormal", groupIndex, elementIndex, index) : onToggleAnswerField(e, index)
               }
-              value={props.answer.abnormal}
+              value={answer.abnormal}
               color="primary"
               id="abnormal"
             />
@@ -74,13 +82,11 @@ export const CodedConceptAnswer = props => {
         <FormControlLabel
           control={
             <Checkbox
-              checked={props.answer.unique}
+              checked={answer.unique}
               onChange={e =>
-                props.inlineConcept
-                  ? props.onToggleAnswerField("unique", props.groupIndex, props.elementIndex, props.index)
-                  : props.onToggleAnswerField(e, props.index)
+                inlineConcept ? onToggleAnswerField("unique", groupIndex, elementIndex, index) : onToggleAnswerField(e, index)
               }
-              value={props.answer.unique}
+              value={answer.unique}
               color="primary"
               id="unique"
             />
@@ -92,12 +98,12 @@ export const CodedConceptAnswer = props => {
       <Grid item>
         <Grid item container direction={"row"} alignItems={"center"}>
           <Grid item>
-            <Button disabled={props.index === 0} color="primary" type="button" onClick={() => action("onMoveUp")}>
+            <Button disabled={index === 0} color="primary" type="button" onClick={() => action("onMoveUp")}>
               <ArrowDropUpIcon /> Move up
             </Button>
           </Grid>
           <Grid item>
-            <Button disabled={props.index + 1 === props.totalAnswers} color="primary" type="button" onClick={() => action("onMoveDown")}>
+            <Button disabled={index + 1 === totalAnswers} color="primary" type="button" onClick={() => action("onMoveDown")}>
               <ArrowDropDownIcon /> Move down
             </Button>
           </Grid>
@@ -106,18 +112,20 @@ export const CodedConceptAnswer = props => {
               <DeleteIcon fontSize={"small"} /> Remove
             </Button>
           </Grid>
-          <Grid item>
-            <AvniImageUpload
-              width={20}
-              height={20}
-              allowUpload={true}
-              onSelect={mediaFile => props.onSelectAnswerMedia(mediaFile, props.index)}
-              maxFileSize={WebConceptView.MaxFileSize}
-              onDelete={() => props.onRemoveAnswerMedia(props.index)}
-              oldImgUrl={props.answer.mediaUrl}
-              uniqueName={"answer" + props.index}
-            />
-          </Grid>
+          {!inlineConcept && (
+            <Grid item>
+              <AvniImageUpload
+                width={20}
+                height={20}
+                allowUpload={true}
+                onSelect={mediaFile => onSelectAnswerMedia(mediaFile, index)}
+                maxFileSize={WebConceptView.MaxFileSize}
+                onDelete={() => onRemoveAnswerMedia(index)}
+                oldImgUrl={answer.mediaUrl}
+                uniqueName={"answer" + index}
+              />
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </Grid>
