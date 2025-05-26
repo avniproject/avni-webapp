@@ -100,7 +100,6 @@ deploy_build_local: build-app
 	mkdir ../avni-server/static
 	cp -r build/* ../avni-server/static
 
-
 zip-app:
 	yarn install
 	yarn run build
