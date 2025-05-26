@@ -3,7 +3,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import http from "common/utils/httpClient";
-import { default as UUID } from "uuid";
 import NumericConcept from "../components/NumericConcept";
 import CodedConcept from "../components/CodedConcept";
 import { LocationConcept } from "../components/LocationConcept";
@@ -14,7 +13,7 @@ import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, isEmpty, remove, replace, sortBy, toLower, trim } from "lodash";
+import { filter, find, replace, sortBy, toLower, trim } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -30,6 +29,9 @@ import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
 import { EncounterConcept } from "../components/EncounterConcept";
 import { connect } from "react-redux";
 import { ImageV2Concept } from "../components/ImageV2Concept";
+import { AvniImageUpload } from "../../common/components/AvniImageUpload";
+import ConceptService from "../../common/service/ConceptService";
+import { ConceptAnswerError, WebConcept, WebConceptAnswerView, WebConceptView } from "../../common/model/WebConcept";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -69,7 +71,7 @@ const checkForEmptyAnswerNames = answers => {
   answers
     .filter(answer => answer.name.trim() === "")
     .forEach(answer => {
-      answer["isAnswerHavingError"] = { isErrored: true, type: "required" };
+      answer["isAnswerHavingError"] = ConceptAnswerError.inError("required");
     });
 };
 
@@ -79,7 +81,7 @@ const checkForDuplicateAnswers = answers => {
     .filter(answer => answer && !answer.voided)
     .forEach(answer => {
       if (uniqueCodedAnswerNames.size === uniqueCodedAnswerNames.add(answer.name).size) {
-        answer["isAnswerHavingError"] = { isErrored: true, type: "duplicate" };
+        answer.isAnswerHavingError = ConceptAnswerError.inError("duplicate");
       }
     });
 };
@@ -87,38 +89,15 @@ const checkForDuplicateAnswers = answers => {
 class CreateEditConcept extends Component {
   constructor(props) {
     super(props);
+    const emptyConcept = WebConceptView.emptyConcept();
     this.state = {
-      dataTypes: [],
-      name: "",
-      uuid: "",
-      dataType: "",
-      lowAbsolute: null,
-      highAbsolute: null,
-      lowNormal: null,
-      highNormal: null,
-      unit: null,
-      createdBy: "",
-      lastModifiedBy: "",
-      creationDateTime: "",
-      lastModifiedDateTime: "",
-      answers: [
-        {
-          name: "",
-          uuid: "",
-          unique: false,
-          abnormal: false,
-          editable: true,
-          voided: false,
-          order: 0,
-          isAnswerHavingError: { isErrored: false, type: "" }
-        }
-      ],
+      concept: emptyConcept,
       conceptCreationAlert: false,
       error: {},
+      dataTypes: [],
       defaultSnackbarStatus: true,
-      keyValues: [],
       redirectShow: false,
-      redirectOnDelete: false,
+      redirectOnDeleteOrCreate: false,
       active: false,
       readOnlyKeys: [
         "isWithinCatchment",
@@ -134,53 +113,23 @@ class CreateEditConcept extends Component {
     };
   }
 
-  componentDidMount() {
+  async onLoad() {
     if (this.props.isCreatePage) {
-      http.get("/concept/dataTypes").then(response => {
-        this.setState({
-          dataTypes: sortBy(response.data)
-        });
+      const response = await http.get("/concept/dataTypes");
+      this.setState({
+        dataTypes: sortBy(response.data)
       });
     } else {
-      http.get("/web/concept/" + this.props.match.params.uuid).then(response => {
-        let answers = [];
-        if (response.data.dataType === "Coded" && response.data.conceptAnswers) {
-          answers = response.data.conceptAnswers.map(conceptAnswer => ({
-            name: conceptAnswer.answerConcept.name,
-            uuid: conceptAnswer.answerConcept.uuid,
-            unique: conceptAnswer.unique,
-            abnormal: conceptAnswer.abnormal,
-            order: conceptAnswer.order,
-            voided: conceptAnswer.voided
-          }));
-          answers.sort(function(conceptOrder1, conceptOrder2) {
-            return conceptOrder1.order - conceptOrder2.order;
-          });
-        }
-
-        this.setState({
-          name: response.data.name,
-          uuid: response.data.uuid,
-          dataType: response.data.dataType,
-          active: response.data.active,
-          lowAbsolute: response.data.lowAbsolute,
-          highAbsolute: response.data.highAbsolute,
-          lowNormal: response.data.lowNormal,
-          highNormal: response.data.highNormal,
-          unit: response.data.unit,
-          createdBy: response.data.createdBy,
-          lastModifiedBy: response.data.lastModifiedBy,
-          creationDateTime: response.data.createdDateTime,
-          lastModifiedDateTime: response.data.lastModifiedDateTime,
-          keyValues: response.data.keyValues,
-          answers
-        });
-      });
+      const concept = await ConceptService.getConcept(this.props.match.params.uuid);
+      this.setState({ concept });
     }
 
-    http.get("/web/operationalModules").then(response => {
-      this.setState(state => ({ ...state, operationalModules: response.data }));
-    });
+    const opModules = await http.get("/web/operationalModules");
+    this.setState(state => ({ ...state, operationalModules: opModules.data }));
+  }
+
+  componentDidMount() {
+    this.onLoad();
   }
 
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
@@ -194,345 +143,162 @@ class CreateEditConcept extends Component {
   };
 
   onDeleteAnswer = index => {
-    const answers = [...this.state.answers];
-    if (!isEmpty(answers[index].name) && !isEmpty(answers[index].uuid)) {
-      answers[index].voided = true;
-      const encodedURL = `/web/concept?name=${encodeURIComponent(answers[index].name)}`;
-
-      http
-        .get(encodedURL)
-        .then(response => {
-          this.removeDuplicateNonVoidedAnswers(answers, index, answers[index].name);
-          this.setState({
-            answers
-          });
-        })
-        .catch(error => {
-          answers.splice(index, 1);
-          this.setState({
-            answers
-          });
-        });
-    } else {
-      answers.splice(index, 1);
-      this.setState({
-        answers
-      });
-    }
+    const answers = [...this.state.concept.answers];
+    answers.splice(index, 1);
+    this.setState({ concept: { ...this.state.concept, answers } });
   };
 
   onAddAnswer = () => {
     this.setState({
-      answers: [
-        ...this.state.answers,
-        {
-          name: "",
-          uuid: "",
-          unique: false,
-          abnormal: false,
-          editable: true,
-          voided: false,
-          order: 0,
-          isAnswerHavingError: { isErrored: false, type: "" }
-        }
-      ]
+      concept: { ...this.state.concept, answers: [...this.state.concept.answers, WebConceptAnswerView.emptyAnswer()] }
     });
   };
 
-  onChangeAnswerName = (answerName, index) => {
-    const answers = [...this.state.answers];
-    answers[index].name = answerName;
-    this.removeDuplicateVoidedAnswers(answers, index, answerName);
-    this.setState({
-      answers
-    });
+  onChangeAnswerName = (answer, index) => {
+    const answers = [...this.state.concept.answers];
+    answers[index].name = answer;
+    this.setState({ concept: { ...this.state.concept, answers } });
   };
 
-  removeDuplicateVoidedAnswers(answers, index, answerName) {
-    remove(answers, (answer, idx) => idx !== index && answer.voided && answer.name === answerName);
-  }
-
-  removeDuplicateNonVoidedAnswers(answers, index, answerName) {
-    remove(answers, (answer, idx) => idx !== index && !answer.voided && answer.name === answerName);
-  }
+  handleMediaDelete = () => {
+    this.setState({ concept: { ...this.state.concept, mediaUrl: null, unSavedMediaFile: null } });
+  };
 
   onMoveUp = index => {
     this.setState({
-      answers: moveUp(this.state.answers, index)
+      concept: { ...this.state.concept, answers: moveUp(this.state.concept.answers, index) }
     });
   };
 
   onMoveDown = index => {
     this.setState({
-      answers: moveDown(this.state.answers, index)
+      concept: { ...this.state.concept, answers: moveDown(this.state.concept.answers, index) }
     });
   };
 
   onAlphabeticalSort = () => {
     this.setState({
-      answers: alphabeticalSort(this.state.answers)
+      concept: { ...this.state.concept, answers: alphabeticalSort(this.state.concept.answers) }
     });
   };
 
+  onSelectAnswerMedia = (mediaFile, index) => {
+    const answers = [...this.state.concept.answers];
+    answers[index].unSavedMediaFile = mediaFile;
+    this.setState({ concept: { ...this.state.concept, answers } });
+  };
+
+  onRemoveAnswerMedia = index => {
+    const answers = [...this.state.concept.answers];
+    answers[index].unSavedMediaFile = null;
+    answers[index].mediaUrl = null;
+    this.setState({ concept: { ...this.state.concept, answers } });
+  };
+
   onToggleAnswerField = (event, index) => {
-    const answers = [...this.state.answers];
+    const answers = [...this.state.concept.answers];
     answers[index][event.target.id] = !answers[index][event.target.id];
     this.setState({
-      answers
+      concept: { ...this.state.concept, answers }
     });
   };
 
   handleChange = stateHandler => e => {
+    const resetKeyValues = this.props.isCreatePage && stateHandler === "dataType" && e.target.value !== "Location";
+    const c = { ...this.state.concept };
+    c[stateHandler] = replace(e.target.value, "|", "");
+    if (resetKeyValues) c.keyValues = [];
     this.setState({
-      [stateHandler]: replace(e.target.value, "|", "")
+      concept: c
     });
-    this.resetKeyValuesIfNeeded(stateHandler, e);
   };
 
-  resetKeyValuesIfNeeded(stateHandler, e) {
-    if (this.props.isCreatePage && stateHandler === "dataType" && e.target.value !== "Location") {
-      this.setState({ keyValues: [] });
-    }
-  }
-
-  postCodedData(answers) {
-    answers.map(function(answer, index) {
-      return (answer.order = index);
-    });
-
-    this.setState(
-      {
-        answers: answers
-      },
-      () => {
-        const Uuid = UUID.v4();
-        http
-          .post("/concepts", [
-            {
-              name: this.state.name,
-              uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
-              dataType: this.state.dataType,
-              keyValues: this.state.keyValues,
-              answers: this.state.answers,
-              active: this.props.isCreatePage ? true : this.state.active
-            }
-          ])
-          .then(response => {
-            if (response.status === 200) {
-              this.setState({
-                conceptCreationAlert: true,
-                name: this.props.isCreatePage ? "" : this.state.name,
-                uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
-                dataType: this.props.isCreatePage ? "" : this.state.dataType,
-                keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
-                lowAbsolute: null,
-                highAbsolute: null,
-                lowNormal: null,
-                highNormal: null,
-                unit: null,
-                answers: this.props.isCreatePage ? [] : this.state.answers,
-                defaultSnackbarStatus: true,
-                redirectShow: true
-              });
-            }
-          });
-      }
-    );
-  }
-
   validateKeyValues = (error, key, errorKey) => {
-    const keyValue = this.state.keyValues.find(keyValue => keyValue.key === key);
+    const keyValue = this.state.concept.keyValues.find(keyValue => keyValue.key === key);
     if (keyValue === undefined || keyValue.value === "") {
       error[errorKey] = true;
     }
   };
 
-  formValidation = () => {
-    const conceptName = this.state.name;
+  formValidation = async () => {
     let error = {};
-    const answers = this.state.answers;
-    var promise = new Promise((resolve, reject) => {
-      http
-        .get(`/web/concept?name=${encodeURIComponent(conceptName)}`)
-        .then(response => {
-          if (response.status === 200 && this.props.isCreatePage) {
-            error["nameError"] = true;
-          }
-          if (response.status === 200 && response.data.uuid !== this.state.uuid && !this.props.isCreatePage) {
-            error["nameError"] = true;
-          }
+    const concept = this.state.concept;
+    const answers = concept.answers;
+    if (concept.dataType === "") {
+      error["dataTypeSelectionAlert"] = true;
+    }
+    if (concept.name.trim() === "") {
+      error["isEmptyName"] = true;
+    }
 
-          resolve("Promise resolved ");
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            resolve("Promise resolved ");
-          } else {
-            reject(Error("Promise rejected"));
-          }
-        });
+    // Use WebConcept validation for numeric ranges
+    const numericRangeErrors = WebConcept.validateNumericRanges(concept);
+    error = { ...error, ...numericRangeErrors };
+
+    if (concept.dataType === "Coded") {
+      validateCodedConceptAnswers(answers);
+      if (answers.some(answer => answer["isAnswerHavingError"].isErrored)) {
+        error["isAnswerHavingError"] = true;
+      }
+    }
+
+    if (concept.dataType === "Location") {
+      const lowestLevelKeyValue = concept.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs");
+      if (lowestLevelKeyValue === undefined || lowestLevelKeyValue.value.length === 0) {
+        error["lowestAddressLevelRequired"] = true;
+      }
+
+      const highestLevelKeyValue = concept.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID");
+      if (highestLevelKeyValue !== undefined && highestLevelKeyValue.value === "") {
+        error["highestAddressLevelRequired"] = true;
+      }
+    }
+
+    if (concept.dataType === "Subject") {
+      this.validateKeyValues(error, "subjectTypeUUID", "subjectTypeRequired");
+    }
+
+    if (concept.dataType === "Encounter") {
+      this.validateKeyValues(error, "encounterTypeUUID", "encounterTypeRequired");
+      this.validateKeyValues(error, "encounterScope", "encounterScopeRequired");
+      this.validateKeyValues(error, "encounterIdentifier", "encounterIdentifierRequired");
+    }
+
+    const emptyKeyValues = filter(concept.keyValues, ({ key, value }) => key === "" || value === "");
+    if (emptyKeyValues.length > 0) {
+      error["keyValueError"] = true;
+    }
+
+    this.setState({
+      error: error,
+      answers: answers
     });
 
-    promise.then(
-      result => {
-        if (this.state.dataType === "") {
-          error["dataTypeSelectionAlert"] = true;
-        }
-        if (this.state.name.trim() === "") {
-          error["isEmptyName"] = true;
-        }
-        if (parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute)) {
-          error["absoluteValidation"] = true;
-        }
-        if (parseInt(this.state.lowNormal) > parseInt(this.state.highNormal)) {
-          error["normalValidation"] = true;
-        }
-
-        if (this.state.dataType === "Coded") {
-          validateCodedConceptAnswers(answers);
-          if (answers.some(answer => answer["isAnswerHavingError"].isErrored)) {
-            error["isAnswerHavingError"] = true;
-          }
-        }
-
-        if (this.state.dataType === "Location") {
-          const lowestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs");
-          if (lowestLevelKeyValue === undefined || lowestLevelKeyValue.value.length === 0) {
-            error["lowestAddressLevelRequired"] = true;
-          }
-
-          const highestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID");
-          if (highestLevelKeyValue !== undefined && highestLevelKeyValue.value === "") {
-            this.onDeleteKeyValue(2);
-          }
-        }
-
-        if (this.state.dataType === "Subject") {
-          this.validateKeyValues(error, "subjectTypeUUID", "subjectTypeRequired");
-        }
-
-        if (this.state.dataType === "Encounter") {
-          this.validateKeyValues(error, "encounterTypeUUID", "encounterTypeRequired");
-          this.validateKeyValues(error, "encounterScope", "encounterScopeRequired");
-          this.validateKeyValues(error, "encounterIdentifier", "encounterIdentifierRequired");
-        }
-
-        const emptyKeyValues = filter(this.state.keyValues, ({ key, value }) => key === "" || value === "");
-        if (emptyKeyValues.length > 0) {
-          error["keyValueError"] = true;
-        }
-
-        this.setState({
-          error: error,
-          answers: answers
-        });
-
-        Object.keys(error).length === 0 && this.afterSuccessfullValidation();
-      },
-      function(error) {
-        console.log(error);
-      }
-    );
+    if (Object.keys(error).length === 0) await this.afterSuccessfulValidation();
   };
 
   handleSubmit = e => {
     e.preventDefault();
-
     this.formValidation();
   };
 
-  afterSuccessfullValidation = () => {
-    if (this.state.dataType === "Coded") {
-      const answers = this.state.answers;
-      const length = answers.length;
-
-      let index = 0;
-      if (length !== 0) {
-        answers.forEach(answer => {
-          return http
-            .get(`/web/concept?name=${encodeURIComponent(answer.name)}`)
-            .then(response => {
-              if (response.status === 200) {
-                answer.uuid = response.data.uuid;
-                answer.keyValues = response.data.keyValues;
-                index = index + 1;
-                if (index === length) {
-                  this.postCodedData(answers);
-                }
-              }
-            })
-            .catch(error => {
-              if (error.response.status === 404) {
-                answer.uuid = UUID.v4();
-                http
-                  .post("/concepts", [
-                    {
-                      name: answer.name,
-                      uuid: answer.uuid,
-                      dataType: "NA",
-                      lowAbsolute: null,
-                      highAbsolute: null,
-                      lowNormal: null,
-                      highNormal: null,
-                      unit: null
-                    }
-                  ])
-                  .then(response => {
-                    if (response.status === 200) {
-                      console.log("Dynamic concept added through Coded", response);
-
-                      index = index + 1;
-                      if (index === length) {
-                        this.postCodedData(answers);
-                      }
-                    }
-                  });
-              } else {
-                console.log(error);
-              }
-            });
-        });
-      } else {
-        this.postCodedData(answers);
-      }
-    } else {
-      if (!this.state.error.absoluteValidation || !this.state.error.normalValidation) {
-        const Uuid = UUID.v4();
-        http
-          .post("/concepts", [
-            {
-              name: this.state.name,
-              uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
-              dataType: this.state.dataType,
-              keyValues: this.state.keyValues,
-              lowAbsolute: this.state.lowAbsolute,
-              highAbsolute: this.state.highAbsolute,
-              lowNormal: this.state.lowNormal,
-              highNormal: this.state.highNormal,
-              unit: this.state.unit === "" ? null : this.state.unit,
-              active: this.props.isCreatePage ? true : this.state.active
-            }
-          ])
-          .then(response => {
-            if (response.status === 200) {
-              this.setState({
-                conceptCreationAlert: true,
-                defaultSnackbarStatus: true,
-                name: this.props.isCreatePage ? "" : this.state.name,
-                uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
-                dataType: this.props.isCreatePage ? "" : this.state.dataType,
-                keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
-                lowAbsolute: this.props.isCreatePage ? "" : this.state.lowAbsolute,
-                highAbsolute: this.props.isCreatePage ? "" : this.state.highAbsolute,
-                lowNormal: this.props.isCreatePage ? "" : this.state.lowNormal,
-                highNormal: this.props.isCreatePage ? "" : this.state.highNormal,
-                unit: this.props.isCreatePage ? "" : this.state.unit,
-                redirectShow: true
-              });
-            }
-          });
-      }
+  afterSuccessfulValidation = async () => {
+    const { concept, error } = await ConceptService.saveConcept(this.state.concept);
+    if (error) {
+      this.setState({
+        error: { mediaUploadFailed: true, message: error }
+      });
+      return;
     }
+    const newState = {
+      conceptCreationAlert: true,
+      defaultSnackbarStatus: true,
+      redirectShow: !this.props.isCreatePage,
+      redirectOnDeleteOrCreate: this.props.isCreatePage,
+      concept: this.props.isCreatePage ? WebConceptView.emptyConcept() : concept
+    };
+
+    this.setState(newState);
   };
   onNumericConceptAttributeAssignment = event => {
     this.setState({
@@ -541,12 +307,7 @@ class CreateEditConcept extends Component {
   };
 
   castValueToBooleanOrInt = ({ key, value }) => {
-    let castedValue;
-    try {
-      castedValue = JSON.parse(trim(value));
-    } catch (e) {
-      castedValue = trim(value);
-    }
+    let castedValue = JSON.parse(trim(value));
     return { key: trim(key), value: castedValue };
   };
 
@@ -555,21 +316,27 @@ class CreateEditConcept extends Component {
   };
 
   onKeyValueChange = (keyValue, index) => {
-    const keyValues = this.state.keyValues;
+    const keyValues = this.state.concept.keyValues;
     keyValues[index] = typeof keyValue.value === "object" ? this.handleObjectValue(keyValue) : this.castValueToBooleanOrInt(keyValue);
-    this.setState({ ...this.state, keyValues });
+    this.setState({
+      concept: { ...this.state.concept, keyValues }
+    });
   };
 
   onAddNewKeyValue = () => {
-    const keyValues = this.state.keyValues || [];
+    const keyValues = this.state.concept.keyValues || [];
     keyValues.push({ key: "", value: "" });
-    this.setState({ ...this.state, keyValues });
+    this.setState({
+      concept: { ...this.state.concept, keyValues }
+    });
   };
 
   onDeleteKeyValue = index => {
-    const keyValues = this.state.keyValues;
+    const keyValues = this.state.concept.keyValues;
     keyValues.splice(index, 1);
-    this.setState({ ...this.state, keyValues });
+    this.setState({
+      concept: { ...this.state.concept, keyValues }
+    });
   };
 
   handleActive = event => {
@@ -578,13 +345,17 @@ class CreateEditConcept extends Component {
     });
   };
 
+  handleMediaSelect = mediaFile => {
+    this.setState({ concept: { ...this.state.concept, unSavedMediaFile: mediaFile } });
+  };
+
   onDeleteConcept = () => {
     if (window.confirm("Do you really want to delete the concept?")) {
-      http.delete(`/concept/${this.state.uuid}`).then(response => {
+      http.delete(`/concept/${this.state.concept.uuid}`).then(response => {
         if (response.status === 200) {
           this.setState({
             redirectShow: false,
-            redirectOnDelete: true
+            redirectOnDeleteOrCreate: true
           });
         }
       });
@@ -592,7 +363,7 @@ class CreateEditConcept extends Component {
   };
 
   render() {
-    let dataType;
+    let dataTypeComponent;
     const classes = {
       textField: {
         width: 400,
@@ -613,21 +384,21 @@ class CreateEditConcept extends Component {
     };
 
     const conceptCreationMessage = this.props.isCreatePage ? "Concept created successfully." : "Concept updated successfully.";
-
     const appBarTitle = this.props.isCreatePage ? "Create Concept" : "Edit Concept";
+    const concept = this.state.concept;
 
-    if (this.state.dataType === "Numeric") {
-      dataType = (
+    if (concept.dataType === "Numeric") {
+      dataTypeComponent = (
         <NumericConcept
           onNumericConceptAttributeAssignment={this.onNumericConceptAttributeAssignment}
-          numericDataTypeAttributes={this.state}
+          numericDataTypeAttributes={concept}
         />
       );
     }
-    if (this.state.dataType === "Coded") {
-      dataType = (
+    if (concept.dataType === "Coded") {
+      dataTypeComponent = (
         <CodedConcept
-          answers={this.state.answers}
+          answers={concept.answers}
           onDeleteAnswer={this.onDeleteAnswer}
           onAddAnswer={this.onAddAnswer}
           onChangeAnswerName={this.onChangeAnswerName}
@@ -635,15 +406,17 @@ class CreateEditConcept extends Component {
           onMoveUp={this.onMoveUp}
           onMoveDown={this.onMoveDown}
           onAlphabeticalSort={this.onAlphabeticalSort}
+          onSelectAnswerMedia={this.onSelectAnswerMedia}
+          onRemoveAnswerMedia={this.onRemoveAnswerMedia}
         />
       );
     }
 
-    if (this.state.dataType === "Location") {
-      dataType = (
+    if (concept.dataType === "Location") {
+      dataTypeComponent = (
         <LocationConcept
           updateConceptKeyValues={this.onKeyValueChange}
-          keyValues={this.state.keyValues}
+          keyValues={concept.keyValues}
           error={this.state.error}
           isCreatePage={this.props.isCreatePage}
           inlineConcept={false}
@@ -651,11 +424,11 @@ class CreateEditConcept extends Component {
       );
     }
 
-    if (this.state.dataType === "Subject") {
-      dataType = (
+    if (concept.dataType === "Subject") {
+      dataTypeComponent = (
         <SubjectConcept
           updateKeyValues={this.onKeyValueChange}
-          keyValues={this.state.keyValues}
+          keyValues={concept.keyValues}
           error={this.state.error}
           isCreatePage={this.props.isCreatePage}
           inlineConcept={false}
@@ -664,11 +437,11 @@ class CreateEditConcept extends Component {
       );
     }
 
-    if (this.state.dataType === "Encounter") {
-      dataType = (
+    if (concept.dataType === "Encounter") {
+      dataTypeComponent = (
         <EncounterConcept
           updateKeyValues={this.onKeyValueChange}
-          keyValues={this.state.keyValues}
+          keyValues={concept.keyValues}
           error={this.state.error}
           isCreatePage={this.props.isCreatePage}
           inlineConcept={false}
@@ -677,10 +450,10 @@ class CreateEditConcept extends Component {
       );
     }
 
-    if (this.state.dataType === "PhoneNumber") {
-      const verificationKey = find(this.state.keyValues, ({ key, value }) => key === "verifyPhoneNumber");
+    if (concept.dataType === "PhoneNumber") {
+      const verificationKey = find(concept.keyValues, ({ key, value }) => key === "verifyPhoneNumber");
       if (verificationKey) {
-        dataType = <PhoneNumberConcept onKeyValueChange={this.onKeyValueChange} checked={verificationKey.value} />;
+        dataTypeComponent = <PhoneNumberConcept onKeyValueChange={this.onKeyValueChange} checked={verificationKey.value} />;
       } else {
         this.setState(prevState => ({
           ...prevState,
@@ -689,10 +462,10 @@ class CreateEditConcept extends Component {
       }
     }
 
-    if (this.state.dataType === "ImageV2") {
-      const locationInformationKey = find(this.state.keyValues, ({ key, value }) => key === "captureLocationInformation");
+    if (concept.dataType === "ImageV2") {
+      const locationInformationKey = find(concept.keyValues, ({ key, value }) => key === "captureLocationInformation");
       if (locationInformationKey) {
-        dataType = <ImageV2Concept onKeyValueChange={this.onKeyValueChange} checked={locationInformationKey.value} />;
+        dataTypeComponent = <ImageV2Concept onKeyValueChange={this.onKeyValueChange} checked={locationInformationKey.value} />;
       } else {
         this.setState(prevState => ({
           ...prevState,
@@ -702,110 +475,125 @@ class CreateEditConcept extends Component {
     }
 
     return (
-      <Box boxShadow={2} p={2} bgcolor="background.paper">
+      <Box boxShadow={2} p={3} bgcolor="background.paper">
         <DocumentationContainer filename={"Concept.md"}>
           <Title title={appBarTitle} />
           {!this.props.isCreatePage && (
-            <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+            <Grid container justifyContent="flex-end" mb={2}>
               <Button color="primary" type="button" onClick={() => this.setRedirectShow()}>
                 <VisibilityIcon /> Show
               </Button>
             </Grid>
           )}
-          <div className="container" style={{ float: "left" }}>
-            <div>
+          <Grid container direction="column" spacing={2}>
+            <Grid item xs={12}>
               <AvniTextField
                 id="name"
                 label="Concept name"
-                value={this.state.name}
+                value={concept.name}
                 onChange={this.handleChange("name")}
                 style={classes.textField}
                 margin="normal"
                 autoComplete="off"
                 toolTipKey={"APP_DESIGNER_CONCEPT_NAME"}
+                fullWidth
               />
               {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
               {!this.state.error.isEmptyName &&
                 (this.state.error.nameError && <FormHelperText error>Same name concept already exist.</FormHelperText>)}
-            </div>
-
-            <div>
-              {this.props.isCreatePage && (
+            </Grid>
+            <Grid item xs={12}>
+              {this.props.isCreatePage ? (
                 <ToolTipContainer toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}>
-                  <FormControl>
+                  <FormControl fullWidth>
                     <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
                     <Select
                       id="dataType"
                       label="DataType"
-                      value={this.state.dataType}
+                      value={concept.dataType}
                       onChange={this.handleChange("dataType")}
                       style={classes.select}
                     >
-                      {this.state.dataTypes.map(datatype => {
-                        return (
-                          <MenuItem value={datatype} key={datatype}>
-                            {datatype}
-                          </MenuItem>
-                        );
-                      })}
+                      {this.state.dataTypes.map(datatype => (
+                        <MenuItem value={datatype} key={datatype}>
+                          {datatype}
+                        </MenuItem>
+                      ))}
                     </Select>
                     {this.state.error.dataTypeSelectionAlert && <FormHelperText error>*Required</FormHelperText>}
                   </FormControl>
                 </ToolTipContainer>
-              )}
-              {!this.props.isCreatePage && (
+              ) : (
                 <AvniTextField
                   id="dataType"
                   label="DataType"
-                  value={this.state.dataType}
+                  value={concept.dataType}
                   style={classes.select}
                   disabled={true}
                   toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
+                  fullWidth
                 />
               )}
-            </div>
-            {!this.props.isCreatePage && (
-              <>
-                <p />
-                <ConceptActiveSwitch active={this.state.active} handleActive={this.handleActive} conceptUUID={this.state.uuid} />
-                <p />
-              </>
-            )}
-
-            {dataType}
-            <KeyValues
-              keyValues={this.state.keyValues}
-              onKeyValueChange={this.onKeyValueChange}
-              onAddNewKeyValue={this.onAddNewKeyValue}
-              onDeleteKeyValue={this.onDeleteKeyValue}
-              error={this.state.error.keyValueError}
-              readOnlyKeys={this.state.readOnlyKeys}
-            />
-          </div>
-
-          <Grid container item sm={12}>
-            <Grid item sm={2}>
-              <SaveComponent name="save" onSubmit={this.handleSubmit} styleClass={{ marginLeft: "12px", marginTop: "10px" }} />{" "}
             </Grid>
-            <Grid item sm={10}>
-              {!this.props.isCreatePage && (
-                <Button style={{ float: "right", color: "red", marginTop: "10px" }} onClick={() => this.onDeleteConcept()}>
-                  <DeleteIcon /> Delete
-                </Button>
+            {!this.props.isCreatePage && (
+              <Grid item xs={12}>
+                <ConceptActiveSwitch active={concept.active} handleActive={this.handleActive} conceptUUID={concept.uuid} />
+              </Grid>
+            )}
+            <Grid item xs={12}>
+              <AvniImageUpload
+                height={20}
+                width={20}
+                onSelect={this.handleMediaSelect}
+                label={`Image (max ${Math.round((WebConceptView.MaxFileSize / 1024 + Number.EPSILON) * 10) / 10} KB)`}
+                maxFileSize={WebConceptView.MaxFileSize}
+                oldImgUrl={concept.mediaUrl}
+                onDelete={this.handleMediaDelete}
+              />
+              {this.state.error && this.state.error.mediaUploadFailed && (
+                <FormControl error style={{ marginTop: 4 }}>
+                  <FormHelperText error>{this.state.error.message}</FormHelperText>
+                </FormControl>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              {dataTypeComponent}
+            </Grid>
+            <Grid item xs={12}>
+              <KeyValues
+                keyValues={concept.keyValues}
+                onKeyValueChange={this.onKeyValueChange}
+                onAddNewKeyValue={this.onAddNewKeyValue}
+                onDeleteKeyValue={this.onDeleteKeyValue}
+                error={this.state.error.keyValueError}
+                readOnlyKeys={this.state.readOnlyKeys}
+              />
+            </Grid>
+            <Grid item xs={12} container justifyContent="flex-end" alignItems="center" spacing={2}>
+              <Grid item>
+                <SaveComponent name="save" onSubmit={this.handleSubmit} styleClass={{ marginLeft: "12px", marginTop: "10px" }} />
+              </Grid>
+              <Grid item>
+                {!this.props.isCreatePage && (
+                  <Button style={{ color: "red", marginTop: "10px" }} onClick={() => this.onDeleteConcept()}>
+                    <DeleteIcon /> Delete
+                  </Button>
+                )}
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              {this.state.conceptCreationAlert && (
+                <CustomizedSnackbar
+                  message={conceptCreationMessage}
+                  getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+                  defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+                />
               )}
             </Grid>
           </Grid>
-
-          {this.state.conceptCreationAlert && (
-            <CustomizedSnackbar
-              message={conceptCreationMessage}
-              getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
-              defaultSnackbarStatus={this.state.defaultSnackbarStatus}
-            />
-          )}
         </DocumentationContainer>
-        {this.state.redirectShow && <Redirect to={`/appDesigner/concept/${this.state.uuid}/show`} />}
-        {this.state.redirectOnDelete && <Redirect to={`/appDesigner/concepts`} />}
+        {this.state.redirectShow && <Redirect to={`/appDesigner/concept/${concept.uuid}/show`} />}
+        {this.state.redirectOnDeleteOrCreate && <Redirect to={`/appDesigner/concepts`} />}
       </Box>
     );
   }

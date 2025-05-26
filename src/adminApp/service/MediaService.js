@@ -8,6 +8,10 @@ class MediaService {
       return "Unable to fetch media";
     }
   }
+
+  static async getMultipleMedia(urls) {
+    return (await http.post(`/media/signedUrls`, urls)).data;
+  }
 }
 
 export default MediaService;

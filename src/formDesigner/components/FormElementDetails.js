@@ -233,6 +233,7 @@ function FormElementDetails({ userInfo, ...props }) {
                 handleInlinePhoneNumberAttributes={props.handleInlinePhoneNumberAttributes}
                 handleConceptFormLibrary={props.handleConceptFormLibrary}
                 dataTypesToIgnore={dataTypesToIgnore}
+                onSelectAnswerMedia={props.onSelectAnswerMedia}
               />
             </div>
           )}

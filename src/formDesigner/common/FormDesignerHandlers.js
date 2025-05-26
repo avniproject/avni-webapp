@@ -218,7 +218,7 @@ const formDesignerOnSubmitInlineConcept = (inlineConceptObject, formElement, upd
     answer.order = index;
   });
   http
-    .post("/concepts", [inlineConceptObject])
+    .post("/concepts", inlineConceptObject)
     .then(response => {
       if (response.status === 200) {
         formElement["concept"].name = inlineConceptObject.name;

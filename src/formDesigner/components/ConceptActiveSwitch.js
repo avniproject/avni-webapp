@@ -7,14 +7,12 @@ export const ConceptActiveSwitch = ({ active, handleActive, conceptUUID }) => {
   const [conceptUsage, setConceptUsage] = React.useState({});
   React.useEffect(() => {
     if (conceptUUID) {
-      http
-        .get("/web/concept/usage/" + conceptUUID)
-        .then(response => setConceptUsage(response.data));
+      http.get("/web/concept/usage/" + conceptUUID).then(response => setConceptUsage(response.data));
     }
   }, [conceptUUID]);
 
   return (
-    <div style={{ marginLeft: 10 }}>
+    <div>
       <AvniSwitch
         disabled={!_.isEmpty(conceptUsage.forms)}
         checked={!!active}

@@ -26,7 +26,7 @@ export function MaterialTableToolBar({ toolBarButtons, ...props }) {
 
   return (
     <Box style={{ display: "flex", flexDirection: "row-reverse", marginBottom: 30 }}>
-      {toolBarButtons.map((toolbarButton: MaterialTableToolBarButton) => {
+      {toolBarButtons.map(toolbarButton => {
         return (
           <Button
             key={toolbarButton.text}
