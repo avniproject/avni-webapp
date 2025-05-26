@@ -92,7 +92,11 @@ class OrgManagerAppDesigner extends Component {
           )}
           <Resource name="applicationMenu" options={{ label: "Application Menu" }} list={ApplicationMenuList} />
           <Resource name="extensions" options={{ label: "Extensions" }} list={Extensions} />
-          <Resource name="archivalConfig" options={{ label: "App Storage Config" }} list={ArchivalConfig} />
+          {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOrganisationConfiguration) ? (
+            <Resource name="archivalConfig" options={{ label: "App Storage Config" }} list={ArchivalConfig} />
+          ) : (
+            <div />
+          )}
           <Resource name="ruleFailures" options={{ label: "Rule Failures" }} list={RuleFailureTelemetryList} />
         </Admin>
       </React.Fragment>
