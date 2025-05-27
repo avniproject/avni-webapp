@@ -30,7 +30,7 @@ const Homepage = ({ userInfo, organisation }) => {
     <ScreenWithAppBar appbarTitle={`Avni Web Console - ${organisation.organisationCategoryName}`}>
       <Grid container justifyContent="center">
         <HomePageCard
-          href={"/#/admin/user"}
+          href={"/#/admin"}
           name={"Admin"}
           customIconComponent={<SupervisorAccount color="primary" style={{ fontSize: 100 }} />}
         />
