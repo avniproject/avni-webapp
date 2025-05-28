@@ -33,10 +33,11 @@ export const CodedConceptAnswer = ({
   onToggleAnswerField,
   onSelectAnswerMedia,
   onRemoveAnswerMedia,
-  totalAnswers
+  totalAnswers,
+  ...props
 }) => {
   const action = actionName => {
-    inlineConcept ? actionName(groupIndex, elementIndex, index) : actionName(index);
+    inlineConcept ? props[actionName](groupIndex, elementIndex, index) : props[actionName](index);
   };
 
   const isDuplicateAnswerValue = get(answer, "isAnswerHavingError.isErrored") && answer.isAnswerHavingError.type === "duplicate";
