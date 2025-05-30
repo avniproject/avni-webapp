@@ -9,6 +9,7 @@ import { ArchivalConfigReducer } from "./ArchivalConfigReducer";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import CustomizedSnackbar from "../CustomizedSnackbar";
 import _ from "lodash";
+import Typography from "@material-ui/core/Typography";
 
 const initialState = {
   // sqlQuery: "",
@@ -50,9 +51,10 @@ export const ArchivalConfig = () => {
           <Grid container direction={"column"} spacing={5}>
             <Grid item>
               <AvniFormLabel
-                label={"SQL Query to identify subjects to be excluded from sync"}
+                label={"SQL Query to identify subjects (via id) to be excluded from sync."}
                 toolTipKey={"APP_DESIGNER_ARCHIVAL_SQL_QUERY"}
               />
+              <br />
               <Input
                 type="text"
                 name="sqlQuery"
