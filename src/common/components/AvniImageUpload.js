@@ -1,6 +1,6 @@
 import React from "react";
 import { isEmpty } from "lodash";
-import { Dialog, DialogContent, Grid, IconButton, Typography, Snackbar } from "@material-ui/core";
+import { Dialog, DialogContent, Grid, IconButton, Snackbar, Typography } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
 import FormControl from "@material-ui/core/FormControl";
 import AddAPhoto from "@material-ui/icons/AddAPhoto";
@@ -25,14 +25,35 @@ export const ImagePreview = ({ iconPreview, width, height, onDelete }) => {
           <CloseIcon />
         </IconButton>
       )}
-      <Dialog open={openPreview} onClose={() => setOpenPreview(false)} maxWidth="md">
-        <DialogContent style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 0 }}>
+      <Dialog
+        open={openPreview}
+        onClose={() => setOpenPreview(false)}
+        maxWidth="md"
+        PaperProps={{
+          style: {
+            width: "750px",
+            height: "500px",
+            maxWidth: "90vw",
+            maxHeight: "80vh"
+          }
+        }}
+      >
+        <DialogContent
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "16px",
+            backgroundColor: "#f5f5f5"
+          }}
+        >
           <img
             src={iconPreview}
             alt={"Full Preview"}
             style={{
-              maxWidth: "90vw",
-              maxHeight: "90vh",
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
               display: "block"
             }}
             onClick={() => setOpenPreview(false)}
@@ -58,7 +79,7 @@ export const AvniImageUpload = ({
   const [, setValue] = React.useState("");
   const [file, setFile] = React.useState();
   const [iconPreview, setIconPreview] = React.useState();
-  const [fileSizeError, setFileSizeError] = React.useState("");
+  const [fileError, setFileError] = React.useState("");
 
   React.useEffect(() => {
     if (!file) {
@@ -84,8 +105,14 @@ export const AvniImageUpload = ({
   const handleFileChange = event => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      if (maxFileSize && selectedFile.size > maxFileSize) {
-        setFileSizeError(
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/bmp"];
+      if (!allowedTypes.includes(selectedFile.type)) {
+        setFileError("Unsupported file. File type: unknown. Use .bmp, .jpg, .jpeg, .png, .gif file");
+        setFile(undefined);
+        setValue("");
+        return;
+      } else if (maxFileSize && selectedFile.size > maxFileSize) {
+        setFileError(
           `File size ${Math.round((selectedFile.size / 1024 + Number.EPSILON) * 10) /
             10} KB exceeds the maximum allowed size of ${Math.round((maxFileSize / 1024 + Number.EPSILON) * 10) / 10} KB.`
         );
@@ -93,7 +120,7 @@ export const AvniImageUpload = ({
         setValue("");
         return;
       } else {
-        setFileSizeError("");
+        setFileError("");
       }
       setFile(selectedFile);
       setValue(selectedFile.name);
@@ -140,14 +167,23 @@ export const AvniImageUpload = ({
           </Grid>
         </FormControl>
         <Snackbar
-          open={Boolean(fileSizeError)}
-          autoHideDuration={6000}
-          onClose={() => setFileSizeError("")}
+          open={Boolean(fileError)}
+          autoHideDuration={5000}
+          onClose={() => setFileError("")}
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          style={{ bottom: "24px" }}
         >
-          <div style={{ background: "#fff", borderRadius: 4, padding: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.2)" }}>
-            <Typography variant="body2" style={{ color: "#d32f2f" }}>
-              {fileSizeError}
+          <div
+            style={{
+              background: "#ffebee",
+              borderRadius: 4,
+              padding: 12,
+              boxShadow: "0px 2px 8px rgba(0,0,0,0.3)",
+              border: "1px solid #d32f2f"
+            }}
+          >
+            <Typography variant="body2" style={{ color: "#c62828", fontWeight: 500 }}>
+              {fileError}
             </Typography>
           </div>
         </Snackbar>
