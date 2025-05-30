@@ -9,7 +9,6 @@ import { ArchivalConfigReducer } from "./ArchivalConfigReducer";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import CustomizedSnackbar from "../CustomizedSnackbar";
 import _ from "lodash";
-import Typography from "@material-ui/core/Typography";
 
 const initialState = {
   // sqlQuery: "",
