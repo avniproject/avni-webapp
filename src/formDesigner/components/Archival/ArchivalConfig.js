@@ -42,6 +42,7 @@ export const ArchivalConfig = () => {
       });
   };
 
+  const errorMessage = `${_.get(error, "response.data")} (${_.get(error, "message")})`;
   return (
     <Box boxShadow={2} p={5} bgcolor="background.paper">
       <Title title="Archival Config" />
@@ -93,7 +94,7 @@ export const ArchivalConfig = () => {
         <CustomizedSnackbar
           getDefaultSnackbarStatus={status => setShowSnackbar(status)}
           variant={!_.isNil(error) ? "error" : "success"}
-          message={!_.isNil(error) ? error.message : "Saved Archival Config"}
+          message={!_.isNil(error) ? errorMessage : "Saved Archival Config"}
         />
       )}
     </Box>
