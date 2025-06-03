@@ -34,10 +34,10 @@ class MetabaseBatchJobStatus {
 
 class MetabaseSetupStatus {
   static Unknown = "Unknown";
-  NotEnabled = "NotEnabled";
-  NotSetup = "NotSetup";
-  Setup = "Setup";
-  EtlNotRun = "EtlNotRun";
+  static NotEnabled = "NotEnabled";
+  static NotSetup = "NotSetup";
+  static Setup = "Setup";
+  static EtlNotRun = "EtlNotRun";
 
   status;
   tearDownStatus;
@@ -67,7 +67,7 @@ class MetabaseSetupStatus {
   }
 
   canStartSetup() {
-    return this.status === this.NotSetup && !this.isAnyJobInProgress();
+    return this.status === MetabaseSetupStatus.NotSetup && !this.isAnyJobInProgress();
   }
 
   isSetupInProgress() {
@@ -75,7 +75,7 @@ class MetabaseSetupStatus {
   }
 
   isSetupComplete() {
-    return this.status === this.Setup;
+    return this.status === MetabaseSetupStatus.Setup;
   }
 
   isAnyJobInProgress() {
