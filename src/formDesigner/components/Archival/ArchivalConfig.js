@@ -33,6 +33,7 @@ export const ArchivalConfig = () => {
       .post("/web/archivalConfig", archivalConfigState)
       .then(response => {
         dispatch({ type: "archivalConfig", payload: response.data });
+        setError(null);
         setShowSnackbar(true);
       })
       .catch(e => {
