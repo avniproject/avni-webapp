@@ -29,14 +29,6 @@ class MetabaseBatchJobStatus {
     metabaseBatchJobStatus.status = "Unknown";
     return metabaseBatchJobStatus;
   }
-
-  isRunning() {
-    if (!this.createDateTime) return false;
-    const tenMinutesInMs = 10 * 60 * 1000;
-    const now = new Date();
-    const timeSinceCreation = now - this.createDateTime;
-    return this.status === "STARTED" && timeSinceCreation <= tenMinutesInMs;
-  }
 }
 
 class MetabaseSetupStatus {
