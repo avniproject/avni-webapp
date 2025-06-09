@@ -123,8 +123,8 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
 
   const handleUploadFile = useCallback(async () => {
     try {
-      const locationUploadModeValue = uploadType === UPLOAD_TYPES.LOCATIONS ? mode : "";
-      const encounterUploadModeValue = isEncounterType(uploadType) ? mode : "";
+      const locationUploadModeValue = uploadType === UPLOAD_TYPES.LOCATIONS ? locationUploadMode : "";
+      const encounterUploadModeValue = isEncounterType(uploadType) ? encounterUploadMode : "";
       const [ok, error] = await api.bulkUpload(
         getUploadTypeCode(uploadType),
         file,
