@@ -9,6 +9,7 @@ import querystring from "querystring";
 import IdpDetails from "../../rootApp/security/IdpDetails";
 import CurrentUserService from "../service/CurrentUserService";
 import _ from "lodash";
+import ErrorMessageUtil from "./ErrorMessageUtil"; // Add this import Error handling
 
 function getCsrfToken() {
   // eslint-disable-next-line no-useless-escape
@@ -113,6 +114,15 @@ class HttpClient {
       if (error.status === 401 && this.idp.idpType === IdpDetails.keycloak) {
         this.idp.clearAccessToken();
       }
+
+      // Use the new error handling method
+      const errorDetails = ErrorMessageUtil.getUserFriendlyErrorMessage(error);
+
+      // You can either handle the error display here or pass the error details up
+      // For now, we'll just enrich the error with our friendly message
+      error.friendlyMessage = errorDetails.message;
+      error.title = errorDetails.title;
+
       throw error;
     });
   }
@@ -143,7 +153,18 @@ class HttpClient {
   _wrapAxiosMethod(methodName) {
     return async (...args) => {
       await this.setTokenAndOrgUuidHeaders();
-      return axios[methodName](...args);
+      return axios[methodName](...args).catch(error => {
+        // Use the new error handling method
+        const errorDetails = ErrorMessageUtil.getUserFriendlyErrorMessage(error);
+
+        // Create an enhanced error object
+        const enhancedError = new Error(errorDetails.message);
+        enhancedError.originalError = error;
+        enhancedError.title = errorDetails.title;
+        enhancedError.display = errorDetails.display;
+
+        throw enhancedError;
+      });
     };
   }
 
