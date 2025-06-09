@@ -307,7 +307,12 @@ class CreateEditConcept extends Component {
   };
 
   castValueToBooleanOrInt = ({ key, value }) => {
-    let castedValue = JSON.parse(trim(value));
+    let castedValue;
+    try {
+      castedValue = JSON.parse(trim(value));
+    } catch (e) {
+      castedValue = trim(value);
+    }
     return { key: trim(key), value: castedValue };
   };
 
