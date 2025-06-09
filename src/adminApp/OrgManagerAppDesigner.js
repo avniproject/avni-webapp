@@ -43,6 +43,12 @@ class OrgManagerAppDesigner extends Component {
     return { store };
   }
 
+  componentWillMount() {
+    if (["#/appdesigner", "#/appdesigner/"].includes(window.location.hash)) {
+      this.props.history.replace("/appdesigner/subjectType");
+    }
+  }
+
   render() {
     const { organisation, user, userInfo } = this.props;
 

@@ -70,19 +70,34 @@ export default {
     }),
 
   fetchPrograms: subjectUuid =>
-    httpClient.fetchJson(`/web/eligiblePrograms?subjectUuid=${subjectUuid}`).then(response => {
-      return response.json;
-    }),
+    httpClient
+      .fetchJson(`/web/eligiblePrograms?subjectUuid=${subjectUuid}`)
+      .then(response => {
+        return response.json;
+      })
+      .catch(error => {
+        return [];
+      }),
 
   fetchEligibleEncounterTypes: subjectUUID =>
-    httpClient.fetchJson(`/web/eligibleGeneralEncounters?subjectUUID=${subjectUUID}`).then(response => {
-      return response.json;
-    }),
+    httpClient
+      .fetchJson(`/web/eligibleGeneralEncounters?subjectUUID=${subjectUUID}`)
+      .then(response => {
+        return response.json;
+      })
+      .catch(error => {
+        return [];
+      }),
 
   fetchEligibleProgramEncounterTypes: enrolmentUUID =>
-    httpClient.fetchJson(`/web/eligibleProgramEncounters?enrolmentUUID=${enrolmentUUID}`).then(response => {
-      return response.json;
-    }),
+    httpClient
+      .fetchJson(`/web/eligibleProgramEncounters?enrolmentUUID=${enrolmentUUID}`)
+      .then(response => {
+        return response.json;
+      })
+      .catch(error => {
+        return [];
+      }),
 
   fetchEncounterTypeDetails: uuid => {
     return httpClient.fetchJson(`/web/encounterTypeDetails/${uuid}`).then(response => response.json);

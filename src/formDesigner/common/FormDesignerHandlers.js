@@ -218,7 +218,7 @@ const formDesignerOnSubmitInlineConcept = (inlineConceptObject, formElement, upd
     answer.order = index;
   });
   http
-    .post("/concepts", [inlineConceptObject])
+    .post("/concepts", inlineConceptObject)
     .then(response => {
       if (response.status === 200) {
         formElement["concept"].name = inlineConceptObject.name;
@@ -393,18 +393,16 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
               if (error.response.status === 404) {
                 answer.uuid = UUID.v4();
                 http
-                  .post("/concepts", [
-                    {
-                      name: answer.name,
-                      uuid: answer.uuid,
-                      dataType: "NA",
-                      lowAbsolute: null,
-                      highAbsolute: null,
-                      lowNormal: null,
-                      highNormal: null,
-                      unit: null
-                    }
-                  ])
+                  .post("/concepts", {
+                    name: answer.name,
+                    uuid: answer.uuid,
+                    dataType: "NA",
+                    lowAbsolute: null,
+                    highAbsolute: null,
+                    lowNormal: null,
+                    highNormal: null,
+                    unit: null
+                  })
                   .then(response => {
                     if (response.status === 200) {
                       console.log("Dynamic concept added through Coded", response);

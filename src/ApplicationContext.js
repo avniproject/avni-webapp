@@ -36,6 +36,10 @@ class ApplicationContext {
   static usingIAMServer() {
     return process.env.REACT_APP_IAM_SERVER !== None || process.env.REACT_APP_IAM_SERVER;
   }
+
+  static isTestEnvironment(env) {
+    return env === environments.STAGING || env === environments.PRERELEASE;
+  }
 }
 
 export default ApplicationContext;

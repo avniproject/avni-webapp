@@ -7,6 +7,13 @@ class MetabaseBatchJobStatus {
   exitMessage;
   exitCode;
 
+  isRunning(timeOut) {
+    if (!this.createDateTime) return false;
+    const now = new Date();
+    const timeSinceCreation = now - this.createDateTime;
+    return this.status === "STARTED" && timeSinceCreation <= timeOut;
+  }
+
   static createFromResponse(batchJobResponse) {
     const metabaseBatchJobStatus = new MetabaseBatchJobStatus();
     metabaseBatchJobStatus.status = batchJobResponse.status;
@@ -43,6 +50,9 @@ class MetabaseSetupStatus {
   tearDownStatus;
   createQuestionOnlyStatus;
   setupStatus;
+  avniEnvironment;
+  resources;
+  timeoutInMillis;
 
   static createUnknownStatus() {
     const metabaseSetupStatus = new MetabaseSetupStatus();
@@ -50,6 +60,8 @@ class MetabaseSetupStatus {
     metabaseSetupStatus.tearDownStatus = MetabaseBatchJobStatus.createUnknownStatus();
     metabaseSetupStatus.createQuestionOnlyStatus = MetabaseBatchJobStatus.createUnknownStatus();
     metabaseSetupStatus.setupStatus = MetabaseBatchJobStatus.createUnknownStatus();
+    metabaseSetupStatus.resources = [];
+    metabaseSetupStatus.timeoutInMillis = 0;
     return metabaseSetupStatus;
   }
 
@@ -62,24 +74,28 @@ class MetabaseSetupStatus {
       statusResponse.jobStatuses["CreateQuestionOnly"]
     );
     metabaseSetupStatus.setupStatus = MetabaseBatchJobStatus.createFromResponse(statusResponse.jobStatuses["Setup"]);
-
+    metabaseSetupStatus.avniEnvironment = statusResponse.avniEnvironment;
+    metabaseSetupStatus.resources = statusResponse.resources;
+    metabaseSetupStatus.timeoutInMillis = statusResponse.timeoutInMillis;
     return metabaseSetupStatus;
   }
 
   canStartSetup() {
-    return this.status === MetabaseSetupStatus.NotSetup && !this.isAnyJobInProgress();
+    return (this.status === this.NotSetup || this.setupStatus.status !== "COMPLETED") && !this.isAnyJobInProgress();
   }
 
   isSetupInProgress() {
-    return this.setupStatus.isRunning();
+    return this.setupStatus.isRunning(this.timeoutInMillis);
   }
 
   isSetupComplete() {
-    return this.status === MetabaseSetupStatus.Setup;
+    return this.status === this.Setup && this.setupStatus.status === "COMPLETED";
   }
 
   isAnyJobInProgress() {
-    return [this.tearDownStatus, this.createQuestionOnlyStatus, this.setupStatus].some(jobStatus => jobStatus.isRunning());
+    return [this.tearDownStatus, this.createQuestionOnlyStatus, this.setupStatus].some(jobStatus =>
+      jobStatus.isRunning(this.timeoutInMillis)
+    );
   }
 
   hasErrorMessage() {
@@ -104,6 +120,10 @@ class MetabaseSetupStatus {
     const errorMessage = this.getErrorMessage();
     if (!errorMessage) return null;
     return errorMessage.length > 100 ? errorMessage.substring(0, 100) + "..." : errorMessage;
+  }
+
+  getExpectedDurationInMinutes() {
+    return Math.round(this.timeoutInMillis / (1000 * 60));
   }
 }
 

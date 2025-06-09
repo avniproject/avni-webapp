@@ -20,7 +20,7 @@ import {
 import OrganisationConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 
-import { Dashboard as UploadDashboard } from "../upload";
+import { UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
 import { getAdminOrgs } from "../rootApp/ducks";
@@ -40,6 +40,12 @@ class OrgManager extends Component {
 
   getChildContext() {
     return { store };
+  }
+
+  componentWillMount() {
+    if (["#/admin", "#/admin/"].includes(window.location.hash)) {
+      this.props.history.replace("/admin/user");
+    }
   }
 
   render() {
@@ -73,17 +79,6 @@ class OrgManager extends Component {
           customRoutes={customRoutes}
           appLayout={AdminLayout}
         >
-          <Resource
-            name="language"
-            options={{ label: "Languages" }}
-            list={WithProps(
-              {
-                organisation,
-                hasEditPrivilege: hasPrivilege(userInfo, EditLanguage)
-              },
-              OrganisationConfig
-            )}
-          />
           <Resource
             name="addressLevelType"
             options={{ label: "Location Types" }}
@@ -145,6 +140,17 @@ class OrgManager extends Component {
             show={IdentifierUserAssignmentDetail}
             create={hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentCreate}
             edit={hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentEdit}
+          />
+          <Resource
+            name="language"
+            options={{ label: "Languages" }}
+            list={WithProps(
+              {
+                organisation,
+                hasEditPrivilege: hasPrivilege(userInfo, EditLanguage)
+              },
+              OrganisationConfig
+            )}
           />
           <Resource
             name="organisationDetails"

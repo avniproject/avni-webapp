@@ -8,7 +8,17 @@ export default {
   },
   bulkUpload: (type, file, autoApprove, locationUploadMode, locationHierarchy, encounterUploadMode) =>
     http
-      .uploadFile(http.withParams("/import/new", { type, autoApprove, locationUploadMode, locationHierarchy, encounterUploadMode }), file)
+      .uploadFile(
+        http.withParams("/import/new", {
+          type,
+          autoApprove,
+          locationUploadMode,
+          locationHierarchy,
+          encounterUploadMode
+        }),
+        file
+      )
+      //returns [response, error]
       .then(r => [r.text, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   fetchUploadTypes: () => {
