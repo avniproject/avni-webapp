@@ -1,8 +1,7 @@
 import React, { Fragment } from "react";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
+import { makeStyles } from "@mui/styles";
+import { Grid, Button } from "@mui/material";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";
-import { makeStyles } from "@material-ui/core";
 import { sortBy } from "lodash";
 
 const useStyles = makeStyles(theme => ({
@@ -24,43 +23,34 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectTypeOptions = ({
-  t,
-  operationalModules,
-  onSubjectTypeChange,
-  selectedSubjectTypeUUID
-}) => {
+const SubjectTypeOptions = ({ t, operationalModules, onSubjectTypeChange, selectedSubjectTypeUUID }) => {
   const classes = useStyles();
 
   function getClassName(subjectType) {
-    return selectedSubjectTypeUUID === subjectType.uuid
-      ? classes.selectedButton
-      : classes.unSelectedButton;
+    return selectedSubjectTypeUUID === subjectType.uuid ? classes.selectedButton : classes.unSelectedButton;
   }
 
   return (
     <Fragment>
       <Grid container direction={"row"} spacing={1} alignItems={"center"}>
         {operationalModules.subjectTypes
-          ? sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map(
-              (subjectType, index) => (
-                <Grid key={index} item>
-                  <Button
-                    key={index}
-                    variant="outlined"
-                    onClick={() => onSubjectTypeChange(subjectType.uuid)}
-                    className={getClassName(subjectType)}
-                  >
-                    <Grid container direction={"row"} spacing={1} alignItems={"center"}>
-                      <Grid item>
-                        <SubjectTypeIcon size={25} subjectType={subjectType} />
-                      </Grid>
-                      <Grid item>{subjectType.name}</Grid>
+          ? sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map((subjectType, index) => (
+              <Grid key={index} item>
+                <Button
+                  key={index}
+                  variant="outlined"
+                  onClick={() => onSubjectTypeChange(subjectType.uuid)}
+                  className={getClassName(subjectType)}
+                >
+                  <Grid container direction={"row"} spacing={1} alignItems={"center"}>
+                    <Grid item>
+                      <SubjectTypeIcon size={25} subjectType={subjectType} />
                     </Grid>
-                  </Button>
-                </Grid>
-              )
-            )
+                    <Grid item>{subjectType.name}</Grid>
+                  </Grid>
+                </Button>
+              </Grid>
+            ))
           : ""}
       </Grid>
     </Fragment>

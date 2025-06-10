@@ -5,7 +5,7 @@ import API from "./api";
 import MaterialTable from "material-table";
 import { getFormattedDateTime } from "../adminApp/components/AuditUtil";
 import { isNil, orderBy } from "lodash";
-import { Paper } from "@material-ui/core";
+import { Paper } from "@mui/material";
 import { CustomToolbar } from "./components/CustomToolbar";
 import { CreateEditNews } from "./CreateEditNews";
 import UserInfo from "../common/model/UserInfo";

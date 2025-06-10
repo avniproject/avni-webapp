@@ -1,7 +1,7 @@
 import SignInView from "./SignInView";
 import React, { useState } from "react";
 import httpClient from "../../common/utils/httpClient";
-import Typography from "@material-ui/core/Typography";
+import { Typography } from "@mui/material";
 import _ from "lodash";
 import { connect } from "react-redux";
 import { setAuthSession } from "../ducks";

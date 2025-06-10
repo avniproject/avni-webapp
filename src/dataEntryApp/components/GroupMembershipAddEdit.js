@@ -1,18 +1,14 @@
 import React, { Fragment } from "react";
 import Breadcrumbs from "./Breadcrumbs";
-import { Box, Button, Grid, Paper, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Box, Button, Grid, Paper, Typography, RadioGroup, FormControlLabel, Radio, FormLabel } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { makeStyles } from "@material-ui/core/styles";
 import { withRouter } from "react-router-dom";
 import { withParams } from "../../common/components/utils";
 import { connect } from "react-redux";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "@material-ui/core/Radio";
 import api from "../api/index";
 import AsyncSelect from "react-select/async";
 import SubjectSearchService from "../services/SubjectSearchService";
-import FormLabel from "@material-ui/core/FormLabel";
 import { debounce } from "lodash";
 
 const useStyles = makeStyles(theme => ({

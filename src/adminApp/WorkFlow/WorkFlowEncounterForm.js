@@ -1,16 +1,10 @@
 import React, { useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
-import Button from "@material-ui/core/Button";
+import { Button, Select, MenuItem, InputLabel, FormControl, Chip } from "@mui/material";
 import { default as UUID } from "uuid";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import { isEqual } from "lodash";
+import { isEqual, cloneDeep } from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
-import Chip from "@material-ui/core/Chip";
-import { cloneDeep } from "lodash";
 
 function WorkFlowEncounterForm(props) {
   let data,
@@ -20,24 +14,13 @@ function WorkFlowEncounterForm(props) {
 
   const encounters = props.formMapping.filter(l => l.encounterTypeUUID === props.rowDetails.uuid);
   if (props.whichForm === "encounter" && encounters[0] !== undefined && encounters[0] !== null) {
-    formType = Object.keys(encounters[0]).includes("programUUID")
-      ? "ProgramEncounter"
-      : "Encounter";
-  } else if (
-    props.whichForm === "cancellation" &&
-    encounters[0] !== undefined &&
-    encounters[0] !== null
-  ) {
-    formType = Object.keys(encounters[0]).includes("programUUID")
-      ? "ProgramEncounterCancellation"
-      : "IndividualEncounterCancellation";
+    formType = Object.keys(encounters[0]).includes("programUUID") ? "ProgramEncounter" : "Encounter";
+  } else if (props.whichForm === "cancellation" && encounters[0] !== undefined && encounters[0] !== null) {
+    formType = Object.keys(encounters[0]).includes("programUUID") ? "ProgramEncounterCancellation" : "IndividualEncounterCancellation";
   }
 
   let form = props.formMapping.filter(
-    l =>
-      l.formType === formType &&
-      l.encounterTypeUUID === props.rowDetails.uuid &&
-      l.isVoided === false
+    l => l.formType === formType && l.encounterTypeUUID === props.rowDetails.uuid && l.isVoided === false
   );
 
   const [error, setError] = useState("");
@@ -48,10 +31,7 @@ function WorkFlowEncounterForm(props) {
 
   existMapping = props.formMapping.filter(l => l.encounterTypeUUID === props.rowDetails.uuid);
 
-  showAvailableForms =
-    form.length === 0
-      ? props.formList.filter(form => form.formType === formType && form.formName !== undefined)
-      : [];
+  showAvailableForms = form.length === 0 ? props.formList.filter(form => form.formType === formType && form.formName !== undefined) : [];
 
   showAvailableForms.unshift({ formName: "createform", formUUID: "11111" });
 
@@ -71,9 +51,7 @@ function WorkFlowEncounterForm(props) {
 
   const onRemoveFormAssociation = () => {
     let voidedFormAssociation = form[0];
-    const formMappingforEncounterTypeLength = props.formMapping.filter(
-      l => l.encounterTypeUUID === props.rowDetails.uuid
-    );
+    const formMappingforEncounterTypeLength = props.formMapping.filter(l => l.encounterTypeUUID === props.rowDetails.uuid);
     if (formMappingforEncounterTypeLength.length === 1) {
       voidedFormAssociation["formUUID"] = null;
     } else {
@@ -196,11 +174,7 @@ function WorkFlowEncounterForm(props) {
           clickable
           color="primary"
           onClick={() => setRedirectToForm(true)}
-          label={
-            form[0].formName === undefined || form[0].formName === null
-              ? props.fillFormName
-              : form[0].formName
-          }
+          label={form[0].formName === undefined || form[0].formName === null ? props.fillFormName : form[0].formName}
           onDelete={() => onRemoveFormAssociation()}
         />
       )}
@@ -208,17 +182,11 @@ function WorkFlowEncounterForm(props) {
         <>
           <FormControl>
             <InputLabel id="demo-simple-select-label">{props.placeholder}</InputLabel>
-            <Select
-              label="SelectForm"
-              onChange={event => handleFormName(event)}
-              style={{ width: "200px" }}
-            >
+            <Select label="SelectForm" onChange={event => handleFormName(event)} style={{ width: "200px" }}>
               {showAvailableForms.map((form, index) => {
                 return (
                   <MenuItem value={form} key={index}>
-                    {form.formName === "createform" && (
-                      <Button color="primary">Add new form</Button>
-                    )}
+                    {form.formName === "createform" && <Button color="primary">Add new form</Button>}
                     {form.formName !== "createform" && form.formName}
                   </MenuItem>
                 );
@@ -245,9 +213,7 @@ function WorkFlowEncounterForm(props) {
       {props.notificationAlert && (
         <CustomizedSnackbar
           message={props.message}
-          getDefaultSnackbarStatus={notificationAlert =>
-            props.setNotificationAlert(notificationAlert)
-          }
+          getDefaultSnackbarStatus={notificationAlert => props.setNotificationAlert(notificationAlert)}
           defaultSnackbarStatus={props.notificationAlert}
         />
       )}

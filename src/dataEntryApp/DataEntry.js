@@ -25,8 +25,8 @@ import Encounter from "./views/subjectDashBoard/components/Encounter";
 import CancelEncounter from "./views/subjectDashBoard/components/CancelEncounter";
 import AppBar from "dataEntryApp/components/AppBar";
 import GroupMembershipAddEdit from "./components/GroupMembershipAddEdit";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { Grid } from "@mui/material";
 import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
 import { NewsList } from "./views/subjectDashBoard/components/news/NewsList";
@@ -62,55 +62,24 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
                 <AppBar />
               </Grid>
               <Grid item xs={12}>
-                <Route
-                  exact
-                  path={[path, `${path}/searchFilter`]}
-                  component={SearchFilterFormContainer}
-                />
+                <Route exact path={[path, `${path}/searchFilter`]} component={SearchFilterFormContainer} />
                 <Route exact path={`${path}/search`} component={SubjectSearch} />
                 <Route path={`${path}/register`} component={SubjectRegister} />
                 <Route path={`${path}/editSubject`} component={SubjectRegister} />
-                <Route
-                  exact
-                  path={`${path}/subject`}
-                  component={SubjectDashboard}
-                  key={`${Math.random()}`}
-                />
-                <Route
-                  exact
-                  path={`${path}/subject/subjectProfile`}
-                  component={(...props) => <SubjectDashboard tab={1} {...props} />}
-                />
+                <Route exact path={`${path}/subject`} component={SubjectDashboard} key={`${Math.random()}`} />
+                <Route exact path={`${path}/subject/subjectProfile`} component={(...props) => <SubjectDashboard tab={1} {...props} />} />
                 {/* <Route exact path={`${path}/subject`} component={SubjectDashboard} /> */}
                 <Route exact path={`${path}/subject/enrol`} component={ProgramEnrol} />
                 <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />
                 <Route exact path={`${path}/subject/viewEncounter`} component={ViewVisit} />
                 <Route exact path={`${path}/subject/addRelative`} component={AddRelative} />
-                <Route
-                  exact
-                  path={`${path}/subject/addGroupMember`}
-                  component={GroupMembershipAddEdit}
-                />
-                <Route
-                  exact
-                  path={`${path}/subject/editGroupMembership`}
-                  component={GroupMembershipAddEdit}
-                />
+                <Route exact path={`${path}/subject/addGroupMember`} component={GroupMembershipAddEdit} />
+                <Route exact path={`${path}/subject/editGroupMembership`} component={GroupMembershipAddEdit} />
                 <Route exact path={`${path}/subject/newProgramVisit`} component={NewProgramVisit} />
-                <Route
-                  exact
-                  path={`${path}/subject/programEncounter`}
-                  component={ProgramEncounter}
-                />
+                <Route exact path={`${path}/subject/programEncounter`} component={ProgramEncounter} />
                 <Route path={`${path}/subject/editProgramEncounter`} component={ProgramEncounter} />
-                <Route
-                  path={`${path}/subject/cancelProgramEncounter`}
-                  component={CancelProgramEncounter}
-                />
-                <Route
-                  path={`${path}/subject/editCancelProgramEncounter`}
-                  component={CancelProgramEncounter}
-                />
+                <Route path={`${path}/subject/cancelProgramEncounter`} component={CancelProgramEncounter} />
+                <Route path={`${path}/subject/editCancelProgramEncounter`} component={CancelProgramEncounter} />
                 <Route exact path={`${path}/subject/newGeneralVisit`} component={NewGeneralVisit} />
                 <Route exact path={`${path}/subject/encounter`} component={Encounter} />
                 <Route path={`${path}/subject/editEncounter`} component={Encounter} />

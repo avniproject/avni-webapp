@@ -1,8 +1,6 @@
 import { ResponsiveBar } from "@nivo/bar";
 import React from "react";
-import { Grid } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
+import { Grid, Typography, Box } from "@mui/material";
 import _ from "lodash";
 
 const BarGraph = ({ data, title, id }) => {

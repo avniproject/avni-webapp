@@ -1,15 +1,10 @@
-import Grid from "@material-ui/core/Grid";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Button from "@material-ui/core/Button";
-import Modal from "@material-ui/core/Modal";
+import { makeStyles } from "@mui/styles";
+import { Grid, FormControlLabel, Checkbox, Button, Modal, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { get } from "lodash";
-import { makeStyles } from "@material-ui/core";
 import http from "common/utils/httpClient";
-import TextField from "@material-ui/core/TextField";
 import { AlertModal } from "./AlertModal";
-import WarningIcon from "@material-ui/icons/Warning";
+import { Warning } from "@mui/icons-material";
 import ActivityIndicatorModal from "../../common/components/ActivityIndicatorModal";
 import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
@@ -85,7 +80,7 @@ export const DeleteData = ({
           <Grid item container spacing={1} xs={12}>
             <Grid item xs={1}>
               {" "}
-              <WarningIcon color={"error"} style={{ fontSize: "40px" }} />
+              <Warning color={"error"} style={{ fontSize: "40px" }} />
             </Grid>
             <Grid item xs={11}>
               {warningMessage}

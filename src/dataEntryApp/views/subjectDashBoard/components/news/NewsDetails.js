@@ -1,8 +1,8 @@
 import React from "react";
 import API from "../../../../../news/api";
 import NewsDetailsCard from "../../../../../news/components/NewsDetailsCard";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Paper } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   root: {

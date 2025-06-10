@@ -6,7 +6,7 @@ import { filter, get, isNil, map } from "lodash";
 import DocumentationContext from "./context";
 import Documentation from "./components/Documentation";
 import CustomizedBackdrop from "../dataEntryApp/components/CustomizedBackdrop";
-import Box from "@material-ui/core/Box";
+import { Box } from "@mui/material";
 import { Item } from "./components/Item";
 import { useLocation } from "react-router-dom";
 import { connect } from "react-redux";
@@ -72,11 +72,9 @@ const DocumentationList = ({ userInfo }) => {
     fetchData();
   }, []);
 
-  const onDocumentationToggle = documentation =>
-    dispatch({ type: "toggleDocumentation", payload: documentation });
+  const onDocumentationToggle = documentation => dispatch({ type: "toggleDocumentation", payload: documentation });
 
-  const onDocumentationAdd = (parent = null) =>
-    dispatch({ type: "newDocumentation", payload: { parent: parent } });
+  const onDocumentationAdd = (parent = null) => dispatch({ type: "newDocumentation", payload: { parent: parent } });
 
   const onRemoveDocumentation = async uuid => {
     if (window.confirm("Do you really want to delete this documentation?")) {
@@ -92,28 +90,13 @@ const DocumentationList = ({ userInfo }) => {
     }
   };
 
-  const hasEditPrivilege = UserInfo.hasPrivilege(
-    userInfo,
-    Privilege.PrivilegeType.EditDocumentation
-  );
+  const hasEditPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditDocumentation);
   return (
     <ScreenWithAppBar appbarTitle={"Documentation"}>
       <DocumentationContext.Provider value={{ state: state, dispatch: dispatch }}>
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <Box
-            border={1}
-            pt={2}
-            pb={2}
-            borderColor={"#ddd"}
-            bgcolor={"rgba(248,248,248,0.37)"}
-            style={{ flex: 0.2 }}
-          >
-            <Item
-              name={"Documentation"}
-              onAdd={hasEditPrivilege && (() => onDocumentationAdd())}
-              level={1}
-              disabled={true}
-            />
+          <Box border={1} pt={2} pb={2} borderColor={"#ddd"} bgcolor={"rgba(248,248,248,0.37)"} style={{ flex: 0.2 }}>
+            <Item name={"Documentation"} onAdd={hasEditPrivilege && (() => onDocumentationAdd())} level={1} disabled={true} />
             {createDocumentationNode(
               rootNodes,
               onDocumentationToggle,

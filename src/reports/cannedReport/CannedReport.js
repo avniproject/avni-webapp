@@ -3,14 +3,9 @@ import { reportSideBarOptions } from "../Common";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import AggregateReport from "./AggregateReport";
 import ActivityReport from "./ActivityReport";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import EqualizerIcon from "@material-ui/icons/Equalizer";
-import FormatListNumberedIcon from "@material-ui/icons/FormatListNumbered";
-import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@mui/styles";
+import { AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
+import { Equalizer, FormatListNumbered } from "@mui/icons-material";
 import { some } from "lodash";
 
 const useStyles = makeStyles(theme => ({
@@ -24,13 +19,7 @@ function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-      {...other}
-    >
+    <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`} {...other}>
       {value === index && (
         <div>
           <Box>{children}</Box>
@@ -44,14 +33,9 @@ function renderCannedReport(classes, value, setValue) {
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Tabs
-          value={value}
-          onChange={(event, newValue) => setValue(newValue)}
-          aria-label="report-tabs"
-          variant="fullWidth"
-        >
-          <Tab label="Activity Report" icon={<FormatListNumberedIcon />} />
-          <Tab label="Aggregate Report" icon={<EqualizerIcon />} />
+        <Tabs value={value} onChange={(event, newValue) => setValue(newValue)} aria-label="report-tabs" variant="fullWidth">
+          <Tab label="Activity Report" icon={<FormatListNumbered />} />
+          <Tab label="Aggregate Report" icon={<Equalizer />} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -72,20 +56,14 @@ function renderComingSoon() {
   );
 }
 
-const displayCannedReport = some(["localhost", "staging"], env =>
-  window.location.href.includes(env)
-);
+const displayCannedReport = some(["localhost", "staging"], env => window.location.href.includes(env));
 
 const CannedReport = () => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
   return (
-    <ScreenWithAppBar
-      appbarTitle={`Aggregate reports`}
-      enableLeftMenuButton={true}
-      sidebarOptions={reportSideBarOptions}
-    >
+    <ScreenWithAppBar appbarTitle={`Aggregate reports`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
       {displayCannedReport ? renderCannedReport(classes, value, setValue) : renderComingSoon()}
     </ScreenWithAppBar>
   );

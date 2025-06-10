@@ -1,18 +1,10 @@
 import React, { Fragment } from "react";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import ConceptSearch from "./ConceptSearch";
 import Select from "react-select";
 import { ConceptScope } from "rules-config";
 
-const ConceptAndScope = ({
-  conceptValue,
-  onConceptChange,
-  defaultOptions = [],
-  displayScope,
-  getScopeValue,
-  formType,
-  onScopeChange
-}) => {
+const ConceptAndScope = ({ conceptValue, onConceptChange, defaultOptions = [], displayScope, getScopeValue, formType, onScopeChange }) => {
   const scopeOptions = ConceptScope.getScopeOptionsByFormType(formType);
 
   return (

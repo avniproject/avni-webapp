@@ -1,8 +1,7 @@
 import React from "react";
 import MaterialTable from "material-table";
 import _ from "lodash";
-import Edit from "@material-ui/icons/Edit";
-import Delete from "@material-ui/icons/DeleteOutline";
+import { Edit, Delete } from "@mui/icons-material";
 import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 import EntityService from "../../../common/service/EntityService";
 

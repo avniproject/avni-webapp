@@ -4,12 +4,12 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import _ from "lodash";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import Select from "react-select";
-import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { AvniTextField } from "../../common/components/AvniTextField";
-import { Box, Button, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
-import { Close } from "@material-ui/icons";
+import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import { Close } from "@mui/icons-material";
 
 const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAttempted }) => {
   const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
@@ -26,6 +26,7 @@ const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAtt
     const parameterArray = template.body.match(/{{[0-9]+}}/g);
     return parameterArray ? parameterArray.length : 0;
   };
+
   const onRuleChange = updatedValues => {
     if (_.has(updatedValues, "messageTemplateId")) {
       const noOfParameters = getNumberOfParametersForTemplate(updatedValues.messageTemplateId);
@@ -81,7 +82,7 @@ const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAtt
         Send Message
       </DialogTitle>
       <DialogActions>
-        <IconButton onClick={onClose}>
+        <IconButton onClick={onClose} size="large">
           <Close />
         </IconButton>
       </DialogActions>
@@ -121,20 +122,19 @@ const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAtt
 
           <Box style={{ marginTop: 20, marginLeft: 10 }}>
             <AvniFormLabel label={"Schedule time to send message"} required={true} />
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDateTimePicker
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateTimePicker
                 id="date-picker-dialog"
-                placeholder="Date and Time"
                 format={dateTimeFormat}
                 value={rules[0].scheduledDateTime}
                 onChange={value => onRuleChange({ scheduledDateTime: value })}
-                style={{ width: "20%", marginRight: "1%" }}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                  color: "primary"
+                renderInput={params => <TextField {...params} style={{ width: "20%", marginRight: "1%" }} placeholder="Date and Time" />}
+                slotProps={{
+                  actionBar: { actions: ["clear"] },
+                  openPickerButton: { "aria-label": "change date", color: "primary" }
                 }}
               />
-            </MuiPickersUtilsProvider>
+            </LocalizationProvider>
           </Box>
 
           <DialogActions>

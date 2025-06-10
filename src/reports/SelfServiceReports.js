@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { reportSideBarOptions } from "./Common";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import { Box, makeStyles } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { makeStyles } from "@mui/styles";
+import { Card, CardContent, Typography, Box, Button, CircularProgress, Chip } from "@mui/material";
 import MetabaseSVG from "./Metabase_icon.svg";
-import OpenInNewIcon from "@material-ui/icons/OpenInNew";
+import { OpenInNew, Delete } from "@mui/icons-material";
 import { debounce } from "lodash";
-import DeleteIcon from "@material-ui/icons/Delete";
 import httpClient from "../common/utils/httpClient";
 import MetabaseSetupStatus from "./domain/MetabaseSetupStatus";
 import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
-import Chip from "@material-ui/core/Chip";
 
 const useStyles = makeStyles({
   root: {
@@ -195,7 +189,7 @@ const SelfServiceReports = () => {
                 </Typography>
                 <a href="https://metabase.com" target="_blank" rel="noopener noreferrer" className={classes.metabaseLink}>
                   metabase.com
-                  <OpenInNewIcon className={classes.redirectIcon} />
+                  <OpenInNew className={classes.redirectIcon} />
                 </a>
               </div>
               {showSetupButton && (
@@ -238,14 +232,14 @@ const SelfServiceReports = () => {
                     }}
                     onClick={() => tearDownMetabase()}
                   >
-                    <DeleteIcon /> Delete
+                    <Delete /> Delete
                   </Button>
                 </div>
               )}
               {showDisabledDeleteButton && (
                 <div className={classes.buttonsContainer}>
                   <Button disabled={true}>
-                    <DeleteIcon /> Delete
+                    <Delete /> Delete
                   </Button>
                 </div>
               )}

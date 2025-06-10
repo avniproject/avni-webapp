@@ -4,14 +4,11 @@ import { find, get, map, includes, sortBy, join, size } from "lodash";
 import { Concept } from "openchs-models";
 import { useSelector } from "react-redux";
 import api from "../api";
-import FormLabel from "@material-ui/core/FormLabel";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormHelperText from "@material-ui/core/FormHelperText";
+import { makeStyles } from "@mui/styles";
+import { FormLabel, FormGroup, FormHelperText, Grid, Link } from "@mui/material";
 import { mapGroupMembers, mapIndividual } from "../../common/subjectModelMapper";
 import { subjectService } from "../services/SubjectService";
-import { Grid, Link } from "@material-ui/core";
 import Checkbox from "./Checkbox";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const useStyles = makeStyles(theme => ({
   evenBackground: {

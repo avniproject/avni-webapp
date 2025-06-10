@@ -1,9 +1,7 @@
-import Grid from "@material-ui/core/Grid";
+import { Grid, Input, IconButton } from "@mui/material";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
-import { Input } from "@material-ui/core";
 import React from "react";
-import IconButton from "@material-ui/core/IconButton";
-import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+import { RemoveCircle } from "@mui/icons-material";
 import Select from "react-select";
 
 export const LabelFileName = ({ label, fileName, scope, index, dispatch, options }) => {
@@ -11,31 +9,19 @@ export const LabelFileName = ({ label, fileName, scope, index, dispatch, options
     <Grid container direction={"row"} spacing={5} alignItems={"center"}>
       <Grid item>
         <AvniFormLabel label={"Label"} toolTipKey={"APP_DESIGNER_PRINT_LABEL"} />
-        <Input
-          id={label}
-          value={label}
-          onChange={event =>
-            dispatch({ type: "setLabel", payload: { index, value: event.target.value } })
-          }
-        />
+        <Input id={label} value={label} onChange={event => dispatch({ type: "setLabel", payload: { index, value: event.target.value } })} />
       </Grid>
       <Grid item>
         <AvniFormLabel label={"File Name"} toolTipKey={"APP_DESIGNER_PRINT_FILE_NAME"} />
         <Input
           id={fileName}
           value={fileName}
-          onChange={event =>
-            dispatch({ type: "setFileName", payload: { index, value: event.target.value } })
-          }
+          onChange={event => dispatch({ type: "setFileName", payload: { index, value: event.target.value } })}
         />
       </Grid>
       <Grid item>
         <div style={{ width: "300px" }}>
-          <AvniFormLabel
-            label={"Select Extension Scope *"}
-            toolTipKey={"APP_DESIGNER_PRINT_SCOPE"}
-            position={"top"}
-          />
+          <AvniFormLabel label={"Select Extension Scope *"} toolTipKey={"APP_DESIGNER_PRINT_SCOPE"} position={"top"} />
           <Select
             placeholder={"Extension scope"}
             value={scope}
@@ -50,8 +36,9 @@ export const LabelFileName = ({ label, fileName, scope, index, dispatch, options
             style={{ color: "#d0011b" }}
             component="span"
             onClick={() => dispatch({ type: "removeSetting", payload: { index } })}
+            size="large"
           >
-            <RemoveCircleIcon />
+            <RemoveCircle />
           </IconButton>
         )}
       </Grid>

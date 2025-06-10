@@ -1,15 +1,14 @@
 import React, { Fragment } from "react";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
-import { makeStyles } from "@material-ui/core/styles";
+import { Table } from "@mui/material";
+import { TableBody } from "@mui/material";
+import { TableCell } from "@mui/material";
+import { TableRow } from "@mui/material";
+
 import { Concept, findMediaObservations, Individual, Observation } from "avni-models";
 import { conceptService, i18n } from "../services/ConceptService";
 import { addressLevelService } from "../services/AddressLevelService";
 import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
-import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
 import _, { find, isEmpty, isNil, lowerCase, map } from "lodash";
 import clsx from "clsx";
@@ -18,13 +17,14 @@ import { Link } from "react-router-dom";
 import MediaObservations from "./MediaObservations";
 import http from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
-import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
-import ReportProblemIcon from "@material-ui/icons/ReportProblem";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import { Collapse, Grid, IconButton, styled } from "@material-ui/core";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
+import { TextField } from "@mui/material";
+import { Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { Collapse, Grid, IconButton, styled } from "@mui/material";
+import { ReportProblem, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { VerifiedUser } from "@mui/icons-material";
+import { Error } from "@mui/icons-material";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -143,7 +143,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     return isAbnormal ? (
       <span className={classes.abnormalColor}>
         {" "}
-        <ErrorIcon /> {value}
+        <Error /> {value}
       </span>
     ) : (
       value
@@ -173,7 +173,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
 
   const renderPhoneNumber = phoneNumber => {
     const isVerified = phoneNumber.isVerified();
-    const Icon = isVerified ? VerifiedUserIcon : ReportProblemIcon;
+    const Icon = isVerified ? VerifiedUser : ReportProblem;
     const className = isVerified ? classes.verifiedIconStyle : classes.unverifiedIconStyle;
     return (
       <span>

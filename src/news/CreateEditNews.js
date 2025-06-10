@@ -1,10 +1,9 @@
 import React from "react";
 import { convertToRaw } from "draft-js";
-import Dialog from "@material-ui/core/Dialog";
-import { Box, DialogContent, Grid, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Dialog, Box, DialogContent, Grid, Typography, TextField } from "@mui/material";
 import RichTextEditor from "./components/RichTextEditor";
 import { ActionButton } from "./components/ActionButton";
-import TextField from "@material-ui/core/TextField";
 import { AvniImageUpload } from "../common/components/AvniImageUpload";
 import { isEmpty } from "lodash";
 import { MediaFolder, uploadImage } from "../common/utils/S3Client";

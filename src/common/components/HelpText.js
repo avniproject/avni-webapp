@@ -1,6 +1,7 @@
+import { makeStyles } from "@mui/styles";
 import React from "react";
 import { isEmpty } from "lodash";
-import makeStyles from "@material-ui/core/styles/makeStyles";
+
 import ShowMoreText from "react-show-more-text";
 
 const useStyles = makeStyles(() => ({

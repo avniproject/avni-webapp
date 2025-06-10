@@ -1,5 +1,4 @@
-import { Grid } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
+import { Grid, Typography } from "@mui/material";
 import React from "react";
 
 const Body = () => {

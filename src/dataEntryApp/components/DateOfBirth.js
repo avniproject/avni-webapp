@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
-import { Box, TextField, Typography } from "@material-ui/core";
+import { Box, TextField, Typography } from "@mui/material";
 import moment from "moment/moment";
 import _ from "lodash";
-import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useTranslation } from "react-i18next";
 import { dateFormat } from "dataEntryApp/constants";
 import { LineBreak } from "../../common/components/utils";
@@ -37,44 +37,39 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   return (
     <Fragment>
       <Box display="flex" flexDirection="column">
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <Typography
-            variant="body1"
-            gutterBottom
-            style={{ width: "50%", marginBottom: 5, color: "rgba(0, 0, 0, 0.54)" }}
-          >
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Typography variant="body1" gutterBottom style={{ width: "50%", marginBottom: 5, color: "rgba(0, 0, 0, 0.54)" }}>
             {t("dateOfBirth")}
             {"*"}
           </Typography>
-          <KeyboardDatePicker
-            error={!_.isEmpty(dobErrorMsg)}
-            helperText={t(dobErrorMsg)}
+          <DatePicker
             required
-            margin="normal"
             id="Date-of-Birth"
             autoComplete="off"
             placeholder={dateFormat}
             format={dateFormat}
-            style={{ width: "30%" }}
             name="dateOfBirth"
             // label={t("date of birth")}
             value={_.isNil(dateOfBirth) ? null : dateOfBirth}
             onChange={date => onChange(date)}
-            InputLabelProps={{
-              shrink: true
-            }}
-            KeyboardButtonProps={{
-              "aria-label": "change date",
-              color: "primary"
+            renderInput={params => (
+              <TextField
+                {...params}
+                error={Boolean(!_.isEmpty(dobErrorMsg))}
+                helperText={t(dobErrorMsg)}
+                margin="normal"
+                style={{ width: "30%" }}
+                InputLabelProps={{ shrink: true }}
+              />
+            )}
+            slotProps={{
+              actionBar: { actions: ["clear"] },
+              openPickerButton: { "aria-label": "change date", color: "primary" }
             }}
           />
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
         <LineBreak num={1} />
-        <Typography
-          variant="body1"
-          gutterBottom
-          style={{ width: "50%", color: "rgba(0, 0, 0, 0.54)" }}
-        >
+        <Typography variant="body1" gutterBottom style={{ width: "50%", color: "rgba(0, 0, 0, 0.54)" }}>
           {t("age")}
         </Typography>
         <TextField

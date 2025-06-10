@@ -1,13 +1,11 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@mui/styles";
+import { Grid, DialogContent, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { first, noop } from "lodash";
 import { useHistory, withRouter } from "react-router-dom";
 import Modal from "./CommonModal";
-import DialogContent from "@material-ui/core/DialogContent";
-import { Typography } from "@material-ui/core";
 import { removeRelationShip, saveRelationShip } from "../../../reducers/relationshipReducer";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 
@@ -72,10 +70,9 @@ const RemoveRelative = props => {
 
   const searchContent = (
     <DialogContent style={{ width: 600, height: "auto" }}>
-      <Grid container direction="row" justify="flex-end" alignItems="flex-start">
+      <Grid container direction="row" justifyContent="flex-end" alignItems="flex-start">
         <Typography variant="subtitle1" gutterBottom>
-          Do you want to remove the relationship between {props.relationAname} and{" "}
-          {props.relationBname}?
+          Do you want to remove the relationship between {props.relationAname} and {props.relationBname}?
         </Typography>
       </Grid>
     </DialogContent>

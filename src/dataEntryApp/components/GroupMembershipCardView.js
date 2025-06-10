@@ -1,6 +1,6 @@
 import React from "react";
 import SubjectCardView from "./SubjectCardView";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 
 const GroupMembershipCardView = ({ groupMembership: { groupSubject, groupRole } }) => {
   return (

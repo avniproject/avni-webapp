@@ -5,16 +5,12 @@ import { find, isEmpty } from "lodash";
 import DropDown from "../common/components/DropDown";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import Grid from "@material-ui/core/Grid";
+import { Grid, Button, Box, Checkbox, FormControlLabel } from "@mui/material";
 import { getDashboardData, getOrgConfig } from "./reducers/onLoadReducer";
 import { connect } from "react-redux";
 import { getLocales } from "../common/utils";
 import Import from "./Import";
 import { TranslationDashboard } from "./TranslationDashboard";
-import Button from "@material-ui/core/Button";
-import Box from "@material-ui/core/Box";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const EMPTY_TRANSLATION_KEY = "KEY_NOT_DEFINED";
@@ -76,7 +72,7 @@ export const Translations = ({ user, organisationConfig, getOrgConfig, dashboard
             <Grid>
               <h5 id="title">Upload Translations</h5>
             </Grid>
-            <Grid container direction="row" justify="flex-start" alignItems="center">
+            <Grid container direction="row" justifyContent="flex-start" alignItems="center">
               <Import locales={localeChoices} onSuccessfulImport={() => getDashboardData("Android", EMPTY_TRANSLATION_KEY)} />
             </Grid>
           </Box>
@@ -85,7 +81,7 @@ export const Translations = ({ user, organisationConfig, getOrgConfig, dashboard
             <Grid>
               <h5 id="title">Download Translations</h5>
             </Grid>
-            <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>
+            <Grid container direction="row" justifyContent="flex-start" alignItems="center" m={3}>
               <DropDown name="Platform" value={platform} onChange={setPlatform} style={{ width: 120 }} options={platforms} />
               <Box pl={2}>
                 <FormControlLabel

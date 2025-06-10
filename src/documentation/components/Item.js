@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { isFunction } from "lodash";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/HighlightOff";
-import { IconButton, makeStyles } from "@material-ui/core";
-import Link from "@material-ui/core/Link";
+import { Add, Delete } from "@mui/icons-material";
+import { makeStyles } from "@mui/styles";
+import { IconButton, Link } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,8 +46,7 @@ export const Item = ({ name, onAdd, onDelete, level, disabled, onToggle, isSelec
         height: 30,
         paddingLeft,
         position: "relative",
-        backgroundColor:
-          showIcons || isSelected ? "rgba(145,145,145,0.37)" : "rgba(248,248,248,0.37)",
+        backgroundColor: showIcons || isSelected ? "rgba(145,145,145,0.37)" : "rgba(248,248,248,0.37)",
         whiteSpace: "nowrap",
         width: window.innerWidth / 5
       }}
@@ -60,12 +58,12 @@ export const Item = ({ name, onAdd, onDelete, level, disabled, onToggle, isSelec
         <div style={{ alignSelf: "flex-end", position: "absolute", right: 0 }}>
           {isFunction(onAdd) && (
             <IconButton size={"small"} onClick={onAdd}>
-              <AddIcon />
+              <Add />
             </IconButton>
           )}
           {isFunction(onDelete) && (
             <IconButton size={"small"} onClick={onDelete}>
-              <DeleteIcon style={{ color: "rgba(175,1,25,0.59)" }} />
+              <Delete style={{ color: "rgba(175,1,25,0.59)" }} />
             </IconButton>
           )}
         </div>

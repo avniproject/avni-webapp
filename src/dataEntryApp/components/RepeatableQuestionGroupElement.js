@@ -2,7 +2,7 @@ import React from "react";
 import { RepeatableQuestionGroup } from "openchs-models";
 import QuestionGroupFormElement from "./QuestionGroupFormElement";
 import _ from "lodash";
-import Button from "@material-ui/core/Button";
+import { Button } from "@mui/material";
 import { LineBreak } from "../../common/components/utils";
 
 function AddMoreButton({ addNewQuestionGroup, formElement }) {

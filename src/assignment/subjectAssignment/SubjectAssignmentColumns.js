@@ -1,7 +1,7 @@
 import _, { split, map, isEmpty, isNil } from "lodash";
 import { getSyncAttributes } from "../reducers/SubjectAssignmentReducer";
 import React from "react";
-import Chip from "@material-ui/core/Chip";
+import { Chip } from "@mui/material";
 import SubjectAssignmentMultiSelect from "./SubjectAssignmentMultiSelect";
 import GroupModel from "../../common/model/GroupModel";
 

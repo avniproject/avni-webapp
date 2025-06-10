@@ -1,15 +1,8 @@
 import React, { Fragment } from "react";
-import { withStyles } from "@material-ui/core/styles";
-import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import MuiDialogActions from "@material-ui/core/DialogActions";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import CheckCircleOutlineRoundedIcon from "@material-ui/icons/CheckCircleOutlineRounded";
-import { Box, Typography, Button } from "@material-ui/core";
+import { withStyles, makeStyles } from "@mui/styles";
+import { Dialog, DialogContent, DialogActions, IconButton, Box, Typography, Button } from "@mui/material";
+import { Close, CheckCircleOutline } from "@mui/icons-material";
 import { LineBreak } from "../../common/components/utils";
-import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,54 +22,47 @@ const useStyles = makeStyles(theme => ({
     fontSize: 12,
     width: 100,
     cursor: "pointer",
-    "border-radius": 50,
+    borderRadius: 50,
     padding: "4px 25px"
   },
   iconstyle: {
-    "font-size": "4rem",
-    "font-family": "Roboto, Helvetica, Arial, sans-serif",
-    "font-weight": 400,
+    fontSize: "4rem",
+    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+    fontWeight: 400,
     color: "gray"
   }
 }));
 
-const DialogTitle = withStyles(useStyles)(props => {
+const StyledDialogTitle = withStyles(useStyles)(props => {
   const { children, classes, onClose, ...other } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+    <div className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
       {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-          <CloseIcon />
+        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose} size="large">
+          <Close />
         </IconButton>
       ) : null}
-    </MuiDialogTitle>
+    </div>
   );
 });
 
-const DialogContent = withStyles(theme => ({
+const StyledDialogContent = withStyles(theme => ({
   root: {
     padding: theme.spacing(2),
     margin: "0px 20px"
   }
-}))(MuiDialogContent);
+}))(DialogContent);
 
-const DialogActions = withStyles(theme => ({
+const StyledDialogActions = withStyles(theme => ({
   root: {
     margin: 0,
     padding: theme.spacing(1),
     justifyContent: "center"
   }
-}))(MuiDialogActions);
+}))(DialogActions);
 
-const CustomizedDialog = ({
-  title,
-  showSuccessIcon,
-  message,
-  showOkbtn,
-  openDialogContainer,
-  onOk
-}) => {
+const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDialogContainer, onOk }) => {
   const [open, setOpen] = React.useState(openDialogContainer || false);
   const classes = useStyles();
 
@@ -91,46 +77,31 @@ const CustomizedDialog = ({
 
   return (
     <Fragment>
-      {/* <Button variant="outlined" color="primary" onClick={ setOpen(true);}>
-        Save
-      </Button> */}
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
         {title && (
-          <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+          <StyledDialogTitle id="customized-dialog-title" onClose={handleClose}>
             {title}
-          </DialogTitle>
+          </StyledDialogTitle>
         )}
-        <DialogContent>
-          <Box
-            display="flex"
-            flexDirection={"column"}
-            flexWrap="wrap"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            {showSuccessIcon && <CheckCircleOutlineRoundedIcon className={classes.iconstyle} />}
+        <StyledDialogContent>
+          <Box display="flex" flexDirection="column" flexWrap="wrap" justifyContent="space-between" alignItems="center">
+            {showSuccessIcon && <CheckCircleOutline className={classes.iconstyle} />}
             <LineBreak num={2} />
             {message && <Typography gutterBottom>{message}</Typography>}
           </Box>
-        </DialogContent>
-        <DialogActions>
+        </StyledDialogContent>
+        <StyledDialogActions>
           {showOkbtn && (
-            <Box
-              display="flex"
-              flexDirection={"row"}
-              flexWrap="wrap"
-              justifyContent="space-start"
-              alignItems="center"
-            >
+            <Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="flex-start" alignItems="center">
               <Button className={classes.okbuttonStyle} onClick={handleOk} color="primary">
                 Ok
               </Button>
-              {/* <Chip className={classes.okbuttonStyle} onClick={handleOk}>OK</Chip> */}
             </Box>
           )}
-        </DialogActions>
+        </StyledDialogActions>
       </Dialog>
     </Fragment>
   );
 };
+
 export default CustomizedDialog;

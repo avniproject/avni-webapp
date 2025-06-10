@@ -1,11 +1,7 @@
 import React, { Fragment } from "react";
-import { TextField, Typography } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@mui/styles";
+import { TextField, Typography, Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { makeStyles } from "@material-ui/core/styles";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import { find } from "lodash";
 import AddressLevelsByType from "../../../common/components/AddressLevelsByType";
 
@@ -106,9 +102,7 @@ function BasicForm({
         )}
 
         {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "SearchAll"
-            ? renderSearchAll(index, searchFilterForm.titleKey)
-            : ""
+          searchFilterForm.type === "SearchAll" ? renderSearchAll(index, searchFilterForm.titleKey) : ""
         )}
       </Grid>
       <Grid container spacing={3} className={classes.componentSpacing}>

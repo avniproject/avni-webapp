@@ -1,7 +1,6 @@
-import Link from "@material-ui/core/Link";
+import { Link, IconButton } from "@mui/material";
 import React from "react";
-import FeedbackIcon from "@material-ui/icons/Feedback";
-import IconButton from "@material-ui/core/IconButton";
+import { Feedback } from "@mui/icons-material";
 
 const Footer = () => (
   <div
@@ -26,7 +25,7 @@ const Footer = () => (
         }}
         style={{ color: "white", fontSize: 18 }}
       >
-        <FeedbackIcon style={{ color: "white", marginRight: 8 }} />
+        <Feedback style={{ color: "white", marginRight: 8 }} />
         Share feedback
       </Link>
     </div>

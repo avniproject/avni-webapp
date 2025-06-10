@@ -1,8 +1,6 @@
 import React from "react";
-import Grid from "@material-ui/core/Grid";
+import { Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import { get } from "lodash";
 
 export const SubjectConcept = props => {
@@ -36,7 +34,7 @@ export const SubjectConcept = props => {
   return (
     <>
       <br />
-      <Grid container justify="flex-start">
+      <Grid container justifyContent="flex-start">
         <Grid item xs={12} sm={12}>
           <AvniSelect
             style={{ width: "400px", height: 40, marginTop: 24 }}

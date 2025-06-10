@@ -1,10 +1,9 @@
 import Select from "react-select";
 import React, { Fragment } from "react";
 import { FileFormat } from "avni-models";
-import FormControl from "@material-ui/core/FormControl";
+import { FormControl, TextField } from "@mui/material";
 import { filter, includes, isNil, toNumber, map } from "lodash";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
-import TextField from "@material-ui/core/TextField";
 
 export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
   const fileFormatOptions = FileFormat.names.map(name => ({
@@ -45,9 +44,7 @@ export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
             const value = e.target.value.replace(/[^0-9.]/g, "");
             handleChange(groupIndex, "allowedMaxSize", value, index);
           }}
-          onBlur={() =>
-            handleChange(groupIndex, "allowedMaxSize", toNumber(keyValues.allowedMaxSize), index)
-          }
+          onBlur={() => handleChange(groupIndex, "allowedMaxSize", toNumber(keyValues.allowedMaxSize), index)}
         />
       </FormControl>
     </Fragment>

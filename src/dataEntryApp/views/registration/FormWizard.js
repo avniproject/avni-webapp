@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import { Redirect } from "react-router-dom";
-import { makeStyles } from "@material-ui/styles";
 import Summary from "./Summary";
-import { Box, Paper, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Box, Paper, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";

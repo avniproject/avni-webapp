@@ -1,19 +1,19 @@
 import React, { useCallback, useState } from "react";
 import LogoutButton from "../../adminApp/react-admin-config/LogoutButton";
-import MuiAppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Menu from "@material-ui/core/Menu";
-import IconButton from "@material-ui/core/IconButton";
-import UserIcon from "@material-ui/icons/AccountCircle";
-import MenuIcon from "@material-ui/icons/Menu";
-import HomeIcon from "@material-ui/icons/Home";
+import MuiAppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import makeStyles from "@mui/styles/makeStyles";
+import Menu from "@mui/material/Menu";
+import IconButton from "@mui/material/IconButton";
+import UserIcon from "@mui/icons-material/AccountCircle";
+import MenuIcon from "@mui/icons-material/Menu";
+import HomeIcon from "@mui/icons-material/Home";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { OrganisationOptions } from "./OrganisationOptions";
 import { getUserInfo } from "../../rootApp/ducks";
-import { Box } from "@material-ui/core";
+import { Box } from "@mui/material";
 import PasswordDialog from "../../adminApp/components/PasswordDialog";
 import httpClient from "../utils/httpClient";
 import { get } from "lodash";
@@ -108,6 +108,7 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
                   onClick={props.handleDrawer}
                   edge="start"
                   style={{ outline: "none" }}
+                  size="large"
                 >
                   <MenuIcon />
                 </IconButton>
@@ -130,28 +131,14 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
                 <div style={{ marginTop: "2%" }}>
                   <b>{props.organisation.name} </b> ({props.user.username})
                 </div>
-                <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit">
+                <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit" size="large">
                   <HomeIcon />
                 </IconButton>
-                <IconButton
-                  aria-label="Profile"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  onClick={handleClick}
-                >
+                <IconButton aria-label="Profile" aria-controls="long-menu" aria-haspopup="true" onClick={handleClick} size="large">
                   <UserIcon className={classes.profileButton} />
                 </IconButton>
-                <Menu
-                  id="long-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={!!anchorEl}
-                  onClose={handleClose}
-                >
-                  <LogoutButton
-                    onChangePassword={() => setShowChangePassword(true)}
-                    lastSessionTimeMillis={userInfo.lastSessionTime}
-                  />
+                <Menu id="long-menu" anchorEl={anchorEl} keepMounted open={!!anchorEl} onClose={handleClose}>
+                  <LogoutButton onChangePassword={() => setShowChangePassword(true)} lastSessionTimeMillis={userInfo.lastSessionTime} />
                 </Menu>
               </div>
             </div>

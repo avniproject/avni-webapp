@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Typography } from "@mui/material";
 import { LineBreak } from "common/components/utils";
 import React from "react";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 import { isNil, isDate } from "lodash";
 import { AgeUtil } from "openchs-models";
 
@@ -45,20 +45,13 @@ const FormWizardHeader = ({ subject }) => {
   headerElements = addElement(t("name"), fullName, headerElements, classes, "fw-name");
 
   if (subject.isPerson()) {
-    const dateOfBirth = isDate(subject.dateOfBirth)
-      ? AgeUtil.getDisplayAge(subject.dateOfBirth, i18n)
-      : null;
-    headerElements =
-      dateOfBirth && addElement(t("age"), dateOfBirth, headerElements, classes, "fw-age");
+    const dateOfBirth = isDate(subject.dateOfBirth) ? AgeUtil.getDisplayAge(subject.dateOfBirth, i18n) : null;
+    headerElements = dateOfBirth && addElement(t("age"), dateOfBirth, headerElements, classes, "fw-age");
     const gender = subject.gender && !isNil(subject.gender.name) ? subject.gender.name : "-";
     headerElements = addElement(t("gender"), gender, headerElements, classes, "fw-gender");
   }
-  const lowestAddressLevel = subject.lowestAddressLevel
-    ? subject.lowestAddressLevel.name || "-"
-    : "";
-  const lowestAddressLevelType = subject.lowestAddressLevel
-    ? t(subject.lowestAddressLevel.type) || "-"
-    : "";
+  const lowestAddressLevel = subject.lowestAddressLevel ? subject.lowestAddressLevel.name || "-" : "";
+  const lowestAddressLevelType = subject.lowestAddressLevel ? t(subject.lowestAddressLevel.type) || "-" : "";
   headerElements = addElement(lowestAddressLevelType, lowestAddressLevel, headerElements, classes);
   return (
     <div className={classes.details}>

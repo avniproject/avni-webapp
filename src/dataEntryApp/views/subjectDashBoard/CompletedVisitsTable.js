@@ -1,11 +1,11 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { Box, Grid } from "@mui/material";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import { find, isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { mapObservations } from "common/subjectModelMapper";
-import { Box, Grid } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { selectFormMappingForEncounter } from "../../sagas/encounterSelector";
 import { selectFormMappingForProgramEncounter } from "../../sagas/programEncounterSelector";
@@ -15,7 +15,7 @@ import Observations from "dataEntryApp/components/Observations";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { DeleteButton } from "../../components/DeleteButton";
 import { formatDate } from "../../../common/utils/General";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({
@@ -30,18 +30,10 @@ const transformApiResponse = response => {
   response.cancelObservations = mapObservations(response.cancelObservations);
 };
 
-const EditVisitLink = ({
-  editEncounterUrl,
-  encounter,
-  isForProgramEncounters,
-  encounterFormMapping,
-  programEncounterFormMapping
-}) => {
+const EditVisitLink = ({ editEncounterUrl, encounter, isForProgramEncounters, encounterFormMapping, programEncounterFormMapping }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const isFormAvailable = isForProgramEncounters
-    ? programEncounterFormMapping
-    : encounterFormMapping;
+  const isFormAvailable = isForProgramEncounters ? programEncounterFormMapping : encounterFormMapping;
 
   return isFormAvailable ? (
     <Link to={`${editEncounterUrl}?uuid=${encounter.uuid}`} className={classes.editLabel}>
@@ -90,9 +82,7 @@ const EncounterObs = ({
 
   return requiredFormDetails ? (
     <Observations
-      observations={
-        encounter.encounterDateTime ? encounter.observations : encounter.cancelObservations || []
-      }
+      observations={encounter.encounterDateTime ? encounter.observations : encounter.cancelObservations || []}
       form={requiredFormDetails.form}
       customKey={encounter.uuid}
       key={encounter.uuid}
@@ -179,8 +169,7 @@ const CompletedVisitsTable = ({
       const params = { ...filterParams };
       params.page = query.page;
       params.size = query.pageSize;
-      if (!isEmpty(query.orderBy.field))
-        params.sort = `${query.orderBy.field},${query.orderDirection}`;
+      if (!isEmpty(query.orderBy.field)) params.sort = `${query.orderBy.field},${query.orderDirection}`;
       const filterQueryString = new URLSearchParams(params).toString();
       http
         .get(`${apiUrl}?${filterQueryString}`)
@@ -233,10 +222,7 @@ const CompletedVisitsTable = ({
           render: row => {
             return (
               <Box margin={1} key={row.uuid}>
-                <EncounterObservations
-                  encounter={row}
-                  isForProgramEncounters={isForProgramEncounters}
-                />
+                <EncounterObservations encounter={row} isForProgramEncounters={isForProgramEncounters} />
               </Box>
             );
           }

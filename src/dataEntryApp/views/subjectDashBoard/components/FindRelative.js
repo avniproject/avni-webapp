@@ -1,5 +1,6 @@
+import { makeStyles } from "@mui/styles";
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -118,11 +119,7 @@ const FindRelative = ({
   const searchContent = (
     <div style={{ margin: "30px" }}>
       {props.subjects && props.subjects.listOfRecords ? (
-        <FindRelativeTable
-          subjectData={props.subjects.listOfRecords.filter(
-            subject => subjectProfile.uuid !== subject.uuid
-          )}
-        />
+        <FindRelativeTable subjectData={props.subjects.listOfRecords.filter(subject => subjectProfile.uuid !== subject.uuid)} />
       ) : (
         <SearchForm
           operationalModules={operationalModules}

@@ -1,7 +1,6 @@
 import React, { Fragment } from "react";
-import { Paper, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@mui/styles";
+import { Paper, Typography, Grid } from "@mui/material";
 import ProgramDetails from "./subjectDashboardProgramDetails";
 import Program from "./Program";
 import { useTranslation } from "react-i18next";
@@ -20,12 +19,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProgramTab = ({
-  program,
-  handleUpdateComponent,
-  subjectTypeUuid,
-  subjectVoided
-}) => {
+const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, subjectTypeUuid, subjectVoided }) => {
   let flagActive = false;
   let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -71,12 +65,7 @@ const SubjectDashboardProgramTab = ({
           <Grid container spacing={1}>
             {flagActive ? (
               <Fragment>
-                <Program
-                  type="active"
-                  program={program}
-                  selectedTab={selectedTab}
-                  handleTabChange={handleTabChange}
-                />
+                <Program type="active" program={program} selectedTab={selectedTab} handleTabChange={handleTabChange} />
                 <Grid item style={{ width: "60px" }} />
               </Fragment>
             ) : (
@@ -84,12 +73,7 @@ const SubjectDashboardProgramTab = ({
             )}
 
             {flagExited ? (
-              <Program
-                type="exited"
-                program={program}
-                selectedTab={selectedTabExited}
-                handleTabChange={handleTabChangeExited}
-              />
+              <Program type="exited" program={program} selectedTab={selectedTabExited} handleTabChange={handleTabChangeExited} />
             ) : (
               ""
             )}

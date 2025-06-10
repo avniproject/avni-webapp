@@ -1,7 +1,7 @@
 import AddEditContactGroup from "./AddEditContactGroup";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { Fragment, useCallback, useState } from "react";
-import { LinearProgress, Snackbar } from "@material-ui/core";
+import { LinearProgress, Snackbar } from "@mui/material";
 import { MaterialTableToolBar, MaterialTableToolBarButton } from "../../common/material-table/MaterialTableToolBar";
 import ContactService from "../api/ContactService";
 import _ from "lodash";

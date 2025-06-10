@@ -1,8 +1,7 @@
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
+import { makeStyles } from "@mui/styles";
+import { FormControl, FormLabel } from "@mui/material";
 import Select from "react-select";
 import React from "react";
-import { makeStyles } from "@material-ui/core";
 
 const useStyle = makeStyles(theme => ({
   filter: {
@@ -10,15 +9,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SelectFilter = ({
-  label,
-  options,
-  filter,
-  isMulti = false,
-  filterCriteria,
-  onFilterChange,
-  isClearable = true
-}) => {
+const SelectFilter = ({ label, options, filter, isMulti = false, filterCriteria, onFilterChange, isClearable = true }) => {
   const classes = useStyle();
   return (
     <FormControl fullWidth className={classes.filter}>

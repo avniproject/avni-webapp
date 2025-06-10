@@ -1,3 +1,4 @@
+// import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -44,8 +45,7 @@ const ReportingViews = ({ userInfo }) => {
       title: "View Name",
       field: "viewName",
       searchable: true,
-      render: rowData =>
-        rowData.legacyView ? renderWarning(rowData.viewName) : <span>{rowData.viewName}</span>
+      render: rowData => (rowData.legacyView ? renderWarning(rowData.viewName) : <span>{rowData.viewName}</span>)
     }
   ];
 
@@ -98,9 +98,7 @@ const ReportingViews = ({ userInfo }) => {
         })
         .catch(error => {
           setLoading(false);
-          const errorMessage = `${get(error, "response.data") ||
-            get(error, "message") ||
-            "unknown error"}`;
+          const errorMessage = `${get(error, "response.data") || get(error, "message") || "unknown error"}`;
           alert(errorMessage);
         });
     }
@@ -160,13 +158,7 @@ const ReportingViews = ({ userInfo }) => {
         <Modal onClose={MuiComponentHelper.getDialogClosingHandler()} open={loading}>
           <CircularProgress size={150} className={classes.progress} />
         </Modal>
-        {showAlert && (
-          <CustomizedSnackbar
-            message={message}
-            getDefaultSnackbarStatus={setShowAlert}
-            defaultSnackbarStatus={showAlert}
-          />
-        )}
+        {showAlert && <CustomizedSnackbar message={message} getDefaultSnackbarStatus={setShowAlert} defaultSnackbarStatus={showAlert} />}
       </DocumentationContainer>
     </Box>
   );

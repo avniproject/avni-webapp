@@ -1,7 +1,6 @@
-import { Typography, withStyles } from "@material-ui/core";
-import MuiDialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
+import { Typography, DialogTitle, IconButton } from "@mui/material";
+import { Close } from "@mui/icons-material";
+import { withStyles } from "@mui/styles";
 import React from "react";
 
 const styles = theme => ({
@@ -20,11 +19,11 @@ const styles = theme => ({
 export const CustomDialogTitle = withStyles(styles)(props => {
   const { children, classes, onClose, ...other } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+    <DialogTitle disableTypography className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
-      <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-        <CloseIcon />
+      <IconButton aria-label="close" className={classes.closeButton} onClick={onClose} size="large">
+        <Close />
       </IconButton>
-    </MuiDialogTitle>
+    </DialogTitle>
   );
 });

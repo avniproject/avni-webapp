@@ -1,12 +1,8 @@
 import React from "react";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+import { makeStyles } from "@mui/styles";
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import moment from "moment";
 import Colors from "../Colors";
-import { makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -24,10 +20,7 @@ const ScheduledVisitsTable = ({ visitSchedules }) => {
 
   const { t } = useTranslation();
   return (
-    <Table
-      className={`${classes.tableContainer} ${classes.highlightBackground}`}
-      aria-label="caption table"
-    >
+    <Table className={`${classes.tableContainer} ${classes.highlightBackground}`} aria-label="caption table">
       <TableHead>
         <TableRow>
           <TableCell align="left">{t("visitName")}</TableCell>

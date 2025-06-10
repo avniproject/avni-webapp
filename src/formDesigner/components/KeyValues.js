@@ -1,13 +1,8 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
+import { makeStyles } from "@mui/styles";
+import { TextField, Box, Button, IconButton, Grid, FormHelperText } from "@mui/material";
 import { map } from "lodash";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import DeleteIcon from "@material-ui/icons/Delete";
-import IconButton from "@material-ui/core/IconButton";
-import Grid from "@material-ui/core/Grid";
-import FormHelperText from "@material-ui/core/FormHelperText";
+import { Delete } from "@mui/icons-material";
 import { ToolTip } from "../../common/components/ToolTip";
 
 const useStyles = makeStyles(theme => ({
@@ -28,14 +23,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function KeyValues({
-  keyValues,
-  onKeyValueChange,
-  onAddNewKeyValue,
-  onDeleteKeyValue,
-  error,
-  readOnlyKeys = []
-}) {
+export default function KeyValues({ keyValues, onKeyValueChange, onAddNewKeyValue, onDeleteKeyValue, error, readOnlyKeys = [] }) {
   const classes = useStyles();
   return (
     <Box mt={5}>
@@ -82,19 +70,15 @@ export default function KeyValues({
             onClick={() => onDeleteKeyValue(index)}
             style={{ marginTop: 10 }}
             disabled={readOnlyKeys.includes(key)}
+            size="large"
           >
-            <DeleteIcon fontSize="inherit" />
+            <Delete fontSize="inherit" />
           </IconButton>
         </Grid>
       ))}
       {error && <FormHelperText error>Key-Value can't be blank</FormHelperText>}
       <Grid container>
-        <Button
-          type="button"
-          className={useStyles.button}
-          color="primary"
-          onClick={onAddNewKeyValue}
-        >
+        <Button type="button" className={useStyles.button} color="primary" onClick={onAddNewKeyValue}>
           Add New Key-Value
         </Button>
         <Grid item xs={4}>

@@ -1,7 +1,6 @@
 import React from "react";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Modal from "@material-ui/core/Modal";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { CircularProgress, Modal } from "@mui/material";
 import MuiComponentHelper from "../utils/MuiComponentHelper";
 
 const useStyles = makeStyles(theme => ({

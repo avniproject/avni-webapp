@@ -1,7 +1,7 @@
 import React from "react";
 import { map, filter, get } from "lodash";
-import { Button, makeStyles } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@mui/styles";
+import { Button, Grid } from "@mui/material";
 import { isDevEnv } from "../../../../../common/constants";
 import { extensionScopeTypes } from "../../../../../formDesigner/components/Extensions/ExtensionReducer";
 import commonApi from "../../../../../common/service";
@@ -21,13 +21,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const ExtensionOption = ({
-  subjectUUIDs,
-  typeUUID,
-  typeName,
-  scopeType,
-  configExtensions
-}) => {
+export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType, configExtensions }) => {
   const classes = useStyles();
   const [extensions, setExtensions] = React.useState([]);
 
@@ -42,15 +36,12 @@ export const ExtensionOption = ({
     }
   }, []);
   const isSearchScope = (scopeType, extensionScope) =>
-    scopeType === extensionScopeTypes.searchResults &&
-    extensionScope === extensionScopeTypes.searchResults;
+    scopeType === extensionScopeTypes.searchResults && extensionScope === extensionScopeTypes.searchResults;
   const filteredSettings = filter(
     extensions,
     ({ extensionScope }) =>
       isSearchScope(scopeType, extensionScope.scopeType) ||
-      (typeUUID === extensionScope.uuid &&
-        typeName === extensionScope.name &&
-        scopeType === extensionScope.scopeType)
+      (typeUUID === extensionScope.uuid && typeName === extensionScope.name && scopeType === extensionScope.scopeType)
   );
   const serverURL = isDevEnv ? "http://localhost:8021" : window.location.origin;
 

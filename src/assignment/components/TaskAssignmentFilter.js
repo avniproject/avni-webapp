@@ -1,13 +1,11 @@
 import React, { Fragment } from "react";
-import { Paper, Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import { map } from "lodash";
+import { Paper, Typography, Button } from "@mui/material";
+import _, { map } from "lodash";
 import SelectFilter from "./SelectFilter";
 import { dateFilterFieldOptions } from "../util/DateFilterOptions";
 import { useStyle } from "../util/FilterStyles";
 import { labelValue } from "../util/util";
 import TextFilter from "./TextFilter";
-import _ from "lodash";
 
 export const TaskAssignmentFilter = ({
   filterCriteria,
@@ -20,10 +18,8 @@ export const TaskAssignmentFilter = ({
 }) => {
   const classes = useStyle();
   const allUserOptions = [labelValue("Unassigned", 0), ...userOptions];
-  const onFilterChange = (filter, value) =>
-    dispatch({ type: "setFilter", payload: { filter, value } });
-  const onMetadataFilterChange = (filter, value) =>
-    dispatch({ type: "setMetadataFilter", payload: { filter, value } });
+  const onFilterChange = (filter, value) => dispatch({ type: "setFilter", payload: { filter, value } });
+  const onMetadataFilterChange = (filter, value) => dispatch({ type: "setMetadataFilter", payload: { filter, value } });
 
   return (
     <Fragment>

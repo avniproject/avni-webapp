@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { getDocumentationState, useDocumentationDispatch } from "../hooks";
 import RichTextEditor from "../../news/components/RichTextEditor";
 import { isEmpty } from "lodash";
-import { Box } from "@material-ui/core";
+import { Box } from "@mui/material";
 
 export const DocumentationItem = ({ documentationItem, language }) => {
   const { selectedDocumentation } = getDocumentationState();

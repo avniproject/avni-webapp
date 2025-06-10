@@ -1,4 +1,4 @@
-import FormLabel from "@material-ui/core/FormLabel";
+import { FormLabel } from "@mui/material";
 import React from "react";
 import _ from "lodash";
 

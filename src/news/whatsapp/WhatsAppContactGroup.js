@@ -1,19 +1,14 @@
 import React, { Fragment, useCallback, useState } from "react";
-import Tabs from "@material-ui/core/Tabs";
-import Box from "@material-ui/core/Box";
-import Tab from "@material-ui/core/Tab";
+import { Tabs, Box, Tab, Typography, Breadcrumbs, LinearProgress, Snackbar, IconButton } from "@mui/material";
 import MaterialTable from "material-table";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Link, withRouter } from "react-router-dom";
-import Typography from "@material-ui/core/Typography";
-import { Breadcrumbs, LinearProgress, Snackbar } from "@material-ui/core";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
 import AddContactGroupUsers from "./AddContactGroupUsers";
 import { getLinkTo } from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
 import ContactService from "../api/ContactService";
-import { Edit } from "@material-ui/icons";
-import IconButton from "@material-ui/core/IconButton";
+import { Edit } from "@mui/icons-material";
 import AddEditContactGroup from "./AddEditContactGroup";
 import { MaterialTableToolBar, MaterialTableToolBarButton } from "../../common/material-table/MaterialTableToolBar";
 import ReceiverType from "./ReceiverType";
@@ -199,7 +194,7 @@ const WhatsAppContactGroup = ({ match }) => {
           <Typography component={"span"} color="textPrimary">
             {group["label"]}
           </Typography>
-          <IconButton onClick={() => setEditingContactGroup(true)}>
+          <IconButton onClick={() => setEditingContactGroup(true)} size="large">
             <Edit />
           </IconButton>
         </Box>

@@ -13,12 +13,12 @@ import { getTableColumns } from "./TableColumns";
 import { fetchTasks } from "./FetchTasks";
 import { includes, isEmpty, map, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import { Grid, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Grid, Paper } from "@mui/material";
 import { TaskAssignmentFilter } from "../components/TaskAssignmentFilter";
 import { TaskAssignmentAction } from "../components/TaskAssignmentAction";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop";
-import Paper from "@material-ui/core/Paper";
 import { labelValue, refreshTable } from "../util/util";
 import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 

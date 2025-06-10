@@ -1,5 +1,5 @@
 import React from "react";
-import FormLabel from "@material-ui/core/FormLabel";
+import { FormLabel } from "@mui/material";
 
 export const TextFieldInShow = ({ text, label }) => {
   return (

@@ -1,37 +1,29 @@
 import React from "react";
-
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
-import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import MuiExpansionPanelActions from "@material-ui/core/ExpansionPanelActions";
-import Divider from "@material-ui/core/Divider";
-import Typography from "@material-ui/core/Typography";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import Grid from "@material-ui/core/Grid";
-import { InputLabel } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
-import IconButton from "@material-ui/core/IconButton";
-import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
-import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
-import QueryBuilderIcon from "@material-ui/icons/QueryBuilder";
-import TimerIcon from "@material-ui/icons/Timer";
-import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
-import DateRangeIcon from "@material-ui/icons/DateRange";
-import PhoneIcon from "@material-ui/icons/Phone";
-import TextFieldsIcon from "@material-ui/icons/TextFields";
-import NoteIcon from "@material-ui/icons/Note";
-import Tooltip from "@material-ui/core/Tooltip";
-import ImageIcon from "@material-ui/icons/Image";
-import VideocamIcon from "@material-ui/icons/Videocam";
-import PinDropIcon from "@material-ui/icons/PinDrop";
+import { withStyles, makeStyles } from "@mui/styles";
+import { Accordion, AccordionDetails, AccordionSummary, Typography, Grid, InputLabel, IconButton, Tooltip } from "@mui/material";
+import {
+  ExpandMore,
+  ExpandLess,
+  Delete,
+  RadioButtonChecked,
+  CheckCircleOutline,
+  QueryBuilder,
+  Timer,
+  CalendarToday,
+  DateRange,
+  Phone,
+  TextFields,
+  Note,
+  Image,
+  Videocam,
+  PinDrop,
+  DragHandle,
+  Audiotrack,
+  InsertDriveFile
+} from "@mui/icons-material";
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
 import { ToolTip } from "../../common/components/ToolTip";
-import DragHandleIcon from "@material-ui/icons/DragHandle";
-import Audiotrack from "@material-ui/icons/Audiotrack";
-import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
 
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
@@ -54,14 +46,12 @@ const useStyles = makeStyles(theme => ({
   },
   iconDataType: {
     padding: "10px"
-    // backgroundColor: "#efefef"
   },
   questionCount: {
     paddingTop: "20px"
   },
   deleteicon: {
     padding: "10px 30px -1px 0px"
-    // marginTop: "-10px"
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -77,28 +67,25 @@ const useStyles = makeStyles(theme => ({
     color: "red"
   }
 }));
-export const ExpansionPanel = withStyles({
+
+const StyledAccordion = withStyles({
   root: {
     "&$expanded": {
       margin: 0
     }
   },
   expanded: {}
-})(MuiExpansionPanel);
+})(Accordion);
 
-const ExpansionPanelActions = withStyles({
-  root: {}
-})(MuiExpansionPanelActions);
-
-export const ExpansionPanelDetails = withStyles({
+const StyledAccordionDetails = withStyles({
   root: {
     backgroundColor: "#fff",
     border: "2px solid #bdc6cf",
     padding: 10
   }
-})(MuiExpansionPanelDetails);
+})(AccordionDetails);
 
-export const ExpansionPanelSummary = withStyles({
+const StyledAccordionSummary = withStyles({
   root: {
     paddingRight: 0,
     paddingLeft: "10px",
@@ -118,46 +105,46 @@ export const ExpansionPanelSummary = withStyles({
     "&$expanded": { margin: "0px 0 0 0" }
   },
   expanded: {}
-})(MuiExpansionPanelSummary);
+})(AccordionSummary);
+
 export const dataTypeIcons = {
   concept: {
-    SingleSelect: <RadioButtonCheckedIcon />,
-    MultiSelect: <CheckCircleOutlineIcon />,
+    SingleSelect: <RadioButtonChecked />,
+    MultiSelect: <CheckCircleOutline />,
     "": <b />
   },
-  Date: <CalendarTodayIcon />,
+  Date: <CalendarToday />,
   Numeric: <b>123</b>,
-  Text: <TextFieldsIcon />,
-  Notes: <NoteIcon />,
-  Image: <ImageIcon />,
-  ImageV2: <ImageIcon />,
-  DateTime: <DateRangeIcon />,
-  Time: <QueryBuilderIcon />,
-  Duration: <TimerIcon />,
-  Video: <VideocamIcon />,
+  Text: <TextFields />,
+  Notes: <Note />,
+  Image: <Image />,
+  ImageV2: <Image />,
+  DateTime: <DateRange />,
+  Time: <QueryBuilder />,
+  Duration: <Timer />,
+  Video: <Videocam />,
   Id: <b>Id</b>,
-  Location: <PinDropIcon />,
+  Location: <PinDrop />,
   Subject: <b>ST</b>,
   Encounter: <b>ET</b>,
-  PhoneNumber: <PhoneIcon />,
+  PhoneNumber: <Phone />,
   GroupAffiliation: <b>GA</b>,
   QuestionGroup: <b>QG</b>,
   Audio: <Audiotrack />,
-  File: <InsertDriveFileIcon />,
+  File: <InsertDriveFile />,
   "": <b />
 };
 
 function FormElement(props) {
   const classes = useStyles();
-  const panel = "panel" + props.groupIndex.toString + props.index.toString();
-
+  const panel = "panel" + props.groupIndex.toString() + props.index.toString();
   const [dragElement, setDragElement] = React.useState(false);
   const disableFormElement = props.disableFormElement;
 
   const DragHandler = props => (
     <div style={{ height: 5 }} {...props}>
       <div hidden={!dragElement || disableFormElement}>
-        <DragHandleIcon color={"disabled"} />
+        <DragHandle color="disabled" />
       </div>
     </div>
   );
@@ -165,11 +152,10 @@ function FormElement(props) {
   const handleDelete = event => {
     props.deleteGroup(props.groupIndex, props.index);
     event.stopPropagation();
-    //props.deleteRecord(props.index);
   };
 
   return (
-    <ExpansionPanel
+    <StyledAccordion
       TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
       expanded={props.formElementData.expanded}
       className={props.formElementData.error ? classes.rootError : classes.root}
@@ -177,14 +163,14 @@ function FormElement(props) {
       onMouseEnter={() => setDragElement(true)}
       onMouseLeave={() => setDragElement(false)}
     >
-      <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"} {...props.dragHandleProps}>
-        <Grid container direction={"row"}>
-          <Grid container item alignItems={"center"} justify={"center"}>
+      <StyledAccordionSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"} {...props.dragHandleProps}>
+        <Grid container direction="row">
+          <Grid container item alignItems="center" justifyContent="center">
             <DragHandler />
           </Grid>
-          <Grid container item sm={12} alignItems={"center"}>
+          <Grid container item sm={12} alignItems="center">
             <Grid item>
-              <Typography component={"div"} className={classes.secondaryHeading}>
+              <Typography component="div" className={classes.secondaryHeading}>
                 {[
                   "Date",
                   "Numeric",
@@ -222,8 +208,8 @@ function FormElement(props) {
               </Typography>
             </Grid>
             <Grid item sm={10} style={{ paddingTop: "10px" }}>
-              <Typography component={"span"} className={classes.heading}>
-                <span className={classes.expandIcon}>{props.formElementData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
+              <Typography component="span" className={classes.heading}>
+                <span className={classes.expandIcon}>{props.formElementData.expanded ? <ExpandLess /> : <ExpandMore />}</span>
                 <InputLabel
                   name={"name" + panel}
                   style={{ display: "inline-block" }}
@@ -235,20 +221,19 @@ function FormElement(props) {
                 </InputLabel>
               </Typography>
             </Grid>
-            <Grid item sm={1} direction={"row"}>
-              <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement}>
-                <DeleteIcon />
+            <Grid item sm={1}>
+              <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement} size="small">
+                <Delete />
               </IconButton>
-              <ToolTip toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"} onHover displayPosition={"bottom"} />
+              <ToolTip title="APP_DESIGNER_FORM_ELEMENT_NAME" />
             </Grid>
           </Grid>
         </Grid>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
+      </StyledAccordionSummary>
+      <StyledAccordionDetails>
         <FormElementTabs {...props} indexTab={props.groupIndex + "" + props.index} />
-      </ExpansionPanelDetails>
-      {false && <Divider /> && <ExpansionPanelActions />}
-    </ExpansionPanel>
+      </StyledAccordionDetails>
+    </StyledAccordion>
   );
 }
 

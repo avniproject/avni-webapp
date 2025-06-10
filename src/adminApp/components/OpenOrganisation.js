@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
-import Link from "@material-ui/core/Link";
+import { Link } from "@mui/material";
 import { getUserInfo } from "../../rootApp/ducks";
 
 class OpenOrganisation extends Component {

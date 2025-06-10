@@ -3,12 +3,9 @@ import { useTranslation } from "react-i18next";
 import MaterialTable from "material-table";
 
 import { formatDateTime } from "../../utils/General";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import { makeStyles } from "@mui/styles";
+import { Typography, AccordionSummary, Accordion, AccordionDetails } from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
 import { formatMsgTemplate } from "../utils";
 import materialTableIcons from "../../material-table/MaterialTableIcons";
 
@@ -25,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     fontWeight: "500",
     margin: "0"
   },
-  expandMoreIcon: {
+  expandMoreHoriz: {
     color: "#0e6eff"
   }
 }));
@@ -70,13 +67,13 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
   }
 
   return (
-    <ExpansionPanel className={classes.expansionPanel}>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}>
+    <Accordion className={classes.expansionPanel}>
+      <AccordionSummary expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}>
         <Typography component={"span"} className={classes.expansionHeading}>
           {t(title)}
         </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
+      </AccordionSummary>
+      <AccordionDetails style={{ padding: 0, display: "block" }}>
         <MaterialTable
           icons={materialTableIcons}
           title=""
@@ -95,8 +92,8 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
             toolbar: false
           }}
         />
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 

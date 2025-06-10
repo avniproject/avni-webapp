@@ -1,10 +1,7 @@
 import React from "react";
-import { Grid, makeStyles } from "@material-ui/core";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@mui/styles";
+import { Grid, CardActionArea, CardContent, Typography, Card } from "@mui/material";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";
-import Card from "@material-ui/core/Card";
 
 const useStyles = makeStyles(theme => ({
   root: {

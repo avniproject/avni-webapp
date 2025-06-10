@@ -2,10 +2,9 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getNews, selectNewsList } from "../../../../reducers/NewsReducer";
 import { map } from "lodash";
-import { Box, Grid, makeStyles, Paper } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Box, Grid, Paper, Divider, Typography } from "@mui/material";
 import { NewsCard } from "./NewsCard";
-import Divider from "@material-ui/core/Divider";
-import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles(theme => ({
   root: {

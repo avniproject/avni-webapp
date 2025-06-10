@@ -1,16 +1,13 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Paper, Button, Grid, List, ListItem, ListItemText } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Paper, Button, Grid, List, ListItem, ListItemText } from "@mui/material";
 import moment from "moment/moment";
 import { defaultTo, isEmpty, isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
-import {
-  selectFormMappingForCancelEncounter,
-  selectFormMappingForEncounter
-} from "../../../sagas/encounterSelector";
+import { selectFormMappingForCancelEncounter, selectFormMappingForEncounter } from "../../../sagas/encounterSelector";
 import clsx from "clsx";
 import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
@@ -122,9 +119,7 @@ const CompletedEncounter = ({
           <ListItem className={classes.listItem}>
             <ListItemText
               className={classes.listItemTextDate}
-              primary={moment(
-                new Date(encounter.encounterDateTime || encounter.cancelDateTime)
-              ).format("DD-MM-YYYY")}
+              primary={moment(new Date(encounter.encounterDateTime || encounter.cancelDateTime)).format("DD-MM-YYYY")}
             />
           </ListItem>
           {status && (
@@ -144,21 +139,13 @@ const CompletedEncounter = ({
         {
           <>
             {encounter.encounterDateTime && encounter.uuid && !isEmpty(encounterFormMapping) ? (
-              <InternalLink
-                id={`edit-visit-${encounterId}`}
-                to={`/app/subject/editEncounter?uuid=${encounter.uuid}`}
-              >
+              <InternalLink id={`edit-visit-${encounterId}`} to={`/app/subject/editEncounter?uuid=${encounter.uuid}`}>
                 <Button color="primary" className={classes.visitButton}>
                   {t("edit visit")}
                 </Button>
               </InternalLink>
-            ) : encounter.cancelDateTime &&
-              encounter.uuid &&
-              !isEmpty(cancelEncounterFormMapping) ? (
-              <InternalLink
-                id={`edit-cancel-visit-${encounterId}`}
-                to={`/app/subject/editCancelEncounter?uuid=${encounter.uuid}`}
-              >
+            ) : encounter.cancelDateTime && encounter.uuid && !isEmpty(cancelEncounterFormMapping) ? (
+              <InternalLink id={`edit-cancel-visit-${encounterId}`} to={`/app/subject/editCancelEncounter?uuid=${encounter.uuid}`}>
                 <Button color="primary" className={classes.visitButton}>
                   {t("edit visit")}
                 </Button>
@@ -182,14 +169,8 @@ const CompletedEncounter = ({
 };
 
 const mapStateToProps = (state, props) => ({
-  encounterFormMapping: selectFormMappingForEncounter(
-    props.encounter.encounterType.uuid,
-    props.subjectTypeUuid
-  )(state),
-  cancelEncounterFormMapping: selectFormMappingForCancelEncounter(
-    props.encounter.encounterType.uuid,
-    props.subjectTypeUuid
-  )(state)
+  encounterFormMapping: selectFormMappingForEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state),
+  cancelEncounterFormMapping: selectFormMappingForCancelEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state)
 });
 
 const mapDispatchToProps = {

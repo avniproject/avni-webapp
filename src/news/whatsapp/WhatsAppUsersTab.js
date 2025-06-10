@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import { useHistory, withRouter } from "react-router-dom";
 import SearchUserAndConfirm from "./SearchUserAndConfirm";
-import { Box, LinearProgress } from "@material-ui/core";
+import { Box, LinearProgress, Button } from "@mui/material";
 import WhatsAppMessagesView from "./WhatsAppMessagesView";
-import Button from "@material-ui/core/Button";
 import ReceiverType from "./ReceiverType";
 import UserService from "../../common/service/UserService";
 import BroadcastPath from "../utils/BroadcastPath";
@@ -36,10 +35,7 @@ function WhatsAppUsersTab({ receiverId }) {
     <div className="container">
       {workflowState.name === WorkflowStateNames.Searching && <LinearProgress />}
       {workflowState.name === WorkflowStateNames.ChooseUser && (
-        <SearchUserAndConfirm
-          onUserSelected={user => routeToMessages(user)}
-          confirmButtonText={"View Messages"}
-        />
+        <SearchUserAndConfirm onUserSelected={user => routeToMessages(user)} confirmButtonText={"View Messages"} />
       )}
       {workflowState.name === WorkflowStateNames.ViewUserMessages && (
         <div>
@@ -49,10 +45,7 @@ function WhatsAppUsersTab({ receiverId }) {
             receiverName={workflowState.user.name}
           />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
-            <Button
-              onClick={() => history.push(`${BroadcastPath.UserFullPath}`)}
-              variant="outlined"
-            >
+            <Button onClick={() => history.push(`${BroadcastPath.UserFullPath}`)} variant="outlined">
               Back to search
             </Button>
           </Box>

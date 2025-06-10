@@ -1,14 +1,6 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import NativeSelect from "@material-ui/core/NativeSelect";
-import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { getRelationshipTypes, saveRelationShip } from "../../../reducers/relationshipReducer";
-import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
-import { useHistory, withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
-import { ModelGeneral as General } from "avni-models";
 import {
+  NativeSelect,
   Box,
   Button,
   FormControl,
@@ -21,26 +13,29 @@ import {
   TableHead,
   TableRow,
   Typography
-} from "@material-ui/core";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
+import { getRelationshipTypes, saveRelationShip } from "../../../reducers/relationshipReducer";
+import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
+import { useHistory, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { withParams } from "common/components/utils";
+import { ModelGeneral as General } from "avni-models";
 import FindRelative from "../components/FindRelative";
 import { LineBreak } from "../../../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import { find, get, head, includes, isEmpty } from "lodash";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { getGenders, getOrganisationConfig } from "../../../reducers/metadataReducer";
-import {
-  findApplicableRelations,
-  getRelationshipType,
-  validateRelative
-} from "../../../utils/RelationshipUtil";
+import { findApplicableRelations, getRelationshipType, validateRelative } from "../../../utils/RelationshipUtil";
 
 const useStyles = makeStyles(theme => ({
   root: {
     // padding: theme.spacing(3, 2),
     margin: theme.spacing(1, 3),
     flexGrow: 1,
-    boxShadow:
-      "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   innerPaper: {
     padding: theme.spacing(2, 2),
@@ -169,33 +164,21 @@ const AddRelative = ({
 
   const handleChange = event => {
     const selectedRelationUUID = event.target.value;
-    const relationshipType = getRelationshipType(
-      subjectProfile,
-      selectedRelationUUID,
-      relationshipTypes
-    );
+    const relationshipType = getRelationshipType(subjectProfile, selectedRelationUUID, relationshipTypes);
     const name = event.target.name;
     setState({
       ...state,
       [name]: selectedRelationUUID
     });
     const selectedRelation = find(applicableRelations, ar => ar.uuid === selectedRelationUUID);
-    const validationError = validateRelative(
-      selectedRelative,
-      subjectProfile,
-      selectedRelation,
-      existingRelatives
-    );
+    const validationError = validateRelative(selectedRelative, subjectProfile, selectedRelation, existingRelatives);
     if (validationError) {
       setError(validationError);
       return;
     } else {
       setError("");
     }
-    const isReverseRelation = includes(
-      get(relationshipType, "individualAIsToBRelation.uuid", []),
-      selectedRelationUUID
-    );
+    const isReverseRelation = includes(get(relationshipType, "individualAIsToBRelation.uuid", []), selectedRelationUUID);
     setRelationData({
       ...relationData,
       relationshipTypeUUID: relationshipType.uuid,
@@ -222,7 +205,7 @@ const AddRelative = ({
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <div className={classes.innerPaper}>
-          <Grid container direction="row" justify="space-between" alignItems="baseline">
+          <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
             <Typography component={"span"} className={classes.mainHeading}>
               {t("addRelative")}
             </Typography>
@@ -272,36 +255,21 @@ const AddRelative = ({
                         </TableHead>
                         <TableBody>
                           <TableRow>
-                            <TableCell
-                              key={selectedRelative.fullName}
-                              className={classes.tableCellDetails}
-                            >
+                            <TableCell key={selectedRelative.fullName} className={classes.tableCellDetails}>
                               {t(selectedRelative.fullName)}
                             </TableCell>
 
-                            <TableCell
-                              key={selectedRelative.gender}
-                              className={classes.tableCellDetails}
-                            >
+                            <TableCell key={selectedRelative.gender} className={classes.tableCellDetails}>
                               {t(selectedRelative.gender)}
                             </TableCell>
 
-                            <TableCell
-                              key={selectedRelative.dateOfBirth}
-                              className={classes.tableCellDetails}
-                            >
+                            <TableCell key={selectedRelative.dateOfBirth} className={classes.tableCellDetails}>
                               {selectedRelative.dateOfBirth
-                                ? new Date().getFullYear() -
-                                  new Date(selectedRelative.dateOfBirth).getFullYear() +
-                                  " " +
-                                  `${t("years")}`
+                                ? new Date().getFullYear() - new Date(selectedRelative.dateOfBirth).getFullYear() + " " + `${t("years")}`
                                 : "-"}
                             </TableCell>
 
-                            <TableCell
-                              key={selectedRelative.addressLevel}
-                              className={classes.tableCellDetails}
-                            >
+                            <TableCell key={selectedRelative.addressLevel} className={classes.tableCellDetails}>
                               {t(selectedRelative.addressLevel)}
                             </TableCell>
                           </TableRow>
@@ -336,10 +304,7 @@ const AddRelative = ({
                               </NativeSelect>
                             </FormControl>
                             {
-                              <Typography
-                                style={{ color: "red", marginTop: "10px" }}
-                                variant="subtitle1"
-                              >
+                              <Typography style={{ color: "red", marginTop: "10px" }} variant="subtitle1">
                                 {t(error)}
                               </Typography>
                             }
@@ -353,13 +318,7 @@ const AddRelative = ({
             </div>
           )}
         </div>
-        <Box
-          className={classes.buttomboxstyle}
-          display="flex"
-          flexDirection={"row"}
-          flexWrap="wrap"
-          justifyContent="flex-start"
-        >
+        <Box className={classes.buttomboxstyle} display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
           <Box>
             <Button variant="outlined" className={classes.cancelBtn} onClick={cancelRelation}>
               CANCEL

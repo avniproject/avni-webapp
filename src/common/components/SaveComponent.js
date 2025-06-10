@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Button from "@material-ui/core/Button";
+import { Button } from "@mui/material";
 import { isEmpty } from "lodash";
-import Save from "@material-ui/icons/Save";
+import { Save } from "@mui/icons-material";
 
 export const SaveComponent = ({ disabledFlag, name, onSubmit, ...props }) => {
   const [saveInProgress, setSaveInProgress] = useState(false);

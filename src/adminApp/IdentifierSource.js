@@ -9,7 +9,8 @@ import {
   SimpleForm,
   ReferenceField,
   ReferenceInput,
-  REDUX_FORM_NAME
+  REDUX_FORM_NAME,
+  FormDataConsumer
 } from "react-admin";
 import React, { Fragment } from "react";
 import Chip from "@material-ui/core/Chip";
@@ -20,7 +21,6 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniSelectInput } from "./components/AvniSelectInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
-import { FormDataConsumer } from "react-admin";
 
 const sourceType = {
   userBasedIdentifierGenerator: {

@@ -1,15 +1,12 @@
 import React from "react";
 import MaterialTable from "material-table";
 import Select from "react-select";
-import Button from "@material-ui/core/Button";
+import { Button, Grid, Checkbox } from "@mui/material";
 import api from "../api";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAllDashboards, getGroupDashboards } from "../reducers";
-import Grid from "@material-ui/core/Grid";
-import Checkbox from "@material-ui/core/Checkbox";
-import { RadioButtonChecked, RadioButtonUnchecked } from "@material-ui/icons";
-import Delete from "@material-ui/icons/DeleteOutline";
+import { RadioButtonChecked, RadioButtonUnchecked, Delete } from "@mui/icons-material";
 import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 function handleResponse(response, groupId, refresh) {

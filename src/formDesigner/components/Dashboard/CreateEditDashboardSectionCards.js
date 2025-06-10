@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
-import VisibilityIcon from "@material-ui/icons/Visibility";
+import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
+import { Delete } from "@mui/icons-material";
+import { Visibility } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { DragNDropComponent } from "../../common/DragNDropComponent";
 import PropTypes from "prop-types";
@@ -35,11 +35,11 @@ class CreateEditDashboardSectionCards extends Component {
         <ListItem>
           <ListItemText primary={card.name} secondary={card.description} />
           <ListItemSecondaryAction>
-            <IconButton onClick={() => this.props.history.push(`/appDesigner/reportCard/${card.id}/show`)}>
-              <VisibilityIcon />
+            <IconButton onClick={() => this.props.history.push(`/appDesigner/reportCard/${card.id}/show`)} size="large">
+              <Visibility />
             </IconButton>
-            <IconButton onClick={() => this.props.deleteCard(card)}>
-              <DeleteIcon />
+            <IconButton onClick={() => this.props.deleteCard(card)} size="large">
+              <Delete />
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>

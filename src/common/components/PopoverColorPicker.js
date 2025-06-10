@@ -1,6 +1,6 @@
+import { makeStyles } from "@mui/styles";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
-import { makeStyles } from "@material-ui/core";
 
 // Source: https://codesandbox.io/s/opmco
 const useClickOutside = (ref, handler) => {

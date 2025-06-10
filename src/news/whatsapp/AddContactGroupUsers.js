@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import Dialog from "@material-ui/core/Dialog";
-import { DialogActions, DialogTitle, LinearProgress } from "@material-ui/core";
+import { Dialog, DialogActions, DialogTitle, LinearProgress, Box, IconButton } from "@mui/material";
 
-import Box from "@material-ui/core/Box";
-import { Close } from "@material-ui/icons";
-import IconButton from "@material-ui/core/IconButton";
+import { Close } from "@mui/icons-material";
 
 import ContactService from "../api/ContactService";
 import ErrorMessage from "../../common/components/ErrorMessage";
@@ -33,15 +30,11 @@ const AddContactGroupUser = ({ contactGroupId, onClose, onUserAdd }) => {
       fullScreen
       style={{ backgroundColor: "black", color: "white" }}
     >
-      <DialogTitle
-        id="customized-dialog-title"
-        onClose={onCloseHandler}
-        style={{ backgroundColor: "black", color: "white" }}
-      >
+      <DialogTitle id="customized-dialog-title" onClose={onCloseHandler} style={{ backgroundColor: "black", color: "white" }}>
         Search users to add
       </DialogTitle>
       <DialogActions>
-        <IconButton onClick={onCloseHandler}>
+        <IconButton onClick={onCloseHandler} size="large">
           <Close />
         </IconButton>
       </DialogActions>

@@ -1,6 +1,6 @@
 import React from "react";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
-import FormLabel from "@material-ui/core/FormLabel";
+import { FormLabel } from "@mui/material";
 import ColorValue from "../../common/ColorValue";
 import ResourceShowView from "../../common/ResourceShowView";
 import RuleDisplay from "../../../adminApp/components/RuleDisplay";

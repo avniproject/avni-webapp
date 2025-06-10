@@ -11,7 +11,7 @@ import {
   Paper,
   Select,
   Typography
-} from "@material-ui/core";
+} from "@mui/material";
 import _ from "lodash";
 import { CHANGE_TYPE } from "../adminApp/service/CompareMetadataService";
 import { Link } from "react-router-dom";

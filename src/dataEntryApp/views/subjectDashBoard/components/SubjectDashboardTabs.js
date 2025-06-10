@@ -1,18 +1,11 @@
 import React, { Fragment } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import MUAppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
+import { makeStyles } from "@mui/styles";
+import { AppBar, Tabs, Tab, Typography, Paper, Box } from "@mui/material";
 import PropTypes from "prop-types";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
 import SubjectDashboardProfileTab from "./SubjectDashboardProfileTab";
 import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
 import SubjectDashboardProgramTab from "./subjectDashboardProgramTab";
-import Box from "@material-ui/core/Box";
-import DescriptionIcon from "@material-ui/icons/Description";
-import ListIcon from "@material-ui/icons/List";
-import AssessmentIcon from "@material-ui/icons/Assessment";
+import { Description, List, Assessment } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -112,7 +105,7 @@ export default ({
 
   return (
     <Fragment>
-      <MUAppBar className={classes.tabView} position="static" color="default">
+      <AppBar className={classes.tabView} position="static" color="default">
         {showProgramTab && (
           <Tabs
             value={value}
@@ -124,12 +117,12 @@ export default ({
             aria-label="scrollable auto tabs example"
             className={classes.wrapper}
           >
-            {showProgramTab && <Tab label={t("programs")} icon={<AssessmentIcon id={"program-tab"} />} {...a11yProps(0)} />}
-            <Tab label={t("profile")} icon={<DescriptionIcon id={"profile-tab"} />} {...a11yProps(registrationTabIndex)} />
-            {showGeneralTab && <Tab label={t("General")} icon={<ListIcon id={"general-tab"} />} {...a11yProps(generalTabIndex)} />}
+            {showProgramTab && <Tab label={t("programs")} icon={<Assessment id={"program-tab"} />} {...a11yProps(0)} />}
+            <Tab label={t("profile")} icon={<Description id={"profile-tab"} />} {...a11yProps(registrationTabIndex)} />
+            {showGeneralTab && <Tab label={t("General")} icon={<List id={"general-tab"} />} {...a11yProps(generalTabIndex)} />}
           </Tabs>
         )}
-      </MUAppBar>
+      </AppBar>
       {showProgramTab && (
         <TabContent value={value} index={0}>
           <Paper className={classes.tabsDisplay}>

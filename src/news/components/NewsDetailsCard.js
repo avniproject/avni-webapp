@@ -1,27 +1,16 @@
 import React, { Fragment } from "react";
-import { Box, Grid, Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import { Box, Grid, Typography, Button, Divider } from "@mui/material";
 import { getFormattedDateTime } from "../../adminApp/components/AuditUtil";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+import { Delete, Edit } from "@mui/icons-material";
 import { ActionButton } from "./ActionButton";
 import { isNil } from "lodash";
-import Divider from "@material-ui/core/Divider";
 import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 import DOMPurify from "dompurify";
 import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-const NewsDetailsCard = ({
-  history,
-  news,
-  setDeleteAlert,
-  setOpenEdit,
-  setPublishAlert,
-  displayActions,
-  userInfo
-}) => {
+const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublishAlert, displayActions, userInfo }) => {
   const canEditNews = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditNews);
 
   return (
@@ -29,11 +18,7 @@ const NewsDetailsCard = ({
       <Grid container direction="row" alignItems={"center"}>
         <Grid item container xs={6} direction={"column"}>
           <Grid item>
-            <Button
-              color="primary"
-              onClick={history.goBack}
-              style={{ textTransform: "none", backgroundColor: "transparent" }}
-            >
+            <Button color="primary" onClick={history.goBack} style={{ textTransform: "none", backgroundColor: "transparent" }}>
               <Typography variant="h6" gutterBottom>
                 {"< Back"}
               </Typography>
@@ -51,15 +36,15 @@ const NewsDetailsCard = ({
           </Grid>
         </Grid>
         {displayActions && canEditNews && (
-          <Grid item container justify={"flex-end"} spacing={2} xs={6}>
+          <Grid item container justifyContent={"flex-end"} spacing={2} xs={6}>
             <Grid item>
               <Button style={{ color: "red" }} onClick={() => setDeleteAlert(true)}>
-                <DeleteIcon /> Delete
+                <Delete /> Delete
               </Button>
             </Grid>
             <Grid item>
               <Button color="primary" type="button" onClick={() => setOpenEdit(true)}>
-                <EditIcon />
+                <Edit />
                 Edit
               </Button>
             </Grid>
@@ -84,7 +69,7 @@ const NewsDetailsCard = ({
         <Grid item align={"center"}>
           <AvniImageUpload oldImgUrl={news.heroImage} height={"400"} width={"80%"} />
         </Grid>
-        <Grid item container justify="flex-start">
+        <Grid item container justifyContent="flex-start">
           <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(news.contentHtml) }} />
         </Grid>
       </Grid>

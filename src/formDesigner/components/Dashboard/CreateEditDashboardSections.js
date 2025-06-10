@@ -1,14 +1,10 @@
 import React from "react";
-import { IconButton, Input, MenuItem, Tooltip, Typography } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
+import { makeStyles } from "@mui/styles";
+import { IconButton, Input, MenuItem, Tooltip, Typography, Grid } from "@mui/material";
+import { Delete, ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty } from "lodash";
-import Grid from "@material-ui/core/Grid";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ListIcon from "@material-ui/icons/List";
 import { SelectCardsView } from "./SelectCardsView";
 import CreateEditDashboardSectionCards from "./CreateEditDashboardSectionCards";
-import { makeStyles } from "@material-ui/core/styles";
 import { AvniTextField } from "../../../common/components/AvniTextField";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import { AvniSelect } from "../../../common/components/AvniSelect";
@@ -121,13 +117,9 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
     <Grid container item sm={12} alignItems={"center"}>
       <Grid item sm={2}>
         <Tooltip title={"Grouped Questions"}>
-          <ListIcon style={{ marginLeft: 12, marginRight: 4 }} />
+          <List style={{ marginLeft: 12, marginRight: 4 }} />
         </Tooltip>
-        {expanded === "panel" + index ? (
-          <ExpandLessIcon classes={{ root: classes.icon }} />
-        ) : (
-          <ExpandMoreIcon classes={{ root: classes.icon }} />
-        )}
+        {expanded === "panel" + index ? <ExpandLess classes={{ root: classes.icon }} /> : <ExpandMore classes={{ root: classes.icon }} />}
       </Grid>
       <Grid item sm={5}>
         <Typography className={classes.heading}>
@@ -149,8 +141,12 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
         <Typography className={classes.questionCount}>{WebDashboardSection.getReportCards(section).length} cards</Typography>
       </Grid>
       <Grid item sm={2}>
-        <IconButton aria-label="delete" onClick={() => dispatch({ type: dashboardReducerActions.deleteSection, payload: section })}>
-          <DeleteIcon />
+        <IconButton
+          aria-label="delete"
+          onClick={() => dispatch({ type: dashboardReducerActions.deleteSection, payload: section })}
+          size="large"
+        >
+          <Delete />
         </IconButton>
       </Grid>
     </Grid>

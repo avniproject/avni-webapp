@@ -1,6 +1,6 @@
-import Button from "@material-ui/core/Button";
+import { makeStyles } from "@mui/styles";
+import { Button } from "@mui/material";
 import React from "react";
-import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -13,13 +13,7 @@ const useStyles = makeStyles(theme => ({
 const IconButton = ({ onClick, Icon, label, disabled }) => {
   const classes = useStyles();
   return (
-    <Button
-      color="primary"
-      size="small"
-      className={classes.root}
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <Button color="primary" size="small" className={classes.root} onClick={onClick} disabled={disabled}>
       <Icon style={{ marginRight: 8 }} /> {label}
     </Button>
   );

@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import httpClient from "../utils/httpClient";
 import NamedSelectableEntities from "../model/NamedSelectableEntities";
 import WebEncounterType from "../model/WebEncounterType";
-import DeleteIcon from "@material-ui/icons/Delete";
-import IconButton from "@material-ui/core/IconButton";
+import { Delete } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 
 export function EncounterTypeSelect({ isMulti, selectedSubjectTypes = [], selectedPrograms = [], selectedEncounterTypes = [], onChange }) {
   const [encounterTypes, setEncounterTypes] = useState(NamedSelectableEntities.createEmpty());
@@ -37,8 +37,8 @@ export function EncounterTypeSelect({ isMulti, selectedSubjectTypes = [], select
           />
         </div>
         {selectedEncounterTypes.length > 0 && (
-          <IconButton onClick={() => onChange([])}>
-            <DeleteIcon />
+          <IconButton onClick={() => onChange([])} size="large">
+            <Delete />
           </IconButton>
         )}
       </div>

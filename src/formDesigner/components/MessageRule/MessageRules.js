@@ -1,11 +1,10 @@
 import React from "react";
 import MessageRule from "./MessageRule";
 import IconButton from "../IconButton";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
+import { AddCircle } from "@mui/icons-material";
 import { sampleMessageRule, sampleMessageScheduleRule } from "../../common/SampleRule";
-import FormLabel from "@material-ui/core/FormLabel";
+import { FormLabel, Typography } from "@mui/material";
 import { find } from "lodash";
-import { Typography } from "@material-ui/core";
 
 const MessageRules = ({
   rules = [],
@@ -67,7 +66,7 @@ const MessageRules = ({
           })}
           {!readOnly && (
             <IconButton
-              Icon={AddCircleIcon}
+              Icon={AddCircle}
               label={"Add new message rule"}
               onClick={() =>
                 updateRules(rules.length)({
@@ -77,6 +76,7 @@ const MessageRules = ({
                 })
               }
               disabled={false}
+              size="large"
             />
           )}
           {msgError && msgError !== "" && (

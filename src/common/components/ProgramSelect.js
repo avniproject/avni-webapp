@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import httpClient from "../utils/httpClient";
 import NamedSelectableEntities from "../model/NamedSelectableEntities";
 import WebProgram from "../model/WebProgram";
-import DeleteIcon from "@material-ui/icons/Delete";
-import IconButton from "@material-ui/core/IconButton";
+import { Delete } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 
 export function ProgramSelect({ isMulti, selectedSubjectTypes, selectedPrograms, onChange }) {
   const [programs, setPrograms] = useState(NamedSelectableEntities.createEmpty());
@@ -36,8 +36,8 @@ export function ProgramSelect({ isMulti, selectedSubjectTypes, selectedPrograms,
           />
         </div>
         {selectedPrograms.length > 0 && (
-          <IconButton onClick={() => onChange([])}>
-            <DeleteIcon />
+          <IconButton onClick={() => onChange([])} size="large">
+            <Delete />
           </IconButton>
         )}
       </div>

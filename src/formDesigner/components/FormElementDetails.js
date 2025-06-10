@@ -1,17 +1,27 @@
 import React, { Fragment } from "react";
-import { Button, Checkbox, FormControlLabel, FormGroup, FormLabel, Input, InputLabel, Paper, Select } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import MuiFormControl from "@material-ui/core/FormControl";
+import { makeStyles, withStyles } from "@mui/styles";
+import {
+  FormControl as MuiFormControl,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Input,
+  InputLabel,
+  Paper,
+  Select,
+  Grid,
+  MenuItem,
+  TextField,
+  Radio,
+  RadioGroup,
+  Chip
+} from "@mui/material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
 
-import MenuItem from "@material-ui/core/MenuItem";
 import _, { capitalize, get, includes, isEqual, isNil, replace, toNumber } from "lodash";
-import TextField from "@material-ui/core/TextField";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
 import { AvniFormControl } from "../../common/components/AvniFormControl";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";

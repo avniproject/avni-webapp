@@ -1,20 +1,20 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { LineBreak } from "common/components/utils";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import { useTranslation } from "react-i18next";
 import Modal from "../components/CommonModal";
-import DialogContent from "@material-ui/core/DialogContent";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormLabel from "@material-ui/core/FormLabel";
-import { FormControl, FormGroup } from "@material-ui/core";
+import DialogContent from "@mui/material/DialogContent";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import FormLabel from "@mui/material/FormLabel";
+import { FormControl, FormGroup, TextField } from "@mui/material";
 import moment from "moment/moment";
 import { noop, isNil, isEmpty } from "lodash";
-import IconButton from "@material-ui/core/IconButton";
-import CancelIcon from "@material-ui/icons/Cancel";
+import IconButton from "@mui/material/IconButton";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { dateFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
@@ -147,70 +147,63 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
 
   const content = (
     <DialogContent>
-      <Grid container direction="row" justify="flex-end" alignItems="flex-start">
-        <IconButton
-          color="secondary"
-          className={classes.resetButton}
-          onClick={resetClick}
-          aria-label="add an alarm"
-        >
+      <Grid container direction="row" justifyContent="flex-end" alignItems="flex-start">
+        <IconButton color="secondary" className={classes.resetButton} onClick={resetClick} aria-label="add an alarm" size="large">
           <CancelIcon className={classes.cancelIcon} /> {t("resetAll")}
         </IconButton>
       </Grid>
       <form className={classes.form} noValidate>
         <FormControl className={classes.formControl}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid
-              container
-              direction="row"
-              spacing={3}
-              justify="flex-start"
-              alignItems="flex-start"
-            >
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Grid container direction="row" spacing={3} justifyContent="flex-start" alignItems="flex-start">
               <Grid item xs={6}>
-                <KeyboardDatePicker
+                <DatePicker
                   allowKeyboardControl
-                  margin="normal"
                   id="date-picker-dialog"
-                  label={t("visitscheduledate")}
                   format={dateFormat}
                   autoComplete="off"
                   value={selectedScheduleDate}
                   onChange={scheduleDateChange}
-                  KeyboardButtonProps={{
-                    "aria-label": "change date",
-                    color: "primary"
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label={t("visitscheduledate")}
+                      margin="normal"
+                      error={!isEmpty(filterDateErrors["SCHEDULED_DATE"])}
+                      helperText={!isEmpty(filterDateErrors["SCHEDULED_DATE"]) && t(filterDateErrors["SCHEDULED_DATE"])}
+                    />
+                  )}
+                  slotProps={{
+                    actionBar: { actions: ["clear"] },
+                    openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}
-                  error={!isEmpty(filterDateErrors["SCHEDULED_DATE"])}
-                  helperText={
-                    !isEmpty(filterDateErrors["SCHEDULED_DATE"]) &&
-                    t(filterDateErrors["SCHEDULED_DATE"])
-                  }
                 />
               </Grid>
               <Grid item xs={6}>
-                <KeyboardDatePicker
+                <DatePicker
                   allowKeyboardControl
-                  margin="normal"
                   id="date-picker-dialog"
-                  label={t("visitcompleteddate")}
                   format={dateFormat}
                   autoComplete="off"
                   value={selectedCompletedDate}
                   onChange={completedDateChange}
-                  error={!isEmpty(filterDateErrors["COMPLETED_DATE"])}
-                  helperText={
-                    !isEmpty(filterDateErrors["COMPLETED_DATE"]) &&
-                    t(filterDateErrors["COMPLETED_DATE"])
-                  }
-                  KeyboardButtonProps={{
-                    "aria-label": "change date",
-                    color: "primary"
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label={t("visitcompleteddate")}
+                      margin="normal"
+                      error={!isEmpty(filterDateErrors["COMPLETED_DATE"])}
+                      helperText={!isEmpty(filterDateErrors["COMPLETED_DATE"]) && t(filterDateErrors["COMPLETED_DATE"])}
+                    />
+                  )}
+                  slotProps={{
+                    actionBar: { actions: ["clear"] },
+                    openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}
                 />
               </Grid>
             </Grid>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </FormControl>
         <LineBreak num={1} />
         <FormLabel component="legend">{t("visitType")}</FormLabel>
@@ -250,9 +243,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
           classes: classes.btnCustom,
           redirectTo: `/app/completeVisit`,
           click: applyClick,
-          disabled:
-            !isEmpty(filterDateErrors["COMPLETED_DATE"]) ||
-            !isEmpty(filterDateErrors["SCHEDULED_DATE"])
+          disabled: !isEmpty(filterDateErrors["COMPLETED_DATE"]) || !isEmpty(filterDateErrors["SCHEDULED_DATE"])
         },
         {
           buttonType: "cancelButton",

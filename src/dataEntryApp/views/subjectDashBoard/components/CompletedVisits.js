@@ -1,19 +1,15 @@
 import React, { Fragment, useEffect } from "react";
-import { Paper } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@mui/styles";
+import { Paper, Grid } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
 import { withParams } from "../../../../common/components/utils";
 import { loadEncounters, loadProgramEncounters } from "../../../reducers/completedVisitsReducer";
 import { useTranslation } from "react-i18next";
 import FilterResult from "../components/FilterResult";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import CompletedVisitsTable from "dataEntryApp/views/subjectDashBoard/CompletedVisitsTable";
-import {
-  voidGeneralEncounter,
-  voidProgramEncounter
-} from "../../../reducers/subjectDashboardReducer";
+import { voidGeneralEncounter, voidProgramEncounter } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 
 const useStyle = makeStyles(theme => ({
@@ -88,22 +84,14 @@ const CompleteVisit = ({
 
   const filterQueryString = new URLSearchParams(filterParams).toString();
 
-  const apiUrl = isForProgramEncounters
-    ? `/web/programEnrolment/${entityUuid}/completed`
-    : `/web/subject/${entityUuid}/completed`;
+  const apiUrl = isForProgramEncounters ? `/web/programEnrolment/${entityUuid}/completed` : `/web/subject/${entityUuid}/completed`;
   const viewEncounterUrl = (action = "") =>
-    isForProgramEncounters
-      ? `/app/subject/view${action}ProgramEncounter`
-      : `/app/subject/view${action}Encounter`;
+    isForProgramEncounters ? `/app/subject/view${action}ProgramEncounter` : `/app/subject/view${action}Encounter`;
   const editEncounterUrl = (action = "") =>
-    isForProgramEncounters
-      ? `/app/subject/edit${action}ProgramEncounter`
-      : `/app/subject/edit${action}Encounter`;
+    isForProgramEncounters ? `/app/subject/edit${action}ProgramEncounter` : `/app/subject/edit${action}Encounter`;
 
   useEffect(() => {
-    isForProgramEncounters
-      ? loadProgramEncounters(entityUuid, filterQueryString)
-      : loadEncounters(entityUuid, filterQueryString);
+    isForProgramEncounters ? loadProgramEncounters(entityUuid, filterQueryString) : loadEncounters(entityUuid, filterQueryString);
   }, [entityUuid]);
 
   const [encounterUUID, setEncounterUUID] = React.useState();
@@ -113,7 +101,7 @@ const CompleteVisit = ({
     <div>
       <Fragment>
         <Paper className={classes.searchBox}>
-          <Grid container item justify="flex-end">
+          <Grid container item justifyContent="flex-end">
             <FilterResult encounterTypes={encounterTypes} setFilterParams={setFilterParams} />
           </Grid>
           <Paper className={classes.tableBox}>
@@ -126,18 +114,10 @@ const CompleteVisit = ({
               onDelete={encounter => setEncounterUUID(encounter.uuid)}
             />
             <ConfirmDialog
-              title={
-                isForProgramEncounters
-                  ? t("ProgramEncounterVoidAlertTitle")
-                  : t("GeneralEncounterVoidAlertTitle")
-              }
+              title={isForProgramEncounters ? t("ProgramEncounterVoidAlertTitle") : t("GeneralEncounterVoidAlertTitle")}
               open={encounterUUID !== undefined}
               setOpen={() => setEncounterUUID()}
-              message={
-                isForProgramEncounters
-                  ? t("ProgramEncounterVoidAlertMessage")
-                  : t("GeneralEncounterVoidAlertMessage")
-              }
+              message={isForProgramEncounters ? t("ProgramEncounterVoidAlertMessage") : t("GeneralEncounterVoidAlertMessage")}
               onConfirm={() => voidEncounter(encounterUUID)}
             />
           </Paper>

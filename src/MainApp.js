@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { adaptV4Theme } from "@mui/material/styles";
 import { Provider } from "react-redux";
 import { HashRouter } from "react-router-dom";
 
@@ -10,9 +11,10 @@ import "./formDesigner/App.css";
 import { store } from "./common/store";
 import { App, SecureApp } from "./rootApp";
 
-import { createGenerateClassName, StylesProvider, ThemeProvider } from "@material-ui/styles";
-import { createTheme } from "@material-ui/core/styles";
-import * as Colors from "@material-ui/core/colors";
+import { createGenerateClassName, StylesProvider, ThemeProvider } from "@mui/styles";
+import { StyledEngineProvider } from "@mui/system";
+import { createTheme } from "@mui/material";
+import * as Colors from "@mui/material/colors";
 import http, { httpClient } from "common/utils/httpClient";
 import IdpDetails from "./rootApp/security/IdpDetails";
 import { configureAuth } from "./rootApp/utils";
@@ -21,12 +23,14 @@ import { ErrorFallback } from "./dataEntryApp/ErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorMessageUtil from "./common/utils/ErrorMessageUtil";
 
-const theme = createTheme({
-  palette: {
-    primary: Colors.blue,
-    secondary: Colors.grey
-  }
-});
+const theme = createTheme(
+  adaptV4Theme({
+    palette: {
+      primary: Colors.blue,
+      secondary: Colors.grey
+    }
+  })
+);
 
 const generateClassName = createGenerateClassName({
   productionPrefix: "avnijss"
@@ -69,16 +73,20 @@ const MainApp = () => {
 
   return (
     <StylesProvider generateClassName={generateClassName}>
-      <ThemeProvider theme={theme}>
-        {!unhandledRejectionError && (
-          <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-            <Provider store={store}>
-              <HashRouter>{httpClient.idp.idpType === IdpDetails.none ? <App /> : <SecureApp genericConfig={genericConfig} />}</HashRouter>
-            </Provider>
-          </ErrorBoundary>
-        )}
-        {unhandledRejectionError && <ErrorFallback error={unhandledRejectionError} />}
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          {!unhandledRejectionError && (
+            <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+              <Provider store={store}>
+                <HashRouter>
+                  {httpClient.idp.idpType === IdpDetails.none ? <App /> : <SecureApp genericConfig={genericConfig} />}
+                </HashRouter>
+              </Provider>
+            </ErrorBoundary>
+          )}
+          {unhandledRejectionError && <ErrorFallback error={unhandledRejectionError} />}
+        </ThemeProvider>
+      </StyledEngineProvider>
     </StylesProvider>
   );
 };

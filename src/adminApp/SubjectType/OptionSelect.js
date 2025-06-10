@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import FormLabel from "@material-ui/core/FormLabel";
+import { FormLabel } from "@mui/material";
 import { find, get } from "lodash";
 
 export const OptionSelect = ({ label, options, value, onChange }) => {

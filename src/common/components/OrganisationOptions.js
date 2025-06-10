@@ -1,11 +1,7 @@
 import { isEmpty, map, sortBy, trim } from "lodash";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Button from "@material-ui/core/Button";
+import { makeStyles } from "@mui/styles";
+import { FormControl, InputLabel, Select, MenuItem, Button } from "@mui/material";
 import React from "react";
-import { makeStyles } from "@material-ui/core";
 import CurrentUserService from "../service/CurrentUserService";
 
 const useStyles = makeStyles(theme => ({
@@ -24,13 +20,10 @@ export const OrganisationOptions = ({ getUserInfo, history, organisations, userI
 
   const options = [
     { name: "", value: "" },
-    ...map(
-      sortBy(organisations, organisation => trim(organisation.name).toLowerCase()),
-      ({ name, uuid }) => ({
-        name: name,
-        value: uuid
-      })
-    )
+    ...map(sortBy(organisations, organisation => trim(organisation.name).toLowerCase()), ({ name, uuid }) => ({
+      name: name,
+      value: uuid
+    }))
   ];
 
   const handleChange = event => {

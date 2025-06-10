@@ -1,7 +1,8 @@
 import React from "react";
-import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
+import { InsertDriveFile } from "@mui/icons-material";
 import { size, get, isNil } from "lodash";
-import { Box, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Box, Typography } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -47,7 +48,7 @@ export const FilePreview = ({ url, obsValue }) => {
       onClick={() => window.open(url, "_blank")}
       style={{ cursor: "pointer" }}
     >
-      <InsertDriveFileIcon className={classes.icon} />
+      <InsertDriveFile className={classes.icon} />
       <div>
         <Typography variant="body1" style={{ color: "#FFF" }}>
           {getDisplayFileName()}

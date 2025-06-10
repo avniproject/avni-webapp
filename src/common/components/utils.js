@@ -1,12 +1,11 @@
 import React from "react";
 import _, { get, merge } from "lodash";
 import { Link as RouterLink, withRouter } from "react-router-dom";
-import Link from "@material-ui/core/Link";
-import SvgIcon from "@material-ui/core/SvgIcon";
+import { makeStyles } from "@mui/styles";
+import { Link, SvgIcon } from "@mui/material";
 import qs from "query-string";
 import { join } from "path";
 
-import { makeStyles } from "@material-ui/core/styles";
 import ScreenWithAppBar from "common/components/ScreenWithAppBar";
 
 const createStyles = makeStyles(theme => ({
@@ -44,16 +43,14 @@ export const InternalLink = ({ children, noUnderline, ...props }) => {
   );
 };
 
-export const RelativeLink = withRouter(
-  ({ location, children, to = "./", params, noParams, ...props }) => {
-    const updatedParams = noParams ? "" : qs.stringify(merge(qs.parse(location.search), params));
-    return (
-      <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`} {...props}>
-        {children}
-      </InternalLink>
-    );
-  }
-);
+export const RelativeLink = withRouter(({ location, children, to = "./", params, noParams, ...props }) => {
+  const updatedParams = noParams ? "" : qs.stringify(merge(qs.parse(location.search), params));
+  return (
+    <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`} {...props}>
+      {children}
+    </InternalLink>
+  );
+});
 
 export const Home = () => (
   <div>

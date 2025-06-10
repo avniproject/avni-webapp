@@ -22,7 +22,7 @@ import { isNil } from "lodash";
 import { Title } from "./components/Title";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
-import { Box, Paper } from "@material-ui/core";
+import { Box, Paper } from "@mui/material";
 import { AvniReferenceInput } from "./components/AvniReferenceInput";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";

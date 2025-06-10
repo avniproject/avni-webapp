@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from "react";
 import _, { isEmpty } from "lodash";
 import http from "common/utils/httpClient";
-import Paper from "@material-ui/core/Paper";
+import { Paper, Box, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
-import Box from "@material-ui/core/Box";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import CustomizedSnackbar from "../formDesigner/components/CustomizedSnackbar";
 import { SaveComponent } from "../common/components/SaveComponent";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
@@ -58,9 +54,7 @@ export const WorklistUpdationRule = () => {
       setSettings(orgSettings);
       res.data._embedded.organisationConfig[0] &&
         setWorklistUpdationRule(
-          res.data._embedded.organisationConfig[0].worklistUpdationRule
-            ? res.data._embedded.organisationConfig[0].worklistUpdationRule
-            : ""
+          res.data._embedded.organisationConfig[0].worklistUpdationRule ? res.data._embedded.organisationConfig[0].worklistUpdationRule : ""
         );
     });
   }, []);
@@ -87,18 +81,16 @@ export const WorklistUpdationRule = () => {
       <Title title="Worklist Updation Rule" />
       <Paper>
         <DocumentationContainer filename={"WorklistUpdationRule.md"}>
-          <ExpansionPanel expanded={true}>
-            <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header">
-              <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>
-                Worklist Updation Rule
-              </span>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+          <Accordion expanded={true}>
+            <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
+              <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>Worklist Updation Rule</span>
+            </AccordionSummary>
+            <AccordionDetails>
               <JSEditor
                 value={worklistUpdationRule ? worklistUpdationRule : sampleWorkListUpdationRule()}
                 onValueChange={event => setRule(event)}
               />
-            </ExpansionPanelDetails>
+            </AccordionDetails>
 
             <SaveComponent
               name="Save"
@@ -106,7 +98,7 @@ export const WorklistUpdationRule = () => {
               styleClass={{ marginLeft: "25px", marginBottom: "10px" }}
               disabledFlag={!enableRuleSave}
             />
-          </ExpansionPanel>
+          </Accordion>
         </DocumentationContainer>
       </Paper>
       {notificationAlert && (

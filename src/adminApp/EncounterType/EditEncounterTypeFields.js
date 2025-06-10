@@ -1,7 +1,7 @@
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
-import MenuItem from "@material-ui/core/MenuItem";
+import { MenuItem } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";

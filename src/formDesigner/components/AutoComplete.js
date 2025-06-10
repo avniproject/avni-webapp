@@ -2,11 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import deburr from "lodash/deburr";
 import Downshift from "downshift";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Paper from "@material-ui/core/Paper";
-import MenuItem from "@material-ui/core/MenuItem";
-import Chip from "@material-ui/core/Chip";
+import { makeStyles } from "@mui/styles";
+import { TextField, Paper, MenuItem, Chip } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -97,8 +94,7 @@ function getSuggestions(suggestions, value, { showEmpty = false } = {}) {
   return inputLength === 0 && !showEmpty
     ? []
     : suggestions.filter(suggestion => {
-        const keep =
-          count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
+        const keep = count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
 
         if (keep) {
           count += 1;
@@ -140,21 +136,8 @@ function DownshiftMultiple(props) {
   };
 
   return (
-    <Downshift
-      id="downshift-multiple"
-      inputValue={inputValue}
-      onChange={handleChange}
-      selectedItem={selectedItem}
-    >
-      {({
-        getInputProps,
-        getItemProps,
-        getLabelProps,
-        isOpen,
-        inputValue: inputValue2,
-        selectedItem: selectedItem2,
-        highlightedIndex
-      }) => {
+    <Downshift id="downshift-multiple" inputValue={inputValue} onChange={handleChange} selectedItem={selectedItem}>
+      {({ getInputProps, getItemProps, getLabelProps, isOpen, inputValue: inputValue2, selectedItem: selectedItem2, highlightedIndex }) => {
         const { onBlur, onChange, onFocus, ...inputProps } = getInputProps({
           onKeyDown: handleKeyDown,
           placeholder: "Select multiple encounter types"
@@ -169,13 +152,7 @@ function DownshiftMultiple(props) {
               InputLabelProps: getLabelProps(),
               InputProps: {
                 startAdornment: selectedItem.map(item => (
-                  <Chip
-                    key={item}
-                    tabIndex={-1}
-                    label={item}
-                    className={classes.chip}
-                    onDelete={handleDelete(item)}
-                  />
+                  <Chip key={item} tabIndex={-1} label={item} className={classes.chip} onDelete={handleDelete(item)} />
                 )),
                 onBlur,
                 onChange: event => {

@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import Chip from "@material-ui/core/Chip";
+import { Chip, Grid, TablePagination } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { filter, find, flatten, get, head, isEmpty, isNil, join, map, reject, size, uniqBy } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
-import { Grid } from "@material-ui/core";
 import { AgeUtil } from "openchs-models";
 import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
 import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
-import TablePagination from "@material-ui/core/TablePagination";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const { i18n, t } = useTranslation();

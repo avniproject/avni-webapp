@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-// eslint-disable-next-line
+
 import _, { concat, get, isEmpty, isNil } from "lodash";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";

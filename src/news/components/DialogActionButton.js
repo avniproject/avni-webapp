@@ -1,4 +1,4 @@
-import Button from "@material-ui/core/Button";
+import { Button } from "@mui/material";
 import React from "react";
 
 export const DialogActionButton = ({ onClick, color, text, textColor, ...props }) => {

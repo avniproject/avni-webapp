@@ -11,12 +11,11 @@ import {
 } from "../reducers/SubjectAssignmentReducer";
 import { getColumns } from "./SubjectAssignmentColumns";
 import { fetchSubjectData } from "./SubjectAssignmentData";
-import Grid from "@material-ui/core/Grid";
-import { FormControlLabel, makeStyles, Radio } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Grid, FormControlLabel, Radio, Paper } from "@mui/material";
 import SubjectAssignmentFilter from "./SubjectAssignmentFilter";
 import { refreshTable } from "../util/util";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
-import Paper from "@material-ui/core/Paper";
 import { includes, map, mapValues } from "lodash";
 import { SubjectAssignmentAction } from "../components/SubjectAssignmentAction";
 import materialTableIcons from "../../common/material-table/MaterialTableIcons";

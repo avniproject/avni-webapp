@@ -1,5 +1,5 @@
 import React from "react";
-import RemoveIcon from "@material-ui/icons/Remove";
+import { Remove } from "@mui/icons-material";
 
 export const ShowSubjectType = props => {
   const existMapping = props.formMapping.filter(l => l[props.entityUUID] === props.rowDetails.uuid);
@@ -22,7 +22,7 @@ export const ShowPrograms = props => {
   return (
     <>
       {existMapping.length !== 0 && program.length !== 0 && <span>{program[0].operationalProgramName || program[0].name}</span>}
-      {(existMapping.length === 0 || program.length === 0) && <RemoveIcon />}
+      {(existMapping.length === 0 || program.length === 0) && <Remove />}
     </>
   );
 };

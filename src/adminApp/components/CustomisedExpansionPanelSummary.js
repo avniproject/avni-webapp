@@ -1,5 +1,5 @@
-import { withStyles } from "@material-ui/core";
-import {AccordionSummary} from "@material-ui/core";
+import { AccordionSummary } from "@mui/material";
+import { withStyles } from "@mui/styles";
 import React from "react";
 
 export const CustomisedAccordionSummary = withStyles({

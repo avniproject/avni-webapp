@@ -1,16 +1,11 @@
 import React from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import MuiDialogActions from "@material-ui/core/DialogActions";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import SubjectButton from "./Button";
-import Fab from "@material-ui/core/Fab";
+import { withStyles, makeStyles } from "@mui/styles";
+import { Typography, Dialog, DialogActions, IconButton, Fab } from "@mui/material";
+import { Close } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import CustomizedDialog from "../../../components/Dialog";
+import SubjectButton from "./Button";
 import FloatingButton from "./FloatingButton";
+import CustomizedDialog from "../../../components/Dialog";
 
 const useStyles = makeStyles(theme => ({
   tableCell: {
@@ -99,21 +94,21 @@ const styles = theme => ({
   }
 });
 
-const DialogTitle = withStyles(styles)(props => {
+const StyledDialogTitle = withStyles(styles)(props => {
   const { children, classes, onClose, ...other } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+    <div className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
       {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-          <CloseIcon />
+        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose} size="large">
+          <Close />
         </IconButton>
       ) : null}
-    </MuiDialogTitle>
+    </div>
   );
 });
 
-const DialogActions = withStyles(theme => ({
+const StyledDialogActions = withStyles(theme => ({
   root: {
     margin: 0,
     padding: "11px",
@@ -121,19 +116,18 @@ const DialogActions = withStyles(theme => ({
     float: "left",
     display: "inline"
   }
-}))(MuiDialogActions);
+}))(DialogActions);
 
 const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, ...props }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [validMsg, setValidationMsg] = React.useState(false);
 
-  //const { t } = useTranslation();
-
   const handleClickOpen = () => {
     setOpen(true);
     handleError(false);
   };
+
   const handleClose = () => {
     setOpen(false);
     handleError(false);
@@ -146,16 +140,12 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
   const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
   const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();
   const findButton = buttonsSet.filter(element => element.buttonType === "findButton").shift();
-  const modifySearchFloating = buttonsSet
-    .filter(element => element.buttonType === "modifySearchFloating")
-    .shift();
-  const applyFloating = buttonsSet
-    .filter(element => element.buttonType === "applyFloating")
-    .shift();
+  const modifySearchFloating = buttonsSet.filter(element => element.buttonType === "modifySearchFloating").shift();
+  const applyFloating = buttonsSet.filter(element => element.buttonType === "applyFloating").shift();
 
   return (
     <React.Fragment>
-      {mainButton ? (
+      {mainButton && (
         <Fab
           id={mainButton.label.replaceAll(" ", "-")}
           className={mainButton.classes}
@@ -166,11 +156,9 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
         >
           {mainButton.label}
         </Fab>
-      ) : (
-        ""
       )}
 
-      {filterButton ? (
+      {filterButton && (
         <Fab
           id={filterButton.label.replaceAll(" ", "-")}
           className={filterButton.classes}
@@ -184,50 +172,29 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
         >
           {filterButton.label}
         </Fab>
-      ) : (
-        ""
       )}
 
-      <Dialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-        {...props}
-      >
-        <DialogTitle
-          id="customized-dialog-title"
-          onClose={handleClose}
-          styles={{ backgroundColor: "black" }}
-        >
+      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} {...props}>
+        <StyledDialogTitle id="customized-dialog-title" onClose={handleClose} style={{ backgroundColor: "black" }}>
           {title}
-        </DialogTitle>
+        </StyledDialogTitle>
         {content}
-        <DialogActions className={classes.borderBottom} style={{ backgroundColor: "#FFF" }}>
-          {cancelButton ? (
-            <SubjectButton
-              btnLabel={cancelButton.label}
-              btnClass={cancelButton.classes}
-              btnClick={handleClose}
-              id={"cancel-dialog-button"}
-            />
-          ) : (
-            ""
+        <StyledDialogActions className={classes.borderBottom} style={{ backgroundColor: "#FFF" }}>
+          {cancelButton && (
+            <SubjectButton btnLabel={cancelButton.label} btnClass={cancelButton.classes} btnClick={handleClose} id="cancel-dialog-button" />
           )}
-          {findButton ? (
+          {findButton && (
             <SubjectButton
               btnLabel={findButton.label}
               btnClass={findButton.classes}
               btnClick={() => {
                 findButton.click();
-                // handleClose();
               }}
               btnDisabled={findButton.disabled}
-              id={"find-dialog-button"}
+              id="find-dialog-button"
             />
-          ) : (
-            ""
           )}
-          {applyFloating ? (
+          {applyFloating && (
             <FloatingButton
               btnLabel={applyFloating.label}
               btnClass={applyFloating.classes}
@@ -236,13 +203,11 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
                 handleClose();
               }}
               btnDisabled={applyFloating.disabled}
-              id={"apply-floating-dialog-button"}
+              id="apply-floating-dialog-button"
               left={applyFloating.left}
             />
-          ) : (
-            ""
           )}
-          {modifySearchFloating ? (
+          {modifySearchFloating && (
             <FloatingButton
               btnLabel={modifySearchFloating.label}
               btnClass={modifySearchFloating.classes}
@@ -250,11 +215,9 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
                 modifySearchFloating.click();
               }}
               btnDisabled={modifySearchFloating.disabled}
-              id={"modify-search-dialog-button"}
+              id="modify-search-dialog-button"
               left={modifySearchFloating.left}
             />
-          ) : (
-            ""
           )}
           {saveButton && saveButton.requiredField ? (
             <Link to={saveButton.redirectTo}>
@@ -262,20 +225,20 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
                 btnLabel={saveButton.label}
                 btnClass={saveButton.classes}
                 btnClick={handleClose}
-                id={"save-required-dialog-button"}
+                id="save-required-dialog-button"
               />
             </Link>
-          ) : saveButton ? (
-            <SubjectButton
-              btnLabel={saveButton.label}
-              btnClass={saveButton.classes}
-              btnClick={handleError.bind(this, true)}
-              id={"save-dialog-button"}
-            />
           ) : (
-            ""
+            saveButton && (
+              <SubjectButton
+                btnLabel={saveButton.label}
+                btnClass={saveButton.classes}
+                btnClick={handleError.bind(null, true)}
+                id="save-dialog-button"
+              />
+            )
           )}
-          {applyButton ? (
+          {applyButton && (
             <SubjectButton
               btnLabel={applyButton.label}
               btnClass={applyButton.classes}
@@ -284,16 +247,14 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
                 handleClose();
               }}
               btnDisabled={applyButton.disabled}
-              id={"apply-dialog-button"}
+              id="apply-dialog-button"
             />
-          ) : (
-            ""
           )}
-        </DialogActions>
+        </StyledDialogActions>
       </Dialog>
-      {validMsg ? (
+      {validMsg && (
         <CustomizedDialog
-          showSuccessIcon="true"
+          showSuccessIcon
           message={validMsg}
           showOkbtn={validMsg}
           openDialogContainer={validMsg}
@@ -301,8 +262,6 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
             setValidationMsg(false);
           }}
         />
-      ) : (
-        ""
       )}
     </React.Fragment>
   );

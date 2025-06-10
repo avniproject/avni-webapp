@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { crudUpdate } from "react-admin";
-import Button from "@material-ui/core/Button";
+import { Button } from "@mui/material";
 import PasswordDialog from "./PasswordDialog";
 import httpClient from "../../common/utils/httpClient";
 import { get } from "lodash";

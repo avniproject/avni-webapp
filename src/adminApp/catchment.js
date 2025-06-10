@@ -20,16 +20,13 @@ import {
   REDUX_FORM_NAME,
   DisabledInput
 } from "react-admin";
-import Typography from "@material-ui/core/Typography";
-import CardActions from "@material-ui/core/CardActions";
+import { Typography, CardActions, Chip, Paper } from "@mui/material";
 import { LineBreak } from "../common/components/utils";
 import _ from "lodash";
 import { Title } from "./components/Title";
-import Chip from "@material-ui/core/Chip";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
-import { Paper } from "@material-ui/core";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 import { change } from "redux-form";
 
@@ -67,11 +64,7 @@ export const CatchmentEdit = props => {
 
 export const CatchmentDetail = props => {
   return (
-    <Show
-      title={<Title title={"Catchment"} />}
-      actions={<CustomShowActions hasEditPrivilege={props.hasEditPrivilege} />}
-      {...props}
-    >
+    <Show title={<Title title={"Catchment"} />} actions={<CustomShowActions hasEditPrivilege={props.hasEditPrivilege} />} {...props}>
       <SimpleShowLayout>
         <TextField label="Catchment" source="name" />
         <ReferenceArrayField label="Locations" reference="locations" source="locationIds">
@@ -127,17 +120,12 @@ const CatchmentForm = ({ edit, displayWarning, setDisplayWarning, ...props }) =>
   const optionRenderer = choice => {
     let retVal = `${choice.title} (${choice.typeString})`;
     let lineageParts = choice.titleLineage.split(", ");
-    if (lineageParts.length > 1)
-      retVal += ` in ${lineageParts.slice(0, lineageParts.length - 1).join(" > ")}`;
+    if (lineageParts.length > 1) retVal += ` in ${lineageParts.slice(0, lineageParts.length - 1).join(" > ")}`;
     return retVal;
   };
 
   return (
-    <SimpleForm
-      validate={values => validateCatchment(values, LOCATIONS)}
-      {...props}
-      redirect="show"
-    >
+    <SimpleForm validate={values => validateCatchment(values, LOCATIONS)} {...props} redirect="show">
       <Typography variant="title" component="h3">
         Catchment
       </Typography>
@@ -166,11 +154,7 @@ const CatchmentForm = ({ edit, displayWarning, setDisplayWarning, ...props }) =>
                   >
                     <LocationAutocomplete optionText={optionRenderer} />
                   </ReferenceArrayInput>
-                  <DisabledInput
-                    source="deleteFastSync"
-                    defaultValue={false}
-                    style={{ display: "none" }}
-                  />
+                  <DisabledInput source="deleteFastSync" defaultValue={false} style={{ display: "none" }} />
                 </Fragment>
               );
             }}

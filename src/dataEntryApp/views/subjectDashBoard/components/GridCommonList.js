@@ -1,10 +1,6 @@
 import React from "react";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { Typography, Grid, Card, CardActions, CardContent } from "@mui/material";
 import { bold } from "ansi-colors";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
@@ -67,23 +63,11 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
                               {Individual.getFullName(relative.individualB)}{" "}
                             </InternalLink>
                           </Typography>
-                          <Typography
-                            component={"div"}
-                            className={classes.title}
-                            color="textSecondary"
-                            gutterBottom
-                          >
+                          <Typography component={"div"} className={classes.title} color="textSecondary" gutterBottom>
                             {t(relative.relationship.individualBIsToARelation.name)}
                           </Typography>
-                          <Typography
-                            component={"div"}
-                            className={classes.title}
-                            color="textSecondary"
-                            gutterBottom
-                          >
-                            {new Date().getFullYear() -
-                              new Date(relative.individualB.dateOfBirth).getFullYear()}{" "}
-                            {t("years")}
+                          <Typography component={"div"} className={classes.title} color="textSecondary" gutterBottom>
+                            {new Date().getFullYear() - new Date(relative.individualB.dateOfBirth).getFullYear()} {t("years")}
                           </Typography>
                         </Grid>
                       </Grid>

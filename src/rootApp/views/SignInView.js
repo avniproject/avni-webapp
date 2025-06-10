@@ -5,29 +5,22 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  TextField
-} from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
+  TextField,
+  Paper,
+  InputAdornment,
+  Button,
+  Link,
+  Typography
+} from "@mui/material";
+import { withStyles } from "@mui/styles";
 import AvniLogo from "../../avni-logo-black.png";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import { RemoveRedEye } from "@material-ui/icons";
-import Button from "@material-ui/core/Button";
-import Link from "@material-ui/core/Link";
-import Typography from "@material-ui/core/Typography";
+import { RemoveRedEye } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import SideImage from "../../avni-background.jpeg";
-import { withStyles } from "@material-ui/core/styles";
 import ApplicationContext from "../../ApplicationContext";
 import http from "common/utils/httpClient";
 
-function SignInView({
-  classes,
-  onSignIn,
-  notifyInputChange,
-  onForgotPassword,
-  loading,
-  disallowForgottenPasswordReset = false
-}) {
+function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, loading, disallowForgottenPasswordReset = false }) {
   const [passwordIsMasked, setPasswordIsMasked] = useState(true);
   const autoComplete = ApplicationContext.isDevEnv() ? "on" : "off";
   const [reportingSystems, setReportingSystems] = useState(null);
@@ -38,24 +31,14 @@ function SignInView({
       .then(response => response.json)
       .then(
         responseData =>
-          responseData.reportingSystems &&
-          responseData.reportingSystems.length > 0 &&
-          setReportingSystems(responseData.reportingSystems)
+          responseData.reportingSystems && responseData.reportingSystems.length > 0 && setReportingSystems(responseData.reportingSystems)
       );
   }, []);
 
   return (
     <Grid container component="main" className={classes.root}>
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid
-        item
-        xs={12}
-        sm={8}
-        md={5}
-        component={Paper}
-        elevation={6}
-        style={{ backgroundColor: "#f0f2f0" }}
-      >
+      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} style={{ backgroundColor: "#f0f2f0" }}>
         <Box mb={4}>
           <img src={AvniLogo} alt="logo" height="45px" />
         </Box>
@@ -97,10 +80,7 @@ function SignInView({
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <RemoveRedEye
-                        className={classes.eye}
-                        onClick={() => setPasswordIsMasked(!passwordIsMasked)}
-                      />
+                      <RemoveRedEye className={classes.eye} onClick={() => setPasswordIsMasked(!passwordIsMasked)} />
                     </InputAdornment>
                   )
                 }}
@@ -142,9 +122,8 @@ const ShowReport = ({ classes, reportingSystems }) => {
         <CardHeader title={"View Reports"} />
         <CardContent>
           <Typography variant="body2" color="secondary">
-            Avni provides reports using one of two different external BI tools - Metabase and Jasper
-            Reports. You can find out the reports used by your organisation from your system
-            administrator.
+            Avni provides reports using one of two different external BI tools - Metabase and Jasper Reports. You can find out the reports
+            used by your organisation from your system administrator.
           </Typography>
           <Typography variant="body2" color="secondary">
             <br />
@@ -180,8 +159,7 @@ const useStyles = theme => ({
   image: {
     backgroundImage: `url(${SideImage})`,
     backgroundRepeat: "no-repeat",
-    backgroundColor:
-      theme.palette.type === "light" ? theme.palette.grey[50] : theme.palette.grey[900],
+    backgroundColor: theme.palette.mode === "light" ? theme.palette.grey[50] : theme.palette.grey[900],
     backgroundSize: "cover",
     backgroundPosition: "center"
   },

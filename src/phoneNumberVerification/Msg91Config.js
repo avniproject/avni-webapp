@@ -1,16 +1,12 @@
 import React, { useState } from "react";
-import Box from "@material-ui/core/Box";
+import { Box, Grid, Button, MenuItem, IconButton } from "@mui/material";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { Title } from "react-admin";
 import { AvniTextField } from "../common/components/AvniTextField";
 import { AvniSelect } from "../common/components/AvniSelect";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
 import { SaveComponent } from "../common/components/SaveComponent";
 import api from "./api";
-import MenuItem from "@material-ui/core/MenuItem";
-import IconButton from "@material-ui/core/IconButton";
-import { Edit } from "@material-ui/icons";
+import { Edit } from "@mui/icons-material";
 import { isNil, isEmpty } from "lodash";
 import CustomizedSnackbar from "../formDesigner/components/CustomizedSnackbar";
 
@@ -115,12 +111,9 @@ const Msg91Config = () => {
               </Grid>
 
               <Grid item xs={2}>
-                <div
-                  className="container"
-                  style={{ alignItems: "left", float: "left", width: "100%" }}
-                >
+                <div className="container" style={{ alignItems: "left", float: "left", width: "100%" }}>
                   {!authKeyChanged ? (
-                    <IconButton onClick={() => setEditMode()}>
+                    <IconButton onClick={() => setEditMode()} size="large">
                       <Edit />
                     </IconButton>
                   ) : (
@@ -164,11 +157,7 @@ const Msg91Config = () => {
               />
             </Grid>
             <Grid item xs={10}>
-              <SaveComponent
-                name="save"
-                onSubmit={onSubmit}
-                disabledFlag={authKeyChanged ? !authKeyVerified : !dataChanged}
-              />
+              <SaveComponent name="save" onSubmit={onSubmit} disabledFlag={authKeyChanged ? !authKeyVerified : !dataChanged} />
             </Grid>
           </Grid>
           {messageStatus.display && (

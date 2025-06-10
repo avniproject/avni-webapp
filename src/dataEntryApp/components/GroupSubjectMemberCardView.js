@@ -1,17 +1,13 @@
 import React from "react";
 import SubjectCardView from "./SubjectCardView";
-import { CardActions } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import { makeStyles } from "@mui/styles";
+import { CardActions, Button, Typography, DialogContent, Grid } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
-import Typography from "@material-ui/core/Typography";
-import DialogContent from "@material-ui/core/DialogContent";
-import Grid from "@material-ui/core/Grid";
 import Modal from "../views/subjectDashBoard/components/CommonModal";
 import { noop } from "lodash";
-import { makeStyles } from "@material-ui/core/styles";
 import api from "../api";
-import { withStyles } from "@material-ui/styles";
+import { withStyles } from "@mui/styles";
 
 const useStyles = makeStyles(() => ({
   cardActions: {
@@ -106,9 +102,7 @@ const GroupSubjectMemberCardView = ({
         )}
         <CardActions className={classes.cardActions}>
           <EditButton color="primary">
-            <InternalLink to={`/app/subject/editGroupMembership?uuid=${uuid}`}>
-              {t("edit")}
-            </InternalLink>
+            <InternalLink to={`/app/subject/editGroupMembership?uuid=${uuid}`}>{t("edit")}</InternalLink>
           </EditButton>
           <Modal
             content={removeGroupMemberDialogContent}
@@ -125,9 +119,7 @@ const GroupSubjectMemberCardView = ({
                 redirectTo: ``,
                 classes: classes.btnCustom,
                 click: () => {
-                  api
-                    .deleteGroupSubject(uuid)
-                    .then(() => setTimeout(() => setMembersChanged(true), 250));
+                  api.deleteGroupSubject(uuid).then(() => setTimeout(() => setMembersChanged(true), 250));
                 }
               },
               {

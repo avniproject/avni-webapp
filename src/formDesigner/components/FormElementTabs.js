@@ -1,9 +1,6 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
+import { makeStyles } from "@mui/styles";
+import { Tabs, Tab, Typography, Box } from "@mui/material";
 import FormElementDetails from "./FormElementDetails";
 import { isEqual, get } from "lodash";
 import { sampleFormElementRule } from "../common/SampleRule";
@@ -100,15 +97,9 @@ function FormElementTabs(props) {
         > */}
         <RuleDesigner
           rulesJson={props.formElementData.declarativeRule}
-          onValueChange={jsonData =>
-            props.updateSkipLogicJSON(props.groupIndex, props.index, jsonData)
-          }
+          onValueChange={jsonData => props.updateSkipLogicJSON(props.groupIndex, props.index, jsonData)}
           updateJsCode={declarativeRuleHolder =>
-            props.updateSkipLogicRule(
-              props.groupIndex,
-              props.index,
-              declarativeRuleHolder.generateViewFilterRule(props.entityName)
-            )
+            props.updateSkipLogicRule(props.groupIndex, props.index, declarativeRuleHolder.generateViewFilterRule(props.entityName))
           }
           jsCode={props.formElementData.rule}
           error={get(props.formElementData, "errorMessage.ruleError")}

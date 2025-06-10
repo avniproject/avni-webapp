@@ -1,10 +1,10 @@
 import React, { Fragment } from "react";
-import { TextField, Typography } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@mui/styles";
+import { TextField, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import { useTranslation } from "react-i18next";
-import { makeStyles } from "@material-ui/core/styles";
-import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider, KeyboardDateTimePicker, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
+import { DatePicker, DateTimePicker, TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import _ from "lodash";
 import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
 
@@ -55,97 +55,93 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
             ) : searchFilterForm.widget === "Range" ? (
               searchFilterForm.conceptDataType === "Date" ? (
                 <Grid item xs={12} key={index}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
                     </Typography>
-                    <KeyboardDatePicker
+                    <DatePicker
                       id="date-picker-dialog"
-                      placeholder="From"
                       format={dateFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      style={{ width: "14%", marginRight: "1%" }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
+                      renderInput={params => <TextField {...params} placeholder="From" style={{ width: "14%", marginRight: "1%" }} />}
+                      slotProps={{
+                        actionBar: { actions: ["clear"] },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
-                    <KeyboardDatePicker
+                    <DatePicker
                       id="date-picker-dialog"
-                      placeholder="To"
                       format={dateFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.maxValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
-                      style={{ width: "14%", marginLeft: "1%" }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
+                      renderInput={params => <TextField {...params} placeholder="To" style={{ width: "14%", marginLeft: "1%" }} />}
+                      slotProps={{
+                        actionBar: { actions: ["clear"] },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
-                  </MuiPickersUtilsProvider>
+                  </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "DateTime" ? (
                 <Grid item xs={12} key={index}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
                     </Typography>
-                    <KeyboardDateTimePicker
+                    <DateTimePicker
                       id="date-picker-dialog"
-                      placeholder="From"
                       format={dateTimeFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      style={{ width: "14%", marginRight: "1%" }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
+                      renderInput={params => <TextField {...params} placeholder="From" style={{ width: "14%", marginRight: "1%" }} />}
+                      slotProps={{
+                        actionBar: { actions: ["clear"] },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
-                    <KeyboardDateTimePicker
+                    <DateTimePicker
                       id="date-picker-dialog"
-                      placeholder="To"
                       format={dateTimeFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.maxValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
-                      style={{ width: "14%", marginLeft: "1%" }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
+                      renderInput={params => <TextField {...params} placeholder="To" style={{ width: "14%", marginLeft: "1%" }} />}
+                      slotProps={{
+                        actionBar: { actions: ["clear"] },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
-                  </MuiPickersUtilsProvider>
+                  </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Time" ? (
                 <Grid item xs={12} key={index}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
                     </Typography>
-                    <KeyboardTimePicker
+                    <TimePicker
                       id="date-picker-dialog"
-                      placeholder="From"
+                      format="HH:mm"
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      style={{ width: "14%", marginRight: "1%" }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
+                      renderInput={params => <TextField {...params} placeholder="From" style={{ width: "14%", marginRight: "1%" }} />}
+                      slotProps={{
+                        actionBar: { actions: ["clear"] },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
-                    <KeyboardTimePicker
+                    <TimePicker
                       id="date-picker-dialog"
-                      placeholder="To"
+                      format="HH:mm"
                       value={(!_.isEmpty(selectedValue) && selectedValue.maxValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
-                      style={{ width: "14%", marginLeft: "1%" }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
+                      renderInput={params => <TextField {...params} placeholder="To" style={{ width: "14%", marginLeft: "1%" }} />}
+                      slotProps={{
+                        actionBar: { actions: ["clear"] },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
-                  </MuiPickersUtilsProvider>
+                  </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Numeric" ? (
                 <Grid item xs={12} key={index}>
@@ -203,59 +199,60 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Date" ? (
                 <Grid item xs={12} key={index}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
                     </Typography>
-                    <KeyboardDatePicker
+                    <DatePicker
                       id="date-picker-dialog"
                       format={dateFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      style={{ width: "30%" }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
+                      renderInput={params => <TextField {...params} style={{ width: "30%" }} />}
+                      slotProps={{
+                        actionBar: { actions: ["clear"] },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
-                  </MuiPickersUtilsProvider>
+                  </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "DateTime" ? (
                 <Grid item xs={12} key={index}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
                     </Typography>
-                    <KeyboardDateTimePicker
+                    <DateTimePicker
                       id="date-picker-dialog"
                       format={dateTimeFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      style={{ width: "30%" }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
+                      renderInput={params => <TextField {...params} style={{ width: "30%" }} />}
+                      slotProps={{
+                        actionBar: { actions: ["clear"] },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
-                  </MuiPickersUtilsProvider>
+                  </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Time" ? (
                 <Grid item xs={12} key={index}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
                     </Typography>
-                    <KeyboardTimePicker
+                    <TimePicker
                       id="date-picker-dialog"
+                      format="HH:mm"
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      style={{ width: "30%" }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
+                      renderInput={params => <TextField {...params} style={{ width: "30%" }} />}
+                      slotProps={{
+                        actionBar: { actions: ["clear"] },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
-                  </MuiPickersUtilsProvider>
+                  </LocalizationProvider>
                 </Grid>
               ) : (
                 ""

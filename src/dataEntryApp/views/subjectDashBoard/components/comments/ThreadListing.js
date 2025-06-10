@@ -1,14 +1,9 @@
 import { head, map, sortBy } from "lodash";
-import { Grid, makeStyles, Paper, Typography } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
+import { makeStyles } from "@mui/styles";
+import { Grid, Paper, Typography, Card, CardActionArea, CardContent, Button, IconButton } from "@mui/material";
 import { onThreadReply } from "../../../../reducers/CommentReducer";
 import React, { useState } from "react";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import CommentIcon from "@material-ui/icons/Comment";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import { Comment, ChevronRight } from "@mui/icons-material";
 import NewCommentThreadDialog from "./NewCommentThreadDialog";
 import { CommentCard } from "./CommentCard";
 import { useTranslation } from "react-i18next";
@@ -48,14 +43,7 @@ const useStyles = makeStyles(theme => ({
     flexWrap: "wrap"
   }
 }));
-export const ThreadListing = ({
-  commentThreads,
-  dispatch,
-  setOpen,
-  newCommentText,
-  onCommentChange,
-  subjectUUID
-}) => {
+export const ThreadListing = ({ commentThreads, dispatch, setOpen, newCommentText, onCommentChange, subjectUUID }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [openCommentThread, setOpenCommentThread] = useState(false);
@@ -63,20 +51,16 @@ export const ThreadListing = ({
     <React.Fragment>
       <div className={classes.drawerHeader}>
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-          <CommentIcon style={{ color: "#fff", marginRight: 5, marginLeft: 5 }} />
+          <Comment style={{ color: "#fff", marginRight: 5, marginLeft: 5 }} />
           <Typography style={{ color: "#fff" }}>{t("commentThreads")}</Typography>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <Button
-            className={classes.commentButton}
-            style={{ textTransform: "none" }}
-            onClick={() => setOpenCommentThread(true)}
-          >
+          <Button className={classes.commentButton} style={{ textTransform: "none" }} onClick={() => setOpenCommentThread(true)}>
             {t("addComment")}
           </Button>
           <div className={classes.iconContainer}>
-            <IconButton onClick={() => setOpen(false)}>
-              <ChevronRightIcon style={{ color: "#fff" }} />
+            <IconButton onClick={() => setOpen(false)} size="large">
+              <ChevronRight style={{ color: "#fff" }} />
             </IconButton>
           </div>
         </div>

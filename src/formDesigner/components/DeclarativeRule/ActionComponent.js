@@ -1,17 +1,11 @@
 import React from "react";
 import { useDeclarativeRuleDispatch, useDeclarativeRuleState } from "./DeclarativeRuleContext";
 import { map, startCase, get } from "lodash";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import Select from "react-select";
 import ActionDetailsComponent from "./ActionDetailsComponent";
 
-const ActionComponent = ({
-  action,
-  index,
-  declarativeRuleIndex,
-  getApplicableActions,
-  ...props
-}) => {
+const ActionComponent = ({ action, index, declarativeRuleIndex, getApplicableActions, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const state = useDeclarativeRuleState();
   const types = map(getApplicableActions(state), (v, k) => ({

@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import Dialog from "@material-ui/core/Dialog";
-import { DialogActions, DialogTitle } from "@material-ui/core";
-import { Close } from "@material-ui/icons";
-import IconButton from "@material-ui/core/IconButton";
+import { Dialog, DialogActions, DialogTitle, IconButton } from "@mui/material";
+import { Close } from "@mui/icons-material";
 import ChooseSubject from "./ChooseSubject";
 import ContactService from "../api/ContactService";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
@@ -16,34 +14,19 @@ const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
   const [userError, setUserError] = useState(null);
 
   return (
-    <Dialog
-      onClose={onCloseHandler}
-      aria-labelledby="customized-dialog-title"
-      open={true}
-      fullScreen
-    >
-      <DialogTitle
-        id="customized-dialog-title"
-        onClose={onCloseHandler}
-        style={{ backgroundColor: "black", color: "white" }}
-      >
+    <Dialog onClose={onCloseHandler} aria-labelledby="customized-dialog-title" open={true} fullScreen>
+      <DialogTitle id="customized-dialog-title" onClose={onCloseHandler} style={{ backgroundColor: "black", color: "white" }}>
         Search subject to add
       </DialogTitle>
       <DialogActions>
-        <IconButton onClick={onCloseHandler}>
+        <IconButton onClick={onCloseHandler} size="large">
           <Close />
         </IconButton>
       </DialogActions>
       {(!!userError || !!error) && (
         <CustomizedSnackbar
           variant={"error"}
-          message={
-            !!userError
-              ? userError
-              : error.response.data
-              ? error.response.data
-              : "Unexpected error occurred"
-          }
+          message={userError ? userError : error.response.data ? error.response.data : "Unexpected error occurred"}
           getDefaultSnackbarStatus={snackbarStatus => {
             setError(snackbarStatus);
             setUserError(snackbarStatus);

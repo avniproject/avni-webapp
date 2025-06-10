@@ -1,14 +1,10 @@
 import React from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import Grid from "@material-ui/core/Grid";
+import { Grid } from "@mui/material";
 import httpClient from "../../common/utils/httpClient";
 import { HomePageCard } from "./HomePageCard";
-import SurroundSound from "@material-ui/icons/SurroundSound";
-import { Privilege } from "openchs-models";
-import UserInfo from "../../common/model/UserInfo";
-import { connect } from "react-redux";
-import ApplicationContext from "../../ApplicationContext";
 import {
+  SurroundSound,
   Assessment,
   AssignmentTurnedIn,
   Build,
@@ -18,7 +14,11 @@ import {
   Keyboard,
   SupervisorAccount,
   Translate
-} from "@material-ui/icons";
+} from "@mui/icons-material";
+import { Privilege } from "openchs-models";
+import UserInfo from "../../common/model/UserInfo";
+import { connect } from "react-redux";
+import ApplicationContext from "../../ApplicationContext";
 
 const Homepage = ({ userInfo, organisation }) => {
   httpClient.saveAuthTokenForAnalyticsApp();

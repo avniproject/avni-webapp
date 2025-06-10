@@ -1,7 +1,7 @@
 import React from "react";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
 import ResourceShowView from "../../common/ResourceShowView";
-import FormLabel from "@material-ui/core/FormLabel";
+import { FormLabel } from "@mui/material";
 import ShowDashboardSections from "./ShowDashboardSections";
 import ShowDashboardFilters from "./ShowDashboardFilters";
 import { connect } from "react-redux";

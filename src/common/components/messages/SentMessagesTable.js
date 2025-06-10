@@ -1,10 +1,10 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { formatDateTime } from "../../utils/General";
 import MaterialTable from "material-table";
 
-import Typography from "@material-ui/core/Typography";
 import materialTableIcons from "../../material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({

@@ -1,17 +1,8 @@
 import React from "react";
-import {
-  ExpansionPanel as MuiExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary as MuiExpansionPanelSummary,
-  Tooltip,
-  Typography
-} from "@material-ui/core";
+import { Accordion, AccordionDetails, AccordionSummary, Tooltip, Typography, Grid } from "@mui/material";
+import { ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty, map, orderBy } from "lodash";
-import Grid from "@material-ui/core/Grid";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ListIcon from "@material-ui/icons/List";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@mui/styles";
 import ShowDashboardSectionCards from "./ShowDashboardSectionCards";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
@@ -35,7 +26,6 @@ const useStyles = makeStyles(theme => ({
   questionCount: {
     paddingTop: "5px"
   },
-
   absolute: {
     position: "absolute",
     marginLeft: 20,
@@ -47,7 +37,6 @@ const useStyles = makeStyles(theme => ({
   secondaryHeading: {
     flexBasis: "70%",
     fontSize: theme.typography.pxToRem(15)
-    //color: theme.palette.text.secondary,
   },
   tabs: {
     minHeight: "26px",
@@ -61,15 +50,17 @@ const useStyles = makeStyles(theme => ({
     lineHeight: "56px"
   }
 }));
-export const ExpansionPanel = withStyles({
+
+const StyledAccordion = withStyles({
   root: {
     "&$expanded": {
       margin: 0
     }
   },
   expanded: {}
-})(MuiExpansionPanel);
-export const ExpansionPanelSummary = withStyles({
+})(Accordion);
+
+const StyledAccordionSummary = withStyles({
   root: {
     paddingRight: 0,
     backgroundColor: "#dbdbdb",
@@ -93,7 +84,7 @@ export const ExpansionPanelSummary = withStyles({
     marginHorizontal: "8px",
     display: "inline"
   }
-})(MuiExpansionPanelSummary);
+})(AccordionSummary);
 
 const ShowDashboardSections = ({ sections, history }) => {
   const classes = useStyles();
@@ -108,20 +99,16 @@ const ShowDashboardSections = ({ sections, history }) => {
       {!isEmpty(sections) && (
         <div>
           {map(orderBy(sections, "displayOrder"), (section, index) => (
-            <div>
-              <ExpansionPanel key={index} expanded={expanded === "panel" + index} onChange={handleChange("panel" + index)}>
-                <ExpansionPanelSummary aria-controls={"panel" + index + "bh-content"} id={"panel" + index + "bh-header"}>
-                  <Grid container direction={"row"}>
-                    <Grid container item sm={12} alignItems={"center"}>
+            <div key={index}>
+              <StyledAccordion expanded={expanded === "panel" + index} onChange={handleChange("panel" + index)}>
+                <StyledAccordionSummary aria-controls={"panel" + index + "bh-content"} id={"panel" + index + "bh-header"}>
+                  <Grid container direction="row">
+                    <Grid container item sm={12} alignItems="center">
                       <Grid item sm={1}>
-                        <Tooltip title={"Grouped Questions"}>
-                          <ListIcon style={{ marginLeft: 12, marginRight: 4 }} />
+                        <Tooltip title="Grouped Questions">
+                          <List style={{ marginLeft: 12, marginRight: 4 }} />
                         </Tooltip>
-                        {expanded === "panel" + index ? (
-                          <ExpandLessIcon classes={{ root: classes.icon }} />
-                        ) : (
-                          <ExpandMoreIcon classes={{ root: classes.icon }} />
-                        )}
+                        {expanded === "panel" + index ? <ExpandLess className={classes.icon} /> : <ExpandMore className={classes.icon} />}
                       </Grid>
                       <Grid item sm={5}>
                         <Typography className={classes.heading}>{section.name}</Typography>
@@ -133,21 +120,21 @@ const ShowDashboardSections = ({ sections, history }) => {
                       </Grid>
                     </Grid>
                   </Grid>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
+                </StyledAccordionSummary>
+                <AccordionDetails>
                   <Grid container>
                     <Grid item xs={12}>
-                      <ShowLabelValue label={"Description"} value={section.description} />
+                      <ShowLabelValue label="Description" value={section.description} />
                     </Grid>
                     <Grid item xs={12}>
-                      <ShowLabelValue label={"View Type"} value={section.viewType} />
+                      <ShowLabelValue label="View Type" value={section.viewType} />
                     </Grid>
                     <Grid item xs={12}>
                       <ShowDashboardSectionCards section={section} cards={WebDashboardSection.getReportCards(section)} history={history} />
                     </Grid>
                   </Grid>
-                </ExpansionPanelDetails>
-              </ExpansionPanel>
+                </AccordionDetails>
+              </StyledAccordion>
             </div>
           ))}
         </div>

@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, CardContent, Grid, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { Card, CardContent, Grid, Typography } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import SubjectProfilePicture from "./SubjectProfilePicture";
@@ -21,16 +21,7 @@ const useStyles = () =>
     }
   }));
 
-const SubjectCardView = ({
-  uuid,
-  name,
-  gender,
-  age,
-  location,
-  profilePicture,
-  subjectTypeName,
-  ...props
-}) => {
+const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, subjectTypeName, ...props }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -56,13 +47,7 @@ const SubjectCardView = ({
         {[gender, age, location].map((element, index) => {
           return (
             element && (
-              <Typography
-                component={"div"}
-                className={classes[element]}
-                gutterBottom
-                align={"center"}
-                key={index}
-              >
+              <Typography component={"div"} className={classes[element]} gutterBottom align={"center"} key={index}>
                 {t(element)}
               </Typography>
             )

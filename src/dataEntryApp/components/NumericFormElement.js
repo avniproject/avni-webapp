@@ -1,8 +1,8 @@
 import React from "react";
-import { TextField, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { TextField, Typography } from "@mui/material";
 import { find, isEmpty, isNil, toNumber } from "lodash";
 import { useTranslation } from "react-i18next";
-import { makeStyles } from "@material-ui/core/styles";
 import Colors from "../Colors";
 
 const useStyles = makeStyles(theme => ({

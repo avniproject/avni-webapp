@@ -1,7 +1,5 @@
 import React from "react";
-import TextField from "@material-ui/core/TextField";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
+import { TextField, Select, InputLabel } from "@mui/material";
 
 export const ValueTextUnitSelect = ({ label, value, unit, units, textProps, selectProps, errorMsg, onValueChange, onUnitChange }) => {
   return (

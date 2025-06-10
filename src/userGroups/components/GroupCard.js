@@ -1,15 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
-import {
-  Grid,
-  CardActions,
-  Button,
-  CardContent,
-  Typography,
-  CardActionArea,
-  Card
-} from "@material-ui/core";
+import { DeleteOutline } from "@mui/icons-material";
+import { Grid, CardActions, Button, CardContent, Typography, CardActionArea, Card } from "@mui/material";
 import GroupModel from "../../common/model/GroupModel";
 
 export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
@@ -47,14 +39,10 @@ export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
         </Link>
       </CardActionArea>
       <CardActions>
-        <Grid container justify="flex-end">
+        <Grid container justifyContent="flex-end">
           <Grid item>
-            <Button
-              size="small"
-              disabled={GroupModel.nonRemovableGroup(groupName)}
-              onClick={onDelete}
-            >
-              <DeleteOutlineOutlinedIcon />
+            <Button size="small" disabled={GroupModel.nonRemovableGroup(groupName)} onClick={onDelete}>
+              <DeleteOutline />
             </Button>
           </Grid>
         </Grid>

@@ -1,25 +1,18 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Typography from "@material-ui/core/Typography";
-import List from "@material-ui/core/List";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
+import { makeStyles } from "@mui/styles";
+import { Accordion, AccordionDetails, AccordionSummary, Typography, List, Grid, Button, Paper } from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
 import { bold } from "ansi-colors";
 import moment from "moment/moment";
 import Observations from "dataEntryApp/components/Observations";
 import GridCommonList from "../components/GridCommonList";
-import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import SubjectVoided from "../../../components/SubjectVoided";
 import GroupSubjectMemberCardView from "../../../components/GroupSubjectMemberCardView";
 import GridCardView from "../../../components/GridCardView";
-import { isEmpty, sortBy } from "lodash";
+import _, { isEmpty, sortBy } from "lodash";
 import GroupMembershipCardView from "../../../components/GroupMembershipCardView";
 import MessageDialog from "../../../components/MessageDialog";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,7 +22,6 @@ import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
 import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
 import { Individual } from "avni-models";
 import SubjectDashboardMessagesTab from "./SubjectDashboardMessagesTab";
-import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -86,7 +78,7 @@ const useStyles = makeStyles(theme => ({
   infomsg: {
     marginLeft: 10
   },
-  expandMoreIcon: {
+  expandMoreHoriz: {
     color: "#0e6eff"
   }
 }));
@@ -154,9 +146,9 @@ const SubjectDashboardProfileTab = ({
 
   function renderSubjectProfile() {
     return (
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+      <Accordion className={classes.expansionPanel}>
+        <AccordionSummary
+          expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
           aria-controls="registrationPanelbh-content"
           id="profile-detail"
         >
@@ -171,8 +163,8 @@ const SubjectDashboardProfileTab = ({
               </p>
             )}
           </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        </AccordionSummary>
+        <AccordionDetails>
           <Grid item xs={12}>
             <List>
               <Observations observations={profile ? profile.observations : []} form={registrationForm} />
@@ -189,24 +181,24 @@ const SubjectDashboardProfileTab = ({
               </Button>
             }
           </Grid>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     );
   }
 
   function renderRelatives() {
     return (
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+      <Accordion className={classes.expansionPanel}>
+        <AccordionSummary
+          expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
           aria-controls="relativesPanelbh-content"
           id="relativesPanelbh-header"
         >
           <Typography component={"span"} className={classes.expansionHeading}>
             {t("Relatives")}
           </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
+        </AccordionSummary>
+        <AccordionDetails style={{ paddingTop: "0px" }}>
           {profile.relationships !== undefined && relativeList.length !== 0 ? (
             <GridCommonList
               profileUUID={profile.uuid}
@@ -219,43 +211,43 @@ const SubjectDashboardProfileTab = ({
               {t("noRelativesAdded")}{" "}
             </Typography>
           )}
-        </ExpansionPanelDetails>
+        </AccordionDetails>
         {
           <Button color="primary">
             <InternalLink to={`/app/subject/addRelative?uuid=${profile.uuid}`}> {t("addARelative")} </InternalLink>{" "}
           </Button>
         }
-      </ExpansionPanel>
+      </Accordion>
     );
   }
 
   function renderGroupMembers() {
     return (
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+      <Accordion className={classes.expansionPanel}>
+        <AccordionSummary
+          expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
           aria-controls="groupMembersPanelbh-content"
           id="groupMembersPanelbh-header"
         >
           <Typography component={"span"} className={classes.expansionHeading}>
             {t("members")}
           </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails style={{ paddingTop: "0px", display: "block" }}>
+        </AccordionSummary>
+        <AccordionDetails style={{ paddingTop: "0px", display: "block" }}>
           {profile.roles && profile.roles.length > 0 ? (
             sortBy(profile.roles, [profileRole => profileRole.role]).map((profileRole, index) => {
               return (
-                <ExpansionPanel className={classes.expansionPanel} defaultExpanded>
-                  <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+                <Accordion className={classes.expansionPanel} defaultExpanded>
+                  <AccordionSummary
+                    expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
                     aria-controls="groupMembersRolePanelbh-content"
                     id="groupMembersRolePanelbh-header"
                   >
                     <Typography component={"span"} className={classes.expansionHeading} key={index}>
                       {t(profileRole.role)}
                     </Typography>
-                  </ExpansionPanelSummary>
-                  <ExpansionPanelDetails>
+                  </AccordionSummary>
+                  <AccordionDetails>
                     <GridCardView
                       cards={sortBy(groupMembers, [groupMember => groupMember.memberSubject.firstName.toLowerCase()])
                         .filter(groupMember => groupMember.groupRole.uuid === profileRole.uuid)
@@ -263,8 +255,8 @@ const SubjectDashboardProfileTab = ({
                           <GroupSubjectMemberCardView setMembersChanged={setMembersChanged} groupSubject={groupMember} />
                         ))}
                     />
-                  </ExpansionPanelDetails>
-                </ExpansionPanel>
+                  </AccordionDetails>
+                </Accordion>
               );
             })
           ) : (
@@ -273,13 +265,13 @@ const SubjectDashboardProfileTab = ({
               {t("noGroupMembersAdded")}{" "}
             </Typography>
           )}
-        </ExpansionPanelDetails>
+        </AccordionDetails>
         {
           <Button color="primary">
             <InternalLink to={`/app/subject/addGroupMember`}>{t("addMember")}</InternalLink>{" "}
           </Button>
         }
-      </ExpansionPanel>
+      </Accordion>
     );
   }
 
@@ -288,20 +280,20 @@ const SubjectDashboardProfileTab = ({
       return <GroupMembershipCardView groupMembership={membership} />;
     });
     return (
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+      <Accordion className={classes.expansionPanel}>
+        <AccordionSummary
+          expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
           aria-controls="groupMembershipsPanelbh-content"
           id="groupMembershipsPanelbh-header"
         >
           <Typography component={"span"} className={classes.expansionHeading}>
             {t("Memberships")}
           </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
+        </AccordionSummary>
+        <AccordionDetails style={{ paddingTop: "0px" }}>
           <GridCardView cards={groupMembershipCards} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     );
   }
 

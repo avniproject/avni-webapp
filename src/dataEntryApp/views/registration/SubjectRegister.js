@@ -1,7 +1,8 @@
 import React, { Fragment } from "react";
 import { withRouter } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
-import { Paper, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Paper, Typography } from "@mui/material";
 import { AddressLevel, Individual } from "avni-models";
 import {
   fetchRegistrationRulesResponse,
@@ -30,7 +31,6 @@ import _, { find, get, isEmpty, sortBy } from "lodash";
 import { LineBreak, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
-import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";

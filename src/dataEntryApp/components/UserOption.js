@@ -1,20 +1,18 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Collapse from "@material-ui/core/Collapse";
-import SettingsIcon from "@material-ui/icons/Settings";
-import LogoutIcon from "@material-ui/icons/Input";
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
+import { makeStyles } from "@mui/styles";
+import {
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel
+} from "@mui/material";
+import { Settings, Logout, ArrowUpward, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { LOCALES } from "../../common/constants";
 import { useTranslation } from "react-i18next";
 import { logout, saveUserInfo } from "rootApp/ducks";
@@ -123,10 +121,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
     }
   };
 
-  const hasUploadPrivilege = UserInfo.hasPrivilege(
-    userInfo,
-    Privilege.PrivilegeType.UploadMetadataAndData
-  );
+  const hasUploadPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.UploadMetadataAndData);
 
   return (
     <div style={{ float: "right", boxShadow: "3px 3px 5px #aaaaaa", marginRight: "300px" }}>
@@ -136,13 +131,9 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
         className={classes.root}
         style={{ boxShadow: "3px 3px 5px #aaaaaa", padding: "1%" }}
       >
-        <ListItem
-          button
-          onClick={toggleSettingsMenu}
-          style={{ paddingTop: "5px", paddingBottom: "5px" }}
-        >
+        <ListItem button onClick={toggleSettingsMenu} style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
-            <SettingsIcon style={{ color: "blue" }} />
+            <Settings style={{ color: "blue" }} />
           </ListItemIcon>
           <ListItemText primary={t("settings")} style={{ color: "blue" }} />
           {open ? <ExpandLess /> : <ExpandMore />}
@@ -154,12 +145,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
             style={{ fontSize: "12px", marginTop: "20px", marginLeft: "85px" }}
           >
             <FormLabel component="legend">{t("language")}</FormLabel>
-            <RadioGroup
-              aria-label="language"
-              name="language"
-              value={get(userInfo, "settings.locale", "en")}
-              onChange={handleChange}
-            >
+            <RadioGroup aria-label="language" name="language" value={get(userInfo, "settings.locale", "en")} onChange={handleChange}>
               {orgConfig
                 ? orgConfig.map((element, index) => (
                     <FormControlLabel
@@ -180,13 +166,9 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
         </Collapse>
         <hr className={classes.horizontalLine} />
         {hasUploadPrivilege && (
-          <ListItem
-            onClick={() => history.push(`/admin/upload`)}
-            button
-            style={{ paddingTop: "5px", paddingBottom: "5px" }}
-          >
+          <ListItem onClick={() => history.push(`/admin/upload`)} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
             <ListItemIcon>
-              <ArrowUpwardIcon style={{ color: "blue" }} />
+              <ArrowUpward style={{ color: "blue" }} />
             </ListItemIcon>
             <ListItemText primary={t("bulk upload")} />
           </ListItem>
@@ -194,7 +176,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
         <hr className={classes.horizontalLine} />
         <ListItem onClick={logout} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
-            <LogoutIcon style={{ color: "blue" }} />
+            <Logout style={{ color: "blue" }} />
           </ListItemIcon>
           <ListItemText primary={t("logout")} />
         </ListItem>
@@ -208,10 +190,7 @@ const mapStateToProps = state => ({
     ? state.translationsReducer.orgConfig._embedded.organisationConfig[0].settings.languages
     : "",
   userInfo: state.app.userInfo,
-  defaultLanguage:
-    state.app.userInfo.settings && state.app.userInfo.settings.locale
-      ? state.app.userInfo.settings.locale
-      : "en"
+  defaultLanguage: state.app.userInfo.settings && state.app.userInfo.settings.locale ? state.app.userInfo.settings.locale : "en"
 });
 
 const mapDispatchToProps = dispatch => ({

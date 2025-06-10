@@ -1,15 +1,12 @@
 import React from "react";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import FormHelperText from "@material-ui/core/FormHelperText";
+import { TextField, Grid, FormControl, FormHelperText } from "@mui/material";
 import PropTypes from "prop-types";
 
 export default function NumericConcept(props) {
   const classes = { width: 195, marginRight: 10 };
   return (
     <>
-      <Grid container justify="flex-start">
+      <Grid container justifyContent="flex-start">
         <Grid item sm={12}>
           <FormControl>
             <TextField

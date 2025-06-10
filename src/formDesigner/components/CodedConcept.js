@@ -1,15 +1,9 @@
 import React from "react";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { Checkbox, FormControlLabel, Button, Grid, FormHelperText } from "@mui/material";
+import { Delete, ArrowDropUp, ArrowDropDown } from "@mui/icons-material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import PropTypes from "prop-types";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { get, size } from "lodash";
 import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 import { WebConceptView } from "common/model/WebConcept";
@@ -100,17 +94,17 @@ export const CodedConceptAnswer = ({
         <Grid item container direction={"row"} alignItems={"center"}>
           <Grid item>
             <Button disabled={index === 0} color="primary" type="button" onClick={() => action("onMoveUp")}>
-              <ArrowDropUpIcon /> Move up
+              <ArrowDropUp /> Move up
             </Button>
           </Grid>
           <Grid item>
             <Button disabled={index + 1 === totalAnswers} color="primary" type="button" onClick={() => action("onMoveDown")}>
-              <ArrowDropDownIcon /> Move down
+              <ArrowDropDown /> Move down
             </Button>
           </Grid>
           <Grid item>
             <Button style={{ color: "#ff0000" }} type="button" onClick={() => action("onDeleteAnswer")}>
-              <DeleteIcon fontSize={"small"} /> Remove
+              <Delete fontSize={"small"} /> Remove
             </Button>
           </Grid>
           {!inlineConcept && (

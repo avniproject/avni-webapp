@@ -1,11 +1,7 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import { makeStyles } from "@mui/styles";
+import { List, ListItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
+import { ChevronRight } from "@mui/icons-material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { InternalLink } from "../../../common/components/utils";
@@ -43,17 +39,13 @@ function NewMenu({ operationalModules, handleClose }) {
         {sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map((element, index) => {
           return (
             <React.Fragment key={index}>
-              <InternalLink
-                key={index}
-                to={`/app/register?type=${element.name}`}
-                style={{ color: "blue" }}
-              >
+              <InternalLink key={index} to={`/app/register?type=${element.name}`} style={{ color: "blue" }}>
                 <ListItem button onClick={handleClose}>
                   <ListItemIcon>
                     <SubjectTypeIcon subjectType={element} size={25} />
                   </ListItemIcon>
                   <ListItemText primary={t(element.name)} />
-                  <ChevronRightIcon />
+                  <ChevronRight />
                 </ListItem>
               </InternalLink>
               <Divider className={classes.dividerColor} />

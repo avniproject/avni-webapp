@@ -1,9 +1,6 @@
 import React from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles, withStyles } from "@mui/styles";
+import { AppBar, Tabs, Tab, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 const AntTabs = withStyles({
   indicator: {
@@ -62,17 +59,11 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
 
   return (
     <Grid item className={type === "active" ? classes.activeProgramBar : classes.exitedProgramBar}>
-      <label
-        className={type === "active" ? classes.activeProgramLabel : classes.exitedProgramLabel}
-      >
+      <label className={type === "active" ? classes.activeProgramLabel : classes.exitedProgramLabel}>
         {t(type === "active" ? "activeprograms" : "exitedProgram")}
       </label>
 
-      <AppBar
-        style={type === "active" ? { minHeight: "35px" } : {}}
-        position="static"
-        color="default"
-      >
+      <AppBar style={type === "active" ? { minHeight: "35px" } : {}} position="static" color="default">
         <AntTabs
           onChange={handleTabChange}
           value={selectedTab}
@@ -84,8 +75,7 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
         >
           {program && program.enrolments
             ? program.enrolments.map((element, index) =>
-                (element.programExitDateTime == null && type === "active") ||
-                (element.programExitDateTime != null && type === "exited") ? (
+                (element.programExitDateTime == null && type === "active") || (element.programExitDateTime != null && type === "exited") ? (
                   <AntTab
                     id={element.program.operationalProgramName.replaceAll(" ", "-")}
                     key={index}

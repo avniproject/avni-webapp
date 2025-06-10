@@ -1,6 +1,6 @@
+import { makeStyles } from "@mui/styles";
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import { makeStyles } from "@material-ui/core";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -31,12 +31,7 @@ export const PlatformDocumentation = ({ fileName }) => {
 
   return (
     <div style={{ backgroundColor: "#f6f6f6", borderRadius: 10, padding: 16, margin: 7 }}>
-      <ReactMarkdown
-        source={markdown}
-        escapeHtml={false}
-        className={classes.root}
-        renderers={{ link: LinkRenderer }}
-      />
+      <ReactMarkdown source={markdown} escapeHtml={false} className={classes.root} renderers={{ link: LinkRenderer }} />
     </div>
   );
 };

@@ -1,12 +1,12 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { Typography, Paper } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { isEmpty } from "lodash";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
-import { Typography, Paper } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
 import { getEligibleEncounters, resetState } from "../../../reducers/encounterReducer";
 import NewVisitMenuView from "./NewVisitMenuView";

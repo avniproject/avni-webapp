@@ -2,21 +2,13 @@ import { connect } from "react-redux";
 import { getUploadStatuses } from "../../reducers";
 import { withRouter } from "react-router-dom";
 import React from "react";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableBody from "@material-ui/core/TableBody";
+import { makeStyles } from "@mui/styles";
+import { Table, TableHead, TableRow, TableCell, TableBody, Box, Grid, TablePagination, Button } from "@mui/material";
 import { find, get, isNil, map } from "lodash";
 import moment from "moment";
 import http from "common/utils/httpClient";
 import fileDownload from "js-file-download";
-import Box from "@material-ui/core/Box";
-import { Grid, makeStyles } from "@material-ui/core";
-import Refresh from "@material-ui/icons/Refresh";
-import TablePagination from "@material-ui/core/TablePagination";
-import Button from "@material-ui/core/Button";
-import CloudDownload from "@material-ui/icons/CloudDownload";
+import { Refresh, CloudDownload } from "@mui/icons-material";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,11 +30,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const JobStatus = ({
-  exportJobStatuses,
-  getUploadStatuses,
-  operationalModules: { subjectTypes, programs, encounterTypes }
-}) => {
+const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: { subjectTypes, programs, encounterTypes } }) => {
   React.useEffect(() => {
     getUploadStatuses(0);
   }, []);
@@ -53,26 +41,16 @@ const JobStatus = ({
   const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
   const IsoDateFormat = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
   const getDateParams = ({ startDate, endDate }) =>
-    isNil(startDate) || isNil(endDate)
-      ? ""
-      : `${IsoDateFormat(startDate)} to ${IsoDateFormat(endDate)}`;
+    isNil(startDate) || isNil(endDate) ? "" : `${IsoDateFormat(startDate)} to ${IsoDateFormat(endDate)}`;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     getUploadStatuses(newPage);
   };
 
-  const findEntityByUUID = (entities, statusEntityTypeUUID) =>
-    find(entities, ({ uuid }) => uuid === statusEntityTypeUUID) || {};
+  const findEntityByUUID = (entities, statusEntityTypeUUID) => find(entities, ({ uuid }) => uuid === statusEntityTypeUUID) || {};
 
-  const onDownloadHandler = ({
-    fileName,
-    subjectTypeUUID,
-    programUUID,
-    encounterTypeUUID,
-    startDate,
-    endDate
-  }) => {
+  const onDownloadHandler = ({ fileName, subjectTypeUUID, programUUID, encounterTypeUUID, startDate, endDate }) => {
     const outFileName = [
       findEntityByUUID(subjectTypes, subjectTypeUUID).name,
       findEntityByUUID(programs, programUUID).operationalProgramName,
@@ -94,7 +72,7 @@ const JobStatus = ({
 
   return (
     <Box>
-      <Grid container direction="row" justify="flex-end">
+      <Grid container direction="row" justifyContent="flex-end">
         <Button color="primary" onClick={() => getUploadStatuses(0)}>
           <Refresh />
           {" Refresh"}
@@ -118,28 +96,17 @@ const JobStatus = ({
           {map(get(exportJobStatuses, "content"), status => (
             <TableRow key={status.uuid}>
               <TableCell className={classes.tableRow}>{status.reportType}</TableCell>
+              <TableCell className={classes.tableRow}>{findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}</TableCell>
+              <TableCell className={classes.tableRow}>{findEntityByUUID(programs, status.programUUID).operationalProgramName}</TableCell>
               <TableCell className={classes.tableRow}>
-                {findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}
-              </TableCell>
-              <TableCell className={classes.tableRow}>
-                {findEntityByUUID(programs, status.programUUID).operationalProgramName}
-              </TableCell>
-              <TableCell className={classes.tableRow}>
-                {
-                  findEntityByUUID(encounterTypes, status.encounterTypeUUID)
-                    .operationalEncounterTypeName
-                }
+                {findEntityByUUID(encounterTypes, status.encounterTypeUUID).operationalEncounterTypeName}
               </TableCell>
               <TableCell className={classes.tableRow}>{getDateParams(status)}</TableCell>
               <TableCell className={classes.tableRow}>{formatDate(status.startTime)}</TableCell>
               <TableCell className={classes.tableRow}>{formatDate(status.endTime)}</TableCell>
               <TableCell className={classes.tableRow}>{status.status}</TableCell>
               <TableCell className={classes.tableRow}>
-                <Button
-                  color="primary"
-                  onClick={() => onDownloadHandler(status)}
-                  disabled={status.status !== "COMPLETED"}
-                >
+                <Button color="primary" onClick={() => onDownloadHandler(status)} disabled={status.status !== "COMPLETED"}>
                   <CloudDownload disabled={status.status !== "COMPLETED"} />
                   {" Download"}
                 </Button>

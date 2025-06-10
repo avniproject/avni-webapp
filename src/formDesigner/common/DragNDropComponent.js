@@ -1,15 +1,9 @@
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import RootRef from "@material-ui/core/RootRef";
 import { map, orderBy, isNil } from "lodash";
-import Grid from "@material-ui/core/Grid";
-import {
-  ExpansionPanel as MuiExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary as MuiExpansionPanelSummary,
-  withStyles
-} from "@material-ui/core";
+import { withStyles } from "@mui/styles";
+import { Grid, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import React from "react";
-import DragHandleIcon from "@material-ui/icons/DragHandle";
+import { DragHandle } from "@mui/icons-material";
 
 const getItemStyle = (isDragging, draggableStyle) => ({
   ...draggableStyle,
@@ -20,15 +14,16 @@ const getListStyle = isDraggingOver => ({
   background: "#FFFFFF"
 });
 
-export const ExpansionPanel = withStyles({
+export const StyledAccordion = withStyles({
   root: {
     "&$expanded": {
       margin: 0
     }
   },
   expanded: {}
-})(MuiExpansionPanel);
-export const ExpansionPanelSummary = withStyles({
+})(Accordion);
+
+export const StyledAccordionSummary = withStyles({
   root: {
     paddingRight: 0,
     backgroundColor: "#dbdbdb",
@@ -52,15 +47,9 @@ export const ExpansionPanelSummary = withStyles({
     marginHorizontal: "8px",
     display: "inline"
   }
-})(MuiExpansionPanelSummary);
+})(AccordionSummary);
 
-export const DragNDropComponent = ({
-  onDragEnd,
-  renderOtherSummary,
-  renderDetails,
-  dataList,
-  summaryDirection
-}) => {
+export const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetails, dataList, summaryDirection }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = panel => (event, isExpanded) => {
@@ -71,7 +60,7 @@ export const DragNDropComponent = ({
     return (
       <div style={{ height: 5, align: "center" }}>
         <div hidden={expanded !== false}>
-          <DragHandleIcon color={"disabled"} />
+          <DragHandle color="disabled" />
         </div>
       </div>
     );
@@ -81,52 +70,37 @@ export const DragNDropComponent = ({
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="drop_card">
         {(provided, snapshot) => (
-          <RootRef rootRef={provided.innerRef}>
-            <div style={getListStyle(snapshot.isDraggingOver)}>
-              {map(orderBy(dataList, "displayOrder"), (data, index) => (
-                <Draggable
-                  isDragDisabled={expanded !== false}
-                  key={data.uuid}
-                  draggableId={data.uuid}
-                  index={index}
-                >
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-                    >
-                      <ExpansionPanel
-                        key={index}
-                        expanded={expanded === "panel" + index}
-                        onChange={handleChange("panel" + index)}
+          <div ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)} {...provided.droppableProps}>
+            {map(orderBy(dataList, "displayOrder"), (data, index) => (
+              <Draggable isDragDisabled={expanded !== false} key={data.uuid} draggableId={data.uuid} index={index}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                  >
+                    <StyledAccordion key={index} expanded={expanded === "panel" + index} onChange={handleChange("panel" + index)}>
+                      <StyledAccordionSummary
+                        aria-controls={"panel" + index + "bh-content"}
+                        id={"panel" + index + "bh-header"}
+                        {...provided.dragHandleProps}
                       >
-                        <ExpansionPanelSummary
-                          aria-controls={"panel" + index + "bh-content"}
-                          id={"panel" + index + "bh-header"}
-                          {...provided.dragHandleProps}
-                        >
-                          <Grid container direction={summaryDirection}>
-                            <Grid container item alignItems={"center"} justify={"center"}>
-                              {renderDragIcon(data.uuid)}
-                            </Grid>
-                            {renderOtherSummary(data, index, expanded)}
+                        <Grid container direction={summaryDirection}>
+                          <Grid container item alignItems="center" justifyContent="center">
+                            {renderDragIcon(data.uuid)}
                           </Grid>
-                        </ExpansionPanelSummary>
-                        {renderDetails && (
-                          <ExpansionPanelDetails>
-                            {renderDetails(data, index, expanded)}
-                          </ExpansionPanelDetails>
-                        )}
-                      </ExpansionPanel>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          </RootRef>
+                          {renderOtherSummary(data, index, expanded)}
+                        </Grid>
+                      </StyledAccordionSummary>
+                      {renderDetails && <AccordionDetails>{renderDetails(data, index, expanded)}</AccordionDetails>}
+                    </StyledAccordion>
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
         )}
       </Droppable>
     </DragDropContext>

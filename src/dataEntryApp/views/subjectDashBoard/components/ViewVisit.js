@@ -1,15 +1,12 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@mui/styles";
+import { Paper, Typography, Grid, Button } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getEncounter, getProgramEncounter } from "../../../reducers/viewVisitReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
 import Observations from "dataEntryApp/components/Observations";
-import Button from "@material-ui/core/Button";
 import { InternalLink } from "../../../../common/components/utils";
 import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
@@ -21,15 +18,13 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(3, 2),
     margin: theme.spacing(1, 3),
     flexGrow: 1,
-    boxShadow:
-      "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   innerPaper: {
     padding: theme.spacing(2, 2),
     margin: theme.spacing(1, 1),
     flexGrow: 1,
-    boxShadow:
-      "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   mainHeading: {
     fontSize: "20px",
@@ -80,15 +75,13 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
       : `/app/subject/completedProgramEncounters?uuid=${encounter.enrolmentUuid}`;
   }
   useEffect(() => {
-    isViewEncounter
-      ? getEncounter(match.queryParams.uuid)
-      : getProgramEncounter(match.queryParams.uuid);
+    isViewEncounter ? getEncounter(match.queryParams.uuid) : getProgramEncounter(match.queryParams.uuid);
   }, []);
   return encounter ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <Grid container direction="row" justify="space-between" alignItems="baseline">
+        <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
           <Typography component={"span"} className={classes.mainHeading}>
             {t(defaultTo(encounter.name, encounter.encounterType.name))}
           </Typography>

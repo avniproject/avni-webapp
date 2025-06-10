@@ -1,10 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
+import { AppBar, Tabs, Tab, Typography, Box } from "@mui/material";
 import GroupUsers from "./GroupUsers";
 import GroupPrivileges from "./GroupPrivileges";
 import { withRouter } from "react-router-dom";
@@ -54,12 +50,7 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, userList, ...pro
         <GroupUsers groupId={groupId} {...props} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <GroupPrivileges
-          groupId={groupId}
-          groupName={groupName}
-          hasAllPrivileges={hasAllPrivileges}
-          {...props}
-        />
+        <GroupPrivileges groupId={groupId} groupName={groupName} hasAllPrivileges={hasAllPrivileges} {...props} />
       </TabPanel>
       <TabPanel value={value} index={2}>
         <GroupDashboards groupId={groupId} {...props} />

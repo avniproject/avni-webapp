@@ -1,16 +1,8 @@
 import React, { Fragment } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { Table, TableBody, TableHead, TableCell, TableRow, Typography, Paper } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { isEqual, isNil } from "lodash";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableCell,
-  TableRow,
-  Typography,
-  Paper
-} from "@material-ui/core";
 import { LineBreak, InternalLink } from "../../../../common/components/utils";
 import { ModelGeneral as General } from "avni-models";
 
@@ -31,9 +23,7 @@ const useStyles = makeStyles(theme => ({
 const NewVisitMenuView = ({ sections, uuid, isForProgramEncounters }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const scheduledVisitUrl = isForProgramEncounters
-    ? `/app/subject/programEncounter`
-    : `/app/subject/encounter`;
+  const scheduledVisitUrl = isForProgramEncounters ? `/app/subject/programEncounter` : `/app/subject/encounter`;
   const actualVisitUrl = isForProgramEncounters
     ? `/app/subject/programEncounter?enrolUuid=${uuid}`
     : `/app/subject/encounter?subjectUuid=${uuid}`;
@@ -63,12 +53,7 @@ const NewVisitMenuView = ({ sections, uuid, isForProgramEncounters }) => {
                         .map(encounter => (
                           <TableRow key={encounter.uuid}>
                             {encounter.encounterType ? (
-                              <TableCell
-                                className={classes.tableCell}
-                                component="th"
-                                scope="row"
-                                width="50%"
-                              >
+                              <TableCell className={classes.tableCell} component="th" scope="row" width="50%">
                                 <InternalLink
                                   id={encounter.name.replaceAll(" ", "-")}
                                   to={
@@ -84,8 +69,7 @@ const NewVisitMenuView = ({ sections, uuid, isForProgramEncounters }) => {
                               ""
                             )}
                             <TableCell align="left" width="50%">
-                              {encounter.earliestVisitDateTime &&
-                                General.toDisplayDate(encounter.earliestVisitDateTime)}
+                              {encounter.earliestVisitDateTime && General.toDisplayDate(encounter.earliestVisitDateTime)}
                             </TableCell>
                           </TableRow>
                         ))}

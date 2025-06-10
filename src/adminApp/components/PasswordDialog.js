@@ -1,19 +1,20 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import IconButton from "@material-ui/core/IconButton";
-import Input from "@material-ui/core/Input";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+  FormControl,
+  FormLabel
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { isEqual, size } from "lodash";
-import FormLabel from "@material-ui/core/FormLabel";
 import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
 export default function PasswordDialog({ username, open, onClose, onConfirm, serverError }) {
@@ -67,10 +68,7 @@ export default function PasswordDialog({ username, open, onClose, onConfirm, ser
           autoComplete={"new-password"}
           endAdornment={
             <InputAdornment position="end">
-              <IconButton
-                onClick={() => handleClickShowPassword(state, handler)}
-                onMouseDown={handleMouseDownPassword}
-              >
+              <IconButton onClick={() => handleClickShowPassword(state, handler)} onMouseDown={handleMouseDownPassword} size="large">
                 {state.showPassword ? <Visibility /> : <VisibilityOff />}
               </IconButton>
             </InputAdornment>
@@ -84,11 +82,7 @@ export default function PasswordDialog({ username, open, onClose, onConfirm, ser
   const content = `Enter the new password.`;
   return (
     <div>
-      <Dialog
-        open={open}
-        onClose={MuiComponentHelper.getDialogClosingHandler(onClose)}
-        aria-labelledby="form-dialog-title"
-      >
+      <Dialog open={open} onClose={MuiComponentHelper.getDialogClosingHandler(onClose)} aria-labelledby="form-dialog-title">
         <DialogTitle id="password-reset-title">{title}</DialogTitle>
         <DialogContent>
           <DialogContentText>{content}</DialogContentText>

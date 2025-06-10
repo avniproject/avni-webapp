@@ -1,8 +1,6 @@
 import React from "react";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import Modal from "@material-ui/core/Modal";
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Grid, Button, Modal, Typography } from "@mui/material";
 import Select from "react-select";
 import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
@@ -16,14 +14,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SelectAction = function({
-  dispatch,
-  label,
-  options,
-  assignmentKeyName,
-  isMulti,
-  assignmentCriteria
-}) {
+const SelectAction = function({ dispatch, label, options, assignmentKeyName, isMulti, assignmentCriteria }) {
   const onActionChange = (key, value) => dispatch({ type: "setAction", payload: { key, value } });
 
   return (
@@ -59,13 +50,7 @@ export const TaskAssignmentAction = ({
 
   return (
     <Modal onClose={MuiComponentHelper.getDialogClosingHandler(onClose)} open={openAction}>
-      <Grid
-        container
-        direction={"column"}
-        spacing={3}
-        className={classes.paper}
-        style={{ top: "25%", left: "30%" }}
-      >
+      <Grid container direction={"column"} spacing={3} className={classes.paper} style={{ top: "25%", left: "30%" }}>
         <Typography variant={"h6"}>{"Bulk Action"}</Typography>
         <SelectAction
           dispatch={dispatch}

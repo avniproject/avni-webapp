@@ -1,21 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import RefreshIcon from "@material-ui/icons/Refresh";
+import { makeStyles } from "@mui/styles";
+import { Table, TableBody, TableCell, TableHead, TableRow, Box, TablePagination, Button } from "@mui/material";
+import { Refresh } from "@mui/icons-material";
 import { getStatuses } from "./reducers";
 import { capitalize, get, isNil, map, includes } from "lodash";
 import { staticTypesWithStaticDownload, staticTypesWithDynamicDownload } from "./Types";
 import moment from "moment";
 import FileDownloadButton from "../common/components/FileDownloadButton";
-import { makeStyles } from "@material-ui/core/styles";
-import Box from "@material-ui/core/Box";
-import TablePagination from "@material-ui/core/TablePagination";
-import Button from "@material-ui/core/Button";
 import UploadTypes from "./UploadTypes";
 
 const createStyles = makeStyles(theme => ({
@@ -40,7 +33,7 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
   return (
     <Box>
       <Button color="primary" variant="contained" onClick={() => getStatuses(page)} style={{ float: "right", margin: "10px" }}>
-        <RefreshIcon style={{ marginRight: 5 }} />
+        <Refresh style={{ marginRight: 5 }} />
         {"REFRESH STATUS"}
       </Button>
       <Table aria-label="simple table">

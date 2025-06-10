@@ -4,20 +4,14 @@ import _ from "lodash";
 import { withRouter } from "react-router-dom";
 import { FormTypeEntities } from "../common/constants";
 
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
+import { Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
+import { Close, Edit, LibraryAdd, RestoreFromTrash, Settings, Delete } from "@mui/icons-material";
 
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import NewFormModal from "../components/NewFormModal";
 import moment from "moment";
 import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
-import Edit from "@material-ui/icons/Edit";
-import { LibraryAdd, RestoreFromTrash, Settings } from "@material-ui/icons";
-import Delete from "@material-ui/icons/DeleteOutline";
 
 function isActionDisabled(rowData, userInfo) {
   return rowData.voided || !UserInfo.hasFormEditPrivilege(userInfo, rowData.formType);
@@ -107,20 +101,13 @@ const FormListing = ({ history, userInfo }) => {
 
   const showCloneForm = () => {
     return (
-      <Dialog
-        fullWidth
-        maxWidth="xs"
-        onClose={onCloseEvent}
-        aria-labelledby="customized-dialog-title"
-        open={cloneFormIndicator}
-      >
+      <Dialog fullWidth maxWidth="xs" onClose={onCloseEvent} aria-labelledby="customized-dialog-title" open={cloneFormIndicator}>
         <DialogTitle id="customized-dialog-title" onClose={onCloseEvent}>
           Clone Form
-          <IconButton style={{ float: "right" }} onClick={onCloseEvent}>
-            <CloseIcon />
+          <IconButton style={{ float: "right" }} onClick={onCloseEvent} size="large">
+            <Close />
           </IconButton>
         </DialogTitle>
-
         <DialogContent dividers>
           <NewFormModal isCloneForm={true} uuid={uuid} />
         </DialogContent>

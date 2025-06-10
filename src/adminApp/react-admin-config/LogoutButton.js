@@ -1,9 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import MenuItem from "@material-ui/core/MenuItem";
-import ExitIcon from "@material-ui/icons/PowerSettingsNew";
-import UserIcon from "@material-ui/icons/AccountCircle";
-import LockIcon from "@material-ui/icons/Lock";
+import { MenuItem } from "@mui/material";
+import { Logout, Person, Lock } from "@mui/icons-material";
 import { logout } from "../../rootApp/ducks";
 import _ from "lodash";
 import moment from "moment";
@@ -29,11 +27,11 @@ const LogoutButton = ({ doLogout, username, onChangePassword = _.noop, lastSessi
   return (
     <div>
       <span style={styles.userIcon}>
-        <UserIcon color={"primary"} /> {username}
+        <Person color={"primary"} /> {username}
       </span>
       <MenuItem onClick={onChangePassword}>Change Password</MenuItem>
       <MenuItem onClick={doLogout}>
-        <ExitIcon /> Logout
+        <Logout /> Logout
       </MenuItem>
       {lastSessionTimeMillis > 0 && (
         <span style={styles.lastLoginDate}>Last login: {moment(lastSessionTimeMillis).format("MMM Do YYYY h:mm:ss a")}</span>
@@ -44,7 +42,7 @@ const LogoutButton = ({ doLogout, username, onChangePassword = _.noop, lastSessi
             navigator.clipboard.writeText(httpClient.getIdToken());
           }}
         >
-          <LockIcon /> Copy Token
+          <Lock /> Copy Token
         </MenuItem>
       )}
     </div>

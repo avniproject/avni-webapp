@@ -2,11 +2,10 @@ import React, { useEffect, useState, useReducer } from "react";
 import DeclarativeRuleComponent from "./DeclarativeRuleComponent";
 import { isEmpty, map, size, noop, get } from "lodash";
 import RuleSummaryComponent from "./RuleSummaryComponent";
-import Button from "@material-ui/core/Button";
+import { Button, Box, Typography } from "@mui/material";
 import { DeclarativeRuleHolder } from "rules-config";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
+import { AddCircle } from "@mui/icons-material";
 import IconButton from "../IconButton";
-import { Box, Typography } from "@material-ui/core";
 import DeclarativeRuleContext from "./DeclarativeRuleContext";
 import { DeclarativeRuleReducer } from "./DeclarativeRuleReducer";
 
@@ -87,11 +86,7 @@ const DeclarativeRules = ({
             {"Summary"}
           </Typography>
           {map(summaries, (summary, index) => (
-            <RuleSummaryComponent
-              summary={summary}
-              ruleNumber={index + 1}
-              displayRuleCounts={size(summaries) > 1}
-            />
+            <RuleSummaryComponent summary={summary} ruleNumber={index + 1} displayRuleCounts={size(summaries) > 1} />
           ))}
         </Box>
       )}
@@ -104,10 +99,11 @@ const DeclarativeRules = ({
         />
       ))}
       <IconButton
-        Icon={AddCircleIcon}
+        Icon={AddCircle}
         label={"Add new declarative rule"}
         onClick={() => dispatch({ type: "newDeclarativeRule" })}
         disabled={declarativeRuleHolder.isPartiallyEmpty()}
+        size="large"
       />
       <div>
         <Button

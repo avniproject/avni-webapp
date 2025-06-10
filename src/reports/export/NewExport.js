@@ -1,14 +1,11 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Typography, Grid, Button, Paper, Box } from "@mui/material";
 import React from "react";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getOperationalModules, getUploadStatuses } from "../reducers";
 import JobStatus from "../components/export/JobStatus";
-import Paper from "@material-ui/core/Paper";
-import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { reportSideBarOptions } from "../Common";
 import { ExportRequestBody } from "../components/export/ExportRequestBody";
@@ -30,13 +27,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewExport = ({
-  operationalModules,
-  getOperationalModules,
-  getUploadStatuses,
-  exportJobStatuses,
-  userInfo
-}) => {
+const NewExport = ({ operationalModules, getOperationalModules, getUploadStatuses, exportJobStatuses, userInfo }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -69,24 +60,16 @@ const NewExport = ({
   };
   const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
   return (
-    <ScreenWithAppBar
-      appbarTitle={`New Longitudinal Export`}
-      enableLeftMenuButton={true}
-      sidebarOptions={reportSideBarOptions}
-    >
+    <ScreenWithAppBar appbarTitle={`New Longitudinal Export`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
       {operationalModules && (
         <div>
           <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
             <DocumentationContainer filename={"Report.md"}>
               {allowReportGeneration && (
-                <ExportRequestBody
-                  dispatch={setCustomRequest}
-                  customRequest={customRequest}
-                  exportRequest={exportRequest}
-                />
+                <ExportRequestBody dispatch={setCustomRequest} customRequest={customRequest} exportRequest={exportRequest} />
               )}
               {allowReportGeneration && (
-                <Grid container direction="row" justify="flex-start" alignItems="baseline">
+                <Grid container direction="row" justifyContent="flex-start" alignItems="baseline">
                   <Button
                     variant="contained"
                     color="primary"
@@ -106,10 +89,7 @@ const NewExport = ({
           </Box>
           <Grid item>
             <Paper style={{ marginBottom: 100 }}>
-              <JobStatus
-                exportJobStatuses={exportJobStatuses}
-                operationalModules={operationalModules}
-              />
+              <JobStatus exportJobStatuses={exportJobStatuses} operationalModules={operationalModules} />
             </Paper>
           </Grid>
         </div>

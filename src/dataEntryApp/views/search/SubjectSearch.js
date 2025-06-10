@@ -1,16 +1,13 @@
 import React from "react";
-import { Paper } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { Paper, Typography, Grid, Button } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
-import CancelIcon from "@material-ui/icons/Cancel";
+import { Cancel } from "@mui/icons-material";
 import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
 import { useTranslation } from "react-i18next";
 import { store } from "../../../common/store";
 import { types } from "../../reducers/searchFilterReducer";
-import { Typography } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
 import { isEmpty } from "lodash";
 import { getOrganisationConfig } from "../../reducers/metadataReducer";
 
@@ -70,13 +67,7 @@ const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfi
 
   return (
     <Paper className={classes.searchBox}>
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        alignItems="baseline"
-        style={{ marginBottom: "1%" }}
-      >
+      <Grid container direction="row" justifyContent="space-between" alignItems="baseline" style={{ marginBottom: "1%" }}>
         <Typography
           component={"span"}
           style={{
@@ -90,10 +81,9 @@ const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfi
           {!isEmpty(searchRequest.subjectType) ? t("searchResults") : ""}
         </Typography>
         <Button onClick={() => resetClick()} aria-label="add an alarm" style={{ color: "#212529" }}>
-          <CancelIcon style={{ fontSize: "12px" }} /> {t("resetFilter")}
+          <Cancel style={{ fontSize: "12px" }} /> {t("resetFilter")}
         </Button>
       </Grid>
-
       <SubjectSearchTable searchRequest={searchRequest} organisationConfigs={organisationConfigs} />
     </Paper>
   );

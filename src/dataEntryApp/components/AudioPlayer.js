@@ -2,12 +2,9 @@ import React, { useEffect, useState } from "react";
 import http from "../../common/utils/httpClient";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import { withStyles } from "@material-ui/core/styles";
-import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
+import { IconButton, Dialog, DialogContent } from "@mui/material";
+import { Close } from "@mui/icons-material";
+import { withStyles } from "@mui/styles";
 
 const styles = theme => ({
   root: {
@@ -22,16 +19,16 @@ const styles = theme => ({
   }
 });
 
-const DialogTitle = withStyles(styles)(props => {
+const StyledDialogTitle = withStyles(styles)(props => {
   const { children, classes, onClose, ...other } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+    <div className={classes.root} {...other}>
       {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-          <CloseIcon />
+        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose} size="large">
+          <Close />
         </IconButton>
       ) : null}
-    </MuiDialogTitle>
+    </div>
   );
 });
 
@@ -40,8 +37,7 @@ export const AudioPlayer = ({ url }) => {
   const [signedURL, setSignedURL] = useState();
   const [openModal, setOpenModal] = useState(false);
 
-  const updateSignedURL = () =>
-    http.get(`/media/signedUrl?url=${url}`).then(signedURL => setSignedURL(signedURL.data));
+  const updateSignedURL = () => http.get(`/media/signedUrl?url=${url}`).then(signedURL => setSignedURL(signedURL.data));
 
   useEffect(() => {
     updateSignedURL();
@@ -67,7 +63,7 @@ export const AudioPlayer = ({ url }) => {
         {t("Open in New Tab")}
       </Link>
       <Dialog onClose={() => setOpenModal(false)} open={openModal}>
-        <DialogTitle onClose={() => setOpenModal(false)} />
+        <StyledDialogTitle onClose={() => setOpenModal(false)} />
         <DialogContent>
           <audio autoPlay preload="auto" controls src={signedURL} controlsList="nodownload" />
         </DialogContent>

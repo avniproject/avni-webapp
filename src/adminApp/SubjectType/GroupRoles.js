@@ -1,14 +1,8 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
+import { makeStyles } from "@mui/styles";
+import { TextField, Box, Button, IconButton, Grid, FormHelperText, MenuItem } from "@mui/material";
 import { map, includes, filter } from "lodash";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import DeleteIcon from "@material-ui/icons/Delete";
-import IconButton from "@material-ui/core/IconButton";
-import Grid from "@material-ui/core/Grid";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import MenuItem from "@material-ui/core/MenuItem";
+import { Delete } from "@mui/icons-material";
 import httpClient from "../../common/utils/httpClient";
 import { default as UUID } from "uuid";
 import Types from "./Types";
@@ -80,9 +74,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
           <AvniSelect
             label="Select Member Subject *"
             value={memberSubjectType || ""}
-            onChange={event =>
-              dispatch({ type: "householdMemberSubject", payload: event.target.value })
-            }
+            onChange={event => dispatch({ type: "householdMemberSubject", payload: event.target.value })}
             style={{ width: "200px", marginBottom: 5 }}
             required
             options={
@@ -107,9 +99,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               variant="outlined"
               value={groupRole.role || ""}
               InputProps={{ classes: { input: classes.boxHeight } }}
-              onChange={event =>
-                onGroupRoleChange({ ...groupRole, role: event.target.value }, index)
-              }
+              onChange={event => onGroupRoleChange({ ...groupRole, role: event.target.value }, index)}
             />
             <TextField
               disabled={Types.isHousehold(type)}
@@ -141,9 +131,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               id="minimum-number-of-members"
               label="Minimum members"
               variant="outlined"
-              value={
-                groupRole.minimumNumberOfMembers === "" ? "" : groupRole.minimumNumberOfMembers
-              }
+              value={groupRole.minimumNumberOfMembers === "" ? "" : groupRole.minimumNumberOfMembers}
               InputProps={{ classes: { input: classes.boxHeight } }}
               onChange={event =>
                 onGroupRoleChange(
@@ -160,9 +148,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               id="maximum-number-of-members"
               label="Maximum members"
               variant="outlined"
-              value={
-                groupRole.maximumNumberOfMembers === "" ? "" : groupRole.maximumNumberOfMembers
-              }
+              value={groupRole.maximumNumberOfMembers === "" ? "" : groupRole.maximumNumberOfMembers}
               InputProps={{ classes: { input: classes.boxHeight } }}
               onChange={event =>
                 onGroupRoleChange(
@@ -180,20 +166,16 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               aria-label="delete"
               onClick={() => onDeleteGroupRole(index, groupRole, edit)}
               style={{ marginTop: 10 }}
+              size="large"
             >
-              <DeleteIcon fontSize="inherit" />
+              <Delete fontSize="inherit" />
             </IconButton>
           )}
         </Grid>
       ))}
       {error && <FormHelperText error>Group fields can not be blank</FormHelperText>}
       {!Types.isHousehold(type) && (
-        <Button
-          type="button"
-          className={classes.button}
-          color="primary"
-          onClick={onAddNewGroupRole}
-        >
+        <Button type="button" className={classes.button} color="primary" onClick={onAddNewGroupRole}>
           Add Role
         </Button>
       )}

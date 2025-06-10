@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Select from "react-select";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { localeChoices } from "../../common/constants";
-import Box from "@material-ui/core/Box";
+import { Box } from "@mui/material";
 import http from "common/utils/httpClient";
 import _ from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
@@ -20,9 +20,7 @@ export const CreateEditLanguages = props => {
 
   const setting = props.history.location.state.settings;
   const worklistUpdationRule = props.history.location.state.worklistUpdationRule;
-  const [lang, setLang] = useState(
-    options.filter(l => setting.settings.languages.includes(l.value))
-  );
+  const [lang, setLang] = useState(options.filter(l => setting.settings.languages.includes(l.value)));
   const [messageStatus, setMessageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 

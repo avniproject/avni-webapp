@@ -1,9 +1,6 @@
 import React from "react";
-import Dialog from "@material-ui/core/Dialog";
-import { DialogContent, DialogTitle } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
+import { Dialog, DialogContent, DialogTitle, Box, IconButton } from "@mui/material";
+import { Close } from "@mui/icons-material";
 import { CreateEditFiltersV2 } from "../../../adminApp/components/CreateEditFiltersV2";
 
 export const CreateEditFilterDialog = ({
@@ -21,8 +18,8 @@ export const CreateEditFilterDialog = ({
         <Box display="flex" alignItems="center">
           <Box flexGrow={1}>{selectedFilter ? "Edit Filter" : "Create Filter"}</Box>
           <Box>
-            <IconButton onClick={handleModalClose}>
-              <CloseIcon />
+            <IconButton onClick={handleModalClose} size="large">
+              <Close />
             </IconButton>
           </Box>
         </Box>

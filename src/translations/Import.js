@@ -3,8 +3,7 @@ import FileUpload from "../common/components/FileUpload";
 import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
 import { filter, find, isEmpty, isString, size } from "lodash";
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
+import { Box, Grid } from "@mui/material";
 import UserInfo from "../common/model/UserInfo";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
@@ -68,15 +67,9 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
     <div />
   ) : (
     <Grid container direction="row" spacing={2}>
-      <Grid container item direction="row" justify="space-between" alignItems="center">
+      <Grid container item direction="row" justifyContent="space-between" alignItems="center">
         <Grid item xs={12} sm={4}>
-          <DropDown
-            name="Language"
-            style={{ width: 120 }}
-            value={language}
-            onChange={setLanguage}
-            options={locales}
-          />
+          <DropDown name="Language" style={{ width: 120 }} value={language} onChange={setLanguage} options={locales} />
         </Grid>
         <Grid item xs={12} sm={8}>
           <FileUpload
@@ -84,9 +77,7 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
             onUpload={onUploadPressedHandler}
             canSelect={!isEmpty(language)}
             canUpload={
-              noOfKeysWithoutValues(file) === 0 &&
-              isEmpty(error) &&
-              UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditLanguage)
+              noOfKeysWithoutValues(file) === 0 && isEmpty(error) && UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditLanguage)
             }
           />
         </Grid>

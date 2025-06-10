@@ -1,10 +1,9 @@
+import { makeStyles } from "@mui/styles";
 import React, { Fragment } from "react";
-import { filter, map, sortBy, get } from "lodash";
+import _, { filter, map, sortBy, get } from "lodash";
 import { FormElement } from "./FormElement";
 import { Concept, QuestionGroup } from "avni-models";
-import _ from "lodash";
 import { PrimitiveValue } from "openchs-models";
-import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   gridContainerStyle: {

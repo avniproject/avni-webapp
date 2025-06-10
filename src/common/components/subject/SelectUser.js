@@ -1,13 +1,6 @@
-import Typography from "@material-ui/core/Typography";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableBody from "@material-ui/core/TableBody";
-import Radio from "@material-ui/core/Radio";
+import { makeStyles } from "@mui/styles";
+import { Typography, Table, TableHead, TableRow, TableCell, TableBody, Radio, Box } from "@mui/material";
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,11 +38,7 @@ const SelectUser = function({ users, errorMessage, onSelectedUser }) {
       </Typography>
 
       {users && users.length !== 0 ? (
-        <Table
-          className={classes.tableContainer}
-          aria-labelledby="tableTitle"
-          aria-label="enhanced table"
-        >
+        <Table className={classes.tableContainer} aria-labelledby="tableTitle" aria-label="enhanced table">
           <TableHead>
             <TableRow>
               <TableCell />

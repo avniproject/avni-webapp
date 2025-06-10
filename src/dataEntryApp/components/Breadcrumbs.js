@@ -1,8 +1,6 @@
 import React from "react";
-import Typography from "@material-ui/core/Typography";
-import { Breadcrumbs as MUIBreadcrumb } from "@material-ui/core";
-import Link from "@material-ui/core/Link";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { Typography, Breadcrumbs as MUIBreadcrumb, Link } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -24,23 +22,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Breadcrumbs = ({
-  path,
-  match,
-  programEncounter,
-  subjectProfile,
-  encounter,
-  viewVisit,
-  ...props
-}) => {
+const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter, viewVisit, ...props }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const parts = path.split(/\/+/g).filter(Boolean);
   const subjectName = subjectProfile && subjectProfile.nameString;
   const subjectUuid = subjectProfile && subjectProfile.uuid;
   const viewVisitName = viewVisit && defaultTo(viewVisit.name, viewVisit.encounterType.name);
-  const programEncounterName =
-    programEncounter && defaultTo(programEncounter.name, programEncounter.encounterType.name);
+  const programEncounterName = programEncounter && defaultTo(programEncounter.name, programEncounter.encounterType.name);
   const encounterName = encounter && defaultTo(encounter.name, encounter.encounterType.name);
   const urlPartLabels = {
     APP: "app",

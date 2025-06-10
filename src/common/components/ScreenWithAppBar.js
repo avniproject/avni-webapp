@@ -2,14 +2,9 @@ import React from "react";
 import Body from "./Body";
 import AppBar from "./AppBar";
 import clsx from "clsx";
-import { makeStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import IconButton from "@material-ui/core/IconButton";
+import { makeStyles } from "@mui/styles";
+import { Drawer, List, IconButton, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import PropTypes from "prop-types";
 import _ from "lodash";
 
@@ -91,15 +86,7 @@ const applyListIcon = (open, icon, listTextName) => {
   }
 };
 
-const applyLeftMenu = (
-  classes,
-  open,
-  handleDrawer,
-  selectedIndex,
-  handleListItemClick,
-  children,
-  sidebarOptions
-) => {
+const applyLeftMenu = (classes, open, handleDrawer, selectedIndex, handleListItemClick, children, sidebarOptions) => {
   return (
     <>
       <Drawer
@@ -117,7 +104,7 @@ const applyLeftMenu = (
         open={open}
       >
         <div className={classes.toolbar}>
-          <IconButton onClick={handleDrawer} />
+          <IconButton onClick={handleDrawer} size="large" />
         </div>
         <List>
           {_.map(sidebarOptions, (option, index) => {
@@ -159,9 +146,7 @@ const getSelectedListItem = sidebarOptions => {
 const ScreenWithAppBar = props => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const [selectedIndex, setSelectedIndex] = React.useState(
-    getSelectedListItem(props.sidebarOptions)
-  );
+  const [selectedIndex, setSelectedIndex] = React.useState(getSelectedListItem(props.sidebarOptions));
 
   function handleListItemClick(event, index) {
     setSelectedIndex(index);
@@ -173,21 +158,9 @@ const ScreenWithAppBar = props => {
 
   return (
     <div className={classes.container}>
-      <AppBar
-        title={props.appbarTitle}
-        handleDrawer={handleDrawer}
-        enableLeftMenuButton={props.enableLeftMenuButton}
-      />
+      <AppBar title={props.appbarTitle} handleDrawer={handleDrawer} enableLeftMenuButton={props.enableLeftMenuButton} />
       {props.enableLeftMenuButton &&
-        applyLeftMenu(
-          classes,
-          open,
-          handleDrawer,
-          selectedIndex,
-          handleListItemClick,
-          props.children,
-          props.sidebarOptions
-        )}
+        applyLeftMenu(classes, open, handleDrawer, selectedIndex, handleListItemClick, props.children, props.sidebarOptions)}
 
       {!props.enableLeftMenuButton && <Body>{props.children}</Body>}
     </div>

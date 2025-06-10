@@ -1,10 +1,8 @@
 import { Redirect, withRouter } from "react-router-dom";
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
-import Box from "@material-ui/core/Box";
+import { Box, Button, FormLabel } from "@mui/material";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
-import FormLabel from "@material-ui/core/FormLabel";
 import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
 import { validateGroup } from "./GroupHandlers";
@@ -18,7 +16,7 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
-import Save from "@material-ui/icons/Save";
+import { Save } from "@mui/icons-material";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const SubjectTypeCreate = ({ organisationConfig }) => {

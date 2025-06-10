@@ -100,7 +100,7 @@ const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false, 
   };
   const formElementGroup = isImmutable ? formElementGroupWithoutObs : firstGroupWithAtLeastOneVisibleElement;
 
-  if (!!!formElementGroup) {
+  if (!formElementGroup) {
     return getReturnObject(lastGroupWithAtLeastOneVisibleElement, entity, true);
   }
 

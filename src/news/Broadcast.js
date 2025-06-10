@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import AppBar from "../common/components/AppBar";
 import { HomePageCard } from "../rootApp/views/HomePageCard";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-import Grid from "@material-ui/core/Grid";
+import { WhatsApp } from "@mui/icons-material";
+import { Grid } from "@mui/material";
 import { Route, withRouter } from "react-router-dom";
 import News from "./News";
 import WhatsAppHome from "./whatsapp/WhatsAppHome";
@@ -22,20 +22,14 @@ const BroadcastPage = function({ path, organisationConfig, userInfo }) {
     <React.Fragment>
       <AppBar title={"Broadcast"} position={"sticky"} />
       <Grid container justifyContent="center">
-        <HomePageCard
-          href={getHref(BroadcastPath.News, path)}
-          name={"News Broadcasts"}
-          customIcon={"speaker"}
-        />
-        {organisationConfig &&
-          organisationConfig.organisationConfig.enableMessaging &&
-          showMessaging && (
-            <HomePageCard
-              href={getHref(BroadcastPath.WhatsApp, path)}
-              name="WhatsApp"
-              customIconComponent={<WhatsAppIcon color="primary" style={{ fontSize: 100 }} />}
-            />
-          )}
+        <HomePageCard href={getHref(BroadcastPath.News, path)} name={"News Broadcasts"} customIcon={"speaker"} />
+        {organisationConfig && organisationConfig.organisationConfig.enableMessaging && showMessaging && (
+          <HomePageCard
+            href={getHref(BroadcastPath.WhatsApp, path)}
+            name="WhatsApp"
+            customIconComponent={<WhatsApp color="primary" style={{ fontSize: 100 }} />}
+          />
+        )}
       </Grid>
     </React.Fragment>
   );
@@ -48,31 +42,16 @@ const Broadcast = ({ match: { path }, organisationConfig, userInfo }) => {
   }, []);
   return (
     <React.Fragment>
-      <Route
-        exact
-        path={path}
-        component={WithProps({ path: path, organisationConfig, userInfo }, BroadcastPage)}
-      />
+      <Route exact path={path} component={WithProps({ path: path, organisationConfig, userInfo }, BroadcastPage)} />
       <Route exact path={getRoutePath(path, BroadcastPath.News)} component={News} />
       <Route exact path={`${path}/news/:id/details`} component={NewsDetails} />
+      <Route exact path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab?`)} component={WhatsAppHome} />
       <Route
         exact
-        path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab?`)}
-        component={WhatsAppHome}
-      />
-      <Route
-        exact
-        path={getRoutePath(
-          path,
-          `${BroadcastPath.WhatsApp}/${BroadcastPath.ContactGroup}/:contactGroupId`
-        )}
+        path={getRoutePath(path, `${BroadcastPath.WhatsApp}/${BroadcastPath.ContactGroup}/:contactGroupId`)}
         component={WhatsAppContactGroup}
       />
-      <Route
-        exact
-        path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab/:receiverId/messages`)}
-        component={WhatsAppHome}
-      />
+      <Route exact path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab/:receiverId/messages`)} component={WhatsAppHome} />
     </React.Fragment>
   );
 };

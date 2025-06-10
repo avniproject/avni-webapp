@@ -1,12 +1,11 @@
 import React from "react";
-import Link from "@material-ui/core/Link";
-import CloudDownload from "@material-ui/icons/CloudDownload";
+import { Link, IconButton } from "@mui/material";
+import { CloudDownload } from "@mui/icons-material";
 import http from "common/utils/httpClient";
-import IconButton from "@material-ui/core/IconButton";
 
 const FileDownloadButton = ({ url, filename, disabled, buttonColor = "primary" }) => {
   const DownloadButton = () => (
-    <IconButton disabled={disabled}>
+    <IconButton disabled={disabled} size="large">
       <CloudDownload color={buttonColor} />
     </IconButton>
   );

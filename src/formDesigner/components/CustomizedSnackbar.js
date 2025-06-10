@@ -1,20 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import ErrorIcon from "@material-ui/icons/Error";
-import CloseIcon from "@material-ui/icons/Close";
-import { green } from "@material-ui/core/colors";
-import IconButton from "@material-ui/core/IconButton";
-import Snackbar from "@material-ui/core/Snackbar";
-import SnackbarContent from "@material-ui/core/SnackbarContent";
-import { makeStyles } from "@material-ui/core/styles";
-import WarningIcon from "@material-ui/icons/Warning";
+import { CheckCircle, Error, Close, Warning } from "@mui/icons-material";
+import { makeStyles } from "@mui/styles";
+import { IconButton, Snackbar, SnackbarContent } from "@mui/material";
+import green from "@mui/material/colors/green";
 
 const variantIcon = {
-  success: CheckCircleIcon,
-  error: ErrorIcon,
-  warning: WarningIcon
+  success: CheckCircle,
+  error: Error,
+  warning: Warning
 };
 
 const useStyles1 = makeStyles(theme => ({
@@ -61,8 +56,8 @@ function MySnackbarContentWrapper({ className, message, onClose, variant = "succ
         </span>
       }
       action={[
-        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
-          <CloseIcon className={classes.icon} />
+        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose} size="large">
+          <Close className={classes.icon} />
         </IconButton>
       ]}
       {...other}

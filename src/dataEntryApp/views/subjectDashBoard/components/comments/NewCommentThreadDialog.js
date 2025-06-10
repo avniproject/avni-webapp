@@ -1,12 +1,6 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
+import { makeStyles } from "@mui/styles";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, useTheme, TextField } from "@mui/material";
 import { onNewThread } from "../../../../reducers/CommentReducer";
 import { useTranslation } from "react-i18next";
 
@@ -18,18 +12,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function NewCommentThreadDialog({
-  open,
-  setOpen,
-  newCommentText,
-  onCommentChange,
-  dispatch,
-  subjectUUID
-}) {
+export default function NewCommentThreadDialog({ open, setOpen, newCommentText, onCommentChange, dispatch, subjectUUID }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
 
   const onSave = () => {
     dispatch(onNewThread(newCommentText, subjectUUID));
@@ -38,12 +25,7 @@ export default function NewCommentThreadDialog({
 
   return (
     <div>
-      <Dialog
-        classes={{ paper: classes.dialogPosition }}
-        fullScreen={fullScreen}
-        open={open}
-        onClose={() => setOpen(false)}
-      >
+      <Dialog classes={{ paper: classes.dialogPosition }} fullScreen={fullScreen} open={open} onClose={() => setOpen(false)}>
         <DialogTitle id="new-comment-thread">{t("createNewCommentThread")}</DialogTitle>
         <DialogContent>
           <TextField

@@ -1,12 +1,9 @@
 import React, { useEffect } from "react";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@mui/styles";
+import { Box, Grid, Button, Snackbar, SnackbarContent, Typography } from "@mui/material";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
 import { DeleteData } from "./components/DeleteData";
-import { makeStyles, Snackbar, SnackbarContent } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
 import { OrgSettings } from "./components/OrgSettings";
 import OrganisationCategory from "./domain/OrganisationCategory";
 import OrganisationService from "../common/service/OrganisationService";

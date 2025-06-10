@@ -1,19 +1,9 @@
 import { get, isEmpty, map, sortBy } from "lodash";
-import { Box, makeStyles, Paper, Typography } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
-import {
-  addNewComment,
-  getCommentThreads,
-  onCommentEdit,
-  onThreadResolve,
-  selectCommentState
-} from "../../../../reducers/CommentReducer";
+import { makeStyles } from "@mui/styles";
+import { Box, Paper, Typography, TextField, Button, IconButton } from "@mui/material";
+import { addNewComment, getCommentThreads, onCommentEdit, onThreadResolve, selectCommentState } from "../../../../reducers/CommentReducer";
 import React, { useState } from "react";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import CommentIcon from "@material-ui/icons/Comment";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import { Comment, ChevronRight, ChevronLeft } from "@mui/icons-material";
 import { CommentCard } from "./CommentCard";
 import { useSelector } from "react-redux";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
@@ -67,14 +57,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const CommentListing = ({
-  comments,
-  dispatch,
-  newCommentText,
-  onCommentChange,
-  subjectUUID,
-  setOpen
-}) => {
+export const CommentListing = ({ comments, dispatch, newCommentText, onCommentChange, subjectUUID, setOpen }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const { activeThread } = useSelector(selectCommentState);
@@ -94,11 +77,11 @@ export const CommentListing = ({
       <div className={classes.drawerHeader}>
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
           <div className={classes.iconContainer}>
-            <IconButton onClick={() => dispatch(getCommentThreads(subjectUUID))}>
-              <ChevronLeftIcon style={{ color: "#fff" }} />
+            <IconButton onClick={() => dispatch(getCommentThreads(subjectUUID))} size="large">
+              <ChevronLeft style={{ color: "#fff" }} />
             </IconButton>
           </div>
-          <CommentIcon style={{ color: "#fff", marginRight: 5, marginLeft: 5 }} />
+          <Comment style={{ color: "#fff", marginRight: 5, marginLeft: 5 }} />
           <Typography style={{ color: "#fff" }}>{t("Comments")}</Typography>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
@@ -111,8 +94,8 @@ export const CommentListing = ({
             {t("resolveThread")}
           </Button>
           <div className={classes.iconContainer}>
-            <IconButton onClick={() => setOpen(false)}>
-              <ChevronRightIcon style={{ color: "#fff" }} />
+            <IconButton onClick={() => setOpen(false)} size="large">
+              <ChevronRight style={{ color: "#fff" }} />
             </IconButton>
           </div>
         </div>
@@ -120,19 +103,9 @@ export const CommentListing = ({
       <Paper elevation={0} className={classes.root}>
         {map(sortBy(comments, "createdDateTime"), (comment, index) => {
           return (
-            <Box
-              display="flex"
-              justifyContent={index === 0 ? "flex-start" : "center"}
-              alignItems="center"
-              mb={2}
-            >
+            <Box display="flex" justifyContent={index === 0 ? "flex-start" : "center"} alignItems="center" mb={2}>
               <Paper elevation={0} className={index === 0 ? classes.firstComment : classes.comment}>
-                <CommentCard
-                  displayMenu
-                  comment={comment}
-                  dispatch={dispatch}
-                  setCommentToEdit={setCommentToEdit}
-                />
+                <CommentCard displayMenu comment={comment} dispatch={dispatch} setCommentToEdit={setCommentToEdit} />
               </Paper>
             </Box>
           );

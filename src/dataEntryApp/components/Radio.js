@@ -1,12 +1,11 @@
 import React from "react";
-import { Checkbox } from "@material-ui/core";
-import RadioCheckedIcon from "@material-ui/icons/RadioButtonChecked";
-import RadioIcon from "@material-ui/icons/RadioButtonUnchecked";
+import { Checkbox } from "@mui/material";
+import { RadioButtonChecked, RadioButtonUnchecked } from "@mui/icons-material";
 
 export default props => (
   <Checkbox
     {...props}
-    icon={<RadioIcon fontSize="small" />}
-    checkedIcon={<RadioCheckedIcon fontSize="small" color={props.disabled ? "default" : "primary"} />}
+    icon={<RadioButtonUnchecked fontSize="small" />}
+    checkedIcon={<RadioButtonChecked fontSize="small" color={props.disabled ? "default" : "primary"} />}
   />
 );

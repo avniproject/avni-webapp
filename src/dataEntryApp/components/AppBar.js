@@ -1,19 +1,7 @@
 import React, { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MoreIcon from "@material-ui/icons/MoreVert";
-import Button from "@material-ui/core/Button";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import Grow from "@material-ui/core/Grow";
-import Paper from "@material-ui/core/Paper";
-import Popper from "@material-ui/core/Popper";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { makeStyles } from "@mui/styles";
+import { AppBar, Toolbar, IconButton, Typography, MenuItem, Menu, Button, ClickAwayListener, Grow, Paper, Popper } from "@mui/material";
+import { AccountCircle, MoreHoriz, ExpandMore, Home } from "@mui/icons-material";
 import NewMenu from "../views/dashboardNew/NewMenu";
 import { Link, withRouter } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
@@ -21,7 +9,6 @@ import { InternalLink, withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
-import HomeIcon from "@material-ui/icons/Home";
 import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
 
 const useStyles = makeStyles(theme => ({
@@ -174,11 +161,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
       onClose={handleMobileMenuClose}
     >
       <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-        >
+        <IconButton aria-label="account of current user" aria-controls="primary-search-account-menu" aria-haspopup="true" size="large">
           <AccountCircle />
         </IconButton>
         <p>Profile</p>
@@ -229,16 +212,9 @@ const PrimarySearchAppBar = ({ user, history }) => {
                   style={{ color: "#0e6eff" }}
                 >
                   {t("register")}
-                  <ExpandMoreIcon />
+                  <ExpandMore />
                 </Button>
-                <Popper
-                  style={{ zIndex: 100 }}
-                  open={open}
-                  anchorEl={anchorRef.current}
-                  role={undefined}
-                  transition
-                  disablePortal
-                >
+                <Popper style={{ zIndex: 100 }} open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
                   {({ TransitionProps, placement }) => (
                     <Grow
                       {...TransitionProps}
@@ -264,8 +240,8 @@ const PrimarySearchAppBar = ({ user, history }) => {
               {/* <p className={classes.userDesignation}>{user.roles[0]}</p> */}
             </Typography>
           </div>
-          <IconButton onClick={() => history.push("/home")} aria-label="Home">
-            <HomeIcon />
+          <IconButton onClick={() => history.push("/home")} aria-label="Home" size="large">
+            <Home />
           </IconButton>
           <div className={classes.sectionDesktop}>
             <IconButton
@@ -274,6 +250,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
               aria-controls={menuId}
               aria-haspopup="true"
               onClick={handleProfileMenuOpen}
+              size="large"
             >
               <AccountCircle />
             </IconButton>
@@ -284,8 +261,9 @@ const PrimarySearchAppBar = ({ user, history }) => {
               aria-controls={mobileMenuId}
               aria-haspopup="true"
               onClick={handleMobileMenuOpen}
+              size="large"
             >
-              <MoreIcon />
+              <MoreHoriz />
             </IconButton>
           </div>
         </Toolbar>

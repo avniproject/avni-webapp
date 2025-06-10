@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { Paper } from "@mui/material";
 import ProfileDetails from "./components/ProfileDetails";
 import SubjectDashboardTabs from "./components/SubjectDashboardTabs";
 import {

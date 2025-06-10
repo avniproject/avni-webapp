@@ -1,4 +1,4 @@
-import Typography from "@material-ui/core/Typography";
+import { Typography } from "@mui/material";
 import React from "react";
 import _ from "lodash";
 
@@ -10,7 +10,7 @@ export default function({ error, additionalStyle = {}, customErrorMessage }) {
   console.error(message);
   return (
     <Typography variant={"h5"} style={{ color: "red", ...additionalStyle }}>
-      {!!customErrorMessage ? customErrorMessage : "Unexpected error occurred."}
+      {customErrorMessage ? customErrorMessage : "Unexpected error occurred."}
     </Typography>
   );
 }

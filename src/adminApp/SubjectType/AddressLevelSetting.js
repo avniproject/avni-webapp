@@ -1,5 +1,5 @@
 import React from "react";
-import FormControl from "@material-ui/core/FormControl";
+import { FormControl } from "@mui/material";
 import Select from "react-select";
 import { filter, includes, map } from "lodash";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";

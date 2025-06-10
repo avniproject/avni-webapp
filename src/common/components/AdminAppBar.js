@@ -1,13 +1,12 @@
 import React from "react";
 import { AppBar } from "react-admin";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@mui/styles";
+import { Typography, IconButton } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { getUserInfo } from "../../rootApp/ducks";
 import { OrganisationOptions } from "./OrganisationOptions";
-import { IconButton } from "@material-ui/core";
-import HomeIcon from "@material-ui/icons/Home";
+import { Home } from "@mui/icons-material";
 import CurrentUserService from "../service/CurrentUserService";
 
 const styles = {
@@ -35,16 +34,7 @@ const useStyles = makeStyles(theme => ({
 
 const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
   const styles = useStyles();
-  const {
-    organisation,
-    authSession,
-    history,
-    staticContext,
-    dispatch,
-    organisations,
-    userInfo,
-    ...rest
-  } = props;
+  const { organisation, authSession, history, staticContext, dispatch, organisations, userInfo, ...rest } = props;
   return (
     <AppBar {...rest}>
       <Typography variant="h6" color="inherit" className={classes.title} id="react-admin-title" />
@@ -61,8 +51,8 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
         <b>{organisation.name} </b> ({authSession.username})
       </div>
       {CurrentUserService.hasOrganisationContext(userInfo) && (
-        <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit">
-          <HomeIcon />
+        <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit" size="large">
+          <Home />
         </IconButton>
       )}
     </AppBar>

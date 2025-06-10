@@ -1,6 +1,4 @@
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
-import TextField from "@material-ui/core/TextField";
+import { FormControl, FormLabel, TextField } from "@mui/material";
 import React from "react";
 import { useStyle } from "../util/FilterStyles";
 

@@ -1,4 +1,4 @@
-import FormLabel from "@material-ui/core/FormLabel";
+import { FormLabel } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import _, { isEmpty } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";

@@ -3,7 +3,7 @@ import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
 import Types, { SubjectTypeType } from "./Types";
-import MenuItem from "@material-ui/core/MenuItem";
+import { MenuItem } from "@mui/material";
 import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";

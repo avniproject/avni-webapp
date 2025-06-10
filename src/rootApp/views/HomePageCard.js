@@ -1,8 +1,4 @@
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import CardActionArea from "@material-ui/core/CardActionArea";
+import { Card, CardContent, Grid, Typography, CardActionArea } from "@mui/material";
 import React from "react";
 
 const classes = {
@@ -31,13 +27,7 @@ export const HomePageCard = ({ href, name, customIconComponent }) => (
         <Grid container direction="column" justifyContent="center" alignItems="center">
           <Grid item>{customIconComponent}</Grid>
           <Grid item>
-            <Typography
-              variant="h5"
-              component="h2"
-              align="center"
-              color="secondary"
-              style={{ marginTop: 5 }}
-            >
+            <Typography variant="h5" component="h2" align="center" color="secondary" style={{ marginTop: 5 }}>
               {name}
             </Typography>
           </Grid>

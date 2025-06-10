@@ -1,6 +1,5 @@
-import Grid from "@material-ui/core/Grid";
+import { Grid, Input } from "@mui/material";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
-import { Input } from "@material-ui/core";
 import { get } from "lodash";
 import React from "react";
 

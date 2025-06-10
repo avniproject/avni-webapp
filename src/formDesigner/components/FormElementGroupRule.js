@@ -1,5 +1,5 @@
 import React from "react";
-import Box from "@material-ui/core/Box";
+import { Box } from "@mui/material";
 import { sampleFormElementGroupRule } from "../common/SampleRule";
 import { confirmBeforeRuleEdit } from "../util";
 import { get } from "lodash";
@@ -27,10 +27,7 @@ export const FormElementGroupRule = ({
         rulesJson={groupData.declarativeRule}
         onValueChange={jsonData => updateFormElementGroupRuleJSON(index, jsonData)}
         updateJsCode={declarativeRuleHolder =>
-          updateFormElementGroupRule(
-            index,
-            declarativeRuleHolder.generateFormElementGroupRule(props.entityName)
-          )
+          updateFormElementGroupRule(index, declarativeRuleHolder.generateFormElementGroupRule(props.entityName))
         }
         jsCode={groupData.rule}
         error={get(groupData, "errorMessage.ruleError")}

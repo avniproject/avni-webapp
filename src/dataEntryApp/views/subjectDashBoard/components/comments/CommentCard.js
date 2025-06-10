@@ -1,20 +1,10 @@
-import { Grid, Typography } from "@material-ui/core";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import { Grid, Typography, Chip, IconButton, Menu, MenuItem, Fade } from "@mui/material";
+import { AccountCircle, MoreVert } from "@mui/icons-material";
 import React from "react";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";
 import { useSelector } from "react-redux";
-import {
-  onCommentDelete,
-  selectDisplayUsername,
-  setNewCommentText
-} from "../../../../reducers/CommentReducer";
-import Chip from "@material-ui/core/Chip";
+import { onCommentDelete, selectDisplayUsername, setNewCommentText } from "../../../../reducers/CommentReducer";
 import Colors from "../../../../Colors";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Fade from "@material-ui/core/Fade";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import { useTranslation } from "react-i18next";
 
@@ -61,16 +51,10 @@ export const CommentCard = ({ comment, displayMenu, status, dispatch, setComment
   const renderOptions = () => {
     return comment.displayUsername === myUsername ? (
       <div>
-        <IconButton onClick={event => setAnchorEl(event.currentTarget)}>
-          <MoreVertIcon />
+        <IconButton onClick={event => setAnchorEl(event.currentTarget)} size="large">
+          <MoreVert />
         </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          keepMounted
-          open={open}
-          onClose={() => setAnchorEl(null)}
-          TransitionComponent={Fade}
-        >
+        <Menu anchorEl={anchorEl} keepMounted open={open} onClose={() => setAnchorEl(null)} TransitionComponent={Fade}>
           {options.map(({ label, onPress }) => (
             <MenuItem key={label} onClick={onPress}>
               {label}
@@ -86,7 +70,7 @@ export const CommentCard = ({ comment, displayMenu, status, dispatch, setComment
   return (
     <Grid container direction={"row"}>
       <Grid item xs={1}>
-        <AccountCircleIcon />
+        <AccountCircle />
       </Grid>
       <Grid item xs={textBreakPoint} container direction={"column"} spacing={1}>
         <Grid item container direction={"column"}>

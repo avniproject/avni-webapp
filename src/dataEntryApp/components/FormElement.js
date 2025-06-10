@@ -1,3 +1,4 @@
+import { makeStyles } from "@mui/styles";
 import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import TextFormElement from "./TextFormElement";
@@ -15,7 +16,6 @@ import LocationFormElement from "./LocationFormElement";
 import LandingSubjectFormElement from "./LandingSubjectFormElement";
 import QuestionGroupFormElement from "./QuestionGroupFormElement";
 import { RepeatableQuestionGroupElement } from "./RepeatableQuestionGroupElement";
-import { makeStyles } from "@material-ui/core/styles";
 
 const div = () => <div />;
 

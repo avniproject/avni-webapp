@@ -1,11 +1,10 @@
-import Grid from "@material-ui/core/Grid";
+import { Grid, FormHelperText } from "@mui/material";
 import AsyncSelect from "react-select/async";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { subjectService } from "../services/SubjectService";
 import { debounce, find, first, isEmpty, xor } from "lodash";
-import { FormHelperText } from "@material-ui/core";
 import { Individual } from "avni-models";
 import { Concept } from "openchs-models";
 

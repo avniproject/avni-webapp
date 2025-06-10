@@ -1,9 +1,8 @@
 import React from "react";
-import DateFnsUtils from "@date-io/date-fns";
-import { KeyboardDatePicker, KeyboardDateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { DatePicker, DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { makeStyles } from "@mui/styles";
+import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 import moment from "moment/moment";
 import { find, get, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
@@ -32,28 +31,33 @@ export const DateTimeFormElement = ({ formElement: fe, value, update, validation
   );
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>
-      <KeyboardDateTimePicker
+      <DateTimePicker
         autoOk
         ampm={true}
         required={fe.mandatory}
         value={value}
-        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
-        error={validationResult && !validationResult.success}
         onChange={update}
         placeholder={dateTimeFormat}
         format={dateTimeFormat}
-        style={{ width: "30%" }}
-        KeyboardButtonProps={{
-          "aria-label": "change date",
-          color: "primary"
+        renderInput={params => (
+          <TextField
+            {...params}
+            error={validationResult && !validationResult.success}
+            helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+            style={{ width: "30%" }}
+          />
+        )}
+        slotProps={{
+          actionBar: { actions: ["clear"] },
+          openPickerButton: { "aria-label": "change date", color: "primary" }
         }}
       />
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 };
 
@@ -74,29 +78,34 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
   return durationValue ? (
     <DateAndDurationFormElement formElement={fe} value={value} update={update} validationResult={validationResult} />
   ) : (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>
-      <KeyboardDatePicker
+      <DatePicker
         id={fe.name.replaceAll(" ", "-")}
         required={fe.mandatory}
         value={value}
         onChange={update}
-        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
-        error={validationResult && !validationResult.success}
         placeholder={dateFormat}
         format={dateFormat}
-        style={{ width: "30%" }}
-        KeyboardButtonProps={{
-          "aria-label": "change date",
-          color: "primary"
-        }}
         disabled={!fe.editable}
-        InputProps={{ disableUnderline: !fe.editable }}
+        renderInput={params => (
+          <TextField
+            {...params}
+            error={validationResult && !validationResult.success}
+            helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+            style={{ width: "30%" }}
+            inputProps={{ ...params.inputProps, disableUnderline: !fe.editable }}
+          />
+        )}
+        slotProps={{
+          actionBar: { actions: ["clear"] },
+          openPickerButton: { "aria-label": "change date", color: "primary" }
+        }}
       />
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 };
 
@@ -139,29 +148,34 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update, val
   return (
     <FormControl style={{ width: "100%" }}>
       <FormLabel>{t(fe.name)}</FormLabel>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Typography variant="body1" gutterBottom className={classes.lableStyle}>
           {`${t("Select Date")}${fe.mandatory ? "*" : ""}`}
         </Typography>
-        <KeyboardDatePicker
+        <DatePicker
           id={fe.name.replaceAll(" ", "-")}
           autoOk
           required={fe.mandatory}
           value={date}
           onChange={dateValue => onDateChange(dateValue)}
-          helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
-          error={validationResult && !validationResult.success}
           placeholder={dateFormat}
           format={dateFormat}
-          style={{ width: "30%" }}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-            color: "primary"
-          }}
           disabled={!fe.editable}
-          InputProps={{ disableUnderline: !fe.editable }}
+          renderInput={params => (
+            <TextField
+              {...params}
+              error={validationResult && !validationResult.success}
+              helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+              style={{ width: "30%" }}
+              inputProps={{ ...params.inputProps, disableUnderline: !fe.editable }}
+            />
+          )}
+          slotProps={{
+            actionBar: { actions: ["clear"] },
+            openPickerButton: { "aria-label": "change date", color: "primary" }
+          }}
         />
-      </MuiPickersUtilsProvider>
+      </LocalizationProvider>
       <div>
         <FormLabel>OR</FormLabel>
       </div>

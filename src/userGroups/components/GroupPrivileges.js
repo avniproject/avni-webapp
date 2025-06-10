@@ -1,7 +1,5 @@
 import React from "react";
-import { Switch } from "@material-ui/core";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { Switch, FormGroup, FormControlLabel } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import MaterialTable from "material-table";

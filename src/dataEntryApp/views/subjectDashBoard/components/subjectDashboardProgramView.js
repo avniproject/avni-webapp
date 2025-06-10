@@ -1,12 +1,7 @@
 import React, { useEffect } from "react";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
-import { Paper } from "@material-ui/core";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@mui/styles";
+import { Grid, Paper, Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
@@ -105,7 +100,7 @@ const useStyles = makeStyles(theme => ({
   abnormalColor: {
     color: "#ff4f33"
   },
-  expandMoreIcon: {
+  expandMoreHoriz: {
     color: "#0e6eff"
   },
   visitButton: {
@@ -177,7 +172,7 @@ const ProgramView = ({
           scopeType={extensionScopeTypes.programEnrolment}
           configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
         />
-        <Grid item xs={4} container direction="row" justify="flex-start" alignItems="flex-start">
+        <Grid item xs={4} container direction="row" justifyContent="flex-start" alignItems="flex-start">
           <label className={classes.programLabel}>
             {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>
@@ -212,17 +207,17 @@ const ProgramView = ({
           handleUpdateComponent={handleUpdateComponent}
           setVoidConfirmation={setVoidConfirmation}
         />
-        <ExpansionPanel className={classes.expansionPanel}>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+        <Accordion className={classes.expansionPanel}>
+          <AccordionSummary
+            expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
             aria-controls="plannedVisitPanelbh-content"
             id="planned-program-encounter-details"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               {t("plannedVisits")}
             </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
+          </AccordionSummary>
+          <AccordionDetails style={{ padding: 0, display: "block" }}>
             <PlannedVisitsTable
               plannedVisits={plannedVisits || []}
               doBaseUrl={`/app/subject/programEncounter?encounterUuid`}
@@ -240,22 +235,22 @@ const ProgramView = ({
                 voidProgramEncounter(plannedEncounterUUIDToBeVoided);
               }}
             />
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-        <ExpansionPanel className={classes.expansionPanel} onChange={() => setIsExpanded(p => !p)}>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+          </AccordionDetails>
+        </Accordion>
+        <Accordion className={classes.expansionPanel} onChange={() => setIsExpanded(p => !p)}>
+          <AccordionSummary
+            expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
             aria-controls="completedVisitPanelbh-content"
             id="completed-program-encounter-details"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               {t("completedVisits")}
             </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
+          </AccordionSummary>
+          <AccordionDetails style={{ padding: 0, display: "block" }}>
             {isExpanded && <CompletedVisits entityUuid={programData.uuid} isForProgramEncounters={true} />}
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+          </AccordionDetails>
+        </Accordion>
       </Paper>
       <ConfirmDialog
         title={t("ProgramEnrolmentVoidAlertTitle")}

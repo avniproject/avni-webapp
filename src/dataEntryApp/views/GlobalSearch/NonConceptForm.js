@@ -1,10 +1,10 @@
 import React, { Fragment } from "react";
-import { Typography } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@mui/styles";
+import { TextField, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import { useTranslation } from "react-i18next";
-import { makeStyles } from "@material-ui/core/styles";
-import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { dateFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
@@ -35,22 +35,22 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
             searchFilterForm.type === "EncounterDate") &&
           searchFilterForm.widget === "Default" ? (
             <Grid item xs={12} key={index}>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                   {t(searchFilterForm.titleKey)}
                 </Typography>
-                <KeyboardDatePicker
+                <DatePicker
                   id="date-picker-dialog"
                   format={dateFormat}
                   value={selectedDate[`${searchFilterForm.type}`].minValue}
                   onChange={minDate => onDateChange(minDate, null, searchFilterForm.type)}
-                  style={{ width: "30%" }}
-                  KeyboardButtonProps={{
-                    "aria-label": "change date",
-                    color: "primary"
+                  renderInput={params => <TextField {...params} style={{ width: "30%" }} />}
+                  slotProps={{
+                    actionBar: { actions: ["clear"] },
+                    openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}
                 />
-              </MuiPickersUtilsProvider>
+              </LocalizationProvider>
             </Grid>
           ) : (searchFilterForm.type === "RegistrationDate" ||
               searchFilterForm.type === "EnrolmentDate" ||
@@ -58,11 +58,11 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
               searchFilterForm.type === "EncounterDate") &&
             searchFilterForm.widget === "Range" ? (
             <Grid item xs={12} key={index}>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                   {t(searchFilterForm.titleKey)}
                 </Typography>
-                <KeyboardDatePicker
+                <DatePicker
                   id="date-picker-dialog"
                   format={dateFormat}
                   placeholder="From"
@@ -70,39 +70,35 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                   onChange={minDate =>
                     onDateChange(
                       minDate,
-                      selectedDate[`${searchFilterForm.type}`].maxValue !== null
-                        ? selectedDate[`${searchFilterForm.type}`].maxValue
-                        : null,
+                      selectedDate[`${searchFilterForm.type}`].maxValue !== null ? selectedDate[`${searchFilterForm.type}`].maxValue : null,
                       searchFilterForm.type
                     )
                   }
-                  style={{ width: "14%", marginRight: "1%" }}
-                  KeyboardButtonProps={{
-                    "aria-label": "change date",
-                    color: "primary"
+                  renderInput={params => <TextField {...params} placeholder="From" style={{ width: "14%", marginRight: "1%" }} />}
+                  slotProps={{
+                    actionBar: { actions: ["clear"] },
+                    openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}
                 />
-                <KeyboardDatePicker
+                <DatePicker
                   id="date-picker-dialog"
                   format={dateFormat}
                   placeholder="To"
                   value={selectedDate[`${searchFilterForm.type}`].maxValue}
                   onChange={maxDate =>
                     onDateChange(
-                      selectedDate[`${searchFilterForm.type}`].minValue !== null
-                        ? selectedDate[`${searchFilterForm.type}`].minValue
-                        : null,
+                      selectedDate[`${searchFilterForm.type}`].minValue !== null ? selectedDate[`${searchFilterForm.type}`].minValue : null,
                       maxDate,
                       searchFilterForm.type
                     )
                   }
-                  style={{ width: "14%", marginLeft: "1%" }}
-                  KeyboardButtonProps={{
-                    "aria-label": "change date",
-                    color: "primary"
+                  renderInput={params => <TextField {...params} placeholder="To" style={{ width: "14%", marginLeft: "1%" }} />}
+                  slotProps={{
+                    actionBar: { actions: ["clear"] },
+                    openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}
                 />
-              </MuiPickersUtilsProvider>
+              </LocalizationProvider>
             </Grid>
           ) : (
             ""

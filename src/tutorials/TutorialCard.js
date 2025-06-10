@@ -1,10 +1,6 @@
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import CardActionArea from "@material-ui/core/CardActionArea";
+import { makeStyles } from "@mui/styles";
+import { Card, CardContent, Typography, CardActionArea, Grid } from "@mui/material";
 import React from "react";
-import { makeStyles } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles({
   root: {
@@ -18,11 +14,7 @@ const TutorialCard = ({ href, title, content, footer, iconComponent }) => {
 
   return (
     <Card className={classes.root}>
-      <CardActionArea
-        href={href}
-        target={"_blank"}
-        style={{ color: "inherit", textDecoration: "inherit" }}
-      >
+      <CardActionArea href={href} target={"_blank"} style={{ color: "inherit", textDecoration: "inherit" }}>
         <CardContent>
           <Grid container wrap={"wrap"}>
             <Grid item container direction={"row"} spacing={1}>

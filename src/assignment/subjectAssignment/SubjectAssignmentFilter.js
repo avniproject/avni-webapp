@@ -1,12 +1,10 @@
 import React, { Fragment } from "react";
-import { Paper, Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import { Paper, Typography, Button, Box } from "@mui/material";
 import { useStyle } from "../util/FilterStyles";
 import SelectFilter from "../components/SelectFilter";
 import { dateFilterFieldOptions } from "../util/DateFilterOptions";
 import TextFilter from "../components/TextFilter";
 import AddressLevelsByType from "../../common/components/AddressLevelsByType";
-import Box from "@material-ui/core/Box";
 import { labelValue } from "../util/util";
 import { get, isNil } from "lodash";
 import { getConceptSearchContract } from "../reducers/SubjectAssignmentReducer";
@@ -20,11 +18,7 @@ const renderSyncAttributeFilter = (concept, filterCriteria, filterName, onFilter
       <TextFilter
         isNumeric={isNumeric}
         label={concept.name}
-        value={
-          isNumeric
-            ? get(filterCriteria, `${filterName}.minValue`)
-            : get(filterCriteria, `${filterName}.value`)
-        }
+        value={isNumeric ? get(filterCriteria, `${filterName}.minValue`) : get(filterCriteria, `${filterName}.value`)}
         filterCriteria={filterCriteria}
         onFilterChange={value => {
           const contract = getConceptSearchContract(concept, value);
@@ -63,18 +57,8 @@ const SubjectAssignmentFilter = ({
           filterCriteria={filterCriteria}
           onFilterChange={onFilterChange}
         />
-        {renderSyncAttributeFilter(
-          syncAttribute1,
-          filterCriteria,
-          "syncAttribute1",
-          onFilterChange
-        )}
-        {renderSyncAttributeFilter(
-          syncAttribute2,
-          filterCriteria,
-          "syncAttribute2",
-          onFilterChange
-        )}
+        {renderSyncAttributeFilter(syncAttribute1, filterCriteria, "syncAttribute1", onFilterChange)}
+        {renderSyncAttributeFilter(syncAttribute2, filterCriteria, "syncAttribute2", onFilterChange)}
         <TextFilter
           label={"Subject Name"}
           value={filterCriteria.name}

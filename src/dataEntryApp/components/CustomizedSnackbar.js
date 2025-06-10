@@ -1,17 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import ErrorIcon from "@material-ui/icons/Error";
-import { red, green } from "@material-ui/core/colors";
-import Snackbar from "@material-ui/core/Snackbar";
-import SnackbarContent from "@material-ui/core/SnackbarContent";
-import { makeStyles } from "@material-ui/core/styles";
+import { CheckCircle, Error } from "@mui/icons-material";
+import red from "@mui/material/colors/red";
+import green from "@mui/material/colors/green";
+import { makeStyles } from "@mui/styles";
+import { Snackbar, SnackbarContent } from "@mui/material";
 import _ from "lodash";
 
 const variantIcon = {
-  success: CheckCircleIcon,
-  error: ErrorIcon
+  success: CheckCircle,
+  error: Error
 };
 
 const useStyles1 = makeStyles(theme => ({

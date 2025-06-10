@@ -1,8 +1,7 @@
-import React, {Fragment} from "react";
-import {makeStyles} from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import {Paper} from "@material-ui/core";
-import {useTranslation} from "react-i18next";
+import React, { Fragment } from "react";
+import { makeStyles } from "@mui/styles";
+import { Typography, Paper } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import MessagesView from "../../../../common/components/messages/MessagesView";
 
 const useStyles = makeStyles(theme => ({
@@ -20,28 +19,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardMessagesTab = ({
-                                       sentMessages,
-                                       isMsgsSentAvailable,
-                                       msgsYetToBeSent,
-                                       isMsgsNotYetSentAvailable
-                                     }) => {
-  const {t} = useTranslation();
+const SubjectDashboardMessagesTab = ({ sentMessages, isMsgsSentAvailable, msgsYetToBeSent, isMsgsNotYetSentAvailable }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
   return (
     <Fragment>
       {
         <Paper className={classes.root}>
-          <Typography
-            component={"span"}
-            style={{paddingBottom: 10, display: "block"}}
-            className={classes.expansionHeading}
-          >
+          <Typography component={"span"} style={{ paddingBottom: 10, display: "block" }} className={classes.expansionHeading}>
             {t("Messages")}
           </Typography>
-          <MessagesView isMsgsNotYetSentAvailable={isMsgsNotYetSentAvailable}
-                        isMsgsSentAvailable={isMsgsSentAvailable} msgsYetToBeSent={msgsYetToBeSent}
-                        sentMessages={sentMessages}/>
+          <MessagesView
+            isMsgsNotYetSentAvailable={isMsgsNotYetSentAvailable}
+            isMsgsSentAvailable={isMsgsSentAvailable}
+            msgsYetToBeSent={msgsYetToBeSent}
+            sentMessages={sentMessages}
+          />
         </Paper>
       }
     </Fragment>

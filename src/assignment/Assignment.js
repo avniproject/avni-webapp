@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
 import api from "./api/index";
 import { HomePageCard } from "../rootApp/views/HomePageCard";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import SubjectAssignment from "./subjectAssignment/SubjectAssignment";
 import TaskAssignment from "./taskAssignment/TaskAssignment";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
@@ -30,20 +30,8 @@ const AppBarContainer = props => (
 function renderOptions(canAssignSubject, canEditTask) {
   return (
     <AppBarContainer>
-      {canEditTask && (
-        <HomePageCard
-          href={"/#/assignment/task"}
-          name={"Task Assignment"}
-          customIcon={"assignment_turned_in"}
-        />
-      )}
-      {canAssignSubject && (
-        <HomePageCard
-          href={"/#/assignment/subject"}
-          name={"Subject Assignment"}
-          customIcon={"assignment_turned_in"}
-        />
-      )}
+      {canEditTask && <HomePageCard href={"/#/assignment/task"} name={"Task Assignment"} customIcon={"assignment_turned_in"} />}
+      {canAssignSubject && <HomePageCard href={"/#/assignment/subject"} name={"Subject Assignment"} customIcon={"assignment_turned_in"} />}
     </AppBarContainer>
   );
 }
@@ -52,9 +40,7 @@ function renderEmptyMessage() {
   return (
     <AppBarContainer>
       <Typography component={"div"} variant={"h6"} gutterBottom>
-        {
-          "No Task or subject assignment setup for the organisation. Or you do not have privilege to Edit task"
-        }
+        {"No Task or subject assignment setup for the organisation. Or you do not have privilege to Edit task"}
       </Typography>
     </AppBarContainer>
   );

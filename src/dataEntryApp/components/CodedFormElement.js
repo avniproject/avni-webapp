@@ -1,12 +1,10 @@
 import React from "react";
-import { FormControl, FormControlLabel, FormGroup, FormLabel, FormHelperText } from "@material-ui/core";
-import { xor, first, filter, find } from "lodash";
+import { FormControl, FormControlLabel, FormGroup, FormLabel, FormHelperText, Box } from "@mui/material";
+import { xor, first, filter, find, isEmpty } from "lodash";
 import Checkbox from "./Checkbox";
 import Radio from "./Radio";
-import Box from "@material-ui/core/Box";
 import { useTranslation } from "react-i18next";
 import Colors from "../Colors";
-import { isEmpty } from "lodash";
 
 export const CodedFormElement = ({
   name,

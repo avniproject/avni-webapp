@@ -1,8 +1,6 @@
 import React from "react";
-import { List, ListItem, ListItemText } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
+import { List, ListItem, ListItemText, Box, Grid } from "@mui/material";
 import { isEmpty, map, orderBy } from "lodash";
-import Grid from "@material-ui/core/Grid";
 import WebReportCard from "../../../common/model/WebReportCard";
 
 const ShowDashboardSectionCards = ({ cards }) => {

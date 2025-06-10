@@ -1,10 +1,7 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import { makeStyles } from "@mui/styles";
+import { Button, AppBar, Toolbar, Typography } from "@mui/material";
 import _, { isFunction } from "lodash";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import logo from "../formDesigner/styles/images/avniLogo.png";
 import Colors from "./Colors";
 
@@ -111,10 +108,7 @@ export function ErrorFallback({ error, onClose }) {
           <Button
             onClick={() =>
               navigator.clipboard.writeText(
-                `Message: ${_.get(error, "message")}\n\nStack: ${_.get(
-                  error,
-                  "stack"
-                )}\n\nSaga Stack: ${_.get(error, "sagaStack")}`
+                `Message: ${_.get(error, "message")}\n\nStack: ${_.get(error, "stack")}\n\nSaga Stack: ${_.get(error, "sagaStack")}`
               )
             }
             variant={"contained"}
@@ -125,9 +119,7 @@ export function ErrorFallback({ error, onClose }) {
         <div style={{ display: showError ? "block" : "none" }} className={classes.errorContainer}>
           <ErrorItem fieldName="Message" fieldValue={error.message} />
           <ErrorItem fieldName="Error Stack" fieldValue={error.stack} />
-          {error["sagaStack"] && (
-            <ErrorItem fieldName="Saga Stack" fieldValue={error["sagaStack"]} />
-          )}
+          {error["sagaStack"] && <ErrorItem fieldName="Saga Stack" fieldValue={error["sagaStack"]} />}
         </div>
         <div className={classes.buttonContainer}>
           <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={appHome}>

@@ -1,6 +1,6 @@
 import React from "react";
-import TextField from "@material-ui/core/TextField";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@mui/styles";
+import { TextField } from "@mui/material";
 
 const styles = {
   input: {

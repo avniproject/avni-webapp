@@ -3,8 +3,8 @@ import { get, isEmpty, isNil, map } from "lodash";
 import http from "common/utils/httpClient";
 import CommonSearch from "../../formDesigner/common/CommonSearch";
 import { Link } from "react-router-dom";
-import DeleteIcon from "@material-ui/icons/HighlightOff";
-import { IconButton } from "@material-ui/core";
+import { Delete } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 import Colors from "../../dataEntryApp/Colors";
 
 const getAllParents = (documentation, parents) => {
@@ -33,7 +33,7 @@ const DocumentationSearch = ({ value, onChange, isMulti, placeholder }) => {
       <div style={{ display: "flex", alignItems: "center" }}>
         <Link to={{ pathname: "/documentation", state: { documentationUUID: value.value } }}>{value.label}</Link>
         <IconButton size={"small"} onClick={() => onChange(null)}>
-          <DeleteIcon style={{ color: Colors.ValidationError }} />
+          <Delete style={{ color: Colors.ValidationError }} />
         </IconButton>
       </div>
     );

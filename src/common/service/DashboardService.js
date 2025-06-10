@@ -19,19 +19,19 @@ class DashboardService {
     if (isEmpty(sections)) {
       errors.push({ key: "EMPTY_SECTIONS", message: "Sections cannot be empty" });
     }
-    if (!!find(sections, ({ name }) => isEmpty(name))) {
+    if (find(sections, ({ name }) => isEmpty(name))) {
       errors.push({
         key: "EMPTY_SECTIONS",
         message: "Section name cannot be left blank. Please specify it for all sections."
       });
     }
-    if (!!find(sections, ({ viewType }) => isEmpty(viewType))) {
+    if (find(sections, ({ viewType }) => isEmpty(viewType))) {
       errors.push({
         key: "EMPTY_SECTIONS",
         message: "Section view type cannot be blank. Please select a view type"
       });
     }
-    if (!!find(sections, section => isEmpty(WebDashboardSection.getReportCards(section)))) {
+    if (find(sections, section => isEmpty(WebDashboardSection.getReportCards(section)))) {
       errors.push({ key: "EMPTY_SECTIONS", message: "Please add cards to the section." });
     }
     const incompatibleCardsAndFilters = WebDashboard.getIncompatibleCardsAndFilters(dashboard);

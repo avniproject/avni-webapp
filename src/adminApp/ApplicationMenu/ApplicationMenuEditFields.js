@@ -7,7 +7,7 @@ import { MenuItem } from "openchs-models";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { sampleLinkFunction } from "../../formDesigner/common/SampleRule";
 import ApplicationMenuReducer from "../Reducers/ApplicationMenuReducer";
-import { MenuItem as MaterialMenuItem } from "@material-ui/core";
+import { MenuItem as MaterialMenuItem } from "@mui/material";
 import { JSEditor } from "../../common/components/JSEditor";
 
 const ApplicationMenuEditFields = props => {

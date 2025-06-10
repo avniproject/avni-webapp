@@ -1,10 +1,8 @@
 import React from "react";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
+import { Box, Button, Typography } from "@mui/material";
 import httpClient from "../common/utils/httpClient";
 import IdpFactory from "./security/IdpFactory";
 import IdpDetails from "./security/IdpDetails";
-import { Typography } from "@material-ui/core";
 
 function IdpButton({ idpType, title, onIdpChosen }) {
   return (
@@ -26,8 +24,7 @@ function ChooseIdpView({ onIdpChosen }) {
   return (
     <Box style={{ backgroundColor: "darkgray" }}>
       <Typography variant={"h4"} style={{ color: "white", marginBottom: 300 }}>
-        There are multiple IDP types configured and you do not have an active session, please choose
-        the one is used by your organisation
+        There are multiple IDP types configured and you do not have an active session, please choose the one is used by your organisation
       </Typography>
       <Box
         style={{

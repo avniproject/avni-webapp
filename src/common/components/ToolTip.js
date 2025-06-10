@@ -1,8 +1,7 @@
 import React from "react";
-import HelpIcon from "@material-ui/icons/Help";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import { Help } from "@mui/icons-material";
+import { ClickAwayListener, Paper } from "@mui/material";
 import ReactMarkdown from "react-markdown";
-import Paper from "@material-ui/core/Paper";
 import _ from "lodash";
 import { LinkRenderer } from "./PlatformDocumentation";
 
@@ -51,7 +50,7 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
   const renderOnHover = () => {
     return (
       <div style={styles.root}>
-        <HelpIcon
+        <Help
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
           style={{ fontSize: "18px", color: "#6b6969", cursor: "pointer" }}
@@ -65,10 +64,7 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
     return (
       <ClickAwayListener onClickAway={handleClickAway}>
         <div style={styles.root}>
-          <HelpIcon
-            onClick={handleClick}
-            style={{ fontSize: "18px", color: "#a19d9d", cursor: "pointer" }}
-          />
+          <Help onClick={handleClick} style={{ fontSize: "18px", color: "#a19d9d", cursor: "pointer" }} />
           {open ? displayMarkup() : null}
         </div>
       </ClickAwayListener>

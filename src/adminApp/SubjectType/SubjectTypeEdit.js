@@ -1,13 +1,9 @@
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect, withRouter } from "react-router-dom";
-import Box from "@material-ui/core/Box";
+import { Box, Button, FormLabel, Grid } from "@mui/material";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
-import FormLabel from "@material-ui/core/FormLabel";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import Grid from "@material-ui/core/Grid";
-import DeleteIcon from "@material-ui/icons/Delete";
+import { Visibility, Delete } from "@mui/icons-material";
 import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
 import { validateGroup } from "./GroupHandlers";
@@ -156,7 +152,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
         <Title title={"Edit subject type "} />
         <Grid container item={12} style={{ justifyContent: "flex-end" }}>
           <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
-            <VisibilityIcon /> Show
+            <Visibility /> Show
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
@@ -220,7 +216,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
               }
               onClick={() => onDelete()}
             >
-              <DeleteIcon /> Delete
+              <Delete /> Delete
             </Button>
           </Grid>
         </Grid>

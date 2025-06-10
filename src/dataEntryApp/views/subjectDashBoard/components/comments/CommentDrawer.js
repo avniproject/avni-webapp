@@ -1,13 +1,8 @@
 import React, { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
+import { makeStyles } from "@mui/styles";
+import { Drawer } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getCommentThreads,
-  selectCommentState,
-  setLoadCommentListing,
-  setNewCommentText
-} from "../../../../reducers/CommentReducer";
+import { getCommentThreads, selectCommentState, setLoadCommentListing, setNewCommentText } from "../../../../reducers/CommentReducer";
 import { ThreadListing } from "./ThreadListing";
 import { CommentListing } from "./CommentListing";
 
@@ -26,9 +21,7 @@ const useStyles = makeStyles(theme => ({
 export const CommentDrawer = ({ open, setOpen, subjectUUID }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { commentThreads, comments, loadCommentListing, newCommentText } = useSelector(
-    selectCommentState
-  );
+  const { commentThreads, comments, loadCommentListing, newCommentText } = useSelector(selectCommentState);
 
   useEffect(() => {
     if (open) {

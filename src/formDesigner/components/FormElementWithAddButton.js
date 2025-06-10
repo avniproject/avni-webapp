@@ -1,8 +1,8 @@
 import React from "react";
 
-import { makeStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
+import { makeStyles } from "@mui/styles";
+import { Fab } from "@mui/material";
+import { Add } from "@mui/icons-material";
 import { isEqual } from "lodash";
 
 import FormElement from "./FormElement";
@@ -37,11 +37,7 @@ function FormElementWithAddButton(props) {
   };
 
   return (
-    <div
-      className={classes.parent}
-      onMouseEnter={hoverDisplayAddGroup}
-      onMouseLeave={hoverHideAddGroup}
-    >
+    <div className={classes.parent} onMouseEnter={hoverDisplayAddGroup} onMouseLeave={hoverHideAddGroup}>
       <FormElement {...props} />
       <div className={classes.absolute}>
         {hover && (
@@ -52,7 +48,7 @@ function FormElementWithAddButton(props) {
             size="small"
             disabled={props.disableFormElement}
           >
-            <AddIcon />
+            <Add />
           </Fab>
         )}
       </div>

@@ -1,7 +1,7 @@
 import http from "../../common/utils/httpClient";
-import Edit from "@material-ui/icons/Edit";
+import { Edit } from "@mui/icons-material";
 import React from "react";
-import Delete from "@material-ui/icons/DeleteOutline";
+import { Delete } from "@mui/icons-material";
 
 class EntityListUtil {
   static refreshTable = ref => ref.current && ref.current.onQueryChange();
@@ -15,9 +15,7 @@ class EntityListUtil {
       icon: () => <Delete />,
       tooltip: `Delete ${entityDisplayName.toLowerCase()}}`,
       onClick: (event, rowData) => {
-        const voidedMessage = `Do you really want to delete the ${entityDisplayName.toLowerCase()} ${
-          rowData[entityFieldName]
-        }?`;
+        const voidedMessage = `Do you really want to delete the ${entityDisplayName.toLowerCase()} ${rowData[entityFieldName]}?`;
         if (window.confirm(voidedMessage)) {
           http.delete(`/web/${resourceName}/${rowData.id}`).then(response => {
             if (response.status === 200) {

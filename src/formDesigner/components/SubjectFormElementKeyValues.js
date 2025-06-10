@@ -1,7 +1,6 @@
 import React, { Fragment } from "react";
-import Grid from "@material-ui/core/Grid";
+import { Grid, Checkbox, FormControlLabel } from "@mui/material";
 import { AvniFormControl } from "../../common/components/AvniFormControl";
-import { Checkbox, FormControlLabel } from "@material-ui/core";
 import { FormElement } from "avni-models";
 import Types from "../../adminApp/SubjectType/Types";
 

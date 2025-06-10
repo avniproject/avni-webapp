@@ -1,16 +1,10 @@
 import React, { useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
-import Button from "@material-ui/core/Button";
+import { Button, Select, MenuItem, InputLabel, FormControl, Chip } from "@mui/material";
 import { default as UUID } from "uuid";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import { isEqual } from "lodash";
+import { isEqual, cloneDeep } from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
-import Chip from "@material-ui/core/Chip";
-import { cloneDeep } from "lodash";
 
 function WorkFlowFormCreation(props) {
   let data,
@@ -18,9 +12,7 @@ function WorkFlowFormCreation(props) {
     existMapping = [],
     form = props.formMapping.filter(
       formMapping =>
-        formMapping.formType === props.formType &&
-        formMapping[props.customUUID] === props.rowDetails.uuid &&
-        formMapping.isVoided === false
+        formMapping.formType === props.formType && formMapping[props.customUUID] === props.rowDetails.uuid && formMapping.isVoided === false
     );
 
   const [error, setError] = useState("");
@@ -32,11 +24,7 @@ function WorkFlowFormCreation(props) {
   existMapping = props.formMapping.filter(l => l[props.customUUID] === props.rowDetails.uuid);
 
   showAvailableForms =
-    form.length === 0
-      ? props.formList.filter(
-          form => form.formType === props.formType && form.formName !== undefined
-        )
-      : [];
+    form.length === 0 ? props.formList.filter(form => form.formType === props.formType && form.formName !== undefined) : [];
 
   showAvailableForms.unshift({ formName: "createform", formUUID: "11111" });
 
@@ -57,9 +45,7 @@ function WorkFlowFormCreation(props) {
   const onRemoveFormAssociation = () => {
     let voidedFormAssociation = form[0];
     voidedFormAssociation["isVoided"] = true;
-    const formMappingLengthForEntity = props.formMapping.filter(
-      l => l[props.customUUID] === props.rowDetails.uuid
-    );
+    const formMappingLengthForEntity = props.formMapping.filter(l => l[props.customUUID] === props.rowDetails.uuid);
     if (formMappingLengthForEntity.length === 1) {
       voidedFormAssociation["formUUID"] = null;
     } else {
@@ -177,11 +163,7 @@ function WorkFlowFormCreation(props) {
           clickable
           color="primary"
           onClick={() => setRedirectToForm(true)}
-          label={
-            form[0].formName === undefined || form[0].formName === null
-              ? props.fillFormName
-              : form[0].formName
-          }
+          label={form[0].formName === undefined || form[0].formName === null ? props.fillFormName : form[0].formName}
           onDelete={() => onRemoveFormAssociation()}
         />
       )}
@@ -189,17 +171,11 @@ function WorkFlowFormCreation(props) {
         <>
           <FormControl>
             <InputLabel id="demo-simple-select-label">{props.placeholder}</InputLabel>
-            <Select
-              label="SelectForm"
-              onChange={event => handleFormName(event)}
-              style={{ width: "200px" }}
-            >
+            <Select label="SelectForm" onChange={event => handleFormName(event)} style={{ width: "200px" }}>
               {showAvailableForms.map((form, index) => {
                 return (
                   <MenuItem value={form} key={index}>
-                    {form.formName === "createform" && (
-                      <Button color="primary">Add new form</Button>
-                    )}
+                    {form.formName === "createform" && <Button color="primary">Add new form</Button>}
                     {form.formName !== "createform" && form.formName}
                   </MenuItem>
                 );
@@ -226,9 +202,7 @@ function WorkFlowFormCreation(props) {
       {props.notificationAlert && (
         <CustomizedSnackbar
           message={props.message}
-          getDefaultSnackbarStatus={notificationAlert =>
-            props.setNotificationAlert(notificationAlert)
-          }
+          getDefaultSnackbarStatus={notificationAlert => props.setNotificationAlert(notificationAlert)}
           defaultSnackbarStatus={props.notificationAlert}
         />
       )}

@@ -1,11 +1,6 @@
 import React, { Fragment, useState } from "react";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, Grid, Box } from "@mui/material";
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import PropTypes from "prop-types";
 import {
   sampleChecklistRule,
@@ -16,7 +11,6 @@ import {
   sampleVisitScheduleRule
 } from "../common/SampleRule";
 import { ConceptSelect } from "common/components/ConceptSelect";
-import Box from "@material-ui/core/Box";
 import RuleDesigner from "./DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../util";
 import { get } from "lodash";
@@ -27,19 +21,15 @@ const RulePanel = ({ title, details }) => {
   const onToggleExpand = () => setExpanded(!expanded);
 
   return (
-    <ExpansionPanel expanded={expanded}>
-      <ExpansionPanelSummary
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-        style={{ marginTop: "3%" }}
-      >
+    <Accordion expanded={expanded}>
+      <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" style={{ marginTop: "3%" }}>
         <Grid container item sm={12} onClick={onToggleExpand}>
-          <span>{expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
+          <span>{expanded ? <ExpandLess /> : <ExpandMore />}</span>
           <Typography>{title}</Typography>
         </Grid>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails style={{ display: "block" }}>{details}</ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionSummary>
+      <AccordionDetails style={{ display: "block" }}>{details}</AccordionDetails>
+    </Accordion>
   );
 };
 
@@ -98,10 +88,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         title={"Edit Form Rule"}
         details={
           <Fragment>
-            <JSEditor
-              value={form.editFormRule || sampleEditFormRule()}
-              onValueChange={x => props.onRuleUpdate("editFormRule", x)}
-            />
+            <JSEditor value={form.editFormRule || sampleEditFormRule()} onValueChange={x => props.onRuleUpdate("editFormRule", x)} />
           </Fragment>
         }
       />
@@ -111,10 +98,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         onValueChange={jsonData => onDeclarativeRuleUpdate("decisionDeclarativeRule", jsonData)}
         rulesJson={form.decisionDeclarativeRule}
         updateJsCode={declarativeRuleHolder =>
-          props.onRuleUpdate(
-            "decisionRule",
-            declarativeRuleHolder.generateDecisionRule(props.entityName)
-          )
+          props.onRuleUpdate("decisionRule", declarativeRuleHolder.generateDecisionRule(props.entityName))
         }
         jsCode={form.decisionRule}
         error={get(form, "ruleError.decisionRule")}
@@ -131,8 +115,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
       >
         <Box mt={5}>
           <Typography gutterBottom variant="body1" component="div">
-            Select decision concepts that you want as columns in the reporting views. You will have
-            to refresh the{" "}
+            Select decision concepts that you want as columns in the reporting views. You will have to refresh the{" "}
             <a href={"#/appdesigner/reportingViews"} target="_blank" rel="noopener noreferrer">
               reporting views
             </a>{" "}
@@ -151,10 +134,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         onValueChange={jsonData => onDeclarativeRuleUpdate("taskScheduleDeclarativeRule", jsonData)}
         rulesJson={form.taskScheduleDeclarativeRule}
         updateJsCode={declarativeRuleHolder =>
-          props.onRuleUpdate(
-            "taskScheduleRule",
-            declarativeRuleHolder.generateTaskScheduleRule(props.entityName)
-          )
+          props.onRuleUpdate("taskScheduleRule", declarativeRuleHolder.generateTaskScheduleRule(props.entityName))
         }
         jsCode={form.taskScheduleRule}
         error={get(form, "ruleError.taskScheduleRule")}
@@ -171,15 +151,10 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
       />
       <DeclarativeFormRule
         title={"Visit Schedule Rule"}
-        onValueChange={jsonData =>
-          onDeclarativeRuleUpdate("visitScheduleDeclarativeRule", jsonData)
-        }
+        onValueChange={jsonData => onDeclarativeRuleUpdate("visitScheduleDeclarativeRule", jsonData)}
         rulesJson={form.visitScheduleDeclarativeRule}
         updateJsCode={declarativeRuleHolder =>
-          props.onRuleUpdate(
-            "visitScheduleRule",
-            declarativeRuleHolder.generateVisitScheduleRule(props.entityName)
-          )
+          props.onRuleUpdate("visitScheduleRule", declarativeRuleHolder.generateVisitScheduleRule(props.entityName))
         }
         jsCode={form.visitScheduleRule}
         error={get(form, "ruleError.visitScheduleRule")}
@@ -199,10 +174,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         onValueChange={jsonData => onDeclarativeRuleUpdate("validationDeclarativeRule", jsonData)}
         rulesJson={form.validationDeclarativeRule}
         updateJsCode={declarativeRuleHolder =>
-          props.onRuleUpdate(
-            "validationRule",
-            declarativeRuleHolder.generateFormValidationRule(props.entityName)
-          )
+          props.onRuleUpdate("validationRule", declarativeRuleHolder.generateFormValidationRule(props.entityName))
         }
         jsCode={form.validationRule}
         error={get(form, "ruleError.validationRule")}

@@ -1,12 +1,9 @@
 import React, { useEffect, useReducer, useState } from "react";
-import EditIcon from "@material-ui/icons/Edit";
+import { Edit } from "@mui/icons-material";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
-import Box from "@material-ui/core/Box";
+import { Box, Button, FormLabel, Grid } from "@mui/material";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
-import FormLabel from "@material-ui/core/FormLabel";
-import Grid from "@material-ui/core/Grid";
 import _, { get, identity } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "../domain/formMapping";
@@ -72,7 +69,7 @@ const SubjectTypeShow = props => {
           {hasPrivilegeEdit && (
             <Grid container style={{ justifyContent: "flex-end" }}>
               <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
-                <EditIcon />
+                <Edit />
                 Edit
               </Button>
             </Grid>

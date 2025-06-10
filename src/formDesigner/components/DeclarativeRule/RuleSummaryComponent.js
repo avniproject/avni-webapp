@@ -1,7 +1,6 @@
 import React, { Fragment } from "react";
 import { isEmpty, map, zip, toUpper } from "lodash";
-import { Typography } from "@material-ui/core";
-import Chip from "@material-ui/core/Chip";
+import { Typography, Chip } from "@mui/material";
 
 const RuleSummaryComponent = ({ summary, ruleNumber, displayRuleCounts }) => {
   if (isEmpty(summary)) return null;

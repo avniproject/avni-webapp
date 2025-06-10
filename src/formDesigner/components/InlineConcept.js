@@ -1,9 +1,7 @@
 import React from "react";
 import NumericConcept from "./NumericConcept";
-import { Button, FormControl, Input } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import { Button, FormControl, Input, Grid, MenuItem, Box } from "@mui/material";
 import { CodedConceptAnswer } from "./CodedConcept";
-import MenuItem from "@material-ui/core/MenuItem";
 import { inlineConceptDataType } from "../common/constants";
 import { BackButton } from "./FormElementDetails";
 import { AvniSelect } from "../../common/components/AvniSelect";
@@ -11,7 +9,6 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";
 import { PhoneNumberConcept } from "./PhoneNumberConcept";
-import Box from "@material-ui/core/Box";
 import { filter, includes, replace, size } from "lodash";
 import http from "../../common/utils/httpClient";
 import { EncounterConcept } from "./EncounterConcept";

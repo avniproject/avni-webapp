@@ -1,9 +1,5 @@
 import React from "react";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "@material-ui/core/Radio";
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 
 export const LocationHierarchy = ({ hierarchy, setHierarchy, configuredHierarchies }) => {
   const handleChange = event => {

@@ -1,14 +1,10 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { get, includes, isArrayLikeObject, isEmpty, lowerCase, omit, startsWith } from "lodash";
-import { Box, Button, Grid, makeStyles, Typography } from "@material-ui/core";
-import FormControl from "@material-ui/core/FormControl";
+import { makeStyles } from "@mui/styles";
+import { Box, Button, Grid, Typography, FormControl } from "@mui/material";
 import http from "../../common/utils/httpClient";
-import AddAPhoto from "@material-ui/icons/AddAPhoto";
-import VideoCall from "@material-ui/icons/VideoCall";
-import Audiotrack from "@material-ui/icons/Audiotrack";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import { AddAPhoto, VideoCall, Audiotrack, CloudUpload, Close } from "@mui/icons-material";
 import CustomizedBackdrop from "./CustomizedBackdrop";
-import CloseIcon from "@material-ui/icons/Close";
 import ReactImageVideoLightbox from "react-image-video-lightbox";
 import { Concept } from "avni-models";
 import { FilePreview } from "./FilePreview";
@@ -33,7 +29,7 @@ const iconMap = {
   image: AddAPhoto,
   video: VideoCall,
   audio: Audiotrack,
-  file: CloudUploadIcon
+  file: CloudUpload
 };
 
 const getFileMimeType = formElement => {
@@ -115,13 +111,15 @@ function consolidateAlerts(etFiles, formElement, isFileDataType) {
   const alerts = [];
   etFiles.forEach(file => {
     if (!isValidType(formElement, file.type, isFileDataType)) {
-      alerts.push(`Selected files type not supported for file ${file.name}. Please choose proper files.\n`);
+      alerts.push(`Selected files type not supported for file ${file.name}. Please choose proper files.
+`);
     }
     if (isFileDataType && isBiggerFile(formElement, file.size)) {
       const oneMBInBytes = 1000000;
       alerts.push(
         `Selected file size ${file.size / oneMBInBytes} MB is more than the set max file size ${formElement.allowedMaxSize /
-          oneMBInBytes} MB for file ${file.name}.\n`
+          oneMBInBytes} MB for file ${file.name}.
+`
       );
     }
   });
@@ -235,7 +233,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
           mediaPreviewMap(preview[fileName], MissingSignedMediaMessage, fileName)[mediaType]
         )}
         <Button style={{ float: "left", color: "red" }} onClick={() => onDelete(fileName)}>
-          <CloseIcon />
+          <Close />
         </Button>
       </Box>
     );

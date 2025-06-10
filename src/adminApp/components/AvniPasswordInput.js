@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { TextInput } from "react-admin";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { IconButton, InputAdornment } from "@material-ui/core";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { IconButton, InputAdornment } from "@mui/material";
 
 export const AvniPasswordInput = ({ toolTipKey, initiallyVisible = false, ...props }) => {
   const [visible, setVisible] = useState(initiallyVisible);
@@ -19,7 +18,7 @@ export const AvniPasswordInput = ({ toolTipKey, initiallyVisible = false, ...pro
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={handleClick}>
+              <IconButton onClick={handleClick} size="large">
                 {visible ? <Visibility /> : <VisibilityOff />}
               </IconButton>
             </InputAdornment>

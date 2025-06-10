@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import httpClient from "../utils/httpClient";
 import NamedSelectableEntities from "../model/NamedSelectableEntities";
 import WebSubjectType from "../model/WebSubjectType";
-import DeleteIcon from "@material-ui/icons/Delete";
-import IconButton from "@material-ui/core/IconButton";
+import { Delete } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 
 export function SubjectTypeSelect({ isMulti, onChange, selectedSubjectTypes = [] }) {
   const [subjectTypes, setSubjectTypes] = useState(NamedSelectableEntities.createEmpty());
@@ -34,8 +34,8 @@ export function SubjectTypeSelect({ isMulti, onChange, selectedSubjectTypes = []
             maxMenuHeight={200}
           />
         </div>
-        <IconButton onClick={() => onChange([])}>
-          <DeleteIcon />
+        <IconButton onClick={() => onChange([])} size="large">
+          <Delete />
         </IconButton>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { PlatformDocumentation } from "./PlatformDocumentation";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 
 export const DocumentationContainer = ({ filename, ...props }) => {
   return (

@@ -1,34 +1,23 @@
-import { FormControl, FormLabel, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { FormControl, FormLabel, Typography, Grid, Button, Paper, Box, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import React from "react";
 import api from "../api";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getOperationalModules, getUploadStatuses } from "../reducers";
 import JobStatus from "../components/export/JobStatus";
-import Paper from "@material-ui/core/Paper";
 import _ from "lodash";
-import Box from "@material-ui/core/Box";
 import ReportTypes, { reportTypes } from "./ReportTypes";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "../../dataEntryApp/components/Radio";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import AddressLevelsByType from "../../common/components/AddressLevelsByType";
 import { reportSideBarOptions } from "../Common";
-import {
-  applicableOptions,
-  ExportReducer,
-  getRequestBody,
-  initialState
-} from "./reducer/ExportReducer";
+import { applicableOptions, ExportReducer, getRequestBody, initialState } from "./reducer/ExportReducer";
 import { RegistrationType } from "../components/export/RegistrationType";
 import { EnrolmentType } from "../components/export/EnrolmentType";
 import { EncounterType } from "../components/export/EncounterType";
 import { GroupSubjectType } from "../components/export/GroupSubjectType";
-import Checkbox from "@material-ui/core/Checkbox";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { useTranslation } from "react-i18next";
@@ -46,13 +35,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Export = ({
-  operationalModules,
-  getOperationalModules,
-  getUploadStatuses,
-  exportJobStatuses,
-  userInfo
-}) => {
+const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, exportJobStatuses, userInfo }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -75,10 +58,7 @@ const Export = ({
   } = exportRequest;
   const dispatch = (type, payload) => dispatchFun({ type, payload });
   const subjectTypes = _.get(operationalModules, "subjectTypes");
-  const { programOptions, encounterTypeOptions } = applicableOptions(
-    operationalModules,
-    exportRequest
-  );
+  const { programOptions, encounterTypeOptions } = applicableOptions(operationalModules, exportRequest);
 
   const onStartExportHandler = async () => {
     const [ok, error] = await api.startExportJob(getRequestBody(exportRequest));
@@ -133,13 +113,7 @@ const Export = ({
           {ReportTypes.names.map(type => (
             <FormControlLabel
               key={type.name}
-              control={
-                <Radio
-                  checked={type.name === reportType.name}
-                  onChange={() => onReportTypeChange(type)}
-                  value={type.name}
-                />
-              }
+              control={<Radio checked={type.name === reportType.name} onChange={() => onReportTypeChange(type)} value={type.name} />}
               label={type.name}
             />
           ))}
@@ -151,9 +125,7 @@ const Export = ({
   const commonProps = { dispatch, startDate, endDate, subjectType, subjectTypes, setEnableExport };
   const reportTypeMap = {
     [reportTypes.Registration]: <RegistrationType {...commonProps} />,
-    [reportTypes.Enrolment]: (
-      <EnrolmentType {...commonProps} programOptions={programOptions} program={program} />
-    ),
+    [reportTypes.Enrolment]: <EnrolmentType {...commonProps} programOptions={programOptions} program={program} />,
     [reportTypes.Encounter]: (
       <EncounterType
         {...commonProps}
@@ -173,11 +145,7 @@ const Export = ({
   const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 
   return (
-    <ScreenWithAppBar
-      appbarTitle={`Longitudinal Export`}
-      enableLeftMenuButton={true}
-      sidebarOptions={reportSideBarOptions}
-    >
+    <ScreenWithAppBar appbarTitle={`Longitudinal Export`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
       {operationalModules && (
         <div>
           <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
@@ -191,7 +159,7 @@ const Export = ({
                 </Grid>
               )}
               {allowReportGeneration && (
-                <Grid container direction="row" justify="flex-start" alignItems="baseline">
+                <Grid container direction="row" justifyContent="flex-start" alignItems="baseline">
                   <Button
                     variant="contained"
                     color="primary"
@@ -211,10 +179,7 @@ const Export = ({
           </Box>
           <Grid item>
             <Paper style={{ marginBottom: 100 }}>
-              <JobStatus
-                exportJobStatuses={exportJobStatuses}
-                operationalModules={operationalModules}
-              />
+              <JobStatus exportJobStatuses={exportJobStatuses} operationalModules={operationalModules} />
             </Paper>
           </Grid>
         </div>

@@ -1,9 +1,8 @@
-import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@mui/styles";
+import { Paper } from "@mui/material";
 import React from "react";
-import { makeStyles } from "@material-ui/core";
 import clsx from "clsx";
-import InfoIcon from "@material-ui/icons/Info";
-import WarningIcon from "@material-ui/icons/Warning";
+import { Info, Warning } from "@mui/icons-material";
 
 const useStyles = makeStyles(theme => ({
   outlinedwarning: {
@@ -30,7 +29,7 @@ export const AvniAlert = ({ severity, variant, ...props }) => {
   return (
     <Paper square elevation={0} className={clsx(classes.root, classes[`${variant}${severity}`])}>
       <div className={classes.icon}>
-        {severity === "warning" ? <WarningIcon /> : <InfoIcon />} {props.children}
+        {severity === "warning" ? <Warning /> : <Info />} {props.children}
       </div>
     </Paper>
   );

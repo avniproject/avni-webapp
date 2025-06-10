@@ -1,10 +1,8 @@
 import React from "react";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
+import { FormControl, FormLabel, Grid } from "@mui/material";
 import { debounce, deburr, get, isEqual, isFunction, map, noop, sortBy } from "lodash";
 import AsyncSelect from "react-select/async";
 import httpClient from "../utils/httpClient";
-import { Grid } from "@material-ui/core";
 import { locationNameRenderer } from "../../dataEntryApp/utils/LocationUtil";
 
 const AddressLevelsByType = ({ label, addressLevelsIds = [], setAddressLevelsIds, setError = noop, skipGrid = false }) => {

@@ -1,28 +1,30 @@
 import React, { useEffect } from "react";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@mui/styles";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Grid,
+  Typography,
+  DialogContent,
+  FormControl,
+  InputLabel,
+  NativeSelect,
+  Fab
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
-import DialogContent from "@material-ui/core/DialogContent";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
 import Modal from "./CommonModal";
 import { getPrograms } from "../../../reducers/programReducer";
 import { Link, withRouter } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 import { withParams } from "common/components/utils";
-import NativeSelect from "@material-ui/core/NativeSelect";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { CommentDrawer } from "./comments/CommentDrawer";
-import CommentIcon from "@material-ui/icons/Comment";
+import { Comment } from "@mui/icons-material";
 import { selectOrganisationConfig } from "../../../sagas/selectors";
 import { get, isNil, isEmpty } from "lodash";
-import Fab from "@material-ui/core/Fab";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
 import SubjectProfilePicture from "../../../components/SubjectProfilePicture";
@@ -248,7 +250,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                 aria-label="add"
                 onClick={() => setOpenComment(true)}
               >
-                <CommentIcon style={{ marginRight: 4 }} />
+                <Comment style={{ marginRight: 4 }} />
                 {t("comments")}
               </Fab>
             )}

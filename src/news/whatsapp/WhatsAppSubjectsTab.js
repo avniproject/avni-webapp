@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ChooseSubject from "./ChooseSubject";
-import { Box, LinearProgress } from "@material-ui/core";
+import { Box, LinearProgress, Button } from "@mui/material";
 import { useHistory, withRouter } from "react-router-dom";
 import _ from "lodash";
 import WhatsAppMessagesView from "./WhatsAppMessagesView";
-import Button from "@material-ui/core/Button";
 import ReceiverType from "./ReceiverType";
 import SubjectSearchService from "../../dataEntryApp/services/SubjectSearchService";
 import BroadcastPath from "../utils/BroadcastPath";
@@ -52,10 +51,7 @@ function WhatsAppSubjectsTab({ receiverId }) {
             receiverName={workflowState.subject.fullName}
           />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
-            <Button
-              onClick={() => history.push(`${BroadcastPath.SubjectFullPath}`)}
-              variant="outlined"
-            >
+            <Button onClick={() => history.push(`${BroadcastPath.SubjectFullPath}`)} variant="outlined">
               Back to search
             </Button>
           </Box>

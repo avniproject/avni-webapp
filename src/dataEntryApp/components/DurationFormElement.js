@@ -1,9 +1,9 @@
 import React, { Fragment, useState } from "react";
-import { TextField, FormLabel, FormControl } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { TextField, FormLabel, FormControl } from "@mui/material";
 import { isEmpty, find } from "lodash";
 import { CompositeDuration } from "avni-models";
 import { useTranslation } from "react-i18next";
-import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {

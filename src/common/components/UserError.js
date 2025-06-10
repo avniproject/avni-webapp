@@ -1,4 +1,4 @@
-import Typography from "@material-ui/core/Typography";
+import { Typography } from "@mui/material";
 import React from "react";
 import _ from "lodash";
 

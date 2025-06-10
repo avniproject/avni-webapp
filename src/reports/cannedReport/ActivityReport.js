@@ -1,6 +1,6 @@
 import React from "react";
 import ActivityCard from "../components/ActivityCard";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { connect } from "react-redux";
 import { getActivityReport } from "../reducers";
 import { withRouter } from "react-router-dom";
@@ -13,11 +13,7 @@ const ActivityReport = ({ activityReport, getActivityReport }) => {
 
   const renderActivityCard = (title, propertyName) => {
     return activityReport[propertyName].total > 0 ? (
-      <ActivityCard
-        title={title}
-        total={activityReport[propertyName].total}
-        data={activityReport[propertyName].data}
-      />
+      <ActivityCard title={title} total={activityReport[propertyName].total} data={activityReport[propertyName].data} />
     ) : (
       <div />
     );

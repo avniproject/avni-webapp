@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { withStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import { withStyles } from "@mui/styles";
+import { Typography, Accordion, AccordionDetails, Box, Input } from "@mui/material";
 import { AddressLevelSetting } from "./AddressLevelSetting";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { ValidFormat } from "./ValidFormat";
@@ -9,7 +9,6 @@ import { findFormUuidForSubjectType } from "../domain/formMapping";
 import http from "../../common/utils/httpClient";
 import { forEach, get, includes, isEmpty } from "lodash";
 import { OptionSelect } from "./OptionSelect";
-import { Accordion, AccordionDetails, Box, Input } from "@material-ui/core";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { SubjectTypeType } from "./Types";
 

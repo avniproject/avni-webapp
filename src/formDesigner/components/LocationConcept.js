@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
-import Grid from "@material-ui/core/Grid";
+import { Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelect } from "../../common/components/AvniSelect";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import _ from "lodash";
 import http from "../../common/utils/httpClient";
 
@@ -172,7 +170,7 @@ export const LocationConcept = props => {
   return (
     <>
       <br />
-      <Grid container justify="flex-start">
+      <Grid container justifyContent="flex-start">
         <Grid item={true} xs={12} sm={12}>
           <AvniSwitch
             onChange={updateIsWithinCatchment}

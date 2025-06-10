@@ -1,15 +1,12 @@
 import React, { Fragment } from "react";
 import ProgramView from "./subjectDashboardProgramView";
-import Typography from "@material-ui/core/Typography";
+import { Typography, Box } from "@mui/material";
 import PropTypes from "prop-types";
-import Box from "@material-ui/core/Box";
 
 function TabPanel(props) {
   const { children, value, index } = props;
 
-  return (
-    <Typography component={"span"}>{value === index && <Box p={3}>{children}</Box>}</Typography>
-  );
+  return <Typography component={"span"}>{value === index && <Box p={3}>{children}</Box>}</Typography>;
 }
 
 TabPanel.propTypes = {
@@ -18,13 +15,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-const programDetails = ({
-  tabPanelValue,
-  programData,
-  handleUpdateComponent,
-  subjectTypeUuid,
-  subjectVoided
-}) => {
+const programDetails = ({ tabPanelValue, programData, handleUpdateComponent, subjectTypeUuid, subjectVoided }) => {
   return (
     <div>
       {programData && programData.enrolments

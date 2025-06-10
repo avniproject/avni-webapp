@@ -1,13 +1,7 @@
-import Typography from "@material-ui/core/Typography";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableBody from "@material-ui/core/TableBody";
-import Radio from "@material-ui/core/Radio";
+import { makeStyles } from "@mui/styles";
+import { Typography, Table, TableHead, TableRow, TableCell, TableBody, Radio } from "@mui/material";
 import React from "react";
 import _ from "lodash";
-import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {

@@ -1,10 +1,4 @@
-import FormLabel from "@material-ui/core/FormLabel";
-import Box from "@material-ui/core/Box";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableBody from "@material-ui/core/TableBody";
+import { FormLabel, Box, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import React from "react";
 import { filter } from "lodash";
 
@@ -24,21 +18,16 @@ export const GroupRoleShow = ({ groupRoles }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {nonVoidedRoles.map(
-              (
-                { role, subjectMemberName, maximumNumberOfMembers, minimumNumberOfMembers },
-                index
-              ) => (
-                <TableRow key={index}>
-                  <TableCell component="th" scope="row">
-                    {role}
-                  </TableCell>
-                  <TableCell align="right">{subjectMemberName}</TableCell>
-                  <TableCell align="right">{maximumNumberOfMembers}</TableCell>
-                  <TableCell align="right">{minimumNumberOfMembers}</TableCell>
-                </TableRow>
-              )
-            )}
+            {nonVoidedRoles.map(({ role, subjectMemberName, maximumNumberOfMembers, minimumNumberOfMembers }, index) => (
+              <TableRow key={index}>
+                <TableCell component="th" scope="row">
+                  {role}
+                </TableCell>
+                <TableCell align="right">{subjectMemberName}</TableCell>
+                <TableCell align="right">{maximumNumberOfMembers}</TableCell>
+                <TableCell align="right">{minimumNumberOfMembers}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </Box>

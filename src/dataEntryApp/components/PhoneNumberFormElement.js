@@ -2,10 +2,9 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { find, get, isEmpty, isNaN, isNil, size } from "lodash";
 import { PhoneNumber } from "avni-models";
-import { makeStyles, TextField, Typography } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { TextField, Typography, FormControlLabel, Checkbox } from "@mui/material";
 import Colors from "../Colors";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {

@@ -1,7 +1,6 @@
 import React from "react";
 import { Condition } from "rules-config";
-import Grid from "@material-ui/core/Grid";
-import Chip from "@material-ui/core/Chip";
+import { Grid, Chip } from "@mui/material";
 import { toUpper } from "lodash";
 
 const ConditionConjunctionComponent = ({ onConjunctionChange, value, ...props }) => {
@@ -10,7 +9,7 @@ const ConditionConjunctionComponent = ({ onConjunctionChange, value, ...props })
   const orConjunction = Condition.conjunctions.Or;
 
   return (
-    <Grid container direction={"row"} justify={"center"}>
+    <Grid container direction={"row"} justifyContent={"center"}>
       <Grid item>
         <Chip
           style={{ marginTop: "15px", marginBottom: "15px" }}

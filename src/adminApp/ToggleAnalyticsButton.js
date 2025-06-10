@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { fetchEnd, fetchStart, showNotification, Button } from "react-admin";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { CircularProgress } from "@mui/material";
 
 import EtlJobService from "./service/etl/EtlJobService";
 import { Redirect } from "react-router-dom";
@@ -23,9 +23,7 @@ class ToggleAnalyticsButton extends Component {
 
     // As we want to know when the new post has been created in order to close the modal, we use the
     // dataProvider directly
-    const toggleFn = record.analyticsDataSyncActive
-      ? EtlJobService.disableJob
-      : EtlJobService.createOrEnableJob;
+    const toggleFn = record.analyticsDataSyncActive ? EtlJobService.disableJob : EtlJobService.createOrEnableJob;
     toggleFn(record.uuid, resource)
       .catch(error => {
         showNotification(error.message, "error");
@@ -48,12 +46,7 @@ class ToggleAnalyticsButton extends Component {
 
     return (
       <Fragment>
-        <Button
-          disabled={busy}
-          onClick={() => this.handleClick()}
-          label={`${label} - Analytics Data Sync`}
-          variant={"contained"}
-        >
+        <Button disabled={busy} onClick={() => this.handleClick()} label={`${label} - Analytics Data Sync`} variant={"contained"}>
           {busy && <CircularProgress />}
         </Button>
       </Fragment>
