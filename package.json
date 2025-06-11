@@ -103,42 +103,6 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "plugin:import/errors",
-      "plugin:import/warnings"
-    ],
-    "plugins": [
-      "import"
-    ],
-    "rules": {
-      "import/no-duplicates": "off",
-      "no-duplicate-imports": [
-        "error",
-        {
-          "includeExports": true
-        }
-      ],
-      "import/no-unresolved": "error",
-      "import/named": "error",
-      "import/default": "error",
-      "import/no-named-as-default": "warn",
-      "import/no-named-as-default-member": "warn"
-    },
-    "settings": {
-      "import/resolver": {
-        "node": {
-          "extensions": [
-            ".js",
-            ".jsx",
-            ".ts",
-            ".tsx"
-          ]
-        }
-      }
-    }
-  },
   "browserslist": [
     ">0.2%",
     "not dead",
