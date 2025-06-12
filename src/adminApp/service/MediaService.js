@@ -10,6 +10,9 @@ class MediaService {
   }
 
   static async getMultipleMedia(urls) {
+    if (!Array.isArray(urls) || urls.length === 0) {
+      return [];
+    }
     return (await http.post(`/media/signedUrls`, urls)).data;
   }
 }

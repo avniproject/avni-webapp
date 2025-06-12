@@ -279,8 +279,10 @@ function ConceptDetails({ userInfo, ...props }) {
       conceptRes.mediaUrl = mediaSignedUrl;
     }
 
-    if (conceptRes.dataType === "Coded") {
-      const conceptAnswersWithMedia = conceptRes.conceptAnswers.filter(ca => !_.isNil(ca.answerConcept.mediaUrl));
+    if (conceptRes.dataType === "Coded" && conceptRes.conceptAnswers) {
+      const conceptAnswersWithMedia = conceptRes.conceptAnswers.filter(
+        ca => ca && ca.answerConcept && ca.answerConcept.mediaUrl && !_.isNil(ca.answerConcept.mediaUrl)
+      );
       const mediaSignedUrls = await MediaService.getMultipleMedia(conceptAnswersWithMedia.map(ca => ca.answerConcept.mediaUrl));
       conceptRes.conceptAnswers = conceptRes.conceptAnswers.map((ca, index) => {
         if (!_.isNil(ca.answerConcept.mediaUrl)) {
