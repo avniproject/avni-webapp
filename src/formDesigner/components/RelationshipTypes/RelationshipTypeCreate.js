@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
 import _, { get, isEmpty } from "lodash";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { Redirect } from "react-router-dom";

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
 import { cloneDeep, get, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 
 import { CreateComponent } from "../../../common/components/CreateComponent";
@@ -10,7 +10,7 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-import Delete from "@material-ui/icons/DeleteOutline";
+import Delete from "@mui/icons-material/DeleteOutline";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType);

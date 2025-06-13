@@ -1,16 +1,16 @@
 import React, { Fragment } from "react";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import fetchData from "common/material-table/fetch";
 import http from "common/utils/httpClient";
 import moment from "moment";
-import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-import { Close, MenuOpen } from "@material-ui/icons";
+import { Close, MenuOpen } from "@mui/icons-material";
 
 const tableRef = React.createRef();
 const refreshTable = ref => ref.current && ref.current.onQueryChange({ page: 0 });
@@ -49,8 +49,7 @@ const columns = [
   {
     title: "Closed Date",
     field: "closedDateTime",
-    render: rowData =>
-      rowData.closedDateTime && moment(rowData.closedDateTime).format("YYYY-MM-DD HH:mm")
+    render: rowData => rowData.closedDateTime && moment(rowData.closedDateTime).format("YYYY-MM-DD HH:mm")
   },
   {
     title: "Individual UUID",

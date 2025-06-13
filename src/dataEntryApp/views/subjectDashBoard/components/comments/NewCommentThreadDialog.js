@@ -16,7 +16,7 @@ export default function NewCommentThreadDialog({ open, setOpen, newCommentText, 
   const { t } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("lg"));
+  const fullScreen = useMediaQuery(theme.breakpoints.down("xl"));
 
   const onSave = () => {
     dispatch(onNewThread(newCommentText, subjectUUID));

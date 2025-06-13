@@ -1,21 +1,21 @@
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
 import React from "react";
 import { JsonEditor } from "../components/JsonEditor";
 import _ from "lodash";
-import FormLabel from "@material-ui/core/FormLabel";
-import Button from "@material-ui/core/Button";
+import FormLabel from "@mui/material/FormLabel";
+import Button from "@mui/material/Button";
 import { ValidationError } from "../components/ValidationError";
 import api from "../api/ChecklistDetailsApi";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-import Save from "@material-ui/icons/Save";
+import Save from "@mui/icons-material/Save";
 
 const ChecklistDetails = ({ userInfo }) => {
   const [checklistDetails, setChecklistDetails] = React.useState();
@@ -40,17 +40,14 @@ const ChecklistDetails = ({ userInfo }) => {
     }
   };
 
-  const getValidationErrorByKey = errorKey =>
-    _.find(validationErrors, ({ key }) => key === errorKey);
+  const getValidationErrorByKey = errorKey => _.find(validationErrors, ({ key }) => key === errorKey);
 
   const onSave = async () => {
     if (!_.isEmpty(getValidationErrorByKey("JSON_ERROR"))) {
       return;
     }
     const [status, error] = await api.saveChecklistDetails(JSON.parse(checklistDetails));
-    !_.isNil(error)
-      ? setValidationErrors([{ key: "SERVER_ERROR", message: error }])
-      : setValidationErrors([]);
+    !_.isNil(error) ? setValidationErrors([{ key: "SERVER_ERROR", message: error }]) : setValidationErrors([]);
     if (status === 201) {
       setSuccess(true);
       setFoldCard(true);

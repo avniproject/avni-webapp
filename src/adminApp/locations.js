@@ -32,7 +32,7 @@ import { Title } from "./components/Title";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
-import { Paper } from "@material-ui/core";
+import { Paper } from "@mui/material";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
 const LocationFilter = props => (
@@ -42,12 +42,7 @@ const LocationFilter = props => (
 );
 
 export const LocationList = props => (
-  <List
-    {...props}
-    bulkActions={false}
-    sort={{ field: "title", order: "ASC" }}
-    filters={<LocationFilter />}
-  >
+  <List {...props} bulkActions={false} sort={{ field: "title", order: "ASC" }} filters={<LocationFilter />}>
     <Datagrid rowClick="show">
       <TextField label="Name" source="title" />
       <TextField label="Type" source="typeString" />
@@ -70,14 +65,7 @@ const ParentLocationReferenceField = props => {
   return isNil(props.record.parentId) ? (
     <None />
   ) : (
-    <ReferenceField
-      {...props}
-      label="Parent location"
-      source="parentId"
-      linkType="show"
-      reference="locations"
-      allowEmpty
-    >
+    <ReferenceField {...props} label="Parent location" source="parentId" linkType="show" reference="locations" allowEmpty>
       <FunctionField render={record => `${record.title} (${record.typeString})`} />
     </ReferenceField>
   );
@@ -94,12 +82,7 @@ export const LocationDetail = props => {
         <TextField source="title" label="Name" />
         <TextField source="typeString" label="Type" />
         <ParentLocationReferenceField label="Part of (location)" />
-        <ReferenceManyField
-          label="Contains locations"
-          reference="locations"
-          target="parentId"
-          sort={{ field: "title", order: "ASC" }}
-        >
+        <ReferenceManyField label="Contains locations" reference="locations" target="parentId" sort={{ field: "title", order: "ASC" }}>
           <SubLocationsGrid />
         </ReferenceManyField>
         <FunctionField label="Created" render={audit => createdAudit(audit)} />
@@ -113,11 +96,7 @@ export const LocationDetail = props => {
 const LocationCreateEditToolbar = ({ edit, ...props }) => {
   return (
     <Toolbar {...props}>
-      {edit ? (
-        <SaveButton {...props} />
-      ) : (
-        <LocationSaveButton submitOnEnter={false} redirect="show" />
-      )}
+      {edit ? <SaveButton {...props} /> : <LocationSaveButton submitOnEnter={false} redirect="show" />}
       {edit && <DeleteButton undoable={false} redirect="list" style={{ marginLeft: "auto" }} />}
     </Toolbar>
   );
@@ -155,19 +134,9 @@ export class LocationForm extends React.Component {
     const { edit = false, ...restProps } = this.props;
 
     return (
-      <SimpleForm
-        toolbar={<LocationCreateEditToolbar edit={edit} />}
-        {...restProps}
-        redirect="show"
-      >
+      <SimpleForm toolbar={<LocationCreateEditToolbar edit={edit} />} {...restProps} redirect="show">
         <div>
-          <AvniTextInput
-            label="Name of new location"
-            source="title"
-            validate={isRequired}
-            fullWidth
-            toolTipKey={"ADMIN_LOCATION_NAME"}
-          />
+          <AvniTextInput label="Name of new location" source="title" validate={isRequired} fullWidth toolTipKey={"ADMIN_LOCATION_NAME"} />
         </div>
         <AvniFormDataConsumer toolTipKey={"ADMIN_LOCATION_TYPE"}>
           {({ formData, dispatch, ...rest }) => (
@@ -188,12 +157,7 @@ export class LocationForm extends React.Component {
         </AvniFormDataConsumer>
         <FormDataConsumer>
           {({ formData, dispatch, ...rest }) => (
-            <DisabledInput
-              source="type"
-              defaultValue={getNameOfLocationType(formData.typeId)}
-              style={{ display: "none" }}
-              {...rest}
-            />
+            <DisabledInput source="type" defaultValue={getNameOfLocationType(formData.typeId)} style={{ display: "none" }} {...rest} />
           )}
         </FormDataConsumer>
         <FormDataConsumer>
@@ -214,9 +178,7 @@ export class LocationForm extends React.Component {
                   validate={isRequired}
                   {...rest}
                 >
-                  <SelectInput
-                    optionText={record => record && `${record.titleLineage} (${record.typeString})`}
-                  />
+                  <SelectInput optionText={record => record && `${record.titleLineage} (${record.typeString})`} />
                 </ReferenceInput>
               )
             );

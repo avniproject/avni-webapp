@@ -19,7 +19,7 @@ const styles = theme => ({
 export const CustomDialogTitle = withStyles(styles)(props => {
   const { children, classes, onClose, ...other } = props;
   return (
-    <DialogTitle disableTypography className={classes.root} {...other}>
+    <DialogTitle className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
       <IconButton aria-label="close" className={classes.closeButton} onClick={onClose} size="large">
         <Close />

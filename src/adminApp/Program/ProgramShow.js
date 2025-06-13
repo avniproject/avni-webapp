@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer, useState } from "react";
-import EditIcon from "@material-ui/icons/Edit";
+import EditIcon from "@mui/icons-material/Edit";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
-import FormLabel from "@material-ui/core/FormLabel";
-import Grid from "@material-ui/core/Grid";
+import Button from "@mui/material/Button";
+import FormLabel from "@mui/material/FormLabel";
+import Grid from "@mui/material/Grid";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { get, identity } from "lodash";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";

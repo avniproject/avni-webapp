@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer, useState } from "react";
 import _, { identity, isEmpty } from "lodash";
 import http from "common/utils/httpClient";
-import Paper from "@material-ui/core/Paper";
+import Paper from "@mui/material/Paper";
 import { Title } from "react-admin";
-import Box from "@material-ui/core/Box";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import Box from "@mui/material/Box";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
@@ -81,11 +81,11 @@ export const UserMessagingConfig = () => {
       <Title title="Message Rule for User Creation" />
       <Paper>
         <DocumentationContainer filename={"UserMessagingConfig.md"}>
-          <ExpansionPanel expanded={true}>
-            <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header">
+          <Accordion expanded={true}>
+            <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
               <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>User Messaging Config</span>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
               <div className="container" style={{ float: "left" }}>
                 {settings && settings.enableMessaging ? (
                   <MessageRules
@@ -106,7 +106,7 @@ export const UserMessagingConfig = () => {
                   </div>
                 )}
               </div>
-            </ExpansionPanelDetails>
+            </AccordionDetails>
 
             <SaveComponent
               name="Save"
@@ -114,7 +114,7 @@ export const UserMessagingConfig = () => {
               styleClass={{ marginLeft: "25px", marginBottom: "10px" }}
               disabledFlag={!enableMessagingConfigSave}
             />
-          </ExpansionPanel>
+          </Accordion>
         </DocumentationContainer>
       </Paper>
       {notificationAlert && (

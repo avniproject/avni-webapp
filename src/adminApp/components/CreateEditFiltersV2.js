@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FormControl } from "@material-ui/core";
+import { FormControl } from "@mui/material";
 import Select from "react-select";
 import _, { map, startCase, values } from "lodash";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";

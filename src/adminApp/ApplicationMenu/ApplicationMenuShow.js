@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import EditIcon from "@material-ui/icons/Edit";
+import EditIcon from "@mui/icons-material/Edit";
 import { Redirect } from "react-router-dom";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
 import _ from "lodash";
 import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import RuleDisplay from "../components/RuleDisplay";
@@ -19,9 +19,7 @@ const ApplicationMenuShow = props => {
   const [editAlert, setEditAlert] = useState(false);
 
   useEffect(() => {
-    ApplicationMenuService.getMenuItem(props.match.params.id).then(menuItem =>
-      setApplicationMenu(menuItem)
-    );
+    ApplicationMenuService.getMenuItem(props.match.params.id).then(menuItem => setApplicationMenu(menuItem));
   }, []);
 
   return (

@@ -1,24 +1,21 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { Redirect } from "react-router-dom";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import Grid from "@material-ui/core/Grid";
-import DeleteIcon from "@material-ui/icons/Delete";
+import Button from "@mui/material/Button";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import Grid from "@mui/material/Grid";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import ApplicationMenuReducer from "../Reducers/ApplicationMenuReducer";
 import EntityEditUtil from "../Util/EntityEditUtil";
 import ApplicationMenuEditFields from "./ApplicationMenuEditFields";
 import ApplicationMenuService from "../service/ApplicationMenuService";
 import _ from "lodash";
-import FormLabel from "@material-ui/core/FormLabel";
+import FormLabel from "@mui/material/FormLabel";
 
 const ApplicationMenuEdit = props => {
-  const [state, dispatch] = useReducer(
-    ApplicationMenuReducer.execute,
-    ApplicationMenuReducer.createApplicationMenuInitialState()
-  );
+  const [state, dispatch] = useReducer(ApplicationMenuReducer.execute, ApplicationMenuReducer.createApplicationMenuInitialState());
   const [redirectShow, setRedirectShow] = useState(false);
   const [deleteAlert, setDeleteAlert] = useState(false);
 
@@ -38,9 +35,7 @@ const ApplicationMenuEdit = props => {
       type: ApplicationMenuReducer.SUBMITTED,
       payload: {
         cb: () => {
-          const savePromise = isCreate()
-            ? ApplicationMenuService.post(state.menuItem)
-            : ApplicationMenuService.put(state.menuItem);
+          const savePromise = isCreate() ? ApplicationMenuService.post(state.menuItem) : ApplicationMenuService.put(state.menuItem);
           savePromise
             .then(response => {
               if (response.status === 200) {
@@ -65,11 +60,7 @@ const ApplicationMenuEdit = props => {
           </Grid>
         )}
         <div className="container" style={{ float: "left" }}>
-          <ApplicationMenuEditFields
-            menuItem={state.menuItem}
-            dispatch={dispatch}
-            errors={state.errors}
-          />
+          <ApplicationMenuEditFields menuItem={state.menuItem} dispatch={dispatch} errors={state.errors} />
           <p />
         </div>
         {state.errors.size > 0 &&
@@ -93,14 +84,7 @@ const ApplicationMenuEdit = props => {
                   float: "right",
                   color: "red"
                 }}
-                onClick={() =>
-                  EntityEditUtil.onDelete(
-                    "menuItem",
-                    props.match.params.id,
-                    "application menu",
-                    () => setDeleteAlert(true)
-                  )
-                }
+                onClick={() => EntityEditUtil.onDelete("menuItem", props.match.params.id, "application menu", () => setDeleteAlert(true))}
               >
                 <DeleteIcon /> Delete
               </Button>
@@ -109,13 +93,7 @@ const ApplicationMenuEdit = props => {
         </Grid>
       </Box>
       {(redirectShow || state.saved) && (
-        <Redirect
-          to={
-            isCreate()
-              ? "/appDesigner/applicationMenu"
-              : `/appDesigner/applicationMenu/${props.match.params.id}/show`
-          }
-        />
+        <Redirect to={isCreate() ? "/appDesigner/applicationMenu" : `/appDesigner/applicationMenu/${props.match.params.id}/show`} />
       )}
       {deleteAlert && <Redirect to="/appDesigner/applicationMenu" />}
     </>

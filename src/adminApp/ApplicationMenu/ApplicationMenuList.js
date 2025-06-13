@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import EntityListUtil from "../Util/EntityListUtil";

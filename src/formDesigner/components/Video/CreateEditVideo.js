@@ -1,17 +1,17 @@
 import React from "react";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { SaveComponent } from "../../../common/components/SaveComponent";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { isEmpty, isNil } from "lodash";
 import { AvniTextField } from "../../../common/components/AvniTextField";
 import { VideoReducer } from "./VideoReducer";
 import { Redirect } from "react-router-dom";
 import http from "../../../common/utils/httpClient";
-import Button from "@material-ui/core/Button";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import Grid from "@material-ui/core/Grid";
-import DeleteIcon from "@material-ui/icons/Delete";
+import Button from "@mui/material/Button";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import Grid from "@mui/material/Grid";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { createServerError, getErrorByKey } from "../../common/ErrorUtil";
 
 const initialState = { title: "", fileName: "", duration: "", description: "" };

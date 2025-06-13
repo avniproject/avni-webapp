@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { localeChoices } from "../common/constants";
 import _, { isEmpty } from "lodash";
 import http from "common/utils/httpClient";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import IconButton from "@material-ui/core/IconButton";
-import { Add, Edit } from "@material-ui/icons";
+import makeStyles from "@mui/styles/makeStyles";
+import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import { Add, Edit } from "@mui/icons-material";
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { connect } from "react-redux";
 import { getOperationalModules } from "../reports/reducers";
 import { withRouter } from "react-router-dom";
@@ -50,10 +50,7 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
 
   useEffect(() => {
     http.get("/organisationConfig").then(res => {
-      const settings = _.filter(
-        res.data["_embedded"].organisationConfig,
-        config => config.organisationId === organisation.id
-      );
+      const settings = _.filter(res.data["_embedded"].organisationConfig, config => config.organisationId === organisation.id);
       const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
       res.data["_embedded"].organisationConfig[0] &&
@@ -91,6 +88,7 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
           state: { settings, worklistUpdationRule }
         })
       }
+      size="large"
     >
       {_.isEmpty(settings.settings.languages) ? <Add /> : <Edit />}
     </IconButton>

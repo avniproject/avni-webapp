@@ -22,7 +22,7 @@ import {
   TextField,
   TextInput
 } from "react-admin";
-import CardActions from "@material-ui/core/CardActions";
+import CardActions from "@mui/material/CardActions";
 import { change } from "redux-form";
 import EnableDisableButton from "./components/EnableDisableButton";
 import {

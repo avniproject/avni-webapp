@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import http from "common/utils/httpClient";
 import _ from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
-import Edit from "@material-ui/icons/Edit";
-import Delete from "@material-ui/icons/DeleteOutline";
+import Edit from "@mui/icons-material/Edit";
+import Delete from "@mui/icons-material/DeleteOutline";
 
 const Concepts = ({ history, userInfo }) => {
   const columns = [
@@ -34,8 +34,7 @@ const Concepts = ({ history, userInfo }) => {
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + encodeURIComponent(query.search);
-      if (!_.isEmpty(query.orderBy.field))
-        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+      if (!_.isEmpty(query.orderBy.field)) apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
         .get(apiUrl)
         .then(response => response.data)

@@ -1,9 +1,9 @@
 import { Redirect, withRouter } from "react-router-dom";
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
 import _, { identity } from "lodash";
@@ -15,7 +15,7 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
-import Save from "@material-ui/icons/Save";
+import Save from "@mui/icons-material/Save";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const EncounterTypeCreate = ({ organisationConfig }) => {

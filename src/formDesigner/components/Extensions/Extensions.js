@@ -1,12 +1,12 @@
 import React from "react";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Title } from "react-admin";
 import { LabelFileName } from "./LabelFileName";
 import { checkForErrors, ExtensionReducer, extensionScopeTypes } from "./ExtensionReducer";
 import { get, isEmpty, map } from "lodash";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 import http from "common/utils/httpClient";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
 import { getErrorByKey } from "../../common/ErrorUtil";
@@ -72,9 +72,7 @@ const Extensions = ({ userInfo }) => {
         })
         .catch(error => {
           setLoad(false);
-          const errorMessage = `${get(error, "response.data") ||
-            get(error, "message") ||
-            "unknown error"}`;
+          const errorMessage = `${get(error, "response.data") || get(error, "message") || "unknown error"}`;
           alert(`Error while uploading the data\n ${errorMessage}`);
           console.error(error);
         });

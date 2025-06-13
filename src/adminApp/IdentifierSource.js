@@ -13,8 +13,8 @@ import {
   FormDataConsumer
 } from "react-admin";
 import React, { Fragment } from "react";
-import Chip from "@material-ui/core/Chip";
-import { FormLabel, Paper } from "@material-ui/core";
+import Chip from "@mui/material/Chip";
+import { FormLabel, Paper } from "@mui/material";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { cloneDeep, get } from "lodash";
 import { Redirect } from "react-router-dom";

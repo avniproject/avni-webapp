@@ -18,7 +18,7 @@ import { change } from "redux-form";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
-import { Paper } from "@material-ui/core";
+import { Paper } from "@mui/material";
 
 const Title = ({ record }) => {
   return (

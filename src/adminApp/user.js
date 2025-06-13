@@ -28,8 +28,8 @@ import {
   TextField,
   TextInput
 } from "react-admin";
-import Typography from "@material-ui/core/Typography";
-import CardActions from "@material-ui/core/CardActions";
+import Typography from "@mui/material/Typography";
+import CardActions from "@mui/material/CardActions";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
@@ -54,12 +54,12 @@ import { ToolTipContainer } from "../common/components/ToolTipContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniBooleanInput } from "./components/AvniBooleanInput";
 import { AvniRadioButtonGroupInput } from "../common/components/AvniRadioButtonGroupInput";
-import { Paper } from "@material-ui/core";
+import { Paper } from "@mui/material";
 import { activatedAudit, createdAudit, modifiedAudit } from "./components/AuditUtil";
 import ResetPasswordButton from "./components/ResetPasswordButton";
 import { AvniPasswordInput } from "./components/AvniPasswordInput";
-import Chip from "@material-ui/core/Chip";
-import Grid from "@material-ui/core/Grid";
+import Chip from "@mui/material/Chip";
+import Grid from "@mui/material/Grid";
 import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";

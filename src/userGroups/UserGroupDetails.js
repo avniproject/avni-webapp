@@ -1,9 +1,9 @@
 import { connect } from "react-redux";
 import React from "react";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import { withRouter } from "react-router-dom";
 import { TabView } from "./components/TabbedView";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 
 const queryString = require("query-string");
@@ -12,9 +12,7 @@ const UserGroupDetails = ({ ...props }) => {
   let parsedProps = queryString.parse(props.location.search);
   let groupName = parsedProps.groupName;
 
-  const [hasAllPrivileges, setHasAllPrivileges] = React.useState(
-    parsedProps.hasAllPrivileges === "true"
-  );
+  const [hasAllPrivileges, setHasAllPrivileges] = React.useState(parsedProps.hasAllPrivileges === "true");
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">

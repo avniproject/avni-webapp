@@ -2,20 +2,20 @@ import React, { Fragment, useEffect, useState } from "react";
 import _, { isEmpty } from "lodash";
 import http from "common/utils/httpClient";
 import MaterialTable from "material-table";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
+import makeStyles from "@mui/styles/makeStyles";
+import Paper from "@mui/material/Paper";
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { connect } from "react-redux";
 import { getOperationalModules } from "../reports/reducers";
 import { withRouter } from "react-router-dom";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import commonApi from "../common/service";
 import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
-import Edit from "@material-ui/icons/Edit";
-import Delete from "@material-ui/icons/DeleteOutline";
+import Edit from "@mui/icons-material/Edit";
+import Delete from "@mui/icons-material/DeleteOutline";
 import materialTableIcons from "../common/material-table/MaterialTableIcons";
 
 function hasEditPrivilege(userInfo) {

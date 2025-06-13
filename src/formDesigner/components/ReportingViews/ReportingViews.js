@@ -1,23 +1,22 @@
-// import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import http from "../../../common/utils/httpClient";
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
 import { cloneDeep, get } from "lodash";
 import { CreateComponent } from "../../../common/components/CreateComponent";
-import Modal from "@material-ui/core/Modal";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Modal from "@mui/material/Modal";
+import CircularProgress from "@mui/material/CircularProgress";
 import CustomizedSnackbar from "../CustomizedSnackbar";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
-import Chip from "@material-ui/core/Chip";
+import Chip from "@mui/material/Chip";
 import { JSEditor } from "../../../common/components/JSEditor";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MuiComponentHelper from "../../../common/utils/MuiComponentHelper";
-import Delete from "@material-ui/icons/DeleteOutline";
+import Delete from "@mui/icons-material/DeleteOutline";
 
 const useStyles = makeStyles(theme => ({
   progress: {

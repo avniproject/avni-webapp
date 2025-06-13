@@ -1,10 +1,10 @@
 import React, { useEffect, useReducer, useState } from "react";
 import http from "../../../common/utils/httpClient";
 import { Title } from "react-admin";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
-import { Box, Input } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import { Box, Input } from "@mui/material";
+import Button from "@mui/material/Button";
 import { ArchivalConfigReducer } from "./ArchivalConfigReducer";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import CustomizedSnackbar from "../CustomizedSnackbar";

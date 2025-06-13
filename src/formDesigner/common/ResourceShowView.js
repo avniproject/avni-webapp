@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import http from "../../common/utils/httpClient";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import EditIcon from "@material-ui/icons/Edit";
-import Box from "@material-ui/core/Box";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import EditIcon from "@mui/icons-material/Edit";
+import Box from "@mui/material/Box";
 import { Redirect } from "react-router-dom";
 import { Title } from "react-admin";
 import _ from "lodash";

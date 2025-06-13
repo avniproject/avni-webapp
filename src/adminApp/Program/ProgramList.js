@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
 import _, { get, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
@@ -11,8 +11,8 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { connect } from "react-redux";
-import Edit from "@material-ui/icons/Edit";
-import Delete from "@material-ui/icons/DeleteOutline";
+import Edit from "@mui/icons-material/Edit";
+import Delete from "@mui/icons-material/DeleteOutline";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditProgram);

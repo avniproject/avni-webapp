@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import NewFormModal from "../components/NewFormModal";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import FormListing from "../components/FormListing";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 
@@ -23,16 +23,10 @@ const Forms = props => {
           <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
             <CreateComponent onSubmit={openNewFormDialog} name="New Form" />
           </div>
-          <Dialog
-            fullWidth
-            maxWidth="xs"
-            onClose={closeNewFormDialog}
-            aria-labelledby="customized-dialog-title"
-            open={showNewFormDialog}
-          >
+          <Dialog fullWidth maxWidth="xs" onClose={closeNewFormDialog} aria-labelledby="customized-dialog-title" open={showNewFormDialog}>
             <DialogTitle id="customized-dialog-title" onClose={closeNewFormDialog}>
               New Form
-              <IconButton style={{ float: "right" }} onClick={closeNewFormDialog}>
+              <IconButton style={{ float: "right" }} onClick={closeNewFormDialog} size="large">
                 <CloseIcon />
               </IconButton>
             </DialogTitle>

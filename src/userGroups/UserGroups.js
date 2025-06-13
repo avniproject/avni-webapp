@@ -1,16 +1,16 @@
-// import { makeStyles } from "@mui/styles";
 import { connect } from "react-redux";
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { getGroups } from "./reducers";
-import { Input, InputLabel, makeStyles } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
+import { Input, InputLabel } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import Box from "@mui/material/Box";
 import { map } from "lodash";
 import { GroupCard } from "./components/GroupCard";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import Modal from "@material-ui/core/Modal";
-import FormControl from "@material-ui/core/FormControl";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import Modal from "@mui/material/Modal";
+import FormControl from "@mui/material/FormControl";
 import api from "./api";
 import { Title } from "react-admin";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
@@ -117,7 +117,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
             </Box>
           </div>
         </Modal>
-        <Grid container justify="flex-start">
+        <Grid container justifyContent="flex-start">
           <Button variant="contained" color="primary" onClick={() => setOpenModal(true)} style={{ marginLeft: 20 }}>
             {"Create Group"}
           </Button>

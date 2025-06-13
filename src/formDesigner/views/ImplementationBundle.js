@@ -1,12 +1,12 @@
 import React, { Fragment } from "react";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import http from "common/utils/httpClient";
 import fileDownload from "js-file-download";
 import { connect } from "react-redux";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { get } from "lodash";
 import ActivityIndicatorModal from "../../common/components/ActivityIndicatorModal";
@@ -16,10 +16,7 @@ import { Privilege } from "openchs-models";
 function ImplementationBundle({ organisation, userInfo }) {
   const [loading, setLoading] = React.useState(false);
   const [includeLocations, setIncludeLocations] = React.useState(false);
-  const hasDownloadPrivilege = UserInfo.hasPrivilege(
-    userInfo,
-    Privilege.PrivilegeType.DownloadBundle
-  );
+  const hasDownloadPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.DownloadBundle);
 
   function onDownloadHandler() {
     setLoading(true);
@@ -35,9 +32,7 @@ function ImplementationBundle({ organisation, userInfo }) {
       })
       .catch(error => {
         setLoading(false);
-        const errorMessage = `${get(error, "response.data") ||
-          get(error, "message") ||
-          "unknown error"}`;
+        const errorMessage = `${get(error, "response.data") || get(error, "message") || "unknown error"}`;
         alert(errorMessage);
       });
   }
@@ -51,11 +46,7 @@ function ImplementationBundle({ organisation, userInfo }) {
             <p>Download Implementation Bundle</p>
             <FormControlLabel
               control={
-                <Checkbox
-                  checked={includeLocations}
-                  onChange={event => setIncludeLocations(event.target.checked)}
-                  name="location"
-                />
+                <Checkbox checked={includeLocations} onChange={event => setIncludeLocations(event.target.checked)} name="location" />
               }
               label="Include Locations"
             />
