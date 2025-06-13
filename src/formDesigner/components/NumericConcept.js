@@ -44,7 +44,7 @@ export default function NumericConcept(props) {
               InputProps={{ inputProps: { min: 0 } }}
               defaultValue={props.numericDataTypeAttributes.highAbsolute}
             />
-            {props.numericDataTypeAttributes.error.absoluteValidation && (
+            {props.numericDataTypeAttributes.error && props.numericDataTypeAttributes.error.absoluteValidation && (
               <FormHelperText error>High absolute must be greater than low absolute and high normal</FormHelperText>
             )}
           </FormControl>
@@ -83,7 +83,7 @@ export default function NumericConcept(props) {
               InputProps={{ inputProps: { min: 0 } }}
               defaultValue={props.numericDataTypeAttributes.highNormal}
             />
-            {props.numericDataTypeAttributes.error.normalValidation && (
+            {props.numericDataTypeAttributes.error && props.numericDataTypeAttributes.error.normalValidation && (
               <FormHelperText error>High normal must be greater than low normal and low absolute</FormHelperText>
             )}
           </FormControl>
