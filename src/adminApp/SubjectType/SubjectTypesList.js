@@ -57,9 +57,9 @@ const SubjectTypesList = ({ history, userInfo }) => {
       let apiUrl = "/web/subjectType?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
+      if (!isEmpty(query.search)) apiUrl += `&name=${query.search}`;
       if (!isEmpty(query.orderBy.field)) {
-        const sortBy = query.orderBy.field === "type" ? "subjectTypeType" : query.orderBy.field;
-        apiUrl += `&sort=${sortBy},${query.orderDirection}`;
+        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       }
       http
         .get(apiUrl)
@@ -120,7 +120,9 @@ const SubjectTypesList = ({ history, userInfo }) => {
                 addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,
-                search: false,
+                search: true,
+                searchFieldAlignment: "left",
+                searchFieldStyle: { width: "100%", marginLeft: "-8%" },
                 rowStyle: rowData => ({
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
