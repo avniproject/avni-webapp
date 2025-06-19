@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useMemo, useCallback } from "react";
 import http from "common/utils/httpClient";
 import { get, isEmpty, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
@@ -19,95 +19,122 @@ function hasEditPrivilege(userInfo) {
 
 const SubjectTypesList = ({ history, userInfo }) => {
   const [formMappings, setFormMappings] = useState([]);
+  const [redirect, setRedirect] = useState(false);
+  const tableRef = useRef(null);
 
   useFormMappings(setFormMappings);
 
-  const columns = [
-    {
-      title: "Name",
-      defaultSort: "asc",
-      sorting: false,
-      render: rowData => <a href={`#/appDesigner/subjectType/${rowData.id}/show`}>{rowData.name}</a>
-    },
-    {
-      title: "Registration Form",
-      field: "formName",
-      sorting: false,
-      render: rowData => {
-        const formName = get(findRegistrationForm(formMappings, rowData), "formName");
-        return hasEditPrivilege(userInfo) ? (
-          <a href={`#/appdesigner/forms/${get(findRegistrationForm(formMappings, rowData), "formUUID")}`}>{formName}</a>
-        ) : (
-          formName
-        );
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Name",
+        enableSorting: false,
+        Cell: ({ row }) => <a href={`#/appDesigner/subjectType/${row.original.id}/show`}>{row.original.name}</a>
+      },
+      {
+        accessorKey: "formName",
+        header: "Registration Form",
+        enableSorting: false,
+        Cell: ({ row }) => {
+          const formName = get(findRegistrationForm(formMappings, row.original), "formName");
+          return hasEditPrivilege(userInfo) ? (
+            <a href={`#/appdesigner/forms/${get(findRegistrationForm(formMappings, row.original), "formUUID")}`}>{formName}</a>
+          ) : (
+            formName
+          );
+        }
+      },
+      {
+        accessorKey: "type",
+        header: "Type"
+      },
+      {
+        accessorKey: "organisationId",
+        header: "Organization Id",
+        type: "number",
+        muiTableBodyCellProps: { align: "right" }
       }
-    },
-    { title: "Type", field: "type" },
-    { title: "Organisation Id", field: "organisationId", type: "numeric" }
-  ];
+    ],
+    [formMappings, userInfo]
+  );
 
-  const [redirect, setRedirect] = useState(false);
-
-  const tableRef = React.createRef();
-  const refreshTable = ref => ref.current && ref.current.onQueryChange();
-
-  const fetchData = query =>
-    new Promise(resolve => {
-      let apiUrl = "/web/subjectType?";
-      apiUrl += "size=" + query.pageSize;
-      apiUrl += "&page=" + query.page;
-      if (!isEmpty(query.orderBy.field)) {
-        const sortBy = query.orderBy.field === "type" ? "subjectTypeType" : query.orderBy.field;
-        apiUrl += `&sort=${sortBy},${query.orderDirection}`;
-      }
-      http
-        .get(apiUrl)
-        .then(response => response.data)
-        .then(result => {
-          resolve({
-            data: result._embedded ? result._embedded.subjectType : [],
-            page: result.page.number,
-            totalCount: result.page.totalElements
+  const fetchData = useCallback(
+    ({ page, pageSize, orderBy, orderDirection }) =>
+      new Promise(resolve => {
+        const validSortFields = ["name", "type", "organisationId"];
+        let apiUrl = `/web/subjectType?size=${encodeURIComponent(pageSize)}&page=${encodeURIComponent(page)}`;
+        if (orderBy && validSortFields.includes(orderBy)) {
+          const sortBy = orderBy === "type" ? "subjectTypeType" : orderBy;
+          apiUrl += `&sort=${encodeURIComponent(sortBy)},${encodeURIComponent(orderDirection)}`;
+        }
+        http
+          .get(apiUrl)
+          .then(response => response.data)
+          .then(result => {
+            resolve({
+              data: result._embedded?.subjectType || [],
+              totalCount: result.page?.totalElements || 0
+            });
+          })
+          .catch(error => {
+            console.error("Failed to fetch subject types:", error);
+            resolve({
+              data: [],
+              totalCount: 0
+            });
           });
-        });
-    });
+      }),
+    []
+  );
 
-  const addNewConcept = () => {
-    setRedirect(true);
-  };
-
-  const editSubjectType = rowData => ({
-    icon: () => <Edit />,
-    tooltip: "Edit subject type",
-    onClick: event => history.push(`/appDesigner/subjectType/${rowData.id}`),
-    disabled: rowData.voided
-  });
-
-  const voidSubjectType = rowData => ({
-    icon: () => <Delete />,
-    tooltip: "Delete subject type",
-    onClick: (event, rowData) => {
-      const voidedMessage = "Do you really want to delete the subject type " + rowData.name + " ?";
-      if (window.confirm(voidedMessage)) {
-        http.delete("/web/subjectType/" + rowData.id).then(response => {
-          if (response.status === 200) {
-            refreshTable(tableRef);
-          }
-        });
-      }
-    }
-  });
+  const actions = useMemo(
+    () =>
+      hasEditPrivilege(userInfo)
+        ? [
+            {
+              icon: Edit,
+              tooltip: "Edit Subject Type",
+              onClick: (event, row) => {
+                history.push(`/appDesigner/subjectType/${row.original.id}`);
+              },
+              disabled: row => row.original.voided ?? false
+            },
+            {
+              icon: Delete,
+              tooltip: "Delete Subject Type",
+              onClick: (event, row) => {
+                const voidedMessage = `Do you really want to delete the subject type ${row.original.name}?`;
+                if (window.confirm(voidedMessage)) {
+                  http
+                    .delete(`/web/subjectType/${row.original.id}`)
+                    .then(response => {
+                      if (response.status === 200 && tableRef.current) {
+                        tableRef.current.refresh();
+                      }
+                    })
+                    .catch(error => {
+                      console.error("Failed to delete subject type:", error);
+                      alert("Failed to delete subject type. Please try again.");
+                    });
+                }
+              },
+              disabled: row => row.original.voided ?? false
+            }
+          ]
+        : [],
+    [history, userInfo, tableRef]
+  );
 
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Subject Types" />
-
-        <div className="container">
-          <div>
-            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={addNewConcept} name="New Subject type" />}
-            </div>
+        <Title title="Subject Types" color="primary" />
+        <Box className="container">
+          <Box component="div">
+            <Box sx={{ float: "right", right: "50px", marginTop: "15px" }}>
+              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={() => setRedirect(true)} name="New Subject Type" />}
+            </Box>
 
             <AvniMaterialTable
               title=""
@@ -116,21 +143,20 @@ const SubjectTypesList = ({ history, userInfo }) => {
               fetchData={fetchData}
               options={{
                 pageSize: 10,
-                addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,
                 search: false,
-                rowStyle: rowData => ({
-                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
+                rowStyle: ({ original }) => ({
+                  backgroundColor: original.active ? "#fff" : "#DBDBDB"
                 })
               }}
-              route={"/appdesigner/subjectType"}
-              actions={hasEditPrivilege(userInfo) && [editSubjectType, voidSubjectType]}
+              route="/appdesigner/subjectType"
+              actions={actions}
             />
-          </div>
-        </div>
+          </Box>
+        </Box>
       </Box>
-      {redirect && <Redirect to={"/appDesigner/subjectType/create"} />}
+      {redirect && <Redirect to="/appDesigner/subjectType/create" />}
     </>
   );
 };

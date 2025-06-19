@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import http from "common/utils/httpClient";
 import _, { get } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
-import { findProgramEncounterCancellationForm, findProgramEncounterForm } from "../domain/formMapping";
+import { findProgramEncounterForm, findProgramEncounterCancellationForm } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-import Edit from "@mui/icons-material/Edit";
-import Delete from "@mui/icons-material/DeleteOutline";
+import { Edit, Delete } from "@mui/icons-material";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditEncounterType);
@@ -23,9 +22,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
   const [formMappings, setFormMappings] = useState([]);
   const [subjectTypes, setSubjectTypes] = useState([]);
   const [program, setProgram] = useState([]);
-
-  const tableRef = React.createRef();
-  const refreshTable = ref => ref.current && ref.current.onQueryChange();
+  const tableRef = useRef(null);
 
   useEffect(() => {
     http.get("/web/operationalModules").then(response => {
@@ -37,96 +34,123 @@ const EncounterTypeList = ({ history, userInfo }) => {
     });
   }, []);
 
-  const columns = [
-    {
-      title: "Name",
-      defaultSort: "asc",
-      sorting: false,
-      render: rowData => <a href={`#/appDesigner/encounterType/${rowData.id}/show`}>{rowData.name}</a>
-    },
-    {
-      title: "Subject Type",
-      sorting: false,
-      render: rowData => (
-        <ShowSubjectType
-          rowDetails={rowData}
-          subjectType={subjectTypes}
-          formMapping={formMappings}
-          setMapping={setFormMappings}
-          entityUUID="encounterTypeUUID"
-        />
-      )
-    },
-    {
-      title: "Programs",
-      sorting: false,
-      render: rowData => <ShowPrograms rowDetails={rowData} program={program} formMapping={formMappings} setMapping={setFormMappings} />
-    },
-    {
-      title: "Encounter Form",
-      field: "formName",
-      sorting: false,
-      render: rowData => (
-        <a href={`#/appdesigner/forms/${get(findProgramEncounterForm(formMappings, rowData), "formUUID")}`}>
-          {get(findProgramEncounterForm(formMappings, rowData), "formName")}
-        </a>
-      )
-    },
-    {
-      title: "Cancellation Form",
-      field: "formName",
-      sorting: false,
-      render: rowData => (
-        <a href={`#/appdesigner/forms/${get(findProgramEncounterCancellationForm(formMappings, rowData), "formUUID")}`}>
-          {get(findProgramEncounterCancellationForm(formMappings, rowData), "formName")}
-        </a>
-      )
-    }
-  ];
-
-  const fetchData = query =>
-    new Promise(resolve => {
-      let apiUrl = "/web/encounterType?";
-      apiUrl += "size=" + query.pageSize;
-      apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.orderBy.field)) apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
-      http
-        .get(apiUrl)
-        .then(response => response.data)
-        .then(result => {
-          resolve({
-            data: result._embedded ? result._embedded.encounterType : [],
-            page: result.page.number,
-            totalCount: result.page.totalElements
-          });
-        });
-    });
-
-  const addNewConcept = () => {
-    setRedirect(true);
-  };
-
-  const editEncounterType = rowData => ({
-    icon: () => <Edit />,
-    tooltip: "Edit encounter type",
-    onClick: event => history.push(`/appDesigner/encounterType/${rowData.id}`),
-    disabled: rowData.voided
-  });
-
-  const voidEncounterType = rowData => ({
-    icon: () => <Delete />,
-    tooltip: "Delete encounter type",
-    onClick: (event, rowData) => {
-      const voidedMessage = "Do you really want to delete the encounter type " + rowData.name + " ?";
-      if (window.confirm(voidedMessage)) {
-        http.delete("/web/encounterType/" + rowData.id).then(response => {
-          if (response.status === 200) {
-            refreshTable(tableRef);
-          }
-        });
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Name",
+        enableSorting: true,
+        Cell: ({ row }) => <a href={`#/appDesigner/encounterType/${row.original.id}/show`}>{row.original.name}</a>
+      },
+      {
+        accessorKey: "subjectType",
+        header: "Subject Type",
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <ShowSubjectType
+            rowDetails={row.original}
+            subjectType={subjectTypes}
+            formMapping={formMappings}
+            setMapping={setFormMappings}
+            entityUUID="encounterTypeUUID"
+          />
+        )
+      },
+      {
+        accessorKey: "programs",
+        header: "Programs",
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <ShowPrograms rowDetails={row.original} program={program} formMapping={formMappings} setMapping={setFormMappings} />
+        )
+      },
+      {
+        accessorKey: "encounterForm",
+        header: "Encounter Form",
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <a href={`#/appdesigner/forms/${get(findProgramEncounterForm(formMappings, row.original), "formUUID")}`}>
+            {get(findProgramEncounterForm(formMappings, row.original), "formName")}
+          </a>
+        )
+      },
+      {
+        accessorKey: "cancellationForm",
+        header: "Cancellation Form",
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <a href={`#/appdesigner/forms/${get(findProgramEncounterCancellationForm(formMappings, row.original), "formUUID")}`}>
+            {get(findProgramEncounterCancellationForm(formMappings, row.original), "formName")}
+          </a>
+        )
       }
-    }
-  });
+    ],
+    [formMappings, subjectTypes, program]
+  );
+
+  const fetchData = useCallback(
+    ({ page, pageSize, orderBy, orderDirection }) =>
+      new Promise(resolve => {
+        const validSortFields = ["name"];
+        let apiUrl = `/web/encounterType?size=${encodeURIComponent(pageSize)}&page=${encodeURIComponent(page)}`;
+        if (orderBy && validSortFields.includes(orderBy)) {
+          apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(orderDirection)}`;
+        }
+        http
+          .get(apiUrl)
+          .then(response => response.data)
+          .then(result => {
+            resolve({
+              data: result._embedded?.encounterType || [],
+              totalCount: result.page?.totalElements || 0
+            });
+          })
+          .catch(error => {
+            console.error("Failed to fetch encounter types:", error);
+            resolve({
+              data: [],
+              totalCount: 0
+            });
+          });
+      }),
+    []
+  );
+
+  const actions = useMemo(
+    () =>
+      hasEditPrivilege(userInfo)
+        ? [
+            {
+              icon: Edit,
+              tooltip: "Edit encounter type",
+              onClick: (event, row) => history.push(`/appDesigner/encounterType/${row.original.id}`),
+              disabled: row => row.original.voided ?? false
+            },
+            {
+              icon: Delete,
+              tooltip: "Delete encounter type",
+              onClick: (event, row) => {
+                const voidedMessage = `Do you really want to delete the encounter type ${row.original.name}?`;
+                if (window.confirm(voidedMessage)) {
+                  http
+                    .delete(`/web/encounterType/${row.original.id}`)
+                    .then(response => {
+                      if (response.status === 200 && tableRef.current) {
+                        tableRef.current.refresh();
+                      }
+                    })
+                    .catch(error => {
+                      console.error("Failed to delete encounter type:", error);
+                      alert("Failed to delete encounter type. Please try again.");
+                    });
+                }
+              },
+              disabled: row => row.original.voided ?? false
+            }
+          ]
+        : [],
+    [history, userInfo]
+  );
 
   return (
     <>
@@ -136,7 +160,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={addNewConcept} name="New Encounter type" />}
+              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={() => setRedirect(true)} name="New Encounter type" />}
             </div>
             <AvniMaterialTable
               title=""
@@ -145,15 +169,14 @@ const EncounterTypeList = ({ history, userInfo }) => {
               fetchData={fetchData}
               options={{
                 pageSize: 10,
-                addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,
                 search: false,
-                rowStyle: rowData => ({
-                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
+                rowStyle: ({ original }) => ({
+                  backgroundColor: original.voided ? "#DBDBDB" : "#fff"
                 })
               }}
-              actions={hasEditPrivilege(userInfo) && [editEncounterType, voidEncounterType]}
+              actions={actions}
               route={"/appDesigner/encounterType"}
             />
           </div>

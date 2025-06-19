@@ -1,14 +1,13 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { Button, Grid, Typography } from "@mui/material";
+import { MaterialReactTable } from "material-react-table";
 import { useTranslation } from "react-i18next";
-import MaterialTable from "material-table";
 import { InternalLink } from "../../../common/components/utils";
 import { DeleteButton } from "../../components/DeleteButton";
 import moment from "moment";
 import { size } from "lodash";
 import { formatDate } from "../../../common/utils/General";
-import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
@@ -26,6 +25,8 @@ const useStyles = makeStyles(theme => ({
 const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [sorting, setSorting] = useState([{ id: "earliestVisitDateTime", desc: true }]);
 
   const getStatus = ({ maxVisitDateTime, earliestVisitDateTime }) => {
     if (moment().isAfter(moment(maxVisitDateTime))) {
@@ -37,49 +38,52 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
     return "";
   };
 
-  const columns = [
-    {
-      title: t("visitName"),
-      field: "name"
-    },
-    {
-      title: t("visitscheduledate"),
-      field: "earliestVisitDateTime",
-      type: "date",
-      render: row => formatDate(row.earliestVisitDateTime),
-      defaultSort: "desc"
-    },
-    {
-      title: t("status"),
-      render: row => <label className={classes.labelStyle}>{t(getStatus(row))}</label>
-    },
-    {
-      title: t("actions"),
-      field: "actions",
-      sorting: false,
-      render: row => (
-        <Grid container alignItems={"center"} alignContent={"center"} spacing={10}>
-          <Grid item>
-            <InternalLink to={`${doBaseUrl}=${row.uuid}`}>
-              <Button id={`do-visit-${row.uuid}`} color="primary">
-                {t("do")}
-              </Button>
-            </InternalLink>
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: t("visitName")
+      },
+      {
+        accessorKey: "earliestVisitDateTime",
+        header: t("visitscheduledate"),
+        Cell: ({ row }) => formatDate(row.original.earliestVisitDateTime)
+      },
+      {
+        id: "status",
+        header: t("status"),
+        enableSorting: false,
+        Cell: ({ row }) => <label className={classes.labelStyle}>{t(getStatus(row.original))}</label>
+      },
+      {
+        id: "actions",
+        header: t("actions"),
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <Grid container alignItems={"center"} alignContent={"center"} spacing={10}>
+            <Grid item>
+              <InternalLink to={`${doBaseUrl}=${row.original.uuid}`}>
+                <Button id={`do-visit-${row.original.uuid}`} color="primary">
+                  {t("do")}
+                </Button>
+              </InternalLink>
+            </Grid>
+            <Grid item>
+              <InternalLink to={`${cancelBaseURL}=${row.original.uuid}`}>
+                <Button id={`cancel-visit-${row.original.uuid}`} color="primary">
+                  {t("cancelVisit")}
+                </Button>
+              </InternalLink>
+            </Grid>
+            <Grid item>
+              <DeleteButton onDelete={() => onDelete(row.original)} />
+            </Grid>
           </Grid>
-          <Grid item>
-            <InternalLink to={`${cancelBaseURL}=${row.uuid}`}>
-              <Button id={`cancel-visit-${row.uuid}`} color="primary">
-                {t("cancelVisit")}
-              </Button>
-            </InternalLink>
-          </Grid>
-          <Grid item>
-            <DeleteButton onDelete={() => onDelete(row)} />
-          </Grid>
-        </Grid>
-      )
-    }
-  ];
+        )
+      }
+    ],
+    [t, classes, doBaseUrl, cancelBaseURL, onDelete]
+  );
 
   const renderNoVisitMessage = () => (
     <Typography variant="caption" gutterBottom className={classes.infoMsg}>
@@ -89,26 +93,30 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
   );
 
   const renderTable = () => (
-    <MaterialTable
-      icons={materialTableIcons}
-      title=""
+    <MaterialReactTable
       columns={columns}
-      data={plannedVisits}
-      options={{
-        pageSize: 10,
-        pageSizeOptions: [10, 15, 20],
-        addRowPosition: "first",
-        sorting: true,
-        headerStyle: {
-          zIndex: 1
-        },
-        debounceInterval: 500,
-        search: false,
-        toolbar: false
+      data={plannedVisits || []}
+      manualPagination
+      manualSorting
+      onPaginationChange={setPagination}
+      onSortingChange={setSorting}
+      rowCount={size(plannedVisits)}
+      state={{ pagination, sorting }}
+      enableGlobalFilter={false}
+      enableColumnFilters={false}
+      enableTopToolbar={false}
+      initialState={{
+        sorting: [{ id: "earliestVisitDateTime", desc: true }]
+      }}
+      muiTableProps={{
+        sx: {
+          tableLayout: "auto"
+        }
       }}
     />
   );
 
   return size(plannedVisits) === 0 ? renderNoVisitMessage() : renderTable();
 };
+
 export default PlannedVisitsTable;

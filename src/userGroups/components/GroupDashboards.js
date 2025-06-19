@@ -1,13 +1,12 @@
-import React from "react";
-import MaterialTable from "material-table";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { MaterialReactTable } from "material-react-table";
 import Select from "react-select";
-import { Button, Grid, Checkbox } from "@mui/material";
+import { Button, Grid, Checkbox, Typography, IconButton } from "@mui/material";
 import api from "../api";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAllDashboards, getGroupDashboards } from "../reducers";
 import { RadioButtonChecked, RadioButtonUnchecked, Delete } from "@mui/icons-material";
-import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 function handleResponse(response, groupId, refresh) {
   const [, error] = response;
@@ -18,16 +17,16 @@ function handleResponse(response, groupId, refresh) {
   }
 }
 
-function addDashboardToGroupHandler(event, otherDashboardsOptionsRef, dashboardsToBeAdded, groupId, refresh) {
+function addDashboardToGroupHandler(event, dashboardsToBeAdded, groupId, refresh, setDashboardsToBeAdded, setButtonDisabled) {
   event.preventDefault();
-  otherDashboardsOptionsRef.current.select.clearValue();
-
-  api
-    .addDashboardsToGroup(dashboardsToBeAdded.map(dashboard => ({ dashboardId: dashboard.value, groupId: +groupId })))
-    .then(response => handleResponse(response, groupId, refresh));
+  api.addDashboardsToGroup(dashboardsToBeAdded.map(dashboard => ({ dashboardId: dashboard.value, groupId: +groupId }))).then(response => {
+    handleResponse(response, groupId, refresh);
+    setDashboardsToBeAdded([]);
+    setButtonDisabled(true);
+  });
 }
 
-function removeDashboardFromGroupHandler(event, rowData, groupId, refresh) {
+function removeDashboardFromGroupHandler(rowData, groupId, refresh) {
   api.removeDashboardFromGroup(rowData.id).then(response => handleResponse(response, groupId, refresh));
 }
 
@@ -38,16 +37,18 @@ function setDashboardType({ id, groupId, dashboardId, primaryDashboard, secondar
 }
 
 const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDashboards, groupDashboards, ...props }) => {
-  const [otherDashboards, setOtherDashboards] = React.useState([]);
-  const [otherDashboardsOptions, setOtherDashboardsOptions] = React.useState([]);
-  const otherDashboardsOptionsRef = React.useRef(null);
+  const [otherDashboards, setOtherDashboards] = useState([]);
+  const [otherDashboardsOptions, setOtherDashboardsOptions] = useState([]);
+  const otherDashboardsOptionsRef = useRef(null);
+  const [dashboardsToBeAdded, setDashboardsToBeAdded] = useState([]);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     getGroupDashboards(groupId);
     getAllDashboards();
-  }, []);
+  }, [getGroupDashboards, getAllDashboards, groupId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (allDashboards && groupDashboards) {
       setOtherDashboards(
         allDashboards.filter(dashboard => !groupDashboards.map(groupDashboard => groupDashboard.dashboardId).includes(dashboard.id))
@@ -55,7 +56,7 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
     }
   }, [allDashboards, groupDashboards]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setOtherDashboardsOptions(
       otherDashboards.map(otherDashboard => ({
         label: otherDashboard.name,
@@ -64,44 +65,66 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
     );
   }, [otherDashboards]);
 
-  const [dashboardsToBeAdded, setDashboardsToBeAdded] = React.useState([]);
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
-
   const onDashboardListChange = event => {
-    setDashboardsToBeAdded(event);
-    event && event.length > 0 ? setButtonDisabled(false) : setButtonDisabled(true);
+    setDashboardsToBeAdded(event || []);
+    setButtonDisabled(!event || event.length === 0);
   };
 
-  const columns = [
-    { title: "Name", field: "dashboardName", searchable: true },
-    { title: "Description", field: "dashboardDescription", searchable: true },
-    {
-      title: "Is Primary",
-      field: "primaryDashboard",
-      searchable: false,
-      render: rowData => (
-        <Checkbox
-          icon={<RadioButtonUnchecked />}
-          checkedIcon={<RadioButtonChecked />}
-          checked={!!rowData.primaryDashboard}
-          onChange={e => setDashboardType({ ...rowData, primaryDashboard: e.target.checked }, getGroupDashboards)}
-        />
-      )
-    },
-    {
-      title: "Is Secondary",
-      field: "secondaryDashboard",
-      searchable: false,
-      render: rowData => (
-        <Checkbox
-          icon={<RadioButtonUnchecked />}
-          checkedIcon={<RadioButtonChecked />}
-          checked={!!rowData.secondaryDashboard}
-          onChange={e => setDashboardType({ ...rowData, secondaryDashboard: e.target.checked }, getGroupDashboards)}
-        />
-      )
-    }
-  ];
+  const selectStyles = {
+    menu: provided => ({
+      ...provided,
+      zIndex: 10000
+    })
+  };
+
+  const columns = useMemo(
+    () => [
+      { accessorKey: "dashboardName", header: "Name", enableGlobalFilter: true },
+      { accessorKey: "dashboardDescription", header: "Description", enableGlobalFilter: true },
+      {
+        accessorKey: "primaryDashboard",
+        header: "Is Primary",
+        enableGlobalFilter: false,
+        Cell: ({ row }) => (
+          <Checkbox
+            icon={<RadioButtonUnchecked />}
+            checkedIcon={<RadioButtonChecked />}
+            checked={!!row.original.primaryDashboard}
+            onChange={e => setDashboardType({ ...row.original, primaryDashboard: e.target.checked }, getGroupDashboards)}
+          />
+        )
+      },
+      {
+        accessorKey: "secondaryDashboard",
+        header: "Is Secondary",
+        enableGlobalFilter: false,
+        Cell: ({ row }) => (
+          <Checkbox
+            icon={<RadioButtonUnchecked />}
+            checkedIcon={<RadioButtonChecked />}
+            checked={!!row.original.secondaryDashboard}
+            onChange={e => setDashboardType({ ...row.original, secondaryDashboard: e.target.checked }, getGroupDashboards)}
+          />
+        )
+      },
+      {
+        id: "actions",
+        header: "Remove",
+        enableSorting: false,
+        enableGlobalFilter: false,
+        Cell: ({ row }) => (
+          <IconButton
+            title="Remove dashboard from group"
+            onClick={() => removeDashboardFromGroupHandler(row.original, groupId, getGroupDashboards)}
+          >
+            <Delete />
+          </IconButton>
+        )
+      }
+    ],
+    []
+  );
+
   return (
     <div style={{ width: "100%" }}>
       <h6>Select dashboards to add to this group:</h6>
@@ -114,6 +137,8 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
             isSearchable
             options={otherDashboardsOptions}
             onChange={onDashboardListChange}
+            value={dashboardsToBeAdded}
+            styles={selectStyles}
           />
         </Grid>
         <Grid item xs={2}>
@@ -121,10 +146,10 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
             variant="contained"
             color="primary"
             onClick={event =>
-              addDashboardToGroupHandler(event, otherDashboardsOptionsRef, dashboardsToBeAdded, groupId, getGroupDashboards)
+              addDashboardToGroupHandler(event, dashboardsToBeAdded, groupId, getGroupDashboards, setDashboardsToBeAdded, setButtonDisabled)
             }
             disabled={buttonDisabled}
-            fullWidth={true}
+            fullWidth
           >
             Add dashboard(s)
           </Button>
@@ -132,27 +157,18 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
       </Grid>
       <br />
       <hr />
-      <MaterialTable
-        icons={materialTableIcons}
-        title="Group Dashboards"
+      <Typography variant="h6">Group Dashboards</Typography>
+      <MaterialReactTable
         columns={columns}
-        data={groupDashboards}
-        actions={[
-          rowData => ({
-            icon: () => <Delete />,
-            tooltip: "Remove dashboard from group",
-            onClick: (event, rowData) => removeDashboardFromGroupHandler(event, rowData, groupId, getGroupDashboards)
-          })
-        ]}
-        options={{
-          actionsColumnIndex: 4,
-          searchFieldAlignment: "left",
-          headerStyle: {
-            zIndex: 0
-          }
+        data={groupDashboards || []}
+        enableGlobalFilter
+        enableColumnFilters={false}
+        enableSorting
+        muiTableHeadCellProps={{
+          sx: { zIndex: 0 }
         }}
-        localization={{
-          header: { actions: "Remove" }
+        muiSearchTextFieldProps={{
+          sx: { float: "left" }
         }}
       />
     </div>

@@ -4,18 +4,9 @@ import AppBar from "./AppBar";
 import clsx from "clsx";
 import { makeStyles } from "@mui/styles";
 import { Drawer, List, IconButton, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-
+import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 import _ from "lodash";
-
-/**
- * This is the typical view you will need for most of your screens.
- * It gives your basic screen with an app bar and a white background for your content.
- *
- * @param props
- * @returns {*}
- * @constructor
- */
 
 const drawerWidth = 240;
 
@@ -87,6 +78,8 @@ const applyListIcon = (open, icon, listTextName) => {
 };
 
 const applyLeftMenu = (classes, open, handleDrawer, selectedIndex, handleListItemClick, children, sidebarOptions) => {
+  const history = useHistory();
+
   return (
     <>
       <Drawer
@@ -108,14 +101,16 @@ const applyLeftMenu = (classes, open, handleDrawer, selectedIndex, handleListIte
         </div>
         <List>
           {_.map(sidebarOptions, (option, index) => {
+            const path = option.href.startsWith("#") ? option.href.replace("#", "") : option.href;
             return (
               <ListItem
                 button
-                component="a"
-                href={option.href}
                 key={option.name}
                 selected={selectedIndex === index}
-                onClick={event => handleListItemClick(event, index)}
+                onClick={() => {
+                  handleListItemClick(null, index);
+                  history.push(`${path}?page=0`);
+                }}
               >
                 {applyListIcon(open, <option.Icon />, option.name)}
               </ListItem>
@@ -138,9 +133,9 @@ const getSelectedListItem = sidebarOptions => {
   return _.isEmpty(sidebarOptions)
     ? 0
     : _.map(sidebarOptions, (option, i) => ({
-        selected: window.location.href.includes(option.href),
+        selected: window.location.href.includes(option.href.replace("#", "")),
         index: i
-      })).filter(option => option.selected)[0].index;
+      })).filter(option => option.selected)[0]?.index || 0;
 };
 
 const ScreenWithAppBar = props => {

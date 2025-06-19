@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { cloneDeep, isEqual } from "lodash";
+import React, { useState, useRef, useMemo, useCallback } from "react";
+import { isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
-import Box from "@mui/material/Box";
+import { Box } from "@mui/material";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import { Title } from "react-admin";
 import http from "common/utils/httpClient";
@@ -9,98 +9,135 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { connect } from "react-redux";
-import Edit from "@mui/icons-material/Edit";
-import Delete from "@mui/icons-material/DeleteOutline";
+import { Edit, Delete } from "@mui/icons-material";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditVideo);
 }
 
-const columns = [
-  {
-    title: "Name",
-    render: rowData => !rowData.voided && <a href={`#/appDesigner/video/${rowData.id}/show`}>{rowData.title}</a>
-  },
-  {
-    title: "Description",
-    render: rowData => rowData.description
-  },
-  {
-    title: "Filename",
-    render: rowData => rowData.fileName
-  },
-  {
-    title: "Duration",
-    render: rowData => rowData.duration
-  }
-];
-
 const VideoList = ({ history, userInfo }) => {
   const [redirect, setRedirect] = useState(false);
-  const [result, setResult] = useState([]);
-  const tableRef = React.createRef();
+  const tableRef = useRef(null);
 
-  useEffect(() => {
-    http.get("/web/video").then(response => {
-      const result = response.data.filter(({ voided }) => !voided);
-      setResult(result);
-    });
-  }, []);
-
-  const editVideo = rowData => ({
-    icon: () => <Edit />,
-    tooltip: "Edit video details",
-    onClick: event => history.push(`/video/${rowData.id}`)
-  });
-
-  const voidVideo = rowData => ({
-    icon: () => <Delete />,
-    tooltip: "Delete Video",
-    onClick: (event, rowData) => {
-      const voidedMessage = "Do you really want to delete video " + rowData.title + " ?";
-      if (window.confirm(voidedMessage)) {
-        http.delete("/web/video/" + rowData.id).then(response => {
-          if (response.status === 200) {
-            const index = result.indexOf(rowData);
-            const clonedResult = cloneDeep(result);
-            clonedResult.splice(index, 1);
-            setResult(clonedResult);
-          }
-        });
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "title",
+        header: "Name",
+        Cell: ({ row }) => !row.original.voided && <a href={`#/appDesigner/video/${row.original.id}/show`}>{row.original.title}</a>
+      },
+      {
+        accessorKey: "description",
+        header: "Description",
+        Cell: ({ row }) => row.original.description
+      },
+      {
+        accessorKey: "fileName",
+        header: "Filename",
+        Cell: ({ row }) => row.original.fileName
+      },
+      {
+        accessorKey: "duration",
+        header: "Duration",
+        Cell: ({ row }) => row.original.duration
       }
-    }
-  });
+    ],
+    []
+  );
+
+  const fetchData = useCallback(
+    ({ page, pageSize, orderBy, orderDirection }) =>
+      new Promise(resolve => {
+        let apiUrl = `/web/video?size=${encodeURIComponent(pageSize)}&page=${encodeURIComponent(page)}`;
+        if (orderBy) {
+          apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(orderDirection)}`;
+        }
+        http
+          .get(apiUrl)
+          .then(response => response.data)
+          .then(result => {
+            resolve({
+              data: result.filter(({ voided }) => !voided) || [],
+              totalCount: result.length || 0
+            });
+          })
+          .catch(error => {
+            console.error("Failed to fetch videos:", error);
+            resolve({
+              data: [],
+              totalCount: 0
+            });
+          });
+      }),
+    []
+  );
+
+  const actions = useMemo(
+    () =>
+      hasEditPrivilege(userInfo)
+        ? [
+            {
+              icon: Edit,
+              tooltip: "Edit video details",
+              onClick: (event, row) => history.push(`/video/${row.original.id}`)
+            },
+            {
+              icon: Delete,
+              tooltip: "Delete Video",
+              onClick: (event, row) => {
+                const voidedMessage = `Do you really want to delete video ${row.original.title}?`;
+                if (window.confirm(voidedMessage)) {
+                  http
+                    .delete(`/web/video/${row.original.id}`)
+                    .then(response => {
+                      if (response.status === 200 && tableRef.current) {
+                        tableRef.current.refresh();
+                      }
+                    })
+                    .catch(error => {
+                      console.error("Failed to delete video:", error);
+                      alert("Failed to delete video. Please try again.");
+                    });
+                }
+              }
+            }
+          ]
+        : [],
+    [history, userInfo, tableRef]
+  );
 
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Video Playlist" />
-        <div className="container">
-          {hasEditPrivilege(userInfo) && (
-            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={() => setRedirect(true)} name="New Video" />
-            </div>
-          )}
-          <AvniMaterialTable
-            title=""
-            ref={tableRef}
-            columns={columns}
-            fetchData={result}
-            options={{
-              addRowPosition: "first",
-              sorting: true,
-              debounceInterval: 500,
-              search: false,
-              rowStyle: rowData => ({
-                backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
-              })
-            }}
-            actions={hasEditPrivilege(userInfo) && [editVideo, voidVideo]}
-            route={"/appdesigner/video"}
-          />
-        </div>
+        <Title title="Video Playlist" color="primary" />
+        <Box className="container">
+          <Box component="div">
+            {hasEditPrivilege(userInfo) && (
+              <Box sx={{ float: "right", right: "50px", marginTop: "15px" }}>
+                <CreateComponent onSubmit={() => setRedirect(true)} name="New Video" />
+              </Box>
+            )}
+            <AvniMaterialTable
+              title=""
+              ref={tableRef}
+              columns={columns}
+              fetchData={fetchData}
+              options={{
+                pageSize: 10,
+                sorting: true,
+                debounceInterval: 500,
+                search: false,
+                rowStyle: ({ original }) => ({
+                  backgroundColor: original.voided ? "#DBDBDB" : "#fff"
+                })
+              }}
+              actions={actions}
+              route="/appdesigner/video"
+            />
+          </Box>
+        </Box>
       </Box>
-      {redirect && <Redirect to={"/appDesigner/video/create"} />}
+      {redirect && <Redirect to="/appDesigner/video/create" />}
     </>
   );
 };

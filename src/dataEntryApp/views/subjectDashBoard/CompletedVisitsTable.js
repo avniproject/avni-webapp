@@ -1,7 +1,7 @@
-import React, { Fragment, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { makeStyles } from "@mui/styles";
-import { Box, Grid } from "@mui/material";
-import MaterialTable from "material-table";
+import { Box, Grid, IconButton } from "@mui/material";
+import { MaterialReactTable } from "material-react-table";
 import http from "common/utils/httpClient";
 import { find, isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,6 @@ import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { DeleteButton } from "../../components/DeleteButton";
 import { formatDate } from "../../../common/utils/General";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({
   editLabel: {
@@ -78,7 +77,7 @@ const EncounterObs = ({
     if (!requiredFormDetails) {
       getEncounterForm(formUUID);
     }
-  }, []);
+  }, [requiredFormDetails, formUUID, getEncounterForm]);
 
   return requiredFormDetails ? (
     <Observations
@@ -111,123 +110,109 @@ const CompletedVisitsTable = ({
   onDelete
 }) => {
   const { t } = useTranslation();
-  const columns = [
-    {
-      title: t("visitName"),
-      field: "name",
-      render: row => {
-        return t(row.name || row.encounterType.name);
-      }
-    },
-    {
-      title: t("visitcompleteddate"),
-      field: "encounterDateTime",
-      type: "date",
-      defaultSort: "desc",
-      render: row => formatDate(row.encounterDateTime)
-    },
-    {
-      title: t("visitCanceldate"),
-      field: "cancelDateTime",
-      render: row => formatDate(row.cancelDateTime)
-    },
-    {
-      title: t("visitscheduledate"),
-      field: "earliestVisitDateTime",
-      render: row => formatDate(row.earliestVisitDateTime)
-    },
-    {
-      title: t("actions"),
-      field: "actions",
-      sorting: false,
-      render: row => (
-        <Grid container alignItems={"center"} alignContent={"center"} spacing={10}>
-          <Grid item>
-            <EditVisit
-              editEncounterUrl={editEncounterUrl(row.cancelDateTime ? "cancel" : "")}
-              encounter={row}
-              isForProgramEncounters={isForProgramEncounters}
-            />
-          </Grid>
-          <Grid item>
-            <DeleteButton onDelete={() => onDelete(row)} />
-          </Grid>
-        </Grid>
-      )
-    }
-  ];
+  const [data, setData] = useState([]);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [sorting, setSorting] = useState([{ id: "encounterDateTime", desc: true }]);
 
-  const tableRef = React.createRef();
-  const refreshTable = ref => ref.current && ref.current.onQueryChange();
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: t("visitName"),
+        Cell: ({ row }) => t(row.original.name || row.original.encounterType.name)
+      },
+      {
+        accessorKey: "encounterDateTime",
+        header: t("visitcompleteddate"),
+        Cell: ({ row }) => formatDate(row.original.encounterDateTime)
+      },
+      {
+        accessorKey: "cancelDateTime",
+        header: t("visitCanceldate"),
+        Cell: ({ row }) => formatDate(row.original.cancelDateTime)
+      },
+      {
+        accessorKey: "earliestVisitDateTime",
+        header: t("visitscheduledate"),
+        Cell: ({ row }) => formatDate(row.original.earliestVisitDateTime)
+      },
+      {
+        id: "actions",
+        header: t("actions"),
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <Grid container alignItems={"center"} alignContent={"center"} spacing={10}>
+            <Grid item>
+              <EditVisit
+                editEncounterUrl={editEncounterUrl(row.original.cancelDateTime ? "cancel" : "")}
+                encounter={row.original}
+                isForProgramEncounters={isForProgramEncounters}
+              />
+            </Grid>
+            <Grid item>
+              <DeleteButton onDelete={() => onDelete(row.original)} />
+            </Grid>
+          </Grid>
+        )
+      }
+    ],
+    [t, editEncounterUrl, isForProgramEncounters, onDelete]
+  );
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const params = { ...filterParams };
+      params.page = pagination.pageIndex;
+      params.size = pagination.pageSize;
+      if (sorting[0]?.id) {
+        params.sort = `${sorting[0].id},${sorting[0].desc ? "desc" : "asc"}`;
+      } else {
+        params.sort = null;
+      }
+      const filterQueryString = new URLSearchParams(params).toString();
+      const result = await http.get(`${apiUrl}?${filterQueryString}`).then(response => response.data);
+      result.content.forEach(e => transformApiResponse(e));
+      setData(result.content || []);
+      setTotalRecords(result.totalElements || 0);
+    } catch (error) {
+      console.error("Failed to fetch data", error);
+      setData([]);
+      setTotalRecords(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [apiUrl, filterParams, pagination, sorting]);
 
   useEffect(() => {
-    refreshTable(tableRef);
-  }, [filterParams]);
-
-  const fetchData = query =>
-    new Promise(resolve => {
-      const params = { ...filterParams };
-      params.page = query.page;
-      params.size = query.pageSize;
-      if (!isEmpty(query.orderBy.field)) params.sort = `${query.orderBy.field},${query.orderDirection}`;
-      const filterQueryString = new URLSearchParams(params).toString();
-      http
-        .get(`${apiUrl}?${filterQueryString}`)
-        .then(response => response.data)
-        .then(result => {
-          result.content.forEach(e => transformApiResponse(e));
-          if (result.content.length === 0) {
-            resolve({
-              data: result.content,
-              page: 0,
-              totalCount: result.totalElements
-            });
-          } else {
-            resolve({
-              data: result.content,
-              page: result.number,
-              totalCount: result.totalElements
-            });
-          }
-        });
-    });
+    loadData();
+  }, [loadData]);
 
   return (
-    <MaterialTable
-      icons={materialTableIcons}
-      title=""
-      components={{
-        Container: props => <Fragment>{props.children}</Fragment>
-      }}
-      tableRef={tableRef}
+    <MaterialReactTable
       columns={columns}
-      data={fetchData}
-      options={{
-        pageSize: 10,
-        pageSizeOptions: [10, 15, 20],
-        addRowPosition: "first",
-        sorting: true,
-        headerStyle: {
-          zIndex: 1
-        },
-        debounceInterval: 500,
-        search: false,
-        toolbar: false,
-        detailPanelColumnAlignment: "right"
+      data={data}
+      manualPagination
+      manualSorting
+      onPaginationChange={setPagination}
+      onSortingChange={setSorting}
+      rowCount={totalRecords}
+      state={{ isLoading, pagination, sorting }}
+      enableGlobalFilter={false}
+      enableColumnFilters={false}
+      enableTopToolbar={false}
+      enableExpanding
+      renderDetailPanel={({ row }) => (
+        <Box margin={1} key={row.original.uuid}>
+          <EncounterObservations encounter={row.original} isForProgramEncounters={isForProgramEncounters} />
+        </Box>
+      )}
+      renderExpandIcon={({ row }) => <IconButton>{row.getIsExpanded() ? <KeyboardArrowUp /> : <KeyboardArrowDown />}</IconButton>}
+      initialState={{
+        sorting: [{ id: "encounterDateTime", desc: true }]
       }}
-      detailPanel={[
-        {
-          icon: () => <KeyboardArrowDown />,
-          openIcon: () => <KeyboardArrowUp />,
-          render: row => {
-            return (
-              <Box margin={1} key={row.uuid}>
-                <EncounterObservations encounter={row} isForProgramEncounters={isForProgramEncounters} />
-              </Box>
-            );
-          }
-        }
-      ]}
     />
   );
 };

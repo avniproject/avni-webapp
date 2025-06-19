@@ -4,6 +4,22 @@ import React from "react";
 import { Chip } from "@mui/material";
 import SubjectAssignmentMultiSelect from "./SubjectAssignmentMultiSelect";
 import GroupModel from "../../common/model/GroupModel";
+import { styled } from "@mui/material/styles";
+
+const MultiSelectWrapper = styled("div")({
+  position: "relative",
+  zIndex: 1000,
+  minWidth: "200px",
+  minHeight: "40px",
+  "& .dropdown-menu": {
+    // Target react-multiselect-checkboxes dropdown
+    zIndex: 2000,
+    position: "absolute",
+    maxHeight: "300px",
+    overflowY: "auto",
+    width: "auto !important"
+  }
+});
 
 export const getColumns = (metadata, filterCriteria) => {
   const { syncAttribute1, syncAttribute2 } = getSyncAttributes(metadata, filterCriteria);
@@ -34,7 +50,7 @@ export const getColumns = (metadata, filterCriteria) => {
     return userDropdownSelectedValues;
   }
 
-  const getFormattedUserAndGroups = user => {
+  function getFormattedUserAndGroups(user) {
     const groupNames = `${user.userGroups
       .filter(ug => ug.groupName !== GroupModel.Everyone)
       .map(ug => ug.groupName)
@@ -44,47 +60,54 @@ export const getColumns = (metadata, filterCriteria) => {
     } else {
       return `${user.name}`;
     }
-  };
+  }
 
   const fixedColumns = [
     {
-      title: "Name",
-      cellStyle: { width: "10%" },
-      width: "10%",
-      headerStyle: { width: "10%" },
-      render: row => (
-        <a href={`/#/app/subject?uuid=${row.uuid}`} target="_blank" rel="noopener noreferrer">
-          {row.fullName}
+      header: "Name",
+      accessorFn: row => row.fullName,
+      size: 100,
+      muiTableBodyCellProps: { sx: { width: "10%" } },
+      muiTableHeadCellProps: { sx: { width: "10%" } },
+      Cell: ({ row }) => (
+        <a href={`/#/app/subject?uuid=${row.original.uuid}`} target="_blank" rel="noopener noreferrer">
+          {row.original.fullName}
         </a>
       )
     },
     {
-      title: "Address",
-      field: "addressLevel",
-      cellStyle: { width: "25%" },
-      width: "25%",
-      headerStyle: { width: "25%" }
+      header: "Address",
+      accessorKey: "addressLevel",
+      size: 250,
+      muiTableBodyCellProps: { sx: { width: "25%" } },
+      muiTableHeadCellProps: { sx: { width: "25%" } }
     },
     {
-      title: "Programs",
-      cellStyle: { width: "25%" },
-      width: "25%",
-      headerStyle: { width: "25%" },
-      render: row => getFormattedPrograms(row.programs)
+      header: "Programs",
+      accessorFn: row => row.programs,
+      size: 250,
+      muiTableBodyCellProps: { sx: { width: "25%" } },
+      muiTableHeadCellProps: { sx: { width: "25%" } },
+      Cell: ({ row }) => getFormattedPrograms(row.original.programs)
     },
     {
-      title: "Assigned to",
-      cellStyle: { width: "40%" },
-      width: "40%",
-      headerStyle: { width: "40%" },
-      render: row => (
-        <SubjectAssignmentMultiSelect
-          options={getUserOptions(row, metadata.users)}
-          selectedOptions={getSelectedUserOptions(row, row.assignedUsers)}
-        />
-      )
+      header: "Assigned to",
+      accessorFn: row => row.assignedUsers,
+      size: 400,
+      muiTableBodyCellProps: { sx: { width: "40%", overflow: "visible", position: "relative", zIndex: 1 } },
+      muiTableHeadCellProps: { sx: { width: "40%" } },
+      Cell: ({ row }) => {
+        const options = getUserOptions(row.original, metadata.users);
+        const selectedOptions = getSelectedUserOptions(row.original, row.original.assignedUsers);
+        return (
+          <MultiSelectWrapper>
+            <SubjectAssignmentMultiSelect options={options} selectedOptions={selectedOptions} />
+          </MultiSelectWrapper>
+        );
+      }
     }
   ];
+
   addSyncAttributeColumnIfRequired(syncAttribute1, fixedColumns);
   addSyncAttributeColumnIfRequired(syncAttribute2, fixedColumns);
 
@@ -94,8 +117,9 @@ export const getColumns = (metadata, filterCriteria) => {
 const addSyncAttributeColumnIfRequired = (syncAttribute, fixedColumns) => {
   if (!isNil(syncAttribute)) {
     fixedColumns.push({
-      title: syncAttribute.name,
-      field: syncAttribute.name
+      header: syncAttribute.name,
+      accessorKey: syncAttribute.name,
+      size: 150
     });
   }
 };
@@ -105,7 +129,6 @@ const getFormattedPrograms = programColorString => {
   const programAndColorArray = split(programColorString, ",");
   return map(programAndColorArray, (singleProgramAndColor, index) => {
     const programAndColor = split(singleProgramAndColor, ":");
-
     return getChip(programAndColor[0], programAndColor[1], index);
   });
 };

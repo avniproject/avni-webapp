@@ -30,26 +30,22 @@ export class WebConcept {
     } = {};
     if (
       concept.dataType === "Numeric" &&
-      parseInt(concept.lowAbsolute as any) >
-        parseInt(concept.highAbsolute as any)
+      concept.lowAbsolute > concept.highAbsolute
     ) {
       error["absoluteValidation"] = true;
     }
     if (
       concept.dataType === "Numeric" &&
-      parseInt(concept.lowNormal as any) > parseInt(concept.highNormal as any)
+      concept.lowNormal > concept.highNormal
     ) {
       error["normalValidation"] = true;
     }
     if (
       concept.dataType === "Numeric" &&
       !(
-        parseInt(concept.lowAbsolute as any) <=
-          parseInt(concept.lowNormal as any) &&
-        parseInt(concept.lowNormal as any) <=
-          parseInt(concept.highNormal as any) &&
-        parseInt(concept.highNormal as any) <=
-          parseInt(concept.highAbsolute as any)
+        concept.lowAbsolute <= concept.lowNormal &&
+        concept.lowNormal <= concept.highNormal &&
+        concept.highNormal <= concept.highAbsolute
       )
     ) {
       error["normalValidation"] = true;

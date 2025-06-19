@@ -1,99 +1,98 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import MaterialTable from "material-table";
-
-import { formatDateTime } from "../../utils/General";
-import { makeStyles } from "@mui/styles";
-import { Typography, AccordionSummary, Accordion, AccordionDetails } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { MaterialReactTable } from "material-react-table";
+import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
+import { formatDateTime } from "../../utils/General";
 import { formatMsgTemplate } from "../utils";
-import materialTableIcons from "../../material-table/MaterialTableIcons";
+import MaterialTableIcons from "../../material-table/MaterialTableIcons";
 
-const useStyles = makeStyles(theme => ({
-  expansionPanel: {
-    marginBottom: "11px",
-    borderRadius: "5px",
-    boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-  },
-  expansionHeading: {
-    fontSize: "1rem",
-    flexBasis: "33.33%",
-    flexShrink: 0,
-    fontWeight: "500",
-    margin: "0"
-  },
-  expandMoreHoriz: {
-    color: "#0e6eff"
-  }
+const StyledAccordion = styled(Accordion)(({ theme }) => ({
+  marginBottom: "11px",
+  borderRadius: "5px",
+  boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
 }));
 
-const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryDetails }) => {
+const ExpansionHeading = styled(Typography)(({ theme }) => ({
+  fontSize: "1rem",
+  flexBasis: "33.33%",
+  flexShrink: 0,
+  fontWeight: "500",
+  margin: "0"
+}));
+
+const ExpandMoreIcon = styled(ExpandMore)(({ theme }) => ({
+  color: "#0e6eff"
+}));
+
+const GroupMessagesTable = ({ messages, title, showDeliveryDetails }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
-  const columns = [
-    {
-      title: t("sender"),
-      field: "createdBy"
-    },
-    {
-      title: t("messageTemplateBody"),
-      field: "messageTemplateBody",
-      type: "string",
-      render: row => formatMsgTemplate(row["messageTemplate"].body, row["messageRuleParams"]),
-      cellStyle: {
-        minWidth: 200,
-        maxWidth: 550
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "createdBy",
+        header: t("sender"),
+        Cell: ({ row }) => row.original.createdBy || ""
+      },
+      {
+        accessorKey: "messageTemplateBody",
+        header: t("messageTemplateBody"),
+        Cell: ({ row }) =>
+          row.original.messageTemplate?.body ? formatMsgTemplate(row.original.messageTemplate.body, row.original.messageRuleParams) : "",
+        muiTableBodyCellProps: {
+          sx: { minWidth: 200, maxWidth: 550 }
+        }
+      },
+      {
+        accessorKey: showDeliveryDetails ? "deliveredDateTime" : "scheduledDateTime",
+        header: t(showDeliveryDetails ? "insertedAt" : "scheduledAt"),
+        Cell: ({ row }) =>
+          row.original[showDeliveryDetails ? "deliveredDateTime" : "scheduledDateTime"]
+            ? formatDateTime(row.original[showDeliveryDetails ? "deliveredDateTime" : "scheduledDateTime"])
+            : "",
+        sortingFn: "datetime",
+        sortDescFirst: true
       }
-    }
-  ];
-
-  if (showDeliveryDetails) {
-    columns.push({
-      title: t("insertedAt"),
-      field: "insertedAt",
-      type: "date",
-      render: row => formatDateTime(row["deliveredDateTime"]),
-      defaultSort: "desc"
-    });
-  } else {
-    columns.push({
-      title: t("scheduledAt"),
-      field: "scheduledAt",
-      type: "date",
-      render: row => formatDateTime(row["scheduledDateTime"]),
-      defaultSort: "desc"
-    });
-  }
+    ],
+    [t, showDeliveryDetails]
+  );
 
   return (
-    <Accordion className={classes.expansionPanel}>
-      <AccordionSummary expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}>
-        <Typography component={"span"} className={classes.expansionHeading}>
-          {t(title)}
-        </Typography>
+    <StyledAccordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <ExpansionHeading component="span">{t(title)}</ExpansionHeading>
       </AccordionSummary>
-      <AccordionDetails style={{ padding: 0, display: "block" }}>
-        <MaterialTable
-          icons={materialTableIcons}
-          title=""
+      <AccordionDetails sx={{ padding: 0, display: "block" }}>
+        <MaterialReactTable
           columns={columns}
-          data={messages}
-          options={{
-            pageSize: 10,
-            pageSizeOptions: [10, 15, 20],
-            addRowPosition: "first",
-            sorting: true,
-            headerStyle: {
-              zIndex: 1
-            },
-            debounceInterval: 500,
-            search: false,
-            toolbar: false
+          data={messages || []}
+          icons={MaterialTableIcons}
+          getRowId={row => row.id || row.uuid} // Ensure unique row IDs
+          initialState={{
+            pagination: { pageSize: 10, pageIndex: 0 },
+            density: "compact",
+            sorting: [{ id: showDeliveryDetails ? "deliveredDateTime" : "scheduledDateTime", desc: true }]
+          }}
+          muiTableProps={{
+            sx: {
+              "& .MuiTableHead-root": { zIndex: 1 }
+            }
+          }}
+          muiTablePaginationProps={{
+            rowsPerPageOptions: [10, 15, 20]
+          }}
+          enableSorting
+          enableGlobalFilter={false}
+          enableColumnFilters={false}
+          enableTopToolbar={false}
+          state={{
+            isLoading: !messages
           }}
         />
       </AccordionDetails>
-    </Accordion>
+    </StyledAccordion>
   );
 };
 

@@ -1,87 +1,102 @@
+import React, { Fragment, useCallback, useState, useEffect } from "react";
+import { MaterialReactTable } from "material-react-table";
+import { LinearProgress, Snackbar, Box, Button } from "@mui/material";
 import AddEditContactGroup from "./AddEditContactGroup";
-import MaterialTable, { MTableToolbar } from "material-table";
-import React, { Fragment, useCallback, useState } from "react";
-import { LinearProgress, Snackbar } from "@mui/material";
-import { MaterialTableToolBar, MaterialTableToolBarButton } from "../../common/material-table/MaterialTableToolBar";
 import ContactService from "../api/ContactService";
-import _ from "lodash";
 import ErrorMessage from "../../common/components/ErrorMessage";
-import materialTableIcons from "../../common/material-table/MaterialTableIcons";
-
-const tableRef = React.createRef();
 
 const GroupsTab = ({ groups, columns }) => {
-  const [contactGroupsVersion, setContactGroupsVersion] = useState(1);
+  const [data, setData] = useState([]);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [globalFilter, setGlobalFilter] = useState("");
   const [addingContactGroup, setAddingContactGroup] = useState(false);
   const [savedContactGroup, setSavedContactGroup] = useState(false);
   const [displayProgress, setShowProgressBar] = useState(false);
   const [error, setError] = useState(null);
 
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const query = {
+        page: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        search: globalFilter || ""
+      };
+      const result = await groups(query);
+      console.log("API Response:", result); // Debugging
+      setData(result.data || []);
+      setTotalRecords(result.totalCount || 0);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      setError(error);
+      setData([]);
+      setTotalRecords(0);
+      setIsLoading(false);
+    }
+  }, [pagination, globalFilter, groups]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
   const onContactSaved = useCallback(() => {
     setAddingContactGroup(false);
     setSavedContactGroup(true);
-    setContactGroupsVersion(contactGroupsVersion + 1);
-  }, [contactGroupsVersion]);
+    loadData();
+  }, [loadData]);
 
   const onDelete = useCallback(
-    contactGroupRows => {
-      ContactService.deleteContactGroup(contactGroupRows.map(x => x.id))
+    selectedRows => {
+      setShowProgressBar(true);
+      ContactService.deleteContactGroup(selectedRows.map(row => row.id))
         .then(() => {
           setError(null);
-          setContactGroupsVersion(contactGroupsVersion + 1);
+          loadData();
         })
         .catch(error => setError(error))
         .finally(() => setShowProgressBar(false));
-      setShowProgressBar(true);
     },
-    [contactGroupsVersion]
+    [loadData]
   );
 
   return (
     <div className="container">
-      {addingContactGroup && <AddEditContactGroup onClose={() => setAddingContactGroup(false)} onSave={() => onContactSaved()} />}
-      {!_.isNil(error) && <ErrorMessage error={error} />}
+      {addingContactGroup && <AddEditContactGroup onClose={() => setAddingContactGroup(false)} onSave={onContactSaved} />}
+      {error && <ErrorMessage error={error} />}
       {displayProgress && <LinearProgress style={{ marginBottom: 30 }} />}
-      <MaterialTable
-        icons={materialTableIcons}
-        key={contactGroupsVersion}
-        title=""
-        components={{
-          Container: props => <Fragment>{props.children}</Fragment>,
-          Toolbar: props => (
-            <>
-              <MaterialTableToolBar
-                toolBarButtons={[
-                  new MaterialTableToolBarButton(rows => onDelete(rows), true, "Delete"),
-                  new MaterialTableToolBarButton(() => setAddingContactGroup(true), false, "Add Contact Group")
-                ]}
-                {...props}
-              />
-              <MTableToolbar {...props} />
-            </>
-          )
-        }}
-        tableRef={tableRef}
+      <MaterialReactTable
         columns={columns}
-        data={groups}
-        options={{
-          search: true,
-          searchFieldAlignment: "right",
-          pageSize: 10,
-          pageSizeOptions: [10, 15, 25],
-          addRowPosition: "first",
-          sorting: false,
-          headerStyle: {
-            zIndex: 1
-          },
-          debounceInterval: 500,
-          filtering: false,
-          selection: true,
-          rowStyle: rowData => ({
-            backgroundColor: "#fff"
-          })
+        data={data}
+        manualPagination
+        onPaginationChange={setPagination}
+        rowCount={totalRecords}
+        state={{ pagination, isLoading, globalFilter }}
+        enableGlobalFilter
+        onGlobalFilterChange={setGlobalFilter}
+        enableSorting={false}
+        enableColumnFilters={false}
+        enableRowSelection
+        initialState={{ pagination: { pageSize: 10 } }}
+        muiTableProps={{
+          sx: { table: { backgroundColor: "#fff" } }
         }}
-        actions={[]}
+        renderTopToolbarCustomActions={({ table }) => (
+          <Box sx={{ display: "flex", gap: "8px" }}>
+            <Button
+              onClick={() => {
+                const selectedRows = table.getSelectedRowModel().rows.map(row => row.original);
+                onDelete(selectedRows);
+              }}
+              disabled={table.getSelectedRowModel().rows.length === 0}
+            >
+              Delete
+            </Button>
+            <Button onClick={() => setAddingContactGroup(true)}>Add Contact Group</Button>
+          </Box>
+        )}
       />
       <Snackbar
         open={savedContactGroup}

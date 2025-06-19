@@ -6,28 +6,31 @@ import { connect } from "react-redux";
 const DashboardList = ({ history, userInfo }) => {
   const columns = [
     {
-      title: "Name",
-      render: rowData => !rowData.voided && <a href={`#/appDesigner/dashboard/${rowData.id}/show`}>{rowData.name}</a>,
-      sorting: false
+      accessorKey: "name",
+      header: "Name",
+      enableSorting: false,
+      Cell: ({ row }) => !row.original.voided && <a href={`#/appDesigner/dashboard/${row.original.id}/show`}>{row.original.name}</a>
     },
     {
-      title: "Filters",
-      render: rowData => rowData.filters.map(filter => filter.name).join(", "),
-      sorting: false
+      accessorKey: "filters",
+      header: "Filters",
+      enableSorting: false,
+      Cell: ({ row }) => row.original.filters?.map(filter => filter.name).join(", ") || ""
     },
     {
-      title: "Description",
-      render: rowData => rowData.description,
-      sorting: false
+      accessorKey: "description",
+      header: "Description",
+      enableSorting: false,
+      Cell: ({ row }) => row.original.description || ""
     }
   ];
 
   return (
     <ResourceListView
       history={history}
-      title={"Offline Dashboard"}
-      resourceName={"dashboard"}
-      resourceURLName={"dashboard"}
+      title="Offline Dashboard"
+      resourceName="dashboard"
+      resourceURLName="dashboard"
       columns={columns}
       userInfo={userInfo}
       editPrivilegeType={Privilege.PrivilegeType.EditOfflineDashboardAndReportCard}

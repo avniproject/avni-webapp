@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import MaterialTable from "material-table";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { MaterialReactTable } from "material-react-table";
 import http from "common/utils/httpClient";
-import { Chip, Grid, TablePagination } from "@mui/material";
+import { Box, Chip, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { filter, find, flatten, get, head, isEmpty, isNil, join, map, reject, size, uniqBy } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
@@ -10,7 +10,6 @@ import { AgeUtil } from "openchs-models";
 import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
-import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const { i18n, t } = useTranslation();
@@ -19,206 +18,165 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const customSearchFields = get(organisationConfigs, "organisationConfig.searchResultFields", []);
   const subjectType = find(subjectTypes, ({ uuid }) => uuid === get(searchRequest, "subjectType"));
   const isPerson = get(subjectType, "type", "Person") === "Person";
-  const getResultConcepts = customSearchFields => map(customSearchFields, ({ searchResultConcepts }) => searchResultConcepts);
-  const customColumns = isEmpty(subjectType)
-    ? getResultConcepts(customSearchFields)
-    : getResultConcepts(filter(customSearchFields, ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid));
 
   useEffect(() => {
     setExtensions(get(organisationConfigs, "organisationConfig.extensions", []));
-  }, []);
-  const [pageSortCriteria, setPageSortCriteria] = useState({
-    pageSize: 10,
-    page: 0,
-    orderDirection: "",
-    orderBy: null
-  });
-  const [searchResponse, setSearchResponse] = useState({ searchResults: [], totalElements: -1 });
-  const [loading, setLoading] = useState(false);
+  }, [organisationConfigs]);
 
-  const { searchResults, totalElements } = searchResponse;
+  const getResultConcepts = customSearchFields => map(customSearchFields, ({ searchResultConcepts }) => searchResultConcepts);
 
-  useEffect(() => {
-    setLoading(true);
-    fetchData(pageSortCriteria)
-      .then(response => setSearchResponse({ searchResults: response.data, totalElements: response.totalElements }))
-      .finally(() => setLoading(false));
-  }, [pageSortCriteria]);
+  const customColumns = useMemo(() => {
+    return isEmpty(subjectType)
+      ? getResultConcepts(customSearchFields)
+      : getResultConcepts(filter(customSearchFields, ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid));
+  }, [subjectType, customSearchFields]);
 
-  const renderNameWithIcon = ({ uuid, fullName, firstName, profilePicture, subjectTypeName }) => {
-    return (
-      <Grid container spacing={1} direction={"row"} alignItems={"center"}>
-        <Grid item>
-          <SubjectProfilePicture
-            allowEnlargementOnClick={true}
-            firstName={firstName}
-            profilePicture={profilePicture}
-            subjectType={null}
-            subjectTypeName={subjectTypeName}
-            size={20}
-            style={{ margin: "0px" }}
-          />
-        </Grid>
-        <Grid item>
-          <div>
-            <a href={`/#/app/subject?uuid=${uuid}`}>{fullName}</a>
-          </div>
-        </Grid>
-      </Grid>
-    );
-  };
+  const [data, setData] = useState([]);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [sorting, setSorting] = useState([]);
+  const [rowSelection, setRowSelection] = useState({});
 
-  const labelDisplayedRows = ({ from, to }) => {
-    const reachedEnd = searchResults.length < pageSortCriteria.pageSize;
-    return `${searchResults.length === 0 && pageSortCriteria.page === 0 ? 0 : from}–${
-      reachedEnd ? from - 1 + searchResults.length : to
-    } of ${reachedEnd ? from - 1 + searchResults.length : `more than ${to}`}`;
-  };
-
-  const columnsToDisplay = [
-    {
-      title: t("name"),
-      field: "fullName",
-      render: rowData => renderNameWithIcon(rowData)
-    },
-    ...map(flatten(customColumns), ({ name }) => ({
-      title: t(name),
-      field: name,
-      sorting: false,
-      render: row => row[name]
-    })),
-    isEmpty(subjectType) && size(subjectTypes) > 1
-      ? {
-          title: t("subjectType"),
-          field: "subjectType",
-          render: row => row.subjectTypeName && t(row.subjectTypeName)
-        }
-      : null,
-    isPerson ? { title: t("gender"), field: "gender", render: row => row.gender && t(row.gender) } : null,
-    isPerson
-      ? {
-          title: t("age"),
-          field: "dateOfBirth",
-          render: row => (row.dateOfBirth ? AgeUtil.getDisplayAge(row.dateOfBirth, i18n) : "")
-        }
-      : null,
-    {
-      title: t("Address"),
-      field: "addressLevel",
-      sorting: false,
-      render: row => row.addressLevel
-    },
-    {
-      title: t("enrolments"),
-      field: "activePrograms",
-      sorting: false,
-      render: row => {
-        return row.enrolments
-          ? uniqBy(row.enrolments, enr => enr.operationalProgramName).map((p, key) => (
-              <Chip
-                key={key}
-                size="small"
-                label={t(p.operationalProgramName)}
-                style={{
-                  margin: 2,
-                  backgroundColor: p.programColor,
-                  color: "white"
-                }}
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "fullName",
+        header: t("name"),
+        Cell: ({ row }) => (
+          <Grid container spacing={1} direction={"row"} alignItems={"center"}>
+            <Grid item>
+              <SubjectProfilePicture
+                allowEnlargementOnClick={true}
+                firstName={row.original.firstName}
+                profilePicture={row.original.profilePicture}
+                subjectType={null}
+                subjectTypeName={row.original.subjectTypeName}
+                size={20}
+                style={{ margin: "0px" }}
               />
-            ))
-          : "";
+            </Grid>
+            <Grid item>
+              <div>
+                <a href={`/#/app/subject?uuid=${row.original.uuid}`}>{row.original.fullName}</a>
+              </div>
+            </Grid>
+          </Grid>
+        )
+      },
+      ...flatten(customColumns).map(({ name }) => ({
+        accessorKey: name,
+        header: t(name),
+        enableSorting: false
+      })),
+      ...(isEmpty(subjectType) && size(subjectTypes) > 1
+        ? [
+            {
+              accessorKey: "subjectType",
+              header: t("subjectType"),
+              Cell: ({ row }) => row.original.subjectTypeName && t(row.original.subjectTypeName)
+            }
+          ]
+        : []),
+      ...(isPerson
+        ? [
+            {
+              accessorKey: "gender",
+              header: t("gender"),
+              Cell: ({ row }) => row.original.gender && t(row.original.gender)
+            },
+            {
+              accessorKey: "dateOfBirth",
+              header: t("age"),
+              Cell: ({ row }) => (row.original.dateOfBirth ? AgeUtil.getDisplayAge(row.original.dateOfBirth, i18n) : "")
+            }
+          ]
+        : []),
+      {
+        accessorKey: "addressLevel",
+        header: t("Address"),
+        enableSorting: false,
+        Cell: ({ row }) => row.original.addressLevel
+      },
+      {
+        id: "enrolments",
+        header: t("enrolments"),
+        enableSorting: false,
+        Cell: ({ row }) => {
+          const enrolments = row.original.enrolments;
+          return enrolments
+            ? uniqBy(enrolments, enr => enr.operationalProgramName).map((p, key) => (
+                <Chip
+                  key={key}
+                  size="small"
+                  label={t(p.operationalProgramName)}
+                  style={{
+                    margin: 2,
+                    backgroundColor: p.programColor,
+                    color: "white"
+                  }}
+                />
+              ))
+            : null;
+        }
       }
-    }
-  ];
-  const columns = reject(columnsToDisplay, isNil);
+    ],
+    [customColumns, subjectType, subjectTypes, isPerson, t, i18n]
+  );
 
-  const tableRef = React.createRef();
-
-  const fetchData = query =>
-    new Promise(resolve => {
-      let apiUrl = "/web/searchAPI/v2";
-      const pageElement = {};
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
       const firstSubjectTypeUUID = get(head(subjectTypes), "uuid");
       if (isNil(searchRequest.subjectType) && !isNil(firstSubjectTypeUUID)) {
         searchRequest.subjectType = firstSubjectTypeUUID;
       }
-      pageElement.pageNumber = pageSortCriteria.page;
-      pageElement.numberOfRecordPerPage = pageSortCriteria.pageSize;
-      pageElement.sortColumn = pageSortCriteria.orderBy && pageSortCriteria.orderBy.field;
-      pageElement.sortOrder = pageSortCriteria.orderBy && pageSortCriteria.orderDirection;
+      const pageElement = {
+        pageNumber: pagination.pageIndex,
+        numberOfRecordPerPage: pagination.pageSize,
+        sortColumn: sorting[0]?.id || null,
+        sortOrder: sorting[0]?.desc ? "desc" : sorting[0]?.id ? "asc" : null
+      };
       searchRequest.pageElement = pageElement;
-      http
-        .post(apiUrl, searchRequest)
-        .then(response => response.data)
-        .then(result => {
-          resolve({
-            data: result.listOfRecords,
-            totalElements: result.totalElements,
-            page: query.page
-          });
-        });
-    });
+      const result = await http.post("/web/searchAPI/v2", searchRequest).then(res => res.data);
+      setData(result.listOfRecords || []);
+      setTotalRecords(result.totalElements || 0);
+    } catch (error) {
+      console.error("Failed to fetch data", error);
+      setData([]);
+      setTotalRecords(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [pagination, sorting, searchRequest, subjectTypes]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   return (
-    <div>
-      <MaterialTable
-        icons={materialTableIcons}
-        title=""
-        tableRef={tableRef}
-        columns={columns}
-        data={searchResults}
-        onOrderChange={(orderBy, orderDirection) =>
-          setPageSortCriteria(prevState => ({ ...prevState, orderBy: columns[orderBy], orderDirection }))
-        }
-        isLoading={loading}
-        options={{
-          paging: false,
-          addRowPosition: "first",
-          sorting: true,
-          headerStyle: {
-            zIndex: 1
-          },
-          debounceInterval: 500,
-          search: false,
-          selection: !isEmpty(filter(extensions, ({ extensionScope }) => extensionScope.scopeType === extensionScopeTypes.searchResults))
-        }}
-        components={{
-          Toolbar: props => (
-            <div style={{ marginRight: "10px" }}>
-              <ExtensionOption
-                subjectUUIDs={join(map(props.selectedRows, "uuid"), ",")}
-                scopeType={extensionScopeTypes.searchResults}
-                configExtensions={extensions}
-              />
-            </div>
-          )
-        }}
-      />
-      <style>{`
-        .MuiTableSortLabel-icon {
-          opacity: 1;
-          visibility: visible;
-          color: #bdbdbd;
-        }
-        .MuiTableSortLabel-root.MuiTableSortLabel-active .MuiTableSortLabel-icon{
-          color: #000000; 
-          stroke: #000000; 
-          stroke-width: 0.7;
-        }
-      `}</style>
-      <TablePagination
-        component={"div"}
-        page={pageSortCriteria.page}
-        labelRowsPerPage={""}
-        rowsPerPageOptions={[10, 15, 20]}
-        nextIconButtonProps={{ disabled: searchResults.length < pageSortCriteria.pageSize }}
-        labelDisplayedRows={totalElements === -1 ? labelDisplayedRows : undefined}
-        count={totalElements}
-        rowsPerPage={pageSortCriteria.pageSize}
-        onPageChange={(e, page) => setPageSortCriteria(prevState => ({ ...prevState, page }))}
-        onRowsPerPageChange={e => setPageSortCriteria(prevState => ({ ...prevState, pageSize: e.target.value }))}
-      />
-    </div>
+    <MaterialReactTable
+      columns={columns}
+      data={data}
+      manualPagination
+      manualSorting
+      onPaginationChange={setPagination}
+      onSortingChange={setSorting}
+      rowCount={totalRecords}
+      state={{ isLoading, pagination, sorting, rowSelection }}
+      onRowSelectionChange={setRowSelection}
+      enableGlobalFilter={false}
+      enableColumnFilters={false}
+      renderTopToolbarCustomActions={({ table }) => (
+        <Box sx={{ display: "flex", gap: "8px" }}>
+          <ExtensionOption
+            subjectUUIDs={join(map(table.getSelectedRowModel().rows, row => row.original.uuid), ",")}
+            scopeType={extensionScopeTypes.searchResults}
+            configExtensions={extensions}
+          />
+        </Box>
+      )}
+    />
   );
 };
 

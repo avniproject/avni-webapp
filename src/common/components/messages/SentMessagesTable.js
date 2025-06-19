@@ -1,75 +1,71 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
-import { Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { Typography, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { MaterialReactTable } from "material-react-table"; // Correct import
 import { formatDateTime } from "../../utils/General";
-import MaterialTable from "material-table";
+import MaterialTableIcons from "../../material-table/MaterialTableIcons";
 
-import materialTableIcons from "../../material-table/MaterialTableIcons";
-
-const useStyles = makeStyles(theme => ({
-  labelStyle: {
-    color: "red",
-    backgroundColor: "#ffeaea",
-    fontSize: "12px",
-    alignItems: "center",
-    margin: 0
-  },
-  infoMsg: {
-    marginLeft: 10
-  }
+const InfoMsg = styled(Typography)(({ theme }) => ({
+  marginLeft: 10
 }));
 
 const SentMessagesTable = ({ sentMessages, isMsgsSentAvailable }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   const columns = [
     {
-      title: t("msgBody"),
-      field: "body",
-      cellStyle: {
-        minWidth: 200,
-        maxWidth: 550
+      accessorKey: "body",
+      header: t("msgBody"),
+      muiTableBodyCellProps: {
+        sx: { minWidth: 200, maxWidth: 550 }
       }
     },
     {
-      title: t("insertedAt"),
-      field: "insertedAt",
-      type: "date",
-      render: row => formatDateTime(row.insertedAt),
-      defaultSort: "desc"
+      accessorKey: "insertedAt",
+      header: t("insertedAt"),
+      Cell: ({ cell }) => (cell.getValue() ? formatDateTime(cell.getValue()) : "-"),
+      sortingFn: "datetime",
+      sortDescFirst: true
     }
   ];
 
   const renderNoSentMessages = () => (
-    <Typography variant="caption" gutterBottom className={classes.infoMsg}>
-      {" "}
-      {t("noSentMessages")}{" "}
-    </Typography>
+    <InfoMsg variant="caption" gutterBottom>
+      {t("noSentMessages")}
+    </InfoMsg>
   );
 
   const renderTable = () => (
-    <MaterialTable
-      icons={materialTableIcons}
-      title=""
+    <MaterialReactTable
       columns={columns}
-      data={sentMessages}
-      options={{
-        pageSize: 10,
-        pageSizeOptions: [10, 15, 20],
-        addRowPosition: "first",
-        sorting: true,
-        headerStyle: {
-          zIndex: 1
-        },
-        debounceInterval: 500,
-        search: false,
-        toolbar: false
+      data={sentMessages || []}
+      icons={MaterialTableIcons}
+      getRowId={row => row.id || row.uuid} // Ensure unique row IDs
+      initialState={{
+        pagination: { pageSize: 10, pageIndex: 0 },
+        density: "compact",
+        sorting: [{ id: "insertedAt", desc: true }] // Default sort
+      }}
+      muiTableProps={{
+        sx: {
+          "& .MuiTableHead-root": { zIndex: 1 }
+        }
+      }}
+      muiTablePaginationProps={{
+        rowsPerPageOptions: [10, 15, 20]
+      }}
+      enableSorting
+      enableGlobalFilter={false}
+      enableColumnFilters={false}
+      enableTopToolbar={false}
+      state={{
+        isLoading: !sentMessages // Handle loading state
       }}
     />
   );
 
-  return isMsgsSentAvailable ? renderTable() : renderNoSentMessages();
+  return <Box sx={{ position: "relative" }}>{isMsgsSentAvailable ? renderTable() : renderNoSentMessages()}</Box>;
 };
+
 export default SentMessagesTable;

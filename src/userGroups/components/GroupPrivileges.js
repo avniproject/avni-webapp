@@ -1,14 +1,13 @@
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { MaterialReactTable } from "material-react-table";
 import { Switch, FormGroup, FormControlLabel } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import MaterialTable from "material-table";
 import { getGroupPrivilegeList, getGroups } from "../reducers";
 import api from "../api";
 import { Privilege } from "openchs-models";
 import GroupPrivilegesModel from "../../common/model/GroupPrivilegesModel";
 import GroupModel from "../../common/model/GroupModel";
-import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 const generatePrivilegeDependenciesAndCheckedState = function(groupPrivilegeList) {
   const dependencies = new Map();
@@ -108,18 +107,18 @@ const GroupPrivileges = ({
   getGroupPrivilegeList,
   groupPrivilegeList
 }) => {
-  const [privilegeDependencies, setPrivilegeDependencies] = React.useState(null);
-  const [privilegesCheckedState, setPrivilegesCheckedState] = React.useState(null);
-  const [allPrivilegesAllowed, setAllPrivilegesAllowed] = React.useState(hasAllPrivileges);
-  const [enhancedGroupPrivilegeList, setEnhancedGroupPrivilegeList] = React.useState(groupPrivilegeList);
+  const [privilegeDependencies, setPrivilegeDependencies] = useState(null);
+  const [privilegesCheckedState, setPrivilegesCheckedState] = useState(null);
+  const [allPrivilegesAllowed, setAllPrivilegesAllowed] = useState(hasAllPrivileges);
+  const [enhancedGroupPrivilegeList, setEnhancedGroupPrivilegeList] = useState(groupPrivilegeList);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!allPrivilegesAllowed) {
       getGroupPrivilegeList(groupId);
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!groupPrivilegeList) return;
 
     const [checkedState, dependencies] = generatePrivilegeDependenciesAndCheckedState(groupPrivilegeList);
@@ -197,38 +196,41 @@ const GroupPrivileges = ({
     setHasAllPrivileges(allowOptionSelected);
   };
 
-  const columns = [
-    {
-      title: "Allowed",
-      field: "allow",
-      type: "boolean",
-      grouping: false,
-      render: rowData => (
-        <Switch
-          onChange={event => onTogglePermissionClick(event, rowData)}
-          checked={privilegesCheckedState ? privilegesCheckedState.get(rowData.uuid).checkedState : false}
-        />
-      )
-    },
-    { title: "Subject / Entity Type", field: "groupingTypeName", defaultGroupOrder: 0 },
-    { title: "Subject Type", field: "subjectTypeName" },
-    { title: "Entity Type", field: "privilegeEntityType" },
-    { title: "Privilege", field: "privilegeName" },
-    { title: "Program", field: "programName" },
-    { title: "Program Encounter Type", field: "programEncounterTypeName", defaultSort: "asc" },
-    { title: "General Encounter Type", field: "encounterTypeName" },
-    { title: "Checklist Detail", field: "checklistDetailName" }
-  ];
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "allow",
+        header: "Allowed",
+        enableGrouping: false,
+        Cell: ({ row }) => (
+          <Switch
+            onChange={event => onTogglePermissionClick(event, row.original)}
+            checked={privilegesCheckedState?.get(row.original.uuid)?.checkedState ?? false}
+          />
+        )
+      },
+      { accessorKey: "groupingTypeName", header: "Subject / Entity Type", enableGrouping: true },
+      { accessorKey: "subjectTypeName", header: "Subject Type" },
+      { accessorKey: "privilegeEntityType", header: "Entity Type" },
+      { accessorKey: "privilegeName", header: "Privilege" },
+      { accessorKey: "programName", header: "Program" },
+      {
+        accessorKey: "programEncounterTypeName",
+        header: "Program Encounter Type",
+        muiTableBodyCellProps: { sx: { sortDirection: "asc" } }
+      },
+      { accessorKey: "encounterTypeName", header: "General Encounter Type" },
+      { accessorKey: "checklistDetailName", header: "Checklist Detail" }
+    ],
+    [privilegesCheckedState]
+  );
+
   return (
     <div>
       <FormGroup row>
         <FormControlLabel
           control={
-            <Switch
-              onChange={event => onToggleAllPrivileges(event)}
-              checked={allPrivilegesAllowed}
-              disabled={groupName === GroupModel.Administrators}
-            />
+            <Switch onChange={onToggleAllPrivileges} checked={allPrivilegesAllowed} disabled={groupName === GroupModel.Administrators} />
           }
           label="All privileges"
         />
@@ -237,19 +239,20 @@ const GroupPrivileges = ({
         <div>
           <hr />
           <br />
-          <MaterialTable
-            icons={materialTableIcons}
-            title=""
+          <MaterialReactTable
             columns={columns}
-            data={enhancedGroupPrivilegeList}
-            options={{
-              grouping: true,
-              pageSize: 20,
-              headerStyle: {
-                zIndex: 0
-              },
-              searchFieldAlignment: "left"
-              // filtering: true
+            data={enhancedGroupPrivilegeList || []}
+            enableGrouping
+            enableColumnFilters={false}
+            initialState={{
+              grouping: ["groupingTypeName"],
+              pagination: { pageSize: 20 }
+            }}
+            muiTableHeadCellProps={{
+              sx: { zIndex: 0 }
+            }}
+            muiSearchTextFieldProps={{
+              sx: { float: "left" }
             }}
           />
         </div>

@@ -1,72 +1,66 @@
-import React from "react";
-import MaterialTable from "material-table";
+import React, { useMemo } from "react";
+import { MaterialReactTable } from "material-react-table";
 import _ from "lodash";
+import { IconButton, Box } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
-import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 import EntityService from "../../../common/service/EntityService";
 
-function getFilterColumns(operationalModules) {
-  if (_.isNil(operationalModules.subjectTypes)) return [];
-
-  return [
-    {
-      title: "Name",
-      render: rowData => {
-        return rowData.name;
-      }
-    },
-    {
-      title: "Subject Type",
-      render: rowData => {
-        const subjectType =
-          rowData.filterConfig.subjectType &&
-          EntityService.findByUuid(operationalModules.subjectTypes, rowData.filterConfig.subjectType.uuid);
-        return subjectType ? subjectType.name : "";
-      }
-    },
-    {
-      title: "Filter Type",
-      render: rowData => {
-        return rowData.filterConfig.type;
-      }
-    }
-  ];
-}
-
 const ShowDashboardFilters = ({ filters, editAction, deleteAction, operationalModules }) => {
-  return (
-    <MaterialTable
-      icons={materialTableIcons}
-      columns={getFilterColumns(operationalModules)}
-      data={filters}
-      options={{
-        headerStyle: {
-          zIndex: 1
-        },
-        search: false,
-        paging: false,
-        toolbar: false
-      }}
-      actions={
-        editAction || deleteAction
-          ? [
-              editAction && {
-                icon: () => <Edit />,
-                tooltip: "Edit",
-                onClick: (event, filter) => {
-                  editAction(filter);
-                }
-              },
-              deleteAction && {
-                icon: () => <Delete />,
-                tooltip: "Delete",
-                onClick: (event, filter) => {
-                  deleteAction(filter);
-                }
-              }
-            ]
-          : []
+  const columns = useMemo(() => {
+    if (_.isNil(operationalModules?.subjectTypes)) return [];
+
+    return [
+      {
+        id: "name",
+        header: "Name",
+        Cell: ({ row }) => row.original.name
+      },
+      {
+        id: "subjectType",
+        header: "Subject Type",
+        Cell: ({ row }) => {
+          const subjectType =
+            row.original.filterConfig?.subjectType &&
+            EntityService.findByUuid(operationalModules.subjectTypes, row.original.filterConfig.subjectType.uuid);
+          return subjectType ? subjectType.name : "";
+        }
+      },
+      {
+        id: "filterType",
+        header: "Filter Type",
+        Cell: ({ row }) => row.original.filterConfig?.type
       }
+    ];
+  }, [operationalModules]);
+
+  return (
+    <MaterialReactTable
+      columns={columns}
+      data={filters || []}
+      enablePagination={false}
+      enableGlobalFilter={false}
+      enableColumnFilters={false}
+      enableTopToolbar={false}
+      enableRowActions={editAction || deleteAction}
+      renderRowActions={({ row }) => (
+        <Box sx={{ display: "flex", gap: "8px" }}>
+          {editAction && (
+            <IconButton onClick={() => editAction(row.original)} title="Edit">
+              <Edit />
+            </IconButton>
+          )}
+          {deleteAction && (
+            <IconButton onClick={() => deleteAction(row.original)} title="Delete">
+              <Delete />
+            </IconButton>
+          )}
+        </Box>
+      )}
+      muiTableHeadCellProps={{
+        sx: {
+          zIndex: 1
+        }
+      }}
     />
   );
 };

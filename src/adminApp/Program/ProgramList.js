@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import http from "common/utils/httpClient";
 import _, { get, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
@@ -11,8 +11,7 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { connect } from "react-redux";
-import Edit from "@mui/icons-material/Edit";
-import Delete from "@mui/icons-material/DeleteOutline";
+import { Edit, Delete } from "@mui/icons-material";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditProgram);
@@ -21,6 +20,8 @@ function hasEditPrivilege(userInfo) {
 const ProgramList = ({ history, userInfo }) => {
   const [formMappings, setFormMappings] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
+  const [redirect, setRedirect] = useState(false);
+  const tableRef = useRef(null);
 
   useEffect(() => {
     http.get("/web/operationalModules").then(response => {
@@ -31,103 +32,121 @@ const ProgramList = ({ history, userInfo }) => {
     });
   }, []);
 
-  const columns = [
-    {
-      title: "Name",
-      defaultSort: "asc",
-      sorting: false,
-      render: rowData => <a href={`#/appDesigner/program/${rowData.id}/show`}>{rowData.name}</a>
-    },
-    {
-      title: "Subject Type",
-      sorting: false,
-      render: rowData => (
-        <ShowSubjectType
-          rowDetails={rowData}
-          subjectType={subjectType}
-          formMapping={formMappings}
-          setMapping={setFormMappings}
-          entityUUID="programUUID"
-        />
-      )
-    },
-    {
-      title: "Enrolment Form",
-      field: "formName",
-      sorting: false,
-      render: rowData => (
-        <a href={`#/appdesigner/forms/${get(findProgramEnrolmentForm(formMappings, rowData), "formUUID")}`}>
-          {get(findProgramEnrolmentForm(formMappings, rowData), "formName")}
-        </a>
-      )
-    },
-    {
-      title: "Exit Form",
-      field: "formName",
-      sorting: false,
-      render: rowData => (
-        <a href={`#/appdesigner/forms/${get(findProgramExitForm(formMappings, rowData), "formUUID")}`}>
-          {get(findProgramExitForm(formMappings, rowData), "formName")}
-        </a>
-      )
-    },
-    {
-      title: "Colour",
-      field: "colour",
-      type: "string",
-      sorting: false,
-      render: rowData => <div style={{ width: "20px", height: "20px", border: "1px solid", background: rowData.colour }}>&nbsp;</div>
-    }
-  ];
-
-  const [redirect, setRedirect] = useState(false);
-
-  const tableRef = React.createRef();
-  const refreshTable = ref => ref.current && ref.current.onQueryChange();
-
-  const fetchData = query =>
-    new Promise(resolve => {
-      let apiUrl = "/web/program?";
-      apiUrl += "size=" + query.pageSize;
-      apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.orderBy.field)) apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
-      http
-        .get(apiUrl)
-        .then(response => response.data)
-        .then(result => {
-          resolve({
-            data: result._embedded ? result._embedded.program : [],
-            page: result.page.number,
-            totalCount: result.page.totalElements
-          });
-        });
-    });
-
-  const addNewConcept = () => {
-    setRedirect(true);
-  };
-
-  const editProgram = rowData => ({
-    icon: () => <Edit />,
-    tooltip: "Edit program",
-    onClick: event => history.push(`/appDesigner/program/${rowData.id}`),
-    disabled: rowData.voided
-  });
-
-  const voidProgram = rowData => ({
-    icon: () => <Delete />,
-    tooltip: "Delete program",
-    onClick: (event, rowData) => {
-      const voidedMessage = "Do you really want to delete the program " + rowData.name + " ?";
-      if (window.confirm(voidedMessage)) {
-        http.delete("/web/program/" + rowData.id).then(response => {
-          if (response.status === 200) {
-            refreshTable(tableRef);
-          }
-        });
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Name",
+        enableSorting: true,
+        Cell: ({ row }) => <a href={`#/appDesigner/program/${row.original.id}/show`}>{row.original.name}</a>
+      },
+      {
+        accessorKey: "subjectType",
+        header: "Subject Type",
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <ShowSubjectType
+            rowDetails={row.original}
+            subjectType={subjectType}
+            formMapping={formMappings}
+            setMapping={setFormMappings}
+            entityUUID="programUUID"
+          />
+        )
+      },
+      {
+        accessorKey: "enrolmentForm",
+        header: "Enrolment Form",
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <a href={`#/appdesigner/forms/${get(findProgramEnrolmentForm(formMappings, row.original), "formUUID")}`}>
+            {get(findProgramEnrolmentForm(formMappings, row.original), "formName")}
+          </a>
+        )
+      },
+      {
+        accessorKey: "exitForm",
+        header: "Exit Form",
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <a href={`#/appdesigner/forms/${get(findProgramExitForm(formMappings, row.original), "formUUID")}`}>
+            {get(findProgramExitForm(formMappings, row.original), "formName")}
+          </a>
+        )
+      },
+      {
+        accessorKey: "colour",
+        header: "Colour",
+        enableSorting: true,
+        Cell: ({ row }) => <div style={{ width: "20px", height: "20px", border: "1px solid", background: row.original.colour }}>&nbsp;</div>
       }
-    }
-  });
+    ],
+    [formMappings, subjectType]
+  );
+
+  const fetchData = useCallback(
+    ({ page, pageSize, orderBy, orderDirection }) =>
+      new Promise(resolve => {
+        const validSortFields = ["name", "colour"];
+        let apiUrl = `/web/program?size=${encodeURIComponent(pageSize)}&page=${encodeURIComponent(page)}`;
+        if (orderBy && validSortFields.includes(orderBy)) {
+          apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(orderDirection)}`;
+        }
+        http
+          .get(apiUrl)
+          .then(response => response.data)
+          .then(result => {
+            resolve({
+              data: result._embedded?.program || [],
+              totalCount: result.page?.totalElements || 0
+            });
+          })
+          .catch(error => {
+            console.error("Failed to fetch programs:", error);
+            resolve({
+              data: [],
+              totalCount: 0
+            });
+          });
+      }),
+    []
+  );
+
+  const actions = useMemo(
+    () =>
+      hasEditPrivilege(userInfo)
+        ? [
+            {
+              icon: Edit,
+              tooltip: "Edit program",
+              onClick: (event, row) => history.push(`/appDesigner/program/${row.original.id}`),
+              disabled: row => row.original.voided ?? false
+            },
+            {
+              icon: Delete,
+              tooltip: "Delete program",
+              onClick: (event, row) => {
+                const voidedMessage = `Do you really want to delete the program ${row.original.name}?`;
+                if (window.confirm(voidedMessage)) {
+                  http
+                    .delete(`/web/program/${row.original.id}`)
+                    .then(response => {
+                      if (response.status === 200 && tableRef.current) {
+                        tableRef.current.refresh();
+                      }
+                    })
+                    .catch(error => {
+                      console.error("Failed to delete program:", error);
+                      alert("Failed to delete program. Please try again.");
+                    });
+                }
+              },
+              disabled: row => row.original.voided ?? false
+            }
+          ]
+        : [],
+    [history, userInfo]
+  );
 
   return (
     <>
@@ -137,7 +156,7 @@ const ProgramList = ({ history, userInfo }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={addNewConcept} name="New Program" />}
+              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={() => setRedirect(true)} name="New Program" />}
             </div>
 
             <AvniMaterialTable
@@ -147,15 +166,14 @@ const ProgramList = ({ history, userInfo }) => {
               fetchData={fetchData}
               options={{
                 pageSize: 10,
-                addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,
                 search: false,
-                rowStyle: rowData => ({
-                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
+                rowStyle: ({ original }) => ({
+                  backgroundColor: original.voided ? "#DBDBDB" : "#fff"
                 })
               }}
-              actions={hasEditPrivilege(userInfo) && [editProgram, voidProgram]}
+              actions={actions}
               route={"/appdesigner/program"}
             />
           </div>

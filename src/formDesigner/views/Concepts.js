@@ -1,90 +1,121 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useMemo, useCallback } from "react";
 import http from "common/utils/httpClient";
-import _ from "lodash";
+import { isEqual, isEmpty } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
-import Box from "@mui/material/Box";
+import { Box } from "@mui/material";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
-import Edit from "@mui/icons-material/Edit";
-import Delete from "@mui/icons-material/DeleteOutline";
+import { Edit, Delete } from "@mui/icons-material";
+
+function hasEditPrivilege(userInfo) {
+  return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);
+}
 
 const Concepts = ({ history, userInfo }) => {
-  const columns = [
-    {
-      title: "Name",
-      defaultSort: "asc",
-      render: rowData => <a href={`#/appDesigner/concept/${rowData.uuid}/show`}>{rowData.name}</a>
-    },
-    { title: "DataType", field: "dataType" },
-    { title: "OrganisationId", field: "organisationId", type: "numeric" }
-  ];
-
   const [redirect, setRedirect] = useState(false);
+  const tableRef = useRef(null);
 
-  const tableRef = React.createRef();
-  const refreshTable = ref => ref.current && ref.current.onQueryChange();
-
-  const fetchData = query =>
-    new Promise(resolve => {
-      let apiUrl = "/web/concepts?";
-      apiUrl += "size=" + query.pageSize;
-      apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.search)) apiUrl += "&name=" + encodeURIComponent(query.search);
-      if (!_.isEmpty(query.orderBy.field)) apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
-      http
-        .get(apiUrl)
-        .then(response => response.data)
-        .then(result => {
-          resolve({
-            data: result._embedded ? result._embedded.concept : [],
-            page: result.page.number,
-            totalCount: result.page.totalElements
-          });
-        });
-    });
-
-  const voidConcept = rowData => ({
-    icon: () => <Delete />,
-    tooltip: rowData.organisationId === 1 ? "Can not delete core concepts" : "Delete Concept",
-    onClick: (event, rowData) => {
-      const voidedMessage = "Do you want to delete the concept " + rowData.name + " ?";
-      if (window.confirm(voidedMessage)) {
-        http.delete(`/concept/${rowData.uuid}`).then(response => {
-          if (response.status === 200) {
-            refreshTable(tableRef);
-          }
-        });
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Name",
+        enableSorting: true,
+        Cell: ({ row }) => <a href={`#/appDesigner/concept/${row.original.uuid}/show`}>{row.original.name}</a>
+      },
+      {
+        accessorKey: "dataType",
+        header: "DataType"
+      },
+      {
+        accessorKey: "organisationId",
+        header: "OrganisationId",
+        type: "number",
+        muiTableBodyCellProps: { align: "right" }
       }
-    },
-    disabled: rowData.organisationId === 1
-  });
+    ],
+    []
+  );
 
-  const editConcept = rowData => ({
-    icon: () => <Edit />,
-    tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
-    onClick: (event, concept) => history.push(`/appdesigner/concept/${concept.uuid}/edit`),
-    disabled: rowData.organisationId === 1 || rowData.voided
-  });
+  const fetchData = useCallback(
+    ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
+      new Promise(resolve => {
+        let apiUrl = `/web/concepts?size=${encodeURIComponent(pageSize)}&page=${encodeURIComponent(page)}`;
+        if (!isEmpty(globalFilter)) {
+          apiUrl += `&name=${encodeURIComponent(globalFilter)}`;
+        }
+        if (orderBy) {
+          apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(orderDirection)}`;
+        }
+        http
+          .get(apiUrl)
+          .then(response => response.data)
+          .then(result => {
+            resolve({
+              data: result._embedded?.concept || [],
+              totalCount: result.page?.totalElements || 0
+            });
+          })
+          .catch(error => {
+            console.error("Failed to fetch concepts:", error);
+            resolve({
+              data: [],
+              totalCount: 0
+            });
+          });
+      }),
+    []
+  );
 
-  const addNewConcept = () => {
-    setRedirect(true);
-  };
+  const actions = useMemo(
+    () =>
+      hasEditPrivilege(userInfo)
+        ? [
+            {
+              icon: Edit,
+              tooltip: row => (row.original.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept"),
+              onClick: (event, row) => history.push(`/appdesigner/concept/${row.original.uuid}/edit`),
+              disabled: row => row.original.organisationId === 1 || row.original.voided
+            },
+            {
+              icon: Delete,
+              tooltip: row => (row.original.organisationId === 1 ? "Can not delete core concepts" : "Delete Concept"),
+              onClick: (event, row) => {
+                const voidedMessage = `Do you want to delete the concept ${row.original.name}?`;
+                if (window.confirm(voidedMessage)) {
+                  http
+                    .delete(`/concept/${row.original.uuid}`)
+                    .then(response => {
+                      if (response.status === 200 && tableRef.current) {
+                        tableRef.current.refresh();
+                      }
+                    })
+                    .catch(error => {
+                      console.error("Failed to delete concept:", error);
+                      alert("Failed to delete concept. Please try again.");
+                    });
+                }
+              },
+              disabled: row => row.original.organisationId === 1
+            }
+          ]
+        : [],
+    [history, userInfo, tableRef]
+  );
 
-  const hasPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Concepts" />
-
-        <div className="container">
-          <div>
-            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasPrivilege && <CreateComponent onSubmit={addNewConcept} name="New Concept" />}
-            </div>
+        <Title title="Concepts" color="primary" />
+        <Box className="container">
+          <Box component="div">
+            <Box sx={{ float: "right", right: "50px", marginTop: "15px" }}>
+              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={() => setRedirect(true)} name="New Concept" />}
+            </Box>
             <AvniMaterialTable
               title=""
               ref={tableRef}
@@ -93,25 +124,27 @@ const Concepts = ({ history, userInfo }) => {
               options={{
                 pageSize: 10,
                 pageSizeOptions: [10, 15, 20],
-                addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,
-                searchFieldAlignment: "left",
-                searchFieldStyle: { width: "100%", marginLeft: "-8%" },
-                rowStyle: rowData => ({
-                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
+                search: true,
+                rowStyle: ({ original }) => ({
+                  backgroundColor: original.voided ? "#DBDBDB" : "#fff"
                 })
               }}
-              actions={hasPrivilege && [editConcept, voidConcept]}
-              route={"/appdesigner/concepts"}
+              actions={actions}
+              route="/appdesigner/concepts"
             />
-          </div>
-        </div>
+          </Box>
+        </Box>
       </Box>
-      {redirect && <Redirect to={"/appdesigner/concept/create"} />}
+      {redirect && <Redirect to="/appdesigner/concept/create" />}
     </>
   );
 };
+
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
 
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo

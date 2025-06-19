@@ -1,6 +1,6 @@
-import React, { Fragment, useCallback, useState } from "react";
+import React, { Fragment, useCallback, useState, useEffect } from "react";
 import { Tabs, Box, Tab, Typography, Breadcrumbs, LinearProgress, Snackbar, IconButton } from "@mui/material";
-import MaterialTable from "material-table";
+import { MaterialReactTable } from "material-react-table";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Link, withRouter } from "react-router-dom";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
@@ -10,26 +10,24 @@ import BroadcastPath from "../utils/BroadcastPath";
 import ContactService from "../api/ContactService";
 import { Edit } from "@mui/icons-material";
 import AddEditContactGroup from "./AddEditContactGroup";
-import { MaterialTableToolBar, MaterialTableToolBarButton } from "../../common/material-table/MaterialTableToolBar";
 import ReceiverType from "./ReceiverType";
 import GroupMessageTab from "./GroupMessageTab";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
-import materialTableIcons from "../../common/material-table/MaterialTableIcons";
+import Button from "@mui/material/Button";
 
-const tableRef = React.createRef();
-
-const fetchData = (query, contactGroupId, onContactGroupLoaded) => {
-  return new Promise(resolve =>
-    ContactService.getContactGroupContacts(contactGroupId, query.page, query.pageSize).then(data => {
-      onContactGroupLoaded(data);
-      resolve(data["contacts"]);
-    })
-  );
+const fetchData = async (query, contactGroupId, onContactGroupLoaded) => {
+  const data = await ContactService.getContactGroupContacts(contactGroupId, query.page, query.pageSize);
+  onContactGroupLoaded(data);
+  return data["contacts"];
 };
 
 function Members({ contactGroupId, contactGroupMembersUpdated, contactGroupMembersVersion, onContactGroupLoaded }) {
   const { t } = useTranslation();
+  const [data, setData] = useState([]);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [addingSubjects, setAddingSubject] = useState(false);
   const [addingUsers, setAddingUser] = useState(false);
   const [error, setError] = useState(false);
@@ -38,67 +36,60 @@ function Members({ contactGroupId, contactGroupMembersUpdated, contactGroupMembe
   const [subjectAdded, setSubjectAdded] = useState(false);
   const [userDeleted, setUserDeleted] = useState(false);
 
-  const columns = [
-    {
-      title: t("name"),
-      sorting: false,
-      field: "name"
-    },
-    {
-      title: t("maskedPhone"),
-      sorting: false,
-      field: "maskedPhone"
+  const columns = [{ accessorKey: "name", header: t("name") }, { accessorKey: "maskedPhone", header: t("maskedPhone") }];
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const query = { page: pagination.pageIndex, pageSize: pagination.pageSize };
+      const result = await fetchData(query, contactGroupId, onContactGroupLoaded);
+      setData(result.content || result || []);
+      setTotalRecords(result.totalElements || result.length || 0);
+    } catch (err) {
+      setError(err);
+      setData([]);
+      setTotalRecords(0);
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  }, [pagination, contactGroupId, onContactGroupLoaded]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData, contactGroupMembersVersion]);
 
   const removeContactFromGroup = useCallback(
     contactRows => {
+      setDisplayProgress(true);
       ContactService.removeContactsFromGroup(contactGroupId, contactRows.map(x => x.id))
         .then(() => {
           contactGroupMembersUpdated();
           setUserDeleted(true);
         })
-        .catch(error => setError(error))
+        .catch(err => setError(err))
         .finally(() => setDisplayProgress(false));
-      setDisplayProgress(true);
     },
-    [error, contactGroupMembersVersion]
+    [contactGroupId, contactGroupMembersUpdated]
   );
-
-  const addingSubject = useCallback(() => {
-    setAddingSubject(true);
-    setError(false);
-  }, []);
-
-  const addingUser = useCallback(() => {
-    setAddingUser(true);
-    setError(false);
-  }, []);
 
   const onSubjectAdd = useCallback(() => {
     contactGroupMembersUpdated();
     setSubjectAdded(true);
     setAddingSubject(false);
-  }, []);
+  }, [contactGroupMembersUpdated]);
 
   const onUserAdd = useCallback(() => {
     setAddingUser(false);
     setUserAdded(true);
     contactGroupMembersUpdated();
-  }, []);
+  }, [contactGroupMembersUpdated]);
 
   return (
     <div className="container">
       {addingSubjects && (
-        <AddContactGroupSubjects
-          contactGroupId={contactGroupId}
-          onClose={() => setAddingSubject(false)}
-          onSubjectAdd={subject => onSubjectAdd()}
-        />
+        <AddContactGroupSubjects contactGroupId={contactGroupId} onClose={() => setAddingSubject(false)} onSubjectAdd={onSubjectAdd} />
       )}
-      {addingUsers && (
-        <AddContactGroupUsers contactGroupId={contactGroupId} onClose={() => setAddingUser(false)} onUserAdd={user => onUserAdd()} />
-      )}
+      {addingUsers && <AddContactGroupUsers contactGroupId={contactGroupId} onClose={() => setAddingUser(false)} onUserAdd={onUserAdd} />}
       {(userAdded || subjectAdded || error || userDeleted) && (
         <CustomizedSnackbar
           variant={!error ? "success" : "error"}
@@ -121,40 +112,36 @@ function Members({ contactGroupId, contactGroupMembersUpdated, contactGroupMembe
         />
       )}
       {displayProgress && <LinearProgress style={{ marginBottom: 30 }} />}
-      <MaterialTable
-        icons={materialTableIcons}
-        key={contactGroupMembersVersion}
-        title=""
-        components={{
-          Container: props => <Fragment>{props.children}</Fragment>,
-          Toolbar: props => (
-            <MaterialTableToolBar
-              toolBarButtons={[
-                new MaterialTableToolBarButton(contactRows => removeContactFromGroup(contactRows), true, "Delete"),
-                new MaterialTableToolBarButton(() => addingSubject(), false, "Add Subject"),
-                new MaterialTableToolBarButton(() => addingUser(), false, "Add User")
-              ]}
-              {...props}
-            />
-          )
-        }}
-        tableRef={tableRef}
+      <MaterialReactTable
         columns={columns}
-        data={query => fetchData(query, contactGroupId, onContactGroupLoaded)}
-        options={{
-          addRowPosition: "first",
-          sorting: false,
-          headerStyle: {
-            zIndex: 1
-          },
-          debounceInterval: 500,
-          search: false,
-          selection: true,
-          rowStyle: rowData => ({
-            backgroundColor: "#fff"
-          })
+        data={data}
+        manualPagination
+        onPaginationChange={setPagination}
+        rowCount={totalRecords}
+        state={{ pagination, isLoading }}
+        enableSorting={false}
+        enableGlobalFilter={false}
+        enableColumnFilters={false}
+        enableRowSelection
+        initialState={{ pagination: { pageSize: 10 } }}
+        muiTableProps={{
+          sx: { table: { backgroundColor: "#fff" } }
         }}
-        actions={[]}
+        renderTopToolbarCustomActions={({ table }) => (
+          <Box sx={{ display: "flex", gap: "8px" }}>
+            <Button
+              onClick={() => {
+                const selectedRows = table.getSelectedRowModel().rows.map(row => row.original);
+                removeContactFromGroup(selectedRows);
+              }}
+              disabled={table.getSelectedRowModel().rows.length === 0}
+            >
+              Delete
+            </Button>
+            <Button onClick={() => setAddingSubject(true)}>Add Subject</Button>
+            <Button onClick={() => setAddingUser(true)}>Add User</Button>
+          </Box>
+        )}
       />
     </div>
   );

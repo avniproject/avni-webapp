@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import NewFormModal from "../components/NewFormModal";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -12,8 +12,8 @@ import { CreateComponent } from "../../common/components/CreateComponent";
 
 const Forms = props => {
   const [showNewFormDialog, setShowNewFormDialog] = useState(false);
-  const openNewFormDialog = () => setShowNewFormDialog(true);
-  const closeNewFormDialog = () => setShowNewFormDialog(false);
+  const openNewFormDialog = useCallback(() => setShowNewFormDialog(true), []);
+  const closeNewFormDialog = useCallback(() => setShowNewFormDialog(false), []);
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -30,12 +30,13 @@ const Forms = props => {
                 <CloseIcon />
               </IconButton>
             </DialogTitle>
-
             <DialogContent dividers>
               <NewFormModal {...props} />
             </DialogContent>
           </Dialog>
-          <FormListing />
+          <div style={{ maxWidth: "100%", overflowX: "auto" }}>
+            <FormListing />
+          </div>
         </div>
       </div>
     </Box>

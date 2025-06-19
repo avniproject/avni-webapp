@@ -4,20 +4,14 @@ import { updateUserAssignmentToSubject } from "./SubjectAssignmentData";
 import _, { debounce, isEqual } from "lodash";
 
 const SubjectAssignmentMultiSelect = props => {
-  const [selectedOptions, setSelectedOptions] = useState(
-    getSortedDropdownList(props.selectedOptions)
-  );
+  const [selectedOptions, setSelectedOptions] = useState(getSortedDropdownList(props.selectedOptions));
 
   useEffect(() => {
     setSelectedOptions(getSortedDropdownList(props.selectedOptions));
   }, [props.selectedOptions]);
 
   function getSortedDropdownList(unsortedList) {
-    return _.sortBy(unsortedList, [
-      function(o) {
-        return _.upperCase(o.label);
-      }
-    ]);
+    return _.sortBy(unsortedList, [o => _.upperCase(o.label)]);
   }
 
   const _onChange = (value, event) => {
@@ -36,11 +30,7 @@ const SubjectAssignmentMultiSelect = props => {
     if (value.length === 0) {
       return placeholderButtonLabel;
     }
-
-    let labelDenotingAssignedUsers = `${value.length} user(s): ${value
-      .map(entry => entry.label)
-      .join(", ")}`;
-
+    let labelDenotingAssignedUsers = `${value.length} user(s): ${value.map(entry => entry.label).join(", ")}`;
     let truncatedLabel = _.truncate(labelDenotingAssignedUsers, { length: 50 });
     return truncatedLabel;
   }
@@ -52,6 +42,16 @@ const SubjectAssignmentMultiSelect = props => {
       onChange={debouncedOnChange}
       setState={setSelectedOptions}
       getDropdownButtonLabel={getDropdownButtonLabel}
+      menuPortalTarget={document.body}
+      styles={{
+        menuPortal: base => ({
+          ...base,
+          backgroundColor: "white",
+          opacity: 1,
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          borderRadius: "4px"
+        })
+      }}
     />
   );
 };

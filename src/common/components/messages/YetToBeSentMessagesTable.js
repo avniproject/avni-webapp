@@ -1,82 +1,79 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
-import { Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { Typography, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import MaterialTable from "material-table";
-
+import { MaterialReactTable } from "material-react-table";
 import { formatDateTime } from "../../utils/General";
 import { formatMsgTemplate } from "../utils";
-import materialTableIcons from "../../material-table/MaterialTableIcons";
+import MaterialTableIcons from "../../material-table/MaterialTableIcons";
 
-const useStyles = makeStyles(theme => ({
-  labelStyle: {
-    color: "red",
-    backgroundColor: "#ffeaea",
-    fontSize: "12px",
-    alignItems: "center",
-    margin: 0
-  },
-  infoMsg: {
-    marginLeft: 10
-  }
+const InfoMsg = styled(Typography)(({ theme }) => ({
+  marginLeft: 10
 }));
 
 const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   const columns = [
     {
-      title: t("sender"),
-      field: "createdBy"
+      accessorKey: "createdBy",
+      header: t("sender"),
+      Cell: ({ row }) => row.original.createdBy || ""
     },
     {
-      title: t("messageTemplateBody"),
-      field: "messageTemplateBody",
-      type: "string",
-      render: row => formatMsgTemplate(row["messageTemplate"].body, row["messageRuleParams"]),
-      cellStyle: {
-        minWidth: 200,
-        maxWidth: 550
+      accessorKey: "messageTemplateBody",
+      header: t("messageTemplateBody"),
+      Cell: ({ row }) =>
+        row.original.messageTemplate?.body ? formatMsgTemplate(row.original.messageTemplate.body, row.original.messageRuleParams) : "",
+      muiTableBodyCellProps: {
+        sx: { minWidth: 200, maxWidth: 550 }
       }
     },
     {
-      title: t("scheduledAt"),
-      field: "scheduledAt",
-      type: "date",
-      render: row => formatDateTime(row.scheduledDateTime),
-      defaultSort: "desc"
+      accessorKey: "scheduledDateTime",
+      header: t("scheduledAt"),
+      Cell: ({ row }) => (row.original.scheduledDateTime ? formatDateTime(row.original.scheduledDateTime) : ""),
+      sortingFn: "datetime",
+      sortDescFirst: true
     }
   ];
 
   const renderNoMsgsYetToBeSent = () => (
-    <Typography variant="caption" gutterBottom className={classes.infoMsg}>
-      {" "}
-      {t("noMessagesYetToBeSent")}{" "}
-    </Typography>
+    <InfoMsg variant="caption" gutterBottom>
+      {t("noMessagesYetToBeSent")}
+    </InfoMsg>
   );
 
   const renderTable = () => (
-    <MaterialTable
-      icons={materialTableIcons}
-      title=""
+    <MaterialReactTable
       columns={columns}
-      data={msgsYetToBeSent}
-      options={{
-        pageSize: 10,
-        pageSizeOptions: [10, 15, 20],
-        addRowPosition: "first",
-        sorting: true,
-        headerStyle: {
-          zIndex: 1
-        },
-        debounceInterval: 500,
-        search: false,
-        toolbar: false
+      data={msgsYetToBeSent || []}
+      icons={MaterialTableIcons}
+      getRowId={row => row.id || row.uuid} // Ensure unique row IDs
+      initialState={{
+        pagination: { pageSize: 10, pageIndex: 0 },
+        density: "compact",
+        sorting: [{ id: "scheduledDateTime", desc: true }] // Default sort
+      }}
+      muiTableProps={{
+        sx: {
+          "& .MuiTableHead-root": { zIndex: 1 }
+        }
+      }}
+      muiTablePaginationProps={{
+        rowsPerPageOptions: [10, 15, 20]
+      }}
+      enableSorting
+      enableGlobalFilter={false}
+      enableColumnFilters={false}
+      enableTopToolbar={false}
+      state={{
+        isLoading: !msgsYetToBeSent // Handle loading state
       }}
     />
   );
 
-  return isMsgsNotYetSentAvailable ? renderTable() : renderNoMsgsYetToBeSent();
+  return <Box sx={{ position: "relative" }}>{isMsgsNotYetSentAvailable ? renderTable() : renderNoMsgsYetToBeSent()}</Box>;
 };
+
 export default YetToBeSentMessagesTable;

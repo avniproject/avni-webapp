@@ -17,7 +17,8 @@ import {
   ViewColumn
 } from "@mui/icons-material";
 
-export default {
+// Adjusted for material-react-table compatibility
+const MaterialTableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
   Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
@@ -34,5 +35,10 @@ export default {
   Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
   SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
+  // Additional icons for material-react-table
+  ColumnMenu: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
+  FilterVariant: forwardRef((props, ref) => <FilterList {...props} ref={ref} />)
 };
+
+export default MaterialTableIcons;

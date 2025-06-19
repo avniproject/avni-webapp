@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import http from "../../../common/utils/httpClient";
-import makeStyles from "@mui/styles/makeStyles";
-import { cloneDeep, get } from "lodash";
+import { get } from "lodash";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import Modal from "@mui/material/Modal";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -16,7 +15,8 @@ import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MuiComponentHelper from "../../../common/utils/MuiComponentHelper";
-import Delete from "@mui/icons-material/DeleteOutline";
+import { Delete } from "@mui/icons-material";
+import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles(theme => ({
   progress: {
@@ -38,58 +38,128 @@ function hasEditPrivilege(userInfo) {
 
 const ReportingViews = ({ userInfo }) => {
   const classes = useStyles();
-  const tableRef = React.createRef();
-  const columns = [
-    {
-      title: "View Name",
-      field: "viewName",
-      searchable: true,
-      render: rowData => (rowData.legacyView ? renderWarning(rowData.viewName) : <span>{rowData.viewName}</span>)
-    }
-  ];
-
+  const tableRef = useRef(null);
   const [result, setResult] = useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [showAlert, setShowAlert] = React.useState(false);
-  const [message, setMessage] = React.useState();
+  const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [message, setMessage] = useState();
 
   useEffect(() => {
-    http.get("/viewsInDb").then(response => {
-      const result = response.data;
-      setResult(result);
-    });
+    http
+      .get("/viewsInDb")
+      .then(response => {
+        console.log("ReportingViews fetchData response:", response.data); // Debug log
+        setResult(
+          (response.data || []).map(view => ({
+            ...view,
+            legacyView: view.legacyView ?? false // Normalize legacyView
+          }))
+        );
+      })
+      .catch(error => {
+        console.error("Failed to fetch views:", error);
+        setResult([]);
+      });
   }, []);
 
-  const deleteView = rowData => {
-    return rowData.legacyView
-      ? null
-      : {
-          icon: () => <Delete />,
-          tooltip: "Delete View",
-          onClick: (event, rowData) => {
-            const voidedMessage = "Do you really want to delete view " + rowData.viewName + " ?";
-            if (window.confirm(voidedMessage)) {
-              http.delete("/reportingView/" + rowData.viewName).then(response => {
-                if (response.status === 200) {
-                  const index = result.indexOf(rowData);
-                  const clonedResult = cloneDeep(result);
-                  clonedResult.splice(index, 1);
-                  setResult(clonedResult);
-                }
-              });
-            }
-          }
-        };
-  };
+  const renderWarning = useCallback(
+    (viewName, isLegacy) => (
+      <span>
+        {viewName}
+        {isLegacy && (
+          <Chip
+            label={"Deprecated - Do not use"}
+            style={{ display: "inline-block", marginLeft: "10px", marginBottom: "10px" }}
+            className={classes.chip}
+          />
+        )}
+      </span>
+    ),
+    [classes.chip]
+  );
 
-  const confirmViewCreation = () => {
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "viewName",
+        header: "View Name",
+        enableSorting: true,
+        Cell: ({ row }) => renderWarning(row.original.viewName, row.original.legacyView)
+      }
+    ],
+    [renderWarning]
+  );
+
+  const fetchData = useCallback(
+    ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
+      new Promise(resolve => {
+        let filteredData = [...result];
+        if (globalFilter) {
+          filteredData = filteredData.filter(view => view.viewName.toLowerCase().includes(globalFilter.toLowerCase()));
+        }
+        if (orderBy) {
+          filteredData.sort((a, b) => {
+            const aValue = get(a, orderBy, "");
+            const bValue = get(b, orderBy, "");
+            const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+            return orderDirection === "asc" ? comparison : -comparison;
+          });
+        }
+        const start = page * pageSize;
+        const paginatedData = filteredData.slice(start, start + pageSize);
+        resolve({
+          data: paginatedData,
+          totalCount: filteredData.length
+        });
+      }),
+    [result]
+  );
+
+  const actions = useMemo(
+    () =>
+      hasEditPrivilege(userInfo)
+        ? [
+            row =>
+              row.original.legacyView
+                ? null
+                : {
+                    icon: Delete,
+                    tooltip: "Delete View",
+                    onClick: (event, row) => {
+                      const voidedMessage = `Do you really want to delete view ${row.original.viewName}?`;
+                      if (window.confirm(voidedMessage)) {
+                        http
+                          .delete(`/reportingView/${row.original.viewName}`)
+                          .then(response => {
+                            if (response.status === 200 && tableRef.current) {
+                              tableRef.current.refresh();
+                            }
+                          })
+                          .catch(error => {
+                            console.error("Failed to delete view:", error);
+                            alert("Failed to delete view. Please try again.");
+                          });
+                      }
+                    }
+                  }
+          ]
+        : [],
+    [userInfo]
+  );
+
+  const confirmViewCreation = useCallback(() => {
     if (window.confirm("Are you sure you want to proceed with view creation/refresh?")) {
       setLoading(true);
       http
         .post("/createReportingViews")
         .then(res => {
           if (res.status === 200) {
-            setResult(res.data);
+            setResult(
+              (res.data || []).map(view => ({
+                ...view,
+                legacyView: view.legacyView ?? false
+              }))
+            );
             setLoading(false);
             setMessage("Successfully created the views");
             setShowAlert(true);
@@ -101,19 +171,7 @@ const ReportingViews = ({ userInfo }) => {
           alert(errorMessage);
         });
     }
-  };
-
-  const renderWarning = viewName => (
-    <span>
-      {viewName}
-      <Chip
-        label={"Deprecated - Do not use"}
-        style={{ display: "inline-block", marginLeft: "10px", marginBottom: "10px" }}
-        className={classes.chip}
-        labelStyle={{ verticalAlign: "top" }}
-      />
-    </span>
-  );
+  }, []);
 
   return (
     <Box boxShadow={2} p={5} bgcolor="background.paper">
@@ -122,35 +180,30 @@ const ReportingViews = ({ userInfo }) => {
         <div className="container">
           {hasEditPrivilege(userInfo) && (
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={() => confirmViewCreation()} name="Create/Refresh view" />
+              <CreateComponent onSubmit={confirmViewCreation} name="Create/Refresh view" />
             </div>
           )}
           <AvniMaterialTable
             title=""
             ref={tableRef}
             columns={columns}
-            data={result}
+            fetchData={fetchData}
             options={{
-              addRowPosition: "first",
               pageSize: 10,
               pageSizeOptions: [10, 15, 20],
               sorting: true,
               debounceInterval: 500,
-              searchFieldAlignment: "left",
-              searchFieldStyle: { width: "100%", marginLeft: "-8%" },
-              rowStyle: rowData => ({
-                backgroundColor: rowData["legacyView"] ? "#DBDBDB" : "#FFF"
+              search: true,
+              rowStyle: ({ original }) => ({
+                backgroundColor: original.legacyView ? "#DBDBDB" : "#FFF"
               })
             }}
-            detailPanel={[
-              {
-                tooltip: "View definition",
-                render: rowData => {
-                  return <JSEditor readOnly value={rowData.viewDefinition} />;
-                }
-              }
-            ]}
-            actions={hasEditPrivilege(userInfo) && [deleteView]}
+            renderDetailPanel={({ row }) => (
+              <Box p={2}>
+                <JSEditor readOnly value={row.original.viewDefinition} />
+              </Box>
+            )}
+            actions={actions}
             route={"/appdesigner/reportingViews"}
           />
         </div>

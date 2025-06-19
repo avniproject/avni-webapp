@@ -17,26 +17,18 @@ function ContactGroupLink({ rowData, column }) {
 
 const columns = [
   {
-    title: "Name",
-    defaultSort: "asc",
-    sorting: false,
-    filtering: true,
-    field: "label",
-    render: rowData => <ContactGroupLink rowData={rowData} column="label" />
+    accessorKey: "label",
+    header: "Name",
+    Cell: ({ row }) => <ContactGroupLink rowData={row.original} column="label" />
   },
   {
-    title: "Description",
-    defaultSort: "asc",
-    sorting: false,
-    filtering: false,
-    field: "description"
+    accessorKey: "description",
+    header: "Description"
   },
   {
-    title: "No of contacts",
-    sorting: false,
-    field: "contactsCount",
-    filtering: false,
-    render: rowData => <ContactGroupLink rowData={rowData} column="contactsCount" />
+    accessorKey: "contactsCount",
+    header: "No of contacts",
+    Cell: ({ row }) => <ContactGroupLink rowData={row.original} column="contactsCount" />
   }
 ];
 
@@ -57,19 +49,25 @@ function TabContent(props) {
 
 const WhatsAppHome = function() {
   const defaultActiveTab = "groups";
-  const { activeTab, receiverId } = useParams();
+  const { activeTab: activeTabFromParams, receiverId } = useParams(); // Added receiverId
   const history = useHistory();
-
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState(activeTabFromParams || defaultActiveTab);
 
   useEffect(() => {
-    if (!activeTab) {
-      history.push(`/${BroadcastPath.WhatsAppFullPath}/${defaultActiveTab}`);
+    if (!activeTabFromParams) {
+      setActiveTab(defaultActiveTab);
+      history.replace(`/${BroadcastPath.WhatsAppFullPath}/${defaultActiveTab}`);
+    } else if (activeTabFromParams !== activeTab) {
+      setActiveTab(activeTabFromParams);
     }
-  }, []);
+  }, [activeTabFromParams, history]);
 
   const toggle = (event, tab) => {
-    if (activeTab !== tab) history.push(`/${BroadcastPath.WhatsAppFullPath}/${tab}`);
+    if (activeTab !== tab) {
+      setActiveTab(tab);
+      history.push(`/${BroadcastPath.WhatsAppFullPath}/${tab}`);
+    }
   };
 
   return (
