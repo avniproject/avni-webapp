@@ -213,9 +213,20 @@ const SelfServiceReports = () => {
                 </div>
               )}
             </Box>
+            <br />
+            <Typography variant="body2" color="textPrimary" component="p">
+              Metabase provides analytics charts. You can use this interface to create charts automatically based on your data.
+            </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
-              Metabase provides a graphical interface to create business intelligence and analytics graphs in minutes. Avni integrates with
-              Metabase to support ad hoc and self-serviced reports.
+              1. Setup Reports: This will create the charts based on your data in a collection. The metabase collection name is
+              your-organisation-name. First time you need to do only this, no need to do refresh reports.
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              2. Refresh Reports: This will refresh the charts based on changes in your forms, since setup or last time you ran refresh
+              reports. Use only if you have made any changes to your forms. Any data update is automatically reflected in your charts.
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              3. Delete: This will delete all the charts and metabase collection. This will bring up the option of Setup Reports again.
             </Typography>
             <Typography variant="body1" color="textSecondary" component="p" style={{ marginTop: 20 }}>
               {`Setup and Refresh reports may take upto ${statusResponse.getExpectedDurationInMinutes()} minutes`}
@@ -279,6 +290,7 @@ const SelfServiceReports = () => {
             </Box>
             {showErrorMessage && (
               <>
+                <br />
                 <Typography variant="h6" color="error">
                   Last attempt failed with error
                 </Typography>
