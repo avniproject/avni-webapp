@@ -3,10 +3,12 @@ import Body from "./Body";
 import AppBar from "./AppBar";
 import clsx from "clsx";
 import { makeStyles } from "@mui/styles";
-import { Drawer, List, IconButton, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Drawer, List, IconButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 import _ from "lodash";
+
+import ListItemButton from "@mui/material/ListItemButton";
 
 const drawerWidth = 240;
 
@@ -103,8 +105,7 @@ const applyLeftMenu = (classes, open, handleDrawer, selectedIndex, handleListIte
           {_.map(sidebarOptions, (option, index) => {
             const path = option.href.startsWith("#") ? option.href.replace("#", "") : option.href;
             return (
-              <ListItem
-                button
+              <ListItemButton
                 key={option.name}
                 selected={selectedIndex === index}
                 onClick={() => {
@@ -113,7 +114,7 @@ const applyLeftMenu = (classes, open, handleDrawer, selectedIndex, handleListIte
                 }}
               >
                 {applyListIcon(open, <option.Icon />, option.name)}
-              </ListItem>
+              </ListItemButton>
             );
           })}
         </List>

@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { List, ListItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
+import { List, ListItemIcon, ListItemText, Divider } from "@mui/material";
 import { ChevronRight } from "@mui/icons-material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -8,6 +8,8 @@ import { InternalLink } from "../../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";
 import { sortBy } from "lodash";
+
+import ListItemButton from "@mui/material/ListItemButton";
 
 const useStyle = makeStyles(theme => ({
   container: {
@@ -40,13 +42,13 @@ function NewMenu({ operationalModules, handleClose }) {
           return (
             <React.Fragment key={index}>
               <InternalLink key={index} to={`/app/register?type=${element.name}`} style={{ color: "blue" }}>
-                <ListItem button onClick={handleClose}>
+                <ListItemButton onClick={handleClose}>
                   <ListItemIcon>
                     <SubjectTypeIcon subjectType={element} size={25} />
                   </ListItemIcon>
                   <ListItemText primary={t(element.name)} />
                   <ChevronRight />
-                </ListItem>
+                </ListItemButton>
               </InternalLink>
               <Divider className={classes.dividerColor} />
             </React.Fragment>

@@ -1,17 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import {
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel
-} from "@mui/material";
+import { List, ListItemIcon, ListItemText, Collapse, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from "@mui/material";
 import { Settings, Logout, ArrowUpward, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { LOCALES } from "../../common/constants";
 import { useTranslation } from "react-i18next";
@@ -20,6 +9,8 @@ import { connect } from "react-redux";
 import { get } from "lodash";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+
+import ListItemButton from "@mui/material/ListItemButton";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -131,13 +122,13 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
         className={classes.root}
         style={{ boxShadow: "3px 3px 5px #aaaaaa", padding: "1%" }}
       >
-        <ListItem button onClick={toggleSettingsMenu} style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+        <ListItemButton onClick={toggleSettingsMenu} style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <Settings style={{ color: "blue" }} />
           </ListItemIcon>
           <ListItemText primary={t("settings")} style={{ color: "blue" }} />
           {open ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
+        </ListItemButton>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <FormControl
             component="fieldset"
@@ -166,20 +157,20 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
         </Collapse>
         <hr className={classes.horizontalLine} />
         {hasUploadPrivilege && (
-          <ListItem onClick={() => history.push(`/admin/upload`)} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+          <ListItemButton onClick={() => history.push(`/admin/upload`)} style={{ paddingTop: "5px", paddingBottom: "5px" }}>
             <ListItemIcon>
               <ArrowUpward style={{ color: "blue" }} />
             </ListItemIcon>
             <ListItemText primary={t("bulk upload")} />
-          </ListItem>
+          </ListItemButton>
         )}
         <hr className={classes.horizontalLine} />
-        <ListItem onClick={logout} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+        <ListItemButton onClick={logout} style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <Logout style={{ color: "blue" }} />
           </ListItemIcon>
           <ListItemText primary={t("logout")} />
-        </ListItem>
+        </ListItemButton>
       </List>
     </div>
   );

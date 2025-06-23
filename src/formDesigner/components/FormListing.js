@@ -12,7 +12,8 @@ import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
 
 function isActionDisabled(rowData, userInfo) {
-  return rowData?.voided ?? false || !UserInfo.hasFormEditPrivilege(userInfo, rowData?.formType);
+  // prettier-ignore
+  return (rowData?.voided ?? false) || !UserInfo.hasFormEditPrivilege(userInfo, rowData?.formType);
 }
 
 const FormListing = ({ history, userInfo }) => {
