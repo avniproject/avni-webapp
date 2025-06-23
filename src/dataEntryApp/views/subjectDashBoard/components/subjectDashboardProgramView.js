@@ -172,7 +172,16 @@ const ProgramView = ({
           scopeType={extensionScopeTypes.programEnrolment}
           configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
         />
-        <Grid item xs={4} container direction="row" justifyContent="flex-start" alignItems="flex-start">
+        <Grid
+          item
+          xs={4}
+          container
+          direction="row"
+          sx={{
+            justifyContent: "flex-start",
+            alignItems: "flex-start"
+          }}
+        >
           <label className={classes.programLabel}>
             {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>

@@ -914,7 +914,12 @@ class FormDetails extends Component {
     const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(this.props.userInfo, this.state.formType);
     const form = (
       <Grid container>
-        <Grid container alignContent="flex-end">
+        <Grid
+          container
+          sx={{
+            alignContent: "flex-end"
+          }}
+        >
           <Grid item sm={10}>
             {this.state.nameError && <FormHelperText error>Form name is empty</FormHelperText>}
             <TextField
@@ -944,7 +949,6 @@ class FormDetails extends Component {
               </Button>
             </Grid>
           )}
-
           {hasFormEditPrivilege && !this.state.createFlag && (
             <Grid item sm={2}>
               <SaveComponent
@@ -974,7 +978,6 @@ class FormDetails extends Component {
             </div>
           )}
         </Grid>
-
         <Grid item sm={12}>
           <Tabs style={{ background: "#2196f3", color: "white" }} value={this.state.activeTabIndex} onChange={this.onTabHandleChange}>
             <Tab label="Details" />
@@ -1008,11 +1011,9 @@ class FormDetails extends Component {
                 )}
               </Droppable>
             </DragDropContext>
-
             <SystemInfo {...this.state.form} direction={"row"} />
             {/* </div> */}
           </TabContainer>
-
           <div hidden={this.state.activeTabIndex !== 1}>
             <FormLevelRules
               form={this.state.form}
@@ -1036,9 +1037,14 @@ class FormDetails extends Component {
           state: this.state
         }}
       >
-        <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Box
+          sx={{
+            boxShadow: 2,
+            p: 3,
+            bgcolor: "background.paper"
+          }}
+        >
           <Title title="Form Details" />
-
           {this.state.dataLoaded ? form : <div>Loading</div>}
           {this.state.redirectToWorkflow && redirectTo !== undefined && <Redirect to={`/appdesigner/${redirectTo.stateName}`} />}
           {this.state.successAlert && (

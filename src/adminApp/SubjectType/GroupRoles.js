@@ -68,8 +68,16 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
   };
 
   return (
-    <Box mt={1}>
-      <Box mb={2}>
+    <Box
+      sx={{
+        mt: 1
+      }}
+    >
+      <Box
+        sx={{
+          mb: 2
+        }}
+      >
         {Types.isHousehold(type) && (
           <AvniSelect
             label="Select Member Subject *"
@@ -90,7 +98,14 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
         )}
       </Box>
       {map(nonVoidedRoles, (groupRole, index) => (
-        <Grid key={index} container direction="row" alignItems="center">
+        <Grid
+          key={index}
+          container
+          direction="row"
+          sx={{
+            alignItems: "center"
+          }}
+        >
           <Box className={classes.root} noValidate autoComplete="off">
             <TextField
               disabled={Types.isHousehold(type)}

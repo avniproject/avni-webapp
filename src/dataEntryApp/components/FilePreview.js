@@ -39,14 +39,16 @@ export const FilePreview = ({ url, obsValue }) => {
   };
   return (
     <Box
-      display={"flex"}
-      flexDirection={"row"}
-      alignItems={"center"}
-      px={4}
-      py={1}
       className={classes.container}
       onClick={() => window.open(url, "_blank")}
       style={{ cursor: "pointer" }}
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        px: 4,
+        py: 1
+      }}
     >
       <InsertDriveFile className={classes.icon} />
       <div>

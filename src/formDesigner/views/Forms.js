@@ -16,7 +16,13 @@ const Forms = props => {
   const closeNewFormDialog = useCallback(() => setShowNewFormDialog(false), []);
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title="Forms" />
       <div className="container">
         <div>
@@ -42,5 +48,4 @@ const Forms = props => {
     </Box>
   );
 };
-
 export default Forms;

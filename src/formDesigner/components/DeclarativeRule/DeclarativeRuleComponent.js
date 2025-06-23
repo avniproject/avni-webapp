@@ -12,8 +12,21 @@ const DeclarativeRuleComponent = ({ declarativeRule, declarativeRuleIndex, getAp
   const dispatch = useDeclarativeRuleDispatch();
 
   return (
-    <Box component={"div"} border={1} p={1} mb={1}>
-      <Grid container item justifyContent={"flex-end"}>
+    <Box
+      component={"div"}
+      sx={{
+        border: 1,
+        p: 1,
+        mb: 1
+      }}
+    >
+      <Grid
+        container
+        item
+        sx={{
+          justifyContent: "flex-end"
+        }}
+      >
         <Button
           size="small"
           onClick={() => dispatch({ type: "deleteDeclarativeRule", payload: { declarativeRuleIndex } })}

@@ -23,8 +23,20 @@ const CompoundRuleComponent = ({ compoundRule, conditionIndex, declarativeRuleIn
   const onConditionDelete = () => dispatch({ type: "deleteCondition", payload: { declarativeRuleIndex, conditionIndex } });
 
   return (
-    <Box m={1} border={1} p={2}>
-      <Box display="flex" alignItems="flex-start" justifyContent={"space-between"}>
+    <Box
+      sx={{
+        m: 1,
+        border: 1,
+        p: 2
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between"
+        }}
+      >
         <CompoundRuleConjunctionComponent onConjunctionChange={onCompoundRuleConjunctionChange} value={conjunction} />
         <Box>
           <Button size="small" onClick={onConditionDelete}>
@@ -36,7 +48,13 @@ const CompoundRuleComponent = ({ compoundRule, conditionIndex, declarativeRuleIn
         {map(rules, (rule, index) => (
           <Grid item container direction={"column"} spacing={1} key={index}>
             {index !== 0 && (
-              <Grid item container justifyContent={"center"}>
+              <Grid
+                item
+                container
+                sx={{
+                  justifyContent: "center"
+                }}
+              >
                 <Chip style={{ marginTop: "10px", marginBottom: "10px" }} color="primary" label={toUpper(compoundRule.conjunction)} />
               </Grid>
             )}
@@ -54,5 +72,4 @@ const CompoundRuleComponent = ({ compoundRule, conditionIndex, declarativeRuleIn
     </Box>
   );
 };
-
 export default CompoundRuleComponent;

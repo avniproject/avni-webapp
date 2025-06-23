@@ -37,7 +37,14 @@ export const CodedConceptAnswer = ({
   const isDuplicateAnswerValue = get(answer, "isAnswerHavingError.isErrored") && answer.isAnswerHavingError.type === "duplicate";
 
   return (
-    <Grid item container spacing={0} alignItems={"center"}>
+    <Grid
+      item
+      container
+      spacing={0}
+      sx={{
+        alignItems: "center"
+      }}
+    >
       <Grid item xs={8} sm={3} md={4}>
         <AutoSuggestSingleSelection
           visibility={!answer.editable}
@@ -91,7 +98,14 @@ export const CodedConceptAnswer = ({
         />
       </Grid>
       <Grid item>
-        <Grid item container direction={"row"} alignItems={"center"}>
+        <Grid
+          item
+          container
+          direction={"row"}
+          sx={{
+            alignItems: "center"
+          }}
+        >
           <Grid item>
             <Button disabled={index === 0} color="primary" type="button" onClick={() => action("onMoveUp")}>
               <ArrowDropUp /> Move up
@@ -126,13 +140,11 @@ export const CodedConceptAnswer = ({
     </Grid>
   );
 };
-
 CodedConceptAnswer.defaultProps = {
   inlineConcept: false,
   elementIndex: -1,
   groupIndex: -1
 };
-
 export default function CodedConcept(props) {
   return (
     <>

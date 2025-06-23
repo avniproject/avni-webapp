@@ -5,7 +5,11 @@ import { JsonEditor } from "../../../formDesigner/components/JsonEditor";
 
 export const ExportRequestBody = ({ customRequest, exportRequest, dispatch }) => {
   return (
-    <Box mb={2}>
+    <Box
+      sx={{
+        mb: 2
+      }}
+    >
       <Typography component={"div"} variant={"subtitle1"}>
         {"Request body"}
       </Typography>

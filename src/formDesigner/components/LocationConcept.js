@@ -170,7 +170,12 @@ export const LocationConcept = props => {
   return (
     <>
       <br />
-      <Grid container justifyContent="flex-start">
+      <Grid
+        container
+        sx={{
+          justifyContent: "flex-start"
+        }}
+      >
         <Grid item={true} xs={12} sm={12}>
           <AvniSwitch
             onChange={updateIsWithinCatchment}

@@ -67,14 +67,19 @@ const GroupSubjectMemberCardView = ({
 
   const removeGroupMemberDialogContent = (
     <DialogContent style={{ width: 600, height: "auto" }}>
-      <Grid container direction="row" alignItems="flex-start">
+      <Grid
+        container
+        direction="row"
+        sx={{
+          alignItems: "flex-start"
+        }}
+      >
         <Typography variant="subtitle1" gutterBottom>
           {t("removeMemberConfirmationMessage")}
         </Typography>
       </Grid>
     </DialogContent>
   );
-
   return (
     <div>
       <SubjectCardView
@@ -136,5 +141,4 @@ const GroupSubjectMemberCardView = ({
     </div>
   );
 };
-
 export default GroupSubjectMemberCardView;

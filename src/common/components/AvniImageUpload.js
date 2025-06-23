@@ -110,7 +110,14 @@ export const AvniImageUpload = ({
     return (
       <React.Fragment>
         <FormControl>
-          <Grid container direction="row" alignItems="center" spacing={1}>
+          <Grid
+            container
+            direction="row"
+            spacing={1}
+            sx={{
+              alignItems: "center"
+            }}
+          >
             <Grid item>
               <Typography style={{ opacity: 0.5 }}>{label}</Typography>
             </Grid>

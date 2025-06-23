@@ -3,8 +3,19 @@ import React from "react";
 
 const Header = () => {
   return (
-    <Box pb={3}>
-      <Grid container direction={"column"} alignItems={"center"} spacing={1}>
+    <Box
+      sx={{
+        pb: 3
+      }}
+    >
+      <Grid
+        container
+        direction={"column"}
+        spacing={1}
+        sx={{
+          alignItems: "center"
+        }}
+      >
         <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
           <Typography variant="h3" align={"center"}>
             We are here to help!
@@ -20,5 +31,4 @@ const Header = () => {
     </Box>
   );
 };
-
 export default Header;

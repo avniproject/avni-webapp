@@ -5,7 +5,14 @@ import _ from "lodash";
 
 export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, modifiedDateTime, lastModifiedDateTime, direction }) => {
   return (
-    <Grid container direction={direction || "column"} justifyContent={"space-between"} spacing={2}>
+    <Grid
+      container
+      direction={direction || "column"}
+      spacing={2}
+      sx={{
+        justifyContent: "space-between"
+      }}
+    >
       <Grid item container direction={"column"} spacing={1} xs={6}>
         <Grid item>
           <FormLabel style={{ fontSize: "13px" }}>Created </FormLabel>
@@ -14,7 +21,22 @@ export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, m
           <span style={{ fontSize: "15px" }}>{createdAudit({ createdBy, createdDateTime })}</span>
         </Grid>
       </Grid>
-      <Grid item container direction={"column"} spacing={1} xs={6} alignContent={direction ? "flex-end" : "flex-start"}>
+      <Grid
+        item
+        container
+        direction={"column"}
+        spacing={1}
+        xs={6}
+        sx={[
+          direction
+            ? {
+                alignContent: "flex-end"
+              }
+            : {
+                alignContent: "flex-start"
+              }
+        ]}
+      >
         <Grid item>
           <FormLabel style={{ fontSize: "13px" }}>Modified </FormLabel>
         </Grid>

@@ -81,7 +81,14 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
+        <Grid
+          container
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "baseline"
+          }}
+        >
           <Typography component={"span"} className={classes.mainHeading}>
             {t(defaultTo(encounter.name, encounter.encounterType.name))}
           </Typography>

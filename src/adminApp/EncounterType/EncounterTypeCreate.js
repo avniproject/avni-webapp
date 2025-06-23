@@ -144,7 +144,13 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <DocumentationContainer filename={"EncounterType.md"}>
           <Title title={"Create Encounter Type"} />
           <div className="container">
@@ -189,7 +195,6 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
     </>
   );
 };
-
 const mapStateToProps = state => ({
   organisationConfig: state.app.organisationConfig
 });

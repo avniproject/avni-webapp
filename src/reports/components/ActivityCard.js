@@ -4,8 +4,23 @@ import { map } from "lodash";
 
 const ActivityCard = ({ title, total, data }) => {
   return (
-    <Box border={1.5} mb={2} borderColor={"#ddd"} p={2}>
-      <Grid container direction={"column"} alignItems="center" justifyContent="center" style={{ minWidth: "30vh" }}>
+    <Box
+      sx={{
+        border: 1.5,
+        mb: 2,
+        borderColor: "#ddd",
+        p: 2
+      }}
+    >
+      <Grid
+        container
+        direction={"column"}
+        style={{ minWidth: "30vh" }}
+        sx={{
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
         <Grid item>
           <Typography gutterBottom variant="h5" align={"center"}>
             {title}
@@ -16,9 +31,26 @@ const ActivityCard = ({ title, total, data }) => {
             {total}
           </Typography>
         </Grid>
-        <Grid item container direction={"row"} spacing={1} alignItems="center" justifyContent={"center"}>
+        <Grid
+          item
+          container
+          direction={"row"}
+          spacing={1}
+          sx={{
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
           {map(data, ({ indicator, count }, index) => (
-            <Box border={1} m={1} borderColor={"#ddd"} p={2} key={index}>
+            <Box
+              key={index}
+              sx={{
+                border: 1,
+                m: 1,
+                borderColor: "#ddd",
+                p: 2
+              }}
+            >
               <Grid item container direction={"column"} key={index} xs wrap={"nowrap"} style={{ minWidth: "10vh" }}>
                 <Grid item>
                   <Typography gutterBottom variant="subtitle1" align={"center"}>
@@ -38,5 +70,4 @@ const ActivityCard = ({ title, total, data }) => {
     </Box>
   );
 };
-
 export default ActivityCard;

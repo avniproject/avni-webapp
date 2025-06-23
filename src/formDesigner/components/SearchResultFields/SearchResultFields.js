@@ -134,7 +134,13 @@ const SearchResultFields = ({ userInfo }) => {
   );
 
   return (
-    <Box boxShadow={2} p={5} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 5,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title="Search Result Fields" />
       <CustomizedBackdrop load={loadApp} />
       {loadApp && (
@@ -149,7 +155,12 @@ const SearchResultFields = ({ userInfo }) => {
             style={{ width: "auto" }}
             onChange={concept => dispatch({ type: "addCustomField", payload: { concept } })}
           />
-          <Box mt={3} mb={5}>
+          <Box
+            sx={{
+              mt: 3,
+              mb: 5
+            }}
+          >
             <Typography component={"div"} variant={"h6"} gutterBottom>
               {"Custom search fields"}
             </Typography>

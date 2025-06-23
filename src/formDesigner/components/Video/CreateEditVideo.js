@@ -76,7 +76,13 @@ export const CreateEditVideo = ({ edit, ...props }) => {
   };
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title={"Create Video"} />
       <DocumentationContainer filename={"Video.md"}>
         {edit && (

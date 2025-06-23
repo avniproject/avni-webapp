@@ -6,15 +6,25 @@ import PropTypes from "prop-types";
 function TabPanel(props) {
   const { children, value, index } = props;
 
-  return <Typography component={"span"}>{value === index && <Box p={3}>{children}</Box>}</Typography>;
+  return (
+    <Typography component={"span"}>
+      {value === index && (
+        <Box
+          sx={{
+            p: 3
+          }}
+        >
+          {children}
+        </Box>
+      )}
+    </Typography>
+  );
 }
-
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
   value: PropTypes.any.isRequired
 };
-
 const programDetails = ({ tabPanelValue, programData, handleUpdateComponent, subjectTypeUuid, subjectVoided }) => {
   return (
     <div>
@@ -37,5 +47,4 @@ const programDetails = ({ tabPanelValue, programData, handleUpdateComponent, sub
     </div>
   );
 };
-
 export default programDetails;

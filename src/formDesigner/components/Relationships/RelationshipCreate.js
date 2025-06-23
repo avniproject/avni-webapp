@@ -73,7 +73,13 @@ function RelationshipCreate() {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={"Create Relationship"} />
         <DocumentationContainer filename={"Relationship.md"}>
           {!isIndividualSubjectTypeAvailable && (
@@ -81,7 +87,6 @@ function RelationshipCreate() {
           )}
           {error === "existName" && <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>}
           {error === "emptyName" && <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>}
-
           <TextField
             id="name"
             label="Name*"
@@ -111,5 +116,4 @@ function RelationshipCreate() {
     </>
   );
 }
-
 export default RelationshipCreate;

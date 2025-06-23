@@ -390,7 +390,13 @@ class FormSettings extends Component {
     const isTaskFormType = FormTypeEntities.Task === this.state.formTypeInfo;
 
     return (
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={this.state.name} />
         <div>
           <form>
@@ -411,7 +417,6 @@ class FormSettings extends Component {
               </Select>
               {this.state.errors.formTypeInfo && <FormHelperText error>{this.state.errors.formTypeInfo.formType}</FormHelperText>}
             </FormControl>
-
             {notChecklistItemBased &&
               this.state.formMappings.map((mapping, index) => {
                 return (
@@ -494,5 +499,4 @@ class FormSettings extends Component {
     );
   }
 }
-
 export default FormSettings;

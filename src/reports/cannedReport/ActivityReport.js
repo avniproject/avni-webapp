@@ -22,7 +22,14 @@ const ActivityReport = ({ activityReport, getActivityReport }) => {
   return (
     <BorderBox>
       {activityReport && (
-        <Grid container direction="row" alignItems="baseline" spacing={4}>
+        <Grid
+          container
+          direction="row"
+          spacing={4}
+          sx={{
+            alignItems: "baseline"
+          }}
+        >
           <Grid item>{renderActivityCard("Registrations", "registrations")}</Grid>
           <Grid item>{renderActivityCard("Enrolments", "enrolments")}</Grid>
           <Grid item>{renderActivityCard("Completed Visits", "completedVisits")}</Grid>
@@ -31,11 +38,9 @@ const ActivityReport = ({ activityReport, getActivityReport }) => {
     </BorderBox>
   );
 };
-
 const mapStateToProps = state => ({
   activityReport: state.reports.activityReport
 });
-
 export default withRouter(
   connect(
     mapStateToProps,

@@ -242,7 +242,13 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
             updateOpen(observationValue);
           }}
         >
-          <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}
+          >
             <Link
               to={"#"}
               onClick={event => {
@@ -257,7 +263,15 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
           </Box>
         </Grid>
         <Collapse in={open[observationValue]} timeout="auto" unmountOnExit>
-          <Grid container direction="row" alignItems="center" spacing={1} onClick={() => updateOpen(observationValue)}>
+          <Grid
+            container
+            direction="row"
+            spacing={1}
+            onClick={() => updateOpen(observationValue)}
+            sx={{
+              alignItems: "center"
+            }}
+          >
             {mediaUrls.map((unsignedMediaUrl, index) => {
               const mediaData = _.find(mediaDataList, x => x.unsignedUrl === unsignedMediaUrl);
               const couldntSignMessage = MediaData.MissingSignedMediaMessage;
@@ -265,7 +279,14 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
               return (
                 <Grid item key={index}>
                   {_.isNil(signedMediaUrl) ? (
-                    <Box display={"flex"} flexDirection={"row"} alignItems={"flex-start"} className={classes.boxStyle}>
+                    <Box
+                      className={classes.boxStyle}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "flex-start"
+                      }}
+                    >
                       <p
                         style={{
                           color: "orangered",
@@ -282,7 +303,14 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
                       </p>
                     </Box>
                   ) : (
-                    <Box display={"flex"} flexDirection={"row"} alignItems={"flex-start"} className={classes.boxStyle}>
+                    <Box
+                      className={classes.boxStyle}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "flex-start"
+                      }}
+                    >
                       {mediaPreviewMap(signedMediaUrl)[concept.datatype]}
                     </Box>
                   )}

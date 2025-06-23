@@ -4,7 +4,14 @@ import { Grid, Typography, Box } from "@mui/material";
 
 const PieGraph = ({ data, title, id }) => {
   return (
-    <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
+    <Box
+      sx={{
+        border: 1,
+        mb: 2,
+        borderColor: "#ddd",
+        p: 2
+      }}
+    >
       <Grid container direction={"column"}>
         <Grid item>
           <Typography variant="h6" gutterBottom align={"center"}>
@@ -85,5 +92,4 @@ const PieGraph = ({ data, title, id }) => {
     </Box>
   );
 };
-
 export default PieGraph;

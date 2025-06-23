@@ -64,7 +64,13 @@ const SubjectTypeShow = props => {
   return (
     !_.isEmpty(subjectType) && (
       <>
-        <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Box
+          sx={{
+            boxShadow: 2,
+            p: 3,
+            bgcolor: "background.paper"
+          }}
+        >
           <Title title={"Subject Type: " + subjectType.name} />
           {hasPrivilegeEdit && (
             <Grid container style={{ justifyContent: "flex-end" }}>

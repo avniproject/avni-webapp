@@ -194,8 +194,21 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
       <Typography component={"span"} className={classes.mainHeading}>
         {`${profileDetails.nameString}`}
       </Typography>
-      <Grid alignItems="center" container spacing={1}>
-        <Grid item container xs={4} alignItems="center">
+      <Grid
+        container
+        spacing={1}
+        sx={{
+          alignItems: "center"
+        }}
+      >
+        <Grid
+          item
+          container
+          xs={4}
+          sx={{
+            alignItems: "center"
+          }}
+        >
           <Grid item>
             <SubjectProfilePicture
               allowEnlargementOnClick={false}
@@ -306,18 +319,15 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
     </div>
   );
 };
-
 const mapStateToProps = state => ({
   programs: state.dataEntry.programs ? state.dataEntry.programs.programs : "",
   load: state.dataEntry.loadReducer.load,
   tabsStatus: state.dataEntry.subjectProfile.tabsStatus,
   organisationConfigs: state.dataEntry.metadata.organisationConfigs
 });
-
 const mapDispatchToProps = {
   getPrograms
 };
-
 export default withRouter(
   withParams(
     connect(

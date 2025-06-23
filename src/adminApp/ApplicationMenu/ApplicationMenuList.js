@@ -96,9 +96,14 @@ const ApplicationMenuList = ({ history, userInfo }) => {
 
   return (
     <DocumentationContainer filename={"ApplicationMenu.md"}>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title="Menu Items" />
-
         <div className="container">
           <div>
             {hasEditPrivilege(userInfo) && (
@@ -106,7 +111,6 @@ const ApplicationMenuList = ({ history, userInfo }) => {
                 <CreateComponent onSubmit={() => triggerCreate(true)} name="New Menu Item" />
               </div>
             )}
-
             <AvniMaterialTable
               title=""
               ref={tableRef}
@@ -131,13 +135,10 @@ const ApplicationMenuList = ({ history, userInfo }) => {
     </DocumentationContainer>
   );
 };
-
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default withRouter(connect(mapStateToProps)(React.memo(ApplicationMenuList, areEqual)));

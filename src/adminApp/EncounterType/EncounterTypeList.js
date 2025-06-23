@@ -154,9 +154,14 @@ const EncounterTypeList = ({ history, userInfo }) => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title="Encounter Types" />
-
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
@@ -186,9 +191,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
     </>
   );
 };
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default withRouter(connect(mapStateToProps)(EncounterTypeList));

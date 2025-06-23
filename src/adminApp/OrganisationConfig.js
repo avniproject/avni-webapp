@@ -101,7 +101,14 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
       <Title title="Languages" />
       <Paper className={styles.root}>
         <p />
-        <Box ml={2} mr={2} borderBottom={1} borderColor="#e0e0e0">
+        <Box
+          sx={{
+            ml: 2,
+            mr: 2,
+            borderBottom: 1,
+            borderColor: "#e0e0e0"
+          }}
+        >
           <h6 className="MuiTypography-root MuiTypography-h6" style={{ marginLeft: 20 }}>
             Languages
           </h6>
@@ -118,7 +125,6 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules
 });
-
 export default withRouter(
   connect(
     mapStateToProps,

@@ -81,7 +81,14 @@ const DeclarativeRules = ({
     >
       {!isEmpty(errorMessage) && <div style={{ color: "red" }}>{errorMessage}</div>}
       {!isEmpty(summaries) && (
-        <Box component={"div"} mb={1} p={2} border={1}>
+        <Box
+          component={"div"}
+          sx={{
+            mb: 1,
+            p: 2,
+            border: 1
+          }}
+        >
           <Typography gutterBottom variant={"subtitle1"}>
             {"Summary"}
           </Typography>

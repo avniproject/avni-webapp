@@ -129,7 +129,13 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={title} color="primary" />
         <Box className="container">
           <Box component="div">
@@ -165,9 +171,7 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
     </>
   );
 };
-
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
-
 export default withRouter(React.memo(ResourceListView, areEqual));

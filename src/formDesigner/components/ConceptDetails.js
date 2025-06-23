@@ -70,7 +70,15 @@ function CodedConceptDetails({ conceptAnswers }) {
           return (
             !answer.voided && (
               <div key={index} style={{ width: "100%" }}>
-                <Grid container direction="row" alignItems="center" spacing={2} style={{ width: "100%" }}>
+                <Grid
+                  container
+                  direction="row"
+                  spacing={2}
+                  style={{ width: "100%" }}
+                  sx={{
+                    alignItems: "center"
+                  }}
+                >
                   <Grid item>
                     <TextField id="name" value={answerConcept.name} style={{ width: "300px" }} margin="normal" disabled={true} />
                   </Grid>
@@ -103,7 +111,6 @@ function CodedConceptDetails({ conceptAnswers }) {
     </div>
   );
 }
-
 function LocationDetails({ data, addressLevelTypes }) {
   return (
     <div>
@@ -307,7 +314,13 @@ function ConceptDetails({ userInfo, ...props }) {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={"Concept: " + data.name} />
         {hasEditPrivilege && (
           <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>

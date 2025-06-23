@@ -87,7 +87,14 @@ export const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetail
                         {...provided.dragHandleProps}
                       >
                         <Grid container direction={summaryDirection}>
-                          <Grid container item alignItems="center" justifyContent="center">
+                          <Grid
+                            container
+                            item
+                            sx={{
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}
+                          >
                             {renderDragIcon(data.uuid)}
                           </Grid>
                           {renderOtherSummary(data, index, expanded)}

@@ -131,7 +131,13 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
   return (
     <div>
       <Title title="Dashboard Filter" />
-      <Box boxShadow={2} p={1} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 1,
+          bgcolor: "background.paper"
+        }}
+      >
         <DocumentationContainer filename={documentationFileName}>
           <Box>
             <div className="container" style={{ float: "left", marginBottom: 10 }}>
@@ -146,7 +152,11 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                   toolTipKey={"APP_DESIGNER_FILTER_NAME"}
                 />
               </FormControl>
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               <SingleSelect
                 name="Type"
                 placeholder="Filter Type"
@@ -155,7 +165,11 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                 onChange={x => onTypeChange(x.value)}
                 toolTipKey="APP_DESIGNER_FILTER_TYPE"
               />
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {!_.isEmpty(filterConfig.type) && filterConfig.requiresSpecificSubjectType() && subjectTypeOptions.length > 0 && (
                 <SingleEntitySelect
                   name="Subject Type"
@@ -171,7 +185,11 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                   isClearable={true}
                 />
               )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {filterConfig.isGroupSubjectTypeFilter() && groupSubjectTypeOptions.length > 0 && (
                 <SingleEntitySelect
                   name="Group Subject Type"
@@ -185,7 +203,11 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                   toolTipKey="APP_DESIGNER_FILTER_GROUP_SUBJECT_TYPE"
                 />
               )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {filterConfig.isConceptTypeFilter() && (
                 <div style={{ width: 400 }}>
                   <AvniFormLabel label={"Select Concept"} toolTipKey={"APP_DESIGNER_FILTER_CONCEPT_SEARCH"} position={"top"} />
@@ -207,7 +229,11 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                   />
                 </div>
               )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {filterConfig.isConceptTypeFilter() && (
                 <SingleSelect
                   name="Scope"
@@ -221,7 +247,11 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                   toolTipKey="APP_DESIGNER_FILTER_SEARCH_SCOPE"
                 />
               )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {filterConfig.willObservationBeInScopeOfProgramEnrolment() && (
                 <MultipleEntitySelect
                   name="Programs"
@@ -235,7 +265,11 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                   toolTipKey="APP_DESIGNER_FILTER_PROGRAM"
                 />
               )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {filterConfig.willObservationBeInScopeOfEncounter() && (
                 <MultipleEntitySelect
                   name="Encounter Types"
@@ -249,7 +283,11 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                   toolTipKey="APP_DESIGNER_FILTER_ENCOUNTER_TYPE"
                 />
               )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {filterConfig.isWidgetRequired() && (
                 <SingleSelect
                   name="Widget Type"
@@ -263,9 +301,17 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                   toolTipKey="APP_DESIGNER_FILTER_WIDGET_TYPE"
                 />
               )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
             </div>
-            <Box m={1}>
+            <Box
+              sx={{
+                m: 1
+              }}
+            >
               <SaveComponent name={t("save")} onSubmit={saveFilter} disabledFlag={isSaveDisabled(filterConfig, filterName)} />
             </Box>
             <p />

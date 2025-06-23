@@ -475,11 +475,23 @@ class CreateEditConcept extends Component {
     }
 
     return (
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <DocumentationContainer filename={"Concept.md"}>
           <Title title={appBarTitle} />
           {!this.props.isCreatePage && (
-            <Grid container justifyContent="flex-end" mb={2}>
+            <Grid
+              container
+              sx={{
+                justifyContent: "flex-end",
+                mb: 2
+              }}
+            >
               <Button color="primary" type="button" onClick={() => this.setRedirectShow()}>
                 <VisibilityIcon /> Show
               </Button>
@@ -571,7 +583,16 @@ class CreateEditConcept extends Component {
                 readOnlyKeys={this.state.readOnlyKeys}
               />
             </Grid>
-            <Grid item xs={12} container justifyContent="flex-end" alignItems="center" spacing={2}>
+            <Grid
+              item
+              xs={12}
+              container
+              spacing={2}
+              sx={{
+                justifyContent: "flex-end",
+                alignItems: "center"
+              }}
+            >
               <Grid item>
                 <SaveComponent name="save" onSubmit={this.handleSubmit} styleClass={{ marginLeft: "12px", marginTop: "10px" }} />
               </Grid>

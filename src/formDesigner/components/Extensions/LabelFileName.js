@@ -6,7 +6,14 @@ import Select from "react-select";
 
 export const LabelFileName = ({ label, fileName, scope, index, dispatch, options }) => {
   return (
-    <Grid container direction={"row"} spacing={5} alignItems={"center"}>
+    <Grid
+      container
+      direction={"row"}
+      spacing={5}
+      sx={{
+        alignItems: "center"
+      }}
+    >
       <Grid item>
         <AvniFormLabel label={"Label"} toolTipKey={"APP_DESIGNER_PRINT_LABEL"} />
         <Input id={label} value={label} onChange={event => dispatch({ type: "setLabel", payload: { index, value: event.target.value } })} />

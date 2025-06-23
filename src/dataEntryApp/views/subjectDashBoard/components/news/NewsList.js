@@ -34,9 +34,17 @@ export const NewsList = ({ match, ...props }) => {
       <Typography style={{ opacity: 0.5 }} variant="body1" gutterBottom>
         {"Below is the list of all news published"}
       </Typography>
-      <Box mt={2} />
+      <Box
+        sx={{
+          mt: 2
+        }}
+      />
       <Divider />
-      <Box mt={2} />
+      <Box
+        sx={{
+          mt: 2
+        }}
+      />
       <Grid container direction={"column"} spacing={3}>
         {map(newsList, news => (
           <Grid item>

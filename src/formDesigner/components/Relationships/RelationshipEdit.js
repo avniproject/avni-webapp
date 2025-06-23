@@ -95,7 +95,13 @@ function RelationshipEdit(props) {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={"Edit Relationship"} />
         <DocumentationContainer filename={"Relationship.md"}>
           <Grid container item={12} style={{ justifyContent: "flex-end" }}>
@@ -103,13 +109,11 @@ function RelationshipEdit(props) {
               <VisibilityIcon /> Show
             </Button>
           </Grid>
-
           {!isIndividualSubjectTypeAvailable && (
             <div style={{ color: "red", size: "10" }}>Go to subject type and please create Person subject type </div>
           )}
           {error === "existName" && <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>}
           {error === "emptyName" && <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>}
-
           <TextField
             id="name"
             label="Name*"
@@ -132,7 +136,6 @@ function RelationshipEdit(props) {
             })}
             <br />
           </div>
-
           <Grid container item sm={12}>
             <Grid item sm={1}>
               <SaveComponent name="save" onSubmit={() => onSubmitRelationship()} disabledFlag={!setIsIndividualSubjectTypeAvailable} />{" "}
@@ -150,5 +153,4 @@ function RelationshipEdit(props) {
     </>
   );
 }
-
 export default RelationshipEdit;

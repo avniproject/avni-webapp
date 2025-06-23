@@ -77,7 +77,13 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
   };
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <DocumentationContainer filename={"UserGroup.md"}>
         <Title title={"User Groups"} />
         {showCumulativePrivilegesInfo() ? (
@@ -110,19 +116,27 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
                 />
               </FormControl>
             </Grid>
-            <Box mt={3}>
+            <Box
+              sx={{
+                mt: 3
+              }}
+            >
               <Button mt={10} variant="contained" color="primary" onClick={() => groupCreationHandler()}>
                 {"Create New Group"}
               </Button>
             </Box>
           </div>
         </Modal>
-        <Grid container justifyContent="flex-start">
+        <Grid
+          container
+          sx={{
+            justifyContent: "flex-start"
+          }}
+        >
           <Button variant="contained" color="primary" onClick={() => setOpenModal(true)} style={{ marginLeft: 20 }}>
             {"Create Group"}
           </Button>
         </Grid>
-
         <Grid container>
           {map(groups, (group, index) => (
             <GroupCard
@@ -138,11 +152,9 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
     </Box>
   );
 };
-
 const mapStateToProps = state => ({
   groups: state.userGroups.groups
 });
-
 export default withRouter(
   connect(
     mapStateToProps,

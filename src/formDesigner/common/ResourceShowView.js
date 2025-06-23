@@ -28,7 +28,13 @@ const ResourceShowView = ({
   }, []);
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title={`Show ${title} : ${resource.name}`} />
       {UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
         <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>

@@ -50,12 +50,28 @@ export const CreateEditLanguages = props => {
   return (
     <div>
       <Title title="Edit Language" />
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <DocumentationContainer filename={"Language.md"}>
-          <Box m={2}>
+          <Box
+            sx={{
+              m: 2
+            }}
+          >
             <Select isMulti value={lang} options={options} onChange={name => setLang(name)} />
           </Box>
-          <Box m={2} display="flex" justifyContent="left">
+          <Box
+            sx={{
+              m: 2,
+              display: "flex",
+              justifyContent: "left"
+            }}
+          >
             <SaveComponent name="Save" onSubmit={saveLanguage} />
           </Box>
           {messageStatus.display && (

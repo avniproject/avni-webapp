@@ -57,7 +57,13 @@ const StaticFormElement = ({ groupIndex, index, dataType, name, ...props }) => {
             )}
           </Typography>
         </div>
-        <Grid container sm={12} alignItems="center">
+        <Grid
+          container
+          sm={12}
+          sx={{
+            alignItems: "center"
+          }}
+        >
           <Grid item sm={11} style={{ paddingTop: "10px" }}>
             <Typography component="span" className={classes.heading}>
               <InputLabel name={"name" + panel} style={{ display: "inline-block" }} required classes={{ asterisk: classes.asterisk }}>
@@ -73,5 +79,4 @@ const StaticFormElement = ({ groupIndex, index, dataType, name, ...props }) => {
     </Accordion>
   );
 };
-
 export default StaticFormElement;

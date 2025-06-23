@@ -34,7 +34,13 @@ const RelationshipShow = props => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={"Show Relationship : " + relationship.name} />
         <DocumentationContainer filename={"Relationship.md"}>
           {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditSubjectType) && (
@@ -55,7 +61,6 @@ const RelationshipShow = props => {
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Genders</FormLabel>
               <br />
-
               {genders.map(gender => {
                 return (
                   <FormControlLabel
@@ -69,16 +74,13 @@ const RelationshipShow = props => {
             </div>
             <p />
           </div>
-
           {editAlert && <Redirect to={"/appDesigner/relationship/" + props.match.params.id} />}
         </DocumentationContainer>
       </Box>
     </>
   );
 };
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default connect(mapStateToProps)(RelationshipShow);

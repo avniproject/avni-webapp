@@ -265,10 +265,20 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
   );
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title="Rule Failures" />
       <div className="container">
-        <Box mb={2}>
+        <Box
+          sx={{
+            mb: 2
+          }}
+        >
           <ButtonGroup color="primary">
             <Button variant={selectedStatus === STATUS.OPEN ? "contained" : "outlined"} onClick={() => onSelect(STATUS.OPEN)}>
               Open
@@ -299,7 +309,11 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
             })
           }}
           renderDetailPanel={({ row }) => (
-            <Box p={2}>
+            <Box
+              sx={{
+                p: 2
+              }}
+            >
               <div>{row.original.stacktrace || "-"}</div>
             </Box>
           )}
@@ -314,9 +328,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
     </Box>
   );
 };
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default connect(mapStateToProps)(RuleFailureTelemetryList);

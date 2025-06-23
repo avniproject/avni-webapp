@@ -32,7 +32,14 @@ const SubjectTypeOptions = ({ t, operationalModules, onSubjectTypeChange, select
 
   return (
     <Fragment>
-      <Grid container direction={"row"} spacing={1} alignItems={"center"}>
+      <Grid
+        container
+        direction={"row"}
+        spacing={1}
+        sx={{
+          alignItems: "center"
+        }}
+      >
         {operationalModules.subjectTypes
           ? sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map((subjectType, index) => (
               <Grid key={index} item>
@@ -42,7 +49,14 @@ const SubjectTypeOptions = ({ t, operationalModules, onSubjectTypeChange, select
                   onClick={() => onSubjectTypeChange(subjectType.uuid)}
                   className={getClassName(subjectType)}
                 >
-                  <Grid container direction={"row"} spacing={1} alignItems={"center"}>
+                  <Grid
+                    container
+                    direction={"row"}
+                    spacing={1}
+                    sx={{
+                      alignItems: "center"
+                    }}
+                  >
                     <Grid item>
                       <SubjectTypeIcon size={25} subjectType={subjectType} />
                     </Grid>
@@ -56,5 +70,4 @@ const SubjectTypeOptions = ({ t, operationalModules, onSubjectTypeChange, select
     </Fragment>
   );
 };
-
 export default SubjectTypeOptions;

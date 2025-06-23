@@ -6,7 +6,12 @@ export default function NumericConcept(props) {
   const classes = { width: 195, marginRight: 10 };
   return (
     <>
-      <Grid container justifyContent="flex-start">
+      <Grid
+        container
+        sx={{
+          justifyContent: "flex-start"
+        }}
+      >
         <Grid item sm={12}>
           <FormControl>
             <TextField
@@ -105,12 +110,10 @@ export default function NumericConcept(props) {
     </>
   );
 }
-
 NumericConcept.propTypes = {
   onNumericConceptAttributeAssignment: PropTypes.func.isRequired,
   numericDataTypeAttributes: PropTypes.object.isRequired
 };
-
 NumericConcept.defaultProps = {
   inlineConcept: false
 };

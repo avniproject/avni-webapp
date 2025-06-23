@@ -155,7 +155,14 @@ const FormWizard = ({
       {form && (
         <div>
           {subject && !wizard.isNonFormPage() ? <FormWizardHeader subject={subject} /> : ""}
-          <Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="space-between">
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between"
+            }}
+          >
             <Typography variant="subtitle1" gutterBottom>
               {" "}
               {pageTitle}
@@ -179,7 +186,12 @@ const FormWizard = ({
               </FormElementGroupComponent>
             )}
 
-            <Box className={classes.buttomstyle} display="flex">
+            <Box
+              className={classes.buttomstyle}
+              sx={{
+                display: "flex"
+              }}
+            >
               <Box style={{ marginRight: 20 }}>
                 <FormWizardButton
                   className={classes.privbuttonStyle}

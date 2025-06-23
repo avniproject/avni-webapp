@@ -84,7 +84,15 @@ const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDial
           </StyledDialogTitle>
         )}
         <StyledDialogContent>
-          <Box display="flex" flexDirection="column" flexWrap="wrap" justifyContent="space-between" alignItems="center">
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}
+          >
             {showSuccessIcon && <CheckCircleOutline className={classes.iconstyle} />}
             <LineBreak num={2} />
             {message && <Typography gutterBottom>{message}</Typography>}
@@ -92,7 +100,15 @@ const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDial
         </StyledDialogContent>
         <StyledDialogActions>
           {showOkbtn && (
-            <Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="flex-start" alignItems="center">
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "flex-start",
+                alignItems: "center"
+              }}
+            >
               <Button className={classes.okbuttonStyle} onClick={handleOk} color="primary">
                 Ok
               </Button>
@@ -103,5 +119,4 @@ const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDial
     </Fragment>
   );
 };
-
 export default CustomizedDialog;

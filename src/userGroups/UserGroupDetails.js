@@ -15,7 +15,13 @@ const UserGroupDetails = ({ ...props }) => {
   const [hasAllPrivileges, setHasAllPrivileges] = React.useState(parsedProps.hasAllPrivileges === "true");
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title={"User Groups"} />
       <Grid container>
         <TabView
@@ -29,5 +35,4 @@ const UserGroupDetails = ({ ...props }) => {
     </Box>
   );
 };
-
 export default withRouter(connect()(UserGroupDetails));

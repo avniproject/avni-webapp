@@ -19,20 +19,23 @@ function TabPanel(props) {
       aria-labelledby={`vertical-tab-${propsIndex + index}`}
       {...other}
     >
-      <Box p={3} style={{ padding: 10 }}>
+      <Box
+        style={{ padding: 10 }}
+        sx={{
+          p: 3
+        }}
+      >
         {children}
       </Box>
     </Typography>
   );
 }
-
 function a11yProps(propIndex, index) {
   return {
     id: `vertical-tab-${propIndex + index}`,
     "aria-controls": `vertical-tabpanel-${propIndex + index}`
   };
 }
-
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -47,16 +50,13 @@ const useStyles = makeStyles(theme => ({
     width: "100%"
   }
 }));
-
 function FormElementTabs(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const disableFormElement = props.disableFormElement;
-
   function handleChange(event, newValue) {
     setValue(newValue);
   }
-
   const onSkipLogicRuleChange = event => {
     confirmBeforeRuleEdit(
       props.formElementData.declarativeRule,
@@ -64,7 +64,6 @@ function FormElementTabs(props) {
       () => props.updateSkipLogicJSON(props.groupIndex, props.index, null)
     );
   };
-
   return (
     <div className={classes.root}>
       <Tabs
@@ -85,7 +84,6 @@ function FormElementTabs(props) {
         {/*
           Below div is used to control scroll if you want scroll then uncomment div tag.
         */}
-
         {/* <div
           style={{
             borderStyle: "solid",
@@ -116,9 +114,7 @@ function FormElementTabs(props) {
     </div>
   );
 }
-
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
-
 export default React.memo(FormElementTabs, areEqual);

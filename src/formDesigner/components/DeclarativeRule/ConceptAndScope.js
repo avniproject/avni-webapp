@@ -19,7 +19,15 @@ const ConceptAndScope = ({ conceptValue, onConceptChange, defaultOptions = [], d
         />
       </Grid>
       {displayScope && (
-        <Grid item container xs={4} alignItems={"center"} direction={"row"}>
+        <Grid
+          item
+          container
+          xs={4}
+          direction={"row"}
+          sx={{
+            alignItems: "center"
+          }}
+        >
           <Grid item align={"center"} xs={1}>
             {"In"}
           </Grid>
@@ -37,5 +45,4 @@ const ConceptAndScope = ({ conceptValue, onConceptChange, defaultOptions = [], d
     </Fragment>
   );
 };
-
 export default ConceptAndScope;

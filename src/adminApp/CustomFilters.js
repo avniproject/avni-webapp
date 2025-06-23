@@ -155,7 +155,11 @@ const customFilters = ({ operationalModules, getOperationalModules, history, org
   });
 
   const renderFilterTable = filterType => (
-    <Box m={2}>
+    <Box
+      sx={{
+        m: 2
+      }}
+    >
       {hasEditPrivilege(userInfo) && (
         <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
           <Button
@@ -239,7 +243,6 @@ const customFilters = ({ operationalModules, getOperationalModules, history, org
       />
     </Box>
   );
-
   return _.isNil(subjectTypes) ? (
     <div />
   ) : (
@@ -252,12 +255,10 @@ const customFilters = ({ operationalModules, getOperationalModules, history, org
     </Box>
   );
 };
-
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules,
   userInfo: state.app.userInfo
 });
-
 export default withRouter(
   connect(
     mapStateToProps,

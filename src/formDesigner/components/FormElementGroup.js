@@ -237,10 +237,24 @@ function FormElementGroup(props) {
             >
               <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`} {...provided.dragHandleProps}>
                 <Grid container direction="row">
-                  <Grid container item alignItems="center" justifyContent="center">
+                  <Grid
+                    container
+                    item
+                    sx={{
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
                     <DragHandler />
                   </Grid>
-                  <Grid container item sm={12} alignItems="center">
+                  <Grid
+                    container
+                    item
+                    sm={12}
+                    sx={{
+                      alignItems: "center"
+                    }}
+                  >
                     <Grid item sm={1}>
                       <Tooltip title="Grouped Questions">
                         <Group style={{ marginLeft: 12, marginRight: 4 }} />
@@ -405,5 +419,4 @@ function FormElementGroup(props) {
     </Draggable>
   );
 }
-
 export default React.memo(FormElementGroup, isEqual);

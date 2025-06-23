@@ -103,15 +103,41 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
       <Paper elevation={0} className={classes.root}>
         {map(sortBy(comments, "createdDateTime"), (comment, index) => {
           return (
-            <Box display="flex" justifyContent={index === 0 ? "flex-start" : "center"} alignItems="center" mb={2}>
+            <Box
+              sx={[
+                {
+                  display: "flex",
+                  alignItems: "center",
+                  mb: 2
+                },
+                index === 0
+                  ? {
+                      justifyContent: "flex-start"
+                    }
+                  : {
+                      justifyContent: "center"
+                    }
+              ]}
+            >
               <Paper elevation={0} className={index === 0 ? classes.firstComment : classes.comment}>
                 <CommentCard displayMenu comment={comment} dispatch={dispatch} setCommentToEdit={setCommentToEdit} />
               </Paper>
             </Box>
           );
         })}
-        <Box mt={3} />
-        <Box display="flex" justifyContent={"center"} alignItems="center" mb={2}>
+        <Box
+          sx={{
+            mt: 3
+          }}
+        />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            mb: 2
+          }}
+        >
           <Paper elevation={0} className={classes.inputText}>
             <TextField
               fullWidth
@@ -125,7 +151,11 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
             />
           </Paper>
         </Box>
-        <Box ml={3}>
+        <Box
+          sx={{
+            ml: 3
+          }}
+        >
           <Button
             variant="contained"
             color="primary"
@@ -135,7 +165,11 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
             {isEmpty(commentToEdit) ? t("postComment") : t("editComment")}
           </Button>
         </Box>
-        <Box pt={10} />
+        <Box
+          sx={{
+            pt: 10
+          }}
+        />
       </Paper>
       <ConfirmDialog
         setOpen={setOpenResolve}

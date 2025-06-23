@@ -65,7 +65,13 @@ const EncounterTypeShow = props => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={"Encounter Type : " + encounterType.name} />
         {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditEncounterType) && (
           <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>

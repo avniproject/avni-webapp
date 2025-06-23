@@ -150,7 +150,6 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
-
       <Paper className={classes.root}>
         <div className={classes.innerPaper}>
           <Grid container>
@@ -191,7 +190,15 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
             </Grid>
           </Grid>
         </div>
-        <Box className={classes.bottomboxstyle} display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
+        <Box
+          className={classes.bottomboxstyle}
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "flex-start"
+          }}
+        >
           <Box>
             <Button variant="outlined" className={classes.cancelBtn} onClick={returnToGroupSubjectProfile}>
               CANCEL
@@ -205,12 +212,10 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
     </Fragment>
   );
 };
-
 const mapStateToProps = state => ({
   subjectTypes: state.dataEntry.metadata.operationalModules.subjectTypes,
   groupRoles: state.dataEntry.subjectProfile.subjectProfile.roles,
   groupSubject: state.dataEntry.subjectProfile.subjectProfile,
   memberGroupSubjects: state.dataEntry.subjectProfile.groupMembers
 });
-
 export default withRouter(withParams(connect(mapStateToProps)(GroupMembershipAddEdit)));

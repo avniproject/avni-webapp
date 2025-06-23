@@ -9,7 +9,13 @@ const ConditionConjunctionComponent = ({ onConjunctionChange, value, ...props })
   const orConjunction = Condition.conjunctions.Or;
 
   return (
-    <Grid container direction={"row"} justifyContent={"center"}>
+    <Grid
+      container
+      direction={"row"}
+      sx={{
+        justifyContent: "center"
+      }}
+    >
       <Grid item>
         <Chip
           style={{ marginTop: "15px", marginBottom: "15px" }}
@@ -29,5 +35,4 @@ const ConditionConjunctionComponent = ({ onConjunctionChange, value, ...props })
     </Grid>
   );
 };
-
 export default ConditionConjunctionComponent;

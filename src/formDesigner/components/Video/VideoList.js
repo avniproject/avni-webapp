@@ -108,7 +108,13 @@ const VideoList = ({ history, userInfo }) => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title="Video Playlist" color="primary" />
         <Box className="container">
           <Box component="div">
@@ -141,13 +147,10 @@ const VideoList = ({ history, userInfo }) => {
     </>
   );
 };
-
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default withRouter(connect(mapStateToProps)(React.memo(VideoList, areEqual)));

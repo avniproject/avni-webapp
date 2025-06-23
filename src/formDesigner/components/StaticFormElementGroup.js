@@ -45,7 +45,13 @@ const StaticFormElementGroup = ({ name, formElements }) => {
         style={{ backgroundColor: "#E0E0E0" }}
       >
         <StyledAccordionSummary aria-controls={`${panel}-bh-content`} id={`${panel}-bh-header`}>
-          <Grid container sm={12} alignItems="center">
+          <Grid
+            container
+            sm={12}
+            sx={{
+              alignItems: "center"
+            }}
+          >
             <Grid item sm={1}>
               <Tooltip title="Grouped Questions">
                 <Group style={{ marginLeft: 12, marginRight: 4 }} />
@@ -90,5 +96,4 @@ const StaticFormElementGroup = ({ name, formElements }) => {
     </Grid>
   );
 };
-
 export default StaticFormElementGroup;

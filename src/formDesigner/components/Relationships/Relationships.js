@@ -141,7 +141,13 @@ const Relationships = ({ history, userInfo }) => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title="Relationships" />
         <div className="container">
           {isIndividualSubjectTypeAvailable === "false" && (
@@ -182,13 +188,10 @@ const Relationships = ({ history, userInfo }) => {
     </>
   );
 };
-
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default withRouter(connect(mapStateToProps)(React.memo(Relationships, areEqual)));

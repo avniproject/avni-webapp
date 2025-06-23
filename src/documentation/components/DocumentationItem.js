@@ -19,7 +19,14 @@ export const DocumentationItem = ({ documentationItem, language }) => {
 
   return documentationItem ? (
     <div>
-      <Box border={1} mt={2} borderColor={"#ddd"} p={2}>
+      <Box
+        sx={{
+          border: 1,
+          mt: 2,
+          borderColor: "#ddd",
+          p: 2
+        }}
+      >
         <RichTextEditor
           editorState={documentationItem.editorState}
           setEditorState={editorState =>

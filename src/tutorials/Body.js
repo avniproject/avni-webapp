@@ -3,7 +3,13 @@ import React from "react";
 
 const Body = () => {
   return (
-    <Grid container alignItems={"center"} direction={"column"}>
+    <Grid
+      container
+      direction={"column"}
+      sx={{
+        alignItems: "center"
+      }}
+    >
       <Grid item>
         <Typography variant="h4" gutterBottom>
           Support resources
@@ -17,5 +23,4 @@ const Body = () => {
     </Grid>
   );
 };
-
 export default Body;

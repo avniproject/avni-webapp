@@ -7,7 +7,12 @@ import { InternalLink } from "../../../../common/components/utils";
 export const NewVisitLinkButton = ({ to, label }) => {
   const { t } = useTranslation();
   return (
-    <Grid container justifyContent="flex-end">
+    <Grid
+      container
+      sx={{
+        justifyContent: "flex-end"
+      }}
+    >
       <InternalLink to={to} noUnderline id={"new-general-visit"}>
         <SubjectButton btnLabel={t(label)} />
       </InternalLink>

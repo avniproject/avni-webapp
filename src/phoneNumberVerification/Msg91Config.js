@@ -91,7 +91,13 @@ const Msg91Config = () => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <DocumentationContainer filename={"PhoneNumberVerification.md"}>
           <Title title={"Phone Number Verification"} />
           <Grid container spacing={2} style={{ width: "100%" }}>
@@ -109,7 +115,6 @@ const Msg91Config = () => {
                   disabled={!authKeyChanged}
                 />
               </Grid>
-
               <Grid item xs={2}>
                 <div className="container" style={{ alignItems: "left", float: "left", width: "100%" }}>
                   {!authKeyChanged ? (
@@ -172,5 +177,4 @@ const Msg91Config = () => {
     </>
   );
 };
-
 export default Msg91Config;

@@ -39,7 +39,13 @@ function ImplementationBundle({ organisation, userInfo }) {
 
   return (
     <Fragment>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         {hasDownloadPrivilege && (
           <DocumentationContainer filename={"Bundle.md"}>
             <Title title="Bundle" />

@@ -22,7 +22,14 @@ const ActionComponent = ({ action, index, declarativeRuleIndex, getApplicableAct
   };
 
   return (
-    <Grid container direction={"row"} spacing={1} alignItems={"center"}>
+    <Grid
+      container
+      direction={"row"}
+      spacing={1}
+      sx={{
+        alignItems: "center"
+      }}
+    >
       <Grid item xs={3}>
         <Select
           placeholder="Select action type"
@@ -43,5 +50,4 @@ const ActionComponent = ({ action, index, declarativeRuleIndex, getApplicableAct
     </Grid>
   );
 };
-
 export default ActionComponent;

@@ -143,7 +143,14 @@ const CompletedVisitsTable = ({
         header: t("actions"),
         enableSorting: false,
         Cell: ({ row }) => (
-          <Grid container alignItems={"center"} alignContent={"center"} spacing={10}>
+          <Grid
+            container
+            spacing={10}
+            sx={{
+              alignItems: "center",
+              alignContent: "center"
+            }}
+          >
             <Grid item>
               <EditVisit
                 editEncounterUrl={editEncounterUrl(row.original.cancelDateTime ? "cancel" : "")}
@@ -160,7 +167,6 @@ const CompletedVisitsTable = ({
     ],
     [t, editEncounterUrl, isForProgramEncounters, onDelete]
   );
-
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -185,11 +191,9 @@ const CompletedVisitsTable = ({
       setIsLoading(false);
     }
   }, [apiUrl, filterParams, pagination, sorting]);
-
   useEffect(() => {
     loadData();
   }, [loadData]);
-
   return (
     <MaterialReactTable
       columns={columns}
@@ -205,7 +209,12 @@ const CompletedVisitsTable = ({
       enableTopToolbar={false}
       enableExpanding
       renderDetailPanel={({ row }) => (
-        <Box margin={1} key={row.original.uuid}>
+        <Box
+          key={row.original.uuid}
+          sx={{
+            margin: 1
+          }}
+        >
           <EncounterObservations encounter={row.original} isForProgramEncounters={isForProgramEncounters} />
         </Box>
       )}
@@ -216,5 +225,4 @@ const CompletedVisitsTable = ({
     />
   );
 };
-
 export default CompletedVisitsTable;

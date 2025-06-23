@@ -182,7 +182,16 @@ const ActionDetailsComponent = ({ selectedType, actionDetails, onActionChange, i
   return (
     <Fragment>
       {selectedType === actionTypes.Value && (
-        <Grid item container xs={4} alignItems={"center"} direction={"row"} spacing={1}>
+        <Grid
+          item
+          container
+          xs={4}
+          direction={"row"}
+          spacing={1}
+          sx={{
+            alignItems: "center"
+          }}
+        >
           <MiddleText text={"Is"} />
           <Grid item xs={11}>
             <InputField value={get(actionDetails, "value")} onChange={event => onActionChange("value", event.target.value)} />
@@ -202,7 +211,16 @@ const ActionDetailsComponent = ({ selectedType, actionDetails, onActionChange, i
         </Grid>
       )}
       {includes([actionTypes.ValidationError, actionTypes.FormValidationError], selectedType) && (
-        <Grid item container xs={8} alignItems={"center"} direction={"row"} spacing={1}>
+        <Grid
+          item
+          container
+          xs={8}
+          direction={"row"}
+          spacing={1}
+          sx={{
+            alignItems: "center"
+          }}
+        >
           <MiddleText text={"Is"} />
           <Grid item xs={11}>
             <InputField
@@ -232,5 +250,4 @@ const ActionDetailsComponent = ({ selectedType, actionDetails, onActionChange, i
     </Fragment>
   );
 };
-
 export default ActionDetailsComponent;

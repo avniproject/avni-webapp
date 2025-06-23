@@ -295,7 +295,13 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
   if (categoryError || statusError) {
     return (
       <>
-        <Box boxShadow={2} p={2} bgcolor="background.paper">
+        <Box
+          sx={{
+            boxShadow: 2,
+            p: 2,
+            bgcolor: "background.paper"
+          }}
+        >
           <Grid container style={{ backgroundColor: "#fff" }} direction="column">
             <h1>Something Went Wrong</h1>
           </Grid>
@@ -303,10 +309,15 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
       </>
     );
   }
-
   return (
     <>
-      <Box boxShadow={2} p={2} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 2,
+          bgcolor: "background.paper"
+        }}
+      >
         <Grid container style={{ backgroundColor: "#fff" }} direction="column">
           <Grid item xs={6}>
             <AvniTextField
@@ -321,7 +332,6 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.name && <FormHelperText error>{errors.name}</FormHelperText>}
           </Grid>
-
           <Grid item xs={6}>
             <AvniTextField
               id="dbUser"
@@ -335,7 +345,6 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.dbUser && <FormHelperText error>{errors.dbUser}</FormHelperText>}
           </Grid>
-
           <Grid item xs={6}>
             <AvniTextField
               id="schemaName"
@@ -349,7 +358,6 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.schemaName && <FormHelperText error>{errors.schemaName}</FormHelperText>}
           </Grid>
-
           <Grid item xs={6}>
             <AvniTextField
               id="mediaDirectory"
@@ -363,7 +371,6 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.mediaDirectory && <FormHelperText error>{errors.mediaDirectory}</FormHelperText>}
           </Grid>
-
           <Grid item xs={6}>
             <AvniTextField
               id="usernameSuffix"
@@ -377,7 +384,6 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.usernameSuffix && <FormHelperText error>{errors.usernameSuffix}</FormHelperText>}
           </Grid>
-
           <Grid item xs={6}>
             <AvniSelect
               id="categoryId"
@@ -395,7 +401,6 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.categoryId && <FormHelperText error>{errors.categoryId}</FormHelperText>}
           </Grid>
-
           <Grid item xs={6}>
             <AvniSelect
               id="statusId"
@@ -426,11 +431,9 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
     </>
   );
 };
-
 OrganisationCreateComponent.propTypes = {
   showNotification: PropTypes.func
 };
-
 export const OrganisationCreate = connect(
   null,
   { showNotification: showNotificationAction }

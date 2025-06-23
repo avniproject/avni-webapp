@@ -109,7 +109,13 @@ const Concepts = ({ history, userInfo }) => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title="Concepts" color="primary" />
         <Box className="container">
           <Box component="div">
@@ -141,13 +147,10 @@ const Concepts = ({ history, userInfo }) => {
     </>
   );
 };
-
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default withRouter(connect(mapStateToProps)(Concepts));

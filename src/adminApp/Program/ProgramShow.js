@@ -59,7 +59,13 @@ const ProgramShow = props => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={"Program: " + program.name} />
         {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditProgram) && (
           <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>

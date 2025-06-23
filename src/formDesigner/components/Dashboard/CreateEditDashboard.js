@@ -106,7 +106,13 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
   };
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title={"Create Offline Dashboard"} />
       <DocumentationContainer filename={"Dashboard.md"}>
         {edit && (
@@ -140,10 +146,24 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
         <br />
         <br />
         <Grid container>
-          <Grid item container sm={6} justifyContent={"flex-start"}>
+          <Grid
+            item
+            container
+            sm={6}
+            sx={{
+              justifyContent: "flex-start"
+            }}
+          >
             <AvniFormLabel label={"Sections"} toolTipKey={"APP_DESIGNER_DASHBOARD_SECTIONS"} />
           </Grid>
-          <Grid item container sm={6} justifyContent={"flex-end"}>
+          <Grid
+            item
+            container
+            sm={6}
+            sx={{
+              justifyContent: "flex-end"
+            }}
+          >
             <Button color="primary" onClick={addSection}>
               Add Section
             </Button>
@@ -165,10 +185,24 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
           setShowAddFilterModal={setShowAddFilterModal}
         />
         <Grid container style={{ marginTop: 100 }}>
-          <Grid item container sm={6} justifyContent={"flex-start"}>
+          <Grid
+            item
+            container
+            sm={6}
+            sx={{
+              justifyContent: "flex-start"
+            }}
+          >
             <AvniFormLabel label={"Filters"} toolTipKey={"APP_DESIGNER_DASHBOARD_FILTERS"} />
           </Grid>
-          <Grid item container sm={6} justifyContent={"flex-end"}>
+          <Grid
+            item
+            container
+            sm={6}
+            sx={{
+              justifyContent: "flex-end"
+            }}
+          >
             <Button color="primary" onClick={showFilterDialog}>
               Add Filter
             </Button>
@@ -207,11 +241,9 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
     </Box>
   );
 };
-
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules
 });
-
 export default withRouter(
   connect(
     mapStateToProps,

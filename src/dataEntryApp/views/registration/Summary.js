@@ -36,33 +36,72 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
   return (
     <div className={classes.form}>
       {!isEmpty(rulesResponse.decisionObservations) && (
-        <Box pb={6}>
-          <Typography variant="button" display="block" gutterBottom>
+        <Box
+          sx={{
+            pb: 6
+          }}
+        >
+          <Typography
+            variant="button"
+            gutterBottom
+            sx={{
+              display: "block"
+            }}
+          >
             {t("systemRecommendations")}
           </Typography>
-          <Box pt={1} className={classes.tableContainer}>
+          <Box
+            className={classes.tableContainer}
+            sx={{
+              pt: 1
+            }}
+          >
             <Observations observations={rulesResponse.decisionObservations} additionalRows={[]} highlight />
           </Box>
         </Box>
       )}
-
       {!isEmpty(rulesResponse.visitSchedules) && (
-        <Box pb={6}>
-          <Typography variant="button" display="block" gutterBottom>
+        <Box
+          sx={{
+            pb: 6
+          }}
+        >
+          <Typography
+            variant="button"
+            gutterBottom
+            sx={{
+              display: "block"
+            }}
+          >
             {t("visitsBeingScheduled")}
           </Typography>
-          <Box pt={1} className={classes.tableContainer}>
+          <Box
+            className={classes.tableContainer}
+            sx={{
+              pt: 1
+            }}
+          >
             <ScheduledVisitsTable visitSchedules={rulesResponse.visitSchedules} />
           </Box>
         </Box>
       )}
-
       {!isEmpty(observations) && (
         <Box>
-          <Typography variant="button" display="block" gutterBottom>
+          <Typography
+            variant="button"
+            gutterBottom
+            sx={{
+              display: "block"
+            }}
+          >
             {t("observations")}
           </Typography>
-          <Box pt={1} className={classes.tableContainer}>
+          <Box
+            className={classes.tableContainer}
+            sx={{
+              pt: 1
+            }}
+          >
             <Observations
               observations={observations ? observations : []}
               additionalRows={additionalRows ? additionalRows : []}

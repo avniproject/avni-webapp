@@ -50,7 +50,13 @@ const ApplicationMenuEdit = props => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={`${isCreate() ? "Create" : "Edit"} application menu}`} />
         {!isCreate() && (
           <Grid container item={12} style={{ justifyContent: "flex-end" }}>

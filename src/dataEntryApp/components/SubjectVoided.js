@@ -14,7 +14,13 @@ const SubjectVoided = ({ onUnVoid, showUnVoid }) => {
 
   return (
     <Paper className={classes.root}>
-      <Grid container direction={"column"} alignItems={"flex-start"}>
+      <Grid
+        container
+        direction={"column"}
+        sx={{
+          alignItems: "flex-start"
+        }}
+      >
         <Grid item>
           <Typography variant="h4" gutterBottom color={"error"}>
             {"THE SUBJECT HAS BEEN VOIDED"}
@@ -31,5 +37,4 @@ const SubjectVoided = ({ onUnVoid, showUnVoid }) => {
     </Paper>
   );
 };
-
 export default SubjectVoided;

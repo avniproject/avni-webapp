@@ -42,7 +42,11 @@ const SearchUserAndConfirm = function({ onUserSelected, confirmButtonText = "Con
           <Typography variant="body1">Name</Typography>
           <TextField name="name" autoComplete="off" type="text" onChange={e => setName(e.target.value)} />
         </Box>
-        <Box width={350}>
+        <Box
+          sx={{
+            width: 350
+          }}
+        >
           <Typography variant="body1">Email</Typography>
           <TextField name="email" autoComplete="off" type="text" onChange={e => setEmail(e.target.value)} fullWidth />
         </Box>
@@ -84,7 +88,5 @@ const SearchUserAndConfirm = function({ onUserSelected, confirmButtonText = "Con
     </Box>
   );
 };
-
 const mapStateToProps = state => ({});
-
 export default withRouter(connect(mapStateToProps)(SearchUserAndConfirm));

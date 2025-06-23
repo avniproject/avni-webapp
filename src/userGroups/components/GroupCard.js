@@ -39,7 +39,12 @@ export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
         </Link>
       </CardActionArea>
       <CardActions>
-        <Grid container justifyContent="flex-end">
+        <Grid
+          container
+          sx={{
+            justifyContent: "flex-end"
+          }}
+        >
           <Grid item>
             <Button size="small" disabled={GroupModel.nonRemovableGroup(groupName)} onClick={onDelete}>
               <DeleteOutline />

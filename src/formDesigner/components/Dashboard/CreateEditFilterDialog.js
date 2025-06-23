@@ -15,8 +15,19 @@ export const CreateEditFilterDialog = ({
   return (
     <Dialog open={showAddFilterModal} onClose={handleModalClose}>
       <DialogTitle id="id">
-        <Box display="flex" alignItems="center">
-          <Box flexGrow={1}>{selectedFilter ? "Edit Filter" : "Create Filter"}</Box>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          <Box
+            sx={{
+              flexGrow: 1
+            }}
+          >
+            {selectedFilter ? "Edit Filter" : "Create Filter"}
+          </Box>
           <Box>
             <IconButton onClick={handleModalClose} size="large">
               <Close />

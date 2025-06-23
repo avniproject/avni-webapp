@@ -76,7 +76,6 @@ function InlineConcept(props) {
       {props.formElementData.inlineConceptErrorMessage.dataType !== "" && (
         <div style={{ color: "red", fontSize: "10px" }}>{props.formElementData.inlineConceptErrorMessage.dataType}</div>
       )}
-
       {props.formElementData.inlineConceptDataType === "Numeric" && (
         <NumericConcept
           onNumericConceptAttributeAssignment={props.handleInlineNumericAttributes}
@@ -86,9 +85,12 @@ function InlineConcept(props) {
           index={props.index}
         />
       )}
-
       {props.formElementData.inlineConceptDataType === "Coded" && (
-        <Box mt={2}>
+        <Box
+          sx={{
+            mt: 2
+          }}
+        >
           <Button type="button" color="primary" onClick={() => props.onAlphabeticalSort(props.groupIndex, props.index)}>
             Sort alphabetically
           </Button>
@@ -124,7 +126,6 @@ function InlineConcept(props) {
           <br />
         </>
       )}
-
       {props.formElementData.inlineConceptDataType === "Location" && (
         <>
           <LocationConcept
@@ -139,7 +140,6 @@ function InlineConcept(props) {
           <br />
         </>
       )}
-
       {props.formElementData.inlineConceptDataType === "Subject" && (
         <>
           <SubjectConcept
@@ -155,7 +155,6 @@ function InlineConcept(props) {
           <br />
         </>
       )}
-
       {props.formElementData.inlineConceptDataType === "Encounter" && (
         <>
           <EncounterConcept
@@ -170,9 +169,7 @@ function InlineConcept(props) {
           <br />
         </>
       )}
-
       {props.formElementData.inlineConceptDataType === "PhoneNumber" && renderInlinePhoneNumber()}
-
       <Button
         variant="contained"
         color="primary"
@@ -181,7 +178,6 @@ function InlineConcept(props) {
       >
         Save
       </Button>
-
       {props.formElementData.newFlag && (
         <BackButton
           handleConceptFormLibrary={props.handleConceptFormLibrary}

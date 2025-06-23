@@ -22,7 +22,13 @@ export const FormElementGroupRule = ({
   };
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <RuleDesigner
         rulesJson={groupData.declarativeRule}
         onValueChange={jsonData => updateFormElementGroupRuleJSON(index, jsonData)}

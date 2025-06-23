@@ -214,7 +214,16 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
               />
             </div>
           )}
-          <Box component={"div"} mt={3} mb={2} p={2} border={1} borderColor={"#e1e1e1"}>
+          <Box
+            component={"div"}
+            sx={{
+              mt: 3,
+              mb: 2,
+              p: 2,
+              border: 1,
+              borderColor: "#e1e1e1"
+            }}
+          >
             <Typography gutterBottom variant={"subtitle1"}>
               {"Sync Settings"}
             </Typography>

@@ -39,7 +39,11 @@ function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, lo
     <Grid container component="main" className={classes.root}>
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} style={{ backgroundColor: "#f0f2f0" }}>
-        <Box mb={4}>
+        <Box
+          sx={{
+            mb: 4
+          }}
+        >
           <img src={AvniLogo} alt="logo" height="45px" />
         </Box>
         <Card>

@@ -28,7 +28,12 @@ const Homepage = ({ userInfo, organisation }) => {
 
   return (
     <ScreenWithAppBar appbarTitle={`Avni Web Console - ${organisation.organisationCategoryName}`}>
-      <Grid container justifyContent="center">
+      <Grid
+        container
+        sx={{
+          justifyContent: "center"
+        }}
+      >
         <HomePageCard
           href={"/#/admin"}
           name={"Admin"}
@@ -83,7 +88,6 @@ const Homepage = ({ userInfo, organisation }) => {
     </ScreenWithAppBar>
   );
 };
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo,
   organisation: state.app.organisation

@@ -34,7 +34,12 @@ export const SubjectConcept = props => {
   return (
     <>
       <br />
-      <Grid container justifyContent="flex-start">
+      <Grid
+        container
+        sx={{
+          justifyContent: "flex-start"
+        }}
+      >
         <Grid item xs={12} sm={12}>
           <AvniSelect
             style={{ width: "400px", height: 40, marginTop: 24 }}

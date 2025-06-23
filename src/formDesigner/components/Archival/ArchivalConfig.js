@@ -45,7 +45,13 @@ export const ArchivalConfig = () => {
 
   const errorMessage = `${_.get(error, "response.data")} (${_.get(error, "message")})`;
   return (
-    <Box boxShadow={2} p={5} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 5,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title="Archival Config" />
       <DocumentationContainer filename={"Archival.md"}>
         <div className="container">

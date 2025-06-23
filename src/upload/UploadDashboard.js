@@ -266,7 +266,18 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                 Upload
               </Grid>
               <Grid container item>
-                <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
+                <Grid
+                  container
+                  item
+                  direction="column"
+                  xs={8}
+                  sm={4}
+                  spacing={2}
+                  sx={{
+                    justifyContent: "center",
+                    alignItems: "flex-start"
+                  }}
+                >
                   <DropDown name="Type" value={uploadType} onChange={handleDropdownChange} options={uploadAndDownloadOptions} />
                   <Tooltip title="Download Sample file for selected Upload type" placement="bottom-start" arrow>
                     <span>
@@ -284,7 +295,18 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                     </Button>
                   </Grid>
                 )}
-                <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
+                <Grid
+                  container
+                  item
+                  direction="column"
+                  xs={8}
+                  sm={4}
+                  spacing={2}
+                  sx={{
+                    justifyContent: "center",
+                    alignItems: "flex-start"
+                  }}
+                >
                   <Grid item>
                     <FileUpload
                       canSelect={!isEmpty(uploadType)}
@@ -326,7 +348,13 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                     <LocationHierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} configuredHierarchies={configuredHierarchies} />
                   ) : (
                     <Box>
-                      <Typography color="error" display="block" gutterBottom>
+                      <Typography
+                        color="error"
+                        gutterBottom
+                        sx={{
+                          display: "block"
+                        }}
+                      >
                         Invalid or missing Location Hierarchy.
                       </Typography>
                     </Box>
@@ -344,13 +372,11 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
     </Grid>
   );
 };
-
 const mapStateToProps = state => ({
   statuses: state.bulkUpload.statuses,
   uploadTypes: state.bulkUpload.uploadTypes,
   userRoles: state.app.authSession.roles
 });
-
 export default withRouter(
   connect(
     mapStateToProps,

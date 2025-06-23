@@ -42,12 +42,18 @@ export const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => 
 
   const renderProgress = () => {
     return (
-      <Grid item container xs={12} justifyContent={"center"}>
+      <Grid
+        item
+        container
+        xs={12}
+        sx={{
+          justifyContent: "center"
+        }}
+      >
         <CircularProgress />
       </Grid>
     );
   };
-
   return (
     <Accordion className={classes.expansionPanel}>
       <AccordionSummary

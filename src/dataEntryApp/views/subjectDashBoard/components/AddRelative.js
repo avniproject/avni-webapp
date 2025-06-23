@@ -205,7 +205,14 @@ const AddRelative = ({
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <div className={classes.innerPaper}>
-          <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
+          <Grid
+            container
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "baseline"
+            }}
+          >
             <Typography component={"span"} className={classes.mainHeading}>
               {t("addRelative")}
             </Typography>
@@ -234,7 +241,13 @@ const AddRelative = ({
               </div>
               <div className={classes.scheduleddateStyle}>
                 <div className={classes.tableView}>
-                  <Grid alignItems="center" container spacing={1}>
+                  <Grid
+                    container
+                    spacing={1}
+                    sx={{
+                      alignItems: "center"
+                    }}
+                  >
                     <Grid item xs={6}>
                       <Table aria-label="caption table" className={classes.tableContainer}>
                         <TableHead>
@@ -258,17 +271,14 @@ const AddRelative = ({
                             <TableCell key={selectedRelative.fullName} className={classes.tableCellDetails}>
                               {t(selectedRelative.fullName)}
                             </TableCell>
-
                             <TableCell key={selectedRelative.gender} className={classes.tableCellDetails}>
                               {t(selectedRelative.gender)}
                             </TableCell>
-
                             <TableCell key={selectedRelative.dateOfBirth} className={classes.tableCellDetails}>
                               {selectedRelative.dateOfBirth
                                 ? new Date().getFullYear() - new Date(selectedRelative.dateOfBirth).getFullYear() + " " + `${t("years")}`
                                 : "-"}
                             </TableCell>
-
                             <TableCell key={selectedRelative.addressLevel} className={classes.tableCellDetails}>
                               {t(selectedRelative.addressLevel)}
                             </TableCell>
@@ -277,7 +287,6 @@ const AddRelative = ({
                       </Table>
                       <div style={{ marginLeft: 10 }}>
                         <LineBreak num={1} />
-
                         <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                           Relationship
                         </Typography>
@@ -318,7 +327,15 @@ const AddRelative = ({
             </div>
           )}
         </div>
-        <Box className={classes.buttomboxstyle} display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
+        <Box
+          className={classes.buttomboxstyle}
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "flex-start"
+          }}
+        >
           <Box>
             <Button variant="outlined" className={classes.cancelBtn} onClick={cancelRelation}>
               CANCEL
@@ -340,7 +357,6 @@ const AddRelative = ({
     <CustomizedBackdrop load={isEmpty(subjectProfile)} />
   );
 };
-
 const mapStateToProps = state => ({
   subjectTypes: state.dataEntry.metadata.operationalModules.subjectTypes,
   relationshipTypes: state.dataEntry.relations.relationshipTypes,
@@ -352,7 +368,6 @@ const mapStateToProps = state => ({
   genders: state.dataEntry.metadata.genders,
   organisationConfigs: state.dataEntry.metadata.organisationConfigs
 });
-
 const mapDispatchToProps = {
   getRelationshipTypes,
   saveRelationShip,
@@ -360,7 +375,6 @@ const mapDispatchToProps = {
   getGenders,
   getOrganisationConfig
 };
-
 export default withRouter(
   withParams(
     connect(

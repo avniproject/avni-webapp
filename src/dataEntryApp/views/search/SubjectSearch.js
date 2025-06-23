@@ -67,7 +67,15 @@ const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfi
 
   return (
     <Paper className={classes.searchBox}>
-      <Grid container direction="row" justifyContent="space-between" alignItems="baseline" style={{ marginBottom: "1%" }}>
+      <Grid
+        container
+        direction="row"
+        style={{ marginBottom: "1%" }}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "baseline"
+        }}
+      >
         <Typography
           component={"span"}
           style={{
@@ -88,18 +96,15 @@ const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfi
     </Paper>
   );
 };
-
 const mapStateToProps = state => {
   return {
     searchRequest: state.dataEntry.searchFilterReducer.request,
     organisationConfigs: state.dataEntry.metadata.organisationConfigs
   };
 };
-
 const mapDispatchToProps = {
   getOrganisationConfig
 };
-
 export default withRouter(
   connect(
     mapStateToProps,

@@ -60,7 +60,14 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
         header: t("actions"),
         enableSorting: false,
         Cell: ({ row }) => (
-          <Grid container alignItems={"center"} alignContent={"center"} spacing={10}>
+          <Grid
+            container
+            spacing={10}
+            sx={{
+              alignItems: "center",
+              alignContent: "center"
+            }}
+          >
             <Grid item>
               <InternalLink to={`${doBaseUrl}=${row.original.uuid}`}>
                 <Button id={`do-visit-${row.original.uuid}`} color="primary">
@@ -84,14 +91,12 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
     ],
     [t, classes, doBaseUrl, cancelBaseURL, onDelete]
   );
-
   const renderNoVisitMessage = () => (
     <Typography variant="caption" gutterBottom className={classes.infoMsg}>
       {" "}
       {t("no")} {t("plannedVisits")}{" "}
     </Typography>
   );
-
   const renderTable = () => (
     <MaterialReactTable
       columns={columns}
@@ -115,8 +120,6 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
       }}
     />
   );
-
   return size(plannedVisits) === 0 ? renderNoVisitMessage() : renderTable();
 };
-
 export default PlannedVisitsTable;

@@ -73,13 +73,18 @@ function RelationshipTypeCreate() {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={"Create Relationship Type"} />
         <DocumentationContainer filename={"RelationshipType.md"}>
           {!isIndividualSubjectTypeAvailable && (
             <div style={{ color: "red", size: "10" }}>Please create an Person subject type to enable this screen </div>
           )}
-
           {error.individualAIsToBRelationError !== "" && (
             <div style={{ color: "red", size: "6" }}>{error.individualAIsToBRelationError}</div>
           )}
@@ -137,5 +142,4 @@ function RelationshipTypeCreate() {
     </>
   );
 }
-
 export default RelationshipTypeCreate;

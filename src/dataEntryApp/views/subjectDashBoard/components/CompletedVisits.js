@@ -101,7 +101,13 @@ const CompleteVisit = ({
     <div>
       <Fragment>
         <Paper className={classes.searchBox}>
-          <Grid container item justifyContent="flex-end">
+          <Grid
+            container
+            item
+            sx={{
+              justifyContent: "flex-end"
+            }}
+          >
             <FilterResult encounterTypes={encounterTypes} setFilterParams={setFilterParams} />
           </Grid>
           <Paper className={classes.tableBox}>
@@ -128,21 +134,18 @@ const CompleteVisit = ({
     <CustomizedBackdrop load={load} />
   );
 };
-
 const mapStateToProps = state => {
   return {
     encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
     load: state.dataEntry.loadReducer.load
   };
 };
-
 const mapDispatchToProps = {
   loadEncounters,
   loadProgramEncounters,
   voidGeneralEncounter,
   voidProgramEncounter
 };
-
 export default withRouter(
   withParams(
     connect(

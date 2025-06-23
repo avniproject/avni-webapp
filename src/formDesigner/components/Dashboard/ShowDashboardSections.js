@@ -103,7 +103,14 @@ const ShowDashboardSections = ({ sections, history }) => {
               <StyledAccordion expanded={expanded === "panel" + index} onChange={handleChange("panel" + index)}>
                 <StyledAccordionSummary aria-controls={"panel" + index + "bh-content"} id={"panel" + index + "bh-header"}>
                   <Grid container direction="row">
-                    <Grid container item sm={12} alignItems="center">
+                    <Grid
+                      container
+                      item
+                      sm={12}
+                      sx={{
+                        alignItems: "center"
+                      }}
+                    >
                       <Grid item sm={1}>
                         <Tooltip title="Grouped Questions">
                           <List style={{ marginLeft: 12, marginRight: 4 }} />
@@ -142,5 +149,4 @@ const ShowDashboardSections = ({ sections, history }) => {
     </React.Fragment>
   );
 };
-
 export default ShowDashboardSections;

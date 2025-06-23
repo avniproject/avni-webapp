@@ -58,7 +58,13 @@ const Documentation = ({ userInfo }) => {
   };
 
   return (
-    <Box border={1} borderColor={"#ddd"} p={2}>
+    <Box
+      sx={{
+        border: 1,
+        borderColor: "#ddd",
+        p: 2
+      }}
+    >
       <TextField
         id="doc-name"
         variant="outlined"
@@ -79,7 +85,11 @@ const Documentation = ({ userInfo }) => {
         styleClass={{ marginTop: "14px" }}
         disabledFlag={!UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditDocumentation)}
       />
-      <Box mt={2} />
+      <Box
+        sx={{
+          mt: 2
+        }}
+      />
       {createdBy && (
         <SystemInfo
           direction={"row"}

@@ -67,7 +67,15 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
     <div />
   ) : (
     <Grid container direction="row" spacing={2}>
-      <Grid container item direction="row" justifyContent="space-between" alignItems="center">
+      <Grid
+        container
+        item
+        direction="row"
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}
+      >
         <Grid item xs={12} sm={4}>
           <DropDown name="Language" style={{ width: 120 }} value={language} onChange={setLanguage} options={locales} />
         </Grid>
@@ -82,7 +90,11 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
           />
         </Grid>
       </Grid>
-      <Box py={4}>
+      <Box
+        sx={{
+          py: 4
+        }}
+      >
         {!isEmpty(file) && (
           <div>
             <p>Summary:</p>
@@ -96,9 +108,7 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
     </Grid>
   );
 };
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default connect(mapStateToProps)(ImportTranslations);

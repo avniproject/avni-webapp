@@ -147,7 +147,14 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
 
   const content = (
     <DialogContent>
-      <Grid container direction="row" justifyContent="flex-end" alignItems="flex-start">
+      <Grid
+        container
+        direction="row"
+        sx={{
+          justifyContent: "flex-end",
+          alignItems: "flex-start"
+        }}
+      >
         <IconButton color="secondary" className={classes.resetButton} onClick={resetClick} aria-label="add an alarm" size="large">
           <CancelIcon className={classes.cancelIcon} /> {t("resetAll")}
         </IconButton>
@@ -155,7 +162,15 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
       <form className={classes.form} noValidate>
         <FormControl className={classes.formControl}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Grid container direction="row" spacing={3} justifyContent="flex-start" alignItems="flex-start">
+            <Grid
+              container
+              direction="row"
+              spacing={3}
+              sx={{
+                justifyContent: "flex-start",
+                alignItems: "flex-start"
+              }}
+            >
               <Grid item xs={6}>
                 <DatePicker
                   allowKeyboardControl

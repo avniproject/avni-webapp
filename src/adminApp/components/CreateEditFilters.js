@@ -257,7 +257,13 @@ export const CreateEditFilters = ({
   return (
     <div>
       <Title title="TaskAssignmentFilter Config" />
-      <Box boxShadow={2} p={1} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 1,
+          bgcolor: "background.paper"
+        }}
+      >
         <DocumentationContainer filename={documentationFileName}>
           <Box>
             <div className="container" style={{ float: "left", marginBottom: 10 }}>
@@ -273,7 +279,11 @@ export const CreateEditFilters = ({
                   toolTipKey={"APP_DESIGNER_FILTER_NAME"}
                 />
               </FormControl>
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {renderSelect(
                 "Subject Type",
                 "Select Subject Type",
@@ -282,9 +292,17 @@ export const CreateEditFilters = ({
                 sub => setSubject(sub),
                 "APP_DESIGNER_FILTER_SUBJECT_TYPE"
               )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {renderSelect("Type", "Filter Type", selectedType, typeOptions, type => onTypeChange(type), "APP_DESIGNER_FILTER_TYPE")}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {selectedType.value === CustomFilter.type.GroupSubject &&
                 renderSelect(
                   "Group Subject Type",
@@ -294,7 +312,11 @@ export const CreateEditFilters = ({
                   sub => setGroupSubjectType(sub),
                   "APP_DESIGNER_FILTER_GROUP_SUBJECT_TYPE"
                 )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {selectedType.value === "Concept" && (
                 <div style={{ width: 400 }}>
                   <AvniFormLabel label={"Select Concept"} toolTipKey={"APP_DESIGNER_FILTER_CONCEPT_SEARCH"} position={"top"} />
@@ -308,7 +330,11 @@ export const CreateEditFilters = ({
                   />
                 </div>
               )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {selectedType.value === "Concept" &&
                 renderSelect(
                   "Scope",
@@ -318,7 +344,11 @@ export const CreateEditFilters = ({
                   scope => onScopeChange(scope),
                   "APP_DESIGNER_FILTER_SEARCH_SCOPE"
                 )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {selectedType.value === "Concept" &&
                 selectedScope.value === CustomFilter.scope.ProgramEnrolment &&
                 renderMultiSelect(
@@ -329,7 +359,11 @@ export const CreateEditFilters = ({
                   program => setProgram(program),
                   "APP_DESIGNER_FILTER_PROGRAM"
                 )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {selectedType.value === "Concept" &&
                 selectedScope.value === CustomFilter.scope.ProgramEncounter &&
                 renderSelect(
@@ -340,7 +374,11 @@ export const CreateEditFilters = ({
                   program => setProgram([program]),
                   "APP_DESIGNER_FILTER_PROGRAM"
                 )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {selectedType.value === "Concept" &&
                 (selectedScope.value === CustomFilter.scope.ProgramEncounter || selectedScope.value === CustomFilter.scope.Encounter) &&
                 renderMultiSelect(
@@ -351,7 +389,11 @@ export const CreateEditFilters = ({
                   enc => setEncounter(enc),
                   "APP_DESIGNER_FILTER_ENCOUNTER_TYPE"
                 )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
               {widgetRequired() &&
                 renderSelect(
                   "Widget Type",
@@ -361,9 +403,17 @@ export const CreateEditFilters = ({
                   w => setWidget(w),
                   "APP_DESIGNER_FILTER_WIDGET_TYPE"
                 )}
-              <Box m={1} />
+              <Box
+                sx={{
+                  m: 1
+                }}
+              />
             </div>
-            <Box m={1}>
+            <Box
+              sx={{
+                m: 1
+              }}
+            >
               <SaveComponent name={t("save")} onSubmit={saveFilter} disabledFlag={saveDisabled()} />
             </Box>
             <p />

@@ -64,32 +64,74 @@ export const Translations = ({ user, organisationConfig, getOrgConfig, dashboard
     <ScreenWithAppBar appbarTitle={`Translations`}>
       <DocumentationContainer filename={"Translation.md"}>
         <div id={"margin"}>
-          <Box border={1} borderColor={"#ddd"} p={2}>
+          <Box
+            sx={{
+              border: 1,
+              borderColor: "#ddd",
+              p: 2
+            }}
+          >
             <TranslationDashboard data={dashboardData} emptyTranslationKey={EMPTY_TRANSLATION_KEY} />
           </Box>
           <p />
-          <Box border={1} borderColor={"#ddd"} p={2}>
+          <Box
+            sx={{
+              border: 1,
+              borderColor: "#ddd",
+              p: 2
+            }}
+          >
             <Grid>
               <h5 id="title">Upload Translations</h5>
             </Grid>
-            <Grid container direction="row" justifyContent="flex-start" alignItems="center">
+            <Grid
+              container
+              direction="row"
+              sx={{
+                justifyContent: "flex-start",
+                alignItems: "center"
+              }}
+            >
               <Import locales={localeChoices} onSuccessfulImport={() => getDashboardData("Android", EMPTY_TRANSLATION_KEY)} />
             </Grid>
           </Box>
           <p />
-          <Box border={1} borderColor={"#ddd"} p={2}>
+          <Box
+            sx={{
+              border: 1,
+              borderColor: "#ddd",
+              p: 2
+            }}
+          >
             <Grid>
               <h5 id="title">Download Translations</h5>
             </Grid>
-            <Grid container direction="row" justifyContent="flex-start" alignItems="center" m={3}>
+            <Grid
+              container
+              direction="row"
+              sx={{
+                justifyContent: "flex-start",
+                alignItems: "center",
+                m: 3
+              }}
+            >
               <DropDown name="Platform" value={platform} onChange={setPlatform} style={{ width: 120 }} options={platforms} />
-              <Box pl={2}>
+              <Box
+                sx={{
+                  pl: 2
+                }}
+              >
                 <FormControlLabel
                   control={<Checkbox checked={excludeLocations} onChange={() => setExcludeLocations(prev => !prev)} color="primary" />}
                   label="Exclude Locations"
                 />
               </Box>
-              <Box pl={2} pr={4}>
+              <Box
+                sx={{
+                  pl: 2,
+                  pr: 4
+                }}
+              >
                 <Button
                   variant="contained"
                   onClick={onDownloadPressedHandler}
@@ -107,12 +149,10 @@ export const Translations = ({ user, organisationConfig, getOrgConfig, dashboard
     </ScreenWithAppBar>
   );
 };
-
 const mapStateToProps = state => ({
   organisationConfig: state.translations.onLoad.organisationConfig,
   dashboardData: state.translations.onLoad.dashboardData
 });
-
 export default connect(
   mapStateToProps,
   { getOrgConfig, getDashboardData }

@@ -21,7 +21,12 @@ const BroadcastPage = function({ path, organisationConfig, userInfo }) {
   return (
     <React.Fragment>
       <AppBar title={"Broadcast"} position={"sticky"} />
-      <Grid container justifyContent="center">
+      <Grid
+        container
+        sx={{
+          justifyContent: "center"
+        }}
+      >
         <HomePageCard href={getHref(BroadcastPath.News, path)} name={"News Broadcasts"} customIcon={"speaker"} />
         {organisationConfig && organisationConfig.organisationConfig.enableMessaging && showMessaging && (
           <HomePageCard
@@ -34,7 +39,6 @@ const BroadcastPage = function({ path, organisationConfig, userInfo }) {
     </React.Fragment>
   );
 };
-
 const Broadcast = ({ match: { path }, organisationConfig, userInfo }) => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -55,10 +59,8 @@ const Broadcast = ({ match: { path }, organisationConfig, userInfo }) => {
     </React.Fragment>
   );
 };
-
 const mapStateToProps = state => ({
   organisationConfig: state.broadcast.organisationConfig,
   userInfo: state.app.userInfo
 });
-
 export default withRouter(connect(mapStateToProps)(Broadcast));

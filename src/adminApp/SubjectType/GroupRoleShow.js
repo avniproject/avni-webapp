@@ -5,9 +5,19 @@ import { filter } from "lodash";
 export const GroupRoleShow = ({ groupRoles }) => {
   const nonVoidedRoles = filter(groupRoles, ({ voided }) => !voided);
   return (
-    <Box mb={2}>
+    <Box
+      sx={{
+        mb: 2
+      }}
+    >
       <FormLabel style={{ fontSize: "13px" }}>Group Roles</FormLabel>
-      <Box border={1} borderBottom={0} borderColor="grey.300">
+      <Box
+        sx={{
+          border: 1,
+          borderBottom: 0,
+          borderColor: "grey.300"
+        }}
+      >
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>

@@ -55,7 +55,14 @@ const ProgramEncounter = ({ match, programEncounter, validationResults, setEncou
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <Grid justifyContent="center" alignItems="center" container spacing={3}>
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
           <Grid item xs={12}>
             {props.programEncounterForm && programEncounter && props.subjectProfile ? (
               <ProgramEncounterForm fetchRulesResponse={fetchProgramEncounterRulesResponse}>
@@ -77,14 +84,12 @@ const ProgramEncounter = ({ match, programEncounter, validationResults, setEncou
     </Fragment>
   );
 };
-
 const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
   validationResults: state.dataEntry.programEncounterReducer.validationResults
 });
-
 const mapDispatchToProps = {
   onLoad,
   updateProgramEncounter,
@@ -94,7 +99,6 @@ const mapDispatchToProps = {
   createProgramEncounterForScheduled,
   setEncounterDate
 };
-
 export default withRouter(
   withParams(
     connect(

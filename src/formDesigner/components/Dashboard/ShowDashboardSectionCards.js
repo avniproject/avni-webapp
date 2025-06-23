@@ -10,7 +10,13 @@ const ShowDashboardSectionCards = ({ cards }) => {
         <List>
           {map(orderBy(cards, "displayOrder"), card => (
             <div>
-              <Box border={2} my={0.5} borderColor={"rgba(133,133,133,0.49)"}>
+              <Box
+                sx={{
+                  border: 2,
+                  my: 0.5,
+                  borderColor: "rgba(133,133,133,0.49)"
+                }}
+              >
                 <Grid container direction={"column"}>
                   <Grid item>
                     <ListItem>
@@ -29,5 +35,4 @@ const ShowDashboardSectionCards = ({ cards }) => {
     </div>
   );
 };
-
 export default ShowDashboardSectionCards;

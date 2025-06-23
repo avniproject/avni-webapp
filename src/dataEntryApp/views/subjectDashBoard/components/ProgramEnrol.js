@@ -80,7 +80,14 @@ const ProgramEnrol = ({
           <Typography component={"span"} className={classes.mainHeading}>
             {t(match.queryParams.programName)}
           </Typography>
-          <Grid justifyContent="center" alignItems="center" container spacing={3}>
+          <Grid
+            container
+            spacing={3}
+            sx={{
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
             <Grid item xs={12}>
               {enrolForm && programEnrolment && formType === "ProgramEnrolment" ? (
                 <ProgramEnrolmentForm formType={formType} fetchRulesResponse={fetchEnrolmentRulesResponse}>
@@ -116,7 +123,6 @@ const ProgramEnrol = ({
     <CustomizedBackdrop load={load} />
   );
 };
-
 const mapStateToProps = state => ({
   enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
@@ -124,7 +130,6 @@ const mapStateToProps = state => ({
   load: state.dataEntry.enrolmentReducer.load,
   validationResults: state.dataEntry.enrolmentReducer.validationResults
 });
-
 const mapDispatchToProps = {
   onLoad,
   getSubjectProfile,
@@ -132,7 +137,6 @@ const mapDispatchToProps = {
   setEnrolmentDate,
   setExitDate
 };
-
 export default withRouter(
   withParams(
     connect(

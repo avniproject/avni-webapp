@@ -62,10 +62,21 @@ const ChecklistDetails = ({ userInfo }) => {
   };
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <DocumentationContainer filename={"Checklist.md"}>
         <Title title={"Checklist"} />
-        <Box boxShadow={1} p={1.5}>
+        <Box
+          sx={{
+            boxShadow: 1,
+            p: 1.5
+          }}
+        >
           <div style={{ cursor: "pointer" }} onClick={() => setFoldCard(!foldCard)}>
             {foldCard ? <ExpandMoreIcon /> : <ExpandLessIcon />}
             <FormLabel style={{ fontSize: "16px", color: "black" }}>Checklist</FormLabel>

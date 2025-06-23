@@ -26,9 +26,20 @@ const useStyles = makeStyles(theme => ({
 export default function KeyValues({ keyValues, onKeyValueChange, onAddNewKeyValue, onDeleteKeyValue, error, readOnlyKeys = [] }) {
   const classes = useStyles();
   return (
-    <Box mt={5}>
+    <Box
+      sx={{
+        mt: 5
+      }}
+    >
       {map(keyValues, ({ key, value }, index) => (
-        <Grid key={index} container direction="row" alignItems="center">
+        <Grid
+          key={index}
+          container
+          direction="row"
+          sx={{
+            alignItems: "center"
+          }}
+        >
           <form className={classes.root} noValidate autoComplete="off">
             <TextField
               id="outlined-basic"

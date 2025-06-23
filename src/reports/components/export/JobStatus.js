@@ -72,7 +72,13 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
 
   return (
     <Box>
-      <Grid container direction="row" justifyContent="flex-end">
+      <Grid
+        container
+        direction="row"
+        sx={{
+          justifyContent: "flex-end"
+        }}
+      >
         <Button color="primary" onClick={() => getUploadStatuses(0)}>
           <Refresh />
           {" Refresh"}
@@ -128,11 +134,9 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
     </Box>
   );
 };
-
 const mapStateToProps = state => ({
   exportJobStatuses: state.reports.exportJobStatuses
 });
-
 export default withRouter(
   connect(
     mapStateToProps,

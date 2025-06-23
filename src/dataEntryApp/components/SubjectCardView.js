@@ -28,7 +28,15 @@ const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, su
   return (
     <Card className={classes.card} key={uuid}>
       <CardContent className={classes.cardContent}>
-        <Grid container justifyContent="center" direction="row" spacing={1} alignItems="center">
+        <Grid
+          container
+          direction="row"
+          spacing={1}
+          sx={{
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
           <Grid item>
             <SubjectProfilePicture
               allowEnlargementOnClick={true}
@@ -58,5 +66,4 @@ const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, su
     </Card>
   );
 };
-
 export default SubjectCardView;

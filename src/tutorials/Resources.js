@@ -14,7 +14,13 @@ const Resources = () => {
   );
 
   return (
-    <Grid container alignItems={"center"} spacing={3}>
+    <Grid
+      container
+      spacing={3}
+      sx={{
+        alignItems: "center"
+      }}
+    >
       <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
         <TutorialCard
           title={"Self service help articles"}
@@ -59,5 +65,4 @@ const Resources = () => {
     </Grid>
   );
 };
-
 export default Resources;

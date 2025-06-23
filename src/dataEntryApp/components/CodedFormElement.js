@@ -44,7 +44,13 @@ export const CodedFormElement = ({
     >
       <FormLabel component="legend">{t(name)}</FormLabel>
       <FormGroup>
-        <Box display="flex" flexWrap="wrap" alignContent="flex-start">
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignContent: "flex-start"
+          }}
+        >
           {items.map(item => (
             <Box key={item.uuid}>
               <FormControlLabel

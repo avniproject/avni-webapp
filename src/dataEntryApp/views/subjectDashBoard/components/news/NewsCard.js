@@ -37,7 +37,14 @@ export const NewsCard = ({ signedHeroImage, title, publishedDate, id }) => {
         }}
       >
         <CardContent>
-          <Grid container direction={"row"} spacing={2} alignItems={"center"}>
+          <Grid
+            container
+            direction={"row"}
+            spacing={2}
+            sx={{
+              alignItems: "center"
+            }}
+          >
             <Grid item>{renderImage()}</Grid>
             <Grid item container direction={"column"} xs={8}>
               <Grid item>

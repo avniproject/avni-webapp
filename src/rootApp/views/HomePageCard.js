@@ -24,7 +24,14 @@ export const HomePageCard = ({ href, name, customIconComponent }) => (
   <CardActionArea style={classes.cardArea} href={href}>
     <Card style={classes.card} raised={true}>
       <CardContent style={{ marginTop: 10 }}>
-        <Grid container direction="column" justifyContent="center" alignItems="center">
+        <Grid
+          container
+          direction="column"
+          sx={{
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
           <Grid item>{customIconComponent}</Grid>
           <Grid item>
             <Typography variant="h5" component="h2" align="center" color="secondary" style={{ marginTop: 5 }}>

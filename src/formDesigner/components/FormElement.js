@@ -165,10 +165,24 @@ function FormElement(props) {
     >
       <StyledAccordionSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"} {...props.dragHandleProps}>
         <Grid container direction="row">
-          <Grid container item alignItems="center" justifyContent="center">
+          <Grid
+            container
+            item
+            sx={{
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
             <DragHandler />
           </Grid>
-          <Grid container item sm={12} alignItems="center">
+          <Grid
+            container
+            item
+            sm={12}
+            sx={{
+              alignItems: "center"
+            }}
+          >
             <Grid item>
               <Typography component="div" className={classes.secondaryHeading}>
                 {[
@@ -236,5 +250,4 @@ function FormElement(props) {
     </StyledAccordion>
   );
 }
-
 export default React.memo(FormElement, areEqual);

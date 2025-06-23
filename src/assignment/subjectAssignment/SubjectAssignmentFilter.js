@@ -71,7 +71,11 @@ const SubjectAssignmentFilter = ({
           setAddressLevelsIds={ids => onFilterChange("addressIds", ids)}
           skipGrid={true}
         />
-        <Box mb={5} />
+        <Box
+          sx={{
+            mb: 5
+          }}
+        />
         <SelectFilter
           isMulti={true}
           label={"Program"}
@@ -110,5 +114,4 @@ const SubjectAssignmentFilter = ({
     </Fragment>
   );
 };
-
 export default SubjectAssignmentFilter;

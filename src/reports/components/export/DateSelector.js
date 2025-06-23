@@ -6,7 +6,11 @@ import React from "react";
 
 export const DateSelector = ({ label, value, onChange }) => {
   return (
-    <Box m={2}>
+    <Box
+      sx={{
+        m: 2
+      }}
+    >
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DatePicker
           autoOk

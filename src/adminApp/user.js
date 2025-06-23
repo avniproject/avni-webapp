@@ -328,7 +328,12 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }
         //TODO : this should be removed after react-admin upgrade
         return (
           <Fragment>
-            <Grid container alignItems={"center"}>
+            <Grid
+              container
+              sx={{
+                alignItems: "center"
+              }}
+            >
               <Grid item xs={3}>
                 <SelectInput
                   resettable
@@ -378,9 +383,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }
     </FormDataConsumer>
   );
 };
-
 const initialSyncAttributes = { subjectTypes: [] };
-
 const getSyncConceptValueMap = async sortedSubjectTypes => {
   const syncConceptValueMap = new Map();
   const codedConceptUUIDSet = new Set();
@@ -390,7 +393,6 @@ const getSyncConceptValueMap = async sortedSubjectTypes => {
     syncAttribute1UUID && codedConceptUUIDSet.add(syncAttribute1UUID);
     syncAttribute2UUID && codedConceptUUIDSet.add(syncAttribute2UUID);
   });
-
   for (const conceptUUID of codedConceptUUIDSet) {
     const content = await ConceptService.getAnswerConcepts(conceptUUID);
     content.forEach(val => {
@@ -399,14 +401,12 @@ const getSyncConceptValueMap = async sortedSubjectTypes => {
   }
   return syncConceptValueMap;
 };
-
 function fetchSyncAttributeData(setSyncAttributesData) {
   useEffect(() => {
     let isMounted = true;
     http.get("/subjectType/syncAttributesData").then(res => {
       const { subjectTypes, anySubjectTypeDirectlyAssignable, anySubjectTypeSyncByLocation } = res.data;
       const sortedSubjectTypes = sortBy(subjectTypes, "id");
-
       getSyncConceptValueMap(sortedSubjectTypes).then(syncConceptValueMap => {
         if (isMounted) {
           setSyncAttributesData({
@@ -423,12 +423,10 @@ function fetchSyncAttributeData(setSyncAttributesData) {
     };
   }, []);
 }
-
 const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
   const [languages, setLanguages] = useState([]);
   const [syncAttributesData, setSyncAttributesData] = useState(initialSyncAttributes);
   const isSyncSettingsRequired = syncAttributesData.subjectTypes.length > 0 || syncAttributesData.isAnySubjectTypeDirectlyAssignable;
-
   useEffect(() => {
     http.get("/organisationConfig").then(res => {
       const organisationLocales = isEmpty(res.data._embedded.organisationConfig)
@@ -437,9 +435,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
       setLanguages(organisationLocales);
     });
   }, []);
-
   fetchSyncAttributeData(setSyncAttributesData);
-
   const sanitizeProps = ({ record, resource, save }) => ({
     record,
     resource,

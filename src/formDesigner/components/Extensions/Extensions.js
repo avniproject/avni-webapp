@@ -104,7 +104,13 @@ const Extensions = ({ userInfo }) => {
   };
 
   return (
-    <Box boxShadow={2} p={5} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 5,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title="Extensions" />
       <DocumentationContainer filename={"Prints.md"}>
         <div className="container">
@@ -138,9 +144,7 @@ const Extensions = ({ userInfo }) => {
     </Box>
   );
 };
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default connect(mapStateToProps)(Extensions);

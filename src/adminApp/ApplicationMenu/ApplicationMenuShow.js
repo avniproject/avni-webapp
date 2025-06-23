@@ -25,7 +25,13 @@ const ApplicationMenuShow = props => {
   return (
     !_.isNil(menuItem) && (
       <>
-        <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Box
+          sx={{
+            boxShadow: 2,
+            p: 3,
+            bgcolor: "background.paper"
+          }}
+        >
           <Title title={"Application menu: " + menuItem.displayKey} />
           {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditApplicationMenu) && (
             <Grid container item={12} style={{ justifyContent: "flex-end" }}>

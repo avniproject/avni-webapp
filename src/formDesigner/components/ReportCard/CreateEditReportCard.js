@@ -117,7 +117,13 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   const standardReportCardTypeName = get(card, "standardReportCardType.name") || "";
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title={"Create offline Card"} />
       <DocumentationContainer filename={"Card.md"}>
         {edit && (

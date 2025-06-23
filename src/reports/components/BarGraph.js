@@ -14,7 +14,14 @@ const BarGraph = ({ data, title, id }) => {
   const maxLengthIndicator = _.maxBy(data, ({ indicator }) => indicator.length).indicator.length;
 
   return (
-    <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
+    <Box
+      sx={{
+        border: 1,
+        mb: 2,
+        borderColor: "#ddd",
+        p: 2
+      }}
+    >
       <Grid container direction={"column"}>
         <Grid item>
           <Typography variant="h6" gutterBottom align={"center"}>
@@ -98,5 +105,4 @@ const BarGraph = ({ data, title, id }) => {
     </Box>
   );
 };
-
 export default BarGraph;

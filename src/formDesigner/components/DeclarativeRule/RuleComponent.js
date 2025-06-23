@@ -13,8 +13,26 @@ const RuleComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, 
   const onRuleDelete = () => dispatch({ type: "deleteRule", payload: { declarativeRuleIndex, ruleIndex, conditionIndex } });
 
   return (
-    <Box p={2} mb={1} border={1} display="flex" alignItems="flex-start" style={{ borderStyle: "dotted" }}>
-      <Grid item container spacing={1} direction={"row"} alignItems={"center"} xs={12}>
+    <Box
+      style={{ borderStyle: "dotted" }}
+      sx={{
+        p: 2,
+        mb: 1,
+        border: 1,
+        display: "flex",
+        alignItems: "flex-start"
+      }}
+    >
+      <Grid
+        item
+        container
+        spacing={1}
+        direction={"row"}
+        xs={12}
+        sx={{
+          alignItems: "center"
+        }}
+      >
         <MiddleText text={"The value of"} />
         <LHSComponent rule={rule} ruleIndex={ruleIndex} conditionIndex={conditionIndex} declarativeRuleIndex={declarativeRuleIndex} />
         {rule.isOperatorRequired() && (
@@ -37,5 +55,4 @@ const RuleComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, 
     </Box>
   );
 };
-
 export default RuleComponent;

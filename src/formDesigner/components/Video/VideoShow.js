@@ -20,7 +20,13 @@ const VideoShow = props => {
   }, []);
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title={"Show Video : " + video.title} />
       {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditVideo) && (
         <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>

@@ -148,7 +148,14 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
     <ScreenWithAppBar appbarTitle={`Longitudinal Export`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
       {operationalModules && (
         <div>
-          <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
+          <Box
+            sx={{
+              border: 1,
+              mb: 2,
+              borderColor: "#ddd",
+              p: 2
+            }}
+          >
             <DocumentationContainer filename={"Report.md"}>
               {allowReportGeneration && (
                 <Grid>
@@ -159,7 +166,14 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
                 </Grid>
               )}
               {allowReportGeneration && (
-                <Grid container direction="row" justifyContent="flex-start" alignItems="baseline">
+                <Grid
+                  container
+                  direction="row"
+                  sx={{
+                    justifyContent: "flex-start",
+                    alignItems: "baseline"
+                  }}
+                >
                   <Button
                     variant="contained"
                     color="primary"
@@ -187,13 +201,11 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
     </ScreenWithAppBar>
   );
 };
-
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules,
   exportJobStatuses: state.reports.exportJobStatuses,
   userInfo: state.app.userInfo
 });
-
 export default withRouter(
   connect(
     mapStateToProps,

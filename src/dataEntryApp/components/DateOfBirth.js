@@ -36,7 +36,12 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
 
   return (
     <Fragment>
-      <Box display="flex" flexDirection="column">
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column"
+        }}
+      >
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Typography variant="body1" gutterBottom style={{ width: "50%", marginBottom: 5, color: "rgba(0, 0, 0, 0.54)" }}>
             {t("dateOfBirth")}

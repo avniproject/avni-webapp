@@ -44,7 +44,14 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         accessorKey: "fullName",
         header: t("name"),
         Cell: ({ row }) => (
-          <Grid container spacing={1} direction={"row"} alignItems={"center"}>
+          <Grid
+            container
+            spacing={1}
+            direction={"row"}
+            sx={{
+              alignItems: "center"
+            }}
+          >
             <Grid item>
               <SubjectProfilePicture
                 allowEnlargementOnClick={true}
@@ -123,7 +130,6 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     ],
     [customColumns, subjectType, subjectTypes, isPerson, t, i18n]
   );
-
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -149,11 +155,9 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       setIsLoading(false);
     }
   }, [pagination, sorting, searchRequest, subjectTypes]);
-
   useEffect(() => {
     loadData();
   }, [loadData]);
-
   return (
     <MaterialReactTable
       columns={columns}
@@ -179,5 +183,4 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     />
   );
 };
-
 export default SubjectSearchTable;

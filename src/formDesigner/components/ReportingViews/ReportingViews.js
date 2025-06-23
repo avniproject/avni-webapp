@@ -174,7 +174,13 @@ const ReportingViews = ({ userInfo }) => {
   }, []);
 
   return (
-    <Box boxShadow={2} p={5} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 5,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title="Reporting Views" />
       <DocumentationContainer filename={"View.md"}>
         <div className="container">
@@ -199,7 +205,11 @@ const ReportingViews = ({ userInfo }) => {
               })
             }}
             renderDetailPanel={({ row }) => (
-              <Box p={2}>
+              <Box
+                sx={{
+                  p: 2
+                }}
+              >
                 <JSEditor readOnly value={row.original.viewDefinition} />
               </Box>
             )}
@@ -215,9 +225,7 @@ const ReportingViews = ({ userInfo }) => {
     </Box>
   );
 };
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default connect(mapStateToProps)(ReportingViews);

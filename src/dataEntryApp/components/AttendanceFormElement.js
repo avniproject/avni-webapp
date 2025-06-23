@@ -93,7 +93,13 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
         </Grid>
         <Grid item />
         {memberSubjects.length > 0 && (
-          <Grid item container justifyContent="flex-end">
+          <Grid
+            item
+            container
+            sx={{
+              justifyContent: "flex-end"
+            }}
+          >
             <Link
               underline="hover"
               href="#"
@@ -116,8 +122,10 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
                   container
                   xs={4}
                   className={index % 2 === 0 ? classes.evenBackground : classes.oddBackground}
-                  alignItems="center"
-                  justifyContent="center"
+                  sx={{
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
                 >
                   <Grid item xs={11}>
                     <div>{nameString}</div>
@@ -134,5 +142,4 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
     </Fragment>
   );
 };
-
 export default AttendanceFormElement;

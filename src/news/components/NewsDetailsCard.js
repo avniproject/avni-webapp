@@ -15,7 +15,13 @@ const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublis
 
   return (
     <Fragment>
-      <Grid container direction="row" alignItems={"center"}>
+      <Grid
+        container
+        direction="row"
+        sx={{
+          alignItems: "center"
+        }}
+      >
         <Grid item container xs={6} direction={"column"}>
           <Grid item>
             <Button color="primary" onClick={history.goBack} style={{ textTransform: "none", backgroundColor: "transparent" }}>
@@ -36,7 +42,15 @@ const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublis
           </Grid>
         </Grid>
         {displayActions && canEditNews && (
-          <Grid item container justifyContent={"flex-end"} spacing={2} xs={6}>
+          <Grid
+            item
+            container
+            spacing={2}
+            xs={6}
+            sx={{
+              justifyContent: "flex-end"
+            }}
+          >
             <Grid item>
               <Button style={{ color: "red" }} onClick={() => setDeleteAlert(true)}>
                 <Delete /> Delete
@@ -62,23 +76,35 @@ const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublis
           </Grid>
         )}
       </Grid>
-      <Box mt={2} />
+      <Box
+        sx={{
+          mt: 2
+        }}
+      />
       <Divider />
-      <Box mt={2} />
+      <Box
+        sx={{
+          mt: 2
+        }}
+      />
       <Grid container spacing={5} direction="column">
         <Grid item align={"center"}>
           <AvniImageUpload oldImgUrl={news.heroImage} height={"400"} width={"80%"} />
         </Grid>
-        <Grid item container justifyContent="flex-start">
+        <Grid
+          item
+          container
+          sx={{
+            justifyContent: "flex-start"
+          }}
+        >
           <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(news.contentHtml) }} />
         </Grid>
       </Grid>
     </Fragment>
   );
 };
-
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-
 export default connect(mapStateToProps)(NewsDetailsCard);

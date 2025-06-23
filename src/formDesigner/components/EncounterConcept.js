@@ -46,7 +46,12 @@ export const EncounterConcept = props => {
   );
 
   return (
-    <Grid container justifyContent="flex-start">
+    <Grid
+      container
+      sx={{
+        justifyContent: "flex-start"
+      }}
+    >
       <KeyValue
         options={encounterTypeOptions}
         keyOption={"encounterTypeUUID"}

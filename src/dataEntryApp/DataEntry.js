@@ -57,7 +57,12 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
       {loadApp ? (
         <I18nextProvider i18n={i18n}>
           <div className={classes.root}>
-            <Grid container justifyContent="center">
+            <Grid
+              container
+              sx={{
+                justifyContent: "center"
+              }}
+            >
               <Grid item xs={12}>
                 <AppBar />
               </Grid>
@@ -98,13 +103,11 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
     </div>
   );
 };
-
 const mapStateToProps = state => ({
   operationalModules: state.dataEntry.metadata.operationalModules,
   orgConfig: state.translationsReducer.orgConfig,
   sagaErrorState: state.sagaErrorState
 });
-
 export default withRouter(
   connect(
     mapStateToProps,

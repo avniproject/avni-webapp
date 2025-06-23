@@ -92,7 +92,6 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
           </Fragment>
         }
       />
-
       <DeclarativeFormRule
         title={"Decision Rule"}
         onValueChange={jsonData => onDeclarativeRuleUpdate("decisionDeclarativeRule", jsonData)}
@@ -113,7 +112,11 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         }
         {...commonProps}
       >
-        <Box mt={5}>
+        <Box
+          sx={{
+            mt: 5
+          }}
+        >
           <Typography gutterBottom variant="body1" component="div">
             Select decision concepts that you want as columns in the reporting views. You will have to refresh the{" "}
             <a href={"#/appdesigner/reportingViews"} target="_blank" rel="noopener noreferrer">

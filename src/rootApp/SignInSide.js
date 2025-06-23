@@ -102,7 +102,11 @@ export default function SignInSide() {
                 </Link>
               </Grid>
             </Grid>
-            <Box mt={5}>
+            <Box
+              sx={{
+                mt: 5
+              }}
+            >
               <Copyright />
             </Box>
           </form>

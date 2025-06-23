@@ -78,10 +78,15 @@ const ProgramCreate = ({ organisationConfig }) => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <DocumentationContainer filename={"Program.md"}>
           <Title title={"Create Program "} />
-
           <div className="container" style={{ float: "left" }}>
             <form onSubmit={onSubmit}>
               <EditProgramFields
@@ -119,7 +124,6 @@ const ProgramCreate = ({ organisationConfig }) => {
     </>
   );
 };
-
 const mapStateToProps = state => ({
   organisationConfig: state.app.organisationConfig
 });

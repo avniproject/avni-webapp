@@ -107,7 +107,13 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={"Edit Program "} />
         <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
           <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
@@ -152,7 +158,6 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
           <br />
           <br />
         </div>
-
         <Grid container item sm={12}>
           <Grid item sm={1}>
             <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
@@ -169,7 +174,6 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
     </>
   );
 };
-
 const mapStateToProps = state => ({
   organisationConfig: state.app.organisationConfig
 });

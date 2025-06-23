@@ -127,7 +127,14 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
           <Grid item>
             <Typography style={{ opacity: 0.5 }}>{"News description"}</Typography>
             {open && (
-              <Box border={1} mt={2} borderColor={"#ddd"} p={2}>
+              <Box
+                sx={{
+                  border: 1,
+                  mt: 2,
+                  borderColor: "#ddd",
+                  p: 2
+                }}
+              >
                 <RichTextEditor
                   editorState={news.editorState}
                   setEditorState={newState =>

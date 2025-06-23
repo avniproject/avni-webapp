@@ -18,7 +18,14 @@ const SelectAction = function({ dispatch, label, options, assignmentKeyName, isM
   const onActionChange = (key, value) => dispatch({ type: "setAction", payload: { key, value } });
 
   return (
-    <Grid item spacing={3} alignItems={"center"} xs={12}>
+    <Grid
+      item
+      spacing={3}
+      xs={12}
+      sx={{
+        alignItems: "center"
+      }}
+    >
       <Typography variant="body1">{label}</Typography>
       <Select
         isDisabled={options.length === 0}
@@ -33,7 +40,6 @@ const SelectAction = function({ dispatch, label, options, assignmentKeyName, isM
     </Grid>
   );
 };
-
 export const TaskAssignmentAction = ({
   openAction,
   onDone,
@@ -47,7 +53,6 @@ export const TaskAssignmentAction = ({
 }) => {
   const classes = useStyles();
   const onClose = () => dispatch({ type: "hideAction" });
-
   return (
     <Modal onClose={MuiComponentHelper.getDialogClosingHandler(onClose)} open={openAction}>
       <Grid container direction={"column"} spacing={3} className={classes.paper} style={{ top: "25%", left: "30%" }}>

@@ -180,7 +180,13 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <Title title={"Edit Encounter Type "} />
         <Grid container item={12} style={{ justifyContent: "flex-end" }}>
           <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
@@ -238,7 +244,6 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
     </>
   );
 };
-
 const mapStateToProps = state => ({
   organisationConfig: state.app.organisationConfig
 });

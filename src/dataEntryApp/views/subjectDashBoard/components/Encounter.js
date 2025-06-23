@@ -54,7 +54,14 @@ const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...p
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <Grid justifyContent="center" alignItems="center" container spacing={3}>
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
           <Grid item xs={12}>
             {props.encounterForm && encounter && props.subjectProfile ? (
               <EncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
@@ -76,14 +83,12 @@ const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...p
     </Fragment>
   );
 };
-
 const mapStateToProps = state => ({
   encounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   encounter: state.dataEntry.encounterReducer.encounter,
   validationResults: state.dataEntry.encounterReducer.validationResults
 });
-
 const mapDispatchToProps = {
   updateEncounter,
   resetState,
@@ -92,7 +97,6 @@ const mapDispatchToProps = {
   editEncounter,
   setEncounterDate
 };
-
 export default withRouter(
   withParams(
     connect(

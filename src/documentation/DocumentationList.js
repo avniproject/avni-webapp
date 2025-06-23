@@ -95,7 +95,16 @@ const DocumentationList = ({ userInfo }) => {
     <ScreenWithAppBar appbarTitle={"Documentation"}>
       <DocumentationContext.Provider value={{ state: state, dispatch: dispatch }}>
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <Box border={1} pt={2} pb={2} borderColor={"#ddd"} bgcolor={"rgba(248,248,248,0.37)"} style={{ flex: 0.2 }}>
+          <Box
+            style={{ flex: 0.2 }}
+            sx={{
+              border: 1,
+              pt: 2,
+              pb: 2,
+              borderColor: "#ddd",
+              bgcolor: "rgba(248,248,248,0.37)"
+            }}
+          >
             <Item name={"Documentation"} onAdd={hasEditPrivilege && (() => onDocumentationAdd())} level={1} disabled={true} />
             {createDocumentationNode(
               rootNodes,

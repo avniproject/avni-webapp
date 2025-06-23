@@ -101,10 +101,15 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
 
   return (
     <>
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Box
+        sx={{
+          boxShadow: 2,
+          p: 3,
+          bgcolor: "background.paper"
+        }}
+      >
         <DocumentationContainer filename={"SubjectType.md"}>
           <Title title={"Create Subject Type "} />
-
           <div className="container" style={{ float: "left" }}>
             <form onSubmit={onSubmit}>
               <EditSubjectTypeFields
@@ -154,7 +159,6 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
     </>
   );
 };
-
 const mapStateToProps = state => ({
   organisationConfig: state.app.organisationConfig
 });

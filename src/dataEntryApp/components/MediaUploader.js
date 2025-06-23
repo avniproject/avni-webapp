@@ -213,7 +213,14 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
 
   const renderMedia = fileName => {
     return (
-      <Box display={"flex"} flexDirection={"row"} alignItems={"flex-start"} className={classes.boxStyle}>
+      <Box
+        className={classes.boxStyle}
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-start"
+        }}
+      >
         {startsWith(preview[fileName], MissingSignedMediaMessage) ? (
           <p
             style={{
@@ -261,7 +268,14 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   return (
     <Fragment>
       <FormControl>
-        <Grid container direction="row" alignItems="center" spacing={1}>
+        <Grid
+          container
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center"
+          }}
+        >
           <Grid item>
             <Typography variant="body1" className={classes.labelStyle}>
               {label}
@@ -285,7 +299,14 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
           </Grid>
         </Grid>
       </FormControl>
-      <Grid container direction="row" alignItems="center" spacing={1}>
+      <Grid
+        container
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center"
+        }}
+      >
         {Object.keys(preview).map(fileName => {
           return (
             <Grid item key={fileName}>

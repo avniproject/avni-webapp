@@ -46,7 +46,14 @@ const CancelEncounter = ({ match, encounter, ...props }) => {
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <Grid justifyContent="center" alignItems="center" container spacing={3}>
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
           <Grid item xs={12}>
             {props.cancelEncounterForm && encounter && props.subjectProfile ? (
               <CancelEncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
@@ -66,20 +73,17 @@ const CancelEncounter = ({ match, encounter, ...props }) => {
     </Fragment>
   );
 };
-
 const mapStateToProps = state => ({
   cancelEncounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   encounter: state.dataEntry.encounterReducer.encounter
 });
-
 const mapDispatchToProps = {
   createCancelEncounter,
   editCancelEncounter,
   updateEncounter,
   resetState
 };
-
 export default withRouter(
   withParams(
     connect(

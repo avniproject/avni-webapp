@@ -70,14 +70,20 @@ const RemoveRelative = props => {
 
   const searchContent = (
     <DialogContent style={{ width: 600, height: "auto" }}>
-      <Grid container direction="row" justifyContent="flex-end" alignItems="flex-start">
+      <Grid
+        container
+        direction="row"
+        sx={{
+          justifyContent: "flex-end",
+          alignItems: "flex-start"
+        }}
+      >
         <Typography variant="subtitle1" gutterBottom>
           Do you want to remove the relationship between {props.relationAname} and {props.relationBname}?
         </Typography>
       </Grid>
     </DialogContent>
   );
-
   return (
     <Modal
       content={searchContent}

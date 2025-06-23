@@ -44,7 +44,13 @@ export const OrganisationDetail = ({
   }, []);
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <DocumentationContainer filename={"OrganisationDetail.md"}>
         <Title title={"Organisation Details"} />
         <Grid container direction={"row"} spacing={1}>
@@ -62,10 +68,8 @@ export const OrganisationDetail = ({
               </Grid>
             )}
           </Grid>
-
           <OrgSettings hasEditPrivilege={hasEditPrivilege} dataDeletedIndicator={dataDeletedIndicator} />
         </Grid>
-
         {hasEditPrivilege && (
           <DeleteData
             openModal={openModal}
@@ -77,7 +81,6 @@ export const OrganisationDetail = ({
           />
         )}
       </DocumentationContainer>
-
       <Snackbar open={showCannotDeleteMessage} autoHideDuration={5000} onClose={() => setShowCannotDeleteMessage(false)}>
         <SnackbarContent
           style={{
