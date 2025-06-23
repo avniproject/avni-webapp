@@ -76,7 +76,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
   return orgSettings ? (
     <Grid item container direction={"column"}>
       <Grid item>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" sx={{ mb: 1 }}>
           Organisation settings
         </Typography>
       </Grid>

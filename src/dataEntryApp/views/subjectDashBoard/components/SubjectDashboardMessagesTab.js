@@ -26,7 +26,7 @@ const SubjectDashboardMessagesTab = ({ sentMessages, isMsgsSentAvailable, msgsYe
     <Fragment>
       {
         <Paper className={classes.root}>
-          <Typography component={"span"} style={{ paddingBottom: 10, display: "block" }} className={classes.expansionHeading}>
+          <Typography component={"span"} sx={{ pb: 1.25, display: "block" }} className={classes.expansionHeading}>
             {t("Messages")}
           </Typography>
           <MessagesView

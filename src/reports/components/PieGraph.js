@@ -14,7 +14,7 @@ const PieGraph = ({ data, title, id }) => {
     >
       <Grid container direction={"column"}>
         <Grid item>
-          <Typography variant="h6" gutterBottom align={"center"}>
+          <Typography variant="h6" sx={{ mb: 1, textAlign: "center" }}>
             {title}
           </Typography>
         </Grid>

@@ -125,11 +125,11 @@ const ShowReport = ({ classes, reportingSystems }) => {
       <Grid style={{ backgroundColor: "#f0f2f0" }}>
         <CardHeader title={"View Reports"} />
         <CardContent>
-          <Typography variant="body2" color="secondary">
+          <Typography variant="body2" sx={{ color: theme => theme.palette.secondary.main }}>
             Avni provides reports using one of two different external BI tools - Metabase and Jasper Reports. You can find out the reports
             used by your organisation from your system administrator.
           </Typography>
-          <Typography variant="body2" color="secondary">
+          <Typography variant="body2" sx={{ color: theme => theme.palette.secondary.main }}>
             <br />
             Choose your reporting system
           </Typography>

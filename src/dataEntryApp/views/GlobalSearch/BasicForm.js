@@ -35,7 +35,7 @@ function BasicForm({
   function renderSearchAll(index, titleKey) {
     return (
       <Grid item key={index}>
-        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+        <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
           {t(titleKey)}
         </Typography>
         <TextField
@@ -60,7 +60,7 @@ function BasicForm({
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Name" ? (
             <Grid item key={index}>
-              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+              <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
               <TextField
@@ -82,7 +82,7 @@ function BasicForm({
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Age" ? (
             <Grid item key={index}>
-              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+              <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
               <TextField
@@ -109,7 +109,7 @@ function BasicForm({
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Gender" ? (
             <Grid item xs={12} key={index}>
-              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+              <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
               <FormGroup row>

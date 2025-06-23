@@ -60,7 +60,7 @@ const NewProgramVisit = ({ match, ...props }) => {
             <NewVisitMenuView sections={sections} uuid={enrolmentUuid} isForProgramEncounters={true} />
           </>
         ) : (
-          <Typography variant="caption" gutterBottom>
+          <Typography variant="caption" sx={{ mb: 1 }}>
             {" "}
             {t("no")} {t("plannedVisits")} / {t("unplannedVisits")}{" "}
           </Typography>

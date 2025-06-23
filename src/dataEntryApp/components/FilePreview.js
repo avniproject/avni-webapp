@@ -52,7 +52,7 @@ export const FilePreview = ({ url, obsValue }) => {
     >
       <InsertDriveFile className={classes.icon} />
       <div>
-        <Typography variant="body1" style={{ color: "#FFF" }}>
+        <Typography variant="body1" sx={{ color: "#FFF" }}>
           {getDisplayFileName()}
         </Typography>
       </div>

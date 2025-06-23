@@ -11,12 +11,12 @@ const Body = () => {
       }}
     >
       <Grid item>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" sx={{ mb: 1 }}>
           Support resources
         </Typography>
       </Grid>
       <Grid item>
-        <Typography variant="body1" color="textSecondary" gutterBottom>
+        <Typography variant="body1" sx={{ color: theme => theme.palette.text.secondary }} sx={{ mb: 1 }}>
           Troubleshoot, ask us about the product, or submit a support ticket
         </Typography>
       </Grid>

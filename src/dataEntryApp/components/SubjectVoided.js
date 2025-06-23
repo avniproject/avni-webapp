@@ -22,7 +22,7 @@ const SubjectVoided = ({ onUnVoid, showUnVoid }) => {
         }}
       >
         <Grid item>
-          <Typography variant="h4" gutterBottom color={"error"}>
+          <Typography variant="h4" sx={{ color: theme => theme.palette.error.main, mb: 1 }}>
             {"THE SUBJECT HAS BEEN VOIDED"}
           </Typography>
         </Grid>

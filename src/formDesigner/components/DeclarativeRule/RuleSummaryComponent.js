@@ -9,7 +9,7 @@ const RuleSummaryComponent = ({ summary, ruleNumber, displayRuleCounts }) => {
   return (
     <Fragment>
       {displayRuleCounts && (
-        <Typography gutterBottom variant={"subtitle2"}>
+        <Typography sx={{ mb: 1 }} variant={"subtitle2"}>
           {`Rule ${ruleNumber}`}
         </Typography>
       )}

@@ -68,7 +68,7 @@ export const areValidFormatValuesValid = formElement => {
 export function TabContainer({ skipStyles, ...props }) {
   const typographyCSS = skipStyles ? {} : { padding: 8 * 3 };
   return (
-    <Typography {...props} component="div" style={typographyCSS}>
+    <Typography {...props} component="div" sx={typographyCSS}>
       {props.children}
     </Typography>
   );

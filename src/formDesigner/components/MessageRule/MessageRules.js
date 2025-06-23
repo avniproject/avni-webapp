@@ -40,7 +40,9 @@ const MessageRules = ({
   }
   return (
     <>
-      {templateFetchError && <Typography color={"textPrimary"}>NO MESSAGE TEMPLATE. OR UNABLE FETCH MESSAGE TEMPLATES.</Typography>}
+      {templateFetchError && (
+        <Typography sx={{ color: theme => theme.palette.text.primary }}>NO MESSAGE TEMPLATE. OR UNABLE FETCH MESSAGE TEMPLATES.</Typography>
+      )}
       {!templateFetchError && (
         <>
           <div>

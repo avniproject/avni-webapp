@@ -6,7 +6,7 @@ import SideImage from "formDesigner/styles/images/background.jpg";
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
+    <Typography variant="body2" sx={{ color: theme => theme.palette.text.secondary, textAlign: "center" }}>
       {"Copyright © "}
       <Link color="inherit" href="https://material-ui.com/">
         Your Website

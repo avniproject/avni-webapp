@@ -161,7 +161,7 @@ const SearchResultFields = ({ userInfo }) => {
               mb: 5
             }}
           >
-            <Typography component={"div"} variant={"h6"} gutterBottom>
+            <Typography component={"div"} variant={"h6"} sx={{ mb: 1 }}>
               {"Custom search fields"}
             </Typography>
             {isEmpty(selectedCustomFields) ? renderNotConfiguredMessage() : renderDraggableFields()}

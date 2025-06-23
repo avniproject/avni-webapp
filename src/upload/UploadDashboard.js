@@ -350,9 +350,9 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                     <Box>
                       <Typography
                         color="error"
-                        gutterBottom
                         sx={{
-                          display: "block"
+                          display: "block",
+                          mb: 1
                         }}
                       >
                         Invalid or missing Location Hierarchy.

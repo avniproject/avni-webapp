@@ -206,7 +206,7 @@ const SubjectDashboardProfileTab = ({
               gridListDetails={profile.relationships}
             />
           ) : (
-            <Typography variant="caption" gutterBottom className={classes.infomsg}>
+            <Typography variant="caption" sx={{ mb: 1 }} className={classes.infomsg}>
               {" "}
               {t("noRelativesAdded")}{" "}
             </Typography>
@@ -260,7 +260,7 @@ const SubjectDashboardProfileTab = ({
               );
             })
           ) : (
-            <Typography variant="caption" gutterBottom className={classes.infomsg}>
+            <Typography variant="caption" sx={{ mb: 1 }} className={classes.infomsg}>
               {" "}
               {t("noGroupMembersAdded")}{" "}
             </Typography>
@@ -307,7 +307,7 @@ const SubjectDashboardProfileTab = ({
         <Paper className={classes.root}>
           <SubjectVoided onUnVoid={() => setUnVoidConfirmation(true)} showUnVoid={true} />
           {!_.isEmpty(unVoidErrorKey) && (
-            <Typography variant="button" color={"error"}>
+            <Typography variant="button" sx={{ color: theme => theme.palette.error.main }}>
               {t(unVoidErrorKey)}
             </Typography>
           )}

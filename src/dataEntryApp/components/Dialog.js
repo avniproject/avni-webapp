@@ -95,7 +95,7 @@ const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDial
           >
             {showSuccessIcon && <CheckCircleOutline className={classes.iconstyle} />}
             <LineBreak num={2} />
-            {message && <Typography gutterBottom>{message}</Typography>}
+            {message && <Typography sx={{ mb: 10 }}>{message}</Typography>}
           </Box>
         </StyledDialogContent>
         <StyledDialogActions>

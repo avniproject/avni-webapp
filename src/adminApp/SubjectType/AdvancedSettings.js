@@ -224,7 +224,7 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
               borderColor: "#e1e1e1"
             }}
           >
-            <Typography gutterBottom variant={"subtitle1"}>
+            <Typography sx={{ mb: 1 }} variant={"subtitle1"}>
               {"Sync Settings"}
             </Typography>
             {subjectType.type === SubjectTypeType.User ? (

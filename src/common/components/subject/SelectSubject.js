@@ -38,10 +38,10 @@ const SelectSubject = function({ subjectData, errormsg, onSelectedItem, t = _.id
 
   return (
     <div className={classes.root}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h5" sx={{ mb: 1 }}>
         {subjectData ? (subjectData.length === 0 ? "No" : subjectData.length) : ""} Results found
       </Typography>
-      <Typography variant="subtitle2" gutterBottom>
+      <Typography variant="subtitle2" sx={{ mb: 1 }}>
         {errormsg}
       </Typography>
 

@@ -78,7 +78,7 @@ export const CommentCard = ({ comment, displayMenu, status, dispatch, setComment
           <Grid item>{getFormattedDateTime(comment.createdDateTime)}</Grid>
         </Grid>
         <Grid item>
-          <Typography gutterBottom variant="body1">
+          <Typography sx={{ mb: 1 }} variant="body1">
             {comment.text}
           </Typography>
         </Grid>

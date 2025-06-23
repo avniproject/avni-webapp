@@ -176,7 +176,7 @@ const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter,
           {urlMapper(part).breadcrumb}
         </Link>
       ))}
-      <Typography className={classes.Typography} component={"span"} color="textPrimary">
+      <Typography className={classes.Typography} component={"span"} sx={{ color: theme => theme.palette.text.primary }}>
         {isSubjectEdit ? t("editSubject") : urlMapper(currentPage).breadcrumb}
       </Typography>
     </MUIBreadcrumb>

@@ -89,7 +89,7 @@ const DeclarativeRules = ({
             border: 1
           }}
         >
-          <Typography gutterBottom variant={"subtitle1"}>
+          <Typography sx={{ mb: 1 }} variant={"subtitle1"}>
             {"Summary"}
           </Typography>
           {map(summaries, (summary, index) => (

@@ -52,7 +52,7 @@ function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
   return (
     <div>
       <SendMessage receiverId={receiverId} receiverType={receiverType} onComposedMessage={onComposedMessage} />
-      <Typography variant={"h6"} style={{ paddingBottom: 10 }}>
+      <Typography variant="h6" sx={{ pb: 1.25 }}>
         Messages for: {receiverName}
       </Typography>
       <ErrorMessage error={error} additionalStyle={{ marginBottom: 20 }} />

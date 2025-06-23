@@ -443,7 +443,12 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         <TableRow key={`${index}-${customKey}`}>
           <TableCell style={{ padding: 0, background: "rgb(232 232 232)" }} colSpan={6}>
             <Box sx={{ margin: 2 }}>
-              <Typography style={{ marginLeft: "10px" }} color="textSecondary" variant="body1" gutterBottom component="div">
+              <Typography
+                style={{ marginLeft: "10px" }}
+                sx={{ color: theme => theme.palette.text.secondary, mb: 1 }}
+                variant="body1"
+                component="div"
+              >
                 {t(observation.concept["name"])}
               </Typography>
               <Table size="small" aria-label="questionGroupRows">
@@ -461,7 +466,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       <TableRow key={`${index}-${customKey}`}>
         <TableCell style={{ padding: 0, background: "lightgray" }} colSpan={6}>
           <Box sx={{ margin: 2 }}>
-            <Typography color="textSecondary" variant="h6" gutterBottom component="div">
+            <Typography sx={{ color: theme => theme.palette.text.secondary, mb: 1 }} variant="h6" component="div">
               {t(fegName)}
             </Typography>
             <Table size="small" aria-label="fegRows">

@@ -30,7 +30,7 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedCo
           selectedValue && _.forEach(selectedValue.values, sv => _.assign(selected, { [sv]: true }));
           return searchFilterForm.type === "Concept" && searchFilterForm.conceptDataType === "Coded" ? (
             <Grid item xs={12} key={index}>
-              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+              <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
               <FormGroup row key={index}>

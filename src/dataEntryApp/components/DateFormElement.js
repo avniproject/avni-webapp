@@ -32,7 +32,7 @@ export const DateTimeFormElement = ({ formElement: fe, value, update, validation
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+      <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>
@@ -79,7 +79,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
     <DateAndDurationFormElement formElement={fe} value={value} update={update} validationResult={validationResult} />
   ) : (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+      <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>
@@ -149,7 +149,7 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update, val
     <FormControl style={{ width: "100%" }}>
       <FormLabel>{t(fe.name)}</FormLabel>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+        <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
           {`${t("Select Date")}${fe.mandatory ? "*" : ""}`}
         </Typography>
         <DatePicker
@@ -180,7 +180,7 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update, val
         <FormLabel>OR</FormLabel>
       </div>
       <form>
-        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+        <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
           {`${t("Enter Duration")}${fe.mandatory ? "*" : ""}`}
         </Typography>
         <RadioGroup row aria-label="gender" name="gender1" value={units} onChange={onChangeUnit}>

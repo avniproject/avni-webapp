@@ -207,17 +207,17 @@ const SelfServiceReports = () => {
                 </div>
               )}
             </Box>
-            <Typography variant="body2" color="textSecondary" component="p">
+            <Typography variant="body2" sx={{ color: theme => theme.palette.text.secondary }} component="p">
               Metabase provides a graphical interface to create business intelligence and analytics graphs in minutes. Avni integrates with
               Metabase to support ad hoc and self-serviced reports.
             </Typography>
-            <Typography variant="body1" color="textSecondary" component="p" style={{ marginTop: 20 }}>
+            <Typography variant="body1" sx={{ color: theme => theme.palette.text.secondary, mt: 2.5 }} component="p">
               {`Setup and Refresh reports may take upto ${statusResponse.getExpectedDurationInMinutes()} minutes`}
             </Typography>
             {statusResponse.status === MetabaseSetupStatus.EtlNotRun && (
               <>
                 <br />
-                <Typography variant="h6" color="warning">
+                <Typography variant="h6" sx={{ color: theme => theme.palette.warning.main }}>
                   Analytics database not present. Please contact support.
                 </Typography>
               </>
@@ -273,10 +273,10 @@ const SelfServiceReports = () => {
             </Box>
             {showErrorMessage && (
               <>
-                <Typography variant="h6" color="error">
+                <Typography variant="h6" sx={{ color: theme => theme.palette.error.main }}>
                   Last attempt failed with error
                 </Typography>
-                <Typography variant="body2" color="error">
+                <Typography variant="body2" sx={{ color: theme => theme.palette.error.main }}>
                   {statusResponse.getShortErrorMessage()}
                 </Typography>
                 <br />
@@ -287,7 +287,7 @@ const SelfServiceReports = () => {
             )}
             {isTestEnvironment && (
               <>
-                <Typography variant="body1" style={{ marginTop: "30px" }}>
+                <Typography variant="body1" sx={{ mt: 3.75 }}>
                   Available Resources (note setup will run even after you see all three resources)
                 </Typography>
                 {statusResponse.resources.length > 0 ? (
@@ -303,7 +303,7 @@ const SelfServiceReports = () => {
                     ))}
                   </Box>
                 ) : (
-                  <Typography variant="body2" style={{ marginTop: "10px" }}>
+                  <Typography variant="body2" sx={{ mt: 1.25 }}>
                     No resources present for this organisation.
                   </Typography>
                 )}

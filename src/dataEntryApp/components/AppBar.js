@@ -235,7 +235,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
           <LinkButton label={"search"} link={"/app/searchFilter"} />
           {isNewsAvailable && <LinkButton label={"news"} link={"/app/news"} />}
           <div className={classes.users}>
-            <Typography component={"div"} color="inherit">
+            <Typography component={"div"} sx={{ color: "inherit" }}>
               <p className={classes.userName}>{user.username}</p>
               {/* <p className={classes.userDesignation}>{user.roles[0]}</p> */}
             </Typography>

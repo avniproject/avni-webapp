@@ -55,7 +55,7 @@ const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, su
         {[gender, age, location].map((element, index) => {
           return (
             element && (
-              <Typography component={"div"} className={classes[element]} gutterBottom align={"center"} key={index}>
+              <Typography component={"div"} className={classes[element]} sx={{ textAlign: "center", mb: 1 }} key={index}>
                 {t(element)}
               </Typography>
             )

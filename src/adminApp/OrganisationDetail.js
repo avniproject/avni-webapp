@@ -56,7 +56,7 @@ export const OrganisationDetail = ({
         <Grid container direction={"row"} spacing={1}>
           <Grid item container spacing={3}>
             <Grid item>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" sx={{ mb: 1 }}>
                 Organisation Name : {name}
               </Typography>
             </Grid>

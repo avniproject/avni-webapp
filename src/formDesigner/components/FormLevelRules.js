@@ -117,7 +117,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
             mt: 5
           }}
         >
-          <Typography gutterBottom variant="body1" component="div">
+          <Typography sx={{ mb: 1 }} variant="body1" component="div">
             Select decision concepts that you want as columns in the reporting views. You will have to refresh the{" "}
             <a href={"#/appdesigner/reportingViews"} target="_blank" rel="noopener noreferrer">
               reporting views

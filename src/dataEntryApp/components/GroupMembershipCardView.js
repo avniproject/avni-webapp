@@ -11,7 +11,7 @@ const GroupMembershipCardView = ({ groupMembership: { groupSubject, groupRole } 
         profilePicture={groupSubject.profilePicture}
         subjectTypeName={groupSubject.subjectType.name}
       >
-        <Typography component={"div"} color="textSecondary" gutterBottom align={"center"}>
+        <Typography component={"div"} sx={{ color: theme => theme.palette.text.secondary, mb: 1, textAlign: "center" }}>
           {groupRole.role}
         </Typography>
       </SubjectCardView>

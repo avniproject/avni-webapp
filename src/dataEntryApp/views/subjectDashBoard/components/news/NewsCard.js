@@ -48,12 +48,12 @@ export const NewsCard = ({ signedHeroImage, title, publishedDate, id }) => {
             <Grid item>{renderImage()}</Grid>
             <Grid item container direction={"column"} xs={8}>
               <Grid item>
-                <Typography variant="h5" gutterBottom>
+                <Typography variant="h5" sx={{ mb: 1 }}>
                   {title}
                 </Typography>
               </Grid>
               <Grid item>
-                <Typography style={{ opacity: 0.7 }} variant="body2" gutterBottom>
+                <Typography sx={{ opacity: 0.7, mb: 1 }} variant="body2">
                   {getFormattedDateTime(publishedDate)}
                 </Typography>
               </Grid>

@@ -45,7 +45,7 @@ const DeclarativeRuleComponent = ({ declarativeRule, declarativeRuleIndex, getAp
         disabled={!!find(declarativeRule.conditions, condition => isEmpty(condition.conjunction))}
         size="large"
       />
-      <Typography gutterBottom variant={"subtitle1"}>
+      <Typography sx={{ mb: 1 }} variant={"subtitle1"}>
         {"Actions"}
       </Typography>
       {map(declarativeRule.actions, (action, index) => (

@@ -20,10 +20,10 @@ const TutorialCard = ({ href, title, content, footer, iconComponent }) => {
             <Grid item container direction={"row"} spacing={1}>
               <Grid item>{iconComponent}</Grid>
               <Grid item xs={10}>
-                <Typography gutterBottom variant="h5" component="h2">
+                <Typography sx={{ mb: 1 }} variant="h5" component="h2">
                   {title}
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
+                <Typography variant="body2" sx={{ color: theme => theme.palette.text.secondary }} component="p">
                   {content}
                   {footer}
                 </Typography>

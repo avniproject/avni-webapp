@@ -24,12 +24,12 @@ const useStyle = makeStyles(theme => ({
 function addElement(label, value, headerElements, classes, key) {
   const insertSeparator = headerElements.length !== 0;
   headerElements.push(
-    <Typography variant="caption" key={`${key}-1`} gutterBottom>
+    <Typography variant="caption" key={`${key}-1`} sx={{ mb: 1 }}>
       {(insertSeparator ? " | " : "") + label + ": "}
     </Typography>
   );
   headerElements.push(
-    <Typography className={classes.detailsstyle} key={`${key}-2`} variant="caption" gutterBottom>
+    <Typography className={classes.detailsstyle} key={`${key}-2`} variant="caption" sx={{ mb: 1 }}>
       {value}
     </Typography>
   );

@@ -78,7 +78,7 @@ const RemoveRelative = props => {
           alignItems: "flex-start"
         }}
       >
-        <Typography variant="subtitle1" gutterBottom>
+        <Typography variant="subtitle1" sx={{ mb: 1 }}>
           Do you want to remove the relationship between {props.relationAname} and {props.relationBname}?
         </Typography>
       </Grid>

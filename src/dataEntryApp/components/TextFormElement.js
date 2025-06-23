@@ -37,7 +37,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
     <div className={isGrid ? classes.gridContainerStyle : classes.containerStyle}>
       <Typography
         variant="body1"
-        gutterBottom={!isGrid && isEmpty(helpText)}
+        sx={{ mb: !isGrid && isEmpty(helpText) ? 1 : 0 }}
         className={isGrid ? classes.gridLabelStyle : classes.labelStyle}
       >
         {t(fe.name)}

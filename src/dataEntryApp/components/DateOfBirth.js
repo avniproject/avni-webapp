@@ -43,7 +43,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
         }}
       >
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <Typography variant="body1" gutterBottom style={{ width: "50%", marginBottom: 5, color: "rgba(0, 0, 0, 0.54)" }}>
+          <Typography variant="body1" sx={{ mb: 1 }} style={{ width: "50%", marginBottom: 5, color: "rgba(0, 0, 0, 0.54)" }}>
             {t("dateOfBirth")}
             {"*"}
           </Typography>
@@ -74,7 +74,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           />
         </LocalizationProvider>
         <LineBreak num={1} />
-        <Typography variant="body1" gutterBottom style={{ width: "50%", color: "rgba(0, 0, 0, 0.54)" }}>
+        <Typography variant="body1" sx={{ mb: 1 }} style={{ width: "50%", color: "rgba(0, 0, 0, 0.54)" }}>
           {t("age")}
         </Typography>
         <TextField

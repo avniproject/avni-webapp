@@ -36,7 +36,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
           searchFilterForm.widget === "Default" ? (
             <Grid item xs={12} key={index}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                   {t(searchFilterForm.titleKey)}
                 </Typography>
                 <DatePicker
@@ -59,7 +59,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
             searchFilterForm.widget === "Range" ? (
             <Grid item xs={12} key={index}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                   {t(searchFilterForm.titleKey)}
                 </Typography>
                 <DatePicker

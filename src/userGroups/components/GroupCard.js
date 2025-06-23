@@ -32,7 +32,7 @@ export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
       <CardActionArea style={classes.card}>
         <Link to={toUserGroupDetails}>
           <CardContent>
-            <Typography variant="h5" component="h2" align="center" color="primary">
+            <Typography variant="h5" sx={{ color: theme => theme.palette.primary.main, textAlign: "center" }}>
               {groupName}
             </Typography>
           </CardContent>

@@ -62,7 +62,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
 
   return (
     <div className={isGrid ? classes.gridContainerStyle : classes.containerStyle}>
-      <Typography variant="body1" gutterBottom={!isGrid} className={isGrid ? classes.gridLabelStyle : classes.labelStyle}>
+      <Typography variant="body1" sx={{ mb: !isGrid ? 1 : 0 }} className={isGrid ? classes.gridLabelStyle : classes.labelStyle}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
         {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim()) ? ` (${fe.concept.unit})` : ""}

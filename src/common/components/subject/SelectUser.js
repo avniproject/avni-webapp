@@ -29,11 +29,11 @@ const SelectUser = function({ users, errorMessage, onSelectedUser }) {
   return (
     <Box className={classes.root}>
       {users && (
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" sx={{ mb: 1 }}>
           {users.length === 0 ? "No users found" : `${users.length} - users found`}
         </Typography>
       )}
-      <Typography variant="subtitle2" gutterBottom>
+      <Typography variant="subtitle2" sx={{ mb: 1 }}>
         {errorMessage}
       </Typography>
 

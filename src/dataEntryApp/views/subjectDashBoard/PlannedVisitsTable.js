@@ -92,7 +92,7 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
     [t, classes, doBaseUrl, cancelBaseURL, onDelete]
   );
   const renderNoVisitMessage = () => (
-    <Typography variant="caption" gutterBottom className={classes.infoMsg}>
+    <Typography variant="caption" sx={{ mb: 1 }} className={classes.infoMsg}>
       {" "}
       {t("no")} {t("plannedVisits")}{" "}
     </Typography>

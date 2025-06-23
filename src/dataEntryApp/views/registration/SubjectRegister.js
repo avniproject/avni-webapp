@@ -262,7 +262,7 @@ const SubjectRegister = props => {
       <Breadcrumbs path={props.match.path} />
       <Paper className={classes.root}>
         <div>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" sx={{ mb: 1 }}>
             {t("register")} {t(props.subject.subjectType.name)}
           </Typography>
           <LineBreak num={2} />

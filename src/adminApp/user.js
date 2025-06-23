@@ -152,7 +152,7 @@ const formatLang = lang =>
 
 const SubjectTypeSyncAttributeShow = ({ subjectType, syncConceptValueMap, ...props }) => (
   <div style={{ marginTop: 8, padding: 10, border: "3px solid rgba(0, 0, 0, 0.05)" }}>
-    <Typography gutterBottom variant={"subtitle1"}>{`Sync settings for Subject Type: ${subjectType.name}`}</Typography>
+    <Typography sx={{ mb: 1 }} variant={"subtitle1"}>{`Sync settings for Subject Type: ${subjectType.name}`}</Typography>
     {subjectType.syncAttribute1 && (
       <ConceptSyncAttributeShow
         subjectType={subjectType}
@@ -286,7 +286,7 @@ This might take time depending on the data.`;
 
 const SubjectTypeSyncAttributes = ({ subjectType, ...props }) => (
   <div style={{ marginTop: 8, padding: 10, border: "3px solid rgba(0, 0, 0, 0.05)" }}>
-    <Typography gutterBottom variant={"h6"}>{`Sync settings for Subject Type: ${subjectType.name}`}</Typography>
+    <Typography sx={{ mb: 1 }} variant={"h6"}>{`Sync settings for Subject Type: ${subjectType.name}`}</Typography>
     {subjectType.syncAttribute1 && <ConceptSyncAttribute subjectType={subjectType} syncAttributeName={"syncAttribute1"} {...props} />}
     {subjectType.syncAttribute2 && <ConceptSyncAttribute subjectType={subjectType} syncAttributeName={"syncAttribute2"} {...props} />}
   </div>

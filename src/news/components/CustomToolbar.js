@@ -16,7 +16,7 @@ export const CustomToolbar = ({ totalNews, setOpenCreate }) => {
     >
       <div style={{ display: "flex", flexDirection: "column" }}>
         <Typography variant="h6">{`News broadcast`}</Typography>
-        <Typography style={{ opacity: 0.7 }} variant="body2">
+        <Typography sx={{ opacity: 0.7 }} variant="body2">
           {`A total of ${totalNews} news broadcast has been listed below`}
         </Typography>
       </div>

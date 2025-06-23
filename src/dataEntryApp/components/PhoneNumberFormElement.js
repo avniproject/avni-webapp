@@ -60,7 +60,7 @@ export default function PhoneNumberFormElement({ obsHolder, formElement, update,
 
   return (
     <div>
-      <Typography variant="body1" gutterBottom className={classes.labelStyle}>
+      <Typography variant="body1" sx={{ mb: 1 }} className={classes.labelStyle}>
         {t(label)}
       </Typography>
       <TextField

@@ -47,7 +47,7 @@ function ErrorItem({ fieldName, fieldValue }) {
     <>
       <Typography variant="h6">{fieldName}</Typography>
       {fieldValue && (
-        <Typography variant="body2" style={{ whiteSpace: "pre-line" }}>
+        <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
           {fieldValue}
         </Typography>
       )}
@@ -87,16 +87,16 @@ export function ErrorFallback({ error, onClose }) {
     <div>
       <AppBar className={classes.appBar}>
         <Toolbar>
-          <Typography className={classes.title} variant="h6" noWrap>
+          <Typography className={classes.title} variant="h6" sx={{ whiteSpace: "nowrap" }}>
             <img src={logo} alt="logo" />
           </Typography>
         </Toolbar>
       </AppBar>
       <div className={classes.container}>
-        <Typography variant="h1" gutterBottom>
+        <Typography variant="h1" sx={{ mb: 1 }}>
           oops!
         </Typography>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" sx={{ mb: 1 }}>
           There was a problem when loading this page. Please contact administrator.
         </Typography>
         {!showError && (

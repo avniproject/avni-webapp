@@ -43,9 +43,9 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
         >
           <Typography
             variant="button"
-            gutterBottom
             sx={{
-              display: "block"
+              display: "block",
+              mb: 1
             }}
           >
             {t("systemRecommendations")}
@@ -68,9 +68,9 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
         >
           <Typography
             variant="button"
-            gutterBottom
             sx={{
-              display: "block"
+              display: "block",
+              mb: 1
             }}
           >
             {t("visitsBeingScheduled")}
@@ -89,9 +89,9 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
         <Box>
           <Typography
             variant="button"
-            gutterBottom
             sx={{
-              display: "block"
+              display: "block",
+              mb: 1
             }}
           >
             {t("observations")}

@@ -114,7 +114,7 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
             />
           </Grid>
           <Grid item>
-            <Typography style={{ opacity: 0.5 }}>{"News title"}</Typography>
+            <Typography sx={{ opacity: 0.5 }}>{"News title"}</Typography>
             <TextField
               style={{ margin: 8 }}
               fullWidth
@@ -125,7 +125,7 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
             {displayErrorForKey(error, "EMPTY_TITLE")}
           </Grid>
           <Grid item>
-            <Typography style={{ opacity: 0.5 }}>{"News description"}</Typography>
+            <Typography sx={{ opacity: 0.5 }}>{"News description"}</Typography>
             {open && (
               <Box
                 sx={{

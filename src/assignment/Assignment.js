@@ -39,7 +39,7 @@ function renderOptions(canAssignSubject, canEditTask) {
 function renderEmptyMessage() {
   return (
     <AppBarContainer>
-      <Typography component={"div"} variant={"h6"} gutterBottom>
+      <Typography component={"div"} variant={"h6"} sx={{ mb: 1 }}>
         {"No Task or subject assignment setup for the organisation. Or you do not have privilege to Edit task"}
       </Typography>
     </AppBarContainer>

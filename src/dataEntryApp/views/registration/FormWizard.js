@@ -163,7 +163,7 @@ const FormWizard = ({
               justifyContent: "space-between"
             }}
           >
-            <Typography variant="subtitle1" gutterBottom>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
               {" "}
               {pageTitle}
             </Typography>
@@ -210,9 +210,7 @@ const FormWizard = ({
                 />
               </Box>
               {!_.isEmpty(saveErrorMessageKey) && (
-                <Typography style={{ marginLeft: 20 }} color={"error"}>
-                  {t(saveErrorMessageKey)}
-                </Typography>
+                <Typography sx={{ ml: 2.5, color: theme => theme.palette.error.main }}>>{t(saveErrorMessageKey)}</Typography>
               )}
             </Box>
             {redirect && <Redirect to={onSaveGoto} />}

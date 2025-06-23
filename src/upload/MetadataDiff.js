@@ -117,14 +117,14 @@ const MetadataDiff = ({ response, error, loading, endReview }) => {
   return (
     <Paper style={{ padding: 20 }}>
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" sx={{ mb: 1 }}>
           Metadata Diff
         </Typography>
       </div>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           {loading && <CircularProgress />}
-          {error && <Typography color="error">{error}</Typography>}
+          {error && <Typography sx={{ color: theme => theme.palette.error.main }}>{error}</Typography>}
           <Link onClick={endReview}>{"Back to Upload"}</Link>
           <br />
           <br />
@@ -161,7 +161,7 @@ const MetadataDiff = ({ response, error, loading, endReview }) => {
           ) : (
             !loading &&
             !error && (
-              <Typography variant="h5" gutterBottom>
+              <Typography variant="h5" sx={{ mb: 1 }}>
                 No Changes
               </Typography>
             )

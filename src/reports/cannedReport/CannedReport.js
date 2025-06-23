@@ -50,7 +50,7 @@ function renderCannedReport(classes, value, setValue) {
 
 function renderComingSoon() {
   return (
-    <Typography variant="h2" component="h2" align="center">
+    <Typography variant="h2" component="h2" sx={{ textAlign: "center" }}>
       Coming Soon!
     </Typography>
   );

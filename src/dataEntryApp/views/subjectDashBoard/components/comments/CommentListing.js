@@ -82,7 +82,7 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
             </IconButton>
           </div>
           <Comment style={{ color: "#fff", marginRight: 5, marginLeft: 5 }} />
-          <Typography style={{ color: "#fff" }}>{t("Comments")}</Typography>
+          <Typography sx={{ color: "#fff" }}>{t("Comments")}</Typography>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <Button

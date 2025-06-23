@@ -74,7 +74,7 @@ const GroupSubjectMemberCardView = ({
           alignItems: "flex-start"
         }}
       >
-        <Typography variant="subtitle1" gutterBottom>
+        <Typography variant="subtitle1" sx={{ mb: 1 }}>
           {t("removeMemberConfirmationMessage")}
         </Typography>
       </Grid>
@@ -92,14 +92,14 @@ const GroupSubjectMemberCardView = ({
         subjectTypeName={memberSubject.subjectType.name}
       >
         {dueEncounters && dueEncounters > 0 ? (
-          <Typography color="textSecondary" align={"center"}>
+          <Typography sx={{ color: theme => theme.palette.text.secondary, textAlign: "center" }}>
             {t("Due") + ": " + dueEncounters}
           </Typography>
         ) : (
           ""
         )}
         {overdueEncounters && overdueEncounters > 0 ? (
-          <Typography color="textSecondary" align={"center"}>
+          <Typography sx={{ color: theme => theme.palette.text.secondary, textAlign: "center" }}>
             {t("Overdue") + ": " + overdueEncounters}
           </Typography>
         ) : (

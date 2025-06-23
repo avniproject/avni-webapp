@@ -9,7 +9,7 @@ export default function({ error, additionalStyle = {}, customErrorMessage }) {
   if (error.response && error.response.data) message += " - " + error.response.data;
   console.error(message);
   return (
-    <Typography variant={"h5"} style={{ color: "red", ...additionalStyle }}>
+    <Typography variant="h5" sx={{ color: theme => theme.palette.error.main, ...additionalStyle }}>
       {customErrorMessage ? customErrorMessage : "Unexpected error occurred."}
     </Typography>
   );

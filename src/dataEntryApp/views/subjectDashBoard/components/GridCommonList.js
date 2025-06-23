@@ -57,16 +57,24 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
                           />
                         </Grid>
                         <Grid item>
-                          <Typography component={"div"} color="primary">
+                          <Typography component={"div"} sx={{ color: theme => theme.palette.primary.main }}>
                             <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
                               {" "}
                               {Individual.getFullName(relative.individualB)}{" "}
                             </InternalLink>
                           </Typography>
-                          <Typography component={"div"} className={classes.title} color="textSecondary" gutterBottom>
+                          <Typography
+                            component={"div"}
+                            className={classes.title}
+                            sx={{ mb: 1, color: theme => theme.palette.text.secondary }}
+                          >
                             {t(relative.relationship.individualBIsToARelation.name)}
                           </Typography>
-                          <Typography component={"div"} className={classes.title} color="textSecondary" gutterBottom>
+                          <Typography
+                            component={"div"}
+                            className={classes.title}
+                            sx={{ mb: 1, color: theme => theme.palette.text.secondary }}
+                          >
                             {new Date().getFullYear() - new Date(relative.individualB.dateOfBirth).getFullYear()} {t("years")}
                           </Typography>
                         </Grid>

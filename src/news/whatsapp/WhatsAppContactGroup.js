@@ -178,7 +178,7 @@ const WhatsAppContactGroup = ({ match }) => {
           WhatsApp Groups
         </Link>
         <Box>
-          <Typography component={"span"} color="textPrimary">
+          <Typography component={"span"} sx={{ color: theme => theme.palette.text.primary }}>
             {group["label"]}
           </Typography>
           <IconButton onClick={() => setEditingContactGroup(true)} size="large">

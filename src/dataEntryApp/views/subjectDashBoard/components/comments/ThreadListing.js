@@ -52,7 +52,7 @@ export const ThreadListing = ({ commentThreads, dispatch, setOpen, newCommentTex
       <div className={classes.drawerHeader}>
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
           <Comment style={{ color: "#fff", marginRight: 5, marginLeft: 5 }} />
-          <Typography style={{ color: "#fff" }}>{t("commentThreads")}</Typography>
+          <Typography sx={{ color: "#fff" }}>{t("commentThreads")}</Typography>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <Button className={classes.commentButton} style={{ textTransform: "none" }} onClick={() => setOpenCommentThread(true)}>

@@ -37,7 +37,7 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
   const { organisation, authSession, history, staticContext, dispatch, organisations, userInfo, ...rest } = props;
   return (
     <AppBar {...rest}>
-      <Typography variant="h6" color="inherit" className={classes.title} id="react-admin-title" />
+      <Typography variant="h6" sx={{ color: "inherit" }} className={classes.title} id="react-admin-title" />
       <OrganisationOptions
         getUserInfo={getUserInfo}
         user={authSession}

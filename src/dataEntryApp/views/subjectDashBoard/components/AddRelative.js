@@ -287,7 +287,7 @@ const AddRelative = ({
                       </Table>
                       <div style={{ marginLeft: 10 }}>
                         <LineBreak num={1} />
-                        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                        <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                           Relationship
                         </Typography>
                         <div>
@@ -313,7 +313,7 @@ const AddRelative = ({
                               </NativeSelect>
                             </FormControl>
                             {
-                              <Typography style={{ color: "red", marginTop: "10px" }} variant="subtitle1">
+                              <Typography variant="subtitle1" sx={{ color: theme => theme.palette.error.main, mt: 1.25 }}>
                                 {t(error)}
                               </Typography>
                             }

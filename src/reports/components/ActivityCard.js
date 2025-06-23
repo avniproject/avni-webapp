@@ -22,12 +22,12 @@ const ActivityCard = ({ title, total, data }) => {
         }}
       >
         <Grid item>
-          <Typography gutterBottom variant="h5" align={"center"}>
+          <Typography sx={{ mb: 1, textAlign: "center" }} variant="h5">
             {title}
           </Typography>
         </Grid>
         <Grid item>
-          <Typography gutterBottom variant="h5" align={"center"}>
+          <Typography sx={{ mb: 1, textAlign: "center" }} variant="h5">
             {total}
           </Typography>
         </Grid>
@@ -53,12 +53,12 @@ const ActivityCard = ({ title, total, data }) => {
             >
               <Grid item container direction={"column"} key={index} xs wrap={"nowrap"} style={{ minWidth: "10vh" }}>
                 <Grid item>
-                  <Typography gutterBottom variant="subtitle1" align={"center"}>
+                  <Typography sx={{ mb: 1, textAlign: "center" }} variant="subtitle1">
                     {indicator}
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Typography gutterBottom variant="subtitle1" align={"center"}>
+                  <Typography sx={{ mb: 1, textAlign: "center" }} variant="subtitle1">
                     {count}
                   </Typography>
                 </Grid>

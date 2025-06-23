@@ -7,7 +7,7 @@ export default function({ error }) {
 
   return (
     error && (
-      <Typography variant={"h5"} style={{ color: "red", marginBottom: 20, marginLeft: 20 }}>
+      <Typography variant="h5" sx={{ color: theme => theme.palette.error.main, mb: 2.5, ml: 2.5 }}>
         {error}
       </Typography>
     )

@@ -15,7 +15,7 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Typography variant="body1" gutterBottom style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}>
+      <Typography variant="body1" sx={{ mb: 1.25, width: "50%", color: theme => theme.palette.text.secondary }}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>

@@ -34,7 +34,7 @@ const NewVisitMenuView = ({ sections, uuid, isForProgramEncounters }) => {
         ? sections.map((section, index) => (
             <>
               <Paper className={classes.root}>
-                <Typography gutterBottom>{section.title}</Typography>
+                <Typography sx={{ mb: 1 }}>{section.title}</Typography>
                 <Paper>
                   <Table className={classes.tableContainer} size="small" aria-label="a dense table">
                     <TableHead>

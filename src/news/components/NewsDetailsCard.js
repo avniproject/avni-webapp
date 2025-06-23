@@ -25,18 +25,18 @@ const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublis
         <Grid item container xs={6} direction={"column"}>
           <Grid item>
             <Button color="primary" onClick={history.goBack} style={{ textTransform: "none", backgroundColor: "transparent" }}>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" sx={{ mb: 1 }}>
                 {"< Back"}
               </Typography>
             </Button>
           </Grid>
           <Grid item>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" sx={{ mb: 1 }}>
               {news.title}
             </Typography>
           </Grid>
           <Grid item>
-            <Typography style={{ opacity: 0.7 }} variant="body2">
+            <Typography sx={{ opacity: 0.7 }} variant="body2">
               {getFormattedDateTime(news.createdDateTime)}
             </Typography>
           </Grid>

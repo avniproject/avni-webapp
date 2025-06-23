@@ -79,7 +79,7 @@ const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, subjectTyp
             )}
 
             {!(program && program.enrolments) && (
-              <Typography component={"span"} gutterBottom className={classes.infomsg}>
+              <Typography component={"span"} sx={{ mb: 1 }} className={classes.infomsg}>
                 {" "}
                 {t("notEnroledInAnyProgram")}{" "}
               </Typography>

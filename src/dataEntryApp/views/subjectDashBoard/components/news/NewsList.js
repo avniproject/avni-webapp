@@ -28,10 +28,10 @@ export const NewsList = ({ match, ...props }) => {
 
   return (
     <Paper elevation={0} className={classes.root}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h5" sx={{ mb: 1 }}>
         {"News broadcast"}
       </Typography>
-      <Typography style={{ opacity: 0.5 }} variant="body1" gutterBottom>
+      <Typography style={{ opacity: 0.5 }} variant="body1" sx={{ mb: 1 }}>
         {"Below is the list of all news published"}
       </Typography>
       <Box

@@ -119,7 +119,7 @@ export const AvniImageUpload = ({
             }}
           >
             <Grid item>
-              <Typography style={{ opacity: 0.5 }}>{label}</Typography>
+              <Typography sx={{ opacity: 0.5 }}>{label}</Typography>
             </Grid>
             {allowUpload && (
               <Grid item>
@@ -151,7 +151,7 @@ export const AvniImageUpload = ({
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
           <div style={{ background: "#fff", borderRadius: 4, padding: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.2)" }}>
-            <Typography variant="body2" style={{ color: "#d32f2f" }}>
+            <Typography variant="body2" sx={{ color: theme => theme.palette.error.main }}>
               {fileSizeError}
             </Typography>
           </div>
