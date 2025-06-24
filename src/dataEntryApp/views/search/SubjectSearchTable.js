@@ -101,6 +101,12 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       ? {
           title: t("age"),
           field: "dateOfBirth",
+          customSort: (a, b) => {
+            if (!a.dateOfBirth && !b.dateOfBirth) return 0;
+            if (!a.dateOfBirth) return 1;
+            if (!b.dateOfBirth) return -1;
+            return new Date(b.dateOfBirth) - new Date(a.dateOfBirth);
+          },
           render: row => (row.dateOfBirth ? AgeUtil.getDisplayAge(row.dateOfBirth, i18n) : "")
         }
       : null,
