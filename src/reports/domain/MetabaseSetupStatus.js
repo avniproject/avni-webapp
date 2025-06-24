@@ -74,7 +74,7 @@ class MetabaseSetupStatus {
   }
 
   canStartSetup() {
-    return (this.status === this.NotSetup || this.setupStatus.status !== "COMPLETED") && !this.isAnyJobInProgress();
+    return (this.status === MetabaseSetupStatus.NotSetup || this.setupStatus.status !== "COMPLETED") && !this.isAnyJobInProgress();
   }
 
   isSetupInProgress() {
@@ -82,7 +82,7 @@ class MetabaseSetupStatus {
   }
 
   isSetupComplete() {
-    return this.status === this.Setup && this.setupStatus.status === "COMPLETED";
+    return this.status === MetabaseSetupStatus.Setup && this.setupStatus.status === "COMPLETED";
   }
 
   isAnyJobInProgress() {
