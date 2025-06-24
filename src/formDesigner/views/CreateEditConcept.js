@@ -460,9 +460,10 @@ class CreateEditConcept extends Component {
       if (verificationKey) {
         dataTypeComponent = <PhoneNumberConcept onKeyValueChange={this.onKeyValueChange} checked={verificationKey.value} />;
       } else {
+        const keyValues = [{ key: "verifyPhoneNumber", value: false }];
         this.setState(prevState => ({
           ...prevState,
-          keyValues: [{ key: "verifyPhoneNumber", value: false }]
+          concept: { ...prevState.concept, keyValues }
         }));
       }
     }
@@ -472,9 +473,10 @@ class CreateEditConcept extends Component {
       if (locationInformationKey) {
         dataTypeComponent = <ImageV2Concept onKeyValueChange={this.onKeyValueChange} checked={locationInformationKey.value} />;
       } else {
+        const keyValues = [{ key: "captureLocationInformation", value: false }];
         this.setState(prevState => ({
           ...prevState,
-          keyValues: [{ key: "captureLocationInformation", value: false }]
+          concept: { ...prevState.concept, keyValues }
         }));
       }
     }
