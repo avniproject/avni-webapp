@@ -66,7 +66,7 @@
     "react-multiselect-checkboxes": "^0.1.1",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.1.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "5.0.1",
     "react-select": "^3.0.8",
     "react-show-more-text": "^1.5.2",
     "react-simple-code-editor": "^0.10.0",
@@ -104,10 +104,12 @@
     }
   },
   "browserslist": [
-    ">0.2%",
+    "> 0.5%",
+    "last 2 versions",
+    "Firefox ESR",
     "not dead",
-    "not ie <= 11",
-    "not op_mini all"
+    "safari >= 15.4",
+    "iOS >= 15.4"
   ],
   "devDependencies": {
     "@babel/helper-environment-visitor": "7.22.20",
