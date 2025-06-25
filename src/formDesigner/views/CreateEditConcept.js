@@ -300,9 +300,12 @@ class CreateEditConcept extends Component {
 
     this.setState(newState);
   };
+
   onNumericConceptAttributeAssignment = event => {
+    const newConcept = { ...this.state.concept };
+    newConcept[event.target.id] = event.target.value;
     this.setState({
-      [event.target.id]: event.target.value
+      concept: newConcept
     });
   };
 
@@ -396,7 +399,7 @@ class CreateEditConcept extends Component {
       dataTypeComponent = (
         <NumericConcept
           onNumericConceptAttributeAssignment={this.onNumericConceptAttributeAssignment}
-          numericDataTypeAttributes={concept}
+          numericDataTypeAttributes={{ ...concept, error: this.state.error }}
         />
       );
     }

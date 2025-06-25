@@ -28,21 +28,22 @@ export class WebConcept {
       normalValidation?: boolean;
       absoluteEncapsulationValidation?: boolean;
     } = {};
+    const isNumeric = concept.dataType === "Numeric";
     if (
-      concept.dataType === "Numeric" &&
+      isNumeric &&
       parseInt(concept.lowAbsolute as any) >
         parseInt(concept.highAbsolute as any)
     ) {
       error["absoluteValidation"] = true;
     }
     if (
-      concept.dataType === "Numeric" &&
+      isNumeric &&
       parseInt(concept.lowNormal as any) > parseInt(concept.highNormal as any)
     ) {
       error["normalValidation"] = true;
     }
     if (
-      concept.dataType === "Numeric" &&
+      isNumeric &&
       !(
         parseInt(concept.lowAbsolute as any) <=
           parseInt(concept.lowNormal as any) &&
