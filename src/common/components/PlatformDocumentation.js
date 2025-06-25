@@ -1,6 +1,8 @@
 import { makeStyles } from "@mui/styles";
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -8,7 +10,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-//Custom link renderer to open relative URLs in same tab and absolute URLs in new tab
+// Custom link renderer to open relative URLs in same tab and absolute URLs in new tab
 export const LinkRenderer = props => {
   return props.href.startsWith("http") ? (
     <a href={props.href} target="_blank" rel="noopener noreferrer">
@@ -30,8 +32,8 @@ export const PlatformDocumentation = ({ fileName }) => {
   }, []);
 
   return (
-    <div style={{ backgroundColor: "#f6f6f6", borderRadius: 10, padding: 16, margin: 7 }}>
-      <ReactMarkdown source={markdown} escapeHtml={false} className={classes.root} renderers={{ link: LinkRenderer }} />
+    <div className={classes.root} style={{ backgroundColor: "#f6f6f6", borderRadius: 10, padding: 16, margin: 7 }}>
+      <ReactMarkdown children={markdown} rehypePlugins={[rehypeRaw, rehypeSanitize]} components={{ link: LinkRenderer }} />
     </div>
   );
 };

@@ -4,7 +4,6 @@ import { Link as RouterLink, withRouter } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import { Link, SvgIcon } from "@mui/material";
 import qs from "query-string";
-import { join } from "path";
 
 import ScreenWithAppBar from "common/components/ScreenWithAppBar";
 
@@ -42,15 +41,6 @@ export const InternalLink = ({ children, noUnderline, ...props }) => {
     </Link>
   );
 };
-
-export const RelativeLink = withRouter(({ location, children, to = "./", params, noParams, ...props }) => {
-  const updatedParams = noParams ? "" : qs.stringify(merge(qs.parse(location.search), params));
-  return (
-    <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`} {...props}>
-      {children}
-    </InternalLink>
-  );
-});
 
 export const Home = () => (
   <div>

@@ -20,7 +20,7 @@ import Broadcast from "../news/Broadcast";
 import AvniRouter from "../common/AvniRouter";
 import CurrentUserService from "../common/service/CurrentUserService";
 import OrgManager from "../adminApp/OrgManager";
-import { useIdleTimer } from "react-idle-timer/dist/index.legacy.cjs.js";
+import { useIdleTimer } from "react-idle-timer";
 import { logout } from "./ducks";
 import BaseAuthSession from "./security/BaseAuthSession";
 import { Privilege } from "openchs-models";

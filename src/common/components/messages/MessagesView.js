@@ -1,6 +1,5 @@
 import { makeStyles } from "@mui/styles";
 import { Paper, Accordion, AccordionSummary, Typography, AccordionDetails } from "@mui/material";
-import { bold } from "ansi-colors";
 import { Info, ExpandMore } from "@mui/icons-material";
 import React from "react";
 import YetToBeSentMessagesTable from "./YetToBeSentMessagesTable";
@@ -46,9 +45,6 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     fontSize: 14
-  },
-  headingBold: {
-    fontWeight: bold
   },
   gridBottomBorder: {
     borderBottom: "1px solid rgba(0,0,0,0.12)",

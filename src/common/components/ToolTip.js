@@ -2,6 +2,8 @@ import React from "react";
 import { Help } from "@mui/icons-material";
 import { ClickAwayListener, Paper } from "@mui/material";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 import _ from "lodash";
 import { LinkRenderer } from "./PlatformDocumentation";
 
@@ -43,7 +45,7 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
 
   const displayMarkup = () => (
     <Paper style={styles.content}>
-      <ReactMarkdown source={message} escapeHtml={false} renderers={{ link: LinkRenderer }} />
+      <ReactMarkdown children={message} rehypePlugins={[rehypeRaw, rehypeSanitize]} components={{ link: LinkRenderer }} />
     </Paper>
   );
 

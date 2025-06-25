@@ -2,7 +2,6 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
 import { Accordion, AccordionDetails, AccordionSummary, Typography, List, Grid, Button, Paper } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
-import { bold } from "ansi-colors";
 import moment from "moment/moment";
 import Observations from "dataEntryApp/components/Observations";
 import GridCommonList from "../components/GridCommonList";
@@ -67,9 +66,6 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     fontSize: 14
-  },
-  headingBold: {
-    fontWeight: bold
   },
   gridBottomBorder: {
     borderBottom: "1px solid rgba(0,0,0,0.12)",
