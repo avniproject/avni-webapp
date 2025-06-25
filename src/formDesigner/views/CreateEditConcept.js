@@ -346,7 +346,7 @@ class CreateEditConcept extends Component {
 
   handleActive = event => {
     this.setState({
-      active: event.target.checked
+      concept: { ...this.state.concept, active: event.target.checked }
     });
   };
 
