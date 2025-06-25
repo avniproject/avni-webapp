@@ -4,13 +4,14 @@ import { withRouter } from "react-router-dom";
 import _ from "lodash";
 import "./SecureApp.css";
 import App from "./App";
-import CognitoSignIn from "./CognitoSignIn";
+import SignInView from "./views/SignInView";
 import httpClient from "../common/utils/httpClient";
 import IdpDetails from "./security/IdpDetails";
 import KeycloakSignInView from "./views/KeycloakSignInView";
 import { initGenericConfig, setAuthSession } from "./ducks";
-import { Authenticator, Greetings, SignIn, SignUp } from "aws-amplify-react";
-import { customAmplifyErrorMsgs } from "./utils";
+import { Authenticator } from "@aws-amplify/ui-react";
+import { isDisallowedPassword, DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG } from "./utils";
+import ApplicationContext from "../ApplicationContext";
 import BaseAuthSession from "./security/BaseAuthSession";
 import ChooseIdpView from "./ChooseIdpView";
 import KeycloakWebClient from "./security/KeycloakWebClient";
@@ -22,7 +23,7 @@ class SecureApp extends Component {
   }
 
   setAuthState(authState, authData) {
-    if (authState === BaseAuthSession.AuthStates.SignedIn) {
+    if (authState === "signedIn") {
       this.props.setAuthSession(authState, authData, IdpDetails.cognito);
     }
   }
@@ -55,12 +56,25 @@ class SecureApp extends Component {
       return (
         <div className="centerContainer">
           <Authenticator
-            hide={[Greetings, SignUp, SignIn]}
             onStateChange={this.setAuthState}
-            errorMessage={customAmplifyErrorMsgs}
-          >
-            <CognitoSignIn />
-          </Authenticator>
+            components={{
+              SignIn: props => (
+                <SignInView
+                  {...props}
+                  notifyInputChange={e => props.onChange(e)}
+                  onSignIn={() => {
+                    if (ApplicationContext.isNonProdAndNonDevEnv() && isDisallowedPassword(props.formData.password)) {
+                      alert(DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG);
+                    } else {
+                      props.onSubmit();
+                    }
+                  }}
+                  onForgotPassword={() => props.onStateChange("forgotPassword")}
+                  loading={props.authState === "loading"}
+                />
+              )
+            }}
+          />
         </div>
       );
     }

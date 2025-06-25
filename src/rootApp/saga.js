@@ -1,26 +1,18 @@
 import { call, put, take, takeLatest } from "redux-saga/effects";
-import {
-  getUserInfo,
-  sendInitComplete,
-  setAdminOrgs,
-  setOrganisationConfig,
-  setUserInfo,
-  types
-} from "./ducks";
+import { getUserInfo, sendInitComplete, setAdminOrgs, setOrganisationConfig, setUserInfo, types } from "./ducks";
 import http from "common/utils/httpClient";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import { get, isEmpty } from "lodash";
 import { userLogout } from "react-admin";
-import Auth from "@aws-amplify/auth";
+import * as Auth from "aws-amplify/auth";
 
 const api = {
   fetchUserInfo: () => http.fetchJson("/web/userInfo").then(response => response.json),
   fetchAdminOrgs: () => http.fetchJson("/organisation", {}, true).then(response => response.json),
   fetchTranslations: () => http.fetchJson("/web/translations").then(response => response.json),
-  fetchOrganisationConfig: () =>
-    http.fetchJson("/web/organisationConfig").then(response => response.json),
+  fetchOrganisationConfig: () => http.fetchJson("/web/organisationConfig").then(response => response.json),
   saveUserInfo: userInfo => http.post("/me", userInfo),
   logout: () => http.get("/web/logout")
 };
@@ -52,9 +44,7 @@ function* setUserDetails() {
   }
   yield put(setUserInfo(userDetails));
   const organisationName = get(userDetails, "organisationName", "");
-  document.cookie = `IMPLEMENTATION-NAME=${encodeURIComponent(
-    organisationName
-  )}; path=/; SameSite=Lax; Secure=true`;
+  document.cookie = `IMPLEMENTATION-NAME=${encodeURIComponent(organisationName)}; path=/; SameSite=Lax; Secure=true`;
   if (!isEmpty(organisationName)) {
     const organisationConfig = yield call(api.fetchOrganisationConfig);
     yield put(setOrganisationConfig(get(organisationConfig, "organisationConfig", {})));

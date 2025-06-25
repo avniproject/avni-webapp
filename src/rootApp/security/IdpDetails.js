@@ -1,6 +1,7 @@
 class CognitoDetails {
   poolId;
   clientId;
+  region;
 }
 
 class KeycloakDetails {

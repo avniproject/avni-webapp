@@ -1,28 +1,32 @@
-import Auth from "@aws-amplify/auth";
+import { fetchAuthSession } from "aws-amplify/auth";
 import BaseIdp from "./BaseIdp";
 import IdpDetails from "./IdpDetails";
 import _ from "lodash";
 import LocalStorageLocator from "../../common/utils/LocalStorageLocator";
 
 async function getToken() {
-  const currentSession = await Auth.currentSession();
-  return currentSession["idToken"].jwtToken;
+  const session = await fetchAuthSession();
+  return session.tokens?.idToken?.toString() || null;
 }
 
 class CognitoWebClient extends BaseIdp {
   static AuthStateLocalStorageKey = "amplify-authenticator-authState";
 
   async updateRequestWithSession(options, axios) {
-    if (options) {
-      options.headers.set("AUTH-TOKEN", await getToken());
-    } else {
-      axios.defaults.headers.common["AUTH-TOKEN"] = await getToken();
-      axios.defaults.withCredentials = true;
+    const token = await getToken();
+    if (token) {
+      if (options) {
+        options.headers.set("AUTH-TOKEN", token);
+      } else {
+        axios.defaults.headers.common["AUTH-TOKEN"] = token;
+        axios.defaults.withCredentials = true;
+      }
     }
   }
 
   async getTokenParam() {
-    return `AUTH-TOKEN=${await getToken()}`;
+    const token = await getToken();
+    return token ? `AUTH-TOKEN=${token}` : "";
   }
 
   get idpType() {
@@ -30,11 +34,8 @@ class CognitoWebClient extends BaseIdp {
   }
 
   static isAuthenticatedWithCognito() {
-    return (
-      !_.isNil(
-        LocalStorageLocator.getLocalStorage().getItem(CognitoWebClient.AuthStateLocalStorageKey)
-      ) && !_.isNil(LocalStorageLocator.getLocalStorage().getItem(IdpDetails.AuthTokenName))
-    );
+    const ls = LocalStorageLocator.getLocalStorage();
+    return !_.isNil(ls.getItem(CognitoWebClient.AuthStateLocalStorageKey)) && !_.isNil(ls.getItem(IdpDetails.AuthTokenName));
   }
 }
 

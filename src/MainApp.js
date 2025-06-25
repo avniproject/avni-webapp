@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { adaptV4Theme } from "@mui/material/styles";
 import { Provider } from "react-redux";
 import { HashRouter } from "react-router-dom";
 
@@ -13,7 +12,7 @@ import { App, SecureApp } from "./rootApp";
 
 import { createGenerateClassName, StylesProvider, ThemeProvider } from "@mui/styles";
 import { StyledEngineProvider } from "@mui/system";
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import * as Colors from "@mui/material/colors";
 import http, { httpClient } from "common/utils/httpClient";
 import IdpDetails from "./rootApp/security/IdpDetails";
@@ -23,14 +22,12 @@ import { ErrorFallback } from "./dataEntryApp/ErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorMessageUtil from "./common/utils/ErrorMessageUtil";
 
-const theme = createTheme(
-  adaptV4Theme({
-    palette: {
-      primary: Colors.blue,
-      secondary: Colors.grey
-    }
-  })
-);
+const theme = createTheme({
+  palette: {
+    primary: Colors.blue,
+    secondary: Colors.grey
+  }
+});
 
 const generateClassName = createGenerateClassName({
   productionPrefix: "avnijss"

@@ -4,7 +4,7 @@ import { stringify } from "query-string";
 import axios from "axios";
 import files from "./files";
 import { devEnvUserName } from "../constants";
-import Auth from "@aws-amplify/auth";
+import { fetchAuthSession } from "aws-amplify/auth";
 import querystring from "querystring";
 import IdpDetails from "../../rootApp/security/IdpDetails";
 import CurrentUserService from "../service/CurrentUserService";
@@ -59,10 +59,12 @@ class HttpClient {
   }
 
   saveAuthTokenForAnalyticsApp() {
-    if (this.idp.idpType === IdpDetails.cognito) {
-      Auth.currentSession().then(session => {
-        const authToken = session.idToken.jwtToken;
-        localStorage.setItem(IdpDetails.AuthTokenName, authToken);
+    if (this.idp?.idpType === IdpDetails.cognito) {
+      fetchAuthSession().then(session => {
+        const authToken = session.tokens?.idToken?.toString();
+        if (authToken) {
+          localStorage.setItem(IdpDetails.AuthTokenName, authToken);
+        }
       });
     }
   }
