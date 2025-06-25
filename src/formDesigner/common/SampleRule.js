@@ -69,6 +69,16 @@ export const sampleSubjectProgramEligibilityCheckRule = () => {
 };`;
 };
 
+export const sampleMemberAdditionEligibilityCheckRule = () => {
+  return `//SAMPLE RULE EXAMPLE
+'use strict';
+({params, imports}) => {
+  const individual = params.entity;
+  //sample condition individual.isFemale() && individual.getAgeInYears() > 5;
+  return true;
+};`;
+};
+
 export const sampleEnrolmentEligibilityCheckRule = () => {
   return `//SAMPLE RULE EXAMPLE
 'use strict';
@@ -118,9 +128,7 @@ export const sampleDecisionRule = entityName => {
 ({params, imports}) => {
     const ${entityName} = params.entity;
     const decisions = params.decisions;
-    //create complicationBuilder using ${entityName} and then push to ${decisionType(
-    entityName
-  )} array.
+    //create complicationBuilder using ${entityName} and then push to ${decisionType(entityName)} array.
     return decisions;
 };`;
 };

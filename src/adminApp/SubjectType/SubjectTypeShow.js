@@ -121,6 +121,15 @@ const SubjectTypeShow = props => {
             <p />
             <RuleDisplay fieldLabel={"Subject Program Eligibility Check Rule"} ruleText={subjectType.programEligibilityCheckRule} />
             <p />
+            {subjectType.group && (
+              <>
+                <RuleDisplay
+                  fieldLabel={"Member Addition Eligibility Check Rule"}
+                  ruleText={subjectType.memberAdditionEligibilityCheckRule}
+                />
+                <p />
+              </>
+            )}
             <MessageRules
               templateFetchError={templateFetchError}
               rules={rules}

@@ -200,5 +200,6 @@
   "APP_DESIGNER_SELECT_MESSAGE_TEMPLATE": "Choose the message template",
   "APP_DESIGNER_SELECT_RECEIVER_TYPE": "Choose the receiver type",
   "IGNORE_SYNC_SETTINGS_IN_DEA": "Ignore the SubjectType sync settings restrictions in the Data Entry app.",
-  "APP_DESIGNER_ARCHIVAL_SQL_QUERY": "Should return individual ids only as column id. Query result should change with time progression for progressive archival."
+  "APP_DESIGNER_ARCHIVAL_SQL_QUERY": "Should return individual ids only as column id. Query result should change with time progression for progressive archival.",
+  "MEMBER_ADDITION_ELIGIBILITY_CHECK_RULE": "Will be evaluated when you try to add an existing member to a group of this type"
 }
