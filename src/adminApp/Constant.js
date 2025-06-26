@@ -5,6 +5,7 @@ export const programInitialState = {
   enrolmentSummaryRule: "",
   enrolmentEligibilityCheckRule: "",
   manualEnrolmentEligibilityCheckRule: "",
+  manualEligibilityCheckRequired: false,
   loaded: false
 };
 

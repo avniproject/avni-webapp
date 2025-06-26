@@ -128,7 +128,7 @@ const EditProgramFields = props => {
 
       <br />
       <AvniSwitch
-        checked={program.allow}
+        checked={program.manualEligibilityCheckRequired}
         onChange={event => dispatch({ type: "manualEligibilityCheckRequired", payload: event.target.checked })}
         name="Manual eligibility check required"
         toolTipKey={"APP_DESIGNER_PROGRAM_MANUAL_ELIGIBILITY_CHECK_REQUIRED"}
