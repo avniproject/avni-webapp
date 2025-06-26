@@ -22,6 +22,7 @@ import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MediaService from "../service/MediaService";
+import Types from "./Types";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
@@ -121,7 +122,7 @@ const SubjectTypeShow = props => {
             <p />
             <RuleDisplay fieldLabel={"Subject Program Eligibility Check Rule"} ruleText={subjectType.programEligibilityCheckRule} />
             <p />
-            {subjectType.group && (
+            {Types.isGroup(subjectType.type) && (
               <>
                 <RuleDisplay
                   fieldLabel={"Member Addition Eligibility Check Rule"}
