@@ -4,7 +4,6 @@ class CognitoAuthSession extends BaseAuthSession {
   constructor(authState, authData) {
     super();
     this.authState = authState;
-    this.jwtToken = authData["signInUserSession"].idToken.jwtToken;
     this.username = authData.username;
   }
 
@@ -12,7 +11,6 @@ class CognitoAuthSession extends BaseAuthSession {
   name;
   authState;
   username;
-  jwtToken;
 }
 
 export default CognitoAuthSession;

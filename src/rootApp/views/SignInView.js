@@ -19,8 +19,10 @@ import React, { useEffect, useState } from "react";
 import SideImage from "../../avni-background.jpeg";
 import ApplicationContext from "../../ApplicationContext";
 import http from "common/utils/httpClient";
+import { useAuthenticator } from "@aws-amplify/ui-react";
 
-function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, loading, disallowForgottenPasswordReset = false }) {
+function SignInView({ classes, onSignIn, notifyInputChange, loading, disallowForgottenPasswordReset = false }) {
+  const { toForgotPassword } = useAuthenticator();
   const [passwordIsMasked, setPasswordIsMasked] = useState(true);
   const autoComplete = ApplicationContext.isDevEnv() ? "on" : "off";
   const [reportingSystems, setReportingSystems] = useState(null);
@@ -29,9 +31,10 @@ function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, lo
     http
       .fetchJson("/config")
       .then(response => response.json)
-      .then(
-        responseData =>
-          responseData.reportingSystems && responseData.reportingSystems.length > 0 && setReportingSystems(responseData.reportingSystems)
+      .then(responseData =>
+        responseData.reportingSystems && responseData.reportingSystems.length > 0
+          ? setReportingSystems(responseData.reportingSystems)
+          : null
       );
   }, []);
 
@@ -39,11 +42,7 @@ function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, lo
     <Grid container component="main" className={classes.root}>
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} style={{ backgroundColor: "#f0f2f0" }}>
-        <Box
-          sx={{
-            mb: 4
-          }}
-        >
+        <Box sx={{ mb: 4 }}>
           <img src={AvniLogo} alt="logo" height="45px" />
         </Box>
         <Card>
@@ -53,10 +52,8 @@ function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, lo
               <TextField
                 variant="outlined"
                 inputProps={{
-                  autocomplete: autoComplete,
-                  form: {
-                    autocomplete: autoComplete
-                  }
+                  autoComplete: autoComplete,
+                  form: { autoComplete: autoComplete }
                 }}
                 margin="normal"
                 required
@@ -105,7 +102,7 @@ function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, lo
               </Button>
               <Grid container hidden={disallowForgottenPasswordReset}>
                 <Grid item xs>
-                  <Link href="#" variant="body2" onClick={onForgotPassword}>
+                  <Link href="#" variant="body2" onClick={toForgotPassword}>
                     Forgot password?
                   </Link>
                 </Grid>
@@ -119,42 +116,34 @@ function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, lo
   );
 }
 
-const ShowReport = ({ classes, reportingSystems }) => {
-  return (
-    <>
-      <Grid style={{ backgroundColor: "#f0f2f0" }}>
-        <CardHeader title={"View Reports"} />
-        <CardContent>
-          <Typography variant="body2" sx={{ color: theme => theme.palette.secondary.main }}>
-            Avni provides reports using one of two different external BI tools - Metabase and Jasper Reports. You can find out the reports
-            used by your organisation from your system administrator.
-          </Typography>
-          <Typography variant="body2" sx={{ color: theme => theme.palette.secondary.main }}>
-            <br />
-            Choose your reporting system
-          </Typography>
-        </CardContent>
-        <CardActions style={{ justifyContent: "space-evenly" }}>
-          {reportingSystems.map(({ name, url }) => (
-            <ReportDetails key={name} name={name} url={url} classes={classes} />
-          ))}
-        </CardActions>
-      </Grid>
-    </>
-  );
-};
+const ShowReport = ({ classes, reportingSystems }) => (
+  <Grid style={{ backgroundColor: "#f0f2f0" }}>
+    <CardHeader title={"View Reports"} />
+    <CardContent>
+      <Typography variant="body2" sx={{ color: theme => theme.palette.secondary.main }}>
+        Avni provides reports using one of two different external BI tools - Metabase and Jasper Reports. You can find out the reports used
+        by your organisation from your system administrator.
+      </Typography>
+      <Typography variant="body2" sx={{ color: theme => theme.palette.secondary.main }}>
+        <br />
+        Choose your reporting system
+      </Typography>
+    </CardContent>
+    <CardActions style={{ justifyContent: "space-evenly" }}>
+      {reportingSystems.map(({ name, url }) => (
+        <ReportDetails key={name} name={name} url={url} classes={classes} />
+      ))}
+    </CardActions>
+  </Grid>
+);
 
-const ReportDetails = ({ name, url, classes }) => {
-  return (
-    <>
-      <Link href={url}>
-        <Button size="small" variant={"contained"} className={classes.submit}>
-          {name}
-        </Button>
-      </Link>
-    </>
-  );
-};
+const ReportDetails = ({ name, url, classes }) => (
+  <Link href={url}>
+    <Button size="small" variant="contained" className={classes.submit}>
+      {name}
+    </Button>
+  </Link>
+);
 
 const useStyles = theme => ({
   root: {
@@ -168,7 +157,7 @@ const useStyles = theme => ({
     backgroundPosition: "center"
   },
   form: {
-    width: "100%" // Fix IE 11 issue.
+    width: "100%"
   },
   submit: {
     margin: theme.spacing(3, 0, 2),

@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { HashRouter } from "react-router-dom";
 
 import "./index.css";
+import "@aws-amplify/ui-react/styles.css";
 import "jquery";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap";

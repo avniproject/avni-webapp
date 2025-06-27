@@ -6,20 +6,13 @@ export const configureAuth = config => {
   Amplify.configure({
     Auth: {
       Cognito: {
-        region: "ap-south-1",
-        userPoolId: "ap-south-1_DU27AHJvZ",
-        userPoolClientId: "1d6rgvitjsfoonlkbm07uivgmg",
-        authenticationFlowType: "USER_PASSWORD_AUTH",
-        loginWith: { email: true }
+        region: config.region || AWS_REGION,
+        userPoolId: config.poolId,
+        userPoolClientId: config.clientId,
+        loginWith: { username: true }
       }
     }
   });
-};
-
-export const customAmplifyErrorMsgs = msg => {
-  if (/null failed with error Generate ch?allenges lambda cannot be called/i.test(msg)) return "Password cannot be empty";
-  if (/Cannot read property 'username' of undefined/.test(msg)) return "Username cannot be empty";
-  return msg;
 };
 
 export function isDisallowedPassword(password) {

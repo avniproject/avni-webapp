@@ -3,15 +3,14 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import _ from "lodash";
 import "./SecureApp.css";
+import "@aws-amplify/ui-react/styles.css";
 import App from "./App";
-import SignInView from "./views/SignInView";
+import { Authenticator } from "@aws-amplify/ui-react";
+import CognitoSignIn from "./CognitoSignIn";
 import httpClient from "../common/utils/httpClient";
 import IdpDetails from "./security/IdpDetails";
 import KeycloakSignInView from "./views/KeycloakSignInView";
 import { initGenericConfig, setAuthSession } from "./ducks";
-import { Authenticator } from "@aws-amplify/ui-react";
-import { isDisallowedPassword, DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG } from "./utils";
-import ApplicationContext from "../ApplicationContext";
 import BaseAuthSession from "./security/BaseAuthSession";
 import ChooseIdpView from "./ChooseIdpView";
 import KeycloakWebClient from "./security/KeycloakWebClient";
@@ -19,13 +18,6 @@ import KeycloakWebClient from "./security/KeycloakWebClient";
 class SecureApp extends Component {
   constructor(props) {
     super(props);
-    this.setAuthState = this.setAuthState.bind(this);
-  }
-
-  setAuthState(authState, authData) {
-    if (authState === "signedIn") {
-      this.props.setAuthSession(authState, authData, IdpDetails.cognito);
-    }
   }
 
   componentDidMount() {
@@ -45,7 +37,7 @@ class SecureApp extends Component {
       httpClient.fetchJson("/ping").then(() => {
         window.open(redirect_url, "_self");
       });
-      return <></>;
+      return null;
     }
 
     if (this.hasSignedIn()) return <App />;
@@ -55,26 +47,9 @@ class SecureApp extends Component {
     if (idpType === IdpDetails.cognito) {
       return (
         <div className="centerContainer">
-          <Authenticator
-            onStateChange={this.setAuthState}
-            components={{
-              SignIn: props => (
-                <SignInView
-                  {...props}
-                  notifyInputChange={e => props.onChange(e)}
-                  onSignIn={() => {
-                    if (ApplicationContext.isNonProdAndNonDevEnv() && isDisallowedPassword(props.formData.password)) {
-                      alert(DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG);
-                    } else {
-                      props.onSubmit();
-                    }
-                  }}
-                  onForgotPassword={() => props.onStateChange("forgotPassword")}
-                  loading={props.authState === "loading"}
-                />
-              )
-            }}
-          />
+          <Authenticator.Provider>
+            <CognitoSignIn onSignedIn={user => this.props.setAuthSession(BaseAuthSession.AuthStates.SignedIn, user, IdpDetails.cognito)} />
+          </Authenticator.Provider>
         </div>
       );
     }
