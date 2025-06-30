@@ -99,7 +99,7 @@ const ProgramShow = props => {
           <p />
           <BooleanStatusInShow status={program.active} label={"Active"} />
           <BooleanStatusInShow status={program.allowMultipleEnrolments} label={"Allow multiple active enrolments"} />
-
+          <BooleanStatusInShow status={program.manualEligibilityCheckRequired} label={"Manual eligibility check required"} />
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Program Subject Label</FormLabel>
             <br />
