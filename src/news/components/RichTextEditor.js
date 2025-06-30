@@ -21,13 +21,6 @@ const RichTextEditor = ({ editorState, setEditorState }) => {
               hasInvalidLink = true;
             }
           }
-          // Handle tel links specially
-          else if (url.startsWith("tel:")) {
-            // Simple validation for tel links - just make sure there's something after "tel:"
-            if (url.length <= 4) {
-              hasInvalidLink = true;
-            }
-          }
           // For other URLs use standard URL validation
           else if (
             !validator.isURL(url, {
@@ -44,8 +37,7 @@ const RichTextEditor = ({ editorState, setEditorState }) => {
     if (hasInvalidLink) {
       alert(`Invalid URL format detected. Please check:
 - Web links must start with http:// or https://
-- Email links must use mailto:user@example.com (no space after colon)
-- Phone links must use tel:+1234567890 (no space after colon)`);
+- Email links must use mailto:user@example.com (no space after colon)`);
       return;
     }
 
