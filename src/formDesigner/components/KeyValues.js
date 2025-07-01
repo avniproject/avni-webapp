@@ -28,73 +28,48 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function KeyValues({
-  keyValues,
-  onKeyValueChange,
-  onAddNewKeyValue,
-  onDeleteKeyValue,
-  error,
-  readOnlyKeys = []
-}) {
+export default function KeyValues({ keyValues, onKeyValueChange, onAddNewKeyValue, onDeleteKeyValue, error, readOnlyKeys = [] }) {
   const classes = useStyles();
+  // Parent component now ensures keyValues is initialized
+
   return (
     <Box mt={5}>
-      {map(keyValues, ({ key, value }, index) => (
+      {map(keyValues, (item, index) => (
         <Grid key={index} container direction="row" alignItems="center">
           <form className={classes.root} noValidate autoComplete="off">
             <TextField
               id="outlined-basic"
               label="Key"
               variant="outlined"
-              value={key}
-              disabled={readOnlyKeys.includes(key)}
+              disabled={readOnlyKeys.includes(item && item.key)}
+              value={(item && item.key) || ""}
               InputProps={{ classes: { input: classes.boxHeight } }}
-              onChange={event =>
-                onKeyValueChange(
-                  {
-                    key: event.target.value,
-                    value: value
-                  },
-                  index
-                )
-              }
+              onChange={event => onKeyValueChange({ key: event.target.value, value: item && item.value }, index)}
             />
             <TextField
               id="outlined-basic"
               label="Value"
               variant="outlined"
-              value={value}
-              disabled={readOnlyKeys.includes(key)}
+              disabled={readOnlyKeys.includes(item && item.key)}
+              value={(item && item.value) || ""}
               InputProps={{ classes: { input: classes.boxHeight } }}
-              onChange={event =>
-                onKeyValueChange(
-                  {
-                    key: key,
-                    value: event.target.value
-                  },
-                  index
-                )
-              }
+              onChange={event => onKeyValueChange({ key: item && item.key, value: event.target.value }, index)}
             />
           </form>
           <IconButton
             aria-label="delete"
             onClick={() => onDeleteKeyValue(index)}
             style={{ marginTop: 10 }}
-            disabled={readOnlyKeys.includes(key)}
+            disabled={readOnlyKeys.includes(item && item.key)}
           >
             <DeleteIcon fontSize="inherit" />
           </IconButton>
         </Grid>
       ))}
+
       {error && <FormHelperText error>Key-Value can't be blank</FormHelperText>}
       <Grid container>
-        <Button
-          type="button"
-          className={useStyles.button}
-          color="primary"
-          onClick={onAddNewKeyValue}
-        >
+        <Button type="button" className={useStyles.button} color="primary" onClick={onAddNewKeyValue}>
           Add New Key-Value
         </Button>
         <Grid item xs={4}>

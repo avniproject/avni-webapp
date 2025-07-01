@@ -13,7 +13,8 @@ import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, replace, sortBy, toLower, trim } from "lodash";
+import { filter, replace, sortBy, toLower, trim } from "lodash";
+import { findKeyValue, getKeyValue, safeKeyValues } from "../utils/KeyValuesUtil";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -90,6 +91,8 @@ class CreateEditConcept extends Component {
   constructor(props) {
     super(props);
     const emptyConcept = WebConceptView.emptyConcept();
+    // Ensure keyValues is always initialized as an array
+    emptyConcept.keyValues = emptyConcept.keyValues || [];
     this.state = {
       concept: emptyConcept,
       conceptCreationAlert: false,
@@ -214,7 +217,8 @@ class CreateEditConcept extends Component {
   };
 
   validateKeyValues = (error, key, errorKey) => {
-    const keyValue = this.state.concept.keyValues.find(keyValue => keyValue.key === key);
+    // Use utility function for safer access
+    const keyValue = findKeyValue(this.state.concept.keyValues, key);
     if (keyValue === undefined || keyValue.value === "") {
       error[errorKey] = true;
     }
@@ -243,12 +247,13 @@ class CreateEditConcept extends Component {
     }
 
     if (concept.dataType === "Location") {
-      const lowestLevelKeyValue = concept.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs");
-      if (lowestLevelKeyValue === undefined || lowestLevelKeyValue.value.length === 0) {
-        error["lowestAddressLevelRequired"] = true;
+      // Use utility functions for safer access
+      const lowestLevel = getKeyValue(concept.keyValues, "lowestAddressLevelTypeUUIDs");
+      if (lowestLevel === undefined || lowestLevel.length === 0) {
+        error.lowestAddressLevelRequired = true;
       }
 
-      const highestLevelKeyValue = concept.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID");
+      const highestLevelKeyValue = findKeyValue(concept.keyValues, "highestAddressLevelTypeUUID");
       if (highestLevelKeyValue !== undefined && highestLevelKeyValue.value === "") {
         error["highestAddressLevelRequired"] = true;
       }
@@ -264,7 +269,7 @@ class CreateEditConcept extends Component {
       this.validateKeyValues(error, "encounterIdentifier", "encounterIdentifierRequired");
     }
 
-    const emptyKeyValues = filter(concept.keyValues, ({ key, value }) => key === "" || value === "");
+    const emptyKeyValues = filter(safeKeyValues(concept.keyValues), item => item && (item.key === "" || item.value === ""));
     if (emptyKeyValues.length > 0) {
       error["keyValueError"] = true;
     }
@@ -285,11 +290,16 @@ class CreateEditConcept extends Component {
   afterSuccessfulValidation = async () => {
     const { concept, error } = await ConceptService.saveConcept(this.state.concept);
     if (error) {
-      this.setState({
-        error: { mediaUploadFailed: true, message: error }
-      });
+      // Improve error handling to provide better feedback
+      const newError = {
+        nameConflict: error.includes("already exists"),
+        mediaUploadFailed: !error.includes("already exists"),
+        message: error
+      };
+      this.setState({ error: newError });
       return;
     }
+
     const newState = {
       conceptCreationAlert: true,
       defaultSnackbarStatus: true,
@@ -324,7 +334,8 @@ class CreateEditConcept extends Component {
   };
 
   onKeyValueChange = (keyValue, index) => {
-    const keyValues = this.state.concept.keyValues;
+    // Use safeKeyValues for consistent array handling
+    const keyValues = [...safeKeyValues(this.state.concept.keyValues)];
     keyValues[index] = typeof keyValue.value === "object" ? this.handleObjectValue(keyValue) : this.castValueToBooleanOrInt(keyValue);
     this.setState({
       concept: { ...this.state.concept, keyValues }
@@ -332,15 +343,16 @@ class CreateEditConcept extends Component {
   };
 
   onAddNewKeyValue = () => {
-    const keyValues = this.state.concept.keyValues || [];
-    keyValues.push({ key: "", value: "" });
+    // Use safeKeyValues for consistent array handling
+    const keyValues = [...safeKeyValues(this.state.concept.keyValues), { key: "", value: "" }];
     this.setState({
       concept: { ...this.state.concept, keyValues }
     });
   };
 
   onDeleteKeyValue = index => {
-    const keyValues = this.state.concept.keyValues;
+    // Use safeKeyValues for consistent array handling
+    const keyValues = [...safeKeyValues(this.state.concept.keyValues)];
     keyValues.splice(index, 1);
     this.setState({
       concept: { ...this.state.concept, keyValues }
@@ -424,7 +436,7 @@ class CreateEditConcept extends Component {
       dataTypeComponent = (
         <LocationConcept
           updateConceptKeyValues={this.onKeyValueChange}
-          keyValues={concept.keyValues}
+          keyValues={concept.keyValues || []} /* Ensure keyValues is never undefined */
           error={this.state.error}
           isCreatePage={this.props.isCreatePage}
           inlineConcept={false}
@@ -436,7 +448,7 @@ class CreateEditConcept extends Component {
       dataTypeComponent = (
         <SubjectConcept
           updateKeyValues={this.onKeyValueChange}
-          keyValues={concept.keyValues}
+          keyValues={concept.keyValues || []}
           error={this.state.error}
           isCreatePage={this.props.isCreatePage}
           inlineConcept={false}
@@ -449,7 +461,7 @@ class CreateEditConcept extends Component {
       dataTypeComponent = (
         <EncounterConcept
           updateKeyValues={this.onKeyValueChange}
-          keyValues={concept.keyValues}
+          keyValues={concept.keyValues || []} /* Ensure keyValues is never undefined */
           error={this.state.error}
           isCreatePage={this.props.isCreatePage}
           inlineConcept={false}
@@ -459,7 +471,7 @@ class CreateEditConcept extends Component {
     }
 
     if (concept.dataType === "PhoneNumber") {
-      const verificationKey = find(concept.keyValues, ({ key, value }) => key === "verifyPhoneNumber");
+      const verificationKey = findKeyValue(concept.keyValues, "verifyPhoneNumber");
       if (verificationKey) {
         dataTypeComponent = <PhoneNumberConcept onKeyValueChange={this.onKeyValueChange} checked={verificationKey.value} />;
       } else {
@@ -472,7 +484,7 @@ class CreateEditConcept extends Component {
     }
 
     if (concept.dataType === "ImageV2") {
-      const locationInformationKey = find(concept.keyValues, ({ key, value }) => key === "captureLocationInformation");
+      const locationInformationKey = findKeyValue(concept.keyValues, "captureLocationInformation");
       if (locationInformationKey) {
         dataTypeComponent = <ImageV2Concept onKeyValueChange={this.onKeyValueChange} checked={locationInformationKey.value} />;
       } else {
@@ -509,8 +521,12 @@ class CreateEditConcept extends Component {
                 fullWidth
               />
               {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
-              {!this.state.error.isEmptyName &&
-                (this.state.error.nameError && <FormHelperText error>Same name concept already exist.</FormHelperText>)}
+              {!this.state.error.isEmptyName && this.state.error.nameError && (
+                <FormHelperText error>Same name concept already exist.</FormHelperText>
+              )}
+              {!this.state.error.isEmptyName && this.state.error.nameConflict && (
+                <FormHelperText error>{this.state.error.message}</FormHelperText>
+              )}
             </Grid>
             <Grid item xs={12}>
               {this.props.isCreatePage ? (
@@ -573,7 +589,7 @@ class CreateEditConcept extends Component {
             </Grid>
             <Grid item xs={12}>
               <KeyValues
-                keyValues={concept.keyValues}
+                keyValues={concept.keyValues || []}
                 onKeyValueChange={this.onKeyValueChange}
                 onAddNewKeyValue={this.onAddNewKeyValue}
                 onDeleteKeyValue={this.onDeleteKeyValue}
