@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { reportSideBarOptions } from "./Common";
 import Card from "@material-ui/core/Card";
@@ -100,9 +100,6 @@ async function getStatusResponse() {
   return MetabaseSetupStatus.fromStatusResponse(statusResponse);
 }
 
-// not sure why useState didn't work for maintaining this state
-let intervalId = null;
-
 const SelfServiceReports = () => {
   const classes = useStyles();
 
@@ -110,6 +107,7 @@ const SelfServiceReports = () => {
   const [isBusyCallingCreateQuestionOnly, setIsBusyCallingCreateQuestionOnly] = useState(false);
   const [isBusyCallingSetup, setIsBusyCallingSetup] = useState(false);
   const [isBusyCallingTearDown, setIsBusyCallingTearDown] = useState(false);
+  const intervalRef = useRef();
 
   useEffect(() => {
     updateStatus().then(status => {
@@ -117,6 +115,7 @@ const SelfServiceReports = () => {
         pollSetupStatus();
       }
     });
+    return () => intervalRef && intervalRef.current && clearInterval(intervalRef.current);
   }, []);
 
   async function performAction(url) {
@@ -132,14 +131,14 @@ const SelfServiceReports = () => {
   }
 
   const pollSetupStatus = debounce(async () => {
-    intervalId = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       updateStatus().then(status => {
-        if (!status.isAnyJobInProgress() && intervalId) {
-          clearInterval(intervalId);
+        if (!status.isAnyJobInProgress() && intervalRef.current) {
+          clearInterval(intervalRef.current);
           setIsBusyCallingCreateQuestionOnly(false);
           setIsBusyCallingSetup(false);
           setIsBusyCallingTearDown(false);
-          intervalId = null;
+          intervalRef.current = null;
         }
       });
     }, 5000);
