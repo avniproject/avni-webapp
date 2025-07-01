@@ -1,6 +1,6 @@
 import React from "react";
 import ActivityCard from "../components/ActivityCard";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 import { connect } from "react-redux";
 import { getActivityReport } from "../reducers";
 import { withRouter } from "react-router-dom";

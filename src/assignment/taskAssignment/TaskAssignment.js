@@ -13,7 +13,7 @@ import { fetchTasks } from "./FetchTasks";
 import { includes, isEmpty, map, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { makeStyles } from "@mui/styles";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 import { TaskAssignmentFilter } from "../components/TaskAssignmentFilter";
 import { TaskAssignmentAction } from "../components/TaskAssignmentAction";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";

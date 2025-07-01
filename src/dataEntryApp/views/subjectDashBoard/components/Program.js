@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles, withStyles } from "@mui/styles";
-import { AppBar, Tabs, Tab, Grid } from "@mui/material";
+import { AppBar, Tabs, Tab, GridLegacy as Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 const AntTabs = withStyles({
   indicator: {

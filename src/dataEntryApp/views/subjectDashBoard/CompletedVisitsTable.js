@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { makeStyles } from "@mui/styles";
-import { Box, Grid, IconButton } from "@mui/material";
+import { Box, GridLegacy as Grid, IconButton } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import http from "common/utils/httpClient";
 import { find, isEmpty } from "lodash";

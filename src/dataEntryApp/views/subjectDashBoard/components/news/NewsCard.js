@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Grid, CardActionArea, CardContent, Typography, Card } from "@mui/material";
+import { GridLegacy as Grid, CardActionArea, CardContent, Typography, Card } from "@mui/material";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";
 
 const useStyles = makeStyles(theme => ({

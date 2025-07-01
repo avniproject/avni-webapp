@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { makeStyles } from "@mui/styles";
-import { Grid, Paper, Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
+import { GridLegacy as Grid, Paper, Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";

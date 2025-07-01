@@ -1,6 +1,15 @@
 import React from "react";
 import { withStyles, makeStyles } from "@mui/styles";
-import { Accordion, AccordionDetails, AccordionSummary, Typography, Grid, InputLabel, IconButton, Tooltip } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Typography,
+  GridLegacy as Grid,
+  InputLabel,
+  IconButton,
+  Tooltip
+} from "@mui/material";
 import {
   ExpandMore,
   ExpandLess,

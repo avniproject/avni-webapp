@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { IconButton, Input, MenuItem, Tooltip, Typography, Grid } from "@mui/material";
+import { IconButton, Input, MenuItem, Tooltip, Typography, GridLegacy as Grid } from "@mui/material";
 import { Delete, ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { SelectCardsView } from "./SelectCardsView";

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { LineBreak, withParams } from "../../../common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography, FormControl, Button, Grid } from "@mui/material";
+import { Paper, Typography, FormControl, Button, GridLegacy as Grid } from "@mui/material";
 import { getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
 import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";

@@ -59,7 +59,7 @@ import { activatedAudit, createdAudit, modifiedAudit } from "./components/AuditU
 import ResetPasswordButton from "./components/ResetPasswordButton";
 import { AvniPasswordInput } from "./components/AvniPasswordInput";
 import Chip from "@mui/material/Chip";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";

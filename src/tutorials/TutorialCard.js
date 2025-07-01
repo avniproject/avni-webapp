@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/styles";
-import { Card, CardContent, Typography, CardActionArea, Grid } from "@mui/material";
+import { Card, CardContent, Typography, CardActionArea, GridLegacy as Grid } from "@mui/material";
 import React from "react";
 
 const useStyles = makeStyles({

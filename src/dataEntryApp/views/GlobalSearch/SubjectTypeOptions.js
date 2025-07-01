@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { Grid, Button } from "@mui/material";
+import { GridLegacy as Grid, Button } from "@mui/material";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";
 import { sortBy } from "lodash";
 

@@ -1,6 +1,6 @@
 import { ResponsiveBar } from "@nivo/bar";
 import React from "react";
-import { Grid, Typography, Box } from "@mui/material";
+import { GridLegacy as Grid, Typography, Box } from "@mui/material";
 import _ from "lodash";
 
 const BarGraph = ({ data, title, id }) => {

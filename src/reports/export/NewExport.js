@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/styles";
-import { Typography, Grid, Button, Paper, Box } from "@mui/material";
+import { Typography, GridLegacy as Grid, Button, Paper, Box } from "@mui/material";
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";

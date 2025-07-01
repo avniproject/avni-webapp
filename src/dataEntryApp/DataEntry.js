@@ -26,7 +26,7 @@ import CancelEncounter from "./views/subjectDashBoard/components/CancelEncounter
 import AppBar from "dataEntryApp/components/AppBar";
 import GroupMembershipAddEdit from "./components/GroupMembershipAddEdit";
 import { makeStyles } from "@mui/styles";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
 import { NewsList } from "./views/subjectDashBoard/components/news/NewsList";

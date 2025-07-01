@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import http from "../../common/utils/httpClient";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";

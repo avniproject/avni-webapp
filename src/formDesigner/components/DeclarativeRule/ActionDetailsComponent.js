@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 import MiddleText from "./MiddleText";
 import InputField from "./InputField";
 import { get, includes, isEmpty, map, startCase, zip } from "lodash";

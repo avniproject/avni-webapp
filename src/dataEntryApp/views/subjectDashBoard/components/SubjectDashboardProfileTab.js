@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
-import { Accordion, AccordionDetails, AccordionSummary, Typography, List, Grid, Button, Paper } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Typography, List, GridLegacy as Grid, Button, Paper } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import moment from "moment/moment";
 import Observations from "dataEntryApp/components/Observations";

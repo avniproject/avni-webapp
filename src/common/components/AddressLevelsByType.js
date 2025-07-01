@@ -1,5 +1,5 @@
 import React from "react";
-import { FormControl, FormLabel, Grid } from "@mui/material";
+import { FormControl, FormLabel, GridLegacy as Grid } from "@mui/material";
 import { debounce, deburr, get, isEqual, isFunction, map, noop, sortBy } from "lodash";
 import AsyncSelect from "react-select/async";
 import httpClient from "../utils/httpClient";

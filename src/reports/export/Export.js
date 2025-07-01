@@ -1,5 +1,16 @@
 import { makeStyles } from "@mui/styles";
-import { FormControl, FormLabel, Typography, Grid, Button, Paper, Box, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
+import {
+  FormControl,
+  FormLabel,
+  Typography,
+  GridLegacy as Grid,
+  Button,
+  Paper,
+  Box,
+  FormGroup,
+  FormControlLabel,
+  Checkbox
+} from "@mui/material";
 import React from "react";
 import api from "../api";
 import { connect } from "react-redux";

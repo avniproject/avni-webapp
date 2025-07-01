@@ -1,6 +1,6 @@
 import { head, map, sortBy } from "lodash";
 import { makeStyles } from "@mui/styles";
-import { Grid, Paper, Typography, Card, CardActionArea, CardContent, Button, IconButton } from "@mui/material";
+import { GridLegacy as Grid, Paper, Typography, Card, CardActionArea, CardContent, Button, IconButton } from "@mui/material";
 import { onThreadReply } from "../../../../reducers/CommentReducer";
 import React, { useState } from "react";
 import { Comment, ChevronRight } from "@mui/icons-material";

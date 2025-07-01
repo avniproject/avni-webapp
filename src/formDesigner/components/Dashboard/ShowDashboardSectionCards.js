@@ -1,5 +1,5 @@
 import React from "react";
-import { List, ListItem, ListItemText, Box, Grid } from "@mui/material";
+import { List, ListItem, ListItemText, Box, GridLegacy as Grid } from "@mui/material";
 import { isEmpty, map, orderBy } from "lodash";
 import WebReportCard from "../../../common/model/WebReportCard";
 

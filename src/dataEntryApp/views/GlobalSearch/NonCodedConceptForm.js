@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
 import { TextField, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { DatePicker, DateTimePicker, TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";

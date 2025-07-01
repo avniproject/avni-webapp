@@ -7,7 +7,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { cloneDeep, get } from "lodash";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";

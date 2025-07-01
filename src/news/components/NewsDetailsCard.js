@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Box, Typography, Button, Divider, Grid } from "@mui/material";
+import { Box, Typography, Button, Divider, GridLegacy as Grid } from "@mui/material";
 import { getFormattedDateTime } from "../../adminApp/components/AuditUtil";
 import { Delete, Edit } from "@mui/icons-material";
 import { ActionButton } from "./ActionButton";

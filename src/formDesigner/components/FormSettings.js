@@ -6,7 +6,7 @@ import http from "common/utils/httpClient";
 import FormHelperText from "@mui/material/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 import _ from "lodash";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import { default as UUID } from "uuid";

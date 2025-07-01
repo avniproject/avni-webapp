@@ -7,7 +7,7 @@ import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import FormLabel from "@mui/material/FormLabel";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";

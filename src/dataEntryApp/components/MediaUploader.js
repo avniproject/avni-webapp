@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { get, includes, isArrayLikeObject, isEmpty, lowerCase, omit, startsWith } from "lodash";
 import { makeStyles } from "@mui/styles";
-import { Box, Button, Grid, Typography, FormControl } from "@mui/material";
+import { Box, Button, GridLegacy as Grid, Typography, FormControl } from "@mui/material";
 import http from "../../common/utils/httpClient";
 import { AddAPhoto, VideoCall, Audiotrack, CloudUpload, Close } from "@mui/icons-material";
 import CustomizedBackdrop from "./CustomizedBackdrop";

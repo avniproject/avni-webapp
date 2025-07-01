@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from "react";
 import { Edit } from "@mui/icons-material";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
-import { Box, Button, FormLabel, Grid } from "@mui/material";
+import { Box, Button, FormLabel, GridLegacy as Grid } from "@mui/material";
 import { Title } from "react-admin";
 import _, { get, identity } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";

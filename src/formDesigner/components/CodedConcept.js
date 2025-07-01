@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Checkbox, FormControlLabel, Button, Grid, FormHelperText } from "@mui/material";
+import { Checkbox, FormControlLabel, Button, GridLegacy as Grid, FormHelperText } from "@mui/material";
 import { Delete, ArrowDropUp, ArrowDropDown } from "@mui/icons-material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import PropTypes from "prop-types";

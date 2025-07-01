@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Grid, Button, Modal, Typography } from "@mui/material";
+import { GridLegacy as Grid, Button, Modal, Typography } from "@mui/material";
 import Select from "react-select";
 import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 

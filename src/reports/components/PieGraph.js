@@ -1,6 +1,6 @@
 import { ResponsivePie } from "@nivo/pie";
 import React from "react";
-import { Grid, Typography, Box } from "@mui/material";
+import { GridLegacy as Grid, Typography, Box } from "@mui/material";
 
 const PieGraph = ({ data, title, id }) => {
   return (

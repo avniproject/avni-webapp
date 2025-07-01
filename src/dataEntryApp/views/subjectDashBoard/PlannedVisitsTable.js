@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { makeStyles } from "@mui/styles";
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, GridLegacy as Grid, Typography } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../common/components/utils";

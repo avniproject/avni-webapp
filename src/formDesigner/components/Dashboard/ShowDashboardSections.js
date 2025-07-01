@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Tooltip, Typography, Grid } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Tooltip, Typography, GridLegacy as Grid } from "@mui/material";
 import { ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty, map, orderBy } from "lodash";
 import { withStyles, makeStyles } from "@mui/styles";

@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, Button, Grid, List, ListItem, ListItemText } from "@mui/material";
+import { Paper, Button, GridLegacy as Grid, List, ListItem, ListItemText } from "@mui/material";
 import moment from "moment/moment";
 import { defaultTo, isEmpty, isEqual } from "lodash";
 import { useTranslation } from "react-i18next";

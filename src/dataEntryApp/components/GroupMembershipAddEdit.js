@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Breadcrumbs from "./Breadcrumbs";
 import { makeStyles } from "@mui/styles";
-import { Box, Button, Grid, Paper, Typography, RadioGroup, FormControlLabel, Radio, FormLabel } from "@mui/material";
+import { Box, Button, GridLegacy as Grid, Paper, Typography, RadioGroup, FormControlLabel, Radio, FormLabel } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import { withParams } from "../../common/components/utils";

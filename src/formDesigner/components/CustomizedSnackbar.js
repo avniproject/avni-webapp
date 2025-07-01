@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { CheckCircle, Error, Close, Warning } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
 import { IconButton, Snackbar, SnackbarContent } from "@mui/material";
-import green from "@mui/material/colors/green";
+import { green } from "@mui/material/colors";
 
 const variantIcon = {
   success: CheckCircle,

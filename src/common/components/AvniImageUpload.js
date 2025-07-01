@@ -1,6 +1,6 @@
 import React from "react";
 import { isEmpty } from "lodash";
-import { Dialog, DialogContent, Grid, IconButton, Typography, Snackbar, FormControl } from "@mui/material";
+import { Dialog, DialogContent, GridLegacy as Grid, IconButton, Typography, Snackbar, FormControl } from "@mui/material";
 import { ToolTipContainer } from "./ToolTipContainer";
 import { AddAPhoto, Close } from "@mui/icons-material";
 import MediaService from "../../adminApp/service/MediaService";

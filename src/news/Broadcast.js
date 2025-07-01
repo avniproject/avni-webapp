@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import AppBar from "../common/components/AppBar";
 import { HomePageCard } from "../rootApp/views/HomePageCard";
 import { WhatsApp } from "@mui/icons-material";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 import { Route, withRouter } from "react-router-dom";
 import News from "./News";
 import WhatsAppHome from "./whatsapp/WhatsAppHome";

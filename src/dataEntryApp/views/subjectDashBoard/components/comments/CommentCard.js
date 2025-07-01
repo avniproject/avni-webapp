@@ -1,4 +1,4 @@
-import { Grid, Typography, Chip, IconButton, Menu, MenuItem, Fade } from "@mui/material";
+import { GridLegacy as Grid, Typography, Chip, IconButton, Menu, MenuItem, Fade } from "@mui/material";
 import { AccountCircle, MoreVert } from "@mui/icons-material";
 import React from "react";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";

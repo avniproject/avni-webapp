@@ -4,7 +4,7 @@ import {
   Box,
   Button,
   FormControl,
-  Grid,
+  GridLegacy as Grid,
   InputLabel,
   Paper,
   Table,

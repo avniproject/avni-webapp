@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { TextField, Typography, Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
+import { TextField, Typography, GridLegacy as Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { find } from "lodash";
 import AddressLevelsByType from "../../../common/components/AddressLevelsByType";

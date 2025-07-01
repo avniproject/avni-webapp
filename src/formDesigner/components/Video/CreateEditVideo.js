@@ -10,7 +10,7 @@ import { Redirect } from "react-router-dom";
 import http from "../../../common/utils/httpClient";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { createServerError, getErrorByKey } from "../../common/ErrorUtil";
 

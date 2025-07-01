@@ -1,7 +1,7 @@
 import React from "react";
 import SubjectCardView from "./SubjectCardView";
 import { makeStyles } from "@mui/styles";
-import { CardActions, Button, Typography, DialogContent, Grid } from "@mui/material";
+import { CardActions, Button, Typography, DialogContent, GridLegacy as Grid } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import Modal from "../views/subjectDashBoard/components/CommonModal";

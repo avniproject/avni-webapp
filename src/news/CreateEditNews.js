@@ -1,7 +1,7 @@
 import React from "react";
 import { convertToRaw } from "draft-js";
 import { makeStyles } from "@mui/styles";
-import { Dialog, Box, DialogContent, Grid, Typography, TextField } from "@mui/material";
+import { Dialog, Box, DialogContent, GridLegacy as Grid, Typography, TextField } from "@mui/material";
 import RichTextEditor from "./components/RichTextEditor";
 import { ActionButton } from "./components/ActionButton";
 import { AvniImageUpload } from "../common/components/AvniImageUpload";

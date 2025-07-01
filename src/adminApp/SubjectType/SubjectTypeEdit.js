@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect, withRouter } from "react-router-dom";
-import { Box, Button, FormLabel, Grid } from "@mui/material";
+import { Box, Button, FormLabel, GridLegacy as Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { Visibility, Delete } from "@mui/icons-material";
 import { subjectTypeInitialState } from "../Constant";

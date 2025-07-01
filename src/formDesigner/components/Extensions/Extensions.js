@@ -5,7 +5,7 @@ import { Title } from "react-admin";
 import { LabelFileName } from "./LabelFileName";
 import { checkForErrors, ExtensionReducer, extensionScopeTypes } from "./ExtensionReducer";
 import { get, isEmpty, map } from "lodash";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import http from "common/utils/httpClient";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";

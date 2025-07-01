@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, GridLegacy as Grid, Typography } from "@mui/material";
 import { map } from "lodash";
 
 const ActivityCard = ({ title, total, data }) => {

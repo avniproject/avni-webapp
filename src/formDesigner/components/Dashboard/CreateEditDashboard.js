@@ -3,7 +3,7 @@ import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
 import { isEmpty, isNil, reject } from "lodash";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AvniTextField } from "../../../common/components/AvniTextField";

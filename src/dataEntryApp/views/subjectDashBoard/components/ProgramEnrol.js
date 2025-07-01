@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography, Grid } from "@mui/material";
+import { Paper, Typography, GridLegacy as Grid } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   onLoad,

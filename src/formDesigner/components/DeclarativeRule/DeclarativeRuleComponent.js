@@ -4,7 +4,7 @@ import ActionComponent from "./ActionComponent";
 import ConditionComponent from "./ConditionComponent";
 import { AddCircle, Delete } from "@mui/icons-material";
 import IconButton from "../IconButton";
-import { Box, Grid, Typography, Button } from "@mui/material";
+import { Box, GridLegacy as Grid, Typography, Button } from "@mui/material";
 import Colors from "../../../dataEntryApp/Colors";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 

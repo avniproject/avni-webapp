@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { TextField, Box, Button, IconButton, Grid, FormHelperText } from "@mui/material";
+import { TextField, Box, Button, IconButton, GridLegacy as Grid, FormHelperText } from "@mui/material";
 import { map } from "lodash";
 import { Delete } from "@mui/icons-material";
 import { ToolTip } from "../../common/components/ToolTip";

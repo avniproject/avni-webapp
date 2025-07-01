@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 import { map, startCase } from "lodash";
 import Select from "react-select";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";

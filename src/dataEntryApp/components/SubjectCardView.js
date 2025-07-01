@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Card, CardContent, Grid, Typography } from "@mui/material";
+import { Card, CardContent, GridLegacy as Grid, Typography } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import SubjectProfilePicture from "./SubjectProfilePicture";

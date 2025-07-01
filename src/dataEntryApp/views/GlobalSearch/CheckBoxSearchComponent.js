@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { FormControl, FormControlLabel, Checkbox, Grid } from "@mui/material";
+import { FormControl, FormControlLabel, Checkbox, GridLegacy as Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({

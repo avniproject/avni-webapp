@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import FormLabel from "@mui/material/FormLabel";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";

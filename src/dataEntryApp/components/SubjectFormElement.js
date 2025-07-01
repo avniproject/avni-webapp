@@ -1,4 +1,4 @@
-import { Grid, FormHelperText } from "@mui/material";
+import { GridLegacy as Grid, FormHelperText } from "@mui/material";
 import AsyncSelect from "react-select/async";
 import React from "react";
 import { useTranslation } from "react-i18next";

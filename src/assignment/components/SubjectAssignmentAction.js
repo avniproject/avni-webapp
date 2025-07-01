@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Grid, Button, Modal, Typography, RadioGroup } from "@mui/material";
+import { GridLegacy as Grid, Button, Modal, Typography, RadioGroup } from "@mui/material";
 import Select from "react-select";
 
 const useStyles = makeStyles(theme => ({

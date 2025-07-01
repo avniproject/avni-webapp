@@ -1,7 +1,7 @@
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { map, orderBy, isNil } from "lodash";
 import { withStyles } from "@mui/styles";
-import { Grid, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
+import { GridLegacy as Grid, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import React from "react";
 import { DragHandle } from "@mui/icons-material";
 

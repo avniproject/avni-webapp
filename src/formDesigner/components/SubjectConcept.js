@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, MenuItem, FormHelperText } from "@mui/material";
+import { GridLegacy as Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { get } from "lodash";
 

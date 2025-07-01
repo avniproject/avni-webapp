@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Grid } from "@mui/material";
+import { Button, GridLegacy as Grid } from "@mui/material";
 import Select from "react-select";
 import _, { map } from "lodash";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";

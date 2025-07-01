@@ -1,6 +1,6 @@
 import React from "react";
 import { PlatformDocumentation } from "./PlatformDocumentation";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 
 export const DocumentationContainer = ({ filename, ...props }) => {
   return (

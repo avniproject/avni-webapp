@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";

@@ -1,7 +1,7 @@
 import React from "react";
 import { map, filter, get } from "lodash";
 import { makeStyles } from "@mui/styles";
-import { Button, Grid } from "@mui/material";
+import { Button, GridLegacy as Grid } from "@mui/material";
 import { isDevEnv } from "../../../../../common/constants";
 import { extensionScopeTypes } from "../../../../../formDesigner/components/Extensions/ExtensionReducer";
 import commonApi from "../../../../../common/service";

@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { Typography, Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
+import { Typography, GridLegacy as Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
 

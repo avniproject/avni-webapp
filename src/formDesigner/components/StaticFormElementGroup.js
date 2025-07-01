@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Grid, Typography, FormControl, Input, Tooltip, AccordionDetails } from "@mui/material";
+import { GridLegacy as Grid, Typography, FormControl, Input, Tooltip, AccordionDetails } from "@mui/material";
 import { ExpandMore, ExpandLess, Group } from "@mui/icons-material";
 import { ToolTip } from "../../common/components/ToolTip";
 import { StyledAccordion, StyledAccordionSummary } from "./FormElementGroup";

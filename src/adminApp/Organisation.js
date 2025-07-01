@@ -23,7 +23,7 @@ import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
-import { Box, Grid, FormHelperText, MenuItem } from "@mui/material";
+import { Box, GridLegacy as Grid, FormHelperText, MenuItem } from "@mui/material";
 import { AvniTextField } from "../common/components/AvniTextField";
 import { SaveComponent } from "../common/components/SaveComponent";
 import { AvniSelect } from "../common/components/AvniSelect";

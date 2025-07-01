@@ -1,4 +1,4 @@
-import { Grid, Input } from "@mui/material";
+import { GridLegacy as Grid, Input } from "@mui/material";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { get } from "lodash";
 import React from "react";

@@ -4,7 +4,7 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  Grid,
+  GridLegacy as Grid,
   TextField,
   Paper,
   InputAdornment,

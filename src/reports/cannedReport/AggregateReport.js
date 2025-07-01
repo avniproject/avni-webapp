@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Button } from "@mui/material";
+import { GridLegacy as Grid, Button } from "@mui/material";
 import { chain, find, get, isEmpty, map } from "lodash";
 import { connect } from "react-redux";
 import { getOperationalModules } from "../reducers";

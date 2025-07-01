@@ -6,7 +6,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Typography,
-  Grid,
+  GridLegacy as Grid,
   Checkbox,
   FormControl,
   Input,

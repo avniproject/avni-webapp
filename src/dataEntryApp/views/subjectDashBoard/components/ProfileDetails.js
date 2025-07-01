@@ -6,7 +6,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Grid,
+  GridLegacy as Grid,
   Typography,
   DialogContent,
   FormControl,

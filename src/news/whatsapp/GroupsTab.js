@@ -25,7 +25,6 @@ const GroupsTab = ({ groups, columns }) => {
         search: globalFilter || ""
       };
       const result = await groups(query);
-      console.log("API Response:", result); // Debugging
       setData(result.data || []);
       setTotalRecords(result.totalCount || 0);
       setIsLoading(false);

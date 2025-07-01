@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { makeStyles } from "@mui/styles";
-import { Box, Grid, Button, Snackbar, SnackbarContent, Typography } from "@mui/material";
+import { Box, GridLegacy as Grid, Button, Snackbar, SnackbarContent, Typography } from "@mui/material";
 import { Title } from "react-admin";
 import { DeleteData } from "./components/DeleteData";
 import { OrgSettings } from "./components/OrgSettings";

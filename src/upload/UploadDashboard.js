@@ -4,7 +4,7 @@ import { withRouter } from "react-router-dom";
 
 import _, { concat, get, isEmpty, isNil } from "lodash";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloudDownload from "@mui/icons-material/CloudDownload";
 import Button from "@mui/material/Button";

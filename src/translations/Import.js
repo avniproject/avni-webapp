@@ -3,7 +3,7 @@ import FileUpload from "../common/components/FileUpload";
 import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
 import { filter, find, isEmpty, isString, size } from "lodash";
-import { Box, Grid } from "@mui/material";
+import { Box, GridLegacy as Grid } from "@mui/material";
 import UserInfo from "../common/model/UserInfo";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";

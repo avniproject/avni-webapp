@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 import ConceptSearch from "./ConceptSearch";
 import Select from "react-select";
 import { ConceptScope } from "rules-config";

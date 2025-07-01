@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { GridLegacy as Grid, Typography } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import React from "react";
 import http from "common/utils/httpClient";

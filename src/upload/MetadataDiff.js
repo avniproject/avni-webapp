@@ -5,7 +5,7 @@ import {
   AccordionSummary,
   CircularProgress,
   FormControl,
-  Grid,
+  GridLegacy as Grid,
   InputLabel,
   MenuItem,
   Paper,

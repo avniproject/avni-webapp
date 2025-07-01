@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, Grid } from "@mui/material";
+import { Paper, GridLegacy as Grid } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "../../../../common/components/utils";

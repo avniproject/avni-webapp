@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Grid, Button, MenuItem, IconButton } from "@mui/material";
+import { Box, GridLegacy as Grid, Button, MenuItem, IconButton } from "@mui/material";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { Title } from "react-admin";
 import { AvniTextField } from "../common/components/AvniTextField";

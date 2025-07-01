@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import FormLabel from "@mui/material/FormLabel";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { findProgramEncounterCancellationForm, findProgramEncounterForm } from "../domain/formMapping";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";

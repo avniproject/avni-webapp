@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/styles";
-import { Grid, FormControlLabel, Checkbox, Button, Modal, TextField } from "@mui/material";
+import { GridLegacy as Grid, FormControlLabel, Checkbox, Button, Modal, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { get } from "lodash";
 import http from "common/utils/httpClient";

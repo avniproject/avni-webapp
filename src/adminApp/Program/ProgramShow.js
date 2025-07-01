@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import FormLabel from "@mui/material/FormLabel";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { get, identity } from "lodash";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";

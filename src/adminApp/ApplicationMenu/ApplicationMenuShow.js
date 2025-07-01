@@ -4,7 +4,7 @@ import { Redirect } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import _ from "lodash";
 import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import RuleDisplay from "../components/RuleDisplay";

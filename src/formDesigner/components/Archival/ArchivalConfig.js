@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from "react";
 import http from "../../../common/utils/httpClient";
 import { Title } from "react-admin";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Box, Input } from "@mui/material";
 import Button from "@mui/material/Button";

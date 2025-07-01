@@ -1,6 +1,18 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Link, Paper, Box, Grid, Typography } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Link,
+  Paper,
+  Box,
+  GridLegacy as Grid,
+  Typography
+} from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
 import SideImage from "formDesigner/styles/images/background.jpg";
 

@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography, Grid, Button } from "@mui/material";
+import { Paper, Typography, GridLegacy as Grid, Button } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getEncounter, getProgramEncounter } from "../../../reducers/viewVisitReducer";
 import { withRouter, useHistory } from "react-router-dom";

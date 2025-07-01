@@ -1,7 +1,7 @@
 import React from "react";
 import Observations from "../../../components/Observations";
 import { makeStyles } from "@mui/styles";
-import { CircularProgress, AccordionSummary, Typography, AccordionDetails, Accordion, Grid } from "@mui/material";
+import { CircularProgress, AccordionSummary, Typography, AccordionDetails, Accordion, GridLegacy as Grid } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";

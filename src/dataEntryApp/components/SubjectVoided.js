@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, Grid, Button, Typography } from "@mui/material";
+import { Paper, GridLegacy as Grid, Button, Typography } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   root: {

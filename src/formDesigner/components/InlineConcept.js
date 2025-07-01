@@ -1,6 +1,6 @@
 import React from "react";
 import NumericConcept from "./NumericConcept";
-import { Button, FormControl, Input, Grid, MenuItem, Box } from "@mui/material";
+import { Button, FormControl, Input, GridLegacy as Grid, MenuItem, Box } from "@mui/material";
 import { CodedConceptAnswer } from "./CodedConcept";
 import { inlineConceptDataType } from "../common/constants";
 import { BackButton } from "./FormElementDetails";

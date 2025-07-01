@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import Select from "react-select";
-import { Button, Grid, Typography, IconButton } from "@mui/material";
+import { Button, GridLegacy as Grid, Typography, IconButton } from "@mui/material";
 import api from "../api";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";

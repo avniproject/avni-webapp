@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getNews, selectNewsList } from "../../../../reducers/NewsReducer";
 import { map } from "lodash";
 import { makeStyles } from "@mui/styles";
-import { Box, Grid, Paper, Divider, Typography } from "@mui/material";
+import { Box, GridLegacy as Grid, Paper, Divider, Typography } from "@mui/material";
 import { NewsCard } from "./NewsCard";
 
 const useStyles = makeStyles(theme => ({

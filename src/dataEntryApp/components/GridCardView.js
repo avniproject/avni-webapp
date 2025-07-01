@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Grid, Typography } from "@mui/material";
+import { GridLegacy as Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(() => ({

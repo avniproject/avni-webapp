@@ -2,7 +2,7 @@ import React from "react";
 import LHSComponent from "./LHSComponent";
 import RHSComponent from "./RHSComponent";
 import OperatorComponent from "./OperatorComponent";
-import { Grid, Box, Button } from "@mui/material";
+import { GridLegacy as Grid, Box, Button } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import Colors from "../../../dataEntryApp/Colors";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";

@@ -1,7 +1,7 @@
 import React from "react";
 import RuleComponent from "./RuleComponent";
 import { isEmpty, map, toUpper } from "lodash";
-import { Box, Grid, Button, Chip } from "@mui/material";
+import { Box, GridLegacy as Grid, Button, Chip } from "@mui/material";
 import { AddCircle, Delete } from "@mui/icons-material";
 import IconButton from "../IconButton";
 import CompoundRuleConjunctionComponent from "./CompoundRuleConjunctionComponent";

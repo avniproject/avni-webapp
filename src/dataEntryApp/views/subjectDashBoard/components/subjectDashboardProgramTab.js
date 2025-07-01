@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography, Grid } from "@mui/material";
+import { Paper, Typography, GridLegacy as Grid } from "@mui/material";
 import ProgramDetails from "./subjectDashboardProgramDetails";
 import Program from "./Program";
 import { useTranslation } from "react-i18next";

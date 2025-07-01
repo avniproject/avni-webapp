@@ -5,7 +5,7 @@ import { Concept } from "openchs-models";
 import { useSelector } from "react-redux";
 import api from "../api";
 import { makeStyles } from "@mui/styles";
-import { FormLabel, FormGroup, FormHelperText, Grid, Link } from "@mui/material";
+import { FormLabel, FormGroup, FormHelperText, GridLegacy as Grid, Link } from "@mui/material";
 import { mapGroupMembers, mapIndividual } from "../../common/subjectModelMapper";
 import { subjectService } from "../services/SubjectService";
 import Checkbox from "./Checkbox";

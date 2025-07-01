@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import _, { cloneDeep, isEmpty, replace, split } from "lodash";
 import http from "common/utils/httpClient";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import FormElementGroup from "../components/FormElementGroup";
 import Button from "@mui/material/Button";
 import Tabs from "@mui/material/Tabs";

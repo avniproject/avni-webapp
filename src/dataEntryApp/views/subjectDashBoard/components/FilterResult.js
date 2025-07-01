@@ -1,7 +1,7 @@
 import React from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { LineBreak } from "common/components/utils";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Modal from "../components/CommonModal";
 import DialogContent from "@mui/material/DialogContent";

@@ -1,7 +1,7 @@
 import React from "react";
 import { useDeclarativeRuleDispatch, useDeclarativeRuleState } from "./DeclarativeRuleContext";
 import { map, startCase, get } from "lodash";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 import Select from "react-select";
 import ActionDetailsComponent from "./ActionDetailsComponent";
 

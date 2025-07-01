@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Grid, FormControl, FormHelperText } from "@mui/material";
+import { TextField, GridLegacy as Grid, FormControl, FormHelperText } from "@mui/material";
 import PropTypes from "prop-types";
 
 export default function NumericConcept(props) {

@@ -11,7 +11,7 @@ import {
   InputLabel,
   Paper,
   Select,
-  Grid,
+  GridLegacy as Grid,
   MenuItem,
   TextField,
   Radio,

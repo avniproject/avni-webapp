@@ -7,7 +7,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import Box from "@mui/material/Box";
 import { map } from "lodash";
 import { GroupCard } from "./components/GroupCard";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import FormControl from "@mui/material/FormControl";

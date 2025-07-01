@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Typography, Tooltip, Grid, InputLabel, AccordionSummary } from "@mui/material";
+import { Accordion, Typography, Tooltip, GridLegacy as Grid, InputLabel, AccordionSummary } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { ToolTip } from "../common/components/ToolTip";
 import { dataTypeIcons } from "./components/FormElement";

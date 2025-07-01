@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import React from "react";
 import { JsonEditor } from "../components/JsonEditor";
 import _ from "lodash";

@@ -3,7 +3,7 @@ import {
   AccordionSummary,
   Typography,
   AccordionDetails,
-  Grid,
+  GridLegacy as Grid,
   Button,
   Dialog,
   DialogTitle,

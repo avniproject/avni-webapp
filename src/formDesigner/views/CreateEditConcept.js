@@ -18,7 +18,7 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
-import Grid from "@mui/material/Grid";
+import { GridLegacy as Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import { Redirect } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
