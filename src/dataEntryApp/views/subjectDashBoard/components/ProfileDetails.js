@@ -6,7 +6,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  GridLegacy as Grid,
+  Grid,
   Typography,
   DialogContent,
   FormControl,
@@ -202,14 +202,13 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
         }}
       >
         <Grid
-          item
           container
-          xs={4}
           sx={{
             alignItems: "center"
           }}
+          size={4}
         >
-          <Grid item>
+          <Grid>
             <SubjectProfilePicture
               allowEnlargementOnClick={false}
               firstName={profileDetails.firstName}
@@ -220,7 +219,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
               style={{ margin: "0px" }}
             />
           </Grid>
-          <Grid item>
+          <Grid>
             <Table aria-label="caption table" className={classes.tableContainer}>
               <TableHead>
                 <TableRow className={classes.tableHeader}>
@@ -245,7 +244,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             </Table>
           </Grid>
         </Grid>
-        <Grid container item xs={8} align="right" direction={"column"}>
+        <Grid container align="right" direction={"column"} size={8}>
           <ExtensionOption
             subjectUUIDs={profileDetails.uuid}
             typeUUID={profileDetails.subjectType.uuid}
@@ -253,7 +252,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             scopeType={extensionScopeTypes.subjectDashboard}
             configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
           />
-          <Grid item>
+          <Grid>
             {enableComment && (
               <Fab
                 id={"comments"}
@@ -268,7 +267,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
               </Fab>
             )}
           </Grid>
-          <Grid item>
+          <Grid>
             {allowEnrolment ? (
               <div>
                 <Modal

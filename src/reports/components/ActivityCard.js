@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, GridLegacy as Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { map } from "lodash";
 
 const ActivityCard = ({ title, total, data }) => {
@@ -21,18 +21,17 @@ const ActivityCard = ({ title, total, data }) => {
           justifyContent: "center"
         }}
       >
-        <Grid item>
+        <Grid>
           <Typography sx={{ mb: 1, textAlign: "center" }} variant="h5">
             {title}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography sx={{ mb: 1, textAlign: "center" }} variant="h5">
             {total}
           </Typography>
         </Grid>
         <Grid
-          item
           container
           direction={"row"}
           spacing={1}
@@ -51,13 +50,13 @@ const ActivityCard = ({ title, total, data }) => {
                 p: 2
               }}
             >
-              <Grid item container direction={"column"} key={index} xs wrap={"nowrap"} style={{ minWidth: "10vh" }}>
-                <Grid item>
+              <Grid container direction={"column"} key={index} wrap={"nowrap"} style={{ minWidth: "10vh" }} size="grow">
+                <Grid>
                   <Typography sx={{ mb: 1, textAlign: "center" }} variant="subtitle1">
                     {indicator}
                   </Typography>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <Typography sx={{ mb: 1, textAlign: "center" }} variant="subtitle1">
                     {count}
                   </Typography>

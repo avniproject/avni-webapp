@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, CardActionArea, CardContent, Typography, Card } from "@mui/material";
+import { Grid, CardActionArea, CardContent, Typography, Card } from "@mui/material";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";
 
 const useStyles = makeStyles(theme => ({
@@ -45,14 +45,14 @@ export const NewsCard = ({ signedHeroImage, title, publishedDate, id }) => {
               alignItems: "center"
             }}
           >
-            <Grid item>{renderImage()}</Grid>
-            <Grid item container direction={"column"} xs={8}>
-              <Grid item>
+            <Grid>{renderImage()}</Grid>
+            <Grid container direction={"column"} size={8}>
+              <Grid>
                 <Typography variant="h5" sx={{ mb: 1 }}>
                   {title}
                 </Typography>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Typography sx={{ opacity: 0.7, mb: 1 }} variant="body2">
                   {getFormattedDateTime(publishedDate)}
                 </Typography>

@@ -5,7 +5,7 @@ import { find, isEmpty } from "lodash";
 import DropDown from "../common/components/DropDown";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { GridLegacy as Grid, Button, Box, Checkbox, FormControlLabel } from "@mui/material";
+import { Grid, Button, Box, Checkbox, FormControlLabel } from "@mui/material";
 import { getDashboardData, getOrgConfig } from "./reducers/onLoadReducer";
 import { connect } from "react-redux";
 import { getLocales } from "../common/utils";

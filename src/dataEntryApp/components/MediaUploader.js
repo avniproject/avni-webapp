@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { get, includes, isArrayLikeObject, isEmpty, lowerCase, omit, startsWith } from "lodash";
 import { makeStyles } from "@mui/styles";
-import { Box, Button, GridLegacy as Grid, Typography, FormControl } from "@mui/material";
+import { Box, Button, Grid, Typography, FormControl } from "@mui/material";
 import http from "../../common/utils/httpClient";
 import { AddAPhoto, VideoCall, Audiotrack, CloudUpload, Close } from "@mui/icons-material";
 import CustomizedBackdrop from "./CustomizedBackdrop";
@@ -276,12 +276,12 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
             alignItems: "center"
           }}
         >
-          <Grid item>
+          <Grid>
             <Typography variant="body1" className={classes.labelStyle}>
               {label}
             </Typography>
           </Grid>
-          <Grid item>
+          <Grid>
             <Button variant="outlined" color="primary" component="label">
               <Icon color="primary" className={classes.iconStyle} />
               {`Upload ${mediaType}`}
@@ -308,11 +308,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
         }}
       >
         {Object.keys(preview).map(fileName => {
-          return (
-            <Grid item key={fileName}>
-              {preview[fileName] ? renderMedia(fileName) : null}
-            </Grid>
-          );
+          return <Grid key={fileName}>{preview[fileName] ? renderMedia(fileName) : null}</Grid>;
         })}
       </Grid>
       {openImage && previewImage()}

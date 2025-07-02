@@ -2,7 +2,7 @@ import React from "react";
 import LHSComponent from "./LHSComponent";
 import RHSComponent from "./RHSComponent";
 import OperatorComponent from "./OperatorComponent";
-import { GridLegacy as Grid, Box, Button } from "@mui/material";
+import { Grid, Box, Button } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import Colors from "../../../dataEntryApp/Colors";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
@@ -24,14 +24,13 @@ const RuleComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, 
       }}
     >
       <Grid
-        item
         container
         spacing={1}
         direction={"row"}
-        xs={12}
         sx={{
           alignItems: "center"
         }}
+        size={12}
       >
         <MiddleText text={"The value of"} />
         <LHSComponent rule={rule} ruleIndex={ruleIndex} conditionIndex={conditionIndex} declarativeRuleIndex={declarativeRuleIndex} />

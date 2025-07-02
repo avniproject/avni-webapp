@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, Button, Modal, Typography } from "@mui/material";
+import { Grid, Button, Modal, Typography } from "@mui/material";
 import Select from "react-select";
 import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
@@ -19,12 +19,11 @@ const SelectAction = function({ dispatch, label, options, assignmentKeyName, isM
 
   return (
     <Grid
-      item
       spacing={3}
-      xs={12}
       sx={{
         alignItems: "center"
       }}
+      size={12}
     >
       <Typography variant="body1">{label}</Typography>
       <Select
@@ -73,13 +72,13 @@ export const TaskAssignmentAction = ({
           assignmentKeyName={statusAssignmentKeyName}
           assignmentCriteria={assignmentCriteria}
         />
-        <Grid item container spacing={3}>
-          <Grid item>
+        <Grid container spacing={3}>
+          <Grid>
             <Button variant="outlined" color="secondary" onClick={onClose}>
               {"Cancel"}
             </Button>
           </Grid>
-          <Grid item>
+          <Grid>
             <Button variant="contained" color="primary" onClick={onDone}>
               {"Done"}
             </Button>

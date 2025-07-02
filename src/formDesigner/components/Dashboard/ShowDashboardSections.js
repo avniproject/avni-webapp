@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Tooltip, Typography, GridLegacy as Grid } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Tooltip, Typography, Grid } from "@mui/material";
 import { ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty, map, orderBy } from "lodash";
 import { withStyles, makeStyles } from "@mui/styles";
@@ -105,22 +105,35 @@ const ShowDashboardSections = ({ sections, history }) => {
                   <Grid container direction="row">
                     <Grid
                       container
-                      item
-                      sm={12}
                       sx={{
                         alignItems: "center"
                       }}
+                      size={{
+                        sm: 12
+                      }}
                     >
-                      <Grid item sm={1}>
+                      <Grid
+                        size={{
+                          sm: 1
+                        }}
+                      >
                         <Tooltip title="Grouped Questions">
                           <List style={{ marginLeft: 12, marginRight: 4 }} />
                         </Tooltip>
                         {expanded === "panel" + index ? <ExpandLess className={classes.icon} /> : <ExpandMore className={classes.icon} />}
                       </Grid>
-                      <Grid item sm={5}>
+                      <Grid
+                        size={{
+                          sm: 5
+                        }}
+                      >
                         <Typography className={classes.heading}>{section.name}</Typography>
                       </Grid>
-                      <Grid item sm={3}>
+                      <Grid
+                        size={{
+                          sm: 3
+                        }}
+                      >
                         <Typography className={classes.questionCount}>
                           {WebDashboardSection.getReportCards(section).length} cards
                         </Typography>
@@ -130,13 +143,13 @@ const ShowDashboardSections = ({ sections, history }) => {
                 </StyledAccordionSummary>
                 <AccordionDetails>
                   <Grid container>
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <ShowLabelValue label="Description" value={section.description} />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <ShowLabelValue label="View Type" value={section.viewType} />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <ShowDashboardSectionCards section={section} cards={WebDashboardSection.getReportCards(section)} history={history} />
                     </Grid>
                   </Grid>

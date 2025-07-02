@@ -16,7 +16,7 @@ export const ValidFormat = ({
 }) => {
   return (
     <Grid container direction={"row"} spacing={5}>
-      <Grid item>
+      <Grid>
         <AvniFormLabel label={regexLabel} toolTipKey={regexToolTipKey} />
         <Input
           id={regexID}
@@ -24,7 +24,7 @@ export const ValidFormat = ({
           onChange={event => dispatch({ type: regexID, payload: event.target.value })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <AvniFormLabel label={descKeyLabel} toolTipKey={descToolTipKey} />
         <Input
           id={descID}

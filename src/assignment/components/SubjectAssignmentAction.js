@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, Button, Modal, Typography, RadioGroup } from "@mui/material";
+import { Grid, Button, Modal, Typography, RadioGroup } from "@mui/material";
 import Select from "react-select";
 
 const useStyles = makeStyles(theme => ({
@@ -17,7 +17,7 @@ const SelectAction = function({ dispatch, label, options, assignmentKeyName, isM
   const onActionChange = (key, value) => dispatch({ type: "setAction", payload: { key, value } });
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Typography variant="body1">{label}</Typography>
       <Select
         isDisabled={options.length === 0}
@@ -62,8 +62,8 @@ export const SubjectAssignmentAction = ({
     >
       <Grid container direction={"column"} spacing={3} className={classes.paper} style={{ top: "25%", left: "30%" }}>
         <Typography variant={"h6"}>{"Bulk action"}</Typography>
-        <Grid item container spacing={3}>
-          <Grid item>
+        <Grid container spacing={3}>
+          <Grid>
             <RadioGroup
               aria-label="Bulk Action for user"
               name={actionAssignmentKeyName}
@@ -89,13 +89,13 @@ export const SubjectAssignmentAction = ({
           assignmentCriteria={assignmentCriteria}
         />
 
-        <Grid item container spacing={3}>
-          <Grid item>
+        <Grid container spacing={3}>
+          <Grid>
             <Button variant="outlined" color="secondary" onClick={onClose}>
               {"Cancel"}
             </Button>
           </Grid>
-          <Grid item>
+          <Grid>
             <Button variant="contained" color="primary" onClick={onDone} disabled={checkValues()}>
               {"Done"}
             </Button>

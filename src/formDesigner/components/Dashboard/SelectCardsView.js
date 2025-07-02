@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, GridLegacy as Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import Select from "react-select";
 import _, { map } from "lodash";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
@@ -28,7 +28,7 @@ export const SelectCardsView = ({ dashboardSection, addCards }) => {
   return (
     <div>
       <Grid container spacing={2}>
-        <Grid item xs={10} style={{ zIndex: 2 }}>
+        <Grid style={{ zIndex: 2 }} size={10}>
           <Select
             name="addCard"
             ref={cardSelectRef}
@@ -44,7 +44,7 @@ export const SelectCardsView = ({ dashboardSection, addCards }) => {
             })}
           />
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <Button variant="contained" color="primary" onClick={addCardsToDashboard} disabled={cardsToBeAdded.length === 0} fullWidth={true}>
             Add
           </Button>

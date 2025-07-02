@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, Typography, FormControl, Input, Tooltip, AccordionDetails } from "@mui/material";
+import { Grid, Typography, FormControl, Input, Tooltip, AccordionDetails } from "@mui/material";
 import { ExpandMore, ExpandLess, Group } from "@mui/icons-material";
 import { ToolTip } from "../../common/components/ToolTip";
 import { StyledAccordion, StyledAccordionSummary } from "./FormElementGroup";
@@ -36,7 +36,7 @@ const StaticFormElementGroup = ({ name, formElements }) => {
   };
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <StyledAccordion
         TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
         expanded={expanded}
@@ -47,18 +47,28 @@ const StaticFormElementGroup = ({ name, formElements }) => {
         <StyledAccordionSummary aria-controls={`${panel}-bh-content`} id={`${panel}-bh-header`}>
           <Grid
             container
-            sm={12}
             sx={{
               alignItems: "center"
             }}
+            size={{
+              sm: 12
+            }}
           >
-            <Grid item sm={1}>
+            <Grid
+              size={{
+                sm: 1
+              }}
+            >
               <Tooltip title="Grouped Questions">
                 <Group style={{ marginLeft: 12, marginRight: 4 }} />
               </Tooltip>
               {expanded ? <ExpandLess className={classes.icon} /> : <ExpandMore className={classes.icon} />}
             </Grid>
-            <Grid item sm={6}>
+            <Grid
+              size={{
+                sm: 6
+              }}
+            >
               <Typography className={classes.heading}>
                 <FormControl fullWidth>
                   <Input
@@ -73,12 +83,20 @@ const StaticFormElementGroup = ({ name, formElements }) => {
                 </FormControl>
               </Typography>
             </Grid>
-            <Grid item sm={4}>
+            <Grid
+              size={{
+                sm: 4
+              }}
+            >
               <Typography component="div" className={classes.questionCount}>
                 {formElements.length} questions
               </Typography>
             </Grid>
-            <Grid item sm={1}>
+            <Grid
+              size={{
+                sm: 1
+              }}
+            >
               <ToolTip title="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME" displayPosition="bottom" />
             </Grid>
           </Grid>

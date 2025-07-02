@@ -4,7 +4,7 @@ import http from "../../../common/utils/httpClient";
 import { get, isNil, sortBy } from "lodash";
 import Box from "@mui/material/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AvniTextField } from "../../../common/components/AvniTextField";
@@ -294,10 +294,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         {getErrorByKey(error, "INVALID_NESTED_CARD_COUNT")}
         <br />
         <Grid container direction={"row"}>
-          <Grid item xs={1}>
+          <Grid size={1}>
             <SaveComponent name="save" onSubmit={onSave} />
           </Grid>
-          <Grid item xs={11}>
+          <Grid size={11}>
             {edit && (
               <Button style={{ float: "right", color: "red" }} onClick={onDelete}>
                 <DeleteIcon /> Delete

@@ -1,6 +1,6 @@
 import React from "react";
 import { Condition } from "rules-config";
-import { GridLegacy as Grid, Chip } from "@mui/material";
+import { Grid, Chip } from "@mui/material";
 import { toUpper } from "lodash";
 
 const ConditionConjunctionComponent = ({ onConjunctionChange, value, ...props }) => {
@@ -16,7 +16,7 @@ const ConditionConjunctionComponent = ({ onConjunctionChange, value, ...props })
         justifyContent: "center"
       }}
     >
-      <Grid item>
+      <Grid>
         <Chip
           style={{ marginTop: "15px", marginBottom: "15px" }}
           label={toUpper(andConjunction)}
@@ -24,7 +24,7 @@ const ConditionConjunctionComponent = ({ onConjunctionChange, value, ...props })
           onClick={() => onConjunctionChange(andConjunction)}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <Chip
           style={{ marginTop: "15px", marginBottom: "15px" }}
           label={toUpper(orConjunction)}

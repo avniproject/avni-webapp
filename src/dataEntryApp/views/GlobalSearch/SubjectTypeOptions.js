@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, Button } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";
 import { sortBy } from "lodash";
 
@@ -42,7 +42,7 @@ const SubjectTypeOptions = ({ t, operationalModules, onSubjectTypeChange, select
       >
         {operationalModules.subjectTypes
           ? sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map((subjectType, index) => (
-              <Grid key={index} item>
+              <Grid key={index}>
                 <Button
                   key={index}
                   variant="outlined"
@@ -57,10 +57,10 @@ const SubjectTypeOptions = ({ t, operationalModules, onSubjectTypeChange, select
                       alignItems: "center"
                     }}
                   >
-                    <Grid item>
+                    <Grid>
                       <SubjectTypeIcon size={25} subjectType={subjectType} />
                     </Grid>
-                    <Grid item>{subjectType.name}</Grid>
+                    <Grid>{subjectType.name}</Grid>
                   </Grid>
                 </Button>
               </Grid>

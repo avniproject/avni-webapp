@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Breadcrumbs from "./Breadcrumbs";
 import { makeStyles } from "@mui/styles";
-import { Box, Button, GridLegacy as Grid, Paper, Typography, RadioGroup, FormControlLabel, Radio, FormLabel } from "@mui/material";
+import { Box, Button, Grid, Paper, Typography, RadioGroup, FormControlLabel, Radio, FormLabel } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import { withParams } from "../../common/components/utils";
@@ -159,7 +159,7 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
           </Grid>
           <br />
           <Grid container>
-            <Grid item xs={10}>
+            <Grid size={10}>
               <FormLabel component="legend">{t("role")}</FormLabel>
               <RadioGroup
                 row
@@ -184,7 +184,7 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
               </RadioGroup>
             </Grid>
             <br />
-            <Grid item xs={6}>
+            <Grid size={6}>
               <FormLabel component="legend">{t("member")}</FormLabel>
               {editFlow ? renderMember(memberGroupSubject) : renderSearch()}
             </Grid>

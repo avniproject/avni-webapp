@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import MiddleText from "./MiddleText";
 import InputField from "./InputField";
 import { get, includes, isEmpty, map, startCase, zip } from "lodash";
@@ -28,7 +28,7 @@ function VisitScheduleDetails({ actionDetails, onActionChange, declarativeRuleIn
   return (
     <Fragment>
       <MiddleText text={"Of Type"} />
-      <Grid item xs={2}>
+      <Grid size={2}>
         <Select
           placeholder="Select encounter type"
           value={selectedET ? { value: selectedET, label: selectedET } : null}
@@ -40,14 +40,14 @@ function VisitScheduleDetails({ actionDetails, onActionChange, declarativeRuleIn
       {!isEmpty(actionDetails.encounterType) && (
         <Fragment>
           <MiddleText text={"Visit name"} />
-          <Grid item xs={2}>
+          <Grid size={2}>
             <InputField
               value={get(actionDetails, "encounterName")}
               onChange={event => onActionChange("encounterName", event.target.value)}
             />
           </Grid>
           <MiddleText text={"Using"} />
-          <Grid item xs={2}>
+          <Grid size={2}>
             <Select
               placeholder="Date field to use"
               value={dateField ? selectedDateFieldOption : null}
@@ -66,7 +66,7 @@ function VisitScheduleDetails({ actionDetails, onActionChange, declarativeRuleIn
       {!isEmpty(dateField) && (
         <Fragment>
           <MiddleText text={"Schedule on"} />
-          <Grid item xs={1}>
+          <Grid size={1}>
             <InputField
               type={"number"}
               value={get(actionDetails, "daysToSchedule")}
@@ -74,7 +74,7 @@ function VisitScheduleDetails({ actionDetails, onActionChange, declarativeRuleIn
             />
           </Grid>
           <MiddleText text={"Days, and Overdue after"} />
-          <Grid item xs={1}>
+          <Grid size={1}>
             <InputField
               type={"number"}
               value={get(actionDetails, "daysToOverdue")}
@@ -105,7 +105,7 @@ function DecisionDetails({ index, actionDetails, declarativeRuleIndex, onActionC
   return (
     <Fragment>
       <MiddleText text={"Name"} />
-      <Grid item xs={4}>
+      <Grid size={4}>
         <ConceptSearch
           key={index}
           placeholder={"Search decision concept"}
@@ -122,7 +122,7 @@ function DecisionDetails({ index, actionDetails, declarativeRuleIndex, onActionC
       {!isEmpty(actionDetails.conceptName) && (
         <Fragment>
           <MiddleText text={"Value"} />
-          <Grid item xs={2}>
+          <Grid size={2}>
             {actionDetails.conceptDataType === "Coded" ? (
               <ConceptSearch
                 key={index}
@@ -146,7 +146,7 @@ function DecisionDetails({ index, actionDetails, declarativeRuleIndex, onActionC
       {!isEmpty(actionDetails.value) && (
         <Fragment>
           <MiddleText text={"In"} />
-          <Grid item xs={3}>
+          <Grid size={3}>
             <Select
               placeholder="Select scope"
               value={
@@ -183,23 +183,22 @@ const ActionDetailsComponent = ({ selectedType, actionDetails, onActionChange, i
     <Fragment>
       {selectedType === actionTypes.Value && (
         <Grid
-          item
           container
-          xs={4}
           direction={"row"}
           spacing={1}
           sx={{
             alignItems: "center"
           }}
+          size={4}
         >
           <MiddleText text={"Is"} />
-          <Grid item xs={11}>
+          <Grid size={11}>
             <InputField value={get(actionDetails, "value")} onChange={event => onActionChange("value", event.target.value)} />
           </Grid>
         </Grid>
       )}
       {selectedType === actionTypes.SkipAnswers && (
-        <Grid item xs={4}>
+        <Grid size={4}>
           <ConceptSearch
             key={index}
             isMulti={true}
@@ -212,17 +211,16 @@ const ActionDetailsComponent = ({ selectedType, actionDetails, onActionChange, i
       )}
       {includes([actionTypes.ValidationError, actionTypes.FormValidationError], selectedType) && (
         <Grid
-          item
           container
-          xs={8}
           direction={"row"}
           spacing={1}
           sx={{
             alignItems: "center"
           }}
+          size={8}
         >
           <MiddleText text={"Is"} />
-          <Grid item xs={11}>
+          <Grid size={11}>
             <InputField
               value={get(actionDetails, "validationError")}
               onChange={event => onActionChange("validationError", event.target.value)}

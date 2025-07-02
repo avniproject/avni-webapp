@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from "react";
 import http from "../../../common/utils/httpClient";
 import { Title } from "react-admin";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Box, Input } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -56,7 +56,7 @@ export const ArchivalConfig = () => {
       <DocumentationContainer filename={"Archival.md"}>
         <div className="container">
           <Grid container direction={"column"} spacing={5}>
-            <Grid item>
+            <Grid>
               <AvniFormLabel
                 label={"SQL Query to identify subjects (via id) to be excluded from sync."}
                 toolTipKey={"APP_DESIGNER_ARCHIVAL_SQL_QUERY"}
@@ -73,7 +73,7 @@ export const ArchivalConfig = () => {
               />
             </Grid>
             {/*Uncomment when realm query and batch size need to be supported*/}
-            {/*<Grid item>*/}
+            {/*<Grid>*/}
             {/*  <AvniFormLabel label={"Realm Query to identify subjects to be removed from the mobile app"} toolTipKey={"APP_DESIGNER_ARCHIVAL_REALM_QUERY"} />*/}
             {/*  <Input type="text" name="realmQuery" value={archivalConfigState.realmQuery} placeholder={"Realm Query"}*/}
             {/*         style={{width: "100%"}}*/}
@@ -82,14 +82,14 @@ export const ArchivalConfig = () => {
             {/*           dispatch({type: "realmQuery", payload: {value: event.target.value}})*/}
             {/*         }/>*/}
             {/*</Grid>*/}
-            {/*<Grid item>*/}
+            {/*<Grid>*/}
             {/*  <AvniFormLabel label={"Maximum number of records to exclude at one time"} toolTipKey={"APP_DESIGNER_ARCHIVAL_BATCH_SIZE"} />*/}
             {/*  <Input type="text" name="batchSize" value={archivalConfigState.batchSize} placeholder={"Batch Size"}*/}
             {/*         onChange={event =>*/}
             {/*           dispatch({type: "batchSize", payload: {value: event.target.value}})*/}
             {/*         }/>*/}
             {/*</Grid>*/}
-            <Grid item>
+            <Grid>
               <Button variant={"contained"} color={"primary"} onClick={onSave}>
                 Save
               </Button>

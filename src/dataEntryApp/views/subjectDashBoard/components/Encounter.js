@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, Paper } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -62,7 +62,7 @@ const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...p
             alignItems: "center"
           }}
         >
-          <Grid item xs={12}>
+          <Grid size={12}>
             {props.encounterForm && encounter && props.subjectProfile ? (
               <EncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
                 <DateFormElement

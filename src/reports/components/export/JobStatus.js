@@ -3,7 +3,7 @@ import { getUploadStatuses } from "../../reducers";
 import { withRouter } from "react-router-dom";
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Table, TableHead, TableRow, TableCell, TableBody, Box, GridLegacy as Grid, TablePagination, Button } from "@mui/material";
+import { Table, TableHead, TableRow, TableCell, TableBody, Box, Grid, TablePagination, Button } from "@mui/material";
 import { find, get, isNil, map } from "lodash";
 import moment from "moment";
 import http from "common/utils/httpClient";

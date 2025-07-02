@@ -7,7 +7,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { cloneDeep, get } from "lodash";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -104,7 +104,7 @@ function RelationshipEdit(props) {
       >
         <Title title={"Edit Relationship"} />
         <DocumentationContainer filename={"Relationship.md"}>
-          <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+          <Grid container={12} style={{ justifyContent: "flex-end" }}>
             <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
               <VisibilityIcon /> Show
             </Button>
@@ -136,11 +136,24 @@ function RelationshipEdit(props) {
             })}
             <br />
           </div>
-          <Grid container item sm={12}>
-            <Grid item sm={1}>
+          <Grid
+            container
+            size={{
+              sm: 12
+            }}
+          >
+            <Grid
+              size={{
+                sm: 1
+              }}
+            >
               <SaveComponent name="save" onSubmit={() => onSubmitRelationship()} disabledFlag={!setIsIndividualSubjectTypeAvailable} />{" "}
             </Grid>
-            <Grid item sm={11}>
+            <Grid
+              size={{
+                sm: 11
+              }}
+            >
               <Button style={{ float: "right", color: "red" }} onClick={() => onDeleteRelationship()}>
                 <DeleteIcon /> Delete
               </Button>

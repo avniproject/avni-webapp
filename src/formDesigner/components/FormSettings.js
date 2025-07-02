@@ -6,7 +6,7 @@ import http from "common/utils/httpClient";
 import FormHelperText from "@mui/material/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 import _ from "lodash";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import { default as UUID } from "uuid";
@@ -422,29 +422,56 @@ class FormSettings extends Component {
                 return (
                   !mapping.voided && (
                     <div key={index}>
-                      <Grid container item sm={12} spacing={2}>
+                      <Grid
+                        container
+                        spacing={2}
+                        size={{
+                          sm: 12
+                        }}
+                      >
                         {!isTaskFormType && (
-                          <Grid item sm={2}>
+                          <Grid
+                            size={{
+                              sm: 2
+                            }}
+                          >
                             {this.subjectTypeElement(index)}
                           </Grid>
                         )}
                         {isTaskFormType && (
-                          <Grid item sm={2}>
+                          <Grid
+                            size={{
+                              sm: 2
+                            }}
+                          >
                             {this.taskTypeElement(index)}
                           </Grid>
                         )}
                         {programBased && (
-                          <Grid item sm={3}>
+                          <Grid
+                            size={{
+                              sm: 3
+                            }}
+                          >
                             {this.programNameElement(index)}
                           </Grid>
                         )}
                         {encounterTypes && (
-                          <Grid item sm={3}>
+                          <Grid
+                            size={{
+                              sm: 3
+                            }}
+                          >
                             {this.encounterTypesElement(index)}
                           </Grid>
                         )}
                         {!isTaskFormType && (
-                          <Grid item sm={3} style={{ marginTop: 40 }}>
+                          <Grid
+                            style={{ marginTop: 40 }}
+                            size={{
+                              sm: 3
+                            }}
+                          >
                             <AvniSwitch
                               checked={this.state.formMappings[index].enableApproval}
                               onChange={event => this.handleMappingChange(index, "enableApproval", event.target.checked)}
@@ -453,7 +480,11 @@ class FormSettings extends Component {
                             />
                           </Grid>
                         )}
-                        <Grid item sm={1}>
+                        <Grid
+                          size={{
+                            sm: 1
+                          }}
+                        >
                           <IconButton
                             aria-label="delete"
                             onClick={event => this.removeMapping(index)}

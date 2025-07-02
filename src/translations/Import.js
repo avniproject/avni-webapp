@@ -3,7 +3,7 @@ import FileUpload from "../common/components/FileUpload";
 import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
 import { filter, find, isEmpty, isString, size } from "lodash";
-import { Box, GridLegacy as Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import UserInfo from "../common/model/UserInfo";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
@@ -69,17 +69,26 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
     <Grid container direction="row" spacing={2}>
       <Grid
         container
-        item
         direction="row"
         sx={{
           justifyContent: "space-between",
           alignItems: "center"
         }}
       >
-        <Grid item xs={12} sm={4}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 4
+          }}
+        >
           <DropDown name="Language" style={{ width: 120 }} value={language} onChange={setLanguage} options={locales} />
         </Grid>
-        <Grid item xs={12} sm={8}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 8
+          }}
+        >
           <FileUpload
             onSelect={onFileChooseHandler}
             onUpload={onUploadPressedHandler}

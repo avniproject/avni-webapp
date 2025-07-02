@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, GridLegacy as Grid, Box } from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, Grid, Box } from "@mui/material";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import PropTypes from "prop-types";
 import {
@@ -23,7 +23,13 @@ const RulePanel = ({ title, details }) => {
   return (
     <Accordion expanded={expanded}>
       <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" style={{ marginTop: "3%" }}>
-        <Grid container item sm={12} onClick={onToggleExpand}>
+        <Grid
+          container
+          onClick={onToggleExpand}
+          size={{
+            sm: 12
+          }}
+        >
           <span>{expanded ? <ExpandLess /> : <ExpandMore />}</span>
           <Typography>{title}</Typography>
         </Grid>

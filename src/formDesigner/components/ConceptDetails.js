@@ -7,7 +7,7 @@ import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import FormLabel from "@mui/material/FormLabel";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -79,10 +79,10 @@ function CodedConceptDetails({ conceptAnswers }) {
                     alignItems: "center"
                   }}
                 >
-                  <Grid item>
+                  <Grid>
                     <TextField id="name" value={answerConcept.name} style={{ width: "300px" }} margin="normal" disabled={true} />
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <FormControlLabel
                       control={<Checkbox checked={!!answerConcept.abnormal} name="abnormal" />}
                       label="abnormal"
@@ -90,7 +90,7 @@ function CodedConceptDetails({ conceptAnswers }) {
                       disabled={true}
                     />
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <FormControlLabel
                       control={<Checkbox checked={!!answerConcept.unique} name="unique" />}
                       label="unique"
@@ -98,7 +98,7 @@ function CodedConceptDetails({ conceptAnswers }) {
                     />
                   </Grid>
                   {answerConcept.mediaUrl && (
-                    <Grid item>
+                    <Grid>
                       <ImagePreview iconPreview={answerConcept.mediaUrl} width={40} height={40} />
                     </Grid>
                   )}
@@ -323,7 +323,13 @@ function ConceptDetails({ userInfo, ...props }) {
       >
         <Title title={"Concept: " + data.name} />
         {hasEditPrivilege && (
-          <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
+          <Grid
+            container
+            style={{ justifyContent: "flex-end" }}
+            size={{
+              sm: 12
+            }}
+          >
             <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
               <EditIcon />
               Edit

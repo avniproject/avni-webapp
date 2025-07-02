@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { makeStyles } from "@mui/styles";
-import { Box, GridLegacy as Grid, Button, Snackbar, SnackbarContent, Typography } from "@mui/material";
+import { Box, Grid, Button, Snackbar, SnackbarContent, Typography } from "@mui/material";
 import { Title } from "react-admin";
 import { DeleteData } from "./components/DeleteData";
 import { OrgSettings } from "./components/OrgSettings";
@@ -54,14 +54,14 @@ export const OrganisationDetail = ({
       <DocumentationContainer filename={"OrganisationDetail.md"}>
         <Title title={"Organisation Details"} />
         <Grid container direction={"row"} spacing={1}>
-          <Grid item container spacing={3}>
-            <Grid item>
+          <Grid container spacing={3}>
+            <Grid>
               <Typography variant="h6" sx={{ mb: 1 }}>
                 Organisation Name : {name}
               </Typography>
             </Grid>
             {hasEditPrivilege && !_.isNil(organisation) && (
-              <Grid item>
+              <Grid>
                 <Button className={classes.deleteButton} variant="contained" color="secondary" onClick={() => onDeleteClick()}>
                   Delete all data
                 </Button>

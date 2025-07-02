@@ -5,7 +5,7 @@ import { Concept } from "openchs-models";
 import { useSelector } from "react-redux";
 import api from "../api";
 import { makeStyles } from "@mui/styles";
-import { FormLabel, FormGroup, FormHelperText, GridLegacy as Grid, Link } from "@mui/material";
+import { FormLabel, FormGroup, FormHelperText, Grid, Link } from "@mui/material";
 import { mapGroupMembers, mapIndividual } from "../../common/subjectModelMapper";
 import { subjectService } from "../services/SubjectService";
 import Checkbox from "./Checkbox";
@@ -87,14 +87,13 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
 
   return (
     <Fragment>
-      <Grid container direction="column" xs={4} spacing={0.5} style={{ height: "100%" }}>
-        <Grid item>
+      <Grid container direction="column" spacing={0.5} style={{ height: "100%" }} size={4}>
+        <Grid>
           <FormLabel component="legend">{label}</FormLabel>
         </Grid>
-        <Grid item />
+        <Grid />
         {memberSubjects.length > 0 && (
           <Grid
-            item
             container
             sx={{
               justifyContent: "flex-end"
@@ -120,17 +119,17 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
                 <Grid
                   key={uuid}
                   container
-                  xs={4}
                   className={index % 2 === 0 ? classes.evenBackground : classes.oddBackground}
                   sx={{
                     alignItems: "center",
                     justifyContent: "center"
                   }}
+                  size={4}
                 >
-                  <Grid item xs={11}>
+                  <Grid size={11}>
                     <div>{nameString}</div>
                   </Grid>
-                  <Grid item xs={1}>
+                  <Grid size={1}>
                     <Checkbox checked={includes(value, uuid)} onChange={onsSwitchChange} value={uuid} />
                   </Grid>
                 </Grid>

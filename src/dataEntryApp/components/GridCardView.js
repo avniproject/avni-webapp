@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(() => ({
@@ -23,7 +23,17 @@ const GridCardView = ({ cards, xs = 12, sm = 6, md = 3, lg = 2, xl = 2, noDataMe
       {cards && cards.length > 0 ? (
         cards.map((card, index) => {
           return (
-            <Grid key={index} item xs={xs} sm={sm} md={md} lg={lg} xl={xl} className={classes.card}>
+            <Grid
+              key={index}
+              className={classes.card}
+              size={{
+                xs: xs,
+                sm: sm,
+                md: md,
+                lg: lg,
+                xl: xl
+              }}
+            >
               {card}
             </Grid>
           );

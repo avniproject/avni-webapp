@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { TextField, Box, Button, IconButton, GridLegacy as Grid, FormHelperText, MenuItem } from "@mui/material";
+import { TextField, Box, Button, IconButton, Grid, FormHelperText, MenuItem } from "@mui/material";
 import { map, includes, filter } from "lodash";
 import { Delete } from "@mui/icons-material";
 import httpClient from "../../common/utils/httpClient";

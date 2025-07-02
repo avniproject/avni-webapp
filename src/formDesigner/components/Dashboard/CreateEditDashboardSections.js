@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { IconButton, Input, MenuItem, Tooltip, Typography, GridLegacy as Grid } from "@mui/material";
+import { IconButton, Input, MenuItem, Tooltip, Typography, Grid } from "@mui/material";
 import { Delete, ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { SelectCardsView } from "./SelectCardsView";
@@ -65,7 +65,7 @@ function EditSection({ section, index, dispatch, history }) {
   const viewTypes = section.viewType === "Default" ? ["Default", "Tile", "List"] : ["Tile", "List"];
   return (
     <Grid container>
-      <Grid item xs={12}>
+      <Grid size={12}>
         <AvniTextField
           multiline
           id={"description" + index}
@@ -116,19 +116,28 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
   return (
     <Grid
       container
-      item
-      sm={12}
       sx={{
         alignItems: "center"
       }}
+      size={{
+        sm: 12
+      }}
     >
-      <Grid item sm={2}>
+      <Grid
+        size={{
+          sm: 2
+        }}
+      >
         <Tooltip title={"Grouped Questions"}>
           <List style={{ marginLeft: 12, marginRight: 4 }} />
         </Tooltip>
         {expanded === "panel" + index ? <ExpandLess classes={{ root: classes.icon }} /> : <ExpandMore classes={{ root: classes.icon }} />}
       </Grid>
-      <Grid item sm={5}>
+      <Grid
+        size={{
+          sm: 5
+        }}
+      >
         <Typography className={classes.heading}>
           <Input
             type="text"
@@ -144,10 +153,18 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
           />
         </Typography>
       </Grid>
-      <Grid item sm={3}>
+      <Grid
+        size={{
+          sm: 3
+        }}
+      >
         <Typography className={classes.questionCount}>{WebDashboardSection.getReportCards(section).length} cards</Typography>
       </Grid>
-      <Grid item sm={2}>
+      <Grid
+        size={{
+          sm: 2
+        }}
+      >
         <IconButton
           aria-label="delete"
           onClick={() => dispatch({ type: dashboardReducerActions.deleteSection, payload: section })}

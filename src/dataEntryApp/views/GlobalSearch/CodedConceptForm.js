@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { Typography, GridLegacy as Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
+import { Typography, Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
 
@@ -29,7 +29,7 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedCo
           let selected = {};
           selectedValue && _.forEach(selectedValue.values, sv => _.assign(selected, { [sv]: true }));
           return searchFilterForm.type === "Concept" && searchFilterForm.conceptDataType === "Coded" ? (
-            <Grid item xs={12} key={index}>
+            <Grid key={index} size={12}>
               <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>

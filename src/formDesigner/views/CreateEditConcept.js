@@ -18,7 +18,7 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import { Redirect } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -498,7 +498,7 @@ class CreateEditConcept extends Component {
             </Grid>
           )}
           <Grid container direction="column" spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <AvniTextField
                 id="name"
                 label="Concept name"
@@ -514,7 +514,7 @@ class CreateEditConcept extends Component {
               {!this.state.error.isEmptyName &&
                 (this.state.error.nameError && <FormHelperText error>Same name concept already exist.</FormHelperText>)}
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               {this.props.isCreatePage ? (
                 <ToolTipContainer toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}>
                   <FormControl fullWidth>
@@ -548,12 +548,12 @@ class CreateEditConcept extends Component {
               )}
             </Grid>
             {!this.props.isCreatePage && (
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <ConceptActiveSwitch active={concept.active} handleActive={this.handleActive} conceptUUID={concept.uuid} />
               </Grid>
             )}
             {["Coded", "NA"].includes(concept.dataType) && (
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <AvniImageUpload
                   height={20}
                   width={20}
@@ -570,10 +570,8 @@ class CreateEditConcept extends Component {
                 )}
               </Grid>
             )}
-            <Grid item xs={12}>
-              {dataTypeComponent}
-            </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>{dataTypeComponent}</Grid>
+            <Grid size={12}>
               <KeyValues
                 keyValues={concept.keyValues}
                 onKeyValueChange={this.onKeyValueChange}
@@ -584,19 +582,18 @@ class CreateEditConcept extends Component {
               />
             </Grid>
             <Grid
-              item
-              xs={12}
               container
               spacing={2}
               sx={{
                 justifyContent: "flex-end",
                 alignItems: "center"
               }}
+              size={12}
             >
-              <Grid item>
+              <Grid>
                 <SaveComponent name="save" onSubmit={this.handleSubmit} styleClass={{ marginLeft: "12px", marginTop: "10px" }} />
               </Grid>
-              <Grid item>
+              <Grid>
                 {!this.props.isCreatePage && (
                   <Button style={{ color: "red", marginTop: "10px" }} onClick={() => this.onDeleteConcept()}>
                     <DeleteIcon /> Delete
@@ -604,7 +601,7 @@ class CreateEditConcept extends Component {
                 )}
               </Grid>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               {this.state.conceptCreationAlert && (
                 <CustomizedSnackbar
                   message={conceptCreationMessage}

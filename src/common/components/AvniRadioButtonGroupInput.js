@@ -1,7 +1,7 @@
 import React from "react";
 import { ToolTipContainer } from "./ToolTipContainer";
 import { RadioButtonGroupInput } from "react-admin";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 
 export const AvniRadioButtonGroupInput = ({ toolTipKey, ...props }) => {
   return (

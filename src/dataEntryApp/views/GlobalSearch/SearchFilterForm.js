@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { LineBreak, withParams } from "../../../common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography, FormControl, Button, GridLegacy as Grid } from "@mui/material";
+import { Paper, Typography, FormControl, Button, Grid } from "@mui/material";
 import { getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
 import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
@@ -468,7 +468,7 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
         {selectedSearchFilter ? (
           <div>
             <Grid container style={{ paddingLeft: 10 }}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <BasicForm
                   searchFilterForms={selectedSearchFilter}
                   onChange={searchFilterValue}
@@ -480,7 +480,7 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
                   setAddressLevelIds={setAddressLevelIds}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <NonCodedConceptForm
                   searchFilterForms={selectedSearchFilter}
                   onChange={(event, searchFilterForm, fieldName) =>
@@ -489,10 +489,10 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
                   selectedConcepts={selectedConcepts}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <NonConceptForm searchFilterForms={selectedSearchFilter} selectedDate={selectedDate} onDateChange={searchFilterDates} />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <CodedConceptForm
                   searchFilterForms={selectedSearchFilter}
                   conceptList={organisationConfigs.conceptList}
@@ -503,14 +503,14 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
                 />
               </Grid>
               <Grid container spacing={3} direction="row">
-                <Grid item>
+                <Grid>
                   <CheckBoxSearchComponent
                     label="Include Voided"
                     checked={includeVoided}
                     onChange={event => onChecked("includeVoided", event.target.checked)}
                   />
                 </Grid>
-                <Grid item>
+                <Grid>
                   <CheckBoxSearchComponent
                     label="Display Count"
                     checked={includeDisplayCount}

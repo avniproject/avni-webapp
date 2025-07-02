@@ -13,7 +13,7 @@ import { fetchTasks } from "./FetchTasks";
 import { includes, isEmpty, map, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { TaskAssignmentFilter } from "../components/TaskAssignmentFilter";
 import { TaskAssignmentAction } from "../components/TaskAssignmentAction";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
@@ -134,7 +134,7 @@ const TaskAssignment = ({ history, ...props }) => {
   const renderContent = () => (
     <div className={classes.root}>
       <Grid container>
-        <Grid item xs={8}>
+        <Grid size={8}>
           <MaterialReactTable
             columns={columns}
             data={data}
@@ -176,8 +176,8 @@ const TaskAssignment = ({ history, ...props }) => {
             )}
           />
         </Grid>
-        <Grid item xs={1} />
-        <Grid item xs={3}>
+        <Grid size={1} />
+        <Grid size={3}>
           <TaskAssignmentFilter
             dispatch={dispatch}
             filterCriteria={filterCriteria}

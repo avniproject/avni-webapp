@@ -1,5 +1,5 @@
 import React from "react";
-import { GridLegacy as Grid, Button } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import { chain, find, get, isEmpty, map } from "lodash";
 import { connect } from "react-redux";
 import { getOperationalModules } from "../reducers";
@@ -69,7 +69,7 @@ const AggregateReport = ({ operationalModules, getOperationalModules }) => {
       {operationalModules && (
         <BorderBox>
           <Grid container direction={"column"} spacing={2}>
-            <Grid item xs={8}>
+            <Grid size={8}>
               <SingleSelectSearch
                 title={"Form"}
                 placeholder={"Select the form"}
@@ -78,7 +78,7 @@ const AggregateReport = ({ operationalModules, getOperationalModules }) => {
                 onChange={option => setForm(option)}
               />
             </Grid>
-            <Grid item>
+            <Grid>
               <Button variant="contained" color="primary" disabled={isEmpty(selectedForm)} onClick={generateReport}>
                 Generate Report
               </Button>

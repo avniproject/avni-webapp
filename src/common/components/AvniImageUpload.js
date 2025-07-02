@@ -1,6 +1,6 @@
 import React from "react";
 import { isEmpty } from "lodash";
-import { Dialog, DialogContent, GridLegacy as Grid, IconButton, Typography, Snackbar, FormControl } from "@mui/material";
+import { Dialog, DialogContent, Grid, IconButton, Typography, Snackbar, FormControl } from "@mui/material";
 import { ToolTipContainer } from "./ToolTipContainer";
 import { AddAPhoto, Close } from "@mui/icons-material";
 import MediaService from "../../adminApp/service/MediaService";
@@ -118,11 +118,11 @@ export const AvniImageUpload = ({
               alignItems: "center"
             }}
           >
-            <Grid item>
+            <Grid>
               <Typography sx={{ opacity: 0.5 }}>{label}</Typography>
             </Grid>
             {allowUpload && (
-              <Grid item>
+              <Grid>
                 <input
                   accept="image/*"
                   style={{ display: "none" }}
@@ -138,7 +138,7 @@ export const AvniImageUpload = ({
               </Grid>
             )}
             {iconPreview && (
-              <Grid item>
+              <Grid>
                 <ImagePreview iconPreview={iconPreview} width={width} height={height} onDelete={deleteIcon} />
               </Grid>
             )}

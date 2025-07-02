@@ -1,6 +1,6 @@
 import React from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import httpClient from "../../common/utils/httpClient";
 import { HomePageCard } from "./HomePageCard";
 import {

@@ -1,7 +1,7 @@
 import React from "react";
 import Observations from "../../../components/Observations";
 import { makeStyles } from "@mui/styles";
-import { CircularProgress, AccordionSummary, Typography, AccordionDetails, Accordion, GridLegacy as Grid } from "@mui/material";
+import { CircularProgress, AccordionSummary, Typography, AccordionDetails, Accordion, Grid } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
@@ -33,22 +33,17 @@ export const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => 
   };
 
   const renderObs = () => {
-    return (
-      <Grid item xs={12}>
-        {isEmpty(summaryObservations) ? renderNotFound() : <Observations observations={summaryObservations} />}
-      </Grid>
-    );
+    return <Grid size={12}>{isEmpty(summaryObservations) ? renderNotFound() : <Observations observations={summaryObservations} />}</Grid>;
   };
 
   const renderProgress = () => {
     return (
       <Grid
-        item
         container
-        xs={12}
         sx={{
           justifyContent: "center"
         }}
+        size={12}
       >
         <CircularProgress />
       </Grid>
@@ -66,7 +61,7 @@ export const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => 
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Grid item container xs={12}>
+        <Grid container size={12}>
           {isFetching ? renderProgress() : renderObs()}
         </Grid>
       </AccordionDetails>

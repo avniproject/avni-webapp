@@ -4,7 +4,7 @@ import {
   Box,
   Button,
   FormControl,
-  GridLegacy as Grid,
+  Grid,
   InputLabel,
   Paper,
   Table,
@@ -248,7 +248,7 @@ const AddRelative = ({
                       alignItems: "center"
                     }}
                   >
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <Table aria-label="caption table" className={classes.tableContainer}>
                         <TableHead>
                           <TableRow className={classes.tableHeader}>

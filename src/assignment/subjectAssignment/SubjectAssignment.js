@@ -12,7 +12,7 @@ import {
 import { getColumns } from "./SubjectAssignmentColumns";
 import { fetchSubjectData } from "./SubjectAssignmentData";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, FormControlLabel, Radio, Paper } from "@mui/material";
+import { Grid, FormControlLabel, Radio, Paper } from "@mui/material";
 import SubjectAssignmentFilter from "./SubjectAssignmentFilter";
 import { refreshTable } from "../util/util";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
@@ -153,7 +153,7 @@ const SubjectAssignment = () => {
     return (
       <div className={classes.root}>
         <Grid container>
-          <Grid item xs={8}>
+          <Grid size={8}>
             <div className={classes.tableContainer}>
               <MaterialReactTable
                 columns={columns}
@@ -198,8 +198,8 @@ const SubjectAssignment = () => {
               />
             </div>
           </Grid>
-          <Grid item xs={1} />
-          <Grid item xs={3}>
+          <Grid size={1} />
+          <Grid size={3}>
             <SubjectAssignmentFilter
               subjectOptions={subjectOptions}
               programOptions={programOptions}

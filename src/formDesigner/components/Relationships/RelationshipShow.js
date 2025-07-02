@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import FormLabel from "@mui/material/FormLabel";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
@@ -44,7 +44,13 @@ const RelationshipShow = props => {
         <Title title={"Show Relationship : " + relationship.name} />
         <DocumentationContainer filename={"Relationship.md"}>
           {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditSubjectType) && (
-            <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
+            <Grid
+              container
+              style={{ justifyContent: "flex-end" }}
+              size={{
+                sm: 12
+              }}
+            >
               <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
                 <EditIcon />
                 Edit

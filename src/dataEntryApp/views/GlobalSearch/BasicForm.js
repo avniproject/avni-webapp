@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { TextField, Typography, GridLegacy as Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
+import { TextField, Typography, Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { find } from "lodash";
 import AddressLevelsByType from "../../../common/components/AddressLevelsByType";
@@ -34,7 +34,7 @@ function BasicForm({
 
   function renderSearchAll(index, titleKey) {
     return (
-      <Grid item key={index}>
+      <Grid key={index}>
         <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
           {t(titleKey)}
         </Typography>
@@ -59,7 +59,7 @@ function BasicForm({
       <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Name" ? (
-            <Grid item key={index}>
+            <Grid key={index}>
               <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
@@ -81,7 +81,7 @@ function BasicForm({
 
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Age" ? (
-            <Grid item key={index}>
+            <Grid key={index}>
               <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
@@ -108,7 +108,7 @@ function BasicForm({
       <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Gender" ? (
-            <Grid item xs={12} key={index}>
+            <Grid key={index} size={12}>
               <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
@@ -138,7 +138,7 @@ function BasicForm({
       <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Address" ? (
-            <Grid item xs={12} key={index}>
+            <Grid key={index} size={12}>
               <AddressLevelsByType
                 label={t(searchFilterForm.titleKey)}
                 addressLevelsIds={addressLevelIds}

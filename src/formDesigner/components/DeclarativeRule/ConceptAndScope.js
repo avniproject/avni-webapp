@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import ConceptSearch from "./ConceptSearch";
 import Select from "react-select";
 import { ConceptScope } from "rules-config";
@@ -9,7 +9,7 @@ const ConceptAndScope = ({ conceptValue, onConceptChange, defaultOptions = [], d
 
   return (
     <Fragment>
-      <Grid item xs={5}>
+      <Grid size={5}>
         <ConceptSearch
           placeholder={"Type to search"}
           value={conceptValue}
@@ -20,18 +20,17 @@ const ConceptAndScope = ({ conceptValue, onConceptChange, defaultOptions = [], d
       </Grid>
       {displayScope && (
         <Grid
-          item
           container
-          xs={4}
           direction={"row"}
           sx={{
             alignItems: "center"
           }}
+          size={4}
         >
-          <Grid item align={"center"} xs={1}>
+          <Grid align={"center"} size={1}>
             {"In"}
           </Grid>
-          <Grid item xs={11}>
+          <Grid size={11}>
             <Select
               placeholder="Select scope"
               value={getScopeValue(scopeOptions)}

@@ -11,7 +11,7 @@ import {
   InputLabel,
   Paper,
   Select,
-  GridLegacy as Grid,
+  Grid,
   MenuItem,
   TextField,
   Radio,
@@ -55,9 +55,13 @@ const showPicker = (pickerType, cssClasses, props, disableFormElement) => {
   });
 
   return (
-    <Grid container item sm={12}>
+    <Grid
+      container
+      size={{
+        sm: 12
+      }}
+    >
       <AvniFormLabel style={cssClasses.label} label={picker.label} toolTipKey={picker.toolTipKey} />
-
       <RadioGroup
         aria-label={picker.label}
         name={picker.key}
@@ -162,7 +166,12 @@ function FormElementDetails({ userInfo, ...props }) {
 
   return (
     <Fragment>
-      <Grid container sm={12}>
+      <Grid
+        container
+        size={{
+          sm: 12
+        }}
+      >
         {props.formElementData.errorMessage && props.formElementData.errorMessage.name && (
           <div style={{ color: "red" }}>Please enter name</div>
         )}
@@ -257,7 +266,11 @@ function FormElementDetails({ userInfo, ...props }) {
               }}
             >
               {" "}
-              <Grid item sm={12}>
+              <Grid
+                size={{
+                  sm: 12
+                }}
+              >
                 {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
                   <div style={{ color: "red" }}>Please enter concept </div>
                 )}
@@ -288,10 +301,25 @@ function FormElementDetails({ userInfo, ...props }) {
                   )}
                 </FormControl>
               </Grid>
-              {props.formElementData.concept.dataType !== "Coded" && <Grid item sm={6} />}
+              {props.formElementData.concept.dataType !== "Coded" && (
+                <Grid
+                  size={{
+                    sm: 6
+                  }}
+                />
+              )}
               {props.formElementData.concept.dataType === "Numeric" && (
-                <Grid container item sm={12}>
-                  <Grid item sm={2}>
+                <Grid
+                  container
+                  size={{
+                    sm: 12
+                  }}
+                >
+                  <Grid
+                    size={{
+                      sm: 2
+                    }}
+                  >
                     <FormControl>
                       <AvniFormLabel label={"Low Absolute"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_ABSOLUTE"} />
                       <Input
@@ -301,7 +329,11 @@ function FormElementDetails({ userInfo, ...props }) {
                       />
                     </FormControl>
                   </Grid>
-                  <Grid item sm={2}>
+                  <Grid
+                    size={{
+                      sm: 2
+                    }}
+                  >
                     <FormControl>
                       <AvniFormLabel label={"High Absolute"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_ABSOLUTE"} />
                       <Input
@@ -311,7 +343,11 @@ function FormElementDetails({ userInfo, ...props }) {
                       />
                     </FormControl>
                   </Grid>
-                  <Grid item sm={2}>
+                  <Grid
+                    size={{
+                      sm: 2
+                    }}
+                  >
                     <FormControl>
                       <AvniFormLabel label={"Low normal"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_NORMAL"} />
                       <Input
@@ -321,7 +357,11 @@ function FormElementDetails({ userInfo, ...props }) {
                       />
                     </FormControl>
                   </Grid>
-                  <Grid item sm={2}>
+                  <Grid
+                    size={{
+                      sm: 2
+                    }}
+                  >
                     <FormControl>
                       <AvniFormLabel label={"High normal"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_NORMAL"} />
                       <Input
@@ -331,7 +371,11 @@ function FormElementDetails({ userInfo, ...props }) {
                       />
                     </FormControl>
                   </Grid>
-                  <Grid item sm={2}>
+                  <Grid
+                    size={{
+                      sm: 2
+                    }}
+                  >
                     <FormControl>
                       <AvniFormLabel label={"Unit"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIT"} />
                       <Input
@@ -345,7 +389,12 @@ function FormElementDetails({ userInfo, ...props }) {
               )}
               {props.formElementData.concept.dataType === "Coded" && (
                 <>
-                  <Grid container item sm={12}>
+                  <Grid
+                    container
+                    size={{
+                      sm: 12
+                    }}
+                  >
                     <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
                     {_.orderBy(props.formElementData.concept.answers, "order").map(function(d) {
                       if (!d.excluded && !d.voided) {
@@ -385,7 +434,11 @@ function FormElementDetails({ userInfo, ...props }) {
         </Paper>
         {includes(multiSelectFormElementConceptDataTypes, props.formElementData.concept.dataType) && (
           <>
-            <Grid item sm={6}>
+            <Grid
+              size={{
+                sm: 6
+              }}
+            >
               {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
                 <div style={{ color: "red" }}>Please select type</div>
               )}
@@ -424,7 +477,12 @@ function FormElementDetails({ userInfo, ...props }) {
         {props.formElementData.concept.dataType === "Coded" && (
           <>
             <br />
-            <Grid container item sm={12}>
+            <Grid
+              container
+              size={{
+                sm: 12
+              }}
+            >
               <InputLabel style={{ paddingTop: 10 }}>Excluded Answers:</InputLabel>{" "}
               {props.formElementData.concept.answers.map(function(d) {
                 if (d.excluded && !d.voided) {
@@ -453,8 +511,17 @@ function FormElementDetails({ userInfo, ...props }) {
         )}
 
         {props.formElementData.concept.dataType === "Video" && (
-          <Grid container item sm={12}>
-            <Grid item sm={4}>
+          <Grid
+            container
+            size={{
+              sm: 12
+            }}
+          >
+            <Grid
+              size={{
+                sm: 4
+              }}
+            >
               <TextField
                 type="number"
                 name="durationLimitInSecs"
@@ -472,8 +539,16 @@ function FormElementDetails({ userInfo, ...props }) {
                 <div style={{ color: "red" }}>Please enter positive number</div>
               )}
             </Grid>
-            <Grid item sm={1} />
-            <Grid item sm={3}>
+            <Grid
+              size={{
+                sm: 1
+              }}
+            />
+            <Grid
+              size={{
+                sm: 3
+              }}
+            >
               <FormControl className={classes.formControl} disabled={disableFormElement}>
                 <AvniFormLabel label={"Video Quality"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VIDEO_QUALITY"} />
                 <Select
@@ -500,8 +575,17 @@ function FormElementDetails({ userInfo, ...props }) {
           />
         )}
         {(props.formElementData.concept.dataType === "Image" || props.formElementData.concept.dataType === "ImageV2") && (
-          <Grid container item sm={12}>
-            <Grid item sm={3}>
+          <Grid
+            container
+            size={{
+              sm: 12
+            }}
+          >
+            <Grid
+              size={{
+                sm: 3
+              }}
+            >
               <TextField
                 name="maxHeight"
                 type="number"
@@ -519,8 +603,16 @@ function FormElementDetails({ userInfo, ...props }) {
                 <div style={{ color: "red" }}>Please enter positive number</div>
               )}
             </Grid>
-            <Grid item sm={1} />
-            <Grid item sm={3}>
+            <Grid
+              size={{
+                sm: 1
+              }}
+            />
+            <Grid
+              size={{
+                sm: 3
+              }}
+            >
               <TextField
                 type="number"
                 name="maxWidth"
@@ -538,8 +630,16 @@ function FormElementDetails({ userInfo, ...props }) {
                 <div style={{ color: "red" }}>Please enter positive number</div>
               )}
             </Grid>
-            <Grid item sm={1} />
-            <Grid item sm={3}>
+            <Grid
+              size={{
+                sm: 1
+              }}
+            />
+            <Grid
+              size={{
+                sm: 3
+              }}
+            >
               <FormControl className={classes.formControl} disabled={disableFormElement}>
                 <AvniFormLabel label={"Image Quality"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IMAGE_QUALITY"} />
                 <Select
@@ -564,7 +664,12 @@ function FormElementDetails({ userInfo, ...props }) {
         )}
 
         {["Date", "Duration"].includes(props.formElementData.concept.dataType) && (
-          <Grid container item sm={12}>
+          <Grid
+            container
+            size={{
+              sm: 12
+            }}
+          >
             <AvniFormLabel style={cssClasses.label} label={"Duration Options"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DURATION_OPTIONS"} />
 
             <FormControl component="fieldset" disabled={disableFormElement}>
@@ -578,7 +683,11 @@ function FormElementDetails({ userInfo, ...props }) {
         {props.formElementData.concept.dataType === "Time" && showPicker("time", cssClasses, props, disableFormElement)}
 
         {["Text"].includes(props.formElementData.concept.dataType) && (
-          <Grid item sm={12}>
+          <Grid
+            size={{
+              sm: 12
+            }}
+          >
             {props.formElementData.errorMessage && props.formElementData.errorMessage.validFormat && (
               <div style={{ color: "red" }}> Validation Regex and description key both must be empty or both must be filled</div>
             )}
@@ -602,9 +711,18 @@ function FormElementDetails({ userInfo, ...props }) {
             </FormControl>
           </Grid>
         )}
-        <Grid container item sm={12}>
+        <Grid
+          container
+          size={{
+            sm: 12
+          }}
+        >
           {props.formElementData.concept.dataType !== "QuestionGroup" && (
-            <Grid item sm={4}>
+            <Grid
+              size={{
+                sm: 4
+              }}
+            >
               <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"} disabled={disableFormElement}>
                 <FormControlLabel
                   control={
@@ -628,7 +746,11 @@ function FormElementDetails({ userInfo, ...props }) {
             </Grid>
           )}
           {props.formElementData.concept.dataType === "Subject" && <SubjectFormElementKeyValues {...props} />}
-          <Grid item sm={4}>
+          <Grid
+            size={{
+              sm: 4
+            }}
+          >
             {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(props.formElementData.concept.dataType) && (
               <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"} disabled={disableFormElement}>
                 <FormControlLabel
@@ -652,7 +774,11 @@ function FormElementDetails({ userInfo, ...props }) {
             )}
           </Grid>
           {["Numeric", "Text", "PhoneNumber"].includes(props.formElementData.concept.dataType) && (
-            <Grid item sm={4}>
+            <Grid
+              size={{
+                sm: 4
+              }}
+            >
               <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"} disabled={disableFormElement}>
                 <FormControlLabel
                   control={
@@ -671,7 +797,11 @@ function FormElementDetails({ userInfo, ...props }) {
           )}
         </Grid>
         {props.formElementData.concept.dataType === "Id" && (
-          <Grid item sm={6}>
+          <Grid
+            size={{
+              sm: 6
+            }}
+          >
             <FormControl fullWidth disabled={disableFormElement}>
               <AvniFormLabel label={"Identifier Source"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IDENTIFIER_SOURCE"} />
               <Select
@@ -688,8 +818,12 @@ function FormElementDetails({ userInfo, ...props }) {
           </Grid>
         )}
         {props.formElementData.concept.dataType === "GroupAffiliation" && (
-          <Grid item container spacing={5}>
-            <Grid item sm={6}>
+          <Grid container spacing={5}>
+            <Grid
+              size={{
+                sm: 6
+              }}
+            >
               <FormControl fullWidth disabled={disableFormElement}>
                 <AvniFormLabel label={"Group Subject Type"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE"} />
                 <Select
@@ -704,7 +838,11 @@ function FormElementDetails({ userInfo, ...props }) {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item sm={6}>
+            <Grid
+              size={{
+                sm: 6
+              }}
+            >
               {props.formElementData.keyValues.groupSubjectTypeUUID && (
                 <FormControl fullWidth disabled={disableFormElement}>
                   <AvniFormLabel label={"Group Role"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_ROLE"} />
@@ -728,7 +866,7 @@ function FormElementDetails({ userInfo, ...props }) {
         <Fragment>
           <QuestionGroup parentFormElementUUID={props.formElementData.uuid} {...props} />
           <Grid container direction={"row"} spacing={2}>
-            <Grid item>
+            <Grid>
               <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_REPEATABLE"}>
                 <FormControlLabel
                   control={
@@ -744,7 +882,7 @@ function FormElementDetails({ userInfo, ...props }) {
                 />
               </AvniFormControl>
             </Grid>
-            <Grid item>
+            <Grid>
               <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DISABLE_MANUAL_ACTIONS"}>
                 <FormControlLabel
                   control={
@@ -760,7 +898,7 @@ function FormElementDetails({ userInfo, ...props }) {
                 />
               </AvniFormControl>
             </Grid>
-            <Grid item>
+            <Grid>
               <ColourStyle
                 label={"Text colour"}
                 colour={props.formElementData.keyValues.textColour}
@@ -768,7 +906,7 @@ function FormElementDetails({ userInfo, ...props }) {
                 toolTipKey={"APP_DESIGNER_GROUP_TEXT_COLOUR"}
               />
             </Grid>
-            <Grid item>
+            <Grid>
               <ColourStyle
                 label={"Background colour"}
                 colour={props.formElementData.keyValues.backgroundColour}
@@ -776,7 +914,7 @@ function FormElementDetails({ userInfo, ...props }) {
                 toolTipKey={"APP_DESIGNER_GROUP_BACKGROUND_COLOUR"}
               />
             </Grid>
-            <Grid item>
+            <Grid>
               {props.formElementData.errorMessage && props.formElementData.errorMessage.disallowedChangeError && (
                 <div style={{ color: "red", fontSize: "smaller" }}>
                   Changing repeatability is not allowed. Please replace this question with a new one, associate it with a different concept

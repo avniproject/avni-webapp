@@ -1,7 +1,7 @@
 import React from "react";
 import { BooleanInput } from "react-admin";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 
 export const AvniBooleanInput = ({ toolTipKey, ...props }) => {
   return (

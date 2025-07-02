@@ -1,5 +1,5 @@
 import React from "react";
-import { GridLegacy as Grid, MenuItem, FormHelperText } from "@mui/material";
+import { Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { get } from "lodash";
 
@@ -40,7 +40,12 @@ export const SubjectConcept = props => {
           justifyContent: "flex-start"
         }}
       >
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12
+          }}
+        >
           <AvniSelect
             style={{ width: "400px", height: 40, marginTop: 24 }}
             onChange={updateSubjectType}

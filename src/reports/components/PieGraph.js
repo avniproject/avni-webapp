@@ -1,6 +1,6 @@
 import { ResponsivePie } from "@nivo/pie";
 import React from "react";
-import { GridLegacy as Grid, Typography, Box } from "@mui/material";
+import { Grid, Typography, Box } from "@mui/material";
 
 const PieGraph = ({ data, title, id }) => {
   return (
@@ -13,12 +13,12 @@ const PieGraph = ({ data, title, id }) => {
       }}
     >
       <Grid container direction={"column"}>
-        <Grid item>
+        <Grid>
           <Typography variant="h6" sx={{ mb: 1, textAlign: "center" }}>
             {title}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <div style={{ height: 500, flex: 1 }}>
             <ResponsivePie
               key={id}

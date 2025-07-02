@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect, withRouter } from "react-router-dom";
-import { Box, Button, FormLabel, GridLegacy as Grid } from "@mui/material";
+import { Box, Button, FormLabel, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { Visibility, Delete } from "@mui/icons-material";
 import { subjectTypeInitialState } from "../Constant";
@@ -156,7 +156,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
         }}
       >
         <Title title={"Edit subject type "} />
-        <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+        <Grid container={12} style={{ justifyContent: "flex-end" }}>
           <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
             <Visibility /> Show
           </Button>
@@ -205,11 +205,24 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
           )}
           <p />
         </div>
-        <Grid container item sm={12}>
-          <Grid item sm={1}>
+        <Grid
+          container
+          size={{
+            sm: 12
+          }}
+        >
+          <Grid
+            size={{
+              sm: 1
+            }}
+          >
             <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
           </Grid>
-          <Grid item sm={11}>
+          <Grid
+            size={{
+              sm: 11
+            }}
+          >
             <Button
               disabled={!_.isEmpty(disableDelete)}
               style={

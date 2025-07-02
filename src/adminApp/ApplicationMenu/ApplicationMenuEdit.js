@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import ApplicationMenuReducer from "../Reducers/ApplicationMenuReducer";
@@ -59,7 +59,7 @@ const ApplicationMenuEdit = props => {
       >
         <Title title={`${isCreate() ? "Create" : "Edit"} application menu}`} />
         {!isCreate() && (
-          <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+          <Grid container={12} style={{ justifyContent: "flex-end" }}>
             <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
               <VisibilityIcon /> Show
             </Button>
@@ -79,12 +79,25 @@ const ApplicationMenuEdit = props => {
             </div>
           ))}
         <p />
-        <Grid container item sm={12}>
-          <Grid item sm={1}>
+        <Grid
+          container
+          size={{
+            sm: 12
+          }}
+        >
+          <Grid
+            size={{
+              sm: 1
+            }}
+          >
             <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
           </Grid>
           {!isCreate() && (
-            <Grid item sm={11}>
+            <Grid
+              size={{
+                sm: 11
+              }}
+            >
               <Button
                 style={{
                   float: "right",

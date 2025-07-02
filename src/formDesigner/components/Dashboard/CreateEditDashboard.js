@@ -3,7 +3,7 @@ import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
 import { isEmpty, isNil, reject } from "lodash";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AvniTextField } from "../../../common/components/AvniTextField";
@@ -147,21 +147,23 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
         <br />
         <Grid container>
           <Grid
-            item
             container
-            sm={6}
             sx={{
               justifyContent: "flex-start"
+            }}
+            size={{
+              sm: 6
             }}
           >
             <AvniFormLabel label={"Sections"} toolTipKey={"APP_DESIGNER_DASHBOARD_SECTIONS"} />
           </Grid>
           <Grid
-            item
             container
-            sm={6}
             sx={{
               justifyContent: "flex-end"
+            }}
+            size={{
+              sm: 6
             }}
           >
             <Button color="primary" onClick={addSection}>
@@ -170,7 +172,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
           </Grid>
           {getErrorByKey(error, "EMPTY_SECTIONS")}
         </Grid>
-        <Grid item>
+        <Grid>
           <CreateEditDashboardSections sections={WebDashboard.getSections(dashboard)} dispatch={dispatch} history={history} error={error} />
         </Grid>
         {getErrorByKey(error, "EMPTY_CARDS")}
@@ -186,21 +188,23 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
         />
         <Grid container style={{ marginTop: 100 }}>
           <Grid
-            item
             container
-            sm={6}
             sx={{
               justifyContent: "flex-start"
+            }}
+            size={{
+              sm: 6
             }}
           >
             <AvniFormLabel label={"Filters"} toolTipKey={"APP_DESIGNER_DASHBOARD_FILTERS"} />
           </Grid>
           <Grid
-            item
             container
-            sm={6}
             sx={{
               justifyContent: "flex-end"
+            }}
+            size={{
+              sm: 6
             }}
           >
             <Button color="primary" onClick={showFilterDialog}>
@@ -210,7 +214,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
         </Grid>
         <p />
         {getErrorByKey(error, "INCOMPATIBLE_FILTER_AND_CARD")}
-        <Grid item>
+        <Grid>
           <ShowDashboardFilters
             operationalModules={operationalModules}
             filters={dashboard.filters}
@@ -224,10 +228,10 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
         {getErrorByKey(error, "SERVER_ERROR")}
         {getErrorByKey(error, "MISSING_SUBJECT_TYPE_FILTER")}
         <Grid container direction={"row"}>
-          <Grid item xs={1}>
+          <Grid size={1}>
             <SaveComponent name="save" onSubmit={onSave} />
           </Grid>
-          <Grid item xs={11}>
+          <Grid size={11}>
             {edit && (
               <Button style={{ float: "right", color: "red" }} onClick={onDelete}>
                 <DeleteIcon /> Delete

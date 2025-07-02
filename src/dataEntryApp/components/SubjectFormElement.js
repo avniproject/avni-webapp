@@ -1,4 +1,4 @@
-import { GridLegacy as Grid, FormHelperText } from "@mui/material";
+import { Grid, FormHelperText } from "@mui/material";
 import AsyncSelect from "react-select/async";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -98,7 +98,7 @@ const SubjectFormElement = props => {
         {isMandatory ? "*" : ""}
       </div>
       <Grid container spacing={2} style={{ width: "100%" }}>
-        <Grid item xs={10}>
+        <Grid size={10}>
           <AsyncSelect
             cacheOptions
             loadOptions={debouncedLoadSubjects}

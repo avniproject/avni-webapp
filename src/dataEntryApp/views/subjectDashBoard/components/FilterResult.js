@@ -1,7 +1,7 @@
 import React from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { LineBreak } from "common/components/utils";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Modal from "../components/CommonModal";
 import DialogContent from "@mui/material/DialogContent";
@@ -171,7 +171,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                 alignItems: "flex-start"
               }}
             >
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <DatePicker
                   allowKeyboardControl
                   id="date-picker-dialog"
@@ -194,7 +194,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                   }}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <DatePicker
                   allowKeyboardControl
                   id="date-picker-dialog"

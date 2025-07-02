@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import http from "../../common/utils/httpClient";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
@@ -37,7 +37,13 @@ const ResourceShowView = ({
     >
       <Title title={`Show ${title} : ${resource.name}`} />
       {UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
-        <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
+        <Grid
+          container
+          style={{ justifyContent: "flex-end" }}
+          size={{
+            sm: 12
+          }}
+        >
           <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
             <EditIcon />
             Edit

@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
 import { TextField, Typography } from "@mui/material";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -34,7 +34,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
             searchFilterForm.type === "ProgramEncounterDate" ||
             searchFilterForm.type === "EncounterDate") &&
           searchFilterForm.widget === "Default" ? (
-            <Grid item xs={12} key={index}>
+            <Grid key={index} size={12}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                   {t(searchFilterForm.titleKey)}
@@ -57,7 +57,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
               searchFilterForm.type === "ProgramEncounterDate" ||
               searchFilterForm.type === "EncounterDate") &&
             searchFilterForm.widget === "Range" ? (
-            <Grid item xs={12} key={index}>
+            <Grid key={index} size={12}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                   {t(searchFilterForm.titleKey)}

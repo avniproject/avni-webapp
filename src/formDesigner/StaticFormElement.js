@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Typography, Tooltip, GridLegacy as Grid, InputLabel, AccordionSummary } from "@mui/material";
+import { Accordion, Typography, Tooltip, Grid, InputLabel, AccordionSummary } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { ToolTip } from "../common/components/ToolTip";
 import { dataTypeIcons } from "./components/FormElement";
@@ -59,19 +59,31 @@ const StaticFormElement = ({ groupIndex, index, dataType, name, ...props }) => {
         </div>
         <Grid
           container
-          sm={12}
           sx={{
             alignItems: "center"
           }}
+          size={{
+            sm: 12
+          }}
         >
-          <Grid item sm={11} style={{ paddingTop: "10px" }}>
+          <Grid
+            style={{ paddingTop: "10px" }}
+            size={{
+              sm: 11
+            }}
+          >
             <Typography component="span" className={classes.heading}>
               <InputLabel name={"name" + panel} style={{ display: "inline-block" }} required classes={{ asterisk: classes.asterisk }}>
                 {name}
               </InputLabel>
             </Typography>
           </Grid>
-          <Grid item sm={1} direction="row">
+          <Grid
+            direction="row"
+            size={{
+              sm: 1
+            }}
+          >
             <ToolTip toolTipKey="APP_DESIGNER_FORM_ELEMENT_NAME" onHover displayPosition="bottom" />
           </Grid>
         </Grid>

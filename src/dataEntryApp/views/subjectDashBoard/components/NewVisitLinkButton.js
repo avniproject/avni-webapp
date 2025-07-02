@@ -1,6 +1,6 @@
 import React from "react";
 import SubjectButton from "./Button";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
 

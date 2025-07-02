@@ -26,7 +26,7 @@ import CancelEncounter from "./views/subjectDashBoard/components/CancelEncounter
 import AppBar from "dataEntryApp/components/AppBar";
 import GroupMembershipAddEdit from "./components/GroupMembershipAddEdit";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
 import { NewsList } from "./views/subjectDashBoard/components/news/NewsList";
@@ -63,10 +63,10 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
                 justifyContent: "center"
               }}
             >
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <AppBar />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Route exact path={[path, `${path}/searchFilter`]} component={SearchFilterFormContainer} />
                 <Route exact path={`${path}/search`} component={SubjectSearch} />
                 <Route path={`${path}/register`} component={SubjectRegister} />

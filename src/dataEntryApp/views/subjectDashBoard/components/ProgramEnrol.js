@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography, GridLegacy as Grid } from "@mui/material";
+import { Paper, Typography, Grid } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   onLoad,
@@ -88,7 +88,7 @@ const ProgramEnrol = ({
               alignItems: "center"
             }}
           >
-            <Grid item xs={12}>
+            <Grid size={12}>
               {enrolForm && programEnrolment && formType === "ProgramEnrolment" ? (
                 <ProgramEnrolmentForm formType={formType} fetchRulesResponse={fetchEnrolmentRulesResponse}>
                   <DateFormElement

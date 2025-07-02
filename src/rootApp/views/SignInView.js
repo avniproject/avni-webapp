@@ -4,7 +4,7 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  GridLegacy as Grid,
+  Grid,
   TextField,
   Paper,
   InputAdornment,
@@ -40,8 +40,24 @@ function SignInView({ classes, onSignIn, notifyInputChange, loading, disallowFor
 
   return (
     <Grid container component="main" className={classes.root}>
-      <Grid item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} style={{ backgroundColor: "#f0f2f0" }}>
+      <Grid
+        className={classes.image}
+        size={{
+          xs: false,
+          sm: 4,
+          md: 7
+        }}
+      />
+      <Grid
+        component={Paper}
+        elevation={6}
+        style={{ backgroundColor: "#f0f2f0" }}
+        size={{
+          xs: 12,
+          sm: 8,
+          md: 5
+        }}
+      >
         <Box sx={{ mb: 4 }}>
           <img src={AvniLogo} alt="logo" height="45px" />
         </Box>
@@ -101,7 +117,7 @@ function SignInView({ classes, onSignIn, notifyInputChange, loading, disallowFor
                 SIGN IN
               </Button>
               <Grid container hidden={disallowForgottenPasswordReset}>
-                <Grid item xs>
+                <Grid size="grow">
                   <Link href="#" variant="body2" onClick={toForgotPassword}>
                     Forgot password?
                   </Link>

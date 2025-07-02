@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import Select from "react-select";
-import { Button, GridLegacy as Grid, Checkbox, Typography, IconButton } from "@mui/material";
+import { Button, Grid, Checkbox, Typography, IconButton } from "@mui/material";
 import api from "../api";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -129,7 +129,7 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
     <div style={{ width: "100%" }}>
       <h6>Select dashboards to add to this group:</h6>
       <Grid container spacing={2} style={{ width: "100%" }}>
-        <Grid item xs={10}>
+        <Grid size={10}>
           <Select
             name="addDashboardList"
             ref={otherDashboardsOptionsRef}
@@ -141,7 +141,7 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
             styles={selectStyles}
           />
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <Button
             variant="contained"
             color="primary"

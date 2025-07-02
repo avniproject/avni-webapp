@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
 import { TextField, Typography } from "@mui/material";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { DatePicker, DateTimePicker, TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -35,7 +35,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
           );
           return searchFilterForm.type === "Concept" && searchFilterForm.conceptDataType !== "Coded" ? (
             ["Text", "Id"].includes(searchFilterForm.conceptDataType) ? (
-              <Grid item xs={12} key={index}>
+              <Grid key={index} size={12}>
                 <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                   {t(searchFilterForm.titleKey)}
                 </Typography>
@@ -54,7 +54,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
               </Grid>
             ) : searchFilterForm.widget === "Range" ? (
               searchFilterForm.conceptDataType === "Date" ? (
-                <Grid item xs={12} key={index}>
+                <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
@@ -84,7 +84,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                   </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "DateTime" ? (
-                <Grid item xs={12} key={index}>
+                <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
@@ -114,7 +114,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                   </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Time" ? (
-                <Grid item xs={12} key={index}>
+                <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
@@ -144,7 +144,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                   </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Numeric" ? (
-                <Grid item xs={12} key={index}>
+                <Grid key={index} size={12}>
                   <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                     {t(searchFilterForm.titleKey)}
                   </Typography>
@@ -180,7 +180,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
               )
             ) : searchFilterForm.widget === "Default" ? (
               searchFilterForm.conceptDataType === "Numeric" ? (
-                <Grid item xs={12} key={index}>
+                <Grid key={index} size={12}>
                   <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                     {t(searchFilterForm.titleKey)}
                   </Typography>
@@ -198,7 +198,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                   />
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Date" ? (
-                <Grid item xs={12} key={index}>
+                <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
@@ -217,7 +217,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                   </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "DateTime" ? (
-                <Grid item xs={12} key={index}>
+                <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}
@@ -236,7 +236,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                   </LocalizationProvider>
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Time" ? (
-                <Grid item xs={12} key={index}>
+                <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
                       {t(searchFilterForm.titleKey)}

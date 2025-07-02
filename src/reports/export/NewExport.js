@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/styles";
-import { Typography, GridLegacy as Grid, Button, Paper, Box } from "@mui/material";
+import { Typography, Grid, Button, Paper, Box } from "@mui/material";
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -101,7 +101,7 @@ const NewExport = ({ operationalModules, getOperationalModules, getUploadStatuse
               )}
             </DocumentationContainer>
           </Box>
-          <Grid item>
+          <Grid>
             <Paper style={{ marginBottom: 100 }}>
               <JobStatus exportJobStatuses={exportJobStatuses} operationalModules={operationalModules} />
             </Paper>

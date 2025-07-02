@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles, withStyles } from "@mui/styles";
-import { AppBar, Tabs, Tab, GridLegacy as Grid } from "@mui/material";
+import { AppBar, Tabs, Tab, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 const AntTabs = withStyles({
   indicator: {
@@ -58,7 +58,7 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
   const { t } = useTranslation();
 
   return (
-    <Grid item className={type === "active" ? classes.activeProgramBar : classes.exitedProgramBar}>
+    <Grid className={type === "active" ? classes.activeProgramBar : classes.exitedProgramBar}>
       <label className={type === "active" ? classes.activeProgramLabel : classes.exitedProgramLabel}>
         {t(type === "active" ? "activeprograms" : "exitedProgram")}
       </label>

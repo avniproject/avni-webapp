@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { makeStyles } from "@mui/styles";
-import { Button, GridLegacy as Grid, Typography } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../common/components/utils";
@@ -68,21 +68,21 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
               alignContent: "center"
             }}
           >
-            <Grid item>
+            <Grid>
               <InternalLink to={`${doBaseUrl}=${row.original.uuid}`}>
                 <Button id={`do-visit-${row.original.uuid}`} color="primary">
                   {t("do")}
                 </Button>
               </InternalLink>
             </Grid>
-            <Grid item>
+            <Grid>
               <InternalLink to={`${cancelBaseURL}=${row.original.uuid}`}>
                 <Button id={`cancel-visit-${row.original.uuid}`} color="primary">
                   {t("cancelVisit")}
                 </Button>
               </InternalLink>
             </Grid>
-            <Grid item>
+            <Grid>
               <DeleteButton onDelete={() => onDelete(row.original)} />
             </Grid>
           </Grid>

@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
-import { Accordion, AccordionDetails, AccordionSummary, Typography, List, GridLegacy as Grid, Button, Paper } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Typography, List, Grid, Button, Paper } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import moment from "moment/moment";
 import Observations from "dataEntryApp/components/Observations";
@@ -161,7 +161,7 @@ const SubjectDashboardProfileTab = ({
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <List>
               <Observations observations={profile ? profile.observations : []} form={registrationForm} />
             </List>

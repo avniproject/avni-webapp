@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { TextField, Box, Button, IconButton, GridLegacy as Grid, FormHelperText } from "@mui/material";
+import { TextField, Box, Button, IconButton, Grid, FormHelperText } from "@mui/material";
 import { map } from "lodash";
 import { Delete } from "@mui/icons-material";
 import { ToolTip } from "../../common/components/ToolTip";
@@ -92,7 +92,7 @@ export default function KeyValues({ keyValues, onKeyValueChange, onAddNewKeyValu
         <Button type="button" className={useStyles.button} color="primary" onClick={onAddNewKeyValue}>
           Add New Key-Value
         </Button>
-        <Grid item xs={4}>
+        <Grid size={4}>
           <ToolTip toolTipKey={"APP_DESIGNER_CONCEPT_KEY_VALUE"} />
         </Grid>
       </Grid>

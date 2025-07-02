@@ -3,7 +3,7 @@ import {
   AccordionSummary,
   Typography,
   AccordionDetails,
-  GridLegacy as Grid,
+  Grid,
   Button,
   Dialog,
   DialogTitle,
@@ -112,7 +112,7 @@ export const EnrolmentDetails = ({
         </Typography>
       </AccordionSummary>
       <AccordionDetails style={{ paddingTop: "0px" }}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           {renderObservations()}
           {!isExit ? (
             <Fragment>

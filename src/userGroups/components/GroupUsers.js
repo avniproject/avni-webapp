@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import Select from "react-select";
-import { Button, GridLegacy as Grid, Typography, IconButton } from "@mui/material";
+import { Button, Grid, Typography, IconButton } from "@mui/material";
 import api from "../api";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -108,7 +108,7 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
     <div style={{ width: "100%" }}>
       <h6>Select users to add to this group:</h6>
       <Grid container spacing={2} style={{ width: "100%" }}>
-        <Grid item xs={10}>
+        <Grid size={10}>
           <Select
             name="addUserList"
             ref={selectRef}
@@ -120,7 +120,7 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
             styles={selectStyles}
           />
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <Button variant="contained" color="primary" onClick={addUserToGroupHandler} disabled={buttonDisabled} fullWidth>
             Add user(s)
           </Button>

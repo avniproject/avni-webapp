@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, GridLegacy as Grid, FormControl, FormHelperText } from "@mui/material";
+import { TextField, Grid, FormControl, FormHelperText } from "@mui/material";
 import PropTypes from "prop-types";
 
 export default function NumericConcept(props) {
@@ -12,7 +12,11 @@ export default function NumericConcept(props) {
           justifyContent: "flex-start"
         }}
       >
-        <Grid item sm={12}>
+        <Grid
+          size={{
+            sm: 12
+          }}
+        >
           <FormControl>
             <TextField
               type="number"
@@ -51,7 +55,11 @@ export default function NumericConcept(props) {
             )}
           </FormControl>
         </Grid>
-        <Grid item sm={12}>
+        <Grid
+          size={{
+            sm: 12
+          }}
+        >
           <FormControl>
             <TextField
               type="number"

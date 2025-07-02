@@ -1,15 +1,6 @@
 import React from "react";
 import { withStyles, makeStyles } from "@mui/styles";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Typography,
-  GridLegacy as Grid,
-  InputLabel,
-  IconButton,
-  Tooltip
-} from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Typography, Grid, InputLabel, IconButton, Tooltip } from "@mui/material";
 import {
   ExpandMore,
   ExpandLess,
@@ -176,7 +167,6 @@ function FormElement(props) {
         <Grid container direction="row">
           <Grid
             container
-            item
             sx={{
               alignItems: "center",
               justifyContent: "center"
@@ -186,13 +176,14 @@ function FormElement(props) {
           </Grid>
           <Grid
             container
-            item
-            sm={12}
             sx={{
               alignItems: "center"
             }}
+            size={{
+              sm: 12
+            }}
           >
-            <Grid item>
+            <Grid>
               <Typography component="div" className={classes.secondaryHeading}>
                 {[
                   "Date",
@@ -230,7 +221,12 @@ function FormElement(props) {
                 )}
               </Typography>
             </Grid>
-            <Grid item sm={10} style={{ paddingTop: "10px" }}>
+            <Grid
+              style={{ paddingTop: "10px" }}
+              size={{
+                sm: 10
+              }}
+            >
               <Typography component="span" className={classes.heading}>
                 <span className={classes.expandIcon}>{props.formElementData.expanded ? <ExpandLess /> : <ExpandMore />}</span>
                 <InputLabel
@@ -244,7 +240,11 @@ function FormElement(props) {
                 </InputLabel>
               </Typography>
             </Grid>
-            <Grid item sm={1}>
+            <Grid
+              size={{
+                sm: 1
+              }}
+            >
               <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement} size="small">
                 <Delete />
               </IconButton>

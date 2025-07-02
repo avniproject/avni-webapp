@@ -1,5 +1,5 @@
 import React from "react";
-import { GridLegacy as Grid, MenuItem, FormHelperText } from "@mui/material";
+import { Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { filter, find, get } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -27,7 +27,13 @@ export const EncounterConcept = props => {
   };
 
   const KeyValue = ({ options, keyOption, value, label, toolTip, errorKey, index }) => (
-    <Grid item xs={12} sm={12} style={{ marginTop: "10px" }}>
+    <Grid
+      style={{ marginTop: "10px" }}
+      size={{
+        xs: 12,
+        sm: 12
+      }}
+    >
       <AvniSelect
         key={keyOption}
         style={{ width: "400px", height: 40, marginTop: 24 }}

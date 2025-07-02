@@ -1,5 +1,5 @@
 import React from "react";
-import { List, ListItem, ListItemText, Box, GridLegacy as Grid } from "@mui/material";
+import { List, ListItem, ListItemText, Box, Grid } from "@mui/material";
 import { isEmpty, map, orderBy } from "lodash";
 import WebReportCard from "../../../common/model/WebReportCard";
 
@@ -18,7 +18,7 @@ const ShowDashboardSectionCards = ({ cards }) => {
                 }}
               >
                 <Grid container direction={"column"}>
-                  <Grid item>
+                  <Grid>
                     <ListItem>
                       <ListItemText
                         primary={card.name}

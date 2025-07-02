@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { FormControl, FormControlLabel, Checkbox, GridLegacy as Grid } from "@mui/material";
+import { FormControl, FormControlLabel, Checkbox, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -16,7 +16,7 @@ function CheckBoxSearchComponent({ label, checked, onChange }) {
   return (
     <Fragment>
       <Grid container spacing={3} className={classes.componentSpacing}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <FormControl component="fieldset">
             <FormControlLabel
               control={<Checkbox checked={checked} onChange={onChange} color="primary" />}

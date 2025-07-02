@@ -1,4 +1,4 @@
-import { GridLegacy as Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import React from "react";
 import http from "common/utils/httpClient";
@@ -37,7 +37,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
 
   function renderSimpleSetting(key, name, tooltip, disabled = false, onEnabled = noop) {
     return (
-      <Grid item>
+      <Grid>
         <AvniSwitch
           switchFirst
           checked={orgSettings[key] || false}
@@ -74,13 +74,13 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
   };
 
   return orgSettings ? (
-    <Grid item container direction={"column"}>
-      <Grid item>
+    <Grid container direction={"column"}>
+      <Grid>
         <Typography variant="h5" sx={{ mb: 1 }}>
           Organisation settings
         </Typography>
       </Grid>
-      <Grid item container spacing={1} direction={"column"}>
+      <Grid container spacing={1} direction={"column"}>
         {renderSimpleSetting(organisationConfigSettingKeys.draftSave, "Draft save", "ADMIN_SAVE_DRAFT")}
         {renderSimpleSetting(organisationConfigSettingKeys.hideDateOfBirth, "Hide Date of Birth on DEA", "ADMIN_HIDE_DOB")}
         {renderSimpleSetting(organisationConfigSettingKeys.enableComments, "Enable comments", "ADMIN_ENABLE_COMMENTS")}

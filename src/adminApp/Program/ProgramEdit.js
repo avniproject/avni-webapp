@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { programInitialState } from "../Constant";
 import { programReducer } from "../Reducers";
@@ -115,7 +115,13 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
         }}
       >
         <Title title={"Edit Program "} />
-        <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
+        <Grid
+          container
+          style={{ justifyContent: "flex-end" }}
+          size={{
+            sm: 12
+          }}
+        >
           <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
             <VisibilityIcon /> Show
           </Button>
@@ -158,11 +164,24 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
           <br />
           <br />
         </div>
-        <Grid container item sm={12}>
-          <Grid item sm={1}>
+        <Grid
+          container
+          size={{
+            sm: 12
+          }}
+        >
+          <Grid
+            size={{
+              sm: 1
+            }}
+          >
             <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
           </Grid>
-          <Grid item sm={11}>
+          <Grid
+            size={{
+              sm: 11
+            }}
+          >
             <Button style={{ float: "right", color: "red" }} onClick={() => onDelete()}>
               <DeleteIcon /> Delete
             </Button>

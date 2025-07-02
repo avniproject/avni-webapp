@@ -1,5 +1,5 @@
 import React from "react";
-import { GridLegacy as Grid, FormLabel } from "@mui/material";
+import { Grid, FormLabel } from "@mui/material";
 import { createdAudit, modifiedAudit } from "../../adminApp/components/AuditUtil";
 import _ from "lodash";
 
@@ -13,20 +13,18 @@ export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, m
         justifyContent: "space-between"
       }}
     >
-      <Grid item container direction={"column"} spacing={1} xs={6}>
-        <Grid item>
+      <Grid container direction={"column"} spacing={1} size={6}>
+        <Grid>
           <FormLabel style={{ fontSize: "13px" }}>Created </FormLabel>
         </Grid>
-        <Grid item>
+        <Grid>
           <span style={{ fontSize: "15px" }}>{createdAudit({ createdBy, createdDateTime })}</span>
         </Grid>
       </Grid>
       <Grid
-        item
         container
         direction={"column"}
         spacing={1}
-        xs={6}
         sx={[
           direction
             ? {
@@ -36,11 +34,12 @@ export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, m
                 alignContent: "flex-start"
               }
         ]}
+        size={6}
       >
-        <Grid item>
+        <Grid>
           <FormLabel style={{ fontSize: "13px" }}>Modified </FormLabel>
         </Grid>
-        <Grid item>
+        <Grid>
           <span style={{ fontSize: "15px" }}>
             {modifiedAudit({
               lastModifiedBy,
@@ -49,11 +48,11 @@ export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, m
           </span>
         </Grid>
         {!_.isEmpty(uuid) && (
-          <Grid item container direction={"column"} spacing={1} xs={8}>
-            <Grid item>
+          <Grid container direction={"column"} spacing={1} size={8}>
+            <Grid>
               <FormLabel style={{ fontSize: "13px" }}>UUID </FormLabel>
             </Grid>
-            <Grid item>
+            <Grid>
               <span style={{ fontSize: "15px" }}>{uuid}</span>
             </Grid>
           </Grid>

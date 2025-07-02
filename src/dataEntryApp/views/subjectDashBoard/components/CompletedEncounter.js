@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, Button, GridLegacy as Grid, List, ListItem, ListItemText } from "@mui/material";
+import { Paper, Button, Grid, List, ListItem, ListItemText } from "@mui/material";
 import moment from "moment/moment";
 import { defaultTo, isEmpty, isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
@@ -96,7 +96,14 @@ const CompletedEncounter = ({
   }
   const [voidConfirmation, setVoidConfirmation] = React.useState(false);
   return (
-    <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
+    <Grid
+      key={index}
+      className={classes.rightBorder}
+      size={{
+        xs: 6,
+        sm: 3
+      }}
+    >
       <Paper className={classes.paper}>
         <List style={{ paddingBottom: "0px" }}>
           <ListItem className={classes.listItem}>

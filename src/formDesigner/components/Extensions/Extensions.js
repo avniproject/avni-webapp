@@ -5,7 +5,7 @@ import { Title } from "react-admin";
 import { LabelFileName } from "./LabelFileName";
 import { checkForErrors, ExtensionReducer, extensionScopeTypes } from "./ExtensionReducer";
 import { get, isEmpty, map } from "lodash";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import http from "common/utils/httpClient";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
@@ -115,23 +115,23 @@ const Extensions = ({ userInfo }) => {
       <DocumentationContainer filename={"Prints.md"}>
         <div className="container">
           <Grid container direction={"column"} spacing={5}>
-            <Grid item>
+            <Grid>
               {renderSettings()}
               {getErrorByKey(errors, "EMPTY_SETTING")}
             </Grid>
-            <Grid item>
+            <Grid>
               <Button color={"primary"} onClick={() => dispatch({ type: "newSetting" })}>
                 Add more extensions
               </Button>
             </Grid>
-            <Grid container item direction={"column"}>
-              <Grid item>
+            <Grid container direction={"column"}>
+              <Grid>
                 <input type="file" value={value} onChange={onFileSelect} />
               </Grid>
-              <Grid item>{getErrorByKey(errors, "EMPTY_FILE")}</Grid>
+              <Grid>{getErrorByKey(errors, "EMPTY_FILE")}</Grid>
             </Grid>
             {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditExtension) && (
-              <Grid item>
+              <Grid>
                 <Button variant={"contained"} color={"primary"} onClick={onSave}>
                   Save
                 </Button>

@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { GridLegacy as Grid, Checkbox, FormControlLabel } from "@mui/material";
+import { Grid, Checkbox, FormControlLabel } from "@mui/material";
 import { AvniFormControl } from "../../common/components/AvniFormControl";
 import { FormElement } from "avni-models";
 import Types from "../../adminApp/SubjectType/Types";
@@ -8,7 +8,11 @@ const SubjectFormElementKeyValues = props => {
   const { subjectType } = props;
   return (
     <Fragment>
-      <Grid item sm={4}>
+      <Grid
+        size={{
+          sm: 4
+        }}
+      >
         {Types.isGroup(subjectType.type) && (
           <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DISPLAY_ALL_GROUP_MEMBERS"}>
             <FormControlLabel

@@ -7,7 +7,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import Box from "@mui/material/Box";
 import { map } from "lodash";
 import { GroupCard } from "./components/GroupCard";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import FormControl from "@mui/material/FormControl";
@@ -103,7 +103,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
         >
           <div className={classes.paper} style={{ top: "30%", left: "40%" }}>
             <h4 id="group-title">Create a new Group</h4>
-            <Grid container item>
+            <Grid container>
               <FormControl>
                 <InputLabel error={groupNameError}>Group name</InputLabel>
                 <Input

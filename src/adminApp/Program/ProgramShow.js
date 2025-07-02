@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import FormLabel from "@mui/material/FormLabel";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { get, identity } from "lodash";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
@@ -68,7 +68,13 @@ const ProgramShow = props => {
       >
         <Title title={"Program: " + program.name} />
         {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditProgram) && (
-          <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
+          <Grid
+            container
+            style={{ justifyContent: "flex-end" }}
+            size={{
+              sm: 12
+            }}
+          >
             <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
               <EditIcon />
               Edit

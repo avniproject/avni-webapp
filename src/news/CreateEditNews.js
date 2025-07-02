@@ -1,7 +1,7 @@
 import React from "react";
 import { convertToRaw } from "draft-js";
 import { makeStyles } from "@mui/styles";
-import { Dialog, Box, DialogContent, GridLegacy as Grid, Typography, TextField } from "@mui/material";
+import { Dialog, Box, DialogContent, Grid, Typography, TextField } from "@mui/material";
 import RichTextEditor from "./components/RichTextEditor";
 import { ActionButton } from "./components/ActionButton";
 import { AvniImageUpload } from "../common/components/AvniImageUpload";
@@ -103,7 +103,7 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
       <CustomDialogTitle onClose={handleClose}>{headerTitle}</CustomDialogTitle>
       <DialogContent>
         <Grid container spacing={4} direction={"column"}>
-          <Grid item>
+          <Grid>
             <AvniImageUpload
               label={"Header image"}
               onSelect={setFile}
@@ -113,7 +113,7 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
               renderButton={true}
             />
           </Grid>
-          <Grid item>
+          <Grid>
             <Typography sx={{ opacity: 0.5 }}>{"News title"}</Typography>
             <TextField
               style={{ margin: 8 }}
@@ -124,7 +124,7 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
             />
             {displayErrorForKey(error, "EMPTY_TITLE")}
           </Grid>
-          <Grid item>
+          <Grid>
             <Typography sx={{ opacity: 0.5 }}>{"News description"}</Typography>
             {open && (
               <Box
@@ -145,8 +145,8 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
             )}
             {displayErrorForKey(error, "LESS_CONTENT")}
           </Grid>
-          <Grid item>{displayErrorForKey(error, "SERVER_ERROR")}</Grid>
-          <Grid item>
+          <Grid>{displayErrorForKey(error, "SERVER_ERROR")}</Grid>
+          <Grid>
             <ActionButton onClick={onSave} variant="contained" style={{ paddingHorizontal: 10 }} size="medium">
               {"Save Broadcast"}
             </ActionButton>

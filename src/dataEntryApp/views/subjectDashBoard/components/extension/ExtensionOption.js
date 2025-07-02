@@ -1,7 +1,7 @@
 import React from "react";
 import { map, filter, get } from "lodash";
 import { makeStyles } from "@mui/styles";
-import { Button, GridLegacy as Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import { isDevEnv } from "../../../../../common/constants";
 import { extensionScopeTypes } from "../../../../../formDesigner/components/Extensions/ExtensionReducer";
 import commonApi from "../../../../../common/service";
@@ -52,10 +52,10 @@ export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType, c
   };
 
   return (
-    <Grid item container xs={12} direction={"row-reverse"} spacing={1}>
+    <Grid container direction={"row-reverse"} spacing={1} size={12}>
       {map(filteredSettings, ({ label, fileName }, index) => {
         return (
-          <Grid item key={label + index}>
+          <Grid key={label + index}>
             <Button
               id={label}
               className={classes.buttonStyle}

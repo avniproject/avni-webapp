@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Typography, GridLegacy as Grid, Card, CardActions, CardContent } from "@mui/material";
+import { Typography, Grid, Card, CardActions, CardContent } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
 import RemoveRelative from "../components/RemoveRelative";
@@ -32,16 +32,16 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
   const { t } = useTranslation();
 
   return (
-    <Grid item xs={12} container className={classes.gridBottomBorder}>
+    <Grid container className={classes.gridBottomBorder} size={12}>
       {gridListDetails
         ? gridListDetails.map((relative, index) => {
             if (relative !== undefined && !relative.voided) {
               return (
-                <Grid key={index} item xs={3} className={classes.rightBorder}>
+                <Grid key={index} className={classes.rightBorder} size={3}>
                   <Card className={classes.card}>
                     <CardContent>
                       <Grid container direction={"row"} spacing={1}>
-                        <Grid item>
+                        <Grid>
                           <SubjectProfilePicture
                             allowEnlargementOnClick={true}
                             firstName={relative.individualB.name}
@@ -52,7 +52,7 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
                             style={{ margin: "0px" }}
                           />
                         </Grid>
-                        <Grid item>
+                        <Grid>
                           <Typography component={"div"} sx={{ color: theme => theme.palette.primary.main }}>
                             <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
                               {" "}

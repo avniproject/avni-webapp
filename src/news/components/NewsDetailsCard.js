@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Box, Typography, Button, Divider, GridLegacy as Grid } from "@mui/material";
+import { Box, Typography, Button, Divider, Grid } from "@mui/material";
 import { getFormattedDateTime } from "../../adminApp/components/AuditUtil";
 import { Delete, Edit } from "@mui/icons-material";
 import { ActionButton } from "./ActionButton";
@@ -22,20 +22,20 @@ const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublis
           alignItems: "center"
         }}
       >
-        <Grid item container xs={6} direction={"column"}>
-          <Grid item>
+        <Grid container direction={"column"} size={6}>
+          <Grid>
             <Button color="primary" onClick={history.goBack} style={{ textTransform: "none", backgroundColor: "transparent" }}>
               <Typography variant="h6" sx={{ mb: 1 }}>
                 {"< Back"}
               </Typography>
             </Button>
           </Grid>
-          <Grid item>
+          <Grid>
             <Typography variant="h6" sx={{ mb: 1 }}>
               {news.title}
             </Typography>
           </Grid>
-          <Grid item>
+          <Grid>
             <Typography sx={{ opacity: 0.7 }} variant="body2">
               {getFormattedDateTime(news.createdDateTime)}
             </Typography>
@@ -43,26 +43,25 @@ const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublis
         </Grid>
         {displayActions && canEditNews && (
           <Grid
-            item
             container
             spacing={2}
-            xs={6}
             sx={{
               justifyContent: "flex-end"
             }}
+            size={6}
           >
-            <Grid item>
+            <Grid>
               <Button style={{ color: "red" }} onClick={() => setDeleteAlert(true)}>
                 <Delete /> Delete
               </Button>
             </Grid>
-            <Grid item>
+            <Grid>
               <Button color="primary" type="button" onClick={() => setOpenEdit(true)}>
                 <Edit />
                 Edit
               </Button>
             </Grid>
-            <Grid item>
+            <Grid>
               <ActionButton
                 disabled={!isNil(news.publishedDate)}
                 onClick={() => setPublishAlert(true)}
@@ -88,11 +87,10 @@ const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublis
         }}
       />
       <Grid container spacing={5} direction="column">
-        <Grid item align={"center"}>
+        <Grid align={"center"}>
           <AvniImageUpload oldImgUrl={news.heroImage} height={"400"} width={"80%"} />
         </Grid>
         <Grid
-          item
           container
           sx={{
             justifyContent: "flex-start"

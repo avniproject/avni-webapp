@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, GridLegacy as Grid, Button, MenuItem, IconButton } from "@mui/material";
+import { Box, Grid, Button, MenuItem, IconButton } from "@mui/material";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { Title } from "react-admin";
 import { AvniTextField } from "../common/components/AvniTextField";
@@ -101,8 +101,8 @@ const Msg91Config = () => {
         <DocumentationContainer filename={"PhoneNumberVerification.md"}>
           <Title title={"Phone Number Verification"} />
           <Grid container spacing={2} style={{ width: "100%" }}>
-            <Grid container item spacing={1}>
-              <Grid item xs={5}>
+            <Grid container spacing={1}>
+              <Grid size={5}>
                 <AvniTextField
                   toolTipKey={"ADMIN_PHONE_VERIFICATION_MSG91AUTHKEY"}
                   id="authKey"
@@ -115,7 +115,7 @@ const Msg91Config = () => {
                   disabled={!authKeyChanged}
                 />
               </Grid>
-              <Grid item xs={2}>
+              <Grid size={2}>
                 <div className="container" style={{ alignItems: "left", float: "left", width: "100%" }}>
                   {!authKeyChanged ? (
                     <IconButton onClick={() => setEditMode()} size="large">
@@ -134,7 +134,7 @@ const Msg91Config = () => {
                 </div>
               </Grid>
             </Grid>
-            <Grid item xs={10}>
+            <Grid size={10}>
               <AvniTextField
                 toolTipKey={"ADMIN_PHONE_VERIFICATION_MSG91TEMPLATEID"}
                 id="otpSmsTemplateId"
@@ -145,7 +145,7 @@ const Msg91Config = () => {
                 style={{ width: 300 }}
               />
             </Grid>
-            <Grid item xs={10}>
+            <Grid size={10}>
               <AvniSelect
                 toolTipKey={"ADMIN_PHONE_VERIFICATION_OTPLENGTH"}
                 label={"OTP Length"}
@@ -161,7 +161,7 @@ const Msg91Config = () => {
                 style={{ width: 100 }}
               />
             </Grid>
-            <Grid item xs={10}>
+            <Grid size={10}>
               <SaveComponent name="save" onSubmit={onSubmit} disabledFlag={authKeyChanged ? !authKeyVerified : !dataChanged} />
             </Grid>
           </Grid>

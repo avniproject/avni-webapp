@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Checkbox, FormControlLabel, Button, GridLegacy as Grid, FormHelperText } from "@mui/material";
+import { Checkbox, FormControlLabel, Button, Grid, FormHelperText } from "@mui/material";
 import { Delete, ArrowDropUp, ArrowDropDown } from "@mui/icons-material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import PropTypes from "prop-types";
@@ -38,14 +38,19 @@ export const CodedConceptAnswer = ({
 
   return (
     <Grid
-      item
       container
       spacing={0}
       sx={{
         alignItems: "center"
       }}
     >
-      <Grid item xs={8} sm={3} md={4}>
+      <Grid
+        size={{
+          xs: 8,
+          sm: 3,
+          md: 4
+        }}
+      >
         <AutoSuggestSingleSelection
           visibility={!answer.editable}
           showAnswer={answer}
@@ -63,7 +68,7 @@ export const CodedConceptAnswer = ({
         )}
         {isDuplicateAnswerValue && <FormHelperText error>Duplicate answer specified</FormHelperText>}
       </Grid>
-      <Grid item>
+      <Grid>
         <FormControlLabel
           control={
             <Checkbox
@@ -80,7 +85,7 @@ export const CodedConceptAnswer = ({
           style={{ marginTop: 15, marginLeft: 2 }}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <FormControlLabel
           control={
             <Checkbox
@@ -97,32 +102,31 @@ export const CodedConceptAnswer = ({
           style={{ marginTop: 15 }}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <Grid
-          item
           container
           direction={"row"}
           sx={{
             alignItems: "center"
           }}
         >
-          <Grid item>
+          <Grid>
             <Button disabled={index === 0} color="primary" type="button" onClick={() => action("onMoveUp")}>
               <ArrowDropUp /> Move up
             </Button>
           </Grid>
-          <Grid item>
+          <Grid>
             <Button disabled={index + 1 === totalAnswers} color="primary" type="button" onClick={() => action("onMoveDown")}>
               <ArrowDropDown /> Move down
             </Button>
           </Grid>
-          <Grid item>
+          <Grid>
             <Button style={{ color: "#ff0000" }} type="button" onClick={() => action("onDeleteAnswer")}>
               <Delete fontSize={"small"} /> Remove
             </Button>
           </Grid>
           {!inlineConcept && (
-            <Grid item>
+            <Grid>
               <AvniImageUpload
                 width={20}
                 height={20}

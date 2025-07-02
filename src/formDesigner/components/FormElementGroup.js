@@ -6,7 +6,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Typography,
-  GridLegacy as Grid,
+  Grid,
   Checkbox,
   FormControl,
   Input,
@@ -228,7 +228,7 @@ function FormElementGroup(props) {
           onMouseEnter={hoverDisplayAddGroup}
           onMouseLeave={hoverHideAddGroup}
         >
-          <Grid item>
+          <Grid>
             <StyledAccordion
               TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
               expanded={props.groupData.expanded}
@@ -239,7 +239,6 @@ function FormElementGroup(props) {
                 <Grid container direction="row">
                   <Grid
                     container
-                    item
                     sx={{
                       alignItems: "center",
                       justifyContent: "center"
@@ -249,19 +248,28 @@ function FormElementGroup(props) {
                   </Grid>
                   <Grid
                     container
-                    item
-                    sm={12}
                     sx={{
                       alignItems: "center"
                     }}
+                    size={{
+                      sm: 12
+                    }}
                   >
-                    <Grid item sm={1}>
+                    <Grid
+                      size={{
+                        sm: 1
+                      }}
+                    >
                       <Tooltip title="Grouped Questions">
                         <Group style={{ marginLeft: 12, marginRight: 4 }} />
                       </Tooltip>
                       {props.groupData.expanded ? <ExpandLess className={classes.icon} /> : <ExpandMore className={classes.icon} />}
                     </Grid>
-                    <Grid item sm={6}>
+                    <Grid
+                      size={{
+                        sm: 6
+                      }}
+                    >
                       <Typography className={classes.heading}>
                         {props.groupData.errorMessage && props.groupData.errorMessage.name && (
                           <div style={{ color: "red" }}>Please enter Page name.</div>
@@ -285,9 +293,17 @@ function FormElementGroup(props) {
                       </Typography>
                     </Grid>
                     {props.groupData.timed && (
-                      <Grid item sm={3}>
+                      <Grid
+                        size={{
+                          sm: 3
+                        }}
+                      >
                         <Grid container direction="row">
-                          <Grid item sm={6}>
+                          <Grid
+                            size={{
+                              sm: 6
+                            }}
+                          >
                             <TextField
                               type="number"
                               label="Start time (Seconds)"
@@ -299,7 +315,11 @@ function FormElementGroup(props) {
                               disabled={disableGroup}
                             />
                           </Grid>
-                          <Grid item sm={6}>
+                          <Grid
+                            size={{
+                              sm: 6
+                            }}
+                          >
                             <TextField
                               type="number"
                               label="Stay time (Seconds)"
@@ -314,12 +334,20 @@ function FormElementGroup(props) {
                         </Grid>
                       </Grid>
                     )}
-                    <Grid item sm={props.groupData.timed ? 1 : 3}>
+                    <Grid
+                      size={{
+                        sm: props.groupData.timed ? 1 : 3
+                      }}
+                    >
                       <Typography component="div" className={classes.questionCount}>
                         {questionCount} questions
                       </Typography>
                     </Grid>
-                    <Grid item sm={1}>
+                    <Grid
+                      size={{
+                        sm: 1
+                      }}
+                    >
                       <IconButton aria-label="delete" onClick={handleDelete} disabled={disableGroup} size="large">
                         <Delete />
                       </IconButton>

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { GridLegacy as Grid, MenuItem, FormHelperText } from "@mui/material";
+import { Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
@@ -176,7 +176,12 @@ export const LocationConcept = props => {
           justifyContent: "flex-start"
         }}
       >
-        <Grid item={true} xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12
+          }}
+        >
           <AvniSwitch
             onChange={updateIsWithinCatchment}
             checked={isWithinCatchment}
@@ -184,7 +189,12 @@ export const LocationConcept = props => {
             name="Location is available within user's Catchment"
           />
         </Grid>
-        <Grid item={true} xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12
+          }}
+        >
           <AvniSelect
             style={{ width: "400px", height: 40, marginTop: 24, marginBottom: 24 }}
             onChange={updateLowestAddressLevelTypes}
@@ -202,7 +212,12 @@ export const LocationConcept = props => {
           {props.error.noCommonAncestor && <FormHelperText error>No common higher location between selected lower levels.</FormHelperText>}
         </Grid>
         {lowestAddressLevelTypes.length > 0 && (
-          <Grid item={true} xs={12} sm={12}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12
+            }}
+          >
             <AvniSelect
               style={{ width: "400px", height: 40, marginTop: 24 }}
               onChange={updateHighestAddressLevelType}

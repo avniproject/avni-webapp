@@ -1,5 +1,5 @@
 import React from "react";
-import { FormControl, FormLabel, GridLegacy as Grid } from "@mui/material";
+import { FormControl, FormLabel, Grid } from "@mui/material";
 import { debounce, deburr, get, isEqual, isFunction, map, noop, sortBy } from "lodash";
 import AsyncSelect from "react-select/async";
 import httpClient from "../utils/httpClient";
@@ -74,7 +74,7 @@ const AddressLevelsByType = ({ label, addressLevelsIds = [], setAddressLevelsIds
   );
 
   const renderWithGrid = () => (
-    <Grid item xs={6} style={{ marginBottom: "10px" }}>
+    <Grid style={{ marginBottom: "10px" }} size={6}>
       {renderComponent()}
     </Grid>
   );

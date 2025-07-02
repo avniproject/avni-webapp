@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Card, CardContent, GridLegacy as Grid, Typography } from "@mui/material";
+import { Card, CardContent, Grid, Typography } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import SubjectProfilePicture from "./SubjectProfilePicture";
@@ -37,7 +37,7 @@ const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, su
             alignItems: "center"
           }}
         >
-          <Grid item>
+          <Grid>
             <SubjectProfilePicture
               allowEnlargementOnClick={true}
               firstName={name}
@@ -48,7 +48,7 @@ const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, su
               style={{ margin: "0px" }}
             />
           </Grid>
-          <Grid item>
+          <Grid>
             <InternalLink to={`/app/subject?uuid=${uuid}`}>{name}</InternalLink>
           </Grid>
         </Grid>

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, Paper, Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
+import { Grid, Paper, Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
@@ -173,14 +173,13 @@ const ProgramView = ({
           configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
         />
         <Grid
-          item
-          xs={4}
           container
           direction="row"
           sx={{
             justifyContent: "flex-start",
             alignItems: "flex-start"
           }}
+          size={4}
         >
           <label className={classes.programLabel}>
             {t(programData.program.operationalProgramName)} {t("programdetails")}

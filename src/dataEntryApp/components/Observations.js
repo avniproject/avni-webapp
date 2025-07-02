@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { GridLegacy as Grid, Table } from "@mui/material";
+import { Grid, Table } from "@mui/material";
 import { TableBody } from "@mui/material";
 import { TableCell } from "@mui/material";
 import { TableRow } from "@mui/material";
@@ -277,7 +277,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
               const couldntSignMessage = MediaData.MissingSignedMediaMessage;
               const signedMediaUrl = _.get(mediaData, "url");
               return (
-                <Grid item key={index}>
+                <Grid key={index}>
                   {_.isNil(signedMediaUrl) ? (
                     <Box
                       className={classes.boxStyle}

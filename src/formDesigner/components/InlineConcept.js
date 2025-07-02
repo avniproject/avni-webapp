@@ -1,6 +1,6 @@
 import React from "react";
 import NumericConcept from "./NumericConcept";
-import { Button, FormControl, Input, GridLegacy as Grid, MenuItem, Box } from "@mui/material";
+import { Button, FormControl, Input, Grid, MenuItem, Box } from "@mui/material";
 import { CodedConceptAnswer } from "./CodedConcept";
 import { inlineConceptDataType } from "../common/constants";
 import { BackButton } from "./FormElementDetails";
@@ -40,7 +40,11 @@ function InlineConcept(props) {
       {props.formElementData.inlineConceptErrorMessage.inlineConceptError !== "" && (
         <div style={{ color: "red", fontSize: "10px" }}>{props.formElementData.inlineConceptErrorMessage.inlineConceptError}</div>
       )}
-      <Grid item={true} sm={12}>
+      <Grid
+        size={{
+          sm: 12
+        }}
+      >
         <FormControl fullWidth>
           <AvniFormLabel label={"Concept Name"} toolTipKey={"APP_DESIGNER_CONCEPT_NAME"} />
           <Input
@@ -56,7 +60,11 @@ function InlineConcept(props) {
       {props.formElementData.inlineConceptErrorMessage.name !== "" && (
         <div style={{ color: "red", fontSize: "10px" }}>{props.formElementData.inlineConceptErrorMessage.name}</div>
       )}
-      <Grid item={true} sm={12}>
+      <Grid
+        size={{
+          sm: 12
+        }}
+      >
         <AvniSelect
           label="Datatype *"
           value={props.formElementData.inlineConceptDataType}

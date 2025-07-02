@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { map, startCase } from "lodash";
 import Select from "react-select";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
@@ -22,7 +22,7 @@ const OperatorComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleInd
 
   return (
     <Fragment>
-      <Grid item xs={3}>
+      <Grid size={3}>
         <Select
           placeholder="Select operator"
           value={findOrDefault(operators, ({ value }) => value === rule.operator, null)}

@@ -5,7 +5,7 @@ import {
   AccordionSummary,
   CircularProgress,
   FormControl,
-  GridLegacy as Grid,
+  Grid,
   InputLabel,
   MenuItem,
   Paper,
@@ -122,7 +122,7 @@ const MetadataDiff = ({ response, error, loading, endReview }) => {
         </Typography>
       </div>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           {loading && <CircularProgress />}
           {error && <Typography sx={{ color: theme => theme.palette.error.main }}>{error}</Typography>}
           <Link onClick={endReview}>{"Back to Upload"}</Link>

@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, DialogContent, Typography } from "@mui/material";
+import { Grid, DialogContent, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { first, noop } from "lodash";

@@ -1,7 +1,7 @@
 import React from "react";
 import { useDeclarativeRuleDispatch, useDeclarativeRuleState } from "./DeclarativeRuleContext";
 import { map, startCase, get } from "lodash";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Select from "react-select";
 import ActionDetailsComponent from "./ActionDetailsComponent";
 
@@ -30,7 +30,7 @@ const ActionComponent = ({ action, index, declarativeRuleIndex, getApplicableAct
         alignItems: "center"
       }}
     >
-      <Grid item xs={3}>
+      <Grid size={3}>
         <Select
           placeholder="Select action type"
           value={selectedType ? { value: selectedType, label: startCase(selectedType) } : null}

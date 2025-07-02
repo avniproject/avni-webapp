@@ -59,7 +59,7 @@ import { activatedAudit, createdAudit, modifiedAudit } from "./components/AuditU
 import ResetPasswordButton from "./components/ResetPasswordButton";
 import { AvniPasswordInput } from "./components/AvniPasswordInput";
 import Chip from "@mui/material/Chip";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";
@@ -334,7 +334,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }
                 alignItems: "center"
               }}
             >
-              <Grid item xs={3}>
+              <Grid size={3}>
                 <SelectInput
                   resettable
                   source={`syncSettings.${[subjectType.name]}.${syncAttributeName}`}
@@ -349,7 +349,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }
                   {...defaultValue}
                 />
               </Grid>
-              <Grid item xs={9}>
+              <Grid size={9}>
                 {!isEmpty(syncAttributeConceptUUID) ? (
                   get(syncAttributeConcept, "dataType") === "Coded" ? (
                     <Select

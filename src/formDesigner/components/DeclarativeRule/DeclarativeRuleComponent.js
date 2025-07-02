@@ -4,7 +4,7 @@ import ActionComponent from "./ActionComponent";
 import ConditionComponent from "./ConditionComponent";
 import { AddCircle, Delete } from "@mui/icons-material";
 import IconButton from "../IconButton";
-import { Box, GridLegacy as Grid, Typography, Button } from "@mui/material";
+import { Box, Grid, Typography, Button } from "@mui/material";
 import Colors from "../../../dataEntryApp/Colors";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 
@@ -22,7 +22,6 @@ const DeclarativeRuleComponent = ({ declarativeRule, declarativeRuleIndex, getAp
     >
       <Grid
         container
-        item
         sx={{
           justifyContent: "flex-end"
         }}

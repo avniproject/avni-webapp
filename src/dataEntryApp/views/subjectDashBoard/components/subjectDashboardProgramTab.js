@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography, GridLegacy as Grid } from "@mui/material";
+import { Paper, Typography, Grid } from "@mui/material";
 import ProgramDetails from "./subjectDashboardProgramDetails";
 import Program from "./Program";
 import { useTranslation } from "react-i18next";
@@ -66,7 +66,7 @@ const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, subjectTyp
             {flagActive ? (
               <Fragment>
                 <Program type="active" program={program} selectedTab={selectedTab} handleTabChange={handleTabChange} />
-                <Grid item style={{ width: "60px" }} />
+                <Grid style={{ width: "60px" }} />
               </Fragment>
             ) : (
               ""

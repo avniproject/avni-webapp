@@ -1,4 +1,4 @@
-import { Card, CardContent, GridLegacy as Grid, Typography, CardActionArea } from "@mui/material";
+import { Card, CardContent, Grid, Typography, CardActionArea } from "@mui/material";
 import React from "react";
 
 const classes = {
@@ -32,8 +32,8 @@ export const HomePageCard = ({ href, name, customIconComponent }) => (
             alignItems: "center"
           }}
         >
-          <Grid item>{customIconComponent}</Grid>
-          <Grid item>
+          <Grid>{customIconComponent}</Grid>
+          <Grid>
             <Typography
               variant="h5"
               component="h2"

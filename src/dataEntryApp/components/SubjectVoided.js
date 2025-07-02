@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Paper, GridLegacy as Grid, Button, Typography } from "@mui/material";
+import { Paper, Grid, Button, Typography } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,12 +21,12 @@ const SubjectVoided = ({ onUnVoid, showUnVoid }) => {
           alignItems: "flex-start"
         }}
       >
-        <Grid item>
+        <Grid>
           <Typography variant="h4" sx={{ color: theme => theme.palette.error.main, mb: 1 }}>
             {"THE SUBJECT HAS BEEN VOIDED"}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           {showUnVoid && (
             <Button onClick={onUnVoid} color="primary">
               {"Unvoid"}

@@ -23,7 +23,7 @@ import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
-import { Box, GridLegacy as Grid, FormHelperText, MenuItem } from "@mui/material";
+import { Box, Grid, FormHelperText, MenuItem } from "@mui/material";
 import { AvniTextField } from "../common/components/AvniTextField";
 import { SaveComponent } from "../common/components/SaveComponent";
 import { AvniSelect } from "../common/components/AvniSelect";
@@ -319,7 +319,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
         }}
       >
         <Grid container style={{ backgroundColor: "#fff" }} direction="column">
-          <Grid item xs={6}>
+          <Grid size={6}>
             <AvniTextField
               id="name"
               label="Name*"
@@ -332,7 +332,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.name && <FormHelperText error>{errors.name}</FormHelperText>}
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <AvniTextField
               id="dbUser"
               label="DB User*"
@@ -345,7 +345,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.dbUser && <FormHelperText error>{errors.dbUser}</FormHelperText>}
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <AvniTextField
               id="schemaName"
               label="Schema Name*"
@@ -358,7 +358,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.schemaName && <FormHelperText error>{errors.schemaName}</FormHelperText>}
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <AvniTextField
               id="mediaDirectory"
               label="Media Directory*"
@@ -371,7 +371,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.mediaDirectory && <FormHelperText error>{errors.mediaDirectory}</FormHelperText>}
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <AvniTextField
               id="usernameSuffix"
               label="Username Suffix*"
@@ -384,7 +384,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.usernameSuffix && <FormHelperText error>{errors.usernameSuffix}</FormHelperText>}
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <AvniSelect
               id="categoryId"
               label="Organisation Category*"
@@ -401,7 +401,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.categoryId && <FormHelperText error>{errors.categoryId}</FormHelperText>}
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <AvniSelect
               id="statusId"
               label="Organisation Status*"
@@ -418,11 +418,18 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
             />
             {errors.statusId && <FormHelperText error>{errors.statusId}</FormHelperText>}
           </Grid>
-          <Grid item xs={6}>
-            {errors.other && <FormHelperText error>{errors.other}</FormHelperText>}
-          </Grid>
-          <Grid container item sm={12}>
-            <Grid item sm={2}>
+          <Grid size={6}>{errors.other && <FormHelperText error>{errors.other}</FormHelperText>}</Grid>
+          <Grid
+            container
+            size={{
+              sm: 12
+            }}
+          >
+            <Grid
+              size={{
+                sm: 2
+              }}
+            >
               <SaveComponent name="save" onSubmit={handleSubmit} styleClass={{ marginTop: "10px" }} />
             </Grid>
           </Grid>

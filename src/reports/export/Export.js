@@ -1,16 +1,5 @@
 import { makeStyles } from "@mui/styles";
-import {
-  FormControl,
-  FormLabel,
-  Typography,
-  GridLegacy as Grid,
-  Button,
-  Paper,
-  Box,
-  FormGroup,
-  FormControlLabel,
-  Checkbox
-} from "@mui/material";
+import { FormControl, FormLabel, Typography, Grid, Button, Paper, Box, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import React from "react";
 import api from "../api";
 import { connect } from "react-redux";
@@ -82,7 +71,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
   const renderAddressLevel = () => {
     return (
       <Grid container direction={"row"}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <AddressLevelsByType
             label={"Address (Leave blank to consider all)"}
             addressLevelsIds={addressLevelIds}
@@ -90,7 +79,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
             setError={error => dispatch("AddressLevelError", error)}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <div style={{ color: "red", marginBottom: "10px" }}>{addressLevelError}</div>
         </Grid>
       </Grid>
@@ -202,7 +191,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
               )}
             </DocumentationContainer>
           </Box>
-          <Grid item>
+          <Grid>
             <Paper style={{ marginBottom: 100 }}>
               <JobStatus exportJobStatuses={exportJobStatuses} operationalModules={operationalModules} />
             </Paper>

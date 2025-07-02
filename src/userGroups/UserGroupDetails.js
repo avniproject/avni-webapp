@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import React from "react";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { TabView } from "./components/TabbedView";
 import Box from "@mui/material/Box";

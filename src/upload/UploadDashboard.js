@@ -4,7 +4,7 @@ import { withRouter } from "react-router-dom";
 
 import _, { concat, get, isEmpty, isNil } from "lodash";
 import Paper from "@mui/material/Paper";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloudDownload from "@mui/icons-material/CloudDownload";
 import Button from "@mui/material/Button";
@@ -258,24 +258,23 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
   return (
     <Grid container spacing={2} className={classes.root}>
       <Title title="Upload" />
-      <Grid item xs={12} style={{ minWidth: 1200, maxWidth: 1400 }}>
+      <Grid style={{ minWidth: 1200, maxWidth: 1400 }} size={12}>
         <Paper className={classes.uploadDownloadSection}>
           <DocumentationContainer filename="Upload.md">
-            <Grid container item spacing={2}>
-              <Grid container item>
-                Upload
-              </Grid>
-              <Grid container item>
+            <Grid container spacing={2}>
+              <Grid container>Upload</Grid>
+              <Grid container>
                 <Grid
                   container
-                  item
                   direction="column"
-                  xs={8}
-                  sm={4}
                   spacing={2}
                   sx={{
                     justifyContent: "center",
                     alignItems: "flex-start"
+                  }}
+                  size={{
+                    xs: 8,
+                    sm: 4
                   }}
                 >
                   <DropDown name="Type" value={uploadType} onChange={handleDropdownChange} options={uploadAndDownloadOptions} />
@@ -289,7 +288,7 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                   </Tooltip>
                 </Grid>
                 {isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
-                  <Grid item>
+                  <Grid>
                     <Button className={classes.reviewButton} onClick={handleReviewClick}>
                       Review
                     </Button>
@@ -297,17 +296,18 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                 )}
                 <Grid
                   container
-                  item
                   direction="column"
-                  xs={8}
-                  sm={4}
                   spacing={2}
                   sx={{
                     justifyContent: "center",
                     alignItems: "flex-start"
                   }}
+                  size={{
+                    xs: 8,
+                    sm: 4
+                  }}
                 >
-                  <Grid item>
+                  <Grid>
                     <FileUpload
                       canSelect={!isEmpty(uploadType)}
                       canUpload={!isNil(file)}
@@ -315,14 +315,14 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                       onUpload={handleUploadFile}
                     />
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <span style={{ marginLeft: "1em" }}>Selected File: {get(file, "name", "")}</span>
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
             <Grid container>
-              <Grid container item>
+              <Grid container>
                 {uploadTypes.isApprovalEnabled(uploadType) && (
                   <FormControlLabel
                     control={
@@ -337,11 +337,11 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                   />
                 )}
               </Grid>
-              <Grid container item>
+              <Grid container>
                 {uploadType === UPLOAD_TYPES.LOCATIONS && <LocationModes mode={locationUploadMode} setMode={setLocationUploadMode} />}
                 {isEncounterType(uploadType) && <EncounterModes mode={encounterUploadMode} setMode={setEncounterUploadMode} />}
               </Grid>
-              <Grid container item>
+              <Grid container>
                 {uploadType === UPLOAD_TYPES.LOCATIONS &&
                   locationUploadMode === LOCATION_MODES.CREATE &&
                   (configuredHierarchies.length > 0 ? (
@@ -364,7 +364,7 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
           </DocumentationContainer>
         </Paper>
       </Grid>
-      <Grid item xs={12}>
+      <Grid size={12}>
         <Paper style={{ marginBottom: 100 }}>
           <UploadStatus />
         </Paper>

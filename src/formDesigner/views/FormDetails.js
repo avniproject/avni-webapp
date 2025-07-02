@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import _, { cloneDeep, isEmpty, replace, split } from "lodash";
 import http from "common/utils/httpClient";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import FormElementGroup from "../components/FormElementGroup";
 import Button from "@mui/material/Button";
 import Tabs from "@mui/material/Tabs";
@@ -920,7 +920,11 @@ class FormDetails extends Component {
             alignContent: "flex-end"
           }}
         >
-          <Grid item sm={10}>
+          <Grid
+            size={{
+              sm: 10
+            }}
+          >
             {this.state.nameError && <FormHelperText error>Form name is empty</FormHelperText>}
             <TextField
               type="string"
@@ -936,7 +940,11 @@ class FormDetails extends Component {
             />
           </Grid>
           {this.state.createFlag && (
-            <Grid item sm={2}>
+            <Grid
+              size={{
+                sm: 2
+              }}
+            >
               <Button
                 fullWidth
                 variant="contained"
@@ -950,7 +958,11 @@ class FormDetails extends Component {
             </Grid>
           )}
           {hasFormEditPrivilege && !this.state.createFlag && (
-            <Grid item sm={2}>
+            <Grid
+              size={{
+                sm: 2
+              }}
+            >
               <SaveComponent
                 name="Save"
                 onSubmit={this.validateForm}
@@ -978,14 +990,27 @@ class FormDetails extends Component {
             </div>
           )}
         </Grid>
-        <Grid item sm={12}>
+        <Grid
+          size={{
+            sm: 12
+          }}
+        >
           <Tabs style={{ background: "#2196f3", color: "white" }} value={this.state.activeTabIndex} onChange={this.onTabHandleChange}>
             <Tab label="Details" />
             <Tab label="Rules" />
           </Tabs>
           <TabContainer hidden={this.state.activeTabIndex !== 0}>
-            <Grid container item sm={12}>
-              <Grid item sm={12}>
+            <Grid
+              container
+              size={{
+                sm: 12
+              }}
+            >
+              <Grid
+                size={{
+                  sm: 12
+                }}
+              >
                 {this.state.errorMsg !== "" && (
                   <FormControl fullWidth margin="dense">
                     <li style={{ color: "red" }}>{this.state.errorMsg}</li>

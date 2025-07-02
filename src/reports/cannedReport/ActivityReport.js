@@ -1,6 +1,6 @@
 import React from "react";
 import ActivityCard from "../components/ActivityCard";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { connect } from "react-redux";
 import { getActivityReport } from "../reducers";
 import { withRouter } from "react-router-dom";
@@ -30,9 +30,9 @@ const ActivityReport = ({ activityReport, getActivityReport }) => {
             alignItems: "baseline"
           }}
         >
-          <Grid item>{renderActivityCard("Registrations", "registrations")}</Grid>
-          <Grid item>{renderActivityCard("Enrolments", "enrolments")}</Grid>
-          <Grid item>{renderActivityCard("Completed Visits", "completedVisits")}</Grid>
+          <Grid>{renderActivityCard("Registrations", "registrations")}</Grid>
+          <Grid>{renderActivityCard("Enrolments", "enrolments")}</Grid>
+          <Grid>{renderActivityCard("Completed Visits", "completedVisits")}</Grid>
         </Grid>
       )}
     </BorderBox>

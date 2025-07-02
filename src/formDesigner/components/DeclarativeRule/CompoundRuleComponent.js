@@ -1,7 +1,7 @@
 import React from "react";
 import RuleComponent from "./RuleComponent";
 import { isEmpty, map, toUpper } from "lodash";
-import { Box, GridLegacy as Grid, Button, Chip } from "@mui/material";
+import { Box, Grid, Button, Chip } from "@mui/material";
 import { AddCircle, Delete } from "@mui/icons-material";
 import IconButton from "../IconButton";
 import CompoundRuleConjunctionComponent from "./CompoundRuleConjunctionComponent";
@@ -46,10 +46,9 @@ const CompoundRuleComponent = ({ compoundRule, conditionIndex, declarativeRuleIn
       </Box>
       <Grid container direction={"column"}>
         {map(rules, (rule, index) => (
-          <Grid item container direction={"column"} spacing={1} key={index}>
+          <Grid container direction={"column"} spacing={1} key={index}>
             {index !== 0 && (
               <Grid
-                item
                 container
                 sx={{
                   justifyContent: "center"

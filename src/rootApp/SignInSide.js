@@ -1,18 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import {
-  Avatar,
-  Button,
-  CssBaseline,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Link,
-  Paper,
-  Box,
-  GridLegacy as Grid,
-  Typography
-} from "@mui/material";
+import { Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Link, Paper, Box, Grid, Typography } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
 import SideImage from "formDesigner/styles/images/background.jpg";
 
@@ -66,8 +54,24 @@ export default function SignInSide() {
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
-      <Grid item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+      <Grid
+        className={classes.image}
+        size={{
+          xs: false,
+          sm: 4,
+          md: 7
+        }}
+      />
+      <Grid
+        component={Paper}
+        elevation={6}
+        square
+        size={{
+          xs: 12,
+          sm: 8,
+          md: 5
+        }}
+      >
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
             <LockOutlined />
@@ -103,12 +107,12 @@ export default function SignInSide() {
               Sign In
             </Button>
             <Grid container>
-              <Grid item xs>
+              <Grid size="grow">
                 <Link href="#" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Link href="#" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>

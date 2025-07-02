@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { makeStyles } from "@mui/styles";
-import { Box, GridLegacy as Grid, IconButton } from "@mui/material";
+import { Box, Grid, IconButton } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import http from "common/utils/httpClient";
 import { find, isEmpty } from "lodash";
@@ -151,14 +151,14 @@ const CompletedVisitsTable = ({
               alignContent: "center"
             }}
           >
-            <Grid item>
+            <Grid>
               <EditVisit
                 editEncounterUrl={editEncounterUrl(row.original.cancelDateTime ? "cancel" : "")}
                 encounter={row.original}
                 isForProgramEncounters={isForProgramEncounters}
               />
             </Grid>
-            <Grid item>
+            <Grid>
               <DeleteButton onDelete={() => onDelete(row.original)} />
             </Grid>
           </Grid>

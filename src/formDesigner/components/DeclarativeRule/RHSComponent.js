@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { getFormType, useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 import { flatten, get, isEmpty, map, startCase, toNumber, zip } from "lodash";
 import { RHS, Rule } from "rules-config";
@@ -36,7 +36,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
 
   function renderValueBasedOnLHS() {
     return (
-      <Grid item xs={3}>
+      <Grid size={3}>
         {rule.lhs.isGender() ? (
           <Select
             placeholder="Select gender"
@@ -65,7 +65,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
 
   function renderForAnswerConcept() {
     return (
-      <Grid item xs={4}>
+      <Grid size={4}>
         <ConceptSearch
           placeholder={"Search answer"}
           isMulti={isMulti}
@@ -103,7 +103,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
 
   return (
     <Fragment>
-      <Grid item xs={3}>
+      <Grid size={3}>
         <Select
           placeholder="Select type"
           value={selectedTypeOption}

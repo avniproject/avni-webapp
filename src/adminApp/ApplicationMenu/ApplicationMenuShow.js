@@ -4,7 +4,7 @@ import { Redirect } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import _ from "lodash";
 import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import RuleDisplay from "../components/RuleDisplay";
@@ -34,7 +34,7 @@ const ApplicationMenuShow = props => {
         >
           <Title title={"Application menu: " + menuItem.displayKey} />
           {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditApplicationMenu) && (
-            <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+            <Grid container={12} style={{ justifyContent: "flex-end" }}>
               <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
                 <EditIcon />
                 Edit

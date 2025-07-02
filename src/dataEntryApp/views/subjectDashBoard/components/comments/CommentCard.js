@@ -1,4 +1,4 @@
-import { GridLegacy as Grid, Typography, Chip, IconButton, Menu, MenuItem, Fade } from "@mui/material";
+import { Grid, Typography, Chip, IconButton, Menu, MenuItem, Fade } from "@mui/material";
 import { AccountCircle, MoreVert } from "@mui/icons-material";
 import React from "react";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";
@@ -69,23 +69,21 @@ export const CommentCard = ({ comment, displayMenu, status, dispatch, setComment
 
   return (
     <Grid container direction={"row"}>
-      <Grid item xs={1}>
+      <Grid size={1}>
         <AccountCircle />
       </Grid>
-      <Grid item xs={textBreakPoint} container direction={"column"} spacing={1}>
-        <Grid item container direction={"column"}>
-          <Grid item>{displayUsername}</Grid>
-          <Grid item>{getFormattedDateTime(comment.createdDateTime)}</Grid>
+      <Grid container direction={"column"} spacing={1} size={textBreakPoint}>
+        <Grid container direction={"column"}>
+          <Grid>{displayUsername}</Grid>
+          <Grid>{getFormattedDateTime(comment.createdDateTime)}</Grid>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography sx={{ mb: 1 }} variant="body1">
             {comment.text}
           </Typography>
         </Grid>
       </Grid>
-      <Grid item xs={optionBreakPoint}>
-        {displayMenu ? renderOptions() : renderStatus()}
-      </Grid>
+      <Grid size={optionBreakPoint}>{displayMenu ? renderOptions() : renderStatus()}</Grid>
       <ConfirmDialog
         open={openDelete}
         setOpen={setOpenDelete}

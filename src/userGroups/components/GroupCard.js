@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { DeleteOutline } from "@mui/icons-material";
-import { GridLegacy as Grid, CardActions, Button, CardContent, Typography, CardActionArea, Card } from "@mui/material";
+import { Grid, CardActions, Button, CardContent, Typography, CardActionArea, Card } from "@mui/material";
 import GroupModel from "../../common/model/GroupModel";
 
 export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
@@ -45,7 +45,7 @@ export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
             justifyContent: "flex-end"
           }}
         >
-          <Grid item>
+          <Grid>
             <Button size="small" disabled={GroupModel.nonRemovableGroup(groupName)} onClick={onDelete}>
               <DeleteOutline />
             </Button>

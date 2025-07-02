@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Button, GridLegacy as Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   item: {

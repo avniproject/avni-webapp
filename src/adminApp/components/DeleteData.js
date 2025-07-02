@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, FormControlLabel, Checkbox, Button, Modal, TextField } from "@mui/material";
+import { Grid, FormControlLabel, Checkbox, Button, Modal, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { get } from "lodash";
 import http from "common/utils/httpClient";
@@ -77,18 +77,16 @@ export const DeleteData = ({
     <div>
       <Modal onClose={MuiComponentHelper.getDialogClosingHandler(() => setOpenModal(false))} open={openModal}>
         <Grid container direction={"column"} spacing={3} className={classes.paper} style={{ top: "25%", left: "30%" }}>
-          <Grid item container spacing={1} xs={12}>
-            <Grid item xs={1}>
+          <Grid container spacing={1} size={12}>
+            <Grid size={1}>
               {" "}
               <Warning color={"error"} style={{ fontSize: "40px" }} />
             </Grid>
-            <Grid item xs={11}>
-              {warningMessage}
-            </Grid>
+            <Grid size={11}>{warningMessage}</Grid>
           </Grid>
-          <Grid item>{deleteClientDataMessage}</Grid>
+          <Grid>{deleteClientDataMessage}</Grid>
           {hasOrgMetadataDeletionPrivilege && (
-            <Grid item>
+            <Grid>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -103,7 +101,7 @@ export const DeleteData = ({
             </Grid>
           )}
           {hasOrgAdminConfigDeletionPrivilege && deleteMetadata && (
-            <Grid item>
+            <Grid>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -117,20 +115,20 @@ export const DeleteData = ({
               />
             </Grid>
           )}
-          <Grid item>
+          <Grid>
             <TextField
               fullWidth
               helperText="Please enter organisation name to proceed"
               onChange={event => setConfirmText(event.target.value)}
             />
           </Grid>
-          <Grid item container spacing={3}>
-            <Grid item>
+          <Grid container spacing={3}>
+            <Grid>
               <Button variant="contained" color="primary" onClick={() => setOpenModal(false)}>
                 Cancel
               </Button>
             </Grid>
-            <Grid item>
+            <Grid>
               <Button
                 variant="contained"
                 color="secondary"

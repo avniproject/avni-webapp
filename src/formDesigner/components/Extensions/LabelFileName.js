@@ -1,4 +1,4 @@
-import { GridLegacy as Grid, Input, IconButton } from "@mui/material";
+import { Grid, Input, IconButton } from "@mui/material";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import React from "react";
 import { RemoveCircle } from "@mui/icons-material";
@@ -14,11 +14,11 @@ export const LabelFileName = ({ label, fileName, scope, index, dispatch, options
         alignItems: "center"
       }}
     >
-      <Grid item>
+      <Grid>
         <AvniFormLabel label={"Label"} toolTipKey={"APP_DESIGNER_PRINT_LABEL"} />
         <Input id={label} value={label} onChange={event => dispatch({ type: "setLabel", payload: { index, value: event.target.value } })} />
       </Grid>
-      <Grid item>
+      <Grid>
         <AvniFormLabel label={"File Name"} toolTipKey={"APP_DESIGNER_PRINT_FILE_NAME"} />
         <Input
           id={fileName}
@@ -26,7 +26,7 @@ export const LabelFileName = ({ label, fileName, scope, index, dispatch, options
           onChange={event => dispatch({ type: "setFileName", payload: { index, value: event.target.value } })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <div style={{ width: "300px" }}>
           <AvniFormLabel label={"Select Extension Scope *"} toolTipKey={"APP_DESIGNER_PRINT_SCOPE"} position={"top"} />
           <Select
@@ -37,7 +37,7 @@ export const LabelFileName = ({ label, fileName, scope, index, dispatch, options
           />
         </div>
       </Grid>
-      <Grid item>
+      <Grid>
         {index !== 0 && (
           <IconButton
             style={{ color: "#d0011b" }}

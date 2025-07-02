@@ -1,6 +1,6 @@
 import { head, map, sortBy } from "lodash";
 import { makeStyles } from "@mui/styles";
-import { GridLegacy as Grid, Paper, Typography, Card, CardActionArea, CardContent, Button, IconButton } from "@mui/material";
+import { Grid, Paper, Typography, Card, CardActionArea, CardContent, Button, IconButton } from "@mui/material";
 import { onThreadReply } from "../../../../reducers/CommentReducer";
 import React, { useState } from "react";
 import { Comment, ChevronRight } from "@mui/icons-material";
@@ -70,7 +70,7 @@ export const ThreadListing = ({ commentThreads, dispatch, setOpen, newCommentTex
           {map(commentThreads, ({ id, status, comments }) => {
             const topComment = head(sortBy(comments, "createdDateTime"));
             return (
-              <Grid item xs={12} key={id}>
+              <Grid key={id} size={12}>
                 <Card>
                   <CardActionArea onClick={() => dispatch(onThreadReply(id))}>
                     <CardContent>

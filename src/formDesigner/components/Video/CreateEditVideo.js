@@ -10,7 +10,7 @@ import { Redirect } from "react-router-dom";
 import http from "../../../common/utils/httpClient";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { GridLegacy as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { createServerError, getErrorByKey } from "../../common/ErrorUtil";
 
@@ -133,10 +133,10 @@ export const CreateEditVideo = ({ edit, ...props }) => {
         <p />
         {getErrorByKey(error, "SERVER_ERROR")}
         <Grid container direction={"row"}>
-          <Grid item xs={1}>
+          <Grid size={1}>
             <SaveComponent name="save" onSubmit={onSave} />
           </Grid>
-          <Grid item xs={11}>
+          <Grid size={11}>
             {edit && (
               <Button style={{ float: "right", color: "red" }} onClick={onDelete}>
                 <DeleteIcon /> Delete
