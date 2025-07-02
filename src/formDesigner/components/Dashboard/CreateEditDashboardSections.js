@@ -1,5 +1,5 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import React, { Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { IconButton, Input, MenuItem, Tooltip, Typography, Grid } from "@mui/material";
 import { Delete, ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty } from "lodash";
@@ -12,53 +12,31 @@ import { DragNDropComponent } from "../../common/DragNDropComponent";
 import { dashboardReducerActions } from "./DashboardReducer";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 
-const useStyles = makeStyles(theme => ({
-  parent: {
-    paddingLeft: 0,
-    paddingBottom: 30
-  },
-  root: {
-    width: "100%"
-  },
-  rootError: {
-    width: "100%",
-    border: "1px solid red"
-  },
-  iconlay: {
-    flex: 1,
-    alignItems: "center"
-  },
-  questionCount: {
-    paddingTop: "5px"
-  },
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  alignItems: "center",
+}));
 
-  absolute: {
-    position: "absolute",
-    marginLeft: 20,
-    marginTop: -20
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15)
-  },
-  secondaryHeading: {
-    flexBasis: "70%",
-    fontSize: theme.typography.pxToRem(15)
-    //color: theme.palette.text.secondary,
-  },
-  tabs: {
-    minHeight: "26px",
-    height: "26px"
-  },
-  tab: {
-    minHeight: "26px",
-    height: "26px"
-  },
-  formElementGroupInputText: {
-    lineHeight: "56px"
-  },
-  sectionDesc: {
-    margin: "2px"
-  }
+const StyledTypography = styled(Typography)(({ theme, variant }) => ({
+  ...(variant === "heading" && {
+    fontSize: theme.typography.pxToRem(15),
+  }),
+  ...(variant === "questionCount" && {
+    paddingTop: "5px",
+  }),
+}));
+
+const StyledIcon = styled("span")(({ theme, variant }) => ({
+  ...(variant === "list" && {
+    marginLeft: 12,
+    marginRight: 4,
+  }),
+  ...(variant !== "list" && {
+    marginRight: "8px",
+  }),
+}));
+
+const StyledSelect = styled(AvniSelect)(({ theme }) => ({
+  width: "200px",
 }));
 
 function EditSection({ section, index, dispatch, history }) {
@@ -78,8 +56,7 @@ function EditSection({ section, index, dispatch, history }) {
           toolTipKey={"APP_DESIGNER_DASHBOARD_SECTION_DESCRIPTION"}
         />
         <br />
-        <AvniSelect
-          style={{ width: "200px" }}
+        <StyledSelect
           onChange={event =>
             dispatch({ type: dashboardReducerActions.updateSectionField, payload: { section, viewType: event.target.value } })
           }
@@ -110,35 +87,31 @@ function EditSection({ section, index, dispatch, history }) {
 }
 
 function DashboardSectionSummary({ section, index, expanded, dispatch }) {
-  const classes = useStyles();
   const stopPropagation = e => e.stopPropagation();
 
   return (
-    <Grid
+    <StyledGrid
       container
-      sx={{
-        alignItems: "center"
-      }}
       size={{
-        sm: 12
+        sm: 12,
       }}
     >
       <Grid
         size={{
-          sm: 2
+          sm: 2,
         }}
       >
         <Tooltip title={"Grouped Questions"}>
-          <List style={{ marginLeft: 12, marginRight: 4 }} />
+          <StyledIcon as={List} variant="list" />
         </Tooltip>
-        {expanded === "panel" + index ? <ExpandLess classes={{ root: classes.icon }} /> : <ExpandMore classes={{ root: classes.icon }} />}
+        {expanded === "panel" + index ? <StyledIcon as={ExpandLess} /> : <StyledIcon as={ExpandMore} />}
       </Grid>
       <Grid
         size={{
-          sm: 5
+          sm: 5,
         }}
       >
-        <Typography className={classes.heading}>
+        <StyledTypography variant="heading">
           <Input
             type="text"
             placeholder="Section name"
@@ -151,18 +124,20 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
             }
             autoComplete="off"
           />
-        </Typography>
+        </StyledTypography>
       </Grid>
       <Grid
         size={{
-          sm: 3
+          sm: 3,
         }}
       >
-        <Typography className={classes.questionCount}>{WebDashboardSection.getReportCards(section).length} cards</Typography>
+        <StyledTypography variant="questionCount">
+          {WebDashboardSection.getReportCards(section).length} cards
+        </StyledTypography>
       </Grid>
       <Grid
         size={{
-          sm: 2
+          sm: 2,
         }}
       >
         <IconButton
@@ -173,9 +148,10 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
           <Delete />
         </IconButton>
       </Grid>
-    </Grid>
+    </StyledGrid>
   );
 }
+
 const CreateEditDashboardSections = props => {
   const onDragEnd = result => {
     if (!result.destination) {
@@ -183,14 +159,14 @@ const CreateEditDashboardSections = props => {
     }
     props.dispatch({
       type: dashboardReducerActions.changeSectionDisplayOrder,
-      payload: { sourceIndex: result.source.index, destIndex: result.destination.index }
+      payload: { sourceIndex: result.source.index, destIndex: result.destination.index },
     });
   };
 
   const sections = props.sections;
 
   return (
-    <React.Fragment>
+    <Fragment>
       {!isEmpty(sections) && (
         <DragNDropComponent
           dataList={props.sections}
@@ -204,7 +180,7 @@ const CreateEditDashboardSections = props => {
           summaryDirection={"row"}
         />
       )}
-    </React.Fragment>
+    </Fragment>
   );
 };
 

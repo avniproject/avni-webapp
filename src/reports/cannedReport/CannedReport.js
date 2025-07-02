@@ -1,18 +1,16 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { reportSideBarOptions } from "../Common";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import AggregateReport from "./AggregateReport";
 import ActivityReport from "./ActivityReport";
-import { makeStyles } from "@mui/styles";
 import { AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
 import { Equalizer, FormatListNumbered } from "@mui/icons-material";
 import { some } from "lodash";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper
-  }
+const StyledContainer = styled('div')(({ theme }) => ({
+  flexGrow: 1,
+  backgroundColor: theme.palette.background.paper,
 }));
 
 function TabPanel(props) {
@@ -29,9 +27,9 @@ function TabPanel(props) {
   );
 }
 
-function renderCannedReport(classes, value, setValue) {
+function renderCannedReport(value, setValue) {
   return (
-    <div className={classes.root}>
+    <StyledContainer>
       <AppBar position="static">
         <Tabs value={value} onChange={(event, newValue) => setValue(newValue)} aria-label="report-tabs" variant="fullWidth">
           <Tab label="Activity Report" icon={<FormatListNumbered />} />
@@ -44,7 +42,7 @@ function renderCannedReport(classes, value, setValue) {
       <TabPanel value={value} index={1}>
         <AggregateReport />
       </TabPanel>
-    </div>
+    </StyledContainer>
   );
 }
 
@@ -59,12 +57,11 @@ function renderComingSoon() {
 const displayCannedReport = some(["localhost", "staging"], env => window.location.href.includes(env));
 
 const CannedReport = () => {
-  const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
   return (
     <ScreenWithAppBar appbarTitle={`Aggregate reports`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
-      {displayCannedReport ? renderCannedReport(classes, value, setValue) : renderComingSoon()}
+      {displayCannedReport ? renderCannedReport(value, setValue) : renderComingSoon()}
     </ScreenWithAppBar>
   );
 };

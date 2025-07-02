@@ -1,43 +1,38 @@
 import React, { Fragment } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { TextField, Typography, Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { find } from "lodash";
 import AddressLevelsByType from "../../../common/components/AddressLevelsByType";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  },
-  lableStyle: {
-    marginBottom: 10,
-    color: "rgba(0, 0, 0, 0.54)"
-  },
-  componentSpacing: {
-    marginTop: "1%",
-    marginBottom: "1%"
-  }
+const StyledContainer = styled(Grid)(({ theme }) => ({
+  marginTop: '1%',
+  marginBottom: '1%',
+}));
+
+const StyledLabel = styled(Typography)(({ theme }) => ({
+  marginBottom: 10,
+  color: 'rgba(0, 0, 0, 0.54)',
 }));
 
 function BasicForm({
-  searchFilterForms,
-  onChange,
-  genders,
-  onGenderChange,
-  selectedGender,
-  enterValue,
-  addressLevelIds,
-  setAddressLevelIds
-}) {
-  const classes = useStyles();
+                     searchFilterForms,
+                     onChange,
+                     genders,
+                     onGenderChange,
+                     selectedGender,
+                     enterValue,
+                     addressLevelIds,
+                     setAddressLevelIds
+                   }) {
   const { t } = useTranslation();
 
   function renderSearchAll(index, titleKey) {
     return (
       <Grid key={index}>
-        <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
+        <StyledLabel variant="body1">
           {t(titleKey)}
-        </Typography>
+        </StyledLabel>
         <TextField
           id={titleKey}
           key={index}
@@ -56,13 +51,13 @@ function BasicForm({
 
   return isFilterConfigured ? (
     <Fragment>
-      <Grid container spacing={3} className={classes.componentSpacing}>
+      <StyledContainer container spacing={3}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Name" ? (
             <Grid key={index}>
-              <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
+              <StyledLabel variant="body1">
                 {t(searchFilterForm.titleKey)}
-              </Typography>
+              </StyledLabel>
               <TextField
                 id={searchFilterForm.titleKey}
                 key={index}
@@ -82,9 +77,9 @@ function BasicForm({
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Age" ? (
             <Grid key={index}>
-              <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
+              <StyledLabel variant="body1">
                 {t(searchFilterForm.titleKey)}
-              </Typography>
+              </StyledLabel>
               <TextField
                 id={searchFilterForm.titleKey}
                 key={index}
@@ -104,14 +99,14 @@ function BasicForm({
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "SearchAll" ? renderSearchAll(index, searchFilterForm.titleKey) : ""
         )}
-      </Grid>
-      <Grid container spacing={3} className={classes.componentSpacing}>
+      </StyledContainer>
+      <StyledContainer container spacing={3}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Gender" ? (
             <Grid key={index} size={12}>
-              <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
+              <StyledLabel variant="body1">
                 {t(searchFilterForm.titleKey)}
-              </Typography>
+              </StyledLabel>
               <FormGroup row>
                 {genders.map((gender, index) => (
                   <FormControlLabel
@@ -133,9 +128,9 @@ function BasicForm({
             ""
           )
         )}
-      </Grid>
+      </StyledContainer>
 
-      <Grid container spacing={3} className={classes.componentSpacing}>
+      <StyledContainer container spacing={3}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Address" ? (
             <Grid key={index} size={12}>
@@ -149,17 +144,17 @@ function BasicForm({
             ""
           )
         )}
-      </Grid>
+      </StyledContainer>
     </Fragment>
   ) : (
-    <Grid container spacing={3} className={classes.componentSpacing}>
+    <StyledContainer container spacing={3}>
       {renderSearchAll(1, "searchAll")}
-    </Grid>
+    </StyledContainer>
   );
 }
 
 BasicForm.defaultProps = {
-  searchFilterForm: {}
+  searchFilterForms: []
 };
 
 export default BasicForm;

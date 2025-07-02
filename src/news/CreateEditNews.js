@@ -1,6 +1,6 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { convertToRaw } from "draft-js";
-import { makeStyles } from "@mui/styles";
 import { Dialog, Box, DialogContent, Grid, Typography, TextField } from "@mui/material";
 import RichTextEditor from "./components/RichTextEditor";
 import { ActionButton } from "./components/ActionButton";
@@ -17,15 +17,34 @@ import API from "./api";
 import MuiComponentHelper from "../common/utils/MuiComponentHelper";
 import { createServerError } from "../formDesigner/common/ErrorUtil";
 
-const useStyles = makeStyles(theme => ({
-  dialogPaper: {
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialog-paper": {
     minHeight: "90%",
-    minWidth: "80%"
-  }
+    minWidth: "80%",
+  },
+}));
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  border: 1,
+  marginTop: theme.spacing(2),
+  borderColor: "#ddd",
+  padding: theme.spacing(2),
+}));
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  margin: theme.spacing(1),
+  width: "100%",
+}));
+
+const StyledActionButton = styled(ActionButton)(({ theme }) => ({
+  padding: theme.spacing(0, 1.25),
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  opacity: 0.5,
 }));
 
 export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingNews }) => {
-  const classes = useStyles();
   const [news, dispatch] = React.useReducer(NewsReducer, newsInitialState);
   const [file, setFile] = React.useState();
   const [error, setError] = React.useState([]);
@@ -78,7 +97,7 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
         publishedDate: news.publishedDate,
         heroImage: s3FileKey,
         content,
-        contentHtml
+        contentHtml,
       };
 
       const response = edit ? API.editNews(payload) : API.createNews(payload);
@@ -99,24 +118,23 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
   };
 
   return (
-    <Dialog onClose={MuiComponentHelper.getDialogClosingHandler(handleClose)} classes={{ paper: classes.dialogPaper }} open={open}>
+    <StyledDialog onClose={MuiComponentHelper.getDialogClosingHandler(handleClose)} open={open}>
       <CustomDialogTitle onClose={handleClose}>{headerTitle}</CustomDialogTitle>
       <DialogContent>
-        <Grid container spacing={4} direction={"column"}>
+        <Grid container spacing={4} direction="column">
           <Grid>
             <AvniImageUpload
-              label={"Header image"}
+              label="Header image"
               onSelect={setFile}
               oldImgUrl={news.heroImage}
-              height={"300"}
-              width={"100%"}
+              height="300"
+              width="100%"
               renderButton={true}
             />
           </Grid>
           <Grid>
-            <Typography sx={{ opacity: 0.5 }}>{"News title"}</Typography>
-            <TextField
-              style={{ margin: 8 }}
+            <StyledTypography>News title</StyledTypography>
+            <StyledTextField
               fullWidth
               margin="normal"
               value={news.title || ""}
@@ -125,35 +143,28 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
             {displayErrorForKey(error, "EMPTY_TITLE")}
           </Grid>
           <Grid>
-            <Typography sx={{ opacity: 0.5 }}>{"News description"}</Typography>
+            <StyledTypography>News description</StyledTypography>
             {open && (
-              <Box
-                sx={{
-                  border: 1,
-                  mt: 2,
-                  borderColor: "#ddd",
-                  p: 2
-                }}
-              >
+              <StyledBox>
                 <RichTextEditor
                   editorState={news.editorState}
                   setEditorState={newState =>
                     dispatchActionAndClearError("editorState", newState, "LESS_CONTENT", dispatch, error, setError)
                   }
                 />
-              </Box>
+              </StyledBox>
             )}
             {displayErrorForKey(error, "LESS_CONTENT")}
           </Grid>
           <Grid>{displayErrorForKey(error, "SERVER_ERROR")}</Grid>
           <Grid>
-            <ActionButton onClick={onSave} variant="contained" style={{ paddingHorizontal: 10 }} size="medium">
-              {"Save Broadcast"}
-            </ActionButton>
+            <StyledActionButton onClick={onSave} variant="contained" size="medium">
+              Save Broadcast
+            </StyledActionButton>
           </Grid>
         </Grid>
       </DialogContent>
       <CustomizedBackdrop load={!saving} />
-    </Dialog>
+    </StyledDialog>
   );
 };

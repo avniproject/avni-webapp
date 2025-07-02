@@ -1,26 +1,28 @@
 import React, { useEffect } from "react";
+import { styled } from '@mui/material/styles';
 import { isEmpty, map, size, uniq } from "lodash";
-import { makeStyles } from "@mui/styles";
 import { Typography, Button } from "@mui/material";
 
-const useStyle = makeStyles(theme => ({
-  root: {
-    margin: "10px",
-    paddingTop: "10px",
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "flex-end"
-  },
-  space: {
-    marginLeft: theme.spacing(10),
-    marginRight: theme.spacing(10),
-    float: "left"
-  }
+const StyledRoot = styled('div')(({ theme }) => ({
+  margin: "10px",
+  paddingTop: "10px",
+  display: "flex",
+  alignItems: "center",
+  flexDirection: "row",
+  justifyContent: "flex-end"
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  marginLeft: theme.spacing(10),
+  marginRight: theme.spacing(10)
+}));
+
+const StyledSelectButton = styled(Button)(({ theme }) => ({
+  marginLeft: theme.spacing(10),
+  marginRight: theme.spacing(10)
 }));
 
 export const AssignmentToolBar = ({ assignmentCriteria, dispatch, showSelect1000 = true, ...props }) => {
-  const classes = useStyle();
   const { data, selectedRows } = props;
   const selectedRowSize = size(selectedRows);
 
@@ -43,20 +45,20 @@ export const AssignmentToolBar = ({ assignmentCriteria, dispatch, showSelect1000
   const on1000Selected = () => dispatch({ type: "setAction", payload: { key: "allSelected", value: true } });
 
   return (
-    <div className={classes.root}>
+    <StyledRoot>
       {selectedRowSize > 0 && (
-        <Typography className={classes.space} variant="body1">
+        <StyledTypography variant="body1">
           {`Selected ${assignmentCriteria.allSelected ? 1000 : selectedRowSize} tasks`}
-        </Typography>
+        </StyledTypography>
       )}
       {showSelect1000 && selectedRowSize > 0 && selectedRowSize === size(data) && (
-        <Button className={classes.space} color="primary" onClick={on1000Selected}>
+        <StyledSelectButton color="primary" onClick={on1000Selected}>
           {"Click here to select first 1000 tasks"}
-        </Button>
+        </StyledSelectButton>
       )}
       <Button variant="contained" color="primary" onClick={() => onActionPress(selectedIds)} disabled={isEmpty(selectedIds)}>
         {"Actions"}
       </Button>
-    </div>
+    </StyledRoot>
   );
 };

@@ -1,20 +1,18 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Fab } from "@mui/material";
+import clsx from "clsx";
 
-const useStyles = makeStyles(theme => ({
-  ButtonStyle: {
-    marginBottom: theme.spacing(2),
-    marginRight: "10px",
-    height: "28px"
-  }
+const StyledFab = styled(Fab)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  marginRight: "10px",
+  height: "28px",
 }));
 
 const Button = ({ btnLabel, btnClass, btnClick, btnDisabled, id, ...props }) => {
-  const classes = useStyles();
   return (
-    <Fab
-      className={btnClass ? (classes.ButtonStyle, btnClass) : classes.ButtonStyle}
+    <StyledFab
+      className={clsx(btnClass)}
       variant="extended"
       color="primary"
       aria-label="add"
@@ -24,7 +22,7 @@ const Button = ({ btnLabel, btnClass, btnClick, btnDisabled, id, ...props }) => 
       {...props}
     >
       {btnLabel}
-    </Fab>
+    </StyledFab>
   );
 };
 

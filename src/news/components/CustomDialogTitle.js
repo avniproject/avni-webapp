@@ -1,29 +1,27 @@
+import React from "react";
+import { styled } from '@mui/material/styles';
 import { Typography, DialogTitle, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
-import { withStyles } from "@mui/styles";
-import React from "react";
 
-const styles = theme => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2)
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500]
-  }
-});
+const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
+  margin: 0,
+  padding: theme.spacing(2),
+}));
 
-export const CustomDialogTitle = withStyles(styles)(props => {
-  const { children, classes, onClose, ...other } = props;
+const StyledCloseButton = styled(IconButton)(({ theme }) => ({
+  position: "absolute",
+  right: theme.spacing(1),
+  top: theme.spacing(1),
+  color: theme.palette.grey[500],
+}));
+
+export const CustomDialogTitle = ({ children, onClose, ...other }) => {
   return (
-    <DialogTitle className={classes.root} {...other}>
+    <StyledDialogTitle {...other}>
       <Typography variant="h6">{children}</Typography>
-      <IconButton aria-label="close" className={classes.closeButton} onClick={onClose} size="large">
+      <StyledCloseButton aria-label="close" onClick={onClose} size="large">
         <Close />
-      </IconButton>
-    </DialogTitle>
+      </StyledCloseButton>
+    </StyledDialogTitle>
   );
-});
+};

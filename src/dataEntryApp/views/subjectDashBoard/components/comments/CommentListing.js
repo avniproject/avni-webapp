@@ -1,64 +1,88 @@
 import { get, isEmpty, map, sortBy } from "lodash";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Box, Paper, Typography, TextField, Button, IconButton } from "@mui/material";
-import { addNewComment, getCommentThreads, onCommentEdit, onThreadResolve, selectCommentState } from "../../../../reducers/CommentReducer";
-import React, { useState } from "react";
+import { addNewComment, getCommentThreads, onCommentEdit, onThreadResolve, selectCommentState } from "../../../../reducers/Comment/reducer";
+import React, { useState, Fragment } from "react";
 import { Comment, ChevronRight, ChevronLeft } from "@mui/icons-material";
 import { CommentCard } from "./CommentCard";
 import { useSelector } from "react-redux";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(theme => ({
-  drawerHeader: {
-    width: 500,
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "space-between",
-    backgroundColor: "#313a46"
+const StyledHeader = styled('div')(({ theme }) => ({
+  width: 500,
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  padding: theme.spacing(0, 1),
+  ...theme.mixins.toolbar,
+  justifyContent: "space-between",
+  backgroundColor: "#313a46",
+}));
+
+const StyledIconContainer = styled('div')(({ theme }) => ({
+  display: "flex",
+  backgroundColor: "#556479",
+  height: 40,
+  width: 50,
+  alignItems: "center",
+  marginLeft: 5,
+}));
+
+const StyledCommentButton = styled(Button)(({ theme }) => ({
+  color: "#3949ab",
+  background: "#fff",
+  textTransform: "none",
+  "&:hover": {
+    backgroundColor: "#bababa",
   },
-  commentButton: {
-    color: "#3949ab",
-    background: "#fff",
-    "&:hover": {
-      backgroundColor: "#bababa"
-    }
-  },
-  iconContainer: {
-    display: "flex",
-    backgroundColor: "#556479",
-    height: 40,
-    width: 50,
-    alignItems: "center",
-    marginLeft: 5
-  },
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    width: 500,
-    backgroundColor: "#f5f5f5",
-    minHeight: "100vh"
-  },
-  firstComment: {
-    width: 500,
-    flexWrap: "wrap",
-    padding: theme.spacing(3)
-  },
-  comment: {
-    width: 450,
-    flexWrap: "wrap",
-    padding: theme.spacing(3)
-  },
-  inputText: {
-    width: 450
-  }
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  width: 500,
+  backgroundColor: "#f5f5f5",
+  minHeight: "100vh",
+}));
+
+const StyledFirstComment = styled(Paper)(({ theme }) => ({
+  width: 500,
+  flexWrap: "wrap",
+  padding: theme.spacing(3),
+}));
+
+const StyledComment = styled(Paper)(({ theme }) => ({
+  width: 450,
+  flexWrap: "wrap",
+  padding: theme.spacing(3),
+}));
+
+const StyledInputText = styled(Paper)(({ theme }) => ({
+  width: 450,
+}));
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  marginBottom: theme.spacing(2),
+}));
+
+const StyledCommentHeader = styled(Typography)(({ theme }) => ({
+  color: "#fff",
+}));
+
+const StyledChevronIcon = styled(ChevronLeft)(({ theme }) => ({
+  color: "#fff",
+}));
+
+const StyledCommentIcon = styled(Comment)(({ theme }) => ({
+  color: "#fff",
+  marginRight: 5,
+  marginLeft: 5,
 }));
 
 export const CommentListing = ({ comments, dispatch, newCommentText, onCommentChange, subjectUUID, setOpen }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const { activeThread } = useSelector(selectCommentState);
   const disableResolve = get(activeThread, "status", "Open") === "Resolved";
@@ -73,72 +97,47 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
   const onNewComment = () => dispatch(addNewComment(subjectUUID));
 
   return (
-    <React.Fragment>
-      <div className={classes.drawerHeader}>
-        <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-          <div className={classes.iconContainer}>
+    <Fragment>
+      <StyledHeader>
+        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+          <StyledIconContainer>
             <IconButton onClick={() => dispatch(getCommentThreads(subjectUUID))} size="large">
-              <ChevronLeft style={{ color: "#fff" }} />
+              <StyledChevronIcon />
             </IconButton>
-          </div>
-          <Comment style={{ color: "#fff", marginRight: 5, marginLeft: 5 }} />
-          <Typography sx={{ color: "#fff" }}>{t("Comments")}</Typography>
-        </div>
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <Button
+          </StyledIconContainer>
+          <StyledCommentIcon />
+          <StyledCommentHeader>{t("Comments")}</StyledCommentHeader>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <StyledCommentButton
             disabled={disableResolve}
-            className={classes.commentButton}
-            style={{ textTransform: "none" }}
             onClick={() => setOpenResolve(true)}
           >
             {t("resolveThread")}
-          </Button>
-          <div className={classes.iconContainer}>
+          </StyledCommentButton>
+          <StyledIconContainer>
             <IconButton onClick={() => setOpen(false)} size="large">
               <ChevronRight style={{ color: "#fff" }} />
             </IconButton>
-          </div>
-        </div>
-      </div>
-      <Paper elevation={0} className={classes.root}>
-        {map(sortBy(comments, "createdDateTime"), (comment, index) => {
-          return (
-            <Box
-              sx={[
-                {
-                  display: "flex",
-                  alignItems: "center",
-                  mb: 2
-                },
-                index === 0
-                  ? {
-                      justifyContent: "flex-start"
-                    }
-                  : {
-                      justifyContent: "center"
-                    }
-              ]}
-            >
-              <Paper elevation={0} className={index === 0 ? classes.firstComment : classes.comment}>
-                <CommentCard displayMenu comment={comment} dispatch={dispatch} setCommentToEdit={setCommentToEdit} />
-              </Paper>
-            </Box>
-          );
-        })}
-        <Box
-          sx={{
-            mt: 3
-          }}
-        />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mb: 2
-          }}
-        >
-          <Paper elevation={0} className={classes.inputText}>
+          </StyledIconContainer>
+        </Box>
+      </StyledHeader>
+      <StyledPaper elevation={0}>
+        {map(sortBy(comments, "createdDateTime"), (comment, index) => (
+          <StyledBox
+            key={comment.id}
+            sx={{
+              justifyContent: index === 0 ? "flex-start" : "center",
+            }}
+          >
+            <Paper elevation={0} component={index === 0 ? StyledFirstComment : StyledComment}>
+              <CommentCard displayMenu comment={comment} dispatch={dispatch} setCommentToEdit={setCommentToEdit} />
+            </Paper>
+          </StyledBox>
+        ))}
+        <Box sx={{ marginTop: 3 }} />
+        <StyledBox sx={{ justifyContent: "center" }}>
+          <StyledInputText elevation={0}>
             <TextField
               fullWidth
               id="new-comment"
@@ -149,13 +148,9 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
               value={newCommentText}
               onChange={onCommentChange}
             />
-          </Paper>
-        </Box>
-        <Box
-          sx={{
-            ml: 3
-          }}
-        >
+          </StyledInputText>
+        </StyledBox>
+        <Box sx={{ marginLeft: 3 }}>
           <Button
             variant="contained"
             color="primary"
@@ -165,12 +160,8 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
             {isEmpty(commentToEdit) ? t("postComment") : t("editComment")}
           </Button>
         </Box>
-        <Box
-          sx={{
-            pt: 10
-          }}
-        />
-      </Paper>
+        <Box sx={{ paddingTop: 10 }} />
+      </StyledPaper>
       <ConfirmDialog
         setOpen={setOpenResolve}
         open={openResolve}
@@ -178,6 +169,6 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
         message={t("threadResolveMessage")}
         onConfirm={() => dispatch(onThreadResolve())}
       />
-    </React.Fragment>
+    </Fragment>
   );
 };

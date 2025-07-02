@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { AppBar, Toolbar, IconButton, Typography, MenuItem, Menu, Button, ClickAwayListener, Grow, Paper, Popper } from "@mui/material";
 import { AccountCircle, MoreHoriz, ExpandMore, Home } from "@mui/icons-material";
 import NewMenu from "../views/dashboardNew/NewMenu";
@@ -11,91 +11,81 @@ import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
 
-const useStyles = makeStyles(theme => ({
-  grow: {
-    flexGrow: 1
-  },
-  menuButton: {
-    marginRight: theme.spacing(2)
-  },
-  title: {
-    flexGrow: 1,
-    display: "none",
-    [theme.breakpoints.up("sm")]: {
-      display: "block"
-    }
-  },
-  userName: {
-    fontSize: "15px",
-    marginBottom: "0px",
-    fontWeight: "600px",
-    color: "blue"
-  },
-  userDesignation: {
-    fontSize: "12px",
-    marginRight: "6px",
-    marginBottom: "0px",
-    color: "grey"
-  },
-  users: {
-    marginRight: "3px"
-  },
-  sectionDesktop: {
-    display: "none",
-    [theme.breakpoints.up("md")]: {
-      display: "flex"
-    }
-  },
-  root: {
-    width: "100%",
-    color: "blue",
-    maxWidth: 360,
-    position: "absolute",
-    zIndex: "2",
-    backgroundColor: theme.palette.background.paper
-  },
-  MuiSvgIcon: {
-    root: {
-      color: "blue"
-    }
-  },
-  nested: {
-    paddingLeft: theme.spacing(4)
-  },
-  sectionMobile: {
-    display: "flex",
-    [theme.breakpoints.up("md")]: {
-      display: "none"
-    }
-  },
-  inputSearch: {
-    borderBottom: "1px solid #dcdcdc",
-    color: "#0e6eff",
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(1),
-      width: "715px"
-    }
-  },
-  headerMenu: {
-    marginLeft: theme.spacing(3)
-  },
-  ListItemText: {
-    color: "blue"
-  },
-  button: {
-    margin: theme.spacing(1)
+const StyledRoot = styled('div')({
+  flexGrow: 1
+});
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  background: "white"
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  flexGrow: 1,
+  display: "none",
+  [theme.breakpoints.up("sm")]: {
+    display: "block"
   }
 }));
 
+const StyledRegisterButton = styled(Button)(({ theme }) => ({
+  marginLeft: theme.spacing(3),
+  color: "#0e6eff"
+}));
+
+const StyledLinkButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+  marginRight: "10px",
+  marginLeft: "2px",
+  color: "white",
+  background: "blue",
+  padding: "2px",
+  paddingLeft: "10px",
+  paddingRight: "10px",
+  borderRadius: "3px"
+}));
+
+const StyledUsers = styled('div')({
+  marginRight: "3px"
+});
+
+const StyledUserName = styled('p')({
+  fontSize: "15px",
+  marginBottom: "0px",
+  fontWeight: "600",
+  color: "blue"
+});
+
+const StyledSectionDesktop = styled('div')(({ theme }) => ({
+  display: "none",
+  [theme.breakpoints.up("md")]: {
+    display: "flex"
+  }
+}));
+
+const StyledSectionMobile = styled('div')(({ theme }) => ({
+  display: "flex",
+  [theme.breakpoints.up("md")]: {
+    display: "none"
+  }
+}));
+
+const StyledUserOptionContainer = styled('div')(({ theme }) => ({
+  width: "100%",
+  color: "blue",
+  maxWidth: 360,
+  position: "absolute",
+  zIndex: "2",
+  backgroundColor: theme.palette.background.paper
+}));
+
+const StyledPopper = styled(Popper)({
+  zIndex: 100
+});
+
 const PrimarySearchAppBar = ({ user, history }) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -104,13 +94,12 @@ const PrimarySearchAppBar = ({ user, history }) => {
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen);
   };
-  // return focus to the button when we transitioned from !open -> open
+
   const prevOpen = React.useRef(open);
   useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
-
     prevOpen.current = open;
   }, [open]);
 
@@ -120,8 +109,8 @@ const PrimarySearchAppBar = ({ user, history }) => {
 
   const isNewsAvailable = useSelector(selectIsNewsAvailable);
 
-  const handleProfileMenuOpen = event => {
-    userOption ? setUserOption(false) : setUserOption(true);
+  const handleProfileMenuOpen = () => {
+    setUserOption(prev => !prev);
   };
 
   const handleMobileMenuClose = () => {
@@ -143,9 +132,9 @@ const PrimarySearchAppBar = ({ user, history }) => {
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <ClickAwayListener onClickAway={handleClickAway}>
-      <div>
+      <StyledUserOptionContainer>
         <UserOption history={history} />
-      </div>
+      </StyledUserOptionContainer>
     </ClickAwayListener>
   );
 
@@ -170,80 +159,62 @@ const PrimarySearchAppBar = ({ user, history }) => {
   );
 
   const LinkButton = ({ link, label }) => (
-    <Button
+    <StyledLinkButton
       variant="contained"
-      className={classes.button}
       component={Link}
       to={link}
-      style={{
-        marginRight: "10px",
-        marginLeft: "2px",
-        color: "white",
-        background: "blue",
-        padding: "2px",
-        paddingLeft: "10px",
-        paddingRight: "10px",
-        borderRadius: "3px"
-      }}
     >
       {t(label)}
-    </Button>
+    </StyledLinkButton>
   );
 
   return (
-    <div className={classes.grow}>
-      <AppBar position="static" style={{ background: "white" }}>
+    <StyledRoot>
+      <StyledAppBar position="static">
         <Toolbar>
-          <Typography className={classes.title} variant="h6" noWrap>
+          <StyledTypography variant="h6" noWrap>
             <InternalLink to={"/app"}>
               <img src={logo} alt="logo" />
             </InternalLink>
-          </Typography>
-
-          {
-            <ClickAwayListener onClickAway={newHandleclose}>
-              <div>
-                <Button
-                  className={classes.headerMenu}
-                  ref={anchorRef}
-                  aria-controls={open ? "menu-list-grow" : undefined}
-                  aria-haspopup="true"
-                  onClick={handleToggle}
-                  style={{ color: "#0e6eff" }}
-                >
-                  {t("register")}
-                  <ExpandMore />
-                </Button>
-                <Popper style={{ zIndex: 100 }} open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-                  {({ TransitionProps, placement }) => (
-                    <Grow
-                      {...TransitionProps}
-                      style={{
-                        transformOrigin: placement === "bottom" ? "center top" : "center bottom"
-                      }}
-                    >
-                      <Paper>
-                        <NewMenu handleClose={newHandleclose} />
-                      </Paper>
-                    </Grow>
-                  )}
-                </Popper>
-              </div>
-            </ClickAwayListener>
-          }
-
+          </StyledTypography>
+          <ClickAwayListener onClickAway={newHandleclose}>
+            <div>
+              <StyledRegisterButton
+                ref={anchorRef}
+                aria-controls={open ? "menu-list-grow" : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
+              >
+                {t("register")}
+                <ExpandMore />
+              </StyledRegisterButton>
+              <StyledPopper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin: placement === "bottom" ? "center top" : "center bottom"
+                    }}
+                  >
+                    <Paper>
+                      <NewMenu handleClose={newHandleclose} />
+                    </Paper>
+                  </Grow>
+                )}
+              </StyledPopper>
+            </div>
+          </ClickAwayListener>
           <LinkButton label={"search"} link={"/app/searchFilter"} />
           {isNewsAvailable && <LinkButton label={"news"} link={"/app/news"} />}
-          <div className={classes.users}>
-            <Typography component={"div"} sx={{ color: "inherit" }}>
-              <p className={classes.userName}>{user.username}</p>
-              {/* <p className={classes.userDesignation}>{user.roles[0]}</p> */}
+          <StyledUsers>
+            <Typography component="div" sx={{ color: "inherit" }}>
+              <StyledUserName>{user.username}</StyledUserName>
             </Typography>
-          </div>
+          </StyledUsers>
           <IconButton onClick={() => history.push("/home")} aria-label="Home" size="large">
             <Home />
           </IconButton>
-          <div className={classes.sectionDesktop}>
+          <StyledSectionDesktop>
             <IconButton
               edge="end"
               aria-label="account of current user"
@@ -254,8 +225,8 @@ const PrimarySearchAppBar = ({ user, history }) => {
             >
               <AccountCircle />
             </IconButton>
-          </div>
-          <div className={classes.sectionMobile}>
+          </StyledSectionDesktop>
+          <StyledSectionMobile>
             <IconButton
               aria-label="show more"
               aria-controls={mobileMenuId}
@@ -265,12 +236,12 @@ const PrimarySearchAppBar = ({ user, history }) => {
             >
               <MoreHoriz />
             </IconButton>
-          </div>
+          </StyledSectionMobile>
         </Toolbar>
-      </AppBar>
+      </StyledAppBar>
       {renderMobileMenu}
       {userOption ? renderMenu : ""}
-    </div>
+    </StyledRoot>
   );
 };
 

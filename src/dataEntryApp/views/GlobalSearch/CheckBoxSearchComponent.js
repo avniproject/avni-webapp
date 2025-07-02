@@ -1,21 +1,18 @@
 import React, { Fragment } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { FormControl, FormControlLabel, Checkbox, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(theme => ({
-  componentSpacing: {
-    marginTop: "1%",
-    marginBottom: "1%"
-  }
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  marginTop: "1%",
+  marginBottom: "1%",
 }));
 
 function CheckBoxSearchComponent({ label, checked, onChange }) {
-  const classes = useStyles();
   const { t } = useTranslation();
   return (
     <Fragment>
-      <Grid container spacing={3} className={classes.componentSpacing}>
+      <StyledGrid container spacing={3}>
         <Grid size={12}>
           <FormControl component="fieldset">
             <FormControlLabel
@@ -25,7 +22,7 @@ function CheckBoxSearchComponent({ label, checked, onChange }) {
             />
           </FormControl>
         </Grid>
-      </Grid>
+      </StyledGrid>
     </Fragment>
   );
 }

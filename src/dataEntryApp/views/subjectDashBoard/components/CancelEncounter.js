@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Grid, Paper } from "@mui/material";
 import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
@@ -20,16 +20,13 @@ import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import { LineBreak } from "../../../../common/components/utils";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(1, 3),
+  flexGrow: 1,
 }));
 
 const CancelEncounter = ({ match, encounter, ...props }) => {
-  const classes = useStyles();
   const editCancelEncounter = isEqual(match.path, "/app/subject/editCancelEncounter");
   const encounterUuid = match.queryParams.uuid;
 
@@ -45,13 +42,13 @@ const CancelEncounter = ({ match, encounter, ...props }) => {
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
+      <StyledPaper>
         <Grid
           container
           spacing={3}
           sx={{
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <Grid size={12}>
@@ -69,21 +66,24 @@ const CancelEncounter = ({ match, encounter, ...props }) => {
             )}
           </Grid>
         </Grid>
-      </Paper>
+      </StyledPaper>
     </Fragment>
   );
 };
+
 const mapStateToProps = state => ({
   cancelEncounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  encounter: state.dataEntry.encounterReducer.encounter
+  encounter: state.dataEntry.encounterReducer.encounter,
 });
+
 const mapDispatchToProps = {
   createCancelEncounter,
   editCancelEncounter,
   updateEncounter,
-  resetState
+  resetState,
 };
+
 export default withRouter(
   withParams(
     connect(

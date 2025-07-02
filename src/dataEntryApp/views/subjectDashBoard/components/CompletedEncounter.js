@@ -1,5 +1,5 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import React, { Fragment } from "react";
+import { styled } from '@mui/material/styles';
 import { Paper, Button, Grid, List, ListItem, ListItemText } from "@mui/material";
 import moment from "moment/moment";
 import { defaultTo, isEmpty, isEqual } from "lodash";
@@ -8,62 +8,63 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
 import { selectFormMappingForCancelEncounter, selectFormMappingForEncounter } from "../../../sagas/encounterSelector";
-import clsx from "clsx";
 import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import { DeleteButton } from "../../../components/DeleteButton";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    padding: theme.spacing(2)
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(2),
+  borderRight: "1px solid rgba(0,0,0,0.12)",
+  "&:nth-child(4n),&:last-child": {
+    borderRight: "0px solid rgba(0,0,0,0.12)",
   },
-  paper: {
-    textAlign: "left",
-    boxShadow: "none",
-    borderRadius: "0px",
-    // borderRight: "1px solid #dcdcdc",
-    padding: "0px"
-  },
+}));
 
-  rightBorder: {
-    borderRight: "1px solid rgba(0,0,0,0.12)",
-    "&:nth-child(4n),&:last-child": {
-      borderRight: "0px solid rgba(0,0,0,0.12)"
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  textAlign: "left",
+  boxShadow: "none",
+  borderRadius: "0px",
+  padding: "0px",
+}));
+
+const StyledList = styled(List)(({ theme }) => ({
+  paddingBottom: "0px",
+}));
+
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  paddingBottom: "0px",
+  paddingTop: "0px",
+}));
+
+const StyledListItemText = styled(ListItemText)(({ theme }) => ({
+  color: "#2196f3",
+  fontSize: "14px",
+  textTransform: "uppercase",
+}));
+
+const StyledListItemTextDate = styled(ListItemText)(({ theme }) => ({
+  color: "#555555",
+  fontSize: "15px",
+}));
+
+const StyledStatusLabel = styled('label')(({ theme, isCancelled }) => ({
+  fontSize: "12px",
+  padding: "2px 5px",
+  ...(isCancelled
+    ? {
+      color: "gray",
+      backgroundColor: "#DCDCDC",
     }
-  },
-  programStatusStyle: {
-    color: "red",
-    backgroundColor: "#ffeaea",
-    fontSize: "12px",
-    padding: "2px 5px"
-  },
-  listItem: {
-    paddingBottom: "0px",
-    paddingTop: "0px"
-  },
-  cancelLabel: {
-    color: "gray",
-    backgroundColor: "#DCDCDC"
-  },
-  ListItemText: {
-    "& span": {
-      fontSize: "14px"
-    },
-    color: "#2196f3",
-    fontSize: "14px",
-    textTransform: "uppercase"
-  },
-  listItemTextDate: {
-    "& span": {
-      fontSize: "15px",
-      color: "#555555"
-    }
-  },
-  visitButton: {
-    marginLeft: "8px",
-    fontSize: "14px"
-  }
+    : {
+      color: "red",
+      backgroundColor: "#ffeaea",
+    }),
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  marginLeft: "8px",
+  fontSize: "14px",
 }));
 
 const truncate = input => {
@@ -72,20 +73,19 @@ const truncate = input => {
 };
 
 const CompletedEncounter = ({
-  index,
-  encounter,
-  subjectTypeUuid,
-  encounterFormMapping,
-  cancelEncounterFormMapping,
-  voidGeneralEncounter
-}) => {
-  const classes = useStyles();
+                              index,
+                              encounter,
+                              subjectTypeUuid,
+                              encounterFormMapping,
+                              cancelEncounterFormMapping,
+                              voidGeneralEncounter,
+                            }) => {
   const { t } = useTranslation();
   const encounterId = isEmpty(encounter.earliestVisitDateTime)
     ? encounter.encounterType.name.replaceAll(" ", "-")
     : encounter.name.replaceAll(" ", "-");
   const statusMap = {
-    cancelled: t("Cancelled")
+    cancelled: t("Cancelled"),
   };
   let status;
   let visitUrl;
@@ -95,73 +95,60 @@ const CompletedEncounter = ({
     visitUrl = `/app/subject/viewEncounter?uuid=${encounter.uuid}`;
   }
   const [voidConfirmation, setVoidConfirmation] = React.useState(false);
+
   return (
-    <Grid
+    <StyledGrid
       key={index}
-      className={classes.rightBorder}
       size={{
         xs: 6,
-        sm: 3
+        sm: 3,
       }}
     >
-      <Paper className={classes.paper}>
-        <List style={{ paddingBottom: "0px" }}>
-          <ListItem className={classes.listItem}>
+      <StyledPaper>
+        <StyledList>
+          <StyledListItem>
             {visitUrl ? (
               <Link to={visitUrl}>
-                <ListItemText
-                  className={classes.ListItemText}
+                <StyledListItemText
                   title={t(defaultTo(encounter.name, encounter.encounterType.name))}
                   primary={truncate(t(defaultTo(encounter.name, encounter.encounterType.name)))}
                 />
               </Link>
             ) : (
-              <ListItemText
-                className={classes.ListItemText}
+              <StyledListItemText
                 title={t(defaultTo(encounter.name, encounter.encounterType.name))}
                 primary={truncate(t(defaultTo(encounter.name, encounter.encounterType.name)))}
               />
             )}
-          </ListItem>
-          <ListItem className={classes.listItem}>
-            <ListItemText
-              className={classes.listItemTextDate}
+          </StyledListItem>
+          <StyledListItem>
+            <StyledListItemTextDate
               primary={moment(new Date(encounter.encounterDateTime || encounter.cancelDateTime)).format("DD-MM-YYYY")}
             />
-          </ListItem>
+          </StyledListItem>
           {status && (
-            <ListItem className={classes.listItem}>
+            <StyledListItem>
               <ListItemText>
-                <label
-                  className={clsx(classes.programStatusStyle, {
-                    [classes.cancelLabel]: isEqual(status, "cancelled")
-                  })}
-                >
+                <StyledStatusLabel isCancelled={isEqual(status, "cancelled")}>
                   {statusMap[status]}
-                </label>
+                </StyledStatusLabel>
               </ListItemText>
-            </ListItem>
+            </StyledListItem>
           )}
-        </List>
-        {
-          <>
-            {encounter.encounterDateTime && encounter.uuid && !isEmpty(encounterFormMapping) ? (
-              <InternalLink id={`edit-visit-${encounterId}`} to={`/app/subject/editEncounter?uuid=${encounter.uuid}`}>
-                <Button color="primary" className={classes.visitButton}>
-                  {t("edit visit")}
-                </Button>
-              </InternalLink>
-            ) : encounter.cancelDateTime && encounter.uuid && !isEmpty(cancelEncounterFormMapping) ? (
-              <InternalLink id={`edit-cancel-visit-${encounterId}`} to={`/app/subject/editCancelEncounter?uuid=${encounter.uuid}`}>
-                <Button color="primary" className={classes.visitButton}>
-                  {t("edit visit")}
-                </Button>
-              </InternalLink>
-            ) : (
-              ""
-            )}
-          </>
-        }
+        </StyledList>
+        {encounter.encounterDateTime && encounter.uuid && !isEmpty(encounterFormMapping) ? (
+          <InternalLink id={`edit-visit-${encounterId}`} to={`/app/subject/editEncounter?uuid=${encounter.uuid}`}>
+            <StyledButton color="primary">
+              {t("edit visit")}
+            </StyledButton>
+          </InternalLink>
+        ) : encounter.cancelDateTime && encounter.uuid && !isEmpty(cancelEncounterFormMapping) ? (
+          <InternalLink id={`edit-cancel-visit-${encounterId}`} to={`/app/subject/editCancelEncounter?uuid=${encounter.uuid}`}>
+            <StyledButton color="primary">
+              {t("edit visit")}
+            </StyledButton>
+          </InternalLink>
+        ) : null}
         <DeleteButton onDelete={() => setVoidConfirmation(true)} />
         <ConfirmDialog
           title={t("GeneralEncounterVoidAlertTitle")}
@@ -170,18 +157,18 @@ const CompletedEncounter = ({
           message={t("GeneralEncounterVoidAlertMessage")}
           onConfirm={() => voidGeneralEncounter(encounter.uuid)}
         />
-      </Paper>
-    </Grid>
+      </StyledPaper>
+    </StyledGrid>
   );
 };
 
 const mapStateToProps = (state, props) => ({
   encounterFormMapping: selectFormMappingForEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state),
-  cancelEncounterFormMapping: selectFormMappingForCancelEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state)
+  cancelEncounterFormMapping: selectFormMappingForCancelEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state),
 });
 
 const mapDispatchToProps = {
-  voidGeneralEncounter
+  voidGeneralEncounter,
 };
 
 export default connect(

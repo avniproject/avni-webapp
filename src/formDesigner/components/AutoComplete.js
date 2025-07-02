@@ -1,50 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
+import { styled } from '@mui/material/styles';
 import PropTypes from "prop-types";
 import deburr from "lodash/deburr";
 import Downshift from "downshift";
-import { makeStyles } from "@mui/styles";
 import { TextField, Paper, MenuItem, Chip } from "@mui/material";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    height: 250
-  },
-  container: {
-    flexGrow: 1,
-    position: "relative"
-  },
-  paper: {
-    position: "fixed",
-    zIndex: 1,
-    marginTop: theme.spacing(1)
-  },
-  chip: {
-    margin: theme.spacing(0.5, 0.25)
-  },
-  inputRoot: {
-    flexWrap: "wrap"
-  },
-  inputInput: {
-    width: "auto",
-    flexGrow: 1
-  },
-  divider: {
-    height: theme.spacing(2)
-  }
+const Container = styled('div')(({ theme }) => ({
+  flexGrow: 1,
+  position: 'relative',
 }));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  position: 'fixed',
+  zIndex: 1,
+  marginTop: theme.spacing(1),
+}));
+
+const StyledChip = styled(Chip)(({ theme }) => ({
+  margin: theme.spacing(0.5, 0.25),
+}));
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiInputBase-root': {
+    flexWrap: 'wrap',
+  },
+  '& .MuiInputBase-input': {
+    width: 'auto',
+    flexGrow: 1,
+  },
+}));
+
 function renderInput(inputProps) {
-  const { InputProps, classes, ref, ...other } = inputProps;
+  const { InputProps, ref, ...other } = inputProps;
 
   return (
-    <TextField
+    <StyledTextField
       InputProps={{
         inputRef: ref,
-        classes: {
-          root: classes.inputRoot,
-          input: classes.inputInput
-        },
-        ...InputProps
+        ...InputProps,
       }}
       {...other}
     />
@@ -52,8 +45,7 @@ function renderInput(inputProps) {
 }
 
 renderInput.propTypes = {
-  classes: PropTypes.object.isRequired,
-  InputProps: PropTypes.object
+  InputProps: PropTypes.object,
 };
 
 function renderSuggestion(suggestionProps) {
@@ -68,7 +60,7 @@ function renderSuggestion(suggestionProps) {
       selected={isHighlighted}
       component="div"
       style={{
-        fontWeight: isSelected ? 500 : 400
+        fontWeight: isSelected ? 500 : 400,
       }}
     >
       {suggestion.label}
@@ -82,8 +74,8 @@ renderSuggestion.propTypes = {
   itemProps: PropTypes.object.isRequired,
   selectedItem: PropTypes.string.isRequired,
   suggestion: PropTypes.shape({
-    label: PropTypes.string.isRequired
-  }).isRequired
+    label: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 function getSuggestions(suggestions, value, { showEmpty = false } = {}) {
@@ -94,20 +86,18 @@ function getSuggestions(suggestions, value, { showEmpty = false } = {}) {
   return inputLength === 0 && !showEmpty
     ? []
     : suggestions.filter(suggestion => {
-        const keep = count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
-
-        if (keep) {
-          count += 1;
-        }
-
-        return keep;
-      });
+      const keep = count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
+      if (keep) {
+        count += 1;
+      }
+      return keep;
+    });
 }
 
 function DownshiftMultiple(props) {
-  const classes = useStyles();
-  const [inputValue, setInputValue] = React.useState("");
-  const [selectedItem, setSelectedItem] = React.useState(props.setEncounterTypes);
+  const [inputValue, setInputValue] = useState("");
+  // Note: `props.setEncounterTypes` might be a misnamed prop; ensure it's an array of initial values
+  const [selectedItem, setSelectedItem] = useState(props.setEncounterTypes || []);
 
   function handleKeyDown(event) {
     if (selectedItem.length && !inputValue.length && event.key === "Backspace") {
@@ -140,44 +130,42 @@ function DownshiftMultiple(props) {
       {({ getInputProps, getItemProps, getLabelProps, isOpen, inputValue: inputValue2, selectedItem: selectedItem2, highlightedIndex }) => {
         const { onBlur, onChange, onFocus, ...inputProps } = getInputProps({
           onKeyDown: handleKeyDown,
-          placeholder: "Select multiple encounter types"
+          placeholder: "Select multiple encounter types",
         });
 
         return (
-          <div className={classes.container}>
+          <Container>
             {renderInput({
               fullWidth: true,
-              classes,
               label: "Encounter Type",
               InputLabelProps: getLabelProps(),
               InputProps: {
                 startAdornment: selectedItem.map(item => (
-                  <Chip key={item} tabIndex={-1} label={item} className={classes.chip} onDelete={handleDelete(item)} />
+                  <StyledChip key={item} tabIndex={-1} label={item} onDelete={handleDelete(item)} />
                 )),
                 onBlur,
                 onChange: event => {
                   handleInputChange(event);
                   onChange(event);
                 },
-                onFocus
+                onFocus,
               },
-              inputProps
+              inputProps,
             })}
-
             {isOpen ? (
-              <Paper className={classes.paper} square>
+              <StyledPaper square>
                 {getSuggestions(props.suggestions, inputValue2).map((suggestion, index) =>
                   renderSuggestion({
                     suggestion,
                     index,
                     itemProps: getItemProps({ item: suggestion.label }),
                     highlightedIndex,
-                    selectedItem: selectedItem2
+                    selectedItem: selectedItem2,
                   })
                 )}
-              </Paper>
+              </StyledPaper>
             ) : null}
-          </div>
+          </Container>
         );
       }}
     </Downshift>
@@ -186,7 +174,8 @@ function DownshiftMultiple(props) {
 
 DownshiftMultiple.propTypes = {
   suggestions: PropTypes.array.isRequired,
-  OnGetSelectedValue: PropTypes.func.isRequired
+  OnGetSelectedValue: PropTypes.func.isRequired,
+  setEncounterTypes: PropTypes.array,
 };
 
 export default DownshiftMultiple;

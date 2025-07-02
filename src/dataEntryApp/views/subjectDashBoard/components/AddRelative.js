@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect } from "react";
+import { styled } from '@mui/material/styles';
 import {
   NativeSelect,
   Box,
@@ -14,7 +15,6 @@ import {
   TableRow,
   Typography
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getRelationshipTypes, saveRelationShip } from "../../../reducers/relationshipReducer";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
@@ -30,111 +30,128 @@ import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { getGenders, getOrganisationConfig } from "../../../reducers/metadataReducer";
 import { findApplicableRelations, getRelationshipType, validateRelative } from "../../../utils/RelationshipUtil";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    // padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1,
-    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-  },
-  innerPaper: {
-    padding: theme.spacing(2, 2),
-    margin: theme.spacing(1, 1),
-    height: 500
-  },
-  mainHeading: {
-    fontSize: "20px",
-    fontWeight: "500",
-    marginLeft: 10,
-    marginBottom: 10
-  },
-  subHeading: {
-    fontWeight: "bold",
-    fontSize: "12px",
-    padding: theme.spacing(0.6, 0.6),
-    margin: theme.spacing(1, 1)
-  },
-  scheduleddateStyle: {
-    marginBottom: 20,
-    marginTop: 10
-  },
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  margin: theme.spacing(1, 3),
+  flexGrow: 1,
+  boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+}));
 
-  cancelBtn: {
-    color: "orange",
-    width: 110,
-    cursor: "pointer",
-    height: 30,
-    padding: "4px 25px",
-    fontSize: 12,
-    borderRadius: 50,
-    borderColor: "orange"
-  },
-  addBtn: {
-    color: "white",
-    width: 110,
-    cursor: "pointer",
-    height: 30,
-    padding: "4px 25px",
-    fontSize: 12,
-    borderRadius: 50,
-    marginLeft: 20
-  },
-  buttomboxstyle: {
-    backgroundColor: "#f8f4f4",
-    height: 80,
-    width: "100%",
-    padding: 25
-  },
-  tableContainer: {
-    marginTop: "10px"
-  },
-  tableView: {
-    flexGrow: 1,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  tableCell: {
-    color: "#555555",
-    fontSize: "12px",
-    borderBottom: "none",
-    padding: "0px 0px 0px 11px",
-    fontWeight: "500"
-  },
-  tableCellDetails: {
-    borderBottom: "none",
-    padding: "0px 21px 0px 11px",
-    fontWeight: "500",
-    color: "#1010101",
-    fontSize: "14px"
-  },
-  lableStyle: {
-    width: "50%",
-    // marginBottom: 5,
-    color: "rgba(0, 0, 0, 0.54)"
-  },
-  horizontalLine: {
-    padding: "0px",
-    marginTop: "0px",
-    marginBottom: "0px",
-    border: "1px solid lightgray;",
-    width: "100%"
-  }
+const StyledInnerDiv = styled('div')(({ theme }) => ({
+  padding: theme.spacing(2, 2),
+  margin: theme.spacing(1, 1),
+  height: 500
+}));
+
+const StyledMainHeading = styled(Typography)(({ theme }) => ({
+  fontSize: "20px",
+  fontWeight: "500",
+  marginLeft: 10,
+  marginBottom: 10
+}));
+
+const StyledSubHeading = styled(Typography)(({ theme }) => ({
+  fontWeight: "bold",
+  fontSize: "12px",
+  padding: theme.spacing(0.6, 0.6),
+  margin: theme.spacing(1, 1)
+}));
+
+const StyledScheduledDateDiv = styled('div')(({ theme }) => ({
+  marginBottom: 20,
+  marginTop: 10
+}));
+
+const StyledCancelButton = styled(Button)(({ theme }) => ({
+  color: "orange",
+  width: 110,
+  cursor: "pointer",
+  height: 30,
+  padding: "4px 25px",
+  fontSize: 12,
+  borderRadius: 50,
+  borderColor: "orange"
+}));
+
+const StyledAddButton = styled(Button)(({ theme }) => ({
+  color: "white",
+  width: 110,
+  cursor: "pointer",
+  height: 30,
+  padding: "4px 25px",
+  fontSize: 12,
+  borderRadius: 50,
+  marginLeft: 20
+}));
+
+const StyledButtonBox = styled(Box)(({ theme }) => ({
+  backgroundColor: "#f8f4f4",
+  height: 80,
+  width: "100%",
+  padding: 25,
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "flex-start"
+}));
+
+const StyledTable = styled(Table)(({ theme }) => ({
+  marginTop: "10px"
+}));
+
+const StyledTableView = styled('div')(({ theme }) => ({
+  flexGrow: 1,
+  alignItems: "center",
+  justifyContent: "center"
+}));
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  color: "#555555",
+  fontSize: "12px",
+  borderBottom: "none",
+  padding: "0px 0px 0px 11px",
+  fontWeight: "500"
+}));
+
+const StyledTableCellDetails = styled(TableCell)(({ theme }) => ({
+  borderBottom: "none",
+  padding: "0px 21px 0px 11px",
+  fontWeight: "500",
+  color: "#1010101",
+  fontSize: "14px"
+}));
+
+const StyledLabelTypography = styled(Typography)(({ theme }) => ({
+  width: "50%",
+  color: "rgba(0, 0, 0, 0.54)"
+}));
+
+const StyledHorizontalLine = styled('hr')(({ theme }) => ({
+  padding: "0px",
+  marginTop: "0px",
+  marginBottom: "0px",
+  border: "1px solid lightgray",
+  width: "100%"
+}));
+
+const StyledErrorTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+  marginTop: theme.spacing(1.25)
 }));
 
 const AddRelative = ({
-  match,
-  getRelationshipTypes,
-  relationshipTypes,
-  saveRelationShip,
-  getSubjectProfile,
-  subjectProfile,
-  operationalModules,
-  getGenders,
-  genders,
-  getOrganisationConfig,
-  organisationConfigs,
-  searchRequest
-}) => {
+                       match,
+                       getRelationshipTypes,
+                       relationshipTypes,
+                       saveRelationShip,
+                       getSubjectProfile,
+                       subjectProfile,
+                       operationalModules,
+                       getGenders,
+                       genders,
+                       getOrganisationConfig,
+                       organisationConfigs,
+                       searchRequest
+                     }) => {
   useEffect(() => {
     getSubjectProfile(match.queryParams.uuid);
     getRelationshipTypes();
@@ -143,7 +160,6 @@ const AddRelative = ({
   }, []);
 
   const { t } = useTranslation();
-  const classes = useStyles();
   const history = useHistory();
   const selectedRelative = head(JSON.parse(sessionStorage.getItem("selectedRelativeslist")));
   const [error, setError] = React.useState();
@@ -177,6 +193,7 @@ const AddRelative = ({
       return;
     } else {
       setError("");
+      nyl: true
     }
     const isReverseRelation = includes(get(relationshipType, "individualAIsToBRelation.uuid", []), selectedRelationUUID);
     setRelationData({
@@ -195,6 +212,7 @@ const AddRelative = ({
     })();
     history.push(`/app/subject/subjectProfile?uuid=${match.queryParams.uuid}`);
   };
+
   const cancelRelation = () => {
     sessionStorage.removeItem("selectedRelativeslist");
     history.push(`/app/subject/subjectProfile?uuid=${match.queryParams.uuid}`);
@@ -203,8 +221,8 @@ const AddRelative = ({
   return subjectProfile ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
-        <div className={classes.innerPaper}>
+      <StyledPaper>
+        <StyledInnerDiv>
           <Grid
             container
             direction="row"
@@ -213,14 +231,14 @@ const AddRelative = ({
               alignItems: "baseline"
             }}
           >
-            <Typography component={"span"} className={classes.mainHeading}>
+            <StyledMainHeading component="span">
               {t("addRelative")}
-            </Typography>
+            </StyledMainHeading>
           </Grid>
           {(isEmpty(selectedRelative) || error) && (
             <div>
-              <div className={classes.scheduleddateStyle} />
-              <div className={classes.scheduleddateStyle} style={{ marginLeft: 10 }}>
+              <StyledScheduledDateDiv />
+              <StyledScheduledDateDiv style={{ marginLeft: 10 }}>
                 <FindRelative
                   setError={setError}
                   subjectProfile={subjectProfile}
@@ -229,18 +247,18 @@ const AddRelative = ({
                   organisationConfigs={organisationConfigs}
                   searchRequest={searchRequest}
                 />
-              </div>
+              </StyledScheduledDateDiv>
             </div>
           )}
           {!isEmpty(selectedRelative) && (
             <div key={selectedRelative.fullName}>
-              <div className={classes.scheduleddateStyle}>
-                <Typography component={"span"} className={classes.subHeading}>
+              <StyledScheduledDateDiv>
+                <StyledSubHeading component="span">
                   Give relationship
-                </Typography>
-              </div>
-              <div className={classes.scheduleddateStyle}>
-                <div className={classes.tableView}>
+                </StyledSubHeading>
+              </StyledScheduledDateDiv>
+              <StyledScheduledDateDiv>
+                <StyledTableView>
                   <Grid
                     container
                     spacing={1}
@@ -249,114 +267,104 @@ const AddRelative = ({
                     }}
                   >
                     <Grid size={6}>
-                      <Table aria-label="caption table" className={classes.tableContainer}>
+                      <StyledTable aria-label="caption table">
                         <TableHead>
-                          <TableRow className={classes.tableHeader}>
-                            <TableCell className={classes.tableCell} style={{ width: "25%" }}>
+                          <TableRow>
+                            <StyledTableCell style={{ width: "25%" }}>
                               {t("name")}
-                            </TableCell>
-                            <TableCell className={classes.tableCell} style={{ width: "20%" }}>
+                            </StyledTableCell>
+                            <StyledTableCell style={{ width: "20%" }}>
                               {t("gender")}
-                            </TableCell>
-                            <TableCell className={classes.tableCell} style={{ width: "20%" }}>
+                            </StyledTableCell>
+                            <StyledTableCell style={{ width: "20%" }}>
                               {t("age")}
-                            </TableCell>
-                            <TableCell className={classes.tableCell} style={{ width: "35%" }}>
+                            </StyledTableCell>
+                            <StyledTableCell style={{ width: "35%" }}>
                               {t("Village")}
-                            </TableCell>
+                            </StyledTableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
                           <TableRow>
-                            <TableCell key={selectedRelative.fullName} className={classes.tableCellDetails}>
+                            <StyledTableCellDetails key={selectedRelative.fullName}>
                               {t(selectedRelative.fullName)}
-                            </TableCell>
-                            <TableCell key={selectedRelative.gender} className={classes.tableCellDetails}>
+                            </StyledTableCellDetails>
+                            <StyledTableCellDetails key={selectedRelative.gender}>
                               {t(selectedRelative.gender)}
-                            </TableCell>
-                            <TableCell key={selectedRelative.dateOfBirth} className={classes.tableCellDetails}>
+                            </StyledTableCellDetails>
+                            <StyledTableCellDetails key={selectedRelative.dateOfBirth}>
                               {selectedRelative.dateOfBirth
-                                ? new Date().getFullYear() - new Date(selectedRelative.dateOfBirth).getFullYear() + " " + `${t("years")}`
+                                ? new Date().getFullYear() - new Date(selectedRelative.dateOfBirth).getFullYear() + " " + t("years")
                                 : "-"}
-                            </TableCell>
-                            <TableCell key={selectedRelative.addressLevel} className={classes.tableCellDetails}>
+                            </StyledTableCellDetails>
+                            <StyledTableCellDetails key={selectedRelative.addressLevel}>
                               {t(selectedRelative.addressLevel)}
-                            </TableCell>
+                            </StyledTableCellDetails>
                           </TableRow>
                         </TableBody>
-                      </Table>
+                      </StyledTable>
                       <div style={{ marginLeft: 10 }}>
                         <LineBreak num={1} />
-                        <Typography variant="body1" sx={{ mb: 1 }} className={classes.lableStyle}>
+                        <StyledLabelTypography variant="body1" sx={{ mb: 1 }}>
                           Relationship
-                        </Typography>
+                        </StyledLabelTypography>
                         <div>
-                          <div>
-                            <FormControl className={classes.formControl} style={{ width: "50%" }}>
-                              <InputLabel htmlFor="age-native-helper" />
-                              <NativeSelect
-                                value={state.age}
-                                onChange={handleChange}
-                                inputProps={{
-                                  name: "age",
-                                  id: "age-native-simple"
-                                }}
-                              >
-                                <option value="" disabled>
-                                  Select relation
+                          <FormControl style={{ width: "50%" }}>
+                            <InputLabel htmlFor="age-native-helper" />
+                            <NativeSelect
+                              value={state.age}
+                              onChange={handleChange}
+                              inputProps={{
+                                name: "age",
+                                id: "age-native-simple"
+                              }}
+                            >
+                              <option value="" disabled>
+                                Select relation
+                              </option>
+                              {applicableRelations.map((relation, index) => (
+                                <option key={index} value={relation.uuid}>
+                                  {t(relation.name)}
                                 </option>
-                                {applicableRelations.map((relation, index) => (
-                                  <option key={index} value={relation.uuid}>
-                                    {t(relation.name)}
-                                  </option>
-                                ))}
-                              </NativeSelect>
-                            </FormControl>
-                            {
-                              <Typography variant="subtitle1" sx={{ color: theme => theme.palette.error.main, mt: 1.25 }}>
-                                {t(error)}
-                              </Typography>
-                            }
-                          </div>
+                              ))}
+                            </NativeSelect>
+                          </FormControl>
+                          {error && (
+                            <StyledErrorTypography variant="subtitle1">
+                              {t(error)}
+                            </StyledErrorTypography>
+                          )}
                         </div>
                       </div>
                     </Grid>
                   </Grid>
-                </div>
-              </div>
+                </StyledTableView>
+              </StyledScheduledDateDiv>
             </div>
           )}
-        </div>
-        <Box
-          className={classes.buttomboxstyle}
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "flex-start"
-          }}
-        >
+        </StyledInnerDiv>
+        <StyledButtonBox>
           <Box>
-            <Button variant="outlined" className={classes.cancelBtn} onClick={cancelRelation}>
+            <StyledCancelButton variant="outlined" onClick={cancelRelation}>
               CANCEL
-            </Button>
-            <Button
+            </StyledCancelButton>
+            <StyledAddButton
               variant="contained"
-              className={classes.addBtn}
               color="primary"
               onClick={addRelatives}
               disabled={isEmpty(relationData.relationshipTypeUUID) || !isEmpty(error)}
             >
               ADD
-            </Button>
+            </StyledAddButton>
           </Box>
-        </Box>
-      </Paper>
+        </StyledButtonBox>
+      </StyledPaper>
     </Fragment>
   ) : (
     <CustomizedBackdrop load={isEmpty(subjectProfile)} />
   );
 };
+
 const mapStateToProps = state => ({
   subjectTypes: state.dataEntry.metadata.operationalModules.subjectTypes,
   relationshipTypes: state.dataEntry.relations.relationshipTypes,
@@ -368,6 +376,7 @@ const mapStateToProps = state => ({
   genders: state.dataEntry.metadata.genders,
   organisationConfigs: state.dataEntry.metadata.organisationConfigs
 });
+
 const mapDispatchToProps = {
   getRelationshipTypes,
   saveRelationShip,
@@ -375,6 +384,7 @@ const mapDispatchToProps = {
   getGenders,
   getOrganisationConfig
 };
+
 export default withRouter(
   withParams(
     connect(

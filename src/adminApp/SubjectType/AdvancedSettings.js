@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { withStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Typography, Accordion, AccordionDetails, Box, Input } from "@mui/material";
 import { AddressLevelSetting } from "./AddressLevelSetting";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
@@ -12,26 +12,43 @@ import { OptionSelect } from "./OptionSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { SubjectTypeType } from "./Types";
 
-const CustomAccordion = withStyles({
-  root: {
-    border: "1px solid rgba(0,0,0,.125)",
-    boxShadow: "none"
-  },
-  expanded: {
+const CustomAccordion = styled(Accordion)({
+  border: "1px solid rgba(0,0,0,.125)",
+  boxShadow: "none",
+  "&.Mui-expanded": {
     margin: "auto"
   }
-})(props => <Accordion {...props} />);
+});
 CustomAccordion.muiName = "Accordion";
 
-const CustomAccordianDetails = withStyles(theme => ({
-  root: {
-    marginTop: 10,
-    marginBottom: 10,
-    padding: theme.spacing.unit * 2,
-    display: "block"
-  }
-}))(props => <AccordionDetails {...props} />);
-CustomAccordianDetails.muiName = "AccordionDetails";
+const CustomAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
+  marginTop: 10,
+  marginBottom: 10,
+  padding: theme.spacing(2),
+  display: "block"
+}));
+CustomAccordionDetails.muiName = "AccordionDetails";
+
+const StyledSettingsContainer = styled('div')({
+  display: 'flex',
+  flexDirection: "row",
+  justifyContent: "space-between"
+});
+
+const StyledInput = styled(Input)({
+  width: "100%"
+});
+
+const StyledSyncSettingsBox = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(3),
+  marginBottom: theme.spacing(2),
+  padding: theme.spacing(2),
+  border: "1px solid #e1e1e1"
+}));
+
+const StyledSyncSettingsTypography = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(1)
+}));
 
 const syncAttributeDataTypes = ["Numeric", "Coded", "Text"];
 export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMappings, isEdit }) => {
@@ -83,8 +100,8 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
       <CustomisedAccordionSummary>
         <Typography>Advanced settings</Typography>
       </CustomisedAccordionSummary>
-      <CustomAccordianDetails>
-        <div style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <CustomAccordionDetails>
+        <StyledSettingsContainer>
           <AddressLevelSetting
             levelUUIDs={subjectType.locationTypeUUIDs}
             setLevelUUIDs={uuids => dispatch({ type: "locationTypes", payload: uuids })}
@@ -143,7 +160,7 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
                   <ValidFormat
                     subjectType={subjectType}
                     dispatch={dispatch}
-                    regexLabel={"Middle Name Regex"}
+                    regexLabel={subjectType.type === "Person" ? "Middle Name Regex" : "Name Regex"}
                     regexToolTipKey={"APP_DESIGNER_SUBJECT_TYPE_MIDDLE_NAME_REGEX"}
                     regexID={"validMiddleNameRegex"}
                     descKeyLabel={"Middle Name Validation Description Key"}
@@ -181,9 +198,8 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
           )}
           <p />
           <AvniFormLabel label={"Name help text"} toolTipKey={"APP_DESIGNER_NAME_HELP_TEXT"} />
-          <Input
+          <StyledInput
             multiline
-            style={{ width: "100%" }}
             id={"nameHelpText"}
             value={get(subjectType, `nameHelpText`, "")}
             onChange={event => dispatch({ type: "nameHelpText", payload: event.target.value })}
@@ -214,19 +230,10 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
               />
             </div>
           )}
-          <Box
-            component={"div"}
-            sx={{
-              mt: 3,
-              mb: 2,
-              p: 2,
-              border: 1,
-              borderColor: "#e1e1e1"
-            }}
-          >
-            <Typography sx={{ mb: 1 }} variant={"subtitle1"}>
+          <StyledSyncSettingsBox component="div">
+            <StyledSyncSettingsTypography variant="subtitle1">
               {"Sync Settings"}
-            </Typography>
+            </StyledSyncSettingsTypography>
             {subjectType.type === SubjectTypeType.User ? (
               <Typography>Determined by Subject Type</Typography>
             ) : (
@@ -259,9 +266,9 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
                 />
               </>
             )}
-          </Box>
-        </div>
-      </CustomAccordianDetails>
+          </StyledSyncSettingsBox>
+        </StyledSettingsContainer>
+      </CustomAccordionDetails>
     </CustomAccordion>
   );
 };

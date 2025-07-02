@@ -1,5 +1,5 @@
-import React from "react";
-import { withStyles, makeStyles } from "@mui/styles";
+import React, { Fragment } from "react";
+import { styled } from '@mui/material/styles';
 import { Typography, Dialog, DialogActions, IconButton, Fab } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { Link } from "react-router-dom";
@@ -7,119 +7,33 @@ import SubjectButton from "./Button";
 import FloatingButton from "./FloatingButton";
 import CustomizedDialog from "../../../components/Dialog";
 
-const useStyles = makeStyles(theme => ({
-  tableCell: {
-    borderBottom: "none",
-    padding: "0px 0px 0px 16px"
-  },
-  enrollButtonStyle: {
-    backgroundColor: "#fc9153",
-    height: "38px",
-    zIndex: 1
-  },
-  bigAvatar: {
-    width: 42,
-    height: 42
-  },
-  tableView: {
-    flexGrow: 1,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  mainHeading: {
-    fontSize: "20px"
-  },
-  tableHeader: {
-    color: "#555555",
-    fontSize: "12px",
-    fontFamily: "Roboto Reg"
-  },
-  btnCustom: {
-    float: "left",
-    backgroundColor: "#fc9153",
-    height: "30px"
-  },
-  cancelBtnCustom: {
-    float: "left",
-    backgroundColor: "#F8F9F9",
-    color: "#fc9153",
-    border: "1px solid #fc9153",
-    height: "30px"
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    margin: "auto",
-    minWidth: "450px",
-    minHeight: "170px"
-  },
-  formControl: {
-    marginTop: theme.spacing(2),
-    minWidth: 120,
-    width: "211px"
-  },
-  formControlLabel: {
-    marginTop: theme.spacing(1)
-  },
-  selectEmpty: {
-    width: "211px"
-  },
-  btnBottom: {
-    margin: 0,
-    padding: "11px",
-    backgroundColor: "#F8F9F9",
-    float: "left",
-    display: "inline"
-  },
-  root: {
-    width: "100%",
-    "& > * + *": {
-      marginTop: theme.spacing(2)
-    }
-  }
+const StyledDialogTitle = styled('div')(({ theme }) => ({
+  margin: 0,
+  backgroundColor: "#555555",
+  padding: "6px 16px",
+  color: "white",
 }));
 
-const styles = theme => ({
-  root: {
-    margin: 0,
-    backgroundColor: "#555555",
-    padding: "6px 16px",
-    color: "white"
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: "0px",
-    color: "white"
-  }
-});
+const StyledCloseButton = styled(IconButton)(({ theme }) => ({
+  position: "absolute",
+  right: theme.spacing(1),
+  top: "0px",
+  color: "white",
+}));
 
-const StyledDialogTitle = withStyles(styles)(props => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <div className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose} size="large">
-          <Close />
-        </IconButton>
-      ) : null}
-    </div>
-  );
-});
+const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
+  margin: 0,
+  padding: "11px",
+  backgroundColor: "#F8F9F9",
+  float: "left",
+  display: "inline",
+}));
 
-const StyledDialogActions = withStyles(theme => ({
-  root: {
-    margin: 0,
-    padding: "11px",
-    backgroundColor: "#F8F9F9",
-    float: "left",
-    display: "inline"
-  }
-}))(DialogActions);
+const StyledDialogTitleContent = styled(Typography)(({ theme }) => ({
+  variant: "h6",
+}));
 
 const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, ...props }) => {
-  const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [validMsg, setValidationMsg] = React.useState(false);
 
@@ -144,7 +58,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
   const applyFloating = buttonsSet.filter(element => element.buttonType === "applyFloating").shift();
 
   return (
-    <React.Fragment>
+    <Fragment>
       {mainButton && (
         <Fab
           id={mainButton.label.replaceAll(" ", "-")}
@@ -157,7 +71,6 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           {mainButton.label}
         </Fab>
       )}
-
       {filterButton && (
         <Fab
           id={filterButton.label.replaceAll(" ", "-")}
@@ -173,15 +86,22 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           {filterButton.label}
         </Fab>
       )}
-
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} {...props}>
-        <StyledDialogTitle id="customized-dialog-title" onClose={handleClose} style={{ backgroundColor: "black" }}>
-          {title}
+        <StyledDialogTitle id="customized-dialog-title">
+          <StyledDialogTitleContent variant="h6">{title}</StyledDialogTitleContent>
+          <StyledCloseButton aria-label="close" onClick={handleClose} size="large">
+            <Close />
+          </StyledCloseButton>
         </StyledDialogTitle>
         {content}
-        <StyledDialogActions className={classes.borderBottom} style={{ backgroundColor: "#FFF" }}>
+        <StyledDialogActions>
           {cancelButton && (
-            <SubjectButton btnLabel={cancelButton.label} btnClass={cancelButton.classes} btnClick={handleClose} id="cancel-dialog-button" />
+            <SubjectButton
+              btnLabel={cancelButton.label}
+              btnClass={cancelButton.classes}
+              btnClick={handleClose}
+              id="cancel-dialog-button"
+            />
           )}
           {findButton && (
             <SubjectButton
@@ -263,7 +183,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           }}
         />
       )}
-    </React.Fragment>
+    </Fragment>
   );
 };
 

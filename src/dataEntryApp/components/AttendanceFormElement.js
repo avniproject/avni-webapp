@@ -1,30 +1,32 @@
 import React, { useState, useEffect, Fragment, useMemo, useCallback } from "react";
+import { styled } from '@mui/material/styles';
 import { useTranslation } from "react-i18next";
 import { find, get, map, includes, sortBy, join, size } from "lodash";
 import { Concept } from "openchs-models";
 import { useSelector } from "react-redux";
 import api from "../api";
-import { makeStyles } from "@mui/styles";
 import { FormLabel, FormGroup, FormHelperText, Grid, Link } from "@mui/material";
 import { mapGroupMembers, mapIndividual } from "../../common/subjectModelMapper";
 import { subjectService } from "../services/SubjectService";
 import Checkbox from "./Checkbox";
 
-const useStyles = makeStyles(theme => ({
-  evenBackground: {
-    backgroundColor: "#ececec",
-    paddingLeft: 10,
-    paddingRight: 15
-  },
-  oddBackground: {
-    backgroundColor: "#FFF",
-    paddingLeft: 10,
-    paddingRight: 15
-  }
+const StyledGridContainer = styled(Grid)(({ theme }) => ({
+  height: "100%"
+}));
+
+const StyledSelectAllGrid = styled(Grid)(({ theme }) => ({
+  justifyContent: "flex-end"
+}));
+
+const StyledMemberGrid = styled(Grid)(({ theme, index }) => ({
+  backgroundColor: index % 2 === 0 ? "#ececec" : "#FFF",
+  paddingLeft: 10,
+  paddingRight: 15,
+  alignItems: "center",
+  justifyContent: "center"
 }));
 
 const AttendanceFormElement = ({ formElement, update, validationResults, uuid, value = [], displayAllGroupMembers }) => {
-  const classes = useStyles();
   const subjectUUID = useSelector(state => get(state, "dataEntry.subjectProfile.subjectProfile.uuid"));
   const [memberSubjects, setMemberSubjects] = useState([]);
   const { mandatory, name, answersToShow } = formElement;
@@ -87,18 +89,13 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
 
   return (
     <Fragment>
-      <Grid container direction="column" spacing={0.5} style={{ height: "100%" }} size={4}>
+      <StyledGridContainer container direction="column" spacing={0.5} size={4}>
         <Grid>
           <FormLabel component="legend">{label}</FormLabel>
         </Grid>
         <Grid />
         {memberSubjects.length > 0 && (
-          <Grid
-            container
-            sx={{
-              justifyContent: "flex-end"
-            }}
-          >
+          <StyledSelectAllGrid container>
             <Link
               underline="hover"
               href="#"
@@ -109,32 +106,26 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
             >
               {selectLabel}
             </Link>
-          </Grid>
+          </StyledSelectAllGrid>
         )}
-      </Grid>
+      </StyledGridContainer>
       <FormGroup>
         {memberSubjects.length > 0
-          ? map(memberSubjects, ({ uuid, nameString }, index) => {
-              return (
-                <Grid
-                  key={uuid}
-                  container
-                  className={index % 2 === 0 ? classes.evenBackground : classes.oddBackground}
-                  sx={{
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                  size={4}
-                >
-                  <Grid size={11}>
-                    <div>{nameString}</div>
-                  </Grid>
-                  <Grid size={1}>
-                    <Checkbox checked={includes(value, uuid)} onChange={onsSwitchChange} value={uuid} />
-                  </Grid>
-                </Grid>
-              );
-            })
+          ? map(memberSubjects, ({ uuid, nameString }, index) => (
+            <StyledMemberGrid
+              key={uuid}
+              container
+              index={index}
+              size={4}
+            >
+              <Grid size={11}>
+                <div>{nameString}</div>
+              </Grid>
+              <Grid size={1}>
+                <Checkbox checked={includes(value, uuid)} onChange={onsSwitchChange} value={uuid} />
+              </Grid>
+            </StyledMemberGrid>
+          ))
           : null}
       </FormGroup>
       <FormHelperText>{validationResult && t(validationResult.messageKey, validationResult.extra)}</FormHelperText>
