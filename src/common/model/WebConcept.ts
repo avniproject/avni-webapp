@@ -28,33 +28,42 @@ export class WebConcept {
       normalValidation?: boolean;
       absoluteEncapsulationValidation?: boolean;
     } = {};
-    const isNumeric = concept.dataType === "Numeric";
-    if (
-      isNumeric &&
-      parseInt(concept.lowAbsolute as any) >
-        parseInt(concept.highAbsolute as any)
-    ) {
-      error["absoluteValidation"] = true;
+
+    if (concept.dataType !== "Numeric") {
+      return error;
     }
-    if (
-      isNumeric &&
-      parseInt(concept.lowNormal as any) > parseInt(concept.highNormal as any)
-    ) {
+
+    // Convert empty strings to null
+    const convertToNumberOrNull = (value: any) => {
+      if (value === "" || value == null) return null;
+      return Number(value);
+    };
+
+    // Get numeric values, converting empty strings to null
+    const lowAbs = convertToNumberOrNull(concept.lowAbsolute);
+    const highAbs = convertToNumberOrNull(concept.highAbsolute);
+    const lowNorm = convertToNumberOrNull(concept.lowNormal);
+    const highNorm = convertToNumberOrNull(concept.highNormal);
+
+    const isNullOrLessThanOrEqual = (
+      value: number | null,
+      otherValue: number | null
+    ) => {
+      return value === null || otherValue == null || value <= otherValue;
+    };
+
+    if (!isNullOrLessThanOrEqual(lowAbs, lowNorm)) {
+      error["absoluteValidation"] = true;
       error["normalValidation"] = true;
     }
-    if (
-      isNumeric &&
-      !(
-        parseInt(concept.lowAbsolute as any) <=
-          parseInt(concept.lowNormal as any) &&
-        parseInt(concept.lowNormal as any) <=
-          parseInt(concept.highNormal as any) &&
-        parseInt(concept.highNormal as any) <=
-          parseInt(concept.highAbsolute as any)
-      )
-    ) {
+    let lowValue = lowNorm ? lowNorm : lowAbs;
+    if (!isNullOrLessThanOrEqual(lowValue, highNorm)) {
       error["normalValidation"] = true;
+    }
+    lowValue = highNorm ? highNorm : lowValue;
+    if (!isNullOrLessThanOrEqual(lowValue, highAbs)) {
       error["absoluteValidation"] = true;
+      error["normalValidation"] = true;
     }
 
     return error;
