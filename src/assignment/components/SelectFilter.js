@@ -1,29 +1,30 @@
-import { makeStyles } from "@mui/styles";
+import React from "react";
+import { styled } from '@mui/material/styles';
 import { FormControl, FormLabel } from "@mui/material";
 import Select from "react-select";
-import React from "react";
 
-const useStyle = makeStyles(theme => ({
-  filter: {
-    marginBottom: theme.spacing(5)
-  }
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  marginBottom: theme.spacing(5)
 }));
 
+const StyledSelect = styled(Select)({
+  width: "auto"
+});
+
 const SelectFilter = ({ label, options, filter, isMulti = false, filterCriteria, onFilterChange, isClearable = true }) => {
-  const classes = useStyle();
   return (
-    <FormControl fullWidth className={classes.filter}>
+    <StyledFormControl fullWidth>
       <FormLabel component="legend">{label}</FormLabel>
-      <Select
+      <StyledSelect
         isClearable={isClearable}
         maxMenuHeight={120}
         isMulti={isMulti}
         value={filterCriteria[filter]}
         options={options}
-        style={{ width: "auto" }}
         onChange={event => onFilterChange(filter, event)}
       />
-    </FormControl>
+    </StyledFormControl>
   );
 };
+
 export default SelectFilter;

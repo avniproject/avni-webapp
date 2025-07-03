@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { styled } from '@mui/material/styles';
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import http from "../../../common/utils/httpClient";
@@ -16,28 +17,44 @@ import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MuiComponentHelper from "../../../common/utils/MuiComponentHelper";
 import { Delete } from "@mui/icons-material";
-import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles(theme => ({
-  progress: {
-    position: "absolute",
-    top: "30%",
-    left: "50%",
-    zIndex: 1
-  },
-  chip: {
-    color: "#FFF",
-    backgroundColor: "#f50057",
-    height: 20
-  }
+const StyledBox = styled(Box)(({ theme }) => ({
+  boxShadow: theme.shadows[2],
+  padding: theme.spacing(5),
+  backgroundColor: theme.palette.background.paper
 }));
+
+const StyledCreateContainer = styled('div')({
+  float: "right",
+  right: "50px",
+  marginTop: "15px"
+});
+
+const StyledDetailPanel = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2)
+}));
+
+const StyledChip = styled(Chip)({
+  color: "#FFF",
+  backgroundColor: "#f50057",
+  height: 20,
+  display: "inline-block",
+  marginLeft: "10px",
+  marginBottom: "10px"
+});
+
+const StyledCircularProgress = styled(CircularProgress)({
+  position: "absolute",
+  top: "30%",
+  left: "50%",
+  zIndex: 1
+});
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Report);
 }
 
 const ReportingViews = ({ userInfo }) => {
-  const classes = useStyles();
   const tableRef = useRef(null);
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -48,11 +65,11 @@ const ReportingViews = ({ userInfo }) => {
     http
       .get("/viewsInDb")
       .then(response => {
-        console.log("ReportingViews fetchData response:", response.data); // Debug log
+        console.log("ReportingViews fetchData response:", response.data);
         setResult(
           (response.data || []).map(view => ({
             ...view,
-            legacyView: view.legacyView ?? false // Normalize legacyView
+            legacyView: view.legacyView ?? false
           }))
         );
       })
@@ -66,16 +83,10 @@ const ReportingViews = ({ userInfo }) => {
     (viewName, isLegacy) => (
       <span>
         {viewName}
-        {isLegacy && (
-          <Chip
-            label={"Deprecated - Do not use"}
-            style={{ display: "inline-block", marginLeft: "10px", marginBottom: "10px" }}
-            className={classes.chip}
-          />
-        )}
+        {isLegacy && <StyledChip label="Deprecated - Do not use" />}
       </span>
     ),
-    [classes.chip]
+    []
   );
 
   const columns = useMemo(
@@ -119,30 +130,30 @@ const ReportingViews = ({ userInfo }) => {
     () =>
       hasEditPrivilege(userInfo)
         ? [
-            row =>
-              row.original.legacyView
-                ? null
-                : {
-                    icon: Delete,
-                    tooltip: "Delete View",
-                    onClick: (event, row) => {
-                      const voidedMessage = `Do you really want to delete view ${row.original.viewName}?`;
-                      if (window.confirm(voidedMessage)) {
-                        http
-                          .delete(`/reportingView/${row.original.viewName}`)
-                          .then(response => {
-                            if (response.status === 200 && tableRef.current) {
-                              tableRef.current.refresh();
-                            }
-                          })
-                          .catch(error => {
-                            console.error("Failed to delete view:", error);
-                            alert("Failed to delete view. Please try again.");
-                          });
-                      }
-                    }
+          row =>
+            row.original.legacyView
+              ? null
+              : {
+                icon: Delete,
+                tooltip: "Delete View",
+                onClick: (event, row) => {
+                  const voidedMessage = `Do you really want to delete view ${row.original.viewName}?`;
+                  if (window.confirm(voidedMessage)) {
+                    http
+                      .delete(`/reportingView/${row.original.viewName}`)
+                      .then(response => {
+                        if (response.status === 200 && tableRef.current) {
+                          tableRef.current.refresh();
+                        }
+                      })
+                      .catch(error => {
+                        console.error("Failed to delete view:", error);
+                        alert("Failed to delete view. Please try again.");
+                      });
                   }
-          ]
+                }
+              }
+        ]
         : [],
     [userInfo]
   );
@@ -174,20 +185,14 @@ const ReportingViews = ({ userInfo }) => {
   }, []);
 
   return (
-    <Box
-      sx={{
-        boxShadow: 2,
-        p: 5,
-        bgcolor: "background.paper"
-      }}
-    >
+    <StyledBox>
       <Title title="Reporting Views" />
-      <DocumentationContainer filename={"View.md"}>
+      <DocumentationContainer filename="View.md">
         <div className="container">
           {hasEditPrivilege(userInfo) && (
-            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+            <StyledCreateContainer>
               <CreateComponent onSubmit={confirmViewCreation} name="Create/Refresh view" />
-            </div>
+            </StyledCreateContainer>
           )}
           <AvniMaterialTable
             title=""
@@ -205,27 +210,25 @@ const ReportingViews = ({ userInfo }) => {
               })
             }}
             renderDetailPanel={({ row }) => (
-              <Box
-                sx={{
-                  p: 2
-                }}
-              >
+              <StyledDetailPanel>
                 <JSEditor readOnly value={row.original.viewDefinition} />
-              </Box>
+              </StyledDetailPanel>
             )}
             actions={actions}
-            route={"/appdesigner/reportingViews"}
+            route="/appdesigner/reportingViews"
           />
         </div>
         <Modal onClose={MuiComponentHelper.getDialogClosingHandler()} open={loading}>
-          <CircularProgress size={150} className={classes.progress} />
+          <StyledCircularProgress size={150} />
         </Modal>
         {showAlert && <CustomizedSnackbar message={message} getDefaultSnackbarStatus={setShowAlert} defaultSnackbarStatus={showAlert} />}
       </DocumentationContainer>
-    </Box>
+    </StyledBox>
   );
 };
+
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
+
 export default connect(mapStateToProps)(ReportingViews);

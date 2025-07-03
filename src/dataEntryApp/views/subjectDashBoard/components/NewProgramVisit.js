@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Paper, Typography } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { withRouter } from "react-router-dom";
@@ -13,20 +13,18 @@ import NewVisitMenuView from "./NewVisitMenuView";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { getNewEligibleProgramEncounters } from "../../../../common/mapper/ProgramEncounterMapper";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1
-  },
-  mainHeading: {
-    fontSize: "20px"
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(1, 3),
+  flexGrow: 1,
 }));
+
+const StyledTypography = styled(Typography)({
+  fontSize: "20px",
+});
 
 const NewProgramVisit = ({ match, ...props }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const enrolmentUuid = match.queryParams.enrolUuid;
 
   useEffect(() => {
@@ -50,12 +48,10 @@ const NewProgramVisit = ({ match, ...props }) => {
   return props.load ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
+      <StyledPaper>
         {!isEmpty(sections) ? (
           <>
-            <Typography component={"span"} className={classes.mainHeading}>
-              {t("newProgramVisit")}
-            </Typography>
+            <StyledTypography component="span">{t("newProgramVisit")}</StyledTypography>
             <LineBreak num={1} />
             <NewVisitMenuView sections={sections} uuid={enrolmentUuid} isForProgramEncounters={true} />
           </>
@@ -65,29 +61,22 @@ const NewProgramVisit = ({ match, ...props }) => {
             {t("no")} {t("plannedVisits")} / {t("unplannedVisits")}{" "}
           </Typography>
         )}
-      </Paper>
+      </StyledPaper>
     </Fragment>
   ) : (
     <CustomizedBackdrop load={props.load} />
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   eligibleEncounters: state.dataEntry.programEncounterReducer.eligibleEncounters,
   operationalModules: state.dataEntry.metadata.operationalModules,
-  load: state.dataEntry.loadReducer.load
+  load: state.dataEntry.loadReducer.load,
 });
 
 const mapDispatchToProps = {
   getEligibleProgramEncounters,
-  resetState
+  resetState,
 };
 
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(NewProgramVisit)
-  )
-);
+export default withRouter(withParams(connect(mapStateToProps, mapDispatchToProps)(NewProgramVisit)));

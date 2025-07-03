@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Paper, Typography, Grid, Button } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getEncounter, getProgramEncounter } from "../../../reducers/viewVisitReducer";
@@ -13,58 +13,55 @@ import { useTranslation } from "react-i18next";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { defaultTo } from "lodash";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1,
-    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-  },
-  innerPaper: {
-    padding: theme.spacing(2, 2),
-    margin: theme.spacing(1, 1),
-    flexGrow: 1,
-    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-  },
-  mainHeading: {
-    fontSize: "20px",
-    fontWeight: "500",
-    marginLeft: 10,
-    marginBottom: 10
-  },
-  scheduledHeading: {
-    fontSize: "1vw",
-    fontWeight: "300",
-    marginBottom: 10
-  },
-  subHeading: {
-    fontSize: "1vw",
-    fontWeight: "bold"
-  },
-  summaryHeading: {
-    fontSize: "18px",
-    fontWeight: "bold"
-  },
-  programStatusStyle: {
-    // color: "green",
-    backgroundColor: "#54fb36a8",
-    fontSize: "12px",
-    padding: theme.spacing(0.6, 0.6),
-    margin: theme.spacing(1, 1)
-  },
-  scheduleddateStyle: {
-    marginBottom: 20,
-    marginTop: 10
-  },
-  visitButton: {
-    marginLeft: "8px",
-    fontSize: "14px"
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(1, 3),
+  flexGrow: 1,
+  boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  justifyContent: "space-between",
+  alignItems: "baseline"
+}));
+
+const StyledMainHeading = styled(Typography)(({ theme }) => ({
+  fontSize: "20px",
+  fontWeight: "500",
+  marginLeft: 10,
+  marginBottom: 10
+}));
+
+const StyledScheduledHeading = styled(Typography)(({ theme }) => ({
+  fontSize: "1vw",
+  fontWeight: "300",
+  marginBottom: 10
+}));
+
+const StyledSubHeading = styled(Typography)(({ theme }) => ({
+  fontSize: "1vw",
+  fontWeight: "bold"
+}));
+
+const StyledProgramStatus = styled(Typography)(({ theme }) => ({
+  backgroundColor: "#54fb36a8",
+  fontSize: "12px",
+  padding: theme.spacing(0.6, 0.6),
+  margin: theme.spacing(1, 1)
+}));
+
+const StyledScheduledDateContainer = styled('div')(({ theme }) => ({
+  marginBottom: 20,
+  marginTop: 10
+}));
+
+const StyledVisitButton = styled(Button)(({ theme }) => ({
+  marginLeft: "8px",
+  fontSize: "14px"
 }));
 
 const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const history = useHistory();
   const isViewEncounter = match.path === "/app/subject/viewEncounter";
   let viewAllCompletedUrl;
@@ -77,46 +74,34 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
   useEffect(() => {
     isViewEncounter ? getEncounter(match.queryParams.uuid) : getProgramEncounter(match.queryParams.uuid);
   }, []);
+
   return encounter ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
-        <Grid
-          container
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "baseline"
-          }}
-        >
-          <Typography component={"span"} className={classes.mainHeading}>
+      <StyledPaper>
+        <StyledGrid container direction="row">
+          <StyledMainHeading component="span">
             {t(defaultTo(encounter.name, encounter.encounterType.name))}
-          </Typography>
+          </StyledMainHeading>
           {encounter.earliestVisitDateTime ? (
-            <Typography component={"span"} className={classes.scheduledHeading}>
-              {t("Scheduledon")}
-              {":  "}
-              {`${moment(new Date(encounter.earliestVisitDateTime)).format("DD-MM-YYYY")}`}
-            </Typography>
-          ) : (
-            ""
-          )}
-        </Grid>
-        <div className={classes.scheduleddateStyle}>
-          <Typography component={"span"} className={classes.programStatusStyle}>
+            <StyledScheduledHeading component="span">
+              {t("Scheduledon")}: {moment(new Date(encounter.earliestVisitDateTime)).format("DD-MM-YYYY")}
+            </StyledScheduledHeading>
+          ) : null}
+        </StyledGrid>
+        <StyledScheduledDateContainer>
+          <StyledProgramStatus component="span">
             {t("Completed")}
-          </Typography>
-          <Typography component={"span"} className={classes.subHeading}>
-            {`${moment(new Date(encounter.encounterDateTime)).format("DD-MM-YYYY")}`}
-          </Typography>
-        </div>
-
+          </StyledProgramStatus>
+          <StyledSubHeading component="span">
+            {moment(new Date(encounter.encounterDateTime)).format("DD-MM-YYYY")}
+          </StyledSubHeading>
+        </StyledScheduledDateContainer>
         <Observations observations={encounter ? encounter.observations : []} form={form} />
-
         <InternalLink to={viewAllCompletedUrl}>
-          <Button color="primary" className={classes.visitButton}>
+          <StyledVisitButton color="primary">
             {t("viewAllCompletedVisits")}
-          </Button>
+          </StyledVisitButton>
         </InternalLink>
         {/* Re-direct to Dashboard on Back Click*/}
         {/* <InternalLink to={`/app/subject?uuid=${encounter.subjectUuid}`}>
@@ -124,10 +109,10 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
             {t("back")}
           </Button>
         </InternalLink> */}
-        <Button color="primary" className={classes.visitButton} onClick={history.goBack}>
+        <StyledVisitButton color="primary" onClick={history.goBack}>
           {t("back")}
-        </Button>
-      </Paper>
+        </StyledVisitButton>
+      </StyledPaper>
     </Fragment>
   ) : (
     <CustomizedBackdrop load={false} />

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Button, Grid, Typography } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import { useTranslation } from "react-i18next";
@@ -9,22 +9,31 @@ import moment from "moment";
 import { size } from "lodash";
 import { formatDate } from "../../../common/utils/General";
 
-const useStyles = makeStyles(theme => ({
-  labelStyle: {
-    color: "red",
-    backgroundColor: "#ffeaea",
-    fontSize: "12px",
-    alignItems: "center",
-    margin: 0
-  },
-  infoMsg: {
-    marginLeft: 10
-  }
+const StyledLabel = styled('label')({
+  color: "red",
+  backgroundColor: "#ffeaea",
+  fontSize: "12px",
+  alignItems: "center",
+  margin: 0
+});
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  marginLeft: theme.spacing(1.25)
 }));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  container: true,
+  spacing: theme.spacing(10),
+  alignItems: "center",
+  alignContent: "center"
+}));
+
+const StyledTable = styled(MaterialReactTable)({
+  tableLayout: "auto"
+});
 
 const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState([{ id: "earliestVisitDateTime", desc: true }]);
 
@@ -53,21 +62,14 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
         id: "status",
         header: t("status"),
         enableSorting: false,
-        Cell: ({ row }) => <label className={classes.labelStyle}>{t(getStatus(row.original))}</label>
+        Cell: ({ row }) => <StyledLabel>{t(getStatus(row.original))}</StyledLabel>
       },
       {
         id: "actions",
         header: t("actions"),
         enableSorting: false,
         Cell: ({ row }) => (
-          <Grid
-            container
-            spacing={10}
-            sx={{
-              alignItems: "center",
-              alignContent: "center"
-            }}
-          >
+          <StyledGrid>
             <Grid>
               <InternalLink to={`${doBaseUrl}=${row.original.uuid}`}>
                 <Button id={`do-visit-${row.original.uuid}`} color="primary">
@@ -85,20 +87,22 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
             <Grid>
               <DeleteButton onDelete={() => onDelete(row.original)} />
             </Grid>
-          </Grid>
+          </StyledGrid>
         )
       }
     ],
-    [t, classes, doBaseUrl, cancelBaseURL, onDelete]
+    [t, doBaseUrl, cancelBaseURL, onDelete]
   );
+
   const renderNoVisitMessage = () => (
-    <Typography variant="caption" sx={{ mb: 1 }} className={classes.infoMsg}>
+    <StyledTypography variant="caption">
       {" "}
       {t("no")} {t("plannedVisits")}{" "}
-    </Typography>
+    </StyledTypography>
   );
+
   const renderTable = () => (
-    <MaterialReactTable
+    <StyledTable
       columns={columns}
       data={plannedVisits || []}
       manualPagination
@@ -113,13 +117,10 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
       initialState={{
         sorting: [{ id: "earliestVisitDateTime", desc: true }]
       }}
-      muiTableProps={{
-        sx: {
-          tableLayout: "auto"
-        }
-      }}
     />
   );
+
   return size(plannedVisits) === 0 ? renderNoVisitMessage() : renderTable();
 };
+
 export default PlannedVisitsTable;

@@ -1,24 +1,29 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { useTranslation } from "react-i18next";
 import { find, get, isEmpty, isNaN, isNil, size } from "lodash";
 import { PhoneNumber } from "avni-models";
-import { makeStyles } from "@mui/styles";
 import { TextField, Typography, FormControlLabel, Checkbox } from "@mui/material";
 import Colors from "../Colors";
 
-const useStyles = makeStyles(theme => ({
-  labelStyle: {
-    width: "50%",
-    marginBottom: 10,
-    color: "rgba(0, 0, 0, 0.54)"
-  },
-  errorStyle: {
-    color: Colors.ValidationError
+const StyledLabel = styled(Typography)(({ theme }) => ({
+  width: "50%",
+  marginBottom: theme.spacing(1),
+  color: "rgba(0, 0, 0, 0.54)"
+}));
+
+const StyledError = styled(Typography)({
+  color: Colors.ValidationError
+});
+
+const StyledTextField = styled(TextField)(({ textColor }) => ({
+  width: "30%",
+  '& .MuiInputBase-input': {
+    color: textColor
   }
 }));
 
 export default function PhoneNumberFormElement({ obsHolder, formElement, update, validationResults, uuid }) {
-  const classes = useStyles();
   const { mandatory, name, concept, editable } = formElement;
   const observation = obsHolder.findObservation(concept);
   const { t } = useTranslation();
@@ -52,27 +57,24 @@ export default function PhoneNumberFormElement({ obsHolder, formElement, update,
 
   const renderUnverifiedMessage = () => {
     return (
-      <Typography variant="body1" className={classes.errorStyle}>
+      <StyledError variant="body1">
         {t("phoneNumberUnverified")}
-      </Typography>
+      </StyledError>
     );
   };
 
   return (
     <div>
-      <Typography variant="body1" sx={{ mb: 1 }} className={classes.labelStyle}>
-        {t(label)}
-      </Typography>
-      <TextField
-        type={"numeric"}
+      <StyledLabel variant="body1">{t(label)}</StyledLabel>
+      <StyledTextField
+        type="numeric"
         autoComplete="off"
         required={mandatory}
         name={name}
         value={isNaN(parseInt(phoneNumber.getValue())) ? "" : phoneNumber.getValue()}
-        style={{ width: "30%" }}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={isError}
-        inputProps={{ style: { color: textColor } }}
+        textColor={textColor}
         onChange={e => {
           const phoneNumber = e.target.value;
           isEmpty(phoneNumber) ? update({}) : update({ phoneNumber, isVerified: false });

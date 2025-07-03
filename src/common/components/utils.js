@@ -1,55 +1,27 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import _, { get, merge } from "lodash";
 import { Link as RouterLink, withRouter } from "react-router-dom";
-import { makeStyles } from "@mui/styles";
 import { Link, SvgIcon } from "@mui/material";
 import qs from "query-string";
-
 import ScreenWithAppBar from "common/components/ScreenWithAppBar";
 
-const createStyles = makeStyles(theme => ({
-  noUnderline: {
-    "&:hover, &:focus": {
-      textDecoration: "none"
-    }
+const StyledLink = styled(Link)({
+  "&:hover, &:focus": {
+    textDecoration: "none"
   }
-}));
+});
 
-export const AddIcon = props => (
-  <SvgIcon {...props}>
-    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-  </SvgIcon>
-);
-
-export const DownloadIcon = props => (
-  <svg width="24" height="24" viewBox="0 0 24 24" {...props}>
-    <path d="M0 0h24v24H0z" fill="none" />
-    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z" />
-  </svg>
-);
-
-export const InternalLink = ({ children, noUnderline, ...props }) => {
-  const classes = createStyles();
-  return (
-    <Link
-      component={React.forwardRef((props, ref) => (
-        <RouterLink innerRef={ref} {...props} className={noUnderline ? classes.noUnderline : ""} />
-      ))}
-      {...props}
-    >
-      {children}
-    </Link>
-  );
-};
-
-export const Home = () => (
-  <div>
-    <ul>
-      <li>
-        <Link to="/org/">Manage Users</Link>
-      </li>
-    </ul>
-  </div>
+export const InternalLink = ({ children, noUnderline, ...props }) => (
+  <StyledLink
+    component={React.forwardRef((props, ref) => (
+      <RouterLink innerRef={ref} {...props} />
+    ))}
+    className={noUnderline ? "noUnderline" : ""}
+    {...props}
+  >
+    {children}
+  </StyledLink>
 );
 
 export const AccessDenied = () => (
@@ -68,20 +40,12 @@ export const None = ({ displayText = "None" }) => (
   </div>
 );
 
-export const NoneWithLabel = ({ noneText = "None", labelText }) => (
-  <div>
-    <label style={{ fontSize: "0.7em", color: "#666" }}>{labelText}</label>
-    <br />
-    <None displayText={noneText} />
-  </div>
-);
-
 export const withParams = Comp => ({ match, ...props }) => {
   const queryParams = qs.parse(get(props, "location.search"));
   return <Comp match={merge({}, match, { queryParams })} {...props} />;
 };
 
-export const WithProps = (extras, Compnent) => props => <Compnent {...extras} {...props} />;
+export const WithProps = (extras, Component) => props => <Component {...extras} {...props} />;
 
 export const formatMsgTemplate = (str, params) => {
   let replacer = function(value, index) {

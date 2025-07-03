@@ -10,7 +10,6 @@
     "@fontsource/roboto": "^5.0.8",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
-    "@mui/styles": "^6.4.8",
     "@mui/system": "^7.2.0",
     "@mui/x-date-pickers": "5.0.0",
     "@nivo/bar": "^0.62.0",

@@ -1,4 +1,4 @@
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 
@@ -34,50 +34,48 @@ const useClickOutside = (ref, handler) => {
   }, [ref, handler]);
 };
 
-const useStyles = makeStyles(theme => ({
-  picker: {
-    position: "relative",
-    display: "flex",
-    flexDirection: "row"
-  },
+const StyledPicker = styled('div')({
+  position: "relative",
+  display: "flex",
+  flexDirection: "row"
+});
 
-  swatch: {
-    width: "28px",
-    height: "28px",
-    marginRight: "6px",
-    borderRadius: "8px",
-    border: "3px solid #fff",
-    boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1)",
-    cursor: "pointer"
-  },
-
-  popOver: {
-    position: "absolute",
-    top: "calc(100% + 2px)",
-    left: "0",
-    borderRadius: "9px",
-    boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
-    zIndex: 100
-  }
+const StyledSwatch = styled('div')(({ color }) => ({
+  width: "28px",
+  height: "28px",
+  marginRight: "6px",
+  borderRadius: "8px",
+  border: "3px solid #fff",
+  boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1)",
+  cursor: "pointer",
+  backgroundColor: color
 }));
+
+const StyledPopOver = styled('div')({
+  position: "absolute",
+  top: "calc(100% + 2px)",
+  left: "0",
+  borderRadius: "9px",
+  boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
+  zIndex: 100
+});
 
 export const PopoverColorPicker = ({ color, onChange }) => {
   const popover = useRef();
   const [isOpen, toggle] = useState(false);
-  const classes = useStyles();
 
   const close = useCallback(() => toggle(false), []);
   useClickOutside(popover, close);
 
   return (
-    <div className={classes.picker}>
-      <div className={classes.swatch} style={{ backgroundColor: color }} onClick={() => toggle(true)} />
+    <StyledPicker>
+      <StyledSwatch color={color} onClick={() => toggle(true)} />
       {isOpen && (
-        <div className={classes.popOver} ref={popover}>
+        <StyledPopOver ref={popover}>
           <HexColorPicker color={color} onChange={onChange} />
-        </div>
+        </StyledPopOver>
       )}
       <HexColorInput color={color} onChange={onChange} placeholder="Type a color" prefixed />
-    </div>
+    </StyledPicker>
   );
 };

@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Grid, Paper } from "@mui/material";
 import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
@@ -23,30 +23,33 @@ import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import { LineBreak } from "../../../../common/components/utils";
 import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(1, 3),
+  flexGrow: 1
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  container: true,
+  spacing: theme.spacing(3),
+  justifyContent: "center",
+  alignItems: "center"
 }));
 
 const ProgramEncounter = ({ match, programEncounter, validationResults, setEncounterDate, ...props }) => {
-  const classes = useStyles();
   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
   const encounterUuid = match.queryParams.encounterUuid;
   const enrolUuid = match.queryParams.enrolUuid;
   const uuid = match.queryParams.uuid;
   const { t } = useTranslation();
+
   useEffect(() => {
     props.resetState();
     if (editProgramEncounter) {
       props.editProgramEncounter(uuid);
     } else if (encounterUuid) {
-      //encounterUuid - programEncounterUuid
       props.createProgramEncounterForScheduled(encounterUuid);
     } else {
-      //uuid - encounterTypeUuid
       props.createProgramEncounter(uuid, enrolUuid);
     }
   }, []);
@@ -54,42 +57,35 @@ const ProgramEncounter = ({ match, programEncounter, validationResults, setEncou
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
-        <Grid
-          container
-          spacing={3}
-          sx={{
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <Grid size={12}>
-            {props.programEncounterForm && programEncounter && props.subjectProfile ? (
-              <ProgramEncounterForm fetchRulesResponse={fetchProgramEncounterRulesResponse}>
-                <DateFormElement
-                  uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
-                  formElement={new StaticFormElement(t("visitDate"), true, true)}
-                  value={programEncounter.encounterDateTime}
-                  validationResults={validationResults}
-                  update={setEncounterDate}
-                />
-                <LineBreak num={3} />
-              </ProgramEncounterForm>
-            ) : (
-              <CustomizedBackdrop load={false} />
-            )}
-          </Grid>
-        </Grid>
-      </Paper>
+      <StyledPaper>
+        <StyledGrid size={12}>
+          {props.programEncounterForm && programEncounter && props.subjectProfile ? (
+            <ProgramEncounterForm fetchRulesResponse={fetchProgramEncounterRulesResponse}>
+              <DateFormElement
+                uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
+                formElement={new StaticFormElement(t("visitDate"), true, true)}
+                value={programEncounter.encounterDateTime}
+                validationResults={validationResults}
+                update={setEncounterDate}
+              />
+              <LineBreak num={3} />
+            </ProgramEncounterForm>
+          ) : (
+            <CustomizedBackdrop load={false} />
+          )}
+        </StyledGrid>
+      </StyledPaper>
     </Fragment>
   );
 };
+
 const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
   validationResults: state.dataEntry.programEncounterReducer.validationResults
 });
+
 const mapDispatchToProps = {
   onLoad,
   updateProgramEncounter,
@@ -99,6 +95,7 @@ const mapDispatchToProps = {
   createProgramEncounterForScheduled,
   setEncounterDate
 };
+
 export default withRouter(
   withParams(
     connect(

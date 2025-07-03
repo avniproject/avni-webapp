@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { styled } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-
 import _, { concat, get, isEmpty, isNil } from "lodash";
 import Paper from "@mui/material/Paper";
 import { Grid } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import CloudDownload from "@mui/icons-material/CloudDownload";
 import Button from "@mui/material/Button";
 import FileUpload from "../common/components/FileUpload";
@@ -29,23 +28,50 @@ import CompareMetadataService from "../adminApp/service/CompareMetadataService";
 import httpClient from "../common/utils/httpClient";
 import UploadStatus from "./UploadStatus";
 
-const useStyles = makeStyles(theme => ({
-  root: {},
-  button: {
-    color: "#3f51b5"
-  },
-  uploadDownloadSection: {
-    padding: theme.spacing(2)
-  },
-  reviewButton: {
-    marginLeft: theme.spacing(1),
-    marginTop: theme.spacing(1),
-    backgroundColor: "#2196F3",
-    color: "#fff",
-    "&:hover": {
-      backgroundColor: "#1976D2"
-    }
+const StyledRootGrid = styled(Grid)(({ theme }) => ({
+  container: true,
+  spacing: theme.spacing(2)
+}));
+
+const StyledMainGrid = styled(Grid)(({ theme }) => ({
+  minWidth: 1200,
+  maxWidth: 1400
+}));
+
+const StyledUploadPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2)
+}));
+
+const StyledStatusPaper = styled(Paper)(({ theme }) => ({
+  marginBottom: theme.spacing(12.5)
+}));
+
+const StyledReviewButton = styled(Button)(({ theme }) => ({
+  marginLeft: theme.spacing(1),
+  marginTop: theme.spacing(1),
+  backgroundColor: "#2196F3",
+  color: "#fff",
+  "&:hover": {
+    backgroundColor: "#1976D2"
   }
+}));
+
+const StyledFormGrid = styled(Grid)(({ theme }) => ({
+  container: true,
+  direction: "column",
+  spacing: theme.spacing(2),
+  justifyContent: "center",
+  alignItems: "flex-start"
+}));
+
+const StyledFileName = styled('span')(({ theme }) => ({
+  marginLeft: theme.spacing(1)
+}));
+
+const StyledErrorTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+  display: "block",
+  marginBottom: theme.spacing(1)
 }));
 
 const UPLOAD_TYPES = {
@@ -60,6 +86,7 @@ const ENCOUNTER_PREFIXES = {
   ENCOUNTER: "Encounter---",
   PROGRAM_ENCOUNTER: "ProgramEncounter---"
 };
+
 class ReviewStatus {
   constructor(loading, response, error) {
     this.loading = loading;
@@ -71,8 +98,6 @@ class ReviewStatus {
 const isMetadataDiffReviewEnabled = true;
 
 const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
-  const classes = useStyles();
-
   const [uploadType, setUploadType] = useState("");
   const [entityForDownload, setEntityForDownload] = useState("");
   const [file, setFile] = useState(null);
@@ -213,6 +238,7 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
     setReviewStatus(new ReviewStatus(false, null, "An error occurred while comparing metadata."));
     console.error("Review error:", err);
   };
+
   const handleReviewClick = useCallback(async () => {
     setReviewStatus(new ReviewStatus(true, null, null));
     try {
@@ -256,57 +282,33 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
   }
 
   return (
-    <Grid container spacing={2} className={classes.root}>
+    <StyledRootGrid>
       <Title title="Upload" />
-      <Grid style={{ minWidth: 1200, maxWidth: 1400 }} size={12}>
-        <Paper className={classes.uploadDownloadSection}>
+      <StyledMainGrid size={12}>
+        <StyledUploadPaper>
           <DocumentationContainer filename="Upload.md">
             <Grid container spacing={2}>
               <Grid container>Upload</Grid>
               <Grid container>
-                <Grid
-                  container
-                  direction="column"
-                  spacing={2}
-                  sx={{
-                    justifyContent: "center",
-                    alignItems: "flex-start"
-                  }}
-                  size={{
-                    xs: 8,
-                    sm: 4
-                  }}
-                >
+                <StyledFormGrid size={{ xs: 8, sm: 4 }}>
                   <DropDown name="Type" value={uploadType} onChange={handleDropdownChange} options={uploadAndDownloadOptions} />
                   <Tooltip title="Download Sample file for selected Upload type" placement="bottom-start" arrow>
                     <span>
                       <Button color="primary" onClick={handleDownloadSample} disabled={isSampleDownloadDisallowed}>
                         <CloudDownload disabled={isSampleDownloadDisallowed} />
-                        <span style={{ marginLeft: "1em" }}>Download Sample</span>
+                        <StyledFileName>Download Sample</StyledFileName>
                       </Button>
                     </span>
                   </Tooltip>
-                </Grid>
+                </StyledFormGrid>
                 {isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
                   <Grid>
-                    <Button className={classes.reviewButton} onClick={handleReviewClick}>
+                    <StyledReviewButton onClick={handleReviewClick}>
                       Review
-                    </Button>
+                    </StyledReviewButton>
                   </Grid>
                 )}
-                <Grid
-                  container
-                  direction="column"
-                  spacing={2}
-                  sx={{
-                    justifyContent: "center",
-                    alignItems: "flex-start"
-                  }}
-                  size={{
-                    xs: 8,
-                    sm: 4
-                  }}
-                >
+                <StyledFormGrid size={{ xs: 8, sm: 4 }}>
                   <Grid>
                     <FileUpload
                       canSelect={!isEmpty(uploadType)}
@@ -316,9 +318,9 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                     />
                   </Grid>
                   <Grid>
-                    <span style={{ marginLeft: "1em" }}>Selected File: {get(file, "name", "")}</span>
+                    <StyledFileName>Selected File: {get(file, "name", "")}</StyledFileName>
                   </Grid>
-                </Grid>
+                </StyledFormGrid>
               </Grid>
             </Grid>
             <Grid container>
@@ -348,35 +350,31 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                     <LocationHierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} configuredHierarchies={configuredHierarchies} />
                   ) : (
                     <Box>
-                      <Typography
-                        color="error"
-                        sx={{
-                          display: "block",
-                          mb: 1
-                        }}
-                      >
+                      <StyledErrorTypography>
                         Invalid or missing Location Hierarchy.
-                      </Typography>
+                      </StyledErrorTypography>
                     </Box>
                   ))}
               </Grid>
             </Grid>
           </DocumentationContainer>
-        </Paper>
-      </Grid>
+        </StyledUploadPaper>
+      </StyledMainGrid>
       <Grid size={12}>
-        <Paper style={{ marginBottom: 100 }}>
+        <StyledStatusPaper>
           <UploadStatus />
-        </Paper>
+        </StyledStatusPaper>
       </Grid>
-    </Grid>
+    </StyledRootGrid>
   );
 };
+
 const mapStateToProps = state => ({
   statuses: state.bulkUpload.statuses,
   uploadTypes: state.bulkUpload.uploadTypes,
   userRoles: state.app.authSession.roles
 });
+
 export default withRouter(
   connect(
     mapStateToProps,

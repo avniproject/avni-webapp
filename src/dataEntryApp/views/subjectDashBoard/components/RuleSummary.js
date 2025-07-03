@@ -1,35 +1,39 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import Observations from "../../../components/Observations";
-import { makeStyles } from "@mui/styles";
 import { CircularProgress, AccordionSummary, Typography, AccordionDetails, Accordion, Grid } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(theme => ({
-  expansionHeading: {
-    fontSize: "1rem",
-    flexBasis: "33.33%",
-    flexShrink: 0,
-    fontWeight: "500",
-    margin: "0"
-  },
-  expansionPanel: {
-    marginBottom: "11px",
-    borderRadius: "5px",
-    boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-  },
-  expandMoreHoriz: {
-    color: "#0e6eff"
-  }
-}));
+const StyledAccordion = styled(Accordion)({
+  marginBottom: "11px",
+  borderRadius: "5px",
+  boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+});
+
+const StyledTypography = styled(Typography)({
+  fontSize: "1rem",
+  flexBasis: "33.33%",
+  flexShrink: 0,
+  fontWeight: "500",
+  margin: "0"
+});
+
+const StyledExpandMore = styled(ExpandMore)({
+  color: "#0e6eff"
+});
+
+const StyledGrid = styled(Grid)({
+  container: true,
+  justifyContent: "center"
+});
 
 export const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   const renderNotFound = () => {
-    return <Typography component={"span"}>{t("summaryNotFound")}</Typography>;
+    return <Typography component="span">{t("summaryNotFound")}</Typography>;
   };
 
   const renderObs = () => {
@@ -38,26 +42,21 @@ export const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => 
 
   const renderProgress = () => {
     return (
-      <Grid
-        container
-        sx={{
-          justifyContent: "center"
-        }}
-        size={12}
-      >
+      <StyledGrid size={12}>
         <CircularProgress />
-      </Grid>
+      </StyledGrid>
     );
   };
+
   return (
-    <Accordion className={classes.expansionPanel}>
+    <StyledAccordion>
       <AccordionSummary
-        expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
+        expandIcon={<StyledExpandMore />}
         aria-controls="registrationPanelbh-content"
         id="summary"
       >
-        <Typography component={"span"}>
-          <p className={classes.expansionHeading}>{t(title)}</p>
+        <Typography component="span">
+          <StyledTypography component="p">{t(title)}</StyledTypography>
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
@@ -65,6 +64,6 @@ export const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => 
           {isFetching ? renderProgress() : renderObs()}
         </Grid>
       </AccordionDetails>
-    </Accordion>
+    </StyledAccordion>
   );
 };

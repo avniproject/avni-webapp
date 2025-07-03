@@ -1,32 +1,46 @@
 import { isEmpty, map, sortBy, trim } from "lodash";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { FormControl, InputLabel, Select, MenuItem, Button } from "@mui/material";
 import React from "react";
 import CurrentUserService from "../service/CurrentUserService";
 
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 200,
-    color: "white"
-  },
-  whiteColor: {
-    color: "white"
-  }
+const StyledContainer = styled('div')({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+});
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  margin: theme.spacing(1),
+  minWidth: 200,
+  color: "white",
 }));
 
-export const OrganisationOptions = ({ getUserInfo, history, organisations, userInfo }) => {
-  const classes = useStyles();
+const StyledInputLabel = styled(InputLabel)({
+  color: "white",
+});
 
+const StyledSelect = styled(Select)({
+  color: "white",
+  "& .MuiSelect-icon": {
+    color: "white",
+  },
+});
+
+const StyledButton = styled(Button)({
+  color: "white",
+});
+
+export const OrganisationOptions = ({ getUserInfo, history, organisations, userInfo }) => {
   const options = [
     { name: "", value: "" },
-    ...map(sortBy(organisations, organisation => trim(organisation.name).toLowerCase()), ({ name, uuid }) => ({
-      name: name,
-      value: uuid
-    }))
+    ...map(sortBy(organisations, (organisation) => trim(organisation.name).toLowerCase()), ({ name, uuid }) => ({
+      name,
+      value: uuid,
+    })),
   ];
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     if (event.target.value !== "") {
       localStorage.setItem("ORGANISATION_UUID", event.target.value);
       history.push("/home");
@@ -36,42 +50,31 @@ export const OrganisationOptions = ({ getUserInfo, history, organisations, userI
     }
   };
 
-  const exitToAdmin = function() {
+  const exitToAdmin = () => {
     CurrentUserService.exitOrganisation();
     getUserInfo();
     history.push("/#/admin");
     window.location.reload(true);
   };
 
-  return (
-    !isEmpty(organisations) &&
-    CurrentUserService.isAdminUsingAnOrg(userInfo) && (
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="organisation-select-label" style={{ color: "white" }}>
-            Select Organisation
-          </InputLabel>
-          <Select
-            labelid="organisation-select"
-            id="organisation-select"
-            value={localStorage.getItem("ORGANISATION_UUID") || ""}
-            onChange={handleChange}
-            classes={{
-              root: classes.whiteColor,
-              icon: classes.whiteColor
-            }}
-          >
-            {options.map((option, index) => (
-              <MenuItem key={index} value={option.value}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button onClick={() => exitToAdmin()} style={{ color: "white" }}>
-          Exit Organisation
-        </Button>
-      </div>
-    )
-  );
+  return !isEmpty(organisations) && CurrentUserService.isAdminUsingAnOrg(userInfo) ? (
+    <StyledContainer>
+      <StyledFormControl>
+        <StyledInputLabel id="organisation-select-label">Select Organisation</StyledInputLabel>
+        <StyledSelect
+          labelId="organisation-select"
+          id="organisation-select"
+          value={localStorage.getItem("ORGANISATION_UUID") || ""}
+          onChange={handleChange}
+        >
+          {options.map((option, index) => (
+            <MenuItem key={index} value={option.value}>
+              {option.name}
+            </MenuItem>
+          ))}
+        </StyledSelect>
+      </StyledFormControl>
+      <StyledButton onClick={exitToAdmin}>Exit Organisation</StyledButton>
+    </StyledContainer>
+  ) : null;
 };

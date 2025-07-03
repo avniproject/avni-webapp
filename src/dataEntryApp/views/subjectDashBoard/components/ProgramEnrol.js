@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Paper, Typography, Grid } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
@@ -22,52 +22,38 @@ import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import { useTranslation } from "react-i18next";
 import { LineBreak } from "../../../../common/components/utils";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1
-  },
-  mainHeading: {
-    fontSize: "20px"
-  },
-  btnCustom: {
-    backgroundColor: "#fc9153",
-    height: "30px",
-    marginRight: "20px"
-  },
-  container: {
-    display: "inline",
-    flexWrap: "wrap",
-    fontSize: "13px"
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: 200,
-    display: "inline",
-    fontSize: "13px"
-  },
-  input: {
-    fontSize: "13px"
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(1, 3),
+  flexGrow: 1
+}));
+
+const StyledTypography = styled(Typography)({
+  fontSize: "20px"
+});
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  container: true,
+  spacing: theme.spacing(3),
+  justifyContent: "center",
+  alignItems: "center"
 }));
 
 const ProgramEnrol = ({
-  match,
-  onLoad,
-  enrolForm,
-  getSubjectProfile,
-  programEnrolment,
-  load,
-  validationResults,
-  setEnrolmentDate,
-  setExitDate
-}) => {
-  const classes = useStyles();
+                        match,
+                        onLoad,
+                        enrolForm,
+                        getSubjectProfile,
+                        programEnrolment,
+                        load,
+                        validationResults,
+                        setEnrolmentDate,
+                        setExitDate
+                      }) => {
   const { t } = useTranslation();
   const formType = match.queryParams.formType;
   const subjectTypeName = match.queryParams.subjectTypeName;
+
   useEffect(() => {
     onLoad(subjectTypeName, match.queryParams.programName, formType, match.queryParams.programEnrolmentUuid, match.queryParams.uuid);
   }, []);
@@ -75,54 +61,42 @@ const ProgramEnrol = ({
   return load ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
-        <div className={classes.tableView}>
-          <Typography component={"span"} className={classes.mainHeading}>
-            {t(match.queryParams.programName)}
-          </Typography>
-          <Grid
-            container
-            spacing={3}
-            sx={{
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <Grid size={12}>
-              {enrolForm && programEnrolment && formType === "ProgramEnrolment" ? (
-                <ProgramEnrolmentForm formType={formType} fetchRulesResponse={fetchEnrolmentRulesResponse}>
-                  <DateFormElement
-                    uuid={ProgramEnrolment.validationKeys.ENROLMENT_DATE}
-                    formElement={new StaticFormElement("Enrolment Date", true, true)}
-                    value={programEnrolment.enrolmentDateTime}
-                    validationResults={validationResults}
-                    update={setEnrolmentDate}
-                  />
-                  <LineBreak num={3} />
-                </ProgramEnrolmentForm>
-              ) : enrolForm && programEnrolment && formType === "ProgramExit" ? (
-                <ProgramExitEnrolmentForm formType={formType} fetchRulesResponse={fetchEnrolmentRulesResponse}>
-                  <DateFormElement
-                    uuid={ProgramEnrolment.validationKeys.EXIT_DATE}
-                    formElement={new StaticFormElement("Exit Enrolment Date", true, true)}
-                    value={programEnrolment.programExitDateTime}
-                    validationResults={validationResults}
-                    update={setExitDate}
-                  />
-                  <LineBreak num={3} />
-                </ProgramExitEnrolmentForm>
-              ) : (
-                <div>Loading</div>
-              )}
-            </Grid>
-          </Grid>
-        </div>
-      </Paper>
+      <StyledPaper>
+        <StyledTypography component="span">{t(match.queryParams.programName)}</StyledTypography>
+        <StyledGrid size={12}>
+          {enrolForm && programEnrolment && formType === "ProgramEnrolment" ? (
+            <ProgramEnrolmentForm formType={formType} fetchRulesResponse={fetchEnrolmentRulesResponse}>
+              <DateFormElement
+                uuid={ProgramEnrolment.validationKeys.ENROLMENT_DATE}
+                formElement={new StaticFormElement("Enrolment Date", true, true)}
+                value={programEnrolment.enrolmentDateTime}
+                validationResults={validationResults}
+                update={setEnrolmentDate}
+              />
+              <LineBreak num={3} />
+            </ProgramEnrolmentForm>
+          ) : enrolForm && programEnrolment && formType === "ProgramExit" ? (
+            <ProgramExitEnrolmentForm formType={formType} fetchRulesResponse={fetchEnrolmentRulesResponse}>
+              <DateFormElement
+                uuid={ProgramEnrolment.validationKeys.EXIT_DATE}
+                formElement={new StaticFormElement("Exit Enrolment Date", true, true)}
+                value={programEnrolment.programExitDateTime}
+                validationResults={validationResults}
+                update={setExitDate}
+              />
+              <LineBreak num={3} />
+            </ProgramExitEnrolmentForm>
+          ) : (
+            <div>Loading</div>
+          )}
+        </StyledGrid>
+      </StyledPaper>
     </Fragment>
   ) : (
     <CustomizedBackdrop load={load} />
   );
 };
+
 const mapStateToProps = state => ({
   enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
@@ -130,6 +104,7 @@ const mapStateToProps = state => ({
   load: state.dataEntry.enrolmentReducer.load,
   validationResults: state.dataEntry.enrolmentReducer.validationResults
 });
+
 const mapDispatchToProps = {
   onLoad,
   getSubjectProfile,
@@ -137,6 +112,7 @@ const mapDispatchToProps = {
   setEnrolmentDate,
   setExitDate
 };
+
 export default withRouter(
   withParams(
     connect(

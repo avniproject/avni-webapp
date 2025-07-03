@@ -1,70 +1,69 @@
 import React from "react";
-import { makeStyles, withStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { AppBar, Tabs, Tab, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
-const AntTabs = withStyles({
-  indicator: {
-    display: "none"
-  },
-  root: {
-    minHeight: "35px"
-  }
-})(Tabs);
 
-const AntTab = withStyles(theme => ({
-  root: {
-    "&$selected": {
-      backgroundColor: "#dae8fe",
-      borderRight: "2px solid #1890ff",
-      height: "35px"
-    },
-    color: "#2196f3",
-    fontSize: "14px",
-    minHeight: "35px",
+const StyledTabs = styled(Tabs, {
+  shouldForwardProp: prop => !["type"].includes(prop)
+})(({ type }) => ({
+  minHeight: type === "active" ? "35px" : undefined,
+  "& .MuiTabs-indicator": {
+    display: "none"
+  }
+}));
+
+const StyledTab = styled(Tab)({
+  "&.Mui-selected": {
+    backgroundColor: "#dae8fe",
     borderRight: "2px solid #1890ff",
-    textTransform: "none"
+    height: "35px"
   },
-  selected: {}
-}))(props => <Tab disableRipple {...props} />);
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  },
-  activeProgramBar: {
+  color: "#2196f3",
+  fontSize: "14px",
+  minHeight: "35px",
+  borderRight: "2px solid #1890ff",
+  textTransform: "none"
+});
+
+const StyledGrid = styled(Grid, {
+  shouldForwardProp: prop => !["type"].includes(prop)
+})(({ type }) => ({
+  ...(type === "active" && {
     maxWidth: "600px",
     marginTop: "14px",
     marginLeft: "20px",
     height: "18px"
-  },
-  activeProgramLabel: {
-    fontSize: "12px",
-    color: "#555555",
-    fontWeight: "500"
-  },
-  exitedProgramBar: {
+  }),
+  ...(type === "exited" && {
     maxWidth: "372px",
     marginTop: "14px",
     marginLeft: "25px"
-  },
-  exitedProgramLabel: {
-    fontSize: "12px",
-    color: "#555555",
-    fontWeight: "500"
-  }
+  })
+}));
+
+const StyledLabel = styled("label", {
+  shouldForwardProp: prop => !["type"].includes(prop)
+})(({ type }) => ({
+  fontSize: "12px",
+  color: "#555555",
+  fontWeight: "500"
+}));
+
+const StyledAppBar = styled(AppBar, {
+  shouldForwardProp: prop => !["type"].includes(prop)
+})(({ type }) => ({
+  minHeight: type === "active" ? "35px" : undefined
 }));
 
 const Program = ({ type, program, selectedTab, handleTabChange }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   return (
-    <Grid className={type === "active" ? classes.activeProgramBar : classes.exitedProgramBar}>
-      <label className={type === "active" ? classes.activeProgramLabel : classes.exitedProgramLabel}>
-        {t(type === "active" ? "activeprograms" : "exitedProgram")}
-      </label>
-
-      <AppBar style={type === "active" ? { minHeight: "35px" } : {}} position="static" color="default">
-        <AntTabs
+    <StyledGrid type={type}>
+      <StyledLabel type={type}>{t(type === "active" ? "activeprograms" : "exitedProgram")}</StyledLabel>
+      <StyledAppBar position="static" color="default">
+        <StyledTabs
+          type={type}
           onChange={handleTabChange}
           value={selectedTab}
           indicatorColor="primary"
@@ -75,21 +74,23 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
         >
           {program && program.enrolments
             ? program.enrolments.map((element, index) =>
-                (element.programExitDateTime == null && type === "active") || (element.programExitDateTime != null && type === "exited") ? (
-                  <AntTab
-                    id={element.program.operationalProgramName.replaceAll(" ", "-")}
-                    key={index}
-                    value={index}
-                    label={t(element.program.operationalProgramName)}
-                  />
-                ) : (
-                  ""
-                )
+              (element.programExitDateTime == null && type === "active") ||
+              (element.programExitDateTime != null && type === "exited") ? (
+                <StyledTab
+                  id={element.program.operationalProgramName.replaceAll(" ", "-")}
+                  key={index}
+                  value={index}
+                  label={t(element.program.operationalProgramName)}
+                  disableRipple
+                />
+              ) : (
+                ""
               )
+            )
             : ""}
-        </AntTabs>
-      </AppBar>
-    </Grid>
+        </StyledTabs>
+      </StyledAppBar>
+    </StyledGrid>
   );
 };
 

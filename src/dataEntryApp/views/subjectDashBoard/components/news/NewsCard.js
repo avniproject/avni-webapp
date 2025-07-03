@@ -1,52 +1,39 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Grid, CardActionArea, CardContent, Typography, Card } from "@mui/material";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    minHeight: theme.spacing(20),
-    width: "100%",
-    disableRipple: true
-  },
-  actionArea: {
-    "&:hover $focusHighlight": {
-      opacity: 0
-    }
-  },
-  focusHighlight: {}
+const StyledCard = styled(Card)(({ theme }) => ({
+  minHeight: theme.spacing(20),
+  width: "100%",
 }));
 
-export const NewsCard = ({ signedHeroImage, title, publishedDate, id }) => {
-  const classes = useStyles();
+const StyledCardActionArea = styled(CardActionArea)({
+  "&:hover .MuiCardActionArea-focusHighlight": {
+    opacity: 0,
+  },
+});
+
+const StyledImagePlaceholder = styled('div')({
+  width: "204px",
+  height: "120px",
+});
+
+const NewsCard = ({ signedHeroImage, title, publishedDate, id }) => {
   const renderImage = () =>
     signedHeroImage ? (
-      <img src={signedHeroImage} alt={title} width={"204px"} height={"120px"} />
+      <img src={signedHeroImage} alt={title} width="204px" height="120px" />
     ) : (
-      <div style={{ width: "204px", height: "120px" }} />
+      <StyledImagePlaceholder />
     );
 
   return (
-    <Card className={classes.root}>
-      <CardActionArea
-        disableRipple
-        href={`#/app/news/${id}/details`}
-        classes={{
-          root: classes.actionArea,
-          focusHighlight: classes.focusHighlight
-        }}
-      >
+    <StyledCard>
+      <StyledCardActionArea disableRipple href={`#/app/news/${id}/details`}>
         <CardContent>
-          <Grid
-            container
-            direction={"row"}
-            spacing={2}
-            sx={{
-              alignItems: "center"
-            }}
-          >
+          <Grid container direction="row" spacing={2} sx={{ alignItems: "center" }}>
             <Grid>{renderImage()}</Grid>
-            <Grid container direction={"column"} size={8}>
+            <Grid container direction="column" size={8}>
               <Grid>
                 <Typography variant="h5" sx={{ mb: 1 }}>
                   {title}
@@ -60,7 +47,9 @@ export const NewsCard = ({ signedHeroImage, title, publishedDate, id }) => {
             </Grid>
           </Grid>
         </CardContent>
-      </CardActionArea>
-    </Card>
+      </StyledCardActionArea>
+    </StyledCard>
   );
 };
+
+export default NewsCard;

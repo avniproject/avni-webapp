@@ -1,21 +1,20 @@
-import { makeStyles } from "@mui/styles";
 import React, { Fragment } from "react";
+import { styled } from '@mui/material/styles';
 import _, { filter, map, sortBy, get } from "lodash";
 import { FormElement } from "./FormElement";
 import { Concept, QuestionGroup } from "avni-models";
 import { PrimitiveValue } from "openchs-models";
 
-const useStyles = makeStyles(theme => ({
-  gridContainerStyle: {
-    border: "1px solid rgba(0, 0, 0, 0.12)"
-  },
-  gridLabelStyle: {
-    color: "rgba(0, 0, 0, 0.54)",
-    flex: 0.5,
-    marginRight: "15px",
-    borderRight: "1px solid rgba(0, 0, 0, 0.12)"
-  }
-}));
+const StyledGridContainer = styled('div')({
+  border: "1px solid rgba(0, 0, 0, 0.12)"
+});
+
+const StyledGridLabel = styled('div')({
+  color: "rgba(0, 0, 0, 0.54)",
+  flex: 0.5,
+  marginRight: "15px",
+  borderRight: "1px solid rgba(0, 0, 0, 0.12)"
+});
 
 function getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex) {
   if (isRepeatable) return `${formElement.name} - ${repeatableIndex + 1}`;
@@ -23,15 +22,14 @@ function getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex) {
 }
 
 export default function QuestionGroupFormElement({
-  formElement,
-  obsHolder,
-  validationResults,
-  filteredFormElements,
-  updateObs,
-  isRepeatable = false,
-  questionGroupIndex
-}) {
-  const classes = useStyles();
+                                                   formElement,
+                                                   obsHolder,
+                                                   validationResults,
+                                                   filteredFormElements,
+                                                   updateObs,
+                                                   isRepeatable = false,
+                                                   questionGroupIndex
+                                                 }) {
   const allChildren = sortBy(
     filter(
       filteredFormElements,
@@ -55,8 +53,8 @@ export default function QuestionGroupFormElement({
 
   return (
     <Fragment>
-      <div className={classes.gridLabelStyle}>{getQuestionGroupLabel(formElement, isRepeatable, questionGroupIndex)}</div>
-      <div className={classes.gridContainerStyle}>
+      <StyledGridLabel>{getQuestionGroupLabel(formElement, isRepeatable, questionGroupIndex)}</StyledGridLabel>
+      <StyledGridContainer>
         {map(allChildren, childFormElement => {
           let nullReplacement = Concept.dataType.Coded === childFormElement.concept.datatype ? new PrimitiveValue() : null;
           const value = _.includes(
@@ -85,7 +83,7 @@ export default function QuestionGroupFormElement({
             </FormElement>
           );
         })}
-      </div>
+      </StyledGridContainer>
     </Fragment>
   );
 }

@@ -1,34 +1,27 @@
-import { makeStyles } from "@mui/styles";
-import { Typography, Table, TableHead, TableRow, TableCell, TableBody, Radio } from "@mui/material";
 import React from "react";
+import { styled } from '@mui/material/styles';
+import { Typography, Table, TableHead, TableRow, TableCell, TableBody, Radio } from "@mui/material";
 import _ from "lodash";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: "100%"
-  },
-  paper: {
-    width: "100%",
-    marginBottom: theme.spacing(2)
-  },
-  tableContainer: {
-    minWidth: 750
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    height: 1,
-    margin: -1,
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    top: 20,
-    width: 1
-  }
+const StyledContainer = styled('div')({
+  width: "100%"
+});
+
+const StyledTable = styled(Table)({
+  minWidth: 750
+});
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  variant: "h5",
+  marginBottom: theme.spacing(1)
+}));
+
+const StyledErrorTypography = styled(Typography)(({ theme }) => ({
+  variant: "subtitle2",
+  marginBottom: theme.spacing(1)
 }));
 
 const SelectSubject = function({ subjectData, errormsg, onSelectedItem, t = _.identity }) {
-  const classes = useStyles();
   const [selectedValue, setSelectedValue] = React.useState("1");
 
   const handleChange = (event, uuid, row) => {
@@ -37,21 +30,13 @@ const SelectSubject = function({ subjectData, errormsg, onSelectedItem, t = _.id
   };
 
   return (
-    <div className={classes.root}>
-      <Typography variant="h5" sx={{ mb: 1 }}>
+    <StyledContainer>
+      <StyledTypography>
         {subjectData ? (subjectData.length === 0 ? "No" : subjectData.length) : ""} Results found
-      </Typography>
-      <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        {errormsg}
-      </Typography>
-
+      </StyledTypography>
+      <StyledErrorTypography>{errormsg}</StyledErrorTypography>
       {subjectData && subjectData.length !== 0 ? (
-        <Table
-          className={classes.tableContainer}
-          aria-labelledby="tableTitle"
-          // size={dense ? "small" : "medium"}
-          aria-label="enhanced table"
-        >
+        <StyledTable aria-labelledby="tableTitle" aria-label="enhanced table">
           <TableHead>
             <TableRow>
               <TableCell />
@@ -78,7 +63,6 @@ const SelectSubject = function({ subjectData, errormsg, onSelectedItem, t = _.id
                         inputProps={{ "aria-label": "A" }}
                       />
                     </TableCell>
-
                     <TableCell align="left" scope="row" id={labelId}>
                       {t(row.fullName)}
                     </TableCell>
@@ -90,11 +74,11 @@ const SelectSubject = function({ subjectData, errormsg, onSelectedItem, t = _.id
                 );
               })}
           </TableBody>
-        </Table>
+        </StyledTable>
       ) : (
         ""
       )}
-    </div>
+    </StyledContainer>
   );
 };
 

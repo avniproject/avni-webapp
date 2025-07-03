@@ -1,7 +1,7 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { newsInitialState, NewsReducer } from "./reducers";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
-import { makeStyles } from "@mui/styles";
 import { Paper } from "@mui/material";
 import { CreateEditNews } from "./CreateEditNews";
 import { Redirect } from "react-router-dom";
@@ -10,25 +10,14 @@ import { DeleteBroadcast } from "./components/DeleteBroadcast";
 import API from "./api";
 import NewsDetailsCard from "./components/NewsDetailsCard";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  },
-  paper: {
-    padding: 10,
-    margin: "auto",
-    maxWidth: "70%"
-  },
-  image: {
-    width: 128,
-    height: 128
-  },
-  img: {
-    margin: "auto",
-    display: "block",
-    maxWidth: "100%",
-    maxHeight: "100%"
-  }
+const StyledContainer = styled('div')({
+  flexGrow: 1,
+});
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(1.25), // 10px
+  margin: "auto",
+  maxWidth: "70%",
 }));
 
 export default function NewsDetails({ history, ...props }) {
@@ -37,20 +26,19 @@ export default function NewsDetails({ history, ...props }) {
   const [redirectToListing, setRedirectToListing] = React.useState(false);
   const [deleteAlert, setDeleteAlert] = React.useState(false);
   const [publishAlert, setPublishAlert] = React.useState(false);
-  const classes = useStyles();
 
   React.useEffect(() => {
     API.getNewsById(props.match.params.id)
-      .then(res => res.data)
-      .then(res => {
+      .then((res) => res.data)
+      .then((res) => {
         dispatch({ type: "setData", payload: res });
       });
   }, [openEdit]);
 
   return (
-    <ScreenWithAppBar appbarTitle={"News broadcast"}>
-      <div className={classes.root}>
-        <Paper className={classes.paper}>
+    <ScreenWithAppBar appbarTitle="News broadcast">
+      <StyledContainer>
+        <StyledPaper>
           <NewsDetailsCard
             news={news}
             history={history}
@@ -59,17 +47,17 @@ export default function NewsDetails({ history, ...props }) {
             setOpenEdit={setOpenEdit}
             setPublishAlert={setPublishAlert}
           />
-        </Paper>
+        </StyledPaper>
         <CreateEditNews
           open={openEdit}
-          headerTitle={"Edit news broadcast"}
+          headerTitle="Edit news broadcast"
           handleClose={() => setOpenEdit(false)}
           edit={true}
           existingNews={news}
         />
         <PublishBroadcast open={publishAlert} setOpen={setPublishAlert} setRedirect={setRedirectToListing} news={news} />
         <DeleteBroadcast open={deleteAlert} setOpen={setDeleteAlert} setRedirect={setRedirectToListing} news={news} />
-      </div>
+      </StyledContainer>
       {redirectToListing && <Redirect to="/broadcast/news" />}
     </ScreenWithAppBar>
   );

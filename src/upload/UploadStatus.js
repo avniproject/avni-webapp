@@ -1,7 +1,7 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { makeStyles } from "@mui/styles";
 import { Table, TableBody, TableCell, TableHead, TableRow, Box, TablePagination, Button } from "@mui/material";
 import { Refresh } from "@mui/icons-material";
 import { getStatuses } from "./reducers";
@@ -11,17 +11,27 @@ import moment from "moment";
 import FileDownloadButton from "../common/components/FileDownloadButton";
 import UploadTypes from "./UploadTypes";
 
-const createStyles = makeStyles(theme => ({
-  filename: {
-    maxWidth: 180,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap"
-  }
+const StyledBox = styled(Box)({
+  display: 'block'
+});
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  float: "right",
+  margin: theme.spacing(1)
+}));
+
+const StyledFileNameCell = styled(TableCell)({
+  maxWidth: 180,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap"
+});
+
+const StyledDateCell = styled(TableCell)(({ theme }) => ({
+  minWidth: 160
 }));
 
 const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadTypes = new UploadTypes() }) => {
-  const classes = createStyles();
   React.useEffect(() => {
     getStatuses(0);
   }, [viewVersion]);
@@ -31,27 +41,21 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
   };
 
   return (
-    <Box>
-      <Button color="primary" variant="contained" onClick={() => getStatuses(page)} style={{ float: "right", margin: "10px" }}>
+    <StyledBox>
+      <StyledButton color="primary" variant="contained" onClick={() => getStatuses(page)}>
         <Refresh style={{ marginRight: 5 }} />
         {"REFRESH STATUS"}
-      </Button>
+      </StyledButton>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell align="right">Execution Id</TableCell>
-            <TableCell style={{ minWidth: 160 }}>File name</TableCell>
+            <StyledFileNameCell>File name</StyledFileNameCell>
             <TableCell align="right">Download Input</TableCell>
             <TableCell align="right">Type</TableCell>
-            <TableCell align="right" style={{ minWidth: 160 }}>
-              Created at
-            </TableCell>
-            <TableCell align="right" style={{ minWidth: 160 }}>
-              Started at
-            </TableCell>
-            <TableCell align="right" style={{ minWidth: 160 }}>
-              Ended at
-            </TableCell>
+            <StyledDateCell align="right">Created at</StyledDateCell>
+            <StyledDateCell align="right">Started at</StyledDateCell>
+            <StyledDateCell align="right">Ended at</StyledDateCell>
             <TableCell align="right">Status</TableCell>
             <TableCell align="right">{"Rows/File read"}</TableCell>
             <TableCell align="right">{"Rows/File completed"}</TableCell>
@@ -63,9 +67,9 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
           {map(get(statuses, "content"), jobStatus => (
             <TableRow key={jobStatus.uuid}>
               <TableCell align="right">{jobStatus.executionId}</TableCell>
-              <TableCell component="th" scope="jobStatus" className={classes.filename}>
+              <StyledFileNameCell component="th" scope="jobStatus">
                 {jobStatus.fileName}
-              </TableCell>
+              </StyledFileNameCell>
               <TableCell align="right">
                 <FileDownloadButton
                   url={`/import/inputFile?filePath=${jobStatus.s3Key}`}
@@ -79,9 +83,9 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
                   uploadTypes.getName(jobStatus.type) ||
                   jobStatus.type}
               </TableCell>
-              <TableCell align="right">{formatDate(jobStatus.createTime)}</TableCell>
-              <TableCell align="right">{formatDate(jobStatus.startTime)}</TableCell>
-              <TableCell align="right">{formatDate(jobStatus.endTime)}</TableCell>
+              <StyledDateCell align="right">{formatDate(jobStatus.createTime)}</StyledDateCell>
+              <StyledDateCell align="right">{formatDate(jobStatus.startTime)}</StyledDateCell>
+              <StyledDateCell align="right">{formatDate(jobStatus.endTime)}</StyledDateCell>
               <TableCell align="right">
                 {jobStatus.status === "COMPLETED" && 0 < jobStatus.skipped ? "Completed with errors" : capitalize(jobStatus.status)}
               </TableCell>
@@ -114,7 +118,7 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
         nextIconButtonProps={{ "aria-label": "next page" }}
         onPageChange={changePage}
       />
-    </Box>
+    </StyledBox>
   );
 };
 

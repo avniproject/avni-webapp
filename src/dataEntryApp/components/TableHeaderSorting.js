@@ -1,7 +1,24 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import PropTypes from "prop-types";
 import { TableSortLabel, TableCell, TableHead, TableRow } from "@mui/material";
 import { useTranslation } from "react-i18next";
+
+const StyledTableCell = styled(TableCell)({
+  padding: "14px 40px 14px 0px"
+});
+
+const StyledVisuallyHidden = styled('span')({
+  border: 0,
+  clip: "rect(0 0 0 0)",
+  height: 1,
+  margin: -1,
+  overflow: "hidden",
+  padding: 0,
+  position: "absolute",
+  top: 20,
+  width: 1
+});
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -29,7 +46,7 @@ export const stableSort = (array, comparator) => {
 
 export const EnhancedTableHead = props => {
   const { t } = useTranslation();
-  const { headername, classes, order, orderBy, onRequestSort } = props;
+  const { headername, order, orderBy, onRequestSort } = props;
   const createSortHandler = property => event => {
     onRequestSort(event, property);
   };
@@ -39,25 +56,21 @@ export const EnhancedTableHead = props => {
     <TableHead>
       <TableRow>
         {headCells.map(headCell => (
-          <TableCell
+          <StyledTableCell
             key={headCell.id}
             align={headCell.align}
             padding={headCell.disablePadding ? "none" : "default"}
             sortDirection={orderBy === headCell.id ? order : false}
-            style={{ padding: "14px 40px 14px 0px" }}
           >
-            {/* {t(headCell.label)} */}
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
               {t(headCell.label)}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>{/*/!* {order === 'desc' ? 'sorted descending' : 'sorted ascending'} *!/*/}</span>
-              ) : null}
+              {orderBy === headCell.id ? <StyledVisuallyHidden /> : null}
             </TableSortLabel>
-          </TableCell>
+          </StyledTableCell>
         ))}
       </TableRow>
     </TableHead>
@@ -65,12 +78,15 @@ export const EnhancedTableHead = props => {
 };
 
 EnhancedTableHead.propTypes = {
-  headername: PropTypes.object.isRequired,
-  classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
+  headername: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      align: PropTypes.string,
+      disablePadding: PropTypes.bool
+    })
+  ).isRequired,
   order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired
+  onRequestSort: PropTypes.func.isRequired
 };

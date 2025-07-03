@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Typography, Paper } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { withRouter } from "react-router-dom";
@@ -13,20 +13,18 @@ import NewVisitMenuView from "./NewVisitMenuView";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { getNewEligibleEncounters } from "../../../../common/mapper/EncounterMapper";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1
-  },
-  mainHeading: {
-    fontSize: "20px"
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(1, 3),
+  flexGrow: 1,
 }));
+
+const StyledTypography = styled(Typography)({
+  fontSize: "20px",
+});
 
 const NewGeneralVisit = ({ match, ...props }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const subjectUuid = match.queryParams.subjectUuid;
 
   useEffect(() => {
@@ -50,12 +48,10 @@ const NewGeneralVisit = ({ match, ...props }) => {
   return props.load ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
+      <StyledPaper>
         {!isEmpty(sections) ? (
           <>
-            <Typography component={"span"} className={classes.mainHeading}>
-              {t("newGeneralVisit")}
-            </Typography>
+            <StyledTypography component="span">{t("newGeneralVisit")}</StyledTypography>
             <LineBreak num={1} />
             <NewVisitMenuView sections={sections} uuid={subjectUuid} />
           </>
@@ -65,29 +61,22 @@ const NewGeneralVisit = ({ match, ...props }) => {
             {t("no")} {t("plannedVisits")} / {t("unplannedVisits")}{" "}
           </Typography>
         )}
-      </Paper>
+      </StyledPaper>
     </Fragment>
   ) : (
     <CustomizedBackdrop load={props.load} />
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   operationalModules: state.dataEntry.metadata.operationalModules,
   eligibleEncounters: state.dataEntry.encounterReducer.eligibleEncounters,
-  load: state.dataEntry.loadReducer.load
+  load: state.dataEntry.loadReducer.load,
 });
 
 const mapDispatchToProps = {
   getEligibleEncounters,
-  resetState
+  resetState,
 };
 
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(NewGeneralVisit)
-  )
-);
+export default withRouter(withParams(connect(mapStateToProps, mapDispatchToProps)(NewGeneralVisit)));

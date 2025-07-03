@@ -1,10 +1,9 @@
 import { connect } from "react-redux";
+import { styled } from '@mui/material/styles';
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { getGroups } from "./reducers";
 import { Input, InputLabel } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
-import Box from "@mui/material/Box";
 import { map } from "lodash";
 import { GroupCard } from "./components/GroupCard";
 import { Grid } from "@mui/material";
@@ -17,20 +16,35 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniAlert } from "../common/components/AvniAlert";
 import GroupModel from "../common/model/GroupModel";
 
-const useStyles = makeStyles(theme => ({
-  root: {},
-  paper: {
-    position: "absolute",
-    width: 400,
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3)
-  }
+const StyledBox = styled(Box)(({ theme }) => ({
+  boxShadow: theme.shadows[2],
+  padding: theme.spacing(3),
+  backgroundColor: theme.palette.background.paper
+}));
+
+const StyledModalPaper = styled('div')(({ theme }) => ({
+  position: "absolute",
+  width: 400,
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: theme.shadows[5],
+  padding: theme.spacing(2, 4, 3),
+  top: "30%",
+  left: "40%"
+}));
+
+const StyledGrid = styled(Grid)({
+  justifyContent: "flex-start"
+});
+
+const StyledCreateButton = styled(Button)({
+  marginLeft: 20
+});
+
+const StyledModalButtonContainer = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(3)
 }));
 
 const UserGroups = ({ getGroups, groups, ...props }) => {
-  const classes = useStyles();
-
   React.useEffect(() => {
     getGroups();
   }, []);
@@ -77,13 +91,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
   };
 
   return (
-    <Box
-      sx={{
-        boxShadow: 2,
-        p: 3,
-        bgcolor: "background.paper"
-      }}
-    >
+    <StyledBox>
       <DocumentationContainer filename={"UserGroup.md"}>
         <Title title={"User Groups"} />
         {showCumulativePrivilegesInfo() ? (
@@ -101,7 +109,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
           open={openModal}
           onClose={() => setOpenModal(false)}
         >
-          <div className={classes.paper} style={{ top: "30%", left: "40%" }}>
+          <StyledModalPaper>
             <h4 id="group-title">Create a new Group</h4>
             <Grid container>
               <FormControl>
@@ -116,27 +124,18 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
                 />
               </FormControl>
             </Grid>
-            <Box
-              sx={{
-                mt: 3
-              }}
-            >
-              <Button mt={10} variant="contained" color="primary" onClick={() => groupCreationHandler()}>
+            <StyledModalButtonContainer>
+              <Button variant="contained" color="primary" onClick={() => groupCreationHandler()}>
                 {"Create New Group"}
               </Button>
-            </Box>
-          </div>
+            </StyledModalButtonContainer>
+          </StyledModalPaper>
         </Modal>
-        <Grid
-          container
-          sx={{
-            justifyContent: "flex-start"
-          }}
-        >
-          <Button variant="contained" color="primary" onClick={() => setOpenModal(true)} style={{ marginLeft: 20 }}>
+        <StyledGrid container>
+          <StyledCreateButton variant="contained" color="primary" onClick={() => setOpenModal(true)}>
             {"Create Group"}
-          </Button>
-        </Grid>
+          </StyledCreateButton>
+        </StyledGrid>
         <Grid container>
           {map(groups, (group, index) => (
             <GroupCard
@@ -149,12 +148,14 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
           ))}
         </Grid>
       </DocumentationContainer>
-    </Box>
+    </StyledBox>
   );
 };
+
 const mapStateToProps = state => ({
   groups: state.userGroups.groups
 });
+
 export default withRouter(
   connect(
     mapStateToProps,

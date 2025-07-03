@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { styled } from '@mui/material/styles';
 import { localeChoices } from "../common/constants";
-import _, { isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import http from "common/utils/httpClient";
-import makeStyles from "@mui/styles/makeStyles";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import { Add, Edit } from "@mui/icons-material";
@@ -14,11 +14,24 @@ import { getOperationalModules } from "../reports/reducers";
 import { withRouter } from "react-router-dom";
 import commonApi from "../common/service";
 
-const useStyles = makeStyles({
-  root: {
-    width: "100%",
-    overflowX: "auto"
-  }
+const StyledPaper = styled(Paper)({
+  width: "100%",
+  overflowX: "auto",
+});
+
+const StyledTypography = styled('h6')({
+  marginLeft: 20,
+});
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  marginLeft: theme.spacing(2),
+  marginRight: theme.spacing(2),
+  borderBottom: 1,
+  borderColor: "#e0e0e0",
+}));
+
+const StyledSpan = styled('span')({
+  marginLeft: 20,
 });
 
 const OrganisationConfig = ({ getOperationalModules, history, organisation, hasEditPrivilege }) => {
@@ -29,36 +42,35 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
   const emptyOrgSettings = {
     uuid: UUID.v4(),
     settings: { languages: [], myDashboardFilters: [], searchFilters: [] },
-    worklistUpdationRule: ""
+    worklistUpdationRule: "",
   };
 
   const [settings, setSettings] = useState(emptyOrgSettings);
   const [worklistUpdationRule, setWorklistUpdationRule] = useState("");
 
-  const createOrgSettings = setting => {
+  const createOrgSettings = (setting) => {
     const { uuid, settings } = setting;
     const { languages, myDashboardFilters, searchFilters } = settings;
     return {
-      uuid: uuid,
+      uuid,
       settings: {
-        languages: _.isNil(languages) ? [] : languages,
-        myDashboardFilters: _.isNil(myDashboardFilters) ? [] : myDashboardFilters,
-        searchFilters: _.isNil(searchFilters) ? [] : searchFilters
-      }
+        languages: languages ?? [],
+        myDashboardFilters: myDashboardFilters ?? [],
+        searchFilters: searchFilters ?? [],
+      },
     };
   };
 
   useEffect(() => {
-    http.get("/organisationConfig").then(res => {
-      const settings = _.filter(res.data["_embedded"].organisationConfig, config => config.organisationId === organisation.id);
+    http.get("/organisationConfig").then((res) => {
+      const settings = res.data["_embedded"].organisationConfig.filter(
+        (config) => config.organisationId === organisation.id
+      );
       const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
-      res.data["_embedded"].organisationConfig[0] &&
-        setWorklistUpdationRule(
-          res.data["_embedded"].organisationConfig[0].worklistUpdationRule
-            ? res.data["_embedded"].organisationConfig[0].worklistUpdationRule
-            : ""
-        );
+      if (res.data["_embedded"].organisationConfig[0]) {
+        setWorklistUpdationRule(res.data["_embedded"].organisationConfig[0].worklistUpdationRule || "");
+      }
     });
   }, []);
 
@@ -70,14 +82,11 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
     return () => {};
   }, []);
 
-  const styles = useStyles();
-
-  const renderLanguage = languages => {
-    return localeChoices
-      .filter(locale => languages.includes(locale.id))
-      .map(locale => `${locale.name}`)
+  const renderLanguage = (languages) =>
+    localeChoices
+      .filter((locale) => languages.includes(locale.id))
+      .map((locale) => locale.name)
       .join(", ");
-  };
 
   const editLanguage = () => (
     <IconButton
@@ -85,49 +94,37 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
       onClick={() =>
         history.push({
           pathname: "/admin/editLanguages",
-          state: { settings, worklistUpdationRule }
+          state: { settings, worklistUpdationRule },
         })
       }
       size="large"
     >
-      {_.isEmpty(settings.settings.languages) ? <Add /> : <Edit />}
+      {isEmpty(settings.settings.languages) ? <Add /> : <Edit />}
     </IconButton>
   );
 
-  return _.isNil(subjectTypes) ? (
-    <div />
-  ) : (
+  return subjectTypes == null ? null : (
     <Box>
       <Title title="Languages" />
-      <Paper className={styles.root}>
+      <StyledPaper>
         <p />
-        <Box
-          sx={{
-            ml: 2,
-            mr: 2,
-            borderBottom: 1,
-            borderColor: "#e0e0e0"
-          }}
-        >
-          <h6 className="MuiTypography-root MuiTypography-h6" style={{ marginLeft: 20 }}>
-            Languages
-          </h6>
+        <StyledBox>
+          <StyledTypography className="MuiTypography-root MuiTypography-h6">Languages</StyledTypography>
           <Box>
-            {hasEditPrivilege ? editLanguage() : <span style={{ marginLeft: 20 }} />}
+            {hasEditPrivilege ? editLanguage() : <StyledSpan />}
             {renderLanguage(settings.settings.languages)}
           </Box>
-        </Box>
+        </StyledBox>
         <p />
-      </Paper>
+      </StyledPaper>
     </Box>
   );
 };
-const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules
+
+const mapStateToProps = (state) => ({
+  operationalModules: state.reports.operationalModules,
 });
+
 export default withRouter(
-  connect(
-    mapStateToProps,
-    { getOperationalModules }
-  )(OrganisationConfig)
+  connect(mapStateToProps, { getOperationalModules })(OrganisationConfig)
 );
