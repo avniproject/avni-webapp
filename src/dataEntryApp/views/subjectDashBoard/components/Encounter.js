@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Grid, Paper } from "@mui/material";
 import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
@@ -13,7 +13,7 @@ import {
   createEncounterForScheduled,
   editEncounter,
   fetchEncounterRulesResponse,
-  setEncounterDate
+  setEncounterDate,
 } from "dataEntryApp/reducers/encounterReducer";
 import EncounterForm from "./EncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -23,21 +23,24 @@ import { AbstractEncounter } from "openchs-models";
 import { LineBreak } from "../../../../common/components/utils";
 import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(1, 3),
+  flexGrow: 1,
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  justifyContent: "center",
+  alignItems: "center",
 }));
 
 const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...props }) => {
-  const classes = useStyles();
   const editEncounter = isEqual(match.path, "/app/subject/editEncounter");
   const encounterUuid = match.queryParams.encounterUuid;
   const subjectUuid = match.queryParams.subjectUuid;
   const uuid = match.queryParams.uuid;
   const { t } = useTranslation();
+
   useEffect(() => {
     props.resetState();
     if (editEncounter) {
@@ -45,7 +48,6 @@ const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...p
     } else if (encounterUuid) {
       props.createEncounterForScheduled(encounterUuid);
     } else {
-      //uuid - encounterTypeUuid
       props.createEncounter(uuid, subjectUuid);
     }
   }, []);
@@ -53,15 +55,8 @@ const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...p
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
-        <Grid
-          container
-          spacing={3}
-          sx={{
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
+      <StyledPaper>
+        <StyledGrid container spacing={3}>
           <Grid size={12}>
             {props.encounterForm && encounter && props.subjectProfile ? (
               <EncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
@@ -78,25 +73,28 @@ const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...p
               <CustomizedBackdrop load={false} />
             )}
           </Grid>
-        </Grid>
-      </Paper>
+        </StyledGrid>
+      </StyledPaper>
     </Fragment>
   );
 };
+
 const mapStateToProps = state => ({
   encounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   encounter: state.dataEntry.encounterReducer.encounter,
-  validationResults: state.dataEntry.encounterReducer.validationResults
+  validationResults: state.dataEntry.encounterReducer.validationResults,
 });
+
 const mapDispatchToProps = {
   updateEncounter,
   resetState,
   createEncounter,
   createEncounterForScheduled,
   editEncounter,
-  setEncounterDate
+  setEncounterDate,
 };
+
 export default withRouter(
   withParams(
     connect(

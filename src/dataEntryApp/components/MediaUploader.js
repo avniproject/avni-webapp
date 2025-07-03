@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
+import { styled } from '@mui/material/styles';
 import { get, includes, isArrayLikeObject, isEmpty, lowerCase, omit, startsWith } from "lodash";
-import { makeStyles } from "@mui/styles";
 import { Box, Button, Grid, Typography, FormControl } from "@mui/material";
 import http from "../../common/utils/httpClient";
 import { AddAPhoto, VideoCall, Audiotrack, CloudUpload, Close } from "@mui/icons-material";
@@ -10,29 +10,58 @@ import { Concept } from "avni-models";
 import { FilePreview } from "./FilePreview";
 import MediaService from "../../adminApp/service/MediaService";
 
-const useStyles = makeStyles(theme => ({
-  labelStyle: {
-    color: "rgba(0, 0, 0, 0.54)"
-  },
-  boxStyle: {
-    minWidth: 200,
-    minHeight: 50,
-    marginTop: 5
-  },
-  iconStyle: {
-    marginRight: 5,
-    fontSize: 20
-  }
+const StyledTypography = styled(Typography)({
+  color: "rgba(0, 0, 0, 0.54)",
+});
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  minWidth: 200,
+  minHeight: 50,
+  marginTop: theme.spacing(0.625), // 5px
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "flex-start",
 }));
+
+const StyledIcon = styled('span')(({ theme }) => ({
+  marginRight: theme.spacing(0.625), // 5px
+  fontSize: 20,
+}));
+
+const StyledInput = styled('input')({
+  display: "none",
+});
+
+const StyledErrorMessage = styled('p')(({ theme }) => ({
+  color: "orangered",
+  margin: theme.spacing(0.625), // 5px
+  padding: theme.spacing(0.625), // 5px
+  border: "1px solid #999",
+  width: 200,
+  height: 200,
+  textAlign: "center",
+  overflow: "scroll",
+}));
+
+const StyledDeleteButton = styled(Button)({
+  float: "left",
+  color: "red",
+});
+
+const StyledLightboxContainer = styled('div')({
+  '& .reactLightbox': {
+    zIndex: 2,
+  },
+});
 
 const iconMap = {
   image: AddAPhoto,
   video: VideoCall,
   audio: Audiotrack,
-  file: CloudUpload
+  file: CloudUpload,
 };
 
-const getFileMimeType = formElement => {
+const getFileMimeType = (formElement) => {
   const allowedTypes = formElement.allowedTypes;
   return !isEmpty(allowedTypes) ? allowedTypes.join(",") : "*";
 };
@@ -53,18 +82,18 @@ const isValidType = (formElement, type, isFile) => {
 function addObsResultsToPreview(observationValue, setPreview) {
   if (!isEmpty(observationValue)) {
     if (isArrayLikeObject(observationValue)) {
-      observationValue.forEach(obsItrValue => {
-        MediaService.getMedia(obsItrValue).then(res =>
-          setPreview(oldPreview => ({
+      observationValue.forEach((obsItrValue) => {
+        MediaService.getMedia(obsItrValue).then((res) =>
+          setPreview((oldPreview) => ({
             ...oldPreview,
-            [obsItrValue]: res
+            [obsItrValue]: res,
           }))
         );
       });
     } else {
-      MediaService.getMedia(observationValue).then(res =>
+      MediaService.getMedia(observationValue).then((res) =>
         setPreview({
-          [observationValue]: res
+          [observationValue]: res,
         })
       );
     }
@@ -73,14 +102,9 @@ function addObsResultsToPreview(observationValue, setPreview) {
 
 function removeFileFromPreview(fileName, preview, setPreview) {
   preview[fileName] && URL.revokeObjectURL(preview[fileName]);
-  setPreview(oldPreview => {
-    return omit(oldPreview, fileName);
-  });
+  setPreview((oldPreview) => omit(oldPreview, fileName));
 }
 
-/*
- * Push consolidated changes to ObservationHolder, doing it directly without state messes up the multi-select flows
- */
 function invokeUpdate(update, mediaUrl) {
   update(mediaUrl);
 }
@@ -88,10 +112,10 @@ function invokeUpdate(update, mediaUrl) {
 function addMediaUrlToLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue) {
   invokeUpdate(update, fileName);
   if (isMultiSelect) {
-    setLocalObsValue(locObsValue =>
+    setLocalObsValue((locObsValue) =>
       locObsValue && !isArrayLikeObject(locObsValue)
-        ? [locObsValue, fileName].filter(ele => !isEmpty(ele))
-        : [...(locObsValue || []), fileName].filter(ele => !isEmpty(ele))
+        ? [locObsValue, fileName].filter((ele) => !isEmpty(ele))
+        : [...(locObsValue || []), fileName].filter((ele) => !isEmpty(ele))
     );
   } else {
     setLocalObsValue(fileName);
@@ -101,25 +125,24 @@ function addMediaUrlToLocalObsValue(update, fileName, isMultiSelect, localObsVal
 function removeMediaUrlFromLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue) {
   invokeUpdate(update, fileName);
   if (isMultiSelect && isArrayLikeObject(localObsValue)) {
-    setLocalObsValue(locObsValue => locObsValue.filter(item => item !== fileName));
+    setLocalObsValue((locObsValue) => locObsValue.filter((item) => item !== fileName));
   } else {
-    if (localObsValue === fileName) setLocalObsValue(); //Remove previous value
+    if (localObsValue === fileName) setLocalObsValue();
   }
 }
 
 function consolidateAlerts(etFiles, formElement, isFileDataType) {
   const alerts = [];
-  etFiles.forEach(file => {
+  etFiles.forEach((file) => {
     if (!isValidType(formElement, file.type, isFileDataType)) {
-      alerts.push(`Selected files type not supported for file ${file.name}. Please choose proper files.
-`);
+      alerts.push(`Selected files type not supported for file ${file.name}. Please choose proper files.\n`);
     }
     if (isFileDataType && isBiggerFile(formElement, file.size)) {
       const oneMBInBytes = 1000000;
       alerts.push(
-        `Selected file size ${file.size / oneMBInBytes} MB is more than the set max file size ${formElement.allowedMaxSize /
-          oneMBInBytes} MB for file ${file.name}.
-`
+        `Selected file size ${file.size / oneMBInBytes} MB is more than the set max file size ${
+          formElement.allowedMaxSize / oneMBInBytes
+        } MB for file ${file.name}.\n`
       );
     }
   });
@@ -135,20 +158,20 @@ function uploadMediaAndUpdateObservationValue(
   update,
   onDelete
 ) {
-  etFiles.forEach(file => {
+  etFiles.forEach((file) => {
     const fileReader = new FileReader();
     file && fileReader.readAsText(file);
-    setUploadButtonClicked(oldValue => oldValue + 1);
-    fileReader.onloadend = event => {
+    setUploadButtonClicked((oldValue) => oldValue + 1);
+    fileReader.onloadend = () => {
       http
         .uploadFile("/web/uploadMedia", file)
-        .then(r => {
-          setUploadButtonClicked(oldValue => oldValue - 1);
+        .then((r) => {
+          setUploadButtonClicked((oldValue) => oldValue - 1);
           addMediaUrlToLocalObsValue(update, r.data, isMultiSelect, localObsValue, setLocalObsValue);
         })
-        .catch(r => {
-          const error = `${get(r, "response.data") || get(r, "message") || "Unknown error occurred while uploadButtonClicked media"}`;
-          setUploadButtonClicked(oldValue => oldValue - 1);
+        .catch((r) => {
+          const error = `${get(r, "response.data") || get(r, "message") || "Unknown error occurred while uploading media"}`;
+          setUploadButtonClicked((oldValue) => oldValue - 1);
           onDelete(file.name);
           alert(error);
         });
@@ -157,8 +180,8 @@ function uploadMediaAndUpdateObservationValue(
 }
 
 const MissingSignedMediaMessage = "Unable to fetch media";
+
 export const MediaUploader = ({ label, obsValue, mediaType, update, formElement }) => {
-  const classes = useStyles();
   const Icon = iconMap[mediaType];
   const [localObsValue, setLocalObsValue] = useState(obsValue);
   const [preview, setPreview] = useState({});
@@ -177,14 +200,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
     setUploading(uploadButtonClicked > 0);
   }, [uploadButtonClicked]);
 
-  useEffect(() => {
-    if (openImage) {
-      const LightBoxContainer = document.querySelector("div.imagePreviewContainer");
-      LightBoxContainer.firstChild.style.zIndex = 2;
-    }
-  }, [openImage]);
-
-  const onMediaSelect = event => {
+  const onMediaSelect = (event) => {
     const etFiles = Array.from(event.target.files);
     const alerts = consolidateAlerts(etFiles, formElement, isFileDataType);
     if (!isEmpty(alerts)) {
@@ -194,7 +210,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
     uploadMediaAndUpdateObservationValue(etFiles, setUploadButtonClicked, setLocalObsValue, isMultiSelect, localObsValue, update, onDelete);
   };
 
-  const onDelete = fileName => {
+  const onDelete = (fileName) => {
     removeMediaUrlFromLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue);
     removeFileFromPreview(fileName, preview, setPreview);
   };
@@ -208,43 +224,21 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
       </video>
     ),
     audio: <audio preload="auto" controls src={fileToPreview} controlsList="nodownload" />,
-    file: <FilePreview url={fileToPreview} obsValue={previewValue} />
+    file: <FilePreview url={fileToPreview} obsValue={previewValue} />,
   });
 
-  const renderMedia = fileName => {
-    return (
-      <Box
-        className={classes.boxStyle}
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "flex-start"
-        }}
-      >
-        {startsWith(preview[fileName], MissingSignedMediaMessage) ? (
-          <p
-            style={{
-              color: "orangered",
-              margin: "5px",
-              padding: "5px",
-              border: "1px solid #999",
-              width: "200px",
-              height: "200px",
-              textAlign: "center",
-              overflow: "scroll"
-            }}
-          >
-            {preview[fileName]}
-          </p>
-        ) : (
-          mediaPreviewMap(preview[fileName], MissingSignedMediaMessage, fileName)[mediaType]
-        )}
-        <Button style={{ float: "left", color: "red" }} onClick={() => onDelete(fileName)}>
-          <Close />
-        </Button>
-      </Box>
-    );
-  };
+  const renderMedia = (fileName) => (
+    <StyledBox>
+      {startsWith(preview[fileName], MissingSignedMediaMessage) ? (
+        <StyledErrorMessage>{preview[fileName]}</StyledErrorMessage>
+      ) : (
+        mediaPreviewMap(preview[fileName], MissingSignedMediaMessage, fileName)[mediaType]
+      )}
+      <StyledDeleteButton onClick={() => onDelete(fileName)}>
+        <Close />
+      </StyledDeleteButton>
+    </StyledBox>
+  );
 
   const previewImage = () => {
     let startIndex = 0;
@@ -255,61 +249,43 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
       return {
         url: imgSrc,
         type: "photo",
-        altTag: fileName
+        altTag: fileName,
       };
     });
     return (
-      <div className="imagePreviewContainer">
+      <StyledLightboxContainer className="imagePreviewContainer">
         <ReactImageVideoLightbox data={data} startIndex={startIndex} showResourceCount={true} onCloseCallback={() => setOpenImage()} />
-      </div>
+      </StyledLightboxContainer>
     );
   };
 
   return (
     <Fragment>
       <FormControl>
-        <Grid
-          container
-          direction="row"
-          spacing={1}
-          sx={{
-            alignItems: "center"
-          }}
-        >
+        <Grid container direction="row" spacing={1} sx={{ alignItems: "center" }}>
           <Grid>
-            <Typography variant="body1" className={classes.labelStyle}>
-              {label}
-            </Typography>
+            <StyledTypography variant="body1">{label}</StyledTypography>
           </Grid>
           <Grid>
             <Button variant="outlined" color="primary" component="label">
-              <Icon color="primary" className={classes.iconStyle} />
+              <StyledIcon as={Icon} color="primary" />
               {`Upload ${mediaType}`}
-              <input
+              <StyledInput
                 accept={supportedMIMEType}
-                className={classes.input}
                 id="contained-button-file"
                 type="file"
                 multiple={isMultiSelect}
                 onChange={onMediaSelect}
-                style={{ display: "none" }}
-                onClick={event => (event.target.value = null)}
+                onClick={(event) => (event.target.value = null)}
               />
             </Button>
           </Grid>
         </Grid>
       </FormControl>
-      <Grid
-        container
-        direction="row"
-        spacing={1}
-        sx={{
-          alignItems: "center"
-        }}
-      >
-        {Object.keys(preview).map(fileName => {
-          return <Grid key={fileName}>{preview[fileName] ? renderMedia(fileName) : null}</Grid>;
-        })}
+      <Grid container direction="row" spacing={1} sx={{ alignItems: "center" }}>
+        {Object.keys(preview).map((fileName) => (
+          <Grid key={fileName}>{preview[fileName] ? renderMedia(fileName) : null}</Grid>
+        ))}
       </Grid>
       {openImage && previewImage()}
       <CustomizedBackdrop load={!uploading} />

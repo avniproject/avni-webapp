@@ -1,4 +1,4 @@
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { FormControl, FormLabel, Typography, Grid, Button, Paper, Box, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import React from "react";
 import api from "../api";
@@ -22,22 +22,35 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(theme => ({
-  root: {},
-  button: {
-    color: "#3f51b5"
-  },
-  warningText: {
-    fontSize: "20px",
-    fontWeight: "500",
-    marginLeft: 10,
-    marginBottom: 10
-  }
+const StyledBox = styled(Box)(({ theme }) => ({
+  border: "1px solid #ddd",
+  marginBottom: theme.spacing(2),
+  padding: theme.spacing(2),
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  marginBottom: theme.spacing(12.5),
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  justifyContent: "flex-start",
+  alignItems: "baseline",
+}));
+
+const StyledWarningText = styled(Typography)(({ theme }) => ({
+  fontSize: "20px",
+  fontWeight: "500",
+  marginLeft: theme.spacing(1.25),
+  marginBottom: theme.spacing(1.25),
+}));
+
+const StyledErrorText = styled('div')(({ theme }) => ({
+  color: "red",
+  marginBottom: theme.spacing(1.25),
 }));
 
 const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, exportJobStatuses, userInfo }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   React.useEffect(() => {
     getOperationalModules();
@@ -54,7 +67,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
     endDate,
     addressLevelIds,
     addressLevelError,
-    includeVoided
+    includeVoided,
   } = exportRequest;
   const dispatch = (type, payload) => dispatchFun({ type, payload });
   const subjectTypes = _.get(operationalModules, "subjectTypes");
@@ -70,17 +83,17 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
 
   const renderAddressLevel = () => {
     return (
-      <Grid container direction={"row"}>
+      <Grid container direction="row">
         <Grid size={12}>
           <AddressLevelsByType
-            label={"Address (Leave blank to consider all)"}
+            label="Address (Leave blank to consider all)"
             addressLevelsIds={addressLevelIds}
             setAddressLevelsIds={ids => dispatch("addressLevelIds", ids)}
             setError={error => dispatch("AddressLevelError", error)}
           />
         </Grid>
         <Grid size={12}>
-          <div style={{ color: "red", marginBottom: "10px" }}>{addressLevelError}</div>
+          <StyledErrorText>{addressLevelError}</StyledErrorText>
         </Grid>
       </Grid>
     );
@@ -90,7 +103,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
     <FormControlLabel
       control={
         <Checkbox
-          color={"primary"}
+          color="primary"
           checked={includeVoided}
           name="Include voided entries"
           onChange={event => dispatch("includeVoided", event.target.checked)}
@@ -135,7 +148,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
         encounterType={encounterType}
       />
     ),
-    [reportTypes.GroupSubject]: <GroupSubjectType {...commonProps} />
+    [reportTypes.GroupSubject]: <GroupSubjectType {...commonProps} />,
   };
 
   const renderReportTypeOptions = () => {
@@ -145,18 +158,11 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
   const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 
   return (
-    <ScreenWithAppBar appbarTitle={`Longitudinal Export`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
+    <ScreenWithAppBar appbarTitle="Longitudinal Export" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
       {operationalModules && (
         <div>
-          <Box
-            sx={{
-              border: 1,
-              mb: 2,
-              borderColor: "#ddd",
-              p: 2
-            }}
-          >
-            <DocumentationContainer filename={"Report.md"}>
+          <StyledBox>
+            <DocumentationContainer filename="Report.md">
               {allowReportGeneration && (
                 <Grid>
                   {RenderReportTypes()}
@@ -166,46 +172,40 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
                 </Grid>
               )}
               {allowReportGeneration && (
-                <Grid
-                  container
-                  direction="row"
-                  sx={{
-                    justifyContent: "flex-start",
-                    alignItems: "baseline"
-                  }}
-                >
+                <StyledGrid container direction="row">
                   <Button
                     variant="contained"
                     color="primary"
                     aria-haspopup="false"
                     onClick={onStartExportHandler}
                     disabled={!enableExport}
-                    className={classes.item}
                   >
                     Generate Export
                   </Button>
-                  <Typography component={"span"} className={classes.warningText}>
+                  <StyledWarningText component="span">
                     {t("legacyLongitudinalExportWarningMessage")}
-                  </Typography>
-                </Grid>
+                  </StyledWarningText>
+                </StyledGrid>
               )}
             </DocumentationContainer>
-          </Box>
+          </StyledBox>
           <Grid>
-            <Paper style={{ marginBottom: 100 }}>
+            <StyledPaper>
               <JobStatus exportJobStatuses={exportJobStatuses} operationalModules={operationalModules} />
-            </Paper>
+            </StyledPaper>
           </Grid>
         </div>
       )}
     </ScreenWithAppBar>
   );
 };
+
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules,
   exportJobStatuses: state.reports.exportJobStatuses,
-  userInfo: state.app.userInfo
+  userInfo: state.app.userInfo,
 });
+
 export default withRouter(
   connect(
     mapStateToProps,

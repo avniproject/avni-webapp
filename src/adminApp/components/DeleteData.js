@@ -1,6 +1,6 @@
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Grid, FormControlLabel, Checkbox, Button, Modal, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { get } from "lodash";
 import http from "common/utils/httpClient";
 import { AlertModal } from "./AlertModal";
@@ -8,29 +8,32 @@ import { Warning } from "@mui/icons-material";
 import ActivityIndicatorModal from "../../common/components/ActivityIndicatorModal";
 import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
-const useStyles = makeStyles(theme => ({
-  paper: {
-    position: "absolute",
-    width: 800,
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3)
-  },
-  deleteButton: {
-    backgroundColor: "red"
-  }
+const StyledModalContent = styled(Grid)(({ theme }) => ({
+  position: "absolute",
+  width: 800,
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: theme.shadows[5],
+  padding: theme.spacing(2, 4, 3),
+  top: "25%",
+  left: "30%",
+}));
+
+const StyledDeleteButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "red",
+}));
+
+const StyledWarningIcon = styled(Warning)(({ theme }) => ({
+  fontSize: "40px",
 }));
 
 export const DeleteData = ({
-  openModal,
-  setOpenModal,
-  orgName,
-  hasOrgMetadataDeletionPrivilege,
-  hasOrgAdminConfigDeletionPrivilege,
-  setDataDeletedIndicator
-}) => {
-  const classes = useStyles();
-
+                             openModal,
+                             setOpenModal,
+                             orgName,
+                             hasOrgMetadataDeletionPrivilege,
+                             hasOrgAdminConfigDeletionPrivilege,
+                             setDataDeletedIndicator,
+                           }) => {
   const [deleteMetadata, setDeleteMetadata] = useState(false);
   const [deleteAdminConfig, setDeleteAdminConfig] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -74,13 +77,12 @@ export const DeleteData = ({
   };
 
   return (
-    <div>
+    <Fragment>
       <Modal onClose={MuiComponentHelper.getDialogClosingHandler(() => setOpenModal(false))} open={openModal}>
-        <Grid container direction={"column"} spacing={3} className={classes.paper} style={{ top: "25%", left: "30%" }}>
+        <StyledModalContent container direction="column" spacing={3}>
           <Grid container spacing={1} size={12}>
             <Grid size={1}>
-              {" "}
-              <Warning color={"error"} style={{ fontSize: "40px" }} />
+              <StyledWarningIcon color="error" />
             </Grid>
             <Grid size={11}>{warningMessage}</Grid>
           </Grid>
@@ -129,21 +131,20 @@ export const DeleteData = ({
               </Button>
             </Grid>
             <Grid>
-              <Button
+              <StyledDeleteButton
                 variant="contained"
                 color="secondary"
-                className={classes.deleteButton}
                 onClick={deleteData}
                 disabled={orgName !== confirmText}
               >
                 Delete
-              </Button>
+              </StyledDeleteButton>
             </Grid>
           </Grid>
-        </Grid>
+        </StyledModalContent>
       </Modal>
       <ActivityIndicatorModal open={loading} />
       <AlertModal message={message} setShowAlert={setShowAlert} showAlert={showAlert} />
-    </div>
+    </Fragment>
   );
 };

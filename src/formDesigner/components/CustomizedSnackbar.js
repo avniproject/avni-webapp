@@ -1,64 +1,72 @@
 import React from "react";
+import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
-import clsx from "clsx";
 import { CheckCircle, Error, Close, Warning } from "@mui/icons-material";
-import { makeStyles } from "@mui/styles";
 import { IconButton, Snackbar, SnackbarContent } from "@mui/material";
 import { green } from "@mui/material/colors";
 
 const variantIcon = {
   success: CheckCircle,
   error: Error,
-  warning: Warning
+  warning: Warning,
 };
-
-const useStyles1 = makeStyles(theme => ({
-  success: {
-    backgroundColor: green[600]
-  },
-  error: {
-    backgroundColor: "#d0011b"
-  },
-  warning: {
-    backgroundColor: "#ffc107"
-  },
-  icon: {
-    fontSize: 20
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing(1)
-  },
-  message: {
-    display: "flex",
-    alignItems: "center"
-  }
-}));
 
 const textColors = {
   success: "#fff",
   warning: "#000",
-  error: "#fff"
+  error: "#fff",
 };
 
-function MySnackbarContentWrapper({ className, message, onClose, variant = "success", ...other }) {
-  const classes = useStyles1();
+const StyledSnackbarContent = styled(SnackbarContent, {
+  shouldForwardProp: prop => !["variant"].includes(prop),
+})(({ theme, variant }) => ({
+  ...(variant === "success" && {
+    backgroundColor: green[600],
+  }),
+  ...(variant === "error" && {
+    backgroundColor: "#d0011b",
+  }),
+  ...(variant === "warning" && {
+    backgroundColor: "#ffc107",
+  }),
+}));
+
+const StyledMessage = styled("span")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+}));
+
+const StyledMessageText = styled("h5")(({ theme, variant }) => ({
+  color: textColors[variant],
+}));
+
+const StyledIcon = styled("span")(({ theme }) => ({
+  fontSize: 20,
+  opacity: 0.9,
+  marginRight: theme.spacing(1),
+}));
+
+const StyledCloseIcon = styled(Close)(({ theme }) => ({
+  fontSize: 20,
+}));
+
+function MySnackbarContentWrapper({ message, onClose, variant = "success", ...other }) {
   const Icon = variantIcon[variant];
-  const textColor = textColors[variant];
+
   return (
-    <SnackbarContent
-      className={clsx(classes[variant], className)}
+    <StyledSnackbarContent
       aria-describedby="client-snackbar"
+      variant={variant}
       message={
-        <span id="client-snackbar" className={classes.message}>
-          <Icon className={clsx(classes.icon, classes.iconVariant)} />
-          <h5 style={{ color: textColor }}>{message}</h5>
-        </span>
+        <StyledMessage>
+          <StyledIcon as={Icon} />
+          <StyledMessageText variant={variant}>{message}</StyledMessageText>
+        </StyledMessage>
       }
       action={[
         <IconButton key="close" aria-label="close" color="inherit" onClick={onClose} size="large">
-          <Close className={classes.icon} />
-        </IconButton>
+          <StyledCloseIcon />
+        </IconButton>,
       ]}
       {...other}
     />
@@ -66,20 +74,19 @@ function MySnackbarContentWrapper({ className, message, onClose, variant = "succ
 }
 
 MySnackbarContentWrapper.propTypes = {
-  className: PropTypes.string,
   message: PropTypes.string,
   onClose: PropTypes.func,
-  variant: PropTypes.oneOf(["success"]).isRequired
+  variant: PropTypes.oneOf(["success", "error", "warning"]).isRequired,
 };
 
 export default function CustomizedSnackbar({
-  getDefaultSnackbarStatus,
-  defaultSnackbarStatus,
-  onExited,
-  variant,
-  message,
-  autoHideDuration = 2000
-}) {
+                                             getDefaultSnackbarStatus,
+                                             defaultSnackbarStatus,
+                                             onExited,
+                                             variant,
+                                             message,
+                                             autoHideDuration = 2000,
+                                           }) {
   function handleClose(event, reason) {
     if (reason === "clickaway") {
       getDefaultSnackbarStatus(false);
@@ -89,23 +96,21 @@ export default function CustomizedSnackbar({
   }
 
   return (
-    <div>
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center"
-        }}
-        open={defaultSnackbarStatus}
-        autoHideDuration={autoHideDuration}
-        onClose={handleClose}
-        TransitionProps={{ onExited: onExited }}
-      >
-        <MySnackbarContentWrapper onClose={handleClose} variant={variant} message={message} />
-      </Snackbar>
-    </div>
+    <Snackbar
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "center",
+      }}
+      open={defaultSnackbarStatus}
+      autoHideDuration={autoHideDuration}
+      onClose={handleClose}
+      TransitionProps={{ onExited: onExited }}
+    >
+      <MySnackbarContentWrapper onClose={handleClose} variant={variant} message={message} />
+    </Snackbar>
   );
 }
 
 CustomizedSnackbar.defaultProps = {
-  defaultSnackbarStatus: true
+  defaultSnackbarStatus: true,
 };

@@ -29,10 +29,6 @@ const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   display: "inline",
 }));
 
-const StyledDialogTitleContent = styled(Typography)(({ theme }) => ({
-  variant: "h6",
-}));
-
 const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, ...props }) => {
   const [open, setOpen] = React.useState(false);
   const [validMsg, setValidationMsg] = React.useState(false);
@@ -62,7 +58,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
       {mainButton && (
         <Fab
           id={mainButton.label.replaceAll(" ", "-")}
-          className={mainButton.classes}
+          sx={mainButton.sx}
           variant="extended"
           color="primary"
           aria-label="add"
@@ -74,7 +70,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
       {filterButton && (
         <Fab
           id={filterButton.label.replaceAll(" ", "-")}
-          className={filterButton.classes}
+          sx={filterButton.sx}
           variant="extended"
           color="primary"
           aria-label="add"
@@ -88,7 +84,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
       )}
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} {...props}>
         <StyledDialogTitle id="customized-dialog-title">
-          <StyledDialogTitleContent variant="h6">{title}</StyledDialogTitleContent>
+          <Typography variant="h6">{title}</Typography>
           <StyledCloseButton aria-label="close" onClick={handleClose} size="large">
             <Close />
           </StyledCloseButton>
@@ -98,7 +94,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           {cancelButton && (
             <SubjectButton
               btnLabel={cancelButton.label}
-              btnClass={cancelButton.classes}
+              btnClass={cancelButton.sx}
               btnClick={handleClose}
               id="cancel-dialog-button"
             />
@@ -106,7 +102,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           {findButton && (
             <SubjectButton
               btnLabel={findButton.label}
-              btnClass={findButton.classes}
+              btnClass={findButton.sx}
               btnClick={() => {
                 findButton.click();
               }}
@@ -117,7 +113,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           {applyFloating && (
             <FloatingButton
               btnLabel={applyFloating.label}
-              btnClass={applyFloating.classes}
+              btnClass={applyFloating.sx}
               btnClick={() => {
                 applyFloating.click();
                 handleClose();
@@ -130,7 +126,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           {modifySearchFloating && (
             <FloatingButton
               btnLabel={modifySearchFloating.label}
-              btnClass={modifySearchFloating.classes}
+              btnClass={modifySearchFloating.sx}
               btnClick={() => {
                 modifySearchFloating.click();
               }}
@@ -143,7 +139,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
             <Link to={saveButton.redirectTo}>
               <SubjectButton
                 btnLabel={saveButton.label}
-                btnClass={saveButton.classes}
+                btnClass={saveButton.sx}
                 btnClick={handleClose}
                 id="save-required-dialog-button"
               />
@@ -152,7 +148,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
             saveButton && (
               <SubjectButton
                 btnLabel={saveButton.label}
-                btnClass={saveButton.classes}
+                btnClass={saveButton.sx}
                 btnClick={handleError.bind(null, true)}
                 id="save-dialog-button"
               />
@@ -161,7 +157,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           {applyButton && (
             <SubjectButton
               btnLabel={applyButton.label}
-              btnClass={applyButton.classes}
+              btnClass={applyButton.sx}
               btnClick={() => {
                 applyButton.click();
                 handleClose();

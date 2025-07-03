@@ -11,9 +11,8 @@ import "./formDesigner/App.css";
 import { store } from "./common/store";
 import { App, SecureApp } from "./rootApp";
 
-import { createGenerateClassName, StylesProvider, ThemeProvider } from "@mui/styles";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { StyledEngineProvider } from "@mui/system";
-import { createTheme } from "@mui/material/styles";
 import * as Colors from "@mui/material/colors";
 import http, { httpClient } from "common/utils/httpClient";
 import IdpDetails from "./rootApp/security/IdpDetails";
@@ -28,10 +27,6 @@ const theme = createTheme({
     primary: Colors.blue,
     secondary: Colors.grey
   }
-});
-
-const generateClassName = createGenerateClassName({
-  productionPrefix: "avnijss"
 });
 
 httpClient.initHeadersForDevEnv();
@@ -70,22 +65,20 @@ const MainApp = () => {
   }
 
   return (
-    <StylesProvider generateClassName={generateClassName}>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          {!unhandledRejectionError && (
-            <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-              <Provider store={store}>
-                <HashRouter>
-                  {httpClient.idp.idpType === IdpDetails.none ? <App /> : <SecureApp genericConfig={genericConfig} />}
-                </HashRouter>
-              </Provider>
-            </ErrorBoundary>
-          )}
-          {unhandledRejectionError && <ErrorFallback error={unhandledRejectionError} />}
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </StylesProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        {!unhandledRejectionError && (
+          <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+            <Provider store={store}>
+              <HashRouter>
+                {httpClient.idp.idpType === IdpDetails.none ? <App /> : <SecureApp genericConfig={genericConfig} />}
+              </HashRouter>
+            </Provider>
+          </ErrorBoundary>
+        )}
+        {unhandledRejectionError && <ErrorFallback error={unhandledRejectionError} />}
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 

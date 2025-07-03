@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   FormControl,
   InputLabel,
   NativeSelect,
-  Fab
+  Fab,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Modal from "./CommonModal";
@@ -30,109 +30,110 @@ import { extensionScopeTypes } from "../../../../formDesigner/components/Extensi
 import SubjectProfilePicture from "../../../components/SubjectProfilePicture";
 import { AgeUtil } from "openchs-models";
 
-const useStyles = makeStyles(theme => ({
-  tableCellDetails: {
-    borderBottom: "none",
-    padding: "0px 21px 0px 11px",
-    fontWeight: "500",
-    color: "#1010101",
-    fontSize: "14px"
-  },
-  enrollButtonStyle: {
-    backgroundColor: "#f27510",
-    height: "38px",
-    zIndex: 1,
-    boxShadow: "none",
-    whiteSpace: "nowrap"
-  },
-  bigAvatar: {
-    width: 42,
-    height: 42,
-    marginTop: "20px",
-    marginBottom: "8px"
-  },
-  tableContainer: {
-    marginTop: "10px"
-  },
-  tableView: {
-    flexGrow: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "20px"
-  },
-  mainHeading: {
-    fontSize: "20px",
-    fontWeight: "500"
-  },
-  tableCell: {
-    color: "#555555",
-    fontSize: "12px",
-    borderBottom: "none",
-    padding: "0px 0px 0px 11px",
-    fontWeight: "500"
-  },
-  btnCustom: {
-    float: "left",
-    backgroundColor: "#fc9153",
-    height: "30px"
-  },
-  cancelBtnCustom: {
-    float: "left",
-    backgroundColor: "#F8F9F9",
-    color: "#fc9153",
-    border: "1px solid #fc9153",
-    height: "30px"
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    margin: "auto",
-    minWidth: "450px",
-    minHeight: "170px"
-  },
-  formControl: {
-    marginTop: theme.spacing(2),
-    minWidth: 120,
-    width: "211px"
-  },
-  formControlLabel: {
-    marginTop: theme.spacing(1)
-  },
-  selectEmpty: {
-    width: "211px"
-  },
-  btnBottom: {
-    margin: 0,
-    padding: "11px",
-    backgroundColor: "#F8F9F9",
-    float: "left",
-    display: "inline"
-  },
-  error: {
-    color: "red",
-    padding: "3px",
-    fontSize: "12px"
-  },
-  errorText: {
-    color: "red"
-  },
-  commentButton: {
-    margin: theme.spacing(1),
-    backgroundColor: "#f27510",
-    height: "38px",
-    zIndex: 1,
-    boxShadow: "none",
-    whiteSpace: "nowrap"
-  }
+const StyledTableView = styled('div')({
+  flexGrow: 1,
+  alignItems: "center",
+  justifyContent: "center",
+  marginBottom: "20px",
+});
+
+const StyledMainHeading = styled(Typography)({
+  fontSize: "20px",
+  fontWeight: "500",
+});
+
+const StyledTableContainer = styled(Table)({
+  marginTop: "10px",
+});
+
+const StyledTableCell = styled(TableCell)({
+  color: "#555555",
+  fontSize: "12px",
+  borderBottom: "none",
+  padding: "0px 0px 0px 11px",
+  fontWeight: "500",
+});
+
+const StyledTableCellDetails = styled(TableCell)({
+  borderBottom: "none",
+  padding: "0px 21px 0px 11px",
+  fontWeight: "500",
+  color: "#1010101",
+  fontSize: "14px",
+});
+
+const StyledForm = styled('form')({
+  display: "flex",
+  flexDirection: "column",
+  margin: "auto",
+  minWidth: "450px",
+  minHeight: "170px",
+});
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  minWidth: 120,
+  width: "211px",
 }));
 
+const StyledError = styled('div')({
+  color: "red",
+  padding: "3px",
+  fontSize: "12px",
+});
+
+const StyledErrorText = styled(InputLabel)({
+  color: "red",
+});
+
+const StyledGrid = styled(Grid)({
+  alignItems: "center",
+});
+
+const enrollButtonStyle = {
+  backgroundColor: "#f27510",
+  height: "38px",
+  zIndex: 1,
+  boxShadow: "none",
+  whiteSpace: "nowrap",
+};
+
+const commentButtonStyle = {
+  margin: "8px",
+  backgroundColor: "#f27510",
+  height: "38px",
+  zIndex: 1,
+  boxShadow: "none",
+  whiteSpace: "nowrap",
+};
+
+const applyButtonStyle = {
+  float: "left",
+  backgroundColor: "#fc9153",
+  height: "30px",
+  boxShadow: "none",
+};
+
+const cancelButtonStyle = {
+  float: "left",
+  backgroundColor: "#F8F9F9",
+  color: "#fc9153",
+  border: "1px solid #fc9153",
+  height: "30px",
+  boxShadow: "none",
+  "&:hover": {
+    backgroundColor: "#F8F9F9",
+  },
+};
+
 const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match, load, tabsStatus, organisationConfigs }) => {
-  const classes = useStyles();
+  const { i18n, t } = useTranslation();
   const [selectedProgram, setSelectedProgram] = React.useState("");
   const [openComment, setOpenComment] = React.useState(false);
   const [errorStatus, setError] = React.useState(false);
   const orgConfig = useSelector(selectOrganisationConfig);
   const enableComment = get(orgConfig, "settings.enableComments", false);
+
   const handleChange = event => {
     setSelectedProgram(event.target.value);
     setError(!event.target.value);
@@ -142,72 +143,56 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
     setError(isError);
   };
 
-  const { i18n, t } = useTranslation();
-
   useEffect(() => {
     getPrograms(subjectUuid);
   }, []);
+
   const close = () => {
     return true;
   };
+
   const isMultipleProgramEligible = !isNil(programs) ? programs.length > 1 : isNil(programs);
 
   const content = (
     <DialogContent>
-      <form className={classes.form} noValidate>
-        <FormControl className={classes.formControl}>
-          <InputLabel shrink id="demo-simple-select-placeholder-label-label" className={errorStatus ? classes.errorText : ""}>
+      <StyledForm noValidate>
+        <StyledFormControl>
+          <StyledErrorText shrink id="demo-simple-select-placeholder-label-label" error={errorStatus}>
             {t("Program")}
-          </InputLabel>
-
+          </StyledErrorText>
           <NativeSelect
             value={selectedProgram}
             onChange={handleChange}
             inputProps={{
               name: "selected_program",
-              id: "selected_program-native-helper"
+              id: "selected_program-native-helper",
             }}
             error={errorStatus}
           >
             <option key={"emptyElement"} value="" />
-
             {programs
               ? programs.map((element, index) => (
-                  <option key={index} value={element.name}>
-                    {t(element.name)}
-                  </option>
-                ))
+                <option key={index} value={element.name}>
+                  {t(element.name)}
+                </option>
+              ))
               : ""}
           </NativeSelect>
-          {errorStatus ? <div className={classes.error}>Please select program to enrol.</div> : ""}
-        </FormControl>
-      </form>
+          {errorStatus ? <StyledError>Please select program to enrol.</StyledError> : ""}
+        </StyledFormControl>
+      </StyledForm>
     </DialogContent>
   );
 
   const allowEnrolment = tabsStatus && tabsStatus.showProgramTab && !profileDetails.voided && isMultipleProgramEligible;
 
   return (
-    <div className={classes.tableView}>
+    <StyledTableView>
       <CommentDrawer open={openComment} setOpen={setOpenComment} subjectUUID={subjectUuid} />
       <CustomizedBackdrop load={load} />
-      <Typography component={"span"} className={classes.mainHeading}>
-        {`${profileDetails.nameString}`}
-      </Typography>
-      <Grid
-        container
-        spacing={1}
-        sx={{
-          alignItems: "center"
-        }}
-      >
-        <Grid
-          container
-          sx={{
-            alignItems: "center"
-          }}
-          size={4}
-        >
+      <StyledMainHeading component="span">{`${profileDetails.nameString}`}</StyledMainHeading>
+      <StyledGrid container spacing={1}>
+        <Grid container size={4}>
           <Grid>
             <SubjectProfilePicture
               allowEnlargementOnClick={false}
@@ -216,35 +201,35 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
               subjectType={profileDetails.subjectType}
               subjectTypeName={profileDetails.subjectType.name}
               size={200}
-              style={{ margin: "0px" }}
+              sx={{ margin: "0px" }}
             />
           </Grid>
           <Grid>
-            <Table aria-label="caption table" className={classes.tableContainer}>
+            <StyledTableContainer aria-label="caption table">
               <TableHead>
-                <TableRow className={classes.tableHeader}>
-                  {profileDetails.subjectType.isPerson() && <TableCell className={classes.tableCell}>{t("gender")}</TableCell>}
-                  {profileDetails.subjectType.isPerson() && <TableCell className={classes.tableCell}>{t("age")}</TableCell>}
-                  {profileDetails.lowestAddressLevel.titleLineage && <TableCell className={classes.tableCell}>{t("Address")}</TableCell>}
+                <TableRow>
+                  {profileDetails.subjectType.isPerson() && <StyledTableCell>{t("gender")}</StyledTableCell>}
+                  {profileDetails.subjectType.isPerson() && <StyledTableCell>{t("age")}</StyledTableCell>}
+                  {profileDetails.lowestAddressLevel.titleLineage && <StyledTableCell>{t("Address")}</StyledTableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
                 <TableRow>
                   {profileDetails.subjectType.isPerson() && (
-                    <TableCell className={classes.tableCellDetails}>{t(profileDetails.gender.name)}</TableCell>
+                    <StyledTableCellDetails>{t(profileDetails.gender.name)}</StyledTableCellDetails>
                   )}
                   {profileDetails.subjectType.isPerson() && (
-                    <TableCell className={classes.tableCellDetails}>
+                    <StyledTableCellDetails>
                       {profileDetails.dateOfBirth ? AgeUtil.getDisplayAge(profileDetails.dateOfBirth, i18n) : "-"}
-                    </TableCell>
+                    </StyledTableCellDetails>
                   )}
-                  <TableCell className={classes.tableCellDetails}>{profileDetails.lowestAddressLevel.titleLineage}</TableCell>
+                  <StyledTableCellDetails>{profileDetails.lowestAddressLevel.titleLineage}</StyledTableCellDetails>
                 </TableRow>
               </TableBody>
-            </Table>
+            </StyledTableContainer>
           </Grid>
         </Grid>
-        <Grid container align="right" direction={"column"} size={8}>
+        <Grid container align="right" direction="column" size={8}>
           <ExtensionOption
             subjectUUIDs={profileDetails.uuid}
             typeUUID={profileDetails.subjectType.uuid}
@@ -255,50 +240,48 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           <Grid>
             {enableComment && (
               <Fab
-                id={"comments"}
-                className={classes.commentButton}
+                id="comments"
+                sx={commentButtonStyle}
                 variant="extended"
                 color="primary"
                 aria-label="add"
                 onClick={() => setOpenComment(true)}
               >
-                <Comment style={{ marginRight: 4 }} />
+                <Comment sx={{ marginRight: 0.5 }} />
                 {t("comments")}
               </Fab>
             )}
           </Grid>
           <Grid>
             {allowEnrolment ? (
-              <div>
-                <Modal
-                  content={content}
-                  handleError={handleError}
-                  buttonsSet={[
-                    {
-                      buttonType: "openButton",
-                      label: t("enrolInProgram"),
-                      classes: classes.enrollButtonStyle
-                    },
-                    {
-                      buttonType: "saveButton",
-                      label: t("Enrol"),
-                      classes: classes.btnCustom,
-                      redirectTo: `/app/subject/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
-                        profileDetails.subjectType.name
-                      }`,
-                      requiredField: selectedProgram,
-                      handleError: handleError
-                    },
-                    {
-                      buttonType: "cancelButton",
-                      label: t("Cancel"),
-                      classes: classes.cancelBtnCustom
-                    }
-                  ]}
-                  title={t("Enrol in program")}
-                  btnHandleClose={close}
-                />
-              </div>
+              <Modal
+                content={content}
+                handleError={handleError}
+                buttonsSet={[
+                  {
+                    buttonType: "openButton",
+                    label: t("enrolInProgram"),
+                    sx: enrollButtonStyle,
+                  },
+                  {
+                    buttonType: "saveButton",
+                    label: t("Enrol"),
+                    sx: applyButtonStyle,
+                    redirectTo: `/app/subject/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
+                      profileDetails.subjectType.name
+                    }`,
+                    requiredField: selectedProgram,
+                    handleError: handleError,
+                  },
+                  {
+                    buttonType: "cancelButton",
+                    label: t("Cancel"),
+                    sx: cancelButtonStyle,
+                  },
+                ]}
+                title={t("Enrol in program")}
+                btnHandleClose={close}
+              />
             ) : (
               !isEmpty(programs) && (
                 <Link
@@ -306,7 +289,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                     profileDetails.subjectType.name
                   }`}
                 >
-                  <Fab id={programs[0].name} className={classes.enrollButtonStyle} variant="extended" color="primary" aria-label="add">
+                  <Fab id={programs[0].name} sx={enrollButtonStyle} variant="extended" color="primary" aria-label="add">
                     {t(`Enrol in ${programs[0].name}`)}
                   </Fab>
                 </Link>
@@ -314,19 +297,22 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             )}
           </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </StyledGrid>
+    </StyledTableView>
   );
 };
+
 const mapStateToProps = state => ({
   programs: state.dataEntry.programs ? state.dataEntry.programs.programs : "",
   load: state.dataEntry.loadReducer.load,
   tabsStatus: state.dataEntry.subjectProfile.tabsStatus,
-  organisationConfigs: state.dataEntry.metadata.organisationConfigs
+  organisationConfigs: state.dataEntry.metadata.organisationConfigs,
 });
+
 const mapDispatchToProps = {
-  getPrograms
+  getPrograms,
 };
+
 export default withRouter(
   withParams(
     connect(

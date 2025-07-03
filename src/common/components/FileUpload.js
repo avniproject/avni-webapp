@@ -1,16 +1,20 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Button, Grid } from "@mui/material";
 
-const useStyles = makeStyles(theme => ({
-  item: {
-    marginLeft: theme.spacing(2)
-  }
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  justifyContent: "flex-start",
 }));
 
-export default ({ onSelect, onUpload, canSelect, canUpload }) => {
-  const classes = useStyles();
+const StyledButton = styled(Button)(({ theme }) => ({
+  marginLeft: theme.spacing(2),
+}));
 
+const StyledInput = styled('input')(({ theme }) => ({
+  display: "none",
+}));
+
+const FileUpload = ({ onSelect, onUpload, canSelect, canUpload }) => {
   const onSelectWrapper = event => {
     const fileReader = new FileReader();
     event.target.files[0] && fileReader.readAsText(event.target.files[0]);
@@ -30,28 +34,22 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
   };
 
   return (
-    <Grid
-      container
-      direction="row"
-      spacing={1}
-      sx={{
-        justifyContent: "flex-start"
-      }}
-    >
-      <Button variant="contained" component="label" disabled={!canSelect} className={classes.item}>
+    <StyledGrid container direction="row" spacing={1}>
+      <StyledButton variant="contained" component="label" disabled={!canSelect}>
         Choose File
-        <input type="file" onChange={onSelectWrapper} onClick={handleClick} style={{ display: "none" }} />
-      </Button>
-      <Button
+        <StyledInput type="file" onChange={onSelectWrapper} onClick={handleClick} />
+      </StyledButton>
+      <StyledButton
         variant="contained"
         color="primary"
         aria-haspopup="false"
         onClick={onUploadWrapper}
         disabled={!canUpload}
-        className={classes.item}
       >
         Upload
-      </Button>
-    </Grid>
+      </StyledButton>
+    </StyledGrid>
   );
 };
+
+export default FileUpload;

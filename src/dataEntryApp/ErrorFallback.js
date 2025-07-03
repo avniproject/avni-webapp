@@ -1,45 +1,40 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Button, AppBar, Toolbar, Typography } from "@mui/material";
 import _, { isFunction } from "lodash";
 import logo from "../formDesigner/styles/images/avniLogo.png";
 import Colors from "./Colors";
 
-const useStyles = makeStyles(theme => ({
-  appBar: {
-    position: "relative",
-    background: "white"
-  },
-  root: {
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5),
-    marginLeft: theme.spacing(10),
-    marginRight: theme.spacing(10),
-    padding: theme.spacing(5),
-    paddingTop: theme.spacing(3)
-  },
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    marginTop: "50px",
-    marginBottom: "50px",
-    marginRight: "20%",
-    marginLeft: "20%"
-  },
-  buttonContainer: {
-    marginTop: "50px",
-    flex: 1,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  errorContainer: {
-    padding: "5px",
-    backgroundColor: Colors.HighlightBackgroundColor,
-    border: "2px solid #d1d2d2",
-    borderRadius: 5,
-    marginTop: "10px"
-  }
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  position: "relative",
+  background: "white",
+}));
+
+const StyledContainer = styled('div')(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  marginTop: "50px",
+  marginBottom: "50px",
+  marginRight: "20%",
+  marginLeft: "20%",
+}));
+
+const StyledButtonContainer = styled('div')(({ theme }) => ({
+  marginTop: "50px",
+  flex: 1,
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: theme.spacing(2.5),
+}));
+
+const StyledErrorContainer = styled('div')(({ theme }) => ({
+  padding: "5px",
+  backgroundColor: Colors.HighlightBackgroundColor,
+  border: "2px solid #d1d2d2",
+  borderRadius: 5,
+  marginTop: "10px",
 }));
 
 function ErrorItem({ fieldName, fieldValue }) {
@@ -56,7 +51,6 @@ function ErrorItem({ fieldName, fieldValue }) {
 }
 
 export function ErrorFallback({ error, onClose }) {
-  const classes = useStyles();
   const [showError, setShowError] = React.useState(false);
 
   const closeDialogIfRequired = () => {
@@ -84,15 +78,15 @@ export function ErrorFallback({ error, onClose }) {
   };
 
   return (
-    <div>
-      <AppBar className={classes.appBar}>
+    <>
+      <StyledAppBar>
         <Toolbar>
-          <Typography className={classes.title} variant="h6" sx={{ whiteSpace: "nowrap" }}>
+          <Typography variant="h6" sx={{ whiteSpace: "nowrap" }}>
             <img src={logo} alt="logo" />
           </Typography>
         </Toolbar>
-      </AppBar>
-      <div className={classes.container}>
+      </StyledAppBar>
+      <StyledContainer>
         <Typography variant="h1" sx={{ mb: 1 }}>
           oops!
         </Typography>
@@ -100,7 +94,7 @@ export function ErrorFallback({ error, onClose }) {
           There was a problem when loading this page. Please contact administrator.
         </Typography>
         {!showError && (
-          <Button onClick={() => setShowError(true)} variant={"contained"}>
+          <Button onClick={() => setShowError(true)} variant="contained">
             Show error details
           </Button>
         )}
@@ -111,28 +105,30 @@ export function ErrorFallback({ error, onClose }) {
                 `Message: ${_.get(error, "message")}\n\nStack: ${_.get(error, "stack")}\n\nSaga Stack: ${_.get(error, "sagaStack")}`
               )
             }
-            variant={"contained"}
+            variant="contained"
           >
             Copy Error
           </Button>
         )}
-        <div style={{ display: showError ? "block" : "none" }} className={classes.errorContainer}>
-          <ErrorItem fieldName="Message" fieldValue={error.message} />
-          <ErrorItem fieldName="Error Stack" fieldValue={error.stack} />
-          {error["sagaStack"] && <ErrorItem fieldName="Saga Stack" fieldValue={error["sagaStack"]} />}
-        </div>
-        <div className={classes.buttonContainer}>
-          <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={appHome}>
+        {showError && (
+          <StyledErrorContainer>
+            <ErrorItem fieldName="Message" fieldValue={error.message} />
+            <ErrorItem fieldName="Error Stack" fieldValue={error.stack} />
+            {error["sagaStack"] && <ErrorItem fieldName="Saga Stack" fieldValue={error["sagaStack"]} />}
+          </StyledErrorContainer>
+        )}
+        <StyledButtonContainer>
+          <Button variant="contained" color="primary" onClick={appHome}>
             Home
           </Button>
-          <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={reload}>
+          <Button variant="contained" color="primary" onClick={reload}>
             Reload
           </Button>
           <Button variant="contained" color="primary" onClick={clearSession}>
             Clear session & reload (will logout)
           </Button>
-        </div>
-      </div>
-    </div>
+        </StyledButtonContainer>
+      </StyledContainer>
+    </>
   );
 }

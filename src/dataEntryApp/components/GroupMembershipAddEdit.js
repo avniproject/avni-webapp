@@ -1,6 +1,6 @@
-import React, { Fragment } from "react";
+import React from "react";
+import { styled } from '@mui/material/styles';
 import Breadcrumbs from "./Breadcrumbs";
-import { makeStyles } from "@mui/styles";
 import { Box, Button, Grid, Paper, Typography, RadioGroup, FormControlLabel, Radio, FormLabel } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
@@ -11,76 +11,66 @@ import AsyncSelect from "react-select/async";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { debounce } from "lodash";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    // padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1,
-    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-  },
-  innerPaper: {
-    padding: theme.spacing(2, 2),
-    margin: theme.spacing(1, 1),
-    height: 500
-  },
-  mainHeading: {
-    fontSize: "20px",
-    fontWeight: "500",
-    marginLeft: 10,
-    marginBottom: 10
-  },
-  cancelBtn: {
-    color: "orange",
-    width: 110,
-    cursor: "pointer",
-    height: 30,
-    padding: "4px 25px",
-    fontSize: 12,
-    borderRadius: 50,
-    borderColor: "orange"
-  },
-  addBtn: {
-    color: "white",
-    width: 110,
-    cursor: "pointer",
-    height: 30,
-    padding: "4px 25px",
-    fontSize: 12,
-    borderRadius: 50,
-    marginLeft: 20
-  },
-  bottomboxstyle: {
-    backgroundColor: "#f8f4f4",
-    height: 80,
-    width: "100%",
-    padding: 25
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  margin: theme.spacing(1, 3),
+  flexGrow: 1,
+  boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)",
 }));
-const renderMember = member => {
-  return <Typography component={"div"}>{member.memberSubject.nameString}</Typography>;
-};
+
+const StyledInnerContainer = styled('div')(({ theme }) => ({
+  padding: theme.spacing(2),
+  margin: theme.spacing(1),
+  height: 500,
+}));
+
+const StyledMainHeading = styled(Typography)(({ theme }) => ({
+  fontSize: 20,
+  fontWeight: 500,
+  marginLeft: theme.spacing(1.25), // 10px
+  marginBottom: theme.spacing(1.25),
+}));
+
+const StyledButtonContainer = styled(Box)(({ theme }) => ({
+  backgroundColor: "#f8f4f4",
+  height: 80,
+  width: "100%",
+  padding: theme.spacing(3.125), // 25px
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "flex-start",
+}));
+
+const StyledGridContainer = styled(Grid)(({ theme }) => ({
+  marginTop: theme.spacing(2), // Replace <br />
+}));
+
+const renderMember = (member) => (
+  <Typography component="div">{member.memberSubject.nameString}</Typography>
+);
 
 const constructSubjectLabel = (subject, isSearchFlow = false) => {
   if (isSearchFlow) {
-    return subject.fullName + " | " + subject.addressLevel;
-  } else {
-    return subject.nameString + " | " + subject.addressLevel;
+    return `${subject.fullName} | ${subject.addressLevel}`;
   }
+  return `${subject.nameString} | ${subject.addressLevel}`;
 };
 
 const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, groupRoles, ...props }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
+
   const memberGroupSubject =
-    memberGroupSubjects && memberGroupSubjects.find(memberGroupSubject => memberGroupSubject.uuid === match.queryParams.uuid);
+    memberGroupSubjects && memberGroupSubjects.find((mgs) => mgs.uuid === match.queryParams.uuid);
   const [memberSubject, setMemberSubject] = React.useState(
     memberGroupSubject && {
       label: constructSubjectLabel(memberGroupSubject.memberSubject),
-      value: memberGroupSubject.memberSubject
+      value: memberGroupSubject.memberSubject,
     }
   );
   const groupRole = memberGroupSubject && memberGroupSubject.groupRole;
-  const [selectedRole, setSelectedRole] = React.useState(groupRole ? groupRoles.find(role => role.uuid === groupRole.uuid) : null);
+  const [selectedRole, setSelectedRole] = React.useState(
+    groupRole ? groupRoles.find((role) => role.uuid === groupRole.uuid) : null
+  );
   // const isHousehold = groupSubject.isHousehold();
   const editFlow = match.queryParams.uuid != null && memberGroupSubject != null && groupRole != null;
 
@@ -90,39 +80,34 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
 
   const searchSubjects = (subjectName, callback) => {
     SubjectSearchService.search({ name: subjectName, subjectTypeUUID: selectedRole.memberSubjectTypeUUID })
-      .then(searchResults =>
+      .then((searchResults) =>
         searchResults.listOfRecords
-          .filter(subject =>
+          .filter((subject) =>
             memberGroupSubjects
-              ? memberGroupSubjects.map(groupSubject => groupSubject.memberSubject.uuid).indexOf(subject.uuid) === -1
+              ? memberGroupSubjects.map((groupSubject) => groupSubject.memberSubject.uuid).indexOf(subject.uuid) === -1
               : true
           )
-          .map(subject => ({ label: constructSubjectLabel(subject, true), value: subject }))
+          .map((subject) => ({ label: constructSubjectLabel(subject, true), value: subject }))
       )
       .then(callback);
   };
 
   const debounceSearchSubjects = debounce(searchSubjects, 500);
 
-  const renderSearch = () => {
-    return (
-      <AsyncSelect
-        // cacheOptions          //disabled because subject types could be different depending on role
-        loadOptions={debounceSearchSubjects}
-        name={"Search by Name"}
-        isMulti={false}
-        isSearchable
-        isClearable
-        isDisabled={selectedRole === null}
-        placeholder={selectedRole === null ? t("selectRoleToEnable") : t("typeNameToSearch")}
-        value={memberSubject}
-        onChange={subject => setMemberSubject(subject)}
-        noOptionsMessage={() => {
-          return t("zeroNumberOfResults");
-        }}
-      />
-    );
-  };
+  const renderSearch = () => (
+    <AsyncSelect
+      loadOptions={debounceSearchSubjects}
+      name="Search by Name"
+      isMulti={false}
+      isSearchable
+      isClearable
+      isDisabled={selectedRole === null}
+      placeholder={selectedRole === null ? t("selectRoleToEnable") : t("typeNameToSearch")}
+      value={memberSubject}
+      onChange={(subject) => setMemberSubject(subject)}
+      noOptionsMessage={() => t("zeroNumberOfResults")}
+    />
+  );
 
   const handleSave = () => {
     api
@@ -130,35 +115,34 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
         uuid: editFlow ? match.queryParams.uuid : null,
         groupSubjectUUID: groupSubject.uuid,
         memberSubjectUUID: memberSubject.value.uuid,
-        groupRoleUUID: selectedRole.uuid
+        groupRoleUUID: selectedRole.uuid,
       })
-      .then(() => returnToGroupSubjectProfile());
+      .then(returnToGroupSubjectProfile);
   };
 
-  const onRoleChange = uuid => {
-    const updatedRole = groupRoles.find(role => role.uuid === uuid);
+  const onRoleChange = (uuid) => {
+    const updatedRole = groupRoles.find((role) => role.uuid === uuid);
     if (!editFlow && selectedRole && selectedRole.memberSubjectTypeUUID !== updatedRole.memberSubjectTypeUUID) {
       setMemberSubject(null);
     }
     setSelectedRole(updatedRole);
   };
 
-  const hasSelectionChanged = () => {
-    return memberSubject && (groupRole ? selectedRole && selectedRole.uuid !== groupRole.uuid : selectedRole && selectedRole.uuid !== null);
-  };
+  const hasSelectionChanged = () =>
+    memberSubject &&
+    (groupRole ? selectedRole && selectedRole.uuid !== groupRole.uuid : selectedRole && selectedRole.uuid !== null);
 
   return (
-    <Fragment>
+    <>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
-        <div className={classes.innerPaper}>
+      <StyledPaper>
+        <StyledInnerContainer>
           <Grid container>
-            <Typography component={"span"} className={classes.mainHeading}>
+            <StyledMainHeading component="span">
               {editFlow ? t("editGroupMemberTitle") : t("addGroupMemberTitle")}
-            </Typography>
+            </StyledMainHeading>
           </Grid>
-          <br />
-          <Grid container>
+          <StyledGridContainer container>
             <Grid size={10}>
               <FormLabel component="legend">{t("role")}</FormLabel>
               <RadioGroup
@@ -166,7 +150,7 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
                 aria-label="roles"
                 name="roles"
                 value={selectedRole ? selectedRole.uuid : ""}
-                onChange={event => onRoleChange(event.target.value)}
+                onChange={(event) => onRoleChange(event.target.value)}
               >
                 {groupRoles.map((item, index) => (
                   <FormControlLabel
@@ -175,7 +159,7 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
                     control={
                       <Radio
                         color="primary"
-                        disabled={item.maximumNumberOfMembers <= memberGroupSubjects.filter(mgs => mgs.groupRole.uuid === item.uuid).length}
+                        disabled={item.maximumNumberOfMembers <= memberGroupSubjects.filter((mgs) => mgs.groupRole.uuid === item.uuid).length}
                       />
                     }
                     label={t(item.role)}
@@ -183,39 +167,58 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
                 ))}
               </RadioGroup>
             </Grid>
-            <br />
-            <Grid size={6}>
+            <StyledGridContainer size={6}>
               <FormLabel component="legend">{t("member")}</FormLabel>
               {editFlow ? renderMember(memberGroupSubject) : renderSearch()}
-            </Grid>
-          </Grid>
-        </div>
-        <Box
-          className={classes.bottomboxstyle}
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "flex-start"
-          }}
-        >
-          <Box>
-            <Button variant="outlined" className={classes.cancelBtn} onClick={returnToGroupSubjectProfile}>
-              CANCEL
+            </StyledGridContainer>
+          </StyledGridContainer>
+        </StyledInnerContainer>
+        <StyledButtonContainer>
+          <Box sx={{ display: "flex", gap: 2.5 }}>
+            <Button
+              variant="outlined"
+              sx={{
+                color: "orange",
+                width: 110,
+                height: 30,
+                fontSize: 12,
+                borderColor: "orange",
+                borderRadius: 50,
+                padding: "4px 25px",
+              }}
+              onClick={returnToGroupSubjectProfile}
+            >
+              {t("cancel")}
             </Button>
-            <Button variant="contained" className={classes.addBtn} color="primary" onClick={handleSave} disabled={!hasSelectionChanged()}>
-              SAVE
+            <Button
+              variant="contained"
+              sx={{
+                color: "white",
+                width: 110,
+                height: 30,
+                fontSize: 12,
+                borderRadius: 50,
+                padding: "4px 25px",
+                backgroundColor: "orange",
+                "&:hover": { backgroundColor: "darkorange" },
+              }}
+              onClick={handleSave}
+              disabled={!hasSelectionChanged()}
+            >
+              {t("save")}
             </Button>
           </Box>
-        </Box>
-      </Paper>
-    </Fragment>
+        </StyledButtonContainer>
+      </StyledPaper>
+    </>
   );
 };
-const mapStateToProps = state => ({
+
+const mapStateToProps = (state) => ({
   subjectTypes: state.dataEntry.metadata.operationalModules.subjectTypes,
   groupRoles: state.dataEntry.subjectProfile.subjectProfile.roles,
   groupSubject: state.dataEntry.subjectProfile.subjectProfile,
-  memberGroupSubjects: state.dataEntry.subjectProfile.groupMembers
+  memberGroupSubjects: state.dataEntry.subjectProfile.groupMembers,
 });
+
 export default withRouter(withParams(connect(mapStateToProps)(GroupMembershipAddEdit)));

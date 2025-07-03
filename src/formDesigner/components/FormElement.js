@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles, makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Accordion, AccordionDetails, AccordionSummary, Typography, Grid, InputLabel, IconButton, Tooltip } from "@mui/material";
 import {
   ExpandMore,
@@ -25,93 +25,99 @@ import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
 import { ToolTip } from "../../common/components/ToolTip";
 
+const StyledAccordion = styled(Accordion)(({ error }) => ({
+  width: "100%",
+  ...(error && {
+    border: "1px solid red",
+  }),
+  "&.Mui-expanded": {
+    margin: 0,
+  },
+}));
+
+const StyledAccordionSummary = styled(AccordionSummary)({
+  paddingRight: 0,
+  paddingLeft: "10px",
+  backgroundColor: "#dbdbdb",
+  border: "2px solid #bdc6cf",
+  minHeight: 56,
+  "&.Mui-expanded": {
+    minHeight: 56,
+  },
+  "&.Mui-focused": {
+    backgroundColor: "#dbdbdb",
+  },
+  "& .MuiAccordionSummary-content": {
+    margin: "0px 0 0 0",
+    "&.Mui-expanded": {
+      margin: "0px 0 0 0",
+    },
+  },
+});
+
+const StyledAccordionDetails = styled(AccordionDetails)({
+  backgroundColor: "#fff",
+  border: "2px solid #bdc6cf",
+  padding: 10,
+});
+
+const StyledDragHandler = styled('div')({
+  height: 5,
+});
+
+const StyledIconContainer = styled('div')({
+  padding: "10px",
+});
+
+const StyledHeadingContainer = styled(Grid)({
+  paddingTop: "10px",
+});
+
+const StyledTypographyHeading = styled(Typography)(({ theme }) => ({
+  fontSize: theme.typography.pxToRem(15),
+  flexBasis: "33.33%",
+  flexShrink: 0,
+}));
+
+const StyledTypographySecondary = styled(Typography)(({ theme }) => ({
+  flexBasis: "70%",
+  fontSize: theme.typography.pxToRem(15),
+}));
+
+const StyledExpandIcon = styled('span')({
+  paddingTop: "3px",
+  paddingRight: "0px",
+});
+
+const StyledGridAlignCenter = styled(Grid)({
+  alignItems: "center",
+  justifyContent: "center",
+});
+
+const StyledGridAlignItems = styled(Grid)({
+  alignItems: "center",
+});
+
+const StyledInputLabel = styled(InputLabel)({
+  display: "inline-block",
+  "& .MuiInputLabel-asterisk": {
+    color: "red",
+  },
+});
+
+const StyledDeleteIconContainer = styled(Grid)({
+  padding: "10px 30px -1px 0px",
+});
+
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: "100%"
-  },
-  rootError: {
-    width: "100%",
-    border: "1px solid red"
-  },
-  iconlay: {
-    paddingTop: "3px"
-  },
-  expandIcon: {
-    paddingTop: "3px",
-    paddingRight: "0px"
-  },
-  iconDataType: {
-    padding: "10px"
-  },
-  questionCount: {
-    paddingTop: "20px"
-  },
-  deleteicon: {
-    padding: "10px 30px -1px 0px"
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: "33.33%",
-    flexShrink: 0,
-    paddingTop: "10px"
-  },
-  secondaryHeading: {
-    flexBasis: "70%",
-    fontSize: theme.typography.pxToRem(15)
-  },
-  asterisk: {
-    color: "red"
-  }
-}));
-
-const StyledAccordion = withStyles({
-  root: {
-    "&$expanded": {
-      margin: 0
-    }
-  },
-  expanded: {}
-})(Accordion);
-
-const StyledAccordionDetails = withStyles({
-  root: {
-    backgroundColor: "#fff",
-    border: "2px solid #bdc6cf",
-    padding: 10
-  }
-})(AccordionDetails);
-
-const StyledAccordionSummary = withStyles({
-  root: {
-    paddingRight: 0,
-    paddingLeft: "10px",
-    backgroundColor: "#dbdbdb",
-    border: "2px solid #bdc6cf",
-    minHeight: 56,
-    "&$expanded": {
-      minHeight: 56
-    },
-    "&$focused": {
-      backgroundColor: "#dbdbdb"
-    }
-  },
-  focused: {},
-  content: {
-    margin: "0px 0 0 0",
-    "&$expanded": { margin: "0px 0 0 0" }
-  },
-  expanded: {}
-})(AccordionSummary);
 
 export const dataTypeIcons = {
   concept: {
     SingleSelect: <RadioButtonChecked />,
     MultiSelect: <CheckCircleOutline />,
-    "": <b />
+    "": <b />,
   },
   Date: <CalendarToday />,
   Numeric: <b>123</b>,
@@ -132,24 +138,23 @@ export const dataTypeIcons = {
   QuestionGroup: <b>QG</b>,
   Audio: <Audiotrack />,
   File: <InsertDriveFile />,
-  "": <b />
+  "": <b />,
 };
 
-function FormElement(props) {
-  const classes = useStyles();
+const FormElement = (props) => {
   const panel = "panel" + props.groupIndex.toString() + props.index.toString();
   const [dragElement, setDragElement] = React.useState(false);
   const disableFormElement = props.disableFormElement;
 
-  const DragHandler = props => (
-    <div style={{ height: 5 }} {...props}>
+  const DragHandler = (dragProps) => (
+    <StyledDragHandler {...dragProps}>
       <div hidden={!dragElement || disableFormElement}>
         <DragHandle color="disabled" />
       </div>
-    </div>
+    </StyledDragHandler>
   );
 
-  const handleDelete = event => {
+  const handleDelete = (event) => {
     props.deleteGroup(props.groupIndex, props.index);
     event.stopPropagation();
   };
@@ -158,33 +163,24 @@ function FormElement(props) {
     <StyledAccordion
       TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
       expanded={props.formElementData.expanded}
-      className={props.formElementData.error ? classes.rootError : classes.root}
-      onChange={event => props.handleGroupElementChange(props.groupIndex, "expanded", !props.formElementData.expanded, props.index)}
+      error={props.formElementData.error}
+      onChange={(event) => props.handleGroupElementChange(props.groupIndex, "expanded", !props.formElementData.expanded, props.index)}
       onMouseEnter={() => setDragElement(true)}
       onMouseLeave={() => setDragElement(false)}
     >
       <StyledAccordionSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"} {...props.dragHandleProps}>
         <Grid container direction="row">
-          <Grid
-            container
-            sx={{
-              alignItems: "center",
-              justifyContent: "center"
-            }}
-          >
+          <StyledGridAlignCenter container>
             <DragHandler />
-          </Grid>
-          <Grid
+          </StyledGridAlignCenter>
+          <StyledGridAlignItems
             container
-            sx={{
-              alignItems: "center"
-            }}
             size={{
-              sm: 12
+              sm: 12,
             }}
           >
             <Grid>
-              <Typography component="div" className={classes.secondaryHeading}>
+              <StyledTypographySecondary>
                 {[
                   "Date",
                   "Numeric",
@@ -204,53 +200,50 @@ function FormElement(props) {
                   "Audio",
                   "File",
                   "QuestionGroup",
-                  "Encounter"
+                  "Encounter",
                 ].includes(props.formElementData.concept.dataType) && (
-                  <div className={classes.iconDataType}>
+                  <StyledIconContainer>
                     <Tooltip title={props.formElementData.concept.dataType}>
                       {dataTypeIcons[props.formElementData.concept.dataType]}
                     </Tooltip>
-                  </div>
+                  </StyledIconContainer>
                 )}
                 {props.formElementData.concept.dataType === "Coded" && (
-                  <div className={classes.iconDataType}>
+                  <StyledIconContainer>
                     <Tooltip title={props.formElementData.concept.dataType + " : " + props.formElementData.type}>
                       {dataTypeIcons["concept"][props.formElementData.type]}
                     </Tooltip>
-                  </div>
+                  </StyledIconContainer>
                 )}
-              </Typography>
+              </StyledTypographySecondary>
             </Grid>
-            <Grid
-              style={{ paddingTop: "10px" }}
+            <StyledHeadingContainer
               size={{
-                sm: 10
+                sm: 10,
               }}
             >
-              <Typography component="span" className={classes.heading}>
-                <span className={classes.expandIcon}>{props.formElementData.expanded ? <ExpandLess /> : <ExpandMore />}</span>
-                <InputLabel
+              <StyledTypographyHeading>
+                <StyledExpandIcon>{props.formElementData.expanded ? <ExpandLess /> : <ExpandMore />}</StyledExpandIcon>
+                <StyledInputLabel
                   name={"name" + panel}
-                  style={{ display: "inline-block" }}
                   required={props.formElementData.mandatory}
-                  classes={{ asterisk: classes.asterisk }}
                   disabled={disableFormElement}
                 >
                   {props.formElementData.name}
-                </InputLabel>
-              </Typography>
-            </Grid>
-            <Grid
+                </StyledInputLabel>
+              </StyledTypographyHeading>
+            </StyledHeadingContainer>
+            <StyledDeleteIconContainer
               size={{
-                sm: 1
+                sm: 1,
               }}
             >
               <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement} size="small">
                 <Delete />
               </IconButton>
               <ToolTip title="APP_DESIGNER_FORM_ELEMENT_NAME" />
-            </Grid>
-          </Grid>
+            </StyledDeleteIconContainer>
+          </StyledGridAlignItems>
         </Grid>
       </StyledAccordionSummary>
       <StyledAccordionDetails>
@@ -258,5 +251,6 @@ function FormElement(props) {
       </StyledAccordionDetails>
     </StyledAccordion>
   );
-}
+};
+
 export default React.memo(FormElement, areEqual);

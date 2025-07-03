@@ -1,63 +1,66 @@
 import { useTranslation } from "react-i18next";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Typography } from "@mui/material";
 import { LineBreak } from "common/components/utils";
 import React from "react";
 import { isNil, isDate } from "lodash";
 import { AgeUtil } from "openchs-models";
 
-const useStyle = makeStyles(theme => ({
-  detailsstyle: {
-    color: "#000",
-    fontSize: "bold"
-  },
-  details: {
-    color: "rgba(0, 0, 0, 0.54)",
-    backgroundColor: "#F8F9F9",
-    height: 40,
-    width: "100%",
-    padding: 8,
-    marginBottom: 10
-  }
+const StyledRoot = styled('div')(({ theme }) => ({
+  color: "rgba(0, 0, 0, 0.54)",
+  backgroundColor: "#F8F9F9",
+  height: 40,
+  width: "100%",
+  padding: theme.spacing(1),
+  marginBottom: theme.spacing(1.25), // 10px
 }));
 
-function addElement(label, value, headerElements, classes, key) {
+const StyledTypographyValue = styled(Typography)({
+  color: "#000",
+  fontWeight: "bold",
+});
+
+const StyledTypographyLabel = styled(Typography)({
+  marginBottom: theme.spacing(1),
+});
+
+function addElement(label, value, headerElements, key) {
   const insertSeparator = headerElements.length !== 0;
   headerElements.push(
-    <Typography variant="caption" key={`${key}-1`} sx={{ mb: 1 }}>
+    <StyledTypographyLabel variant="caption" key={`${key}-1`}>
       {(insertSeparator ? " | " : "") + label + ": "}
-    </Typography>
+    </StyledTypographyLabel>
   );
   headerElements.push(
-    <Typography className={classes.detailsstyle} key={`${key}-2`} variant="caption" sx={{ mb: 1 }}>
+    <StyledTypographyValue variant="caption" key={`${key}-2`}>
       {value}
-    </Typography>
+    </StyledTypographyValue>
   );
   return headerElements;
 }
 
 const FormWizardHeader = ({ subject }) => {
-  const classes = useStyle();
   const { i18n, t } = useTranslation();
   let headerElements = [];
 
   const fullName = subject.nameString || "-";
-  headerElements = addElement(t("name"), fullName, headerElements, classes, "fw-name");
+  headerElements = addElement(t("name"), fullName, headerElements, "fw-name");
 
   if (subject.isPerson()) {
     const dateOfBirth = isDate(subject.dateOfBirth) ? AgeUtil.getDisplayAge(subject.dateOfBirth, i18n) : null;
-    headerElements = dateOfBirth && addElement(t("age"), dateOfBirth, headerElements, classes, "fw-age");
+    headerElements = dateOfBirth && addElement(t("age"), dateOfBirth, headerElements, "fw-age");
     const gender = subject.gender && !isNil(subject.gender.name) ? subject.gender.name : "-";
-    headerElements = addElement(t("gender"), gender, headerElements, classes, "fw-gender");
+    headerElements = addElement(t("gender"), gender, headerElements, "fw-gender");
   }
   const lowestAddressLevel = subject.lowestAddressLevel ? subject.lowestAddressLevel.name || "-" : "";
   const lowestAddressLevelType = subject.lowestAddressLevel ? t(subject.lowestAddressLevel.type) || "-" : "";
-  headerElements = addElement(lowestAddressLevelType, lowestAddressLevel, headerElements, classes);
+  headerElements = addElement(lowestAddressLevelType, lowestAddressLevel, headerElements, "fw-address");
+
   return (
-    <div className={classes.details}>
+    <StyledRoot>
       {headerElements}
       <LineBreak num={2} />
-    </div>
+    </StyledRoot>
   );
 };
 

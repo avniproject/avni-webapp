@@ -1,19 +1,27 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { InsertDriveFile } from "@mui/icons-material";
 import { size, get, isNil } from "lodash";
-import { makeStyles } from "@mui/styles";
 import { Box, Typography } from "@mui/material";
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    backgroundColor: "#474747"
-  },
-  icon: {
-    fontSize: 40,
-    marginRight: 15,
-    color: "#FFF"
-  }
+const StyledBox = styled(Box)(({ theme }) => ({
+  backgroundColor: "#474747",
+  cursor: "pointer",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  padding: theme.spacing(1, 4),
 }));
+
+const StyledIcon = styled(InsertDriveFile)(({ theme }) => ({
+  fontSize: 40,
+  marginRight: theme.spacing(1.875), // 15px
+  color: "#FFF",
+}));
+
+const StyledTypography = styled(Typography)({
+  color: "#FFF",
+});
 
 // temp fix to ensure there is no crash. don't merge this.
 function getFileName(obsValue) {
@@ -26,7 +34,6 @@ function getFileName(obsValue) {
 }
 
 export const FilePreview = ({ url, obsValue }) => {
-  const classes = useStyles();
   const getDisplayFileName = () => {
     const fileName = getFileName(obsValue);
     const originalName = get(fileName.trim().match(/[0-9A-Fa-f-]{36}\.\w+$/), 0);
@@ -37,25 +44,11 @@ export const FilePreview = ({ url, obsValue }) => {
     }
     return originalName;
   };
+
   return (
-    <Box
-      className={classes.container}
-      onClick={() => window.open(url, "_blank")}
-      style={{ cursor: "pointer" }}
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        px: 4,
-        py: 1
-      }}
-    >
-      <InsertDriveFile className={classes.icon} />
-      <div>
-        <Typography variant="body1" sx={{ color: "#FFF" }}>
-          {getDisplayFileName()}
-        </Typography>
-      </div>
-    </Box>
+    <StyledBox onClick={() => window.open(url, "_blank")}>
+      <StyledIcon />
+      <StyledTypography variant="body1">{getDisplayFileName()}</StyledTypography>
+    </StyledBox>
   );
 };

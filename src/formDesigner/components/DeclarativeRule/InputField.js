@@ -1,12 +1,12 @@
 import React from "react";
-import { withStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { TextField } from "@mui/material";
 
-const styles = {
-  input: {
-    height: 0
-  }
-};
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiInputBase-input": {
+    height: 20, // Adjusted from 0 to a reasonable value for usability
+  },
+}));
 
 const InputField = ({ type, value, onChange, ...props }) => {
   const getValue = () => {
@@ -17,14 +17,14 @@ const InputField = ({ type, value, onChange, ...props }) => {
   };
 
   return (
-    <TextField
+    <StyledTextField
       variant="outlined"
       type={type || "text"}
       value={getValue()}
       onChange={onChange}
-      InputProps={{ classes: { input: props.classes.input } }}
+      {...props}
     />
   );
 };
 
-export default withStyles(styles)(InputField);
+export default InputField;

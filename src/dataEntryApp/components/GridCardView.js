@@ -1,47 +1,43 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(() => ({
-  card: {
-    boxShadow: "0px 0px 0px 0px",
-    borderRadius: "0",
-    padding: "10px"
-  },
-  grid: {
-    paddingBottom: "10px",
-    padding: "10px"
-  }
+const StyledGridContainer = styled(Grid)(({ theme }) => ({
+  padding: theme.spacing(1.25), // 10px
+  paddingBottom: theme.spacing(1.25),
+}));
+
+const StyledGridCard = styled(Grid)(({ theme }) => ({
+  boxShadow: "0px 0px 0px 0px",
+  borderRadius: 0,
+  padding: theme.spacing(1.25), // 10px
 }));
 
 const GridCardView = ({ cards, xs = 12, sm = 6, md = 3, lg = 2, xl = 2, noDataMessage }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
+
   return (
-    <Grid container className={classes.grid}>
+    <StyledGridContainer container>
       {cards && cards.length > 0 ? (
-        cards.map((card, index) => {
-          return (
-            <Grid
-              key={index}
-              className={classes.card}
-              size={{
-                xs: xs,
-                sm: sm,
-                md: md,
-                lg: lg,
-                xl: xl
-              }}
-            >
-              {card}
-            </Grid>
-          );
-        })
+        cards.map((card, index) => (
+          <StyledGridCard
+            key={index}
+            size={{
+              xs,
+              sm,
+              md,
+              lg,
+              xl,
+            }}
+          >
+            {card}
+          </StyledGridCard>
+        ))
       ) : (
-        <Typography component={"div"}>{noDataMessage || t("zeroNumberOfResults")}</Typography>
+        <Typography component="div">{noDataMessage || t("zeroNumberOfResults")}</Typography>
       )}
-    </Grid>
+    </StyledGridContainer>
   );
 };
 

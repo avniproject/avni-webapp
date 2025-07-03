@@ -1,58 +1,53 @@
 import React from "react";
-
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Fab } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { isEqual } from "lodash";
-
 import FormElement from "./FormElement";
+
+const StyledRoot = styled('div')({
+  paddingLeft: 20,
+  paddingBottom: 30,
+});
+
+const StyledFabContainer = styled('div')({
+  position: "absolute",
+  marginLeft: -35,
+  marginTop: -5,
+});
 
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-const useStyles = makeStyles(() => ({
-  parent: {
-    paddingLeft: 20,
-    paddingBottom: 30
-  },
-
-  absolute: {
-    position: "absolute",
-    marginLeft: -35,
-    marginTop: -5
-  }
-}));
-
 function FormElementWithAddButton(props) {
-  const classes = useStyles();
   const [hover, setHover] = React.useState(false);
 
-  const hoverDisplayAddGroup = event => {
+  const hoverDisplayAddGroup = () => {
     setHover(true);
   };
 
-  const hoverHideAddGroup = event => {
+  const hoverHideAddGroup = () => {
     setHover(false);
   };
 
   return (
-    <div className={classes.parent} onMouseEnter={hoverDisplayAddGroup} onMouseLeave={hoverHideAddGroup}>
+    <StyledRoot onMouseEnter={hoverDisplayAddGroup} onMouseLeave={hoverHideAddGroup}>
       <FormElement {...props} />
-      <div className={classes.absolute}>
+      <StyledFabContainer>
         {hover && (
           <Fab
             color="secondary"
             aria-label="add"
-            onClick={event => props.btnGroupAdd(props.groupIndex, props.index)}
+            onClick={(event) => props.btnGroupAdd(props.groupIndex, props.index)}
             size="small"
             disabled={props.disableFormElement}
           >
             <Add />
           </Fab>
         )}
-      </div>
-    </div>
+      </StyledFabContainer>
+    </StyledRoot>
   );
 }
 

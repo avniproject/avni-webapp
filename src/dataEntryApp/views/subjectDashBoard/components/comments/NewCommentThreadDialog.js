@@ -1,21 +1,20 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, useTheme, TextField } from "@mui/material";
 import { onNewThread } from "../../../../reducers/CommentReducer";
 import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(theme => ({
-  dialogPosition: {
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialog-paper": {
     position: "absolute",
     right: 0,
-    width: 400
-  }
+    width: 400,
+  },
 }));
 
 export default function NewCommentThreadDialog({ open, setOpen, newCommentText, onCommentChange, dispatch, subjectUUID }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xl"));
 
   const onSave = () => {
@@ -25,7 +24,7 @@ export default function NewCommentThreadDialog({ open, setOpen, newCommentText, 
 
   return (
     <div>
-      <Dialog classes={{ paper: classes.dialogPosition }} fullScreen={fullScreen} open={open} onClose={() => setOpen(false)}>
+      <StyledDialog fullScreen={fullScreen} open={open} onClose={() => setOpen(false)}>
         <DialogTitle id="new-comment-thread">{t("createNewCommentThread")}</DialogTitle>
         <DialogContent>
           <TextField
@@ -47,7 +46,7 @@ export default function NewCommentThreadDialog({ open, setOpen, newCommentText, 
             {t("save")}
           </Button>
         </DialogActions>
-      </Dialog>
+      </StyledDialog>
     </div>
   );
 }

@@ -1,28 +1,24 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import PropTypes from "prop-types";
-import { makeStyles } from "@mui/styles";
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Tooltip } from "@mui/material";
 
 export const ENCOUNTER_MODES = {
   SCHEDULE: "schedule_a_visit",
-  UPLOAD: "upload_visit_details"
+  UPLOAD: "upload_visit_details",
 };
 
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    marginTop: theme.spacing(2)
-  }
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  marginTop: theme.spacing(2),
 }));
 
 const EncounterModes = ({ mode, setMode }) => {
-  const classes = useStyles();
-
   const handleChange = event => {
     setMode(event.target.value);
   };
 
   return (
-    <FormControl component="fieldset" className={classes.formControl}>
+    <StyledFormControl component="fieldset">
       <FormLabel component="legend">Select Encounter Mode</FormLabel>
       <RadioGroup row aria-label="encounter-mode" name="encounter-mode" value={mode} onChange={handleChange}>
         <Tooltip title="Schedule a new visit" placement="bottom-start" arrow>
@@ -32,17 +28,17 @@ const EncounterModes = ({ mode, setMode }) => {
           <FormControlLabel value={ENCOUNTER_MODES.UPLOAD} control={<Radio color="primary" />} label="Upload visit details" />
         </Tooltip>
       </RadioGroup>
-    </FormControl>
+    </StyledFormControl>
   );
 };
 
 EncounterModes.propTypes = {
   mode: PropTypes.string,
-  setMode: PropTypes.func.isRequired
+  setMode: PropTypes.func.isRequired,
 };
 
 EncounterModes.defaultProps = {
-  mode: ENCOUNTER_MODES.SCHEDULE
+  mode: ENCOUNTER_MODES.SCHEDULE,
 };
 
 export default EncounterModes;

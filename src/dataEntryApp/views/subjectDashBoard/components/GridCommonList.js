@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Typography, Grid, Card, CardActions, CardContent } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
@@ -7,99 +7,91 @@ import RemoveRelative from "../components/RemoveRelative";
 import SubjectProfilePicture from "../../../components/SubjectProfilePicture";
 import { Individual } from "avni-models";
 
-const useStyles = makeStyles(theme => ({
-  card: {
-    boxShadow: "0px 0px 0px 0px",
-    borderRadius: "0"
-  },
-  rightBorder: {
-    borderRight: "1px solid rgba(0,0,0,0.12)",
-    "&:nth-child(4n),&:last-child": {
-      borderRight: "0px solid rgba(0,0,0,0.12)"
-    }
-  },
-  title: {
-    fontSize: 14
-  },
-  gridBottomBorder: {
-    borderBottom: "1px solid rgba(0,0,0,0.12)",
-    paddingBottom: "10px"
-  }
+const StyledGridContainer = styled(Grid)(({ theme }) => ({
+  borderBottom: "1px solid rgba(0,0,0,0.12)",
+  paddingBottom: theme.spacing(1.25), // 10px
 }));
 
+const StyledGridItem = styled(Grid)(({ theme }) => ({
+  borderRight: "1px solid rgba(0,0,0,0.12)",
+  "&:nth-of-type(4n), &:last-child": {
+    borderRight: "0px solid rgba(0,0,0,0.12)",
+  },
+}));
+
+const StyledCard = styled(Card)({
+  boxShadow: "0px 0px 0px 0px",
+  borderRadius: 0,
+});
+
+const StyledTypographyTitle = styled(Typography)(({ theme }) => ({
+  fontSize: 14,
+  color: theme.palette.text.secondary,
+  marginBottom: theme.spacing(1),
+}));
+
+const StyledTypographyLink = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.main,
+}));
+
+const StyledCardActions = styled(CardActions)({
+  padding: "8px 8px 8px 0px",
+});
+
 const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   return (
-    <Grid container className={classes.gridBottomBorder} size={12}>
-      {gridListDetails
-        ? gridListDetails.map((relative, index) => {
-            if (relative !== undefined && !relative.voided) {
-              return (
-                <Grid key={index} className={classes.rightBorder} size={3}>
-                  <Card className={classes.card}>
-                    <CardContent>
-                      <Grid container direction={"row"} spacing={1}>
-                        <Grid>
-                          <SubjectProfilePicture
-                            allowEnlargementOnClick={true}
-                            firstName={relative.individualB.name}
-                            profilePicture={relative.individualB.profilePicture}
-                            subjectType={relative.individualB.subjectType}
-                            subjectTypeName={relative.individualB.subjectType.name}
-                            size={25}
-                            style={{ margin: "0px" }}
-                          />
-                        </Grid>
-                        <Grid>
-                          <Typography component={"div"} sx={{ color: theme => theme.palette.primary.main }}>
-                            <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
-                              {" "}
-                              {Individual.getFullName(relative.individualB)}{" "}
-                            </InternalLink>
-                          </Typography>
-                          <Typography
-                            component={"div"}
-                            className={classes.title}
-                            sx={{ mb: 1, color: theme => theme.palette.text.secondary }}
-                          >
-                            {t(relative.relationship.individualBIsToARelation.name)}
-                          </Typography>
-                          <Typography
-                            component={"div"}
-                            className={classes.title}
-                            sx={{ mb: 1, color: theme => theme.palette.text.secondary }}
-                          >
-                            {new Date().getFullYear() - new Date(relative.individualB.dateOfBirth).getFullYear()} {t("years")}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </CardContent>
-                    {
-                      <CardActions style={{ padding: "8px 8px 8px 0px" }}>
-                        {/* <Button color="primary">{t("remove")}</Button> */}
-                        <RemoveRelative
-                          relationAuuid={profileUUID}
-                          relationAname={profileName}
-                          relationBname={Individual.getFullName(relative.individualB)}
-                          relationBId={relative.id}
-                          relationuuid={relative.uuid}
-                          relationBuuid={relative.individualB.uuid}
-                          relationBTypeuuid={relative.relationship.uuid}
-                        />
-                        {/* <Button color="primary">{t("edit")}</Button> */}
-                      </CardActions>
-                    }
-                  </Card>
-                </Grid>
-              );
-            } else {
-              return "";
-            }
-          })
-        : ""}
-    </Grid>
+    <StyledGridContainer container size={12}>
+      {gridListDetails &&
+        gridListDetails
+          .filter((relative) => relative !== undefined && !relative.voided)
+          .map((relative, index) => (
+            <StyledGridItem key={index} size={3}>
+              <StyledCard>
+                <CardContent>
+                  <Grid container direction="row" spacing={1}>
+                    <Grid>
+                      <SubjectProfilePicture
+                        allowEnlargementOnClick
+                        firstName={relative.individualB.name}
+                        profilePicture={relative.individualB.profilePicture}
+                        subjectType={relative.individualB.subjectType}
+                        subjectTypeName={relative.individualB.subjectType.name}
+                        size={25}
+                        sx={{ margin: 0 }}
+                      />
+                    </Grid>
+                    <Grid>
+                      <StyledTypographyLink component="div">
+                        <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
+                          {Individual.getFullName(relative.individualB)}
+                        </InternalLink>
+                      </StyledTypographyLink>
+                      <StyledTypographyTitle component="div">
+                        {t(relative.relationship.individualBIsToARelation.name)}
+                      </StyledTypographyTitle>
+                      <StyledTypographyTitle component="div">
+                        {new Date().getFullYear() - new Date(relative.individualB.dateOfBirth).getFullYear()} {t("years")}
+                      </StyledTypographyTitle>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+                <StyledCardActions>
+                  <RemoveRelative
+                    relationAuuid={profileUUID}
+                    relationAname={profileName}
+                    relationBname={Individual.getFullName(relative.individualB)}
+                    relationBId={relative.id}
+                    relationuuid={relative.uuid}
+                    relationBuuid={relative.individualB.uuid}
+                    relationBTypeuuid={relative.relationship.uuid}
+                  />
+                </StyledCardActions>
+              </StyledCard>
+            </StyledGridItem>
+          ))}
+    </StyledGridContainer>
   );
 };
 

@@ -1,28 +1,25 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { map, filter, get } from "lodash";
-import { makeStyles } from "@mui/styles";
 import { Button, Grid } from "@mui/material";
 import { isDevEnv } from "../../../../../common/constants";
 import { extensionScopeTypes } from "../../../../../formDesigner/components/Extensions/ExtensionReducer";
 import commonApi from "../../../../../common/service";
 import httpClient from "../../../../../common/utils/httpClient";
 
-const useStyles = makeStyles(theme => ({
-  buttonStyle: {
-    textTransform: "none",
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    color: "#FFFFFF",
-    backgroundColor: "#0000ff",
-    "&:hover": {
-      backgroundColor: "#0000A2"
-    },
-    marginBottom: theme.spacing(2)
-  }
+const StyledButton = styled(Button)(({ theme }) => ({
+  textTransform: "none",
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  color: "#FFFFFF",
+  backgroundColor: "#0000ff",
+  "&:hover": {
+    backgroundColor: "#0000A2",
+  },
+  marginBottom: theme.spacing(2),
 }));
 
 export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType, configExtensions }) => {
-  const classes = useStyles();
   const [extensions, setExtensions] = React.useState([]);
 
   React.useEffect(() => {
@@ -35,14 +32,17 @@ export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType, c
       setExtensions(configExtensions);
     }
   }, []);
+
   const isSearchScope = (scopeType, extensionScope) =>
     scopeType === extensionScopeTypes.searchResults && extensionScope === extensionScopeTypes.searchResults;
+
   const filteredSettings = filter(
     extensions,
     ({ extensionScope }) =>
       isSearchScope(scopeType, extensionScope.scopeType) ||
       (typeUUID === extensionScope.uuid && typeName === extensionScope.name && scopeType === extensionScope.scopeType)
   );
+
   const serverURL = isDevEnv ? "http://localhost:8021" : window.location.origin;
 
   const clickHandler = async fileName => {
@@ -52,22 +52,17 @@ export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType, c
   };
 
   return (
-    <Grid container direction={"row-reverse"} spacing={1} size={12}>
-      {map(filteredSettings, ({ label, fileName }, index) => {
-        return (
-          <Grid key={label + index}>
-            <Button
-              id={label}
-              className={classes.buttonStyle}
-              onClick={() => {
-                clickHandler(fileName);
-              }}
-            >
-              {label}
-            </Button>
-          </Grid>
-        );
-      })}
+    <Grid container direction="row-reverse" spacing={1} size={12}>
+      {map(filteredSettings, ({ label, fileName }, index) => (
+        <Grid key={label + index}>
+          <StyledButton
+            id={label}
+            onClick={() => clickHandler(fileName)}
+          >
+            {label}
+          </StyledButton>
+        </Grid>
+      ))}
     </Grid>
   );
 };

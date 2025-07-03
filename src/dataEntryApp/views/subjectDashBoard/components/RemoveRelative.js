@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Grid, DialogContent, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
@@ -9,46 +9,56 @@ import Modal from "./CommonModal";
 import { removeRelationShip, saveRelationShip } from "../../../reducers/relationshipReducer";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 
-const useStyles = makeStyles(theme => ({
-  removeButtonStyle: {
-    height: "28px",
-    zIndex: 1,
-    marginTop: "1px",
-    boxShadow: "none",
+const StyledDialogContent = styled(DialogContent)({
+  width: 600,
+  height: "auto",
+});
+
+const StyledGrid = styled(Grid)({
+  justifyContent: "flex-end",
+  alignItems: "flex-start",
+});
+
+const removeButtonStyle = {
+  height: "28px",
+  zIndex: 1,
+  marginTop: "1px",
+  boxShadow: "none",
+  color: "#0e6eff",
+  backgroundColor: "#fff",
+  "&:hover": {
     color: "#0e6eff",
     backgroundColor: "#fff",
-    "&:hover": {
-      color: "#0e6eff",
-      backgroundColor: "#fff"
-    }
   },
-  btnCustom: {
-    float: "left",
+};
+
+const applyButtonStyle = {
+  float: "left",
+  backgroundColor: "#f27510",
+  height: "30px",
+  boxShadow: "none",
+  "&:hover": {
     backgroundColor: "#f27510",
-    height: "30px",
-    boxShadow: "none",
-    "&:hover": {
-      backgroundColor: "#f27510"
-    }
   },
-  cancelBtnCustom: {
-    float: "left",
+};
+
+const cancelButtonStyle = {
+  float: "left",
+  backgroundColor: "#F8F9F9",
+  color: "#fc9153",
+  border: "1px solid #fc9153",
+  height: "30px",
+  boxShadow: "none",
+  "&:hover": {
     backgroundColor: "#F8F9F9",
-    color: "#fc9153",
-    border: "1px solid #fc9153",
-    height: "30px",
-    boxShadow: "none",
-    "&:hover": {
-      backgroundColor: "#F8F9F9"
-    }
-  }
-}));
+  },
+};
 
 const RemoveRelative = props => {
   const { t } = useTranslation();
-  const classes = useStyles();
-  const close = () => {};
   const history = useHistory();
+
+  const close = () => {};
 
   const removeClick = () => {
     const RelationData = {
@@ -56,7 +66,7 @@ const RemoveRelative = props => {
       individualBUUID: props.relationBuuid,
       relationshipTypeUUID: props.relationBTypeuuid,
       uuid: props.relationuuid,
-      voided: true
+      voided: true,
     };
     props.saveRelationShip(RelationData);
     (async function fetchData() {
@@ -64,26 +74,19 @@ const RemoveRelative = props => {
         props.getSubjectProfile(props.relationAuuid);
         history.push(`/app/subject/subjectProfile?uuid=${props.relationAuuid}`);
       }, 500);
-      // await props.getSubjectProfile(props.relationAuuid);
     })();
   };
 
   const searchContent = (
-    <DialogContent style={{ width: 600, height: "auto" }}>
-      <Grid
-        container
-        direction="row"
-        sx={{
-          justifyContent: "flex-end",
-          alignItems: "flex-start"
-        }}
-      >
+    <StyledDialogContent>
+      <StyledGrid container direction="row">
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
           Do you want to remove the relationship between {props.relationAname} and {props.relationBname}?
         </Typography>
-      </Grid>
-    </DialogContent>
+      </StyledGrid>
+    </StyledDialogContent>
   );
+
   return (
     <Modal
       content={searchContent}
@@ -92,20 +95,20 @@ const RemoveRelative = props => {
         {
           buttonType: "openButton",
           label: "Remove",
-          classes: classes.removeButtonStyle
+          sx: removeButtonStyle,
         },
         {
           buttonType: "applyButton",
           label: "Remove",
           redirectTo: `/app/subject?uuid=${props.relationAuuid}`,
-          classes: classes.btnCustom,
-          click: removeClick
+          sx: applyButtonStyle,
+          click: removeClick,
         },
         {
           buttonType: "cancelButton",
           label: t("cancel"),
-          classes: classes.cancelBtnCustom
-        }
+          sx: cancelButtonStyle,
+        },
       ]}
       title="Remove Relative"
       btnHandleClose={close}
@@ -117,13 +120,13 @@ const mapStateToProps = state => ({
   Relations: state.dataEntry.relations,
   subjects: state.dataEntry.search.subjects,
   searchParams: state.dataEntry.search.subjectSearchParams,
-  subjectTypes: first(state.dataEntry.metadata.operationalModules.subjectTypes)
+  subjectTypes: first(state.dataEntry.metadata.operationalModules.subjectTypes),
 });
 
 const mapDispatchToProps = {
   removeRelationShip,
   saveRelationShip,
-  getSubjectProfile
+  getSubjectProfile,
 };
 
 export default withRouter(

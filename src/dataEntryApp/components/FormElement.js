@@ -1,5 +1,5 @@
-import { makeStyles } from "@mui/styles";
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { LineBreak } from "../../common/components/utils";
 import TextFormElement from "./TextFormElement";
 import NotesFormElement from "./NotesFormElement";
@@ -16,6 +16,14 @@ import LocationFormElement from "./LocationFormElement";
 import LandingSubjectFormElement from "./LandingSubjectFormElement";
 import QuestionGroupFormElement from "./QuestionGroupFormElement";
 import { RepeatableQuestionGroupElement } from "./RepeatableQuestionGroupElement";
+
+const StyledContainer = styled('div')(({ isGrid }) => ({
+  ...(isGrid && {
+    borderWidth: "2px",
+    borderStyle: "inset",
+    padding: "5px",
+  }),
+}));
 
 const div = () => <div />;
 
@@ -40,33 +48,24 @@ const elements = {
   Subject: LandingSubjectFormElement,
   Location: LocationFormElement,
   QuestionGroup: QuestionGroupFormElement,
-  RepeatableQuestionGroup: RepeatableQuestionGroupElement
+  RepeatableQuestionGroup: RepeatableQuestionGroupElement,
 };
 
-const useStyles = makeStyles(theme => ({
-  gridContainerStyle: {
-    borderWidth: "2px",
-    borderStyle: "inset",
-    padding: "5px"
-  }
-}));
-
 export const FormElement = ({
-  children: formElement,
-  value,
-  update,
-  obsHolder,
-  validationResults,
-  uuid,
-  feIndex,
-  filteredFormElements,
-  ignoreLineBreak,
-  isGrid,
-  updateObs,
-  addNewQuestionGroup,
-  removeQuestionGroup
-}) => {
-  const classes = useStyles();
+                              children: formElement,
+                              value,
+                              update,
+                              obsHolder,
+                              validationResults,
+                              uuid,
+                              feIndex,
+                              filteredFormElements,
+                              ignoreLineBreak,
+                              isGrid,
+                              updateObs,
+                              addNewQuestionGroup,
+                              removeQuestionGroup,
+                            }) => {
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
     formElement.keyValues = [...formElement.keyValues, KeyValue.fromResource({ key: "editable", value: false })];
@@ -84,15 +83,14 @@ export const FormElement = ({
     isGrid,
     updateObs,
     addNewQuestionGroup,
-    removeQuestionGroup
+    removeQuestionGroup,
   };
   const Element = elements[type];
   return (
-    <div className={isGrid ? classes.gridContainerStyle : {}}>
+    <StyledContainer isGrid={isGrid}>
       {!ignoreLineBreak && <LineBreak num={feIndex === 0 ? 0 : 2} />}
-      {/*this check can be removed later when DEA supports all the data types (Encounter and GroupAffiliation is not supported yet)*/}
+      {/* This check can be removed later when DEA supports all the data types (Encounter and GroupAffiliation is not supported yet) */}
       {Element && <Element {...props} />}
-      {/* <LineBreak num={1} /> */}
-    </div>
+    </StyledContainer>
   );
 };

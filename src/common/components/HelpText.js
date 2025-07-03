@@ -1,21 +1,17 @@
-import { makeStyles } from "@mui/styles";
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { isEmpty } from "lodash";
-
 import ShowMoreText from "react-show-more-text";
 
-const useStyles = makeStyles(() => ({
-  container: {
-    width: "50%",
-    marginBottom: "20px",
-    color: "rgba(69,69,69,0.54)"
-  }
+const StyledContainer = styled('div')(({ theme }) => ({
+  width: "50%",
+  marginBottom: theme.spacing(2.5), // 20px
+  color: "rgba(69,69,69,0.54)",
 }));
 
 export const HelpText = ({ text, t }) => {
-  const classes = useStyles();
   const renderText = () => (
-    <div className={classes.container}>
+    <StyledContainer>
       <ShowMoreText
         lines={2}
         more="Show more"
@@ -23,11 +19,11 @@ export const HelpText = ({ text, t }) => {
         className="content-css"
         anchorClass="my-anchor-css-class"
         expanded={false}
-        truncatedEndingComponent={"... "}
+        truncatedEndingComponent="... "
       >
         {t(text)}
       </ShowMoreText>
-    </div>
+    </StyledContainer>
   );
 
   return isEmpty(text) ? null : renderText();

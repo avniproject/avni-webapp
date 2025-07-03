@@ -1,55 +1,61 @@
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { styled } from '@mui/material/styles';
 import { map, orderBy, isNil } from "lodash";
-import { withStyles } from "@mui/styles";
 import { Grid, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import React from "react";
 import { DragHandle } from "@mui/icons-material";
 
-const getItemStyle = (isDragging, draggableStyle) => ({
-  ...draggableStyle,
-  ...{ cursor: "pointer", background: "#FFFFFF", margin: "8px 1px" }
-});
+const StyledDroppableContainer = styled('div')(({ isDraggingOver }) => ({
+  background: "#FFFFFF",
+}));
 
-const getListStyle = isDraggingOver => ({
-  background: "#FFFFFF"
-});
+const StyledDraggableContainer = styled('div')(({ isDragging }) => ({
+  cursor: "pointer",
+  background: "#FFFFFF",
+  margin: "8px 1px",
+}));
 
-export const StyledAccordion = withStyles({
-  root: {
-    "&$expanded": {
-      margin: 0
-    }
+const StyledAccordion = styled(Accordion)({
+  "&.Mui-expanded": {
+    margin: 0,
   },
-  expanded: {}
-})(Accordion);
+});
 
-export const StyledAccordionSummary = withStyles({
-  root: {
-    paddingRight: 0,
-    backgroundColor: "#dbdbdb",
-    border: "1px solid #2196F3",
-    paddingLeft: 0,
+const StyledAccordionSummary = styled(AccordionSummary)({
+  paddingRight: 0,
+  backgroundColor: "#dbdbdb",
+  border: "1px solid #2196F3",
+  paddingLeft: 0,
+  minHeight: 56,
+  "&.Mui-expanded": {
     minHeight: 56,
-    "&$expanded": {
-      minHeight: 56
-    },
-    "&$focused": {
-      backgroundColor: "#dbdbdb"
-    }
   },
-  focused: {},
-  content: {
+  "&.Mui-focused": {
+    backgroundColor: "#dbdbdb",
+  },
+  "& .MuiAccordionSummary-content": {
     margin: "0",
-    "&$expanded": { margin: "0" }
+    "&.Mui-expanded": {
+      margin: "0",
+    },
   },
-  expanded: {},
-  icon: {
+  "& .MuiAccordionSummary-expandIconWrapper": {
     marginHorizontal: "8px",
-    display: "inline"
-  }
-})(AccordionSummary);
+    display: "inline",
+  },
+});
 
-export const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetails, dataList, summaryDirection }) => {
+const StyledGrid = styled(Grid)({
+  alignItems: "center",
+  justifyContent: "center",
+});
+
+const StyledDragIconContainer = styled('div')({
+  height: 5,
+  align: "center",
+});
+
+const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetails, dataList, summaryDirection }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = panel => (event, isExpanded) => {
@@ -58,11 +64,11 @@ export const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetail
 
   const renderDragIcon = sectionUUID => {
     return (
-      <div style={{ height: 5, align: "center" }}>
+      <StyledDragIconContainer>
         <div hidden={expanded !== false}>
           <DragHandle color="disabled" />
         </div>
-      </div>
+      </StyledDragIconContainer>
     );
   };
 
@@ -70,45 +76,49 @@ export const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetail
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="drop_card">
         {(provided, snapshot) => (
-          <div ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)} {...provided.droppableProps}>
+          <StyledDroppableContainer
+            ref={provided.innerRef}
+            isDraggingOver={snapshot.isDraggingOver}
+            {...provided.droppableProps}
+          >
             {map(orderBy(dataList, "displayOrder"), (data, index) => (
               <Draggable isDragDisabled={expanded !== false} key={data.uuid} draggableId={data.uuid} index={index}>
                 {(provided, snapshot) => (
-                  <div
+                  <StyledDraggableContainer
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-                    style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                    isDragging={snapshot.isDragging}
                   >
-                    <StyledAccordion key={index} expanded={expanded === "panel" + index} onChange={handleChange("panel" + index)}>
+                    <StyledAccordion
+                      key={index}
+                      expanded={expanded === "panel" + index}
+                      onChange={handleChange("panel" + index)}
+                    >
                       <StyledAccordionSummary
                         aria-controls={"panel" + index + "bh-content"}
                         id={"panel" + index + "bh-header"}
                         {...provided.dragHandleProps}
                       >
                         <Grid container direction={summaryDirection}>
-                          <Grid
-                            container
-                            sx={{
-                              alignItems: "center",
-                              justifyContent: "center"
-                            }}
-                          >
+                          <StyledGrid container>
                             {renderDragIcon(data.uuid)}
-                          </Grid>
+                          </StyledGrid>
                           {renderOtherSummary(data, index, expanded)}
                         </Grid>
                       </StyledAccordionSummary>
                       {renderDetails && <AccordionDetails>{renderDetails(data, index, expanded)}</AccordionDetails>}
                     </StyledAccordion>
-                  </div>
+                  </StyledDraggableContainer>
                 )}
               </Draggable>
             ))}
             {provided.placeholder}
-          </div>
+          </StyledDroppableContainer>
         )}
       </Droppable>
     </DragDropContext>
   );
 };
+
+export default DragNDropComponent;

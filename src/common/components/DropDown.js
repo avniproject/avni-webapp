@@ -1,22 +1,18 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { InputLabel, FormHelperText, FormControl, Select } from "@mui/material";
 import _ from "lodash";
 
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: 0,
-    fullWidth: true,
-    display: "flex",
-    wrap: "nowrap"
-  }
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  margin: 0,
+  width: "100%",
+  display: "flex",
+  flexWrap: "nowrap",
 }));
 
-const DropDown = ({ name, value, onChange, options, style, required = true, disabled = false }) => {
-  const classes = useStyles();
-
+const DropDown = ({ name, value, onChange, options, required = true, disabled = false }) => {
   return (
-    <FormControl required={required} style={style} className={classes.formControl}>
+    <StyledFormControl required={required}>
       <InputLabel shrink={!_.isEmpty(value)} htmlFor={`${name}-required`}>
         {name}
       </InputLabel>
@@ -37,7 +33,7 @@ const DropDown = ({ name, value, onChange, options, style, required = true, disa
         ))}
       </Select>
       {required && <FormHelperText>Required</FormHelperText>}
-    </FormControl>
+    </StyledFormControl>
   );
 };
 

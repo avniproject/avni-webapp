@@ -1,8 +1,8 @@
 import { connect } from "react-redux";
+import { styled } from '@mui/material/styles';
 import { getUploadStatuses } from "../../reducers";
 import { withRouter } from "react-router-dom";
 import React from "react";
-import { makeStyles } from "@mui/styles";
 import { Table, TableHead, TableRow, TableCell, TableBody, Box, Grid, TablePagination, Button } from "@mui/material";
 import { find, get, isNil, map } from "lodash";
 import moment from "moment";
@@ -10,38 +10,39 @@ import http from "common/utils/httpClient";
 import fileDownload from "js-file-download";
 import { Refresh, CloudDownload } from "@mui/icons-material";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-    marginTop: theme.spacing.unit * 3,
-    overflowX: "hide"
-  },
-  table: {
-    minWidth: 340
-  },
-  tableHeader: {
-    paddingRight: 4,
-    paddingLeft: 5,
-    fontWeight: "bold"
-  },
-  tableRow: {
-    paddingRight: 4,
-    paddingLeft: 5
-  }
+const StyledBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  marginTop: theme.spacing(3),
+  overflowX: "hidden",
 }));
+
+const StyledTable = styled(Table)({
+  minWidth: 340,
+});
+
+const StyledTableCellHeader = styled(TableCell)({
+  paddingRight: 4,
+  paddingLeft: 5,
+  fontWeight: "bold",
+});
+
+const StyledTableCellRow = styled(TableCell)({
+  paddingRight: 4,
+  paddingLeft: 5,
+});
 
 const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: { subjectTypes, programs, encounterTypes } }) => {
   React.useEffect(() => {
     getUploadStatuses(0);
   }, []);
-  const classes = useStyles();
+
   const rowsPerPage = 10;
   const [page, setPage] = React.useState(0);
 
-  const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
-  const IsoDateFormat = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
+  const formatDate = (date) => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
+  const isoDateFormat = (date) => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
   const getDateParams = ({ startDate, endDate }) =>
-    isNil(startDate) || isNil(endDate) ? "" : `${IsoDateFormat(startDate)} to ${IsoDateFormat(endDate)}`;
+    isNil(startDate) || isNil(endDate) ? "" : `${isoDateFormat(startDate)} to ${isoDateFormat(endDate)}`;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -55,72 +56,64 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
       findEntityByUUID(subjectTypes, subjectTypeUUID).name,
       findEntityByUUID(programs, programUUID).operationalProgramName,
       findEntityByUUID(encounterTypes, encounterTypeUUID).operationalEncounterTypeName,
-      IsoDateFormat(startDate),
-      IsoDateFormat(endDate)
+      isoDateFormat(startDate),
+      isoDateFormat(endDate),
     ]
       .filter(Boolean)
       .join("_");
     http
-      .get(`/export/download?fileName=${fileName}`, {
-        responseType: "blob"
-      })
-      .then(response => {
+      .get(`/export/download?fileName=${fileName}`, { responseType: "blob" })
+      .then((response) => {
         fileDownload(response.data, `${outFileName}.csv`);
       })
-      .catch(error => alert(`${error.message} Error occurred while downloading file`));
+      .catch((error) => alert(`${error.message} Error occurred while downloading file`));
   };
 
   return (
-    <Box>
-      <Grid
-        container
-        direction="row"
-        sx={{
-          justifyContent: "flex-end"
-        }}
-      >
+    <StyledBox>
+      <Grid container direction="row" sx={{ justifyContent: "flex-end" }}>
         <Button color="primary" onClick={() => getUploadStatuses(0)}>
           <Refresh />
           {" Refresh"}
         </Button>
       </Grid>
-      <Table className={classes.table}>
+      <StyledTable>
         <TableHead>
           <TableRow>
-            <TableCell className={classes.tableHeader}>Report Type</TableCell>
-            <TableCell className={classes.tableHeader}>Subject type</TableCell>
-            <TableCell className={classes.tableHeader}>Program</TableCell>
-            <TableCell className={classes.tableHeader}>Encounter type</TableCell>
-            <TableCell className={classes.tableHeader}>Date range</TableCell>
-            <TableCell className={classes.tableHeader}>Report Requested at</TableCell>
-            <TableCell className={classes.tableHeader}>Report Generated at</TableCell>
-            <TableCell className={classes.tableHeader}>Status</TableCell>
-            <TableCell className={classes.tableHeader}>Download</TableCell>
+            <StyledTableCellHeader>Report Type</StyledTableCellHeader>
+            <StyledTableCellHeader>Subject type</StyledTableCellHeader>
+            <StyledTableCellHeader>Program</StyledTableCellHeader>
+            <StyledTableCellHeader>Encounter type</StyledTableCellHeader>
+            <StyledTableCellHeader>Date range</StyledTableCellHeader>
+            <StyledTableCellHeader>Report Requested at</StyledTableCellHeader>
+            <StyledTableCellHeader>Report Generated at</StyledTableCellHeader>
+            <StyledTableCellHeader>Status</StyledTableCellHeader>
+            <StyledTableCellHeader>Download</StyledTableCellHeader>
           </TableRow>
         </TableHead>
         <TableBody>
-          {map(get(exportJobStatuses, "content"), status => (
+          {map(get(exportJobStatuses, "content"), (status) => (
             <TableRow key={status.uuid}>
-              <TableCell className={classes.tableRow}>{status.reportType}</TableCell>
-              <TableCell className={classes.tableRow}>{findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}</TableCell>
-              <TableCell className={classes.tableRow}>{findEntityByUUID(programs, status.programUUID).operationalProgramName}</TableCell>
-              <TableCell className={classes.tableRow}>
+              <StyledTableCellRow>{status.reportType}</StyledTableCellRow>
+              <StyledTableCellRow>{findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}</StyledTableCellRow>
+              <StyledTableCellRow>{findEntityByUUID(programs, status.programUUID).operationalProgramName}</StyledTableCellRow>
+              <StyledTableCellRow>
                 {findEntityByUUID(encounterTypes, status.encounterTypeUUID).operationalEncounterTypeName}
-              </TableCell>
-              <TableCell className={classes.tableRow}>{getDateParams(status)}</TableCell>
-              <TableCell className={classes.tableRow}>{formatDate(status.startTime)}</TableCell>
-              <TableCell className={classes.tableRow}>{formatDate(status.endTime)}</TableCell>
-              <TableCell className={classes.tableRow}>{status.status}</TableCell>
-              <TableCell className={classes.tableRow}>
+              </StyledTableCellRow>
+              <StyledTableCellRow>{getDateParams(status)}</StyledTableCellRow>
+              <StyledTableCellRow>{formatDate(status.startTime)}</StyledTableCellRow>
+              <StyledTableCellRow>{formatDate(status.endTime)}</StyledTableCellRow>
+              <StyledTableCellRow>{status.status}</StyledTableCellRow>
+              <StyledTableCellRow>
                 <Button color="primary" onClick={() => onDownloadHandler(status)} disabled={status.status !== "COMPLETED"}>
                   <CloudDownload disabled={status.status !== "COMPLETED"} />
                   {" Download"}
                 </Button>
-              </TableCell>
+              </StyledTableCellRow>
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </StyledTable>
       <TablePagination
         rowsPerPageOptions={[10]}
         component="div"
@@ -131,15 +124,12 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
         nextIconButtonProps={{ "aria-label": "next page" }}
         onPageChange={handleChangePage}
       />
-    </Box>
+    </StyledBox>
   );
 };
-const mapStateToProps = state => ({
-  exportJobStatuses: state.reports.exportJobStatuses
+
+const mapStateToProps = (state) => ({
+  exportJobStatuses: state.reports.exportJobStatuses,
 });
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getUploadStatuses }
-  )(JobStatus)
-);
+
+export default withRouter(connect(mapStateToProps, { getUploadStatuses })(JobStatus));

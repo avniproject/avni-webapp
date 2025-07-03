@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
-import { Paper, Typography, Button, Box } from "@mui/material";
-import { useStyle } from "../util/FilterStyles";
+import { Typography, Button, Box } from "@mui/material";
+import { Root, Header, ApplyButton } from "../util/FilterStyles";
 import SelectFilter from "../components/SelectFilter";
 import { dateFilterFieldOptions } from "../util/DateFilterOptions";
 import TextFilter from "../components/TextFilter";
@@ -30,25 +30,23 @@ const renderSyncAttributeFilter = (concept, filterCriteria, filterName, onFilter
 };
 
 const SubjectAssignmentFilter = ({
-  onFilterApply,
-  subjectOptions,
-  programOptions,
-  userOptions,
-  userGroupOptions,
-  syncAttribute1,
-  syncAttribute2,
-  dispatch,
-  filterCriteria
-}) => {
-  const classes = useStyle();
-  const allUserOptions = [labelValue("Unassigned", 0), ...userOptions];
+                                   onFilterApply,
+                                   subjectOptions,
+                                   programOptions,
+                                   userOptions,
+                                   userGroupOptions,
+                                   syncAttribute1,
+                                   syncAttribute2,
+                                   dispatch,
+                                   filterCriteria
+                                 }) => {
   const onFilterChange = (filter, value) => dispatch("setFilter", { filter, value });
   return (
     <Fragment>
-      <Paper className={classes.root}>
-        <Typography variant={"h6"} className={classes.header}>
-          {"Filters"}
-        </Typography>
+      <Root>
+        <Header>
+          <Typography variant={"h6"}>{"Filters"}</Typography>
+        </Header>
         <SelectFilter
           isClearable={false}
           label={"Subject type"}
@@ -86,7 +84,7 @@ const SubjectAssignmentFilter = ({
         />
         <SelectFilter
           label={"Assigned to"}
-          options={allUserOptions}
+          options={[labelValue("Unassigned", 0), ...userOptions]}
           filter={"assignedTo"}
           filterCriteria={filterCriteria}
           onFilterChange={onFilterChange}
@@ -105,12 +103,12 @@ const SubjectAssignmentFilter = ({
           filterCriteria={filterCriteria}
           onFilterChange={onFilterChange}
         />
-      </Paper>
-      <Paper className={classes.applyButton}>
+      </Root>
+      <ApplyButton>
         <Button fullWidth variant="contained" color="primary" onClick={onFilterApply}>
           {"Apply"}
         </Button>
-      </Paper>
+      </ApplyButton>
     </Fragment>
   );
 };

@@ -1,32 +1,30 @@
 import React, { Fragment } from "react";
-import { Paper, Typography, Button } from "@mui/material";
+import { Typography, Button } from "@mui/material";
 import _, { map } from "lodash";
 import SelectFilter from "./SelectFilter";
 import { dateFilterFieldOptions } from "../util/DateFilterOptions";
-import { useStyle } from "../util/FilterStyles";
+import { Root, Header, ApplyButton } from "../util/FilterStyles";
 import { labelValue } from "../util/util";
 import TextFilter from "./TextFilter";
 
 export const TaskAssignmentFilter = ({
-  filterCriteria,
-  dispatch,
-  onFilterApply,
-  userOptions,
-  taskTypeOptions,
-  taskStatusOptions,
-  conceptNameAnswerPairs
-}) => {
-  const classes = useStyle();
-  const allUserOptions = [labelValue("Unassigned", 0), ...userOptions];
+                                       filterCriteria,
+                                       dispatch,
+                                       onFilterApply,
+                                       userOptions,
+                                       taskTypeOptions,
+                                       taskStatusOptions,
+                                       conceptNameAnswerPairs
+                                     }) => {
   const onFilterChange = (filter, value) => dispatch({ type: "setFilter", payload: { filter, value } });
   const onMetadataFilterChange = (filter, value) => dispatch({ type: "setMetadataFilter", payload: { filter, value } });
 
   return (
     <Fragment>
-      <Paper className={classes.root}>
-        <Typography variant={"h6"} className={classes.header}>
-          {"Filters"}
-        </Typography>
+      <Root>
+        <Header>
+          <Typography variant={"h6"}>{"Filters"}</Typography>
+        </Header>
         {map(conceptNameAnswerPairs, conceptNameAnswerPair => {
           const [name, answers] = conceptNameAnswerPair;
           return _.isNil(answers) ? (
@@ -62,7 +60,7 @@ export const TaskAssignmentFilter = ({
         />
         <SelectFilter
           label={"Assigned to"}
-          options={allUserOptions}
+          options={[labelValue("Unassigned", 0), ...userOptions]}
           filter={"assignedTo"}
           filterCriteria={filterCriteria}
           onFilterChange={onFilterChange}
@@ -88,12 +86,12 @@ export const TaskAssignmentFilter = ({
           filterCriteria={filterCriteria}
           onFilterChange={onFilterChange}
         />
-      </Paper>
-      <Paper className={classes.applyButton}>
+      </Root>
+      <ApplyButton>
         <Button fullWidth variant="contained" color="primary" onClick={onFilterApply}>
           {"Apply"}
         </Button>
-      </Paper>
+      </ApplyButton>
     </Fragment>
   );
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { TextField, Box, Button, IconButton, Grid, FormHelperText, MenuItem } from "@mui/material";
 import { map, includes, filter } from "lodash";
 import { Delete } from "@mui/icons-material";
@@ -8,27 +8,43 @@ import { default as UUID } from "uuid";
 import Types from "./Types";
 import { AvniSelect } from "../../common/components/AvniSelect";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    "& > *": {
-      marginRight: theme.spacing(1),
-      width: 200,
-      marginTop: theme.spacing(1)
-    }
+const StyledContainer = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+}));
+
+const StyledSelectContainer = styled(Box)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}));
+
+const StyledInputContainer = styled(Box)(({ theme }) => ({
+  "& > *": {
+    marginRight: theme.spacing(1),
+    width: 200,
+    marginTop: theme.spacing(1),
   },
-  button: {
-    height: "35px",
-    marginTop: 20
-  },
-  boxHeight: {
-    height: 10
-  }
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  alignItems: "center",
+}));
+
+const StyledAddButton = styled(Button)(({ theme }) => ({
+  height: 35,
+  marginTop: theme.spacing(2.5), // 20px
+}));
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  marginTop: theme.spacing(1.25), // 10px
+}));
+
+const StyledAvniSelect = styled(AvniSelect)(({ theme }) => ({
+  width: 200,
+  marginBottom: theme.spacing(0.625), // 5px
 }));
 
 export default function GroupRoles({ groupRoles, dispatch, error, edit, type, memberSubjectType }) {
-  const classes = useStyles();
   React.useEffect(() => {
-    httpClient.fetchJson("/web/operationalModules").then(response => {
+    httpClient.fetchJson("/web/operationalModules").then((response) => {
       const json = response.json;
       json && setSubjectTypes(json.subjectTypes);
     });
@@ -60,61 +76,41 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
     dispatch({ type: "groupRole", payload: existing });
   };
 
-  const filterOptions = option => {
-    return (
-      (Types.isHousehold(type) && includes(Types.householdMemberTypes, option.type)) ||
-      (Types.getType("Group") === type && includes(Types.groupMemberTypes, option.type))
-    );
-  };
+  const filterOptions = (option) =>
+    (Types.isHousehold(type) && includes(Types.householdMemberTypes, option.type)) ||
+    (Types.getType("Group") === type && includes(Types.groupMemberTypes, option.type));
 
   return (
-    <Box
-      sx={{
-        mt: 1
-      }}
-    >
-      <Box
-        sx={{
-          mb: 2
-        }}
-      >
+    <StyledContainer>
+      <StyledSelectContainer>
         {Types.isHousehold(type) && (
-          <AvniSelect
+          <StyledAvniSelect
             label="Select Member Subject *"
             value={memberSubjectType || ""}
-            onChange={event => dispatch({ type: "householdMemberSubject", payload: event.target.value })}
-            style={{ width: "200px", marginBottom: 5 }}
+            onChange={(event) => dispatch({ type: "householdMemberSubject", payload: event.target.value })}
             required
             options={
               subjectTypeOptions &&
-              subjectTypeOptions.filter(filterOptions).map(option => (
+              subjectTypeOptions.filter(filterOptions).map((option) => (
                 <MenuItem key={option.uuid} value={option.name}>
                   {option.name}
                 </MenuItem>
               ))
             }
-            toolTipKey={"APP_DESIGNER_SUBJECT_MEMBER_SUBJECT_TYPE"}
+            toolTipKey="APP_DESIGNER_SUBJECT_MEMBER_SUBJECT_TYPE"
           />
         )}
-      </Box>
+      </StyledSelectContainer>
       {map(nonVoidedRoles, (groupRole, index) => (
-        <Grid
-          key={index}
-          container
-          direction="row"
-          sx={{
-            alignItems: "center"
-          }}
-        >
-          <Box className={classes.root} noValidate autoComplete="off">
+        <StyledGrid key={index} container direction="row">
+          <StyledInputContainer noValidate autoComplete="off">
             <TextField
               disabled={Types.isHousehold(type)}
               id="role"
               label="Role Name"
               variant="outlined"
               value={groupRole.role || ""}
-              InputProps={{ classes: { input: classes.boxHeight } }}
-              onChange={event => onGroupRoleChange({ ...groupRole, role: event.target.value }, index)}
+              onChange={(event) => onGroupRoleChange({ ...groupRole, role: event.target.value }, index)}
             />
             <TextField
               disabled={Types.isHousehold(type)}
@@ -122,12 +118,11 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               select
               label="Select Member Subject"
               value={groupRole.subjectMemberName || ""}
-              InputProps={{ classes: { input: classes.boxHeight } }}
-              onChange={event =>
+              onChange={(event) =>
                 onGroupRoleChange(
                   {
                     ...groupRole,
-                    subjectMemberName: event.target.value
+                    subjectMemberName: event.target.value,
                   },
                   index
                 )
@@ -135,7 +130,7 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               variant="outlined"
             >
               {subjectTypeOptions &&
-                subjectTypeOptions.filter(filterOptions).map(option => (
+                subjectTypeOptions.filter(filterOptions).map((option) => (
                   <MenuItem key={option.uuid} value={option.name}>
                     {option.name}
                   </MenuItem>
@@ -147,12 +142,11 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               label="Minimum members"
               variant="outlined"
               value={groupRole.minimumNumberOfMembers === "" ? "" : groupRole.minimumNumberOfMembers}
-              InputProps={{ classes: { input: classes.boxHeight } }}
-              onChange={event =>
+              onChange={(event) =>
                 onGroupRoleChange(
                   {
                     ...groupRole,
-                    minimumNumberOfMembers: +event.target.value.replace(/\D/g, "")
+                    minimumNumberOfMembers: +event.target.value.replace(/\D/g, ""),
                   },
                   index
                 )
@@ -164,36 +158,33 @@ export default function GroupRoles({ groupRoles, dispatch, error, edit, type, me
               label="Maximum members"
               variant="outlined"
               value={groupRole.maximumNumberOfMembers === "" ? "" : groupRole.maximumNumberOfMembers}
-              InputProps={{ classes: { input: classes.boxHeight } }}
-              onChange={event =>
+              onChange={(event) =>
                 onGroupRoleChange(
                   {
                     ...groupRole,
-                    maximumNumberOfMembers: +event.target.value.replace(/\D/g, "")
+                    maximumNumberOfMembers: +event.target.value.replace(/\D/g, ""),
                   },
                   index
                 )
               }
             />
-          </Box>
+          </StyledInputContainer>
           {!Types.isHousehold(type) && (
-            <IconButton
+            <StyledIconButton
               aria-label="delete"
               onClick={() => onDeleteGroupRole(index, groupRole, edit)}
-              style={{ marginTop: 10 }}
-              size="large"
             >
               <Delete fontSize="inherit" />
-            </IconButton>
+            </StyledIconButton>
           )}
-        </Grid>
+        </StyledGrid>
       ))}
       {error && <FormHelperText error>Group fields can not be blank</FormHelperText>}
       {!Types.isHousehold(type) && (
-        <Button type="button" className={classes.button} color="primary" onClick={onAddNewGroupRole}>
+        <StyledAddButton type="button" color="primary" onClick={onAddNewGroupRole}>
           Add Role
-        </Button>
+        </StyledAddButton>
       )}
-    </Box>
+    </StyledContainer>
   );
 }

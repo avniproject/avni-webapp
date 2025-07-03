@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
+import { css } from '@emotion/react';
 import { Redirect } from "react-router-dom";
-import Summary from "./Summary";
-import { makeStyles } from "@mui/styles";
+import { styled } from '@mui/material/styles';
 import { Box, Paper, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
@@ -10,126 +10,84 @@ import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
 import { FormElementGroup as FormElementGroupComponent } from "dataEntryApp/components/FormElementGroup";
 import _ from "lodash";
 
-const useStyle = makeStyles(theme => ({
-  form: {
-    padding: theme.spacing(0, 3, 10, 3),
-    height: "Auto",
-    border: "1px solid #f1ebeb",
-    position: "relative",
-    minHeight: "600px"
-  },
-  buttomstyle: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    backgroundColor: "#f8f4f4",
-    height: 80,
-    width: "100%",
-    padding: 25
-  },
-  topprevnav: {
-    color: "#cecdcd",
-    fontSize: "13px",
-    border: "none",
-    background: "white"
-  },
-  toppagenum: {
-    backgroundColor: "silver",
-    color: "black",
-    fontSize: 12,
-    padding: 3
-  },
-  topnav: {
-    color: "orange",
-    fontSize: "13px",
-    cursor: "pointer",
-    border: "none",
-    background: "white",
-
-    "&:hover": {
-      background: "none",
-      border: "none"
-    },
-
-    "&:active": {
-      border: "none",
-      outlineColor: "white"
-    }
-  },
-  prevbuttonspace: {
-    color: "#cecdcd",
-    marginRight: 27,
-    width: 100
-  },
-  nextBtn: {
-    color: "white",
-    width: 110,
-    cursor: "pointer",
-    height: 30,
-    padding: "4px 25px",
-    fontSize: 12,
-    borderRadius: 50,
-    backgroundColor: "orange"
-  },
-  buttomboxstyle: {
-    backgroundColor: "#f8f4f4",
-    height: 80,
-    width: "100%",
-    padding: 25
-  },
-  privbuttonStyle: {
-    color: "orange",
-    width: 110,
-    height: 30,
-    fontSize: 12,
-    borderColor: "orange",
-    cursor: "pointer",
-    borderRadius: 50,
-    padding: "4px 25px",
-    backgroundColor: "white"
-  },
-  nextbuttonStyle: {
-    backgroundColor: "orange",
-    color: "white",
-    height: 30,
-    fontSize: 12,
-    width: 110,
-    cursor: "pointer",
-    borderRadius: 50,
-    padding: "4px 25px"
-  },
-  noUnderline: {
-    "&:hover, &:focus": {
-      textDecoration: "none"
-    }
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(0, 3, 10, 3),
+  height: "auto",
+  border: "1px solid #f1ebeb",
+  position: "relative",
+  minHeight: "600px",
 }));
 
+const StyledButtonContainer = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  backgroundColor: "#f8f4f4",
+  height: 80,
+  width: "100%",
+  padding: theme.spacing(3.125), // 25px
+  display: "flex",
+}));
+
+const StyledButtonWrapper = styled(Box)(({ theme }) => ({
+  marginRight: theme.spacing(2.5), // 20px
+}));
+
+const StyledTitleContainer = styled(Box)({
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+});
+
+const prevButtonStyle = css({
+  color: "orange",
+  width: 110,
+  height: 30,
+  fontSize: 12,
+  borderColor: "orange",
+  cursor: "pointer",
+  borderRadius: 50,
+  padding: "4px 25px",
+  backgroundColor: "white",
+});
+
+const nextButtonStyle = css({
+  backgroundColor: "orange",
+  color: "white",
+  height: 30,
+  fontSize: 12,
+  width: 110,
+  cursor: "pointer",
+  borderRadius: 50,
+  padding: "4px 25px",
+});
+
 const FormWizard = ({
-  form,
-  obsHolder,
-  updateObs,
-  observations,
-  saved,
-  onSaveGoto,
-  onSave,
-  message,
-  subject,
-  validationResults,
-  additionalRows,
-  registrationFlow,
-  children,
-  filteredFormElements,
-  fetchRulesResponse,
-  formElementGroup,
-  onNext,
-  onPrevious,
-  onSummaryPage,
-  wizard,
-  addNewQuestionGroup,
-  removeQuestionGroup,
-  saveErrorMessageKey
-}) => {
+                      form,
+                      obsHolder,
+                      updateObs,
+                      observations,
+                      saved,
+                      onSaveGoto,
+                      onSave,
+                      message,
+                      subject,
+                      validationResults,
+                      additionalRows,
+                      registrationFlow,
+                      children,
+                      filteredFormElements,
+                      fetchRulesResponse,
+                      formElementGroup,
+                      onNext,
+                      onPrevious,
+                      onSummaryPage,
+                      wizard,
+                      addNewQuestionGroup,
+                      removeQuestionGroup,
+                      saveErrorMessageKey,
+                    }) => {
   if (!form) return <div />;
 
   if (saved) {
@@ -139,7 +97,6 @@ const FormWizard = ({
   }
 
   const [redirect, setRedirect] = React.useState(false);
-  const classes = useStyle();
   const { t } = useTranslation();
 
   const isFirstPage = wizard.isFirstPage();
@@ -148,29 +105,25 @@ const FormWizard = ({
     ? t("summaryAndRecommendations")
     : t(isRegistrationFirstPage ? "Basic Details" : formElementGroup.name);
   const pageTitle = `${pageTitleText}`;
-  // const pageCounter = `X / X`;
 
   return (
     <Fragment>
       {form && (
         <div>
           {subject && !wizard.isNonFormPage() ? <FormWizardHeader subject={subject} /> : ""}
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "space-between"
-            }}
-          >
+          <StyledTitleContainer>
             <Typography variant="subtitle1" sx={{ mb: 1 }}>
-              {" "}
               {pageTitle}
             </Typography>
-          </Box>
-          <Paper className={classes.form}>
+          </StyledTitleContainer>
+          <StyledPaper>
             {onSummaryPage ? (
-              <Summary observations={observations} additionalRows={additionalRows} form={form} fetchRulesResponse={fetchRulesResponse} />
+              <Summary
+                observations={observations}
+                additionalRows={additionalRows}
+                form={form}
+                fetchRulesResponse={fetchRulesResponse}
+              />
             ) : (
               <FormElementGroupComponent
                 key={formElementGroup.uuid}
@@ -185,37 +138,33 @@ const FormWizard = ({
                 {children}
               </FormElementGroupComponent>
             )}
-
-            <Box
-              className={classes.buttomstyle}
-              sx={{
-                display: "flex"
-              }}
-            >
-              <Box style={{ marginRight: 20 }}>
+            <StyledButtonContainer>
+              <StyledButtonWrapper>
                 <FormWizardButton
-                  className={classes.privbuttonStyle}
+                  css={prevButtonStyle}
                   text={t("previous")}
                   disabled={!onSummaryPage && isFirstPage}
                   onClick={onPrevious}
                   id={"previous"}
                 />
-              </Box>
+              </StyledButtonWrapper>
               <Box>
                 <FormWizardButton
-                  className={classes.nextbuttonStyle}
+                  css={nextButtonStyle}
                   onClick={onSummaryPage ? onSave : onNext}
                   text={onSummaryPage ? t("save") : t("next")}
                   id={onSummaryPage ? "save" : "next"}
                 />
               </Box>
               {!_.isEmpty(saveErrorMessageKey) && (
-                <Typography sx={{ ml: 2.5, color: theme => theme.palette.error.main }}>>{t(saveErrorMessageKey)}</Typography>
+                <Typography sx={{ ml: 2.5, color: theme => theme.palette.error.main }}>
+                  {t(saveErrorMessageKey)}
+                </Typography>
               )}
-            </Box>
+            </StyledButtonContainer>
             {redirect && <Redirect to={onSaveGoto} />}
             {saved && <CustomizedSnackbar message={t(message || "Your details have been successfully registered.")} />}
-          </Paper>
+          </StyledPaper>
         </div>
       )}
     </Fragment>

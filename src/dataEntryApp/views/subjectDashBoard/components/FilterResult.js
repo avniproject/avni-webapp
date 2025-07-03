@@ -1,81 +1,87 @@
 import React from "react";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from '@mui/material/styles';
 import { LineBreak } from "common/components/utils";
-import { Grid } from "@mui/material";
+import { Grid, FormControl, FormLabel, FormGroup, FormControlLabel, Checkbox, TextField, IconButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Modal from "../components/CommonModal";
 import DialogContent from "@mui/material/DialogContent";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import FormLabel from "@mui/material/FormLabel";
-import { FormControl, FormGroup, TextField } from "@mui/material";
 import moment from "moment/moment";
 import { noop, isNil, isEmpty } from "lodash";
-import IconButton from "@mui/material/IconButton";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { dateFormat } from "dataEntryApp/constants";
 
-const useStyles = makeStyles(theme => ({
-  filterButtonStyle: {
-    height: "28px",
-    zIndex: 1,
-    marginTop: "1px",
-    boxShadow: "none",
-    backgroundColor: "#0e6eff"
-  },
-  btnCustom: {
-    float: "left",
-    backgroundColor: "#f27510",
-    height: "30px",
-    boxShadow: "none",
-    "&:hover": {
-      backgroundColor: "#f27510"
-    }
-  },
-  cancelBtnCustom: {
-    float: "left",
-    backgroundColor: "#F8F9F9",
-    color: "#fc9153",
-    border: "1px solid #fc9153",
-    height: "30px",
-    boxShadow: "none",
-    "&:hover": {
-      backgroundColor: "#F8F9F9"
-    }
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    margin: "auto",
-    width: "fit-content"
-  },
-  resetButton: {
-    fontSize: "13px",
-    color: "#212529",
-    "&:hover": {
-      backgroundColor: "#fff"
-    },
-    "&:focus": {
-      outline: "0"
-    }
-  },
-  cancelIcon: {
-    fontSize: "14px"
-  }
+const StyledForm = styled('form')(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  margin: "auto",
+  width: "fit-content",
 }));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  justifyContent: "flex-end",
+  alignItems: "flex-start",
+}));
+
+const StyledDateGrid = styled(Grid)(({ theme }) => ({
+  justifyContent: "flex-start",
+  alignItems: "flex-start",
+}));
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  fontSize: "13px",
+  color: "#212529",
+  "&:hover": {
+    backgroundColor: "#fff",
+  },
+  "&:focus": {
+    outline: "0",
+  },
+}));
+
+const StyledCancelIcon = styled(CancelIcon)(({ theme }) => ({
+  fontSize: "14px",
+}));
+
+const filterButtonStyle = {
+  height: "28px",
+  zIndex: 1,
+  marginTop: "1px",
+  boxShadow: "none",
+  backgroundColor: "#0e6eff",
+};
+
+const applyButtonStyle = {
+  float: "left",
+  backgroundColor: "#f27510",
+  height: "30px",
+  boxShadow: "none",
+  "&:hover": {
+    backgroundColor: "#f27510",
+  },
+};
+
+const cancelButtonStyle = {
+  float: "left",
+  backgroundColor: "#F8F9F9",
+  color: "#fc9153",
+  border: "1px solid #fc9153",
+  height: "30px",
+  boxShadow: "none",
+  "&:hover": {
+    backgroundColor: "#F8F9F9",
+  },
+};
 
 const FilterResult = ({ encounterTypes, setFilterParams }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
   const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
   const [filterDateErrors, setFilterDateErrors] = React.useState({
     SCHEDULED_DATE: "",
-    COMPLETED_DATE: ""
+    COMPLETED_DATE: "",
   });
-
   const [selectedVisitTypes, setVisitTypes] = React.useState(null);
 
   const visitTypesChange = event => {
@@ -128,8 +134,8 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
     const SelectedvisitTypesListSort =
       selectedVisitTypes != null
         ? Object.keys(selectedVisitTypes)
-            .filter(selectedId => selectedVisitTypes[selectedId])
-            .map(String)
+          .filter(selectedId => selectedVisitTypes[selectedId])
+          .map(String)
         : [];
 
     if (SelectedvisitTypesListSort.length > 0) {
@@ -147,30 +153,15 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
 
   const content = (
     <DialogContent>
-      <Grid
-        container
-        direction="row"
-        sx={{
-          justifyContent: "flex-end",
-          alignItems: "flex-start"
-        }}
-      >
-        <IconButton color="secondary" className={classes.resetButton} onClick={resetClick} aria-label="add an alarm" size="large">
-          <CancelIcon className={classes.cancelIcon} /> {t("resetAll")}
-        </IconButton>
-      </Grid>
-      <form className={classes.form} noValidate>
-        <FormControl className={classes.formControl}>
+      <StyledGrid container direction="row">
+        <StyledIconButton color="secondary" onClick={resetClick} aria-label="add an alarm" size="large">
+          <StyledCancelIcon /> {t("resetAll")}
+        </StyledIconButton>
+      </StyledGrid>
+      <StyledForm noValidate>
+        <FormControl>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Grid
-              container
-              direction="row"
-              spacing={3}
-              sx={{
-                justifyContent: "flex-start",
-                alignItems: "flex-start"
-              }}
-            >
+            <StyledDateGrid container direction="row" spacing={3}>
               <Grid size={6}>
                 <DatePicker
                   allowKeyboardControl
@@ -190,7 +181,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                   )}
                   slotProps={{
                     actionBar: { actions: ["clear"] },
-                    openPickerButton: { "aria-label": "change date", color: "primary" }
+                    openPickerButton: { "aria-label": "change date", color: "primary" },
                   }}
                 />
               </Grid>
@@ -213,11 +204,11 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                   )}
                   slotProps={{
                     actionBar: { actions: ["clear"] },
-                    openPickerButton: { "aria-label": "change date", color: "primary" }
+                    openPickerButton: { "aria-label": "change date", color: "primary" },
                   }}
                 />
               </Grid>
-            </Grid>
+            </StyledDateGrid>
           </LocalizationProvider>
         </FormControl>
         <LineBreak num={1} />
@@ -238,7 +229,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
             />
           ))}
         </FormGroup>
-      </form>
+      </StyledForm>
     </DialogContent>
   );
 
@@ -250,21 +241,21 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
         {
           buttonType: "openButton",
           label: t("filterResults"),
-          classes: classes.filterButtonStyle
+          sx: filterButtonStyle,
         },
         {
           buttonType: "applyButton",
           label: t("apply"),
-          classes: classes.btnCustom,
+          sx: applyButtonStyle,
           redirectTo: `/app/completeVisit`,
           click: applyClick,
-          disabled: !isEmpty(filterDateErrors["COMPLETED_DATE"]) || !isEmpty(filterDateErrors["SCHEDULED_DATE"])
+          disabled: !isEmpty(filterDateErrors["COMPLETED_DATE"]) || !isEmpty(filterDateErrors["SCHEDULED_DATE"]),
         },
         {
           buttonType: "cancelButton",
           label: t("cancel"),
-          classes: classes.cancelBtnCustom
-        }
+          sx: cancelButtonStyle,
+        },
       ]}
       title={t("filterResults")}
       btnHandleClose={close}

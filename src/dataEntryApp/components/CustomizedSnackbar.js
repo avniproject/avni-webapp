@@ -1,53 +1,52 @@
 import React from "react";
+import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
-import clsx from "clsx";
 import { CheckCircle, Error } from "@mui/icons-material";
 import { red, green } from "@mui/material/colors";
-import { makeStyles } from "@mui/styles";
 import { Snackbar, SnackbarContent } from "@mui/material";
 import _ from "lodash";
 
 const variantIcon = {
   success: CheckCircle,
-  error: Error
+  error: Error,
 };
 
-const useStyles1 = makeStyles(theme => ({
-  success: {
+const StyledSnackbarContent = styled(SnackbarContent, {
+  shouldForwardProp: prop => !["variant"].includes(prop),
+})(({ theme, variant }) => ({
+  ...(variant === "success" && {
     backgroundColor: green[600],
-    minWidth: 220
-  },
-  error: {
+    minWidth: 220,
+  }),
+  ...(variant === "error" && {
     backgroundColor: red[300],
-    minWidth: 220
-  },
-  icon: {
-    fontSize: 20
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing(1)
-  },
-  message: {
-    display: "flex",
-    alignItems: "center"
-  }
+    minWidth: 220,
+  }),
 }));
 
-function MySnackbarContentWrapper(props) {
-  const classes = useStyles1();
-  const { className, message, variant, ...other } = props;
+const StyledMessage = styled("span")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+}));
+
+const StyledIcon = styled("span")(({ theme }) => ({
+  fontSize: 20,
+  opacity: 0.9,
+  marginRight: theme.spacing(1),
+}));
+
+function MySnackbarContentWrapper({ message, variant, ...other }) {
   const Icon = variantIcon[variant];
 
   return (
-    <SnackbarContent
-      className={clsx(classes[variant], className)}
+    <StyledSnackbarContent
       aria-describedby="client-snackbar"
+      variant={variant}
       message={
-        <span id="client-snackbar" className={classes.message}>
-          <Icon className={clsx(classes.icon, classes.iconVariant)} />
+        <StyledMessage>
+          <StyledIcon as={Icon} />
           {message}
-        </span>
+        </StyledMessage>
       }
       {...other}
     />
@@ -55,31 +54,28 @@ function MySnackbarContentWrapper(props) {
 }
 
 MySnackbarContentWrapper.propTypes = {
-  className: PropTypes.string,
   message: PropTypes.string,
-  variant: PropTypes.oneOf(["success"]).isRequired
+  variant: PropTypes.oneOf(["success", "error"]).isRequired,
 };
 
 export default function CustomizedSnackbar({ defaultSnackbarStatus, message, onClose = _.noop }) {
   const isError = message === "Profile image URL is not correct or couldn't be loaded.";
   const variant = isError ? "error" : "success";
   return (
-    <div>
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center"
-        }}
-        open={defaultSnackbarStatus}
-        autoHideDuration={2000}
-        onClose={() => onClose()}
-      >
-        <MySnackbarContentWrapper variant={variant} message={message} />
-      </Snackbar>
-    </div>
+    <Snackbar
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "center",
+      }}
+      open={defaultSnackbarStatus}
+      autoHideDuration={2000}
+      onClose={() => onClose()}
+    >
+      <MySnackbarContentWrapper variant={variant} message={message} />
+    </Snackbar>
   );
 }
 
 CustomizedSnackbar.defaultProps = {
-  defaultSnackbarStatus: true
+  defaultSnackbarStatus: true,
 };
