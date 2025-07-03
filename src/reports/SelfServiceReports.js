@@ -141,7 +141,7 @@ const SelfServiceReports = () => {
           intervalRef.current = null;
         }
       });
-    }, 5000);
+    }, 10000);
   }, 500);
 
   const tearDownMetabase = debounce(async () => {
