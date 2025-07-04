@@ -71,11 +71,28 @@ export const sampleSubjectProgramEligibilityCheckRule = () => {
 
 export const sampleMemberAdditionEligibilityCheckRule = () => {
   return `//SAMPLE RULE EXAMPLE
-'use strict';
+"use strict";
 ({params, imports}) => {
-  const individual = params.entity;
-  //sample condition individual.isFemale() && individual.getAgeInYears() > 5;
-  return true;
+  const member = params.member;
+  const group = params.group;
+  
+  // Example: Only allow adding members who are above 18 years of age
+  const age = member.getAge();//As on current date
+  
+  if (age < 18) {
+    return {
+      eligible: {
+        value: false,
+        message: "Only individuals above 18 years can be added to this group"
+      }
+    };
+  }
+  
+  return {
+    eligible: {
+      value: true
+    }
+  };
 };`;
 };
 
