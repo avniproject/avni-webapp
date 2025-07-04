@@ -1,4 +1,3 @@
-import React from "react";
 import { styled } from "@mui/material/styles";
 import { Checkbox, FormControlLabel, Button, Grid, FormHelperText } from "@mui/material";
 import { Delete, ArrowDropUp, ArrowDropDown } from "@mui/icons-material";
@@ -12,39 +11,39 @@ const StyledButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
   height: "35px",
   width: "10%",
-  marginTop: 20,
+  marginTop: 20
 }));
 
 const StyledGridContainer = styled(Grid)(({ theme }) => ({
-  marginTop: 20,
+  marginTop: 20
 }));
 
 const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   marginTop: 15,
-  marginLeft: 2,
+  marginLeft: 2
 }));
 
 const StyledDeleteButton = styled(Button)(({ theme }) => ({
-  color: "#ff0000",
+  color: "#ff0000"
 }));
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
-  alignItems: "center",
+  alignItems: "center"
 }));
 
 export const CodedConceptAnswer = ({
-                                     answer,
-                                     index,
-                                     inlineConcept,
-                                     elementIndex,
-                                     groupIndex,
-                                     onChangeAnswerName,
-                                     onToggleAnswerField,
-                                     onSelectAnswerMedia,
-                                     onRemoveAnswerMedia,
-                                     totalAnswers,
-                                     ...props
-                                   }) => {
+  answer,
+  index,
+  inlineConcept,
+  elementIndex,
+  groupIndex,
+  onChangeAnswerName,
+  onToggleAnswerField,
+  onSelectAnswerMedia,
+  onRemoveAnswerMedia,
+  totalAnswers,
+  ...props
+}) => {
   const action = actionName => {
     inlineConcept ? props[actionName](groupIndex, elementIndex, index) : props[actionName](index);
   };
@@ -57,7 +56,7 @@ export const CodedConceptAnswer = ({
         size={{
           xs: 8,
           sm: 3,
-          md: 4,
+          md: 4
         }}
       >
         <AutoSuggestSingleSelection
@@ -149,7 +148,7 @@ export const CodedConceptAnswer = ({
 CodedConceptAnswer.defaultProps = {
   inlineConcept: false,
   elementIndex: -1,
-  groupIndex: -1,
+  groupIndex: -1
 };
 
 export default function CodedConcept(props) {
@@ -191,5 +190,5 @@ CodedConcept.propTypes = {
   onDeleteAnswer: PropTypes.func.isRequired,
   onAddAnswer: PropTypes.func.isRequired,
   onChangeAnswerName: PropTypes.func.isRequired,
-  onToggleAnswerField: PropTypes.func.isRequired,
+  onToggleAnswerField: PropTypes.func.isRequired
 };

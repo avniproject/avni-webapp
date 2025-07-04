@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { Help } from "@mui/icons-material";
 import { ClickAwayListener, Paper } from "@mui/material";
 import ReactMarkdown from "react-markdown";
@@ -26,10 +26,10 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
       maxWidth: _.includes(["top", "bottom"], displayPosition) ? "300px" : "200px"
     }
   };
-  const [open, setOpen] = React.useState(false);
-  const [message, setMessage] = React.useState("");
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetch(`/documentation/toolTip.json`)
       .then(res => res.json())
       .then(data => setMessage(data[toolTipKey] || "No key found"));

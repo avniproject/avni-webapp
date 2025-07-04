@@ -1,4 +1,3 @@
-import React from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Grid } from "@mui/material";
 import httpClient from "../../common/utils/httpClient";

@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { useState, Fragment, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import {
   NativeSelect,
   Box,
@@ -36,7 +36,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
 }));
 
-const StyledInnerDiv = styled('div')(({ theme }) => ({
+const StyledInnerDiv = styled("div")(({ theme }) => ({
   padding: theme.spacing(2, 2),
   margin: theme.spacing(1, 1),
   height: 500
@@ -56,7 +56,7 @@ const StyledSubHeading = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(1, 1)
 }));
 
-const StyledScheduledDateDiv = styled('div')(({ theme }) => ({
+const StyledScheduledDateDiv = styled("div")(({ theme }) => ({
   marginBottom: 20,
   marginTop: 10
 }));
@@ -98,7 +98,7 @@ const StyledTable = styled(Table)(({ theme }) => ({
   marginTop: "10px"
 }));
 
-const StyledTableView = styled('div')(({ theme }) => ({
+const StyledTableView = styled("div")(({ theme }) => ({
   flexGrow: 1,
   alignItems: "center",
   justifyContent: "center"
@@ -125,7 +125,7 @@ const StyledLabelTypography = styled(Typography)(({ theme }) => ({
   color: "rgba(0, 0, 0, 0.54)"
 }));
 
-const StyledHorizontalLine = styled('hr')(({ theme }) => ({
+const StyledHorizontalLine = styled("hr")(({ theme }) => ({
   padding: "0px",
   marginTop: "0px",
   marginBottom: "0px",
@@ -139,19 +139,19 @@ const StyledErrorTypography = styled(Typography)(({ theme }) => ({
 }));
 
 const AddRelative = ({
-                       match,
-                       getRelationshipTypes,
-                       relationshipTypes,
-                       saveRelationShip,
-                       getSubjectProfile,
-                       subjectProfile,
-                       operationalModules,
-                       getGenders,
-                       genders,
-                       getOrganisationConfig,
-                       organisationConfigs,
-                       searchRequest
-                     }) => {
+  match,
+  getRelationshipTypes,
+  relationshipTypes,
+  saveRelationShip,
+  getSubjectProfile,
+  subjectProfile,
+  operationalModules,
+  getGenders,
+  genders,
+  getOrganisationConfig,
+  organisationConfigs,
+  searchRequest
+}) => {
   useEffect(() => {
     getSubjectProfile(match.queryParams.uuid);
     getRelationshipTypes();
@@ -162,12 +162,12 @@ const AddRelative = ({
   const { t } = useTranslation();
   const history = useHistory();
   const selectedRelative = head(JSON.parse(sessionStorage.getItem("selectedRelativeslist")));
-  const [error, setError] = React.useState();
-  const [state, setState] = React.useState({
+  const [error, setError] = useState();
+  const [state, setState] = useState({
     age: "",
     name: ""
   });
-  const [relationData, setRelationData] = React.useState({
+  const [relationData, setRelationData] = useState({
     uuid: General.randomUUID(),
     relationshipTypeUUID: "",
     individualAUUID: "",
@@ -193,7 +193,7 @@ const AddRelative = ({
       return;
     } else {
       setError("");
-      nyl: true
+      nyl: true;
     }
     const isReverseRelation = includes(get(relationshipType, "individualAIsToBRelation.uuid", []), selectedRelationUUID);
     setRelationData({
@@ -231,9 +231,7 @@ const AddRelative = ({
               alignItems: "baseline"
             }}
           >
-            <StyledMainHeading component="span">
-              {t("addRelative")}
-            </StyledMainHeading>
+            <StyledMainHeading component="span">{t("addRelative")}</StyledMainHeading>
           </Grid>
           {(isEmpty(selectedRelative) || error) && (
             <div>
@@ -253,9 +251,7 @@ const AddRelative = ({
           {!isEmpty(selectedRelative) && (
             <div key={selectedRelative.fullName}>
               <StyledScheduledDateDiv>
-                <StyledSubHeading component="span">
-                  Give relationship
-                </StyledSubHeading>
+                <StyledSubHeading component="span">Give relationship</StyledSubHeading>
               </StyledScheduledDateDiv>
               <StyledScheduledDateDiv>
                 <StyledTableView>
@@ -270,28 +266,16 @@ const AddRelative = ({
                       <StyledTable aria-label="caption table">
                         <TableHead>
                           <TableRow>
-                            <StyledTableCell style={{ width: "25%" }}>
-                              {t("name")}
-                            </StyledTableCell>
-                            <StyledTableCell style={{ width: "20%" }}>
-                              {t("gender")}
-                            </StyledTableCell>
-                            <StyledTableCell style={{ width: "20%" }}>
-                              {t("age")}
-                            </StyledTableCell>
-                            <StyledTableCell style={{ width: "35%" }}>
-                              {t("Village")}
-                            </StyledTableCell>
+                            <StyledTableCell style={{ width: "25%" }}>{t("name")}</StyledTableCell>
+                            <StyledTableCell style={{ width: "20%" }}>{t("gender")}</StyledTableCell>
+                            <StyledTableCell style={{ width: "20%" }}>{t("age")}</StyledTableCell>
+                            <StyledTableCell style={{ width: "35%" }}>{t("Village")}</StyledTableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
                           <TableRow>
-                            <StyledTableCellDetails key={selectedRelative.fullName}>
-                              {t(selectedRelative.fullName)}
-                            </StyledTableCellDetails>
-                            <StyledTableCellDetails key={selectedRelative.gender}>
-                              {t(selectedRelative.gender)}
-                            </StyledTableCellDetails>
+                            <StyledTableCellDetails key={selectedRelative.fullName}>{t(selectedRelative.fullName)}</StyledTableCellDetails>
+                            <StyledTableCellDetails key={selectedRelative.gender}>{t(selectedRelative.gender)}</StyledTableCellDetails>
                             <StyledTableCellDetails key={selectedRelative.dateOfBirth}>
                               {selectedRelative.dateOfBirth
                                 ? new Date().getFullYear() - new Date(selectedRelative.dateOfBirth).getFullYear() + " " + t("years")
@@ -329,11 +313,7 @@ const AddRelative = ({
                               ))}
                             </NativeSelect>
                           </FormControl>
-                          {error && (
-                            <StyledErrorTypography variant="subtitle1">
-                              {t(error)}
-                            </StyledErrorTypography>
-                          )}
+                          {error && <StyledErrorTypography variant="subtitle1">{t(error)}</StyledErrorTypography>}
                         </div>
                       </div>
                     </Grid>

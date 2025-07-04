@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { getDocumentationState, useDocumentationDispatch } from "../hooks";
 import { Tabs, Tab, Box, TextField } from "@mui/material";
 import { find, isEmpty, map } from "lodash";
@@ -27,7 +27,7 @@ function renderDocumentItem(value, index, selectedDocumentation, locale) {
 const Documentation = ({ userInfo }) => {
   const { selectedDocumentation, languages } = getDocumentationState();
   const dispatch = useDocumentationDispatch();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   if (isEmpty(selectedDocumentation)) return null;
 

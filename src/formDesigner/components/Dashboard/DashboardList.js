@@ -1,4 +1,3 @@
-import React from "react";
 import ResourceListView from "../../common/ResourceListView";
 import { Privilege } from "openchs-models";
 import { connect } from "react-redux";

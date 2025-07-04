@@ -1,4 +1,3 @@
-import React from "react";
 import { styled } from "@mui/material/styles";
 import { AppBar, Tabs, Tab, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -74,19 +73,18 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
         >
           {program && program.enrolments
             ? program.enrolments.map((element, index) =>
-              (element.programExitDateTime == null && type === "active") ||
-              (element.programExitDateTime != null && type === "exited") ? (
-                <StyledTab
-                  id={element.program.operationalProgramName.replaceAll(" ", "-")}
-                  key={index}
-                  value={index}
-                  label={t(element.program.operationalProgramName)}
-                  disableRipple
-                />
-              ) : (
-                ""
+                (element.programExitDateTime == null && type === "active") || (element.programExitDateTime != null && type === "exited") ? (
+                  <StyledTab
+                    id={element.program.operationalProgramName.replaceAll(" ", "-")}
+                    key={index}
+                    value={index}
+                    label={t(element.program.operationalProgramName)}
+                    disableRipple
+                  />
+                ) : (
+                  ""
+                )
               )
-            )
             : ""}
         </StyledTabs>
       </StyledAppBar>

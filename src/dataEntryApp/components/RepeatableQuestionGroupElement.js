@@ -1,4 +1,3 @@
-import React from "react";
 import { RepeatableQuestionGroup } from "openchs-models";
 import QuestionGroupFormElement from "./QuestionGroupFormElement";
 import _ from "lodash";

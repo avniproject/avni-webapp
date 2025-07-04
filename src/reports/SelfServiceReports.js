@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { reportSideBarOptions } from "./Common";
-import { makeStyles } from "@mui/styles";
 import { Card, CardContent, Typography, Box, Button, CircularProgress, Chip } from "@mui/material";
 import MetabaseSVG from "./Metabase_icon.svg";
 import { OpenInNew, Delete } from "@mui/icons-material";
@@ -10,83 +10,123 @@ import httpClient from "../common/utils/httpClient";
 import MetabaseSetupStatus from "./domain/MetabaseSetupStatus";
 import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
 
-const useStyles = makeStyles({
-  root: {
-    maxWidth: 600,
-    backgroundColor: "#FFF",
-    padding: "20px",
-    position: "relative"
-  },
-  metabaseHeader: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: "0px",
-    marginBottom: "8px"
-  },
-  setupButtonContainer: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    marginRight: 10
-  },
-  setupButton: {
-    backgroundColor: "#4995ec",
-    color: "#FFF",
-    "&:hover": {
-      backgroundColor: "#4995ec"
-    }
-  },
-  setupDoneLabel: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    color: "green",
-    border: "1px solid green",
-    padding: "5px 10px",
-    borderRadius: "5px",
-    zIndex: 10
-  },
-  buttonsContainer: {
-    marginTop: "30px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginRight: 10
-  },
-  refreshButton: {
-    backgroundColor: "#4995ec",
-    color: "#FFF",
-    "&:hover": {
-      backgroundColor: "#4995ec"
-    }
-  },
-  exploreButton: {
-    backgroundColor: "#4995ec",
-    color: "#FFF",
-    "&:hover": {
-      backgroundColor: "#4995ec"
-    }
-  },
-  metabaseLink: {
-    display: "inline-flex",
-    alignItems: "center",
-    fontSize: "10px",
-    color: "#757575",
-    textDecoration: "none",
-    margin: 0
-  },
-  redirectIcon: {
-    fontSize: "1rem",
-    marginLeft: "5px"
-  },
-  metabaseTitle: {
-    marginBottom: 0,
-    padding: 0
+const StyledCard = styled(Card)({
+  maxWidth: 600,
+  backgroundColor: "#FFF",
+  padding: "20px",
+  position: "relative"
+});
+
+const StyledMetabaseHeader = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-start",
+  gap: "0px",
+  marginBottom: "8px"
+});
+
+const StyledSetupButtonContainer = styled(Box)({
+  position: "absolute",
+  top: 20,
+  right: 20,
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  marginRight: 10
+});
+
+const StyledButton = styled(Button)({
+  backgroundColor: "#4995ec",
+  color: "#FFF",
+  "&:hover": {
+    backgroundColor: "#4995ec"
   }
+});
+
+const StyledDeleteButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.error.main,
+  float: "right"
+}));
+
+const StyledButtonsContainer = styled(Box)({
+  marginTop: "30px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginRight: 10
+});
+
+const StyledMetabaseLink = styled("a")({
+  display: "inline-flex",
+  alignItems: "center",
+  fontSize: "10px",
+  color: "#757575",
+  textDecoration: "none",
+  margin: 0
+});
+
+const StyledRedirectIcon = styled(OpenInNew)({
+  fontSize: "1rem",
+  marginLeft: "5px"
+});
+
+const StyledMetabaseTitle = styled(Typography)({
+  variant: "h4",
+  marginBottom: 0,
+  padding: 0
+});
+
+const StyledDescriptionTypography = styled(Typography)(({ theme }) => ({
+  variant: "body2",
+  color: theme.palette.text.secondary
+}));
+
+const StyledDurationTypography = styled(Typography)(({ theme }) => ({
+  variant: "body1",
+  color: theme.palette.text.secondary,
+  marginTop: theme.spacing(2.5)
+}));
+
+const StyledWarningTypography = styled(Typography)(({ theme }) => ({
+  variant: "h6",
+  color: theme.palette.warning.main
+}));
+
+const StyledErrorTypography = styled(Typography)(({ theme }) => ({
+  variant: "h6",
+  color: theme.palette.error.main
+}));
+
+const StyledErrorDetailTypography = styled(Typography)(({ theme }) => ({
+  variant: "body2",
+  color: theme.palette.error.main
+}));
+
+const StyledResourcesTypography = styled(Typography)(({ theme }) => ({
+  variant: "body1",
+  marginTop: theme.spacing(3.75)
+}));
+
+const StyledNoResourcesTypography = styled(Typography)(({ theme }) => ({
+  variant: "body2",
+  marginTop: theme.spacing(1.25)
+}));
+
+const StyledChipContainer = styled(Box)({
+  display: "flex",
+  flexWrap: "wrap",
+  marginTop: "10px"
+});
+
+const StyledChip = styled(Chip)({
+  marginRight: "5px",
+  marginBottom: "5px"
+});
+
+const StyledProgressContainer = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  gap: "10px"
 });
 
 async function getStatusResponse() {
@@ -98,8 +138,6 @@ async function getStatusResponse() {
 let intervalId = null;
 
 const SelfServiceReports = () => {
-  const classes = useStyles();
-
   const [statusResponse, setStatusResponse] = useState(MetabaseSetupStatus.createUnknownStatus());
   const [isBusyCallingCreateQuestionOnly, setIsBusyCallingCreateQuestionOnly] = useState(false);
   const [isBusyCallingSetup, setIsBusyCallingSetup] = useState(false);
@@ -118,7 +156,6 @@ const SelfServiceReports = () => {
     pollSetupStatus();
   }
 
-  // have to return statusResponse and use it in the caller to get the latest status as the state update is still waiting to happen
   async function updateStatus() {
     const statusResponse = await getStatusResponse();
     setStatusResponse(statusResponse);
@@ -159,126 +196,102 @@ const SelfServiceReports = () => {
   }
 
   const isTestEnvironment = ["prerelease", "staging"].includes(statusResponse.avniEnvironment);
-
   const isBusyCallingAnyAction = isBusyCallingCreateQuestionOnly || isBusyCallingSetup || isBusyCallingTearDown;
-
   const showSetupButton = statusResponse.canStartSetup() && !isBusyCallingAnyAction;
   const showDisabledSetupButton = isBusyCallingSetup;
-
   const showDeleteButton = (statusResponse.isSetupComplete() || isTestEnvironment) && !isBusyCallingAnyAction;
   const showDisabledDeleteButton = isBusyCallingTearDown;
-
   const showRefreshButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
   const showDisabledRefreshButton = isBusyCallingCreateQuestionOnly;
-
   const showExploreButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
-
   const showProgressSpinner = statusResponse.isAnyJobInProgress() || isBusyCallingAnyAction;
   const showErrorMessage = statusResponse.hasErrorMessage();
 
   return (
     <ScreenWithAppBar appbarTitle="Self Service Reports" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
-      <Card className={classes.root}>
+      <StyledCard>
         <CardContent>
-          <Box style={{ display: "flex", flexDirection: "column" }}>
-            <Box style={{ display: "flex", flexDirection: "row" }}>
+          <Box display="flex" flexDirection="column">
+            <Box display="flex" flexDirection="row">
               <img src={MetabaseSVG} alt="Metabase logo" style={{ height: 50, width: 50 }} />
-              <div className={classes.metabaseHeader}>
-                <Typography variant="h4" component="h4" className={classes.metabaseTitle}>
-                  Metabase
-                </Typography>
-                <a href="https://metabase.com" target="_blank" rel="noopener noreferrer" className={classes.metabaseLink}>
+              <StyledMetabaseHeader>
+                <StyledMetabaseTitle component="h4">Metabase</StyledMetabaseTitle>
+                <StyledMetabaseLink href="https://metabase.com" target="_blank" rel="noopener noreferrer">
                   metabase.com
-                  <OpenInNew className={classes.redirectIcon} />
-                </a>
-              </div>
+                  <StyledRedirectIcon />
+                </StyledMetabaseLink>
+              </StyledMetabaseHeader>
               {showSetupButton && (
-                <div className={classes.setupButtonContainer}>
-                  <Button className={classes.setupButton} onClick={setupReports} disabled={statusResponse.isSetupInProgress()}>
+                <StyledSetupButtonContainer>
+                  <StyledButton onClick={setupReports} disabled={statusResponse.isSetupInProgress()}>
                     Setup Reports
-                  </Button>
-                </div>
+                  </StyledButton>
+                </StyledSetupButtonContainer>
               )}
               {showDisabledSetupButton && (
-                <div className={classes.setupButtonContainer}>
-                  <Button className={classes.setupButton} disabled={true}>
-                    Setup Reports
-                  </Button>
-                </div>
+                <StyledSetupButtonContainer>
+                  <StyledButton disabled>Setup Reports</StyledButton>
+                </StyledSetupButtonContainer>
               )}
             </Box>
-            <Typography variant="body2" sx={{ color: theme => theme.palette.text.secondary }} component="p">
+            <StyledDescriptionTypography component="p">
               Metabase provides a graphical interface to create business intelligence and analytics graphs in minutes. Avni integrates with
               Metabase to support ad hoc and self-serviced reports.
-            </Typography>
-            <Typography variant="body1" sx={{ color: theme => theme.palette.text.secondary, mt: 2.5 }} component="p">
-              {`Setup and Refresh reports may take upto ${statusResponse.getExpectedDurationInMinutes()} minutes`}
-            </Typography>
+            </StyledDescriptionTypography>
+            <StyledDurationTypography component="p">
+              {`Setup and Refresh reports may take up to ${statusResponse.getExpectedDurationInMinutes()} minutes`}
+            </StyledDurationTypography>
             {statusResponse.status === MetabaseSetupStatus.EtlNotRun && (
               <>
                 <br />
-                <Typography variant="h6" sx={{ color: theme => theme.palette.warning.main }}>
-                  Analytics database not present. Please contact support.
-                </Typography>
+                <StyledWarningTypography>Analytics database not present. Please contact support.</StyledWarningTypography>
               </>
             )}
-            <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
+            <Box display="flex" flexDirection="row-reverse">
               {showDeleteButton && (
-                <div className={classes.buttonsContainer}>
-                  <Button
-                    style={{
-                      float: "right",
-                      color: "red"
-                    }}
-                    onClick={() => tearDownMetabase()}
-                  >
+                <StyledButtonsContainer>
+                  <StyledDeleteButton onClick={tearDownMetabase}>
                     <Delete /> Delete
-                  </Button>
-                </div>
+                  </StyledDeleteButton>
+                </StyledButtonsContainer>
               )}
               {showDisabledDeleteButton && (
-                <div className={classes.buttonsContainer}>
-                  <Button disabled={true}>
+                <StyledButtonsContainer>
+                  <Button disabled>
                     <Delete /> Delete
                   </Button>
-                </div>
+                </StyledButtonsContainer>
               )}
               {showRefreshButton && (
-                <div className={classes.setupButtonContainer}>
-                  <Button className={classes.refreshButton} onClick={refreshReports}>
-                    Refresh Reports
-                  </Button>
-                </div>
+                <StyledSetupButtonContainer>
+                  <StyledButton onClick={refreshReports}>Refresh Reports</StyledButton>
+                </StyledSetupButtonContainer>
               )}
               {showDisabledRefreshButton && (
-                <div className={classes.setupButtonContainer}>
-                  <Button className={classes.refreshButton} disabled={true}>
-                    Refresh Reports
-                  </Button>
-                </div>
+                <StyledSetupButtonContainer>
+                  <StyledButton disabled>Refresh Reports</StyledButton>
+                </StyledSetupButtonContainer>
               )}
               {showExploreButton && (
-                <div className={classes.buttonsContainer}>
-                  <Button className={classes.exploreButton} href="https://reporting.avniproject.org" target="_blank">
+                <StyledButtonsContainer>
+                  <StyledButton href="https://reporting.avniproject.org" target="_blank">
                     Explore Your Data
-                  </Button>
-                </div>
+                  </StyledButton>
+                </StyledButtonsContainer>
               )}
               {showProgressSpinner && (
-                <div className={classes.buttonsContainer}>
-                  <CircularProgress size={24} />
-                  <Box />
-                </div>
+                <StyledButtonsContainer>
+                  <StyledProgressContainer>
+                    <CircularProgress size={24} />
+                    <Box />
+                  </StyledProgressContainer>
+                </StyledButtonsContainer>
               )}
             </Box>
             {showErrorMessage && (
               <>
-                <Typography variant="h6" sx={{ color: theme => theme.palette.error.main }}>
-                  Last attempt failed with error
-                </Typography>
-                <Typography variant="body2" sx={{ color: theme => theme.palette.error.main }}>
-                  {statusResponse.getShortErrorMessage()}
-                </Typography>
+                <StyledErrorTypography>Last attempt failed with error</StyledErrorTypography>
+                <StyledErrorDetailTypography>{statusResponse.getShortErrorMessage()}</StyledErrorDetailTypography>
                 <br />
                 <CopyToClipboard text={statusResponse.getErrorMessage()}>
                   <button>Copy error to clipboard</button>
@@ -287,31 +300,23 @@ const SelfServiceReports = () => {
             )}
             {isTestEnvironment && (
               <>
-                <Typography variant="body1" sx={{ mt: 3.75 }}>
+                <StyledResourcesTypography>
                   Available Resources (note setup will run even after you see all three resources)
-                </Typography>
+                </StyledResourcesTypography>
                 {statusResponse.resources.length > 0 ? (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      marginTop: "10px"
-                    }}
-                  >
+                  <StyledChipContainer>
                     {statusResponse.resources.map(r => (
-                      <Chip key={r} label={r} style={{ marginRight: "5px", marginBottom: "5px" }} />
+                      <StyledChip key={r} label={r} />
                     ))}
-                  </Box>
+                  </StyledChipContainer>
                 ) : (
-                  <Typography variant="body2" sx={{ mt: 1.25 }}>
-                    No resources present for this organisation.
-                  </Typography>
+                  <StyledNoResourcesTypography>No resources present for this organisation.</StyledNoResourcesTypography>
                 )}
               </>
             )}
           </Box>
         </CardContent>
-      </Card>
+      </StyledCard>
     </ScreenWithAppBar>
   );
 };

@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { AppBar } from "react-admin";
 import { Typography, IconButton } from "@mui/material";
 import { withRouter } from "react-router-dom";
@@ -10,9 +9,9 @@ import { Home } from "@mui/icons-material";
 import CurrentUserService from "../service/CurrentUserService";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center'
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center"
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({

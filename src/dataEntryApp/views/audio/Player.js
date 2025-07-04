@@ -1,4 +1,3 @@
-import React from "react";
 import { replace } from "lodash";
 
 //We play the audio this way when it is opened in the tab instead of passing S3 signed URL because there is codec

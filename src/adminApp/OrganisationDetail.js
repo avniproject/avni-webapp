@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { useState, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { Box, Grid, Button, Snackbar, SnackbarContent, Typography } from "@mui/material";
 import { Title } from "react-admin";
@@ -12,15 +12,15 @@ import _ from "lodash";
 const StyledBox = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[2],
   padding: theme.spacing(3),
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.background.paper
 }));
 
 const StyledButton = styled(Button)({
-  backgroundColor: "red",
+  backgroundColor: "red"
 });
 
 const StyledSnackbarContent = styled(SnackbarContent)({
-  backgroundColor: "red",
+  backgroundColor: "red"
 });
 
 function isProduction(organisation) {
@@ -28,15 +28,15 @@ function isProduction(organisation) {
 }
 
 export const OrganisationDetail = ({
-                                     organisation: { name, id },
-                                     hasEditPrivilege,
-                                     hasOrgAdminConfigDeletionPrivilege,
-                                     hasOrgMetadataDeletionPrivilege,
-                                   }) => {
-  const [openModal, setOpenModal] = React.useState(false);
-  const [dataDeletedIndicator, setDataDeletedIndicator] = React.useState(false);
-  const [organisation, setOrganisation] = React.useState(null);
-  const [showCannotDeleteMessage, setShowCannotDeleteMessage] = React.useState(false);
+  organisation: { name, id },
+  hasEditPrivilege,
+  hasOrgAdminConfigDeletionPrivilege,
+  hasOrgMetadataDeletionPrivilege
+}) => {
+  const [openModal, setOpenModal] = useState(false);
+  const [dataDeletedIndicator, setDataDeletedIndicator] = useState(false);
+  const [organisation, setOrganisation] = useState(null);
+  const [showCannotDeleteMessage, setShowCannotDeleteMessage] = useState(false);
 
   function onDeleteClick() {
     if (isProduction(organisation)) {
@@ -47,7 +47,7 @@ export const OrganisationDetail = ({
   }
 
   useEffect(() => {
-    OrganisationService.getApplicableOrganisation(id).then((x) => setOrganisation(x));
+    OrganisationService.getApplicableOrganisation(id).then(x => setOrganisation(x));
   }, []);
 
   return (

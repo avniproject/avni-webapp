@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { useCallback, useState } from "react";
+import { styled } from "@mui/material/styles";
 import LogoutButton from "../../adminApp/react-admin-config/LogoutButton";
 import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -18,23 +18,23 @@ import PasswordDialog from "../../adminApp/components/PasswordDialog";
 import httpClient from "../utils/httpClient";
 import { get } from "lodash";
 
-const StyledRoot = styled('div')(({ theme }) => ({
+const StyledRoot = styled("div")(({ theme }) => ({
   flexGrow: 1,
   marginBottom: theme.spacing(10)
 }));
 
 const StyledAppBar = styled(MuiAppBar)(({ theme }) => ({
-  position: 'fixed'
+  position: "fixed"
 }));
 
-const StyledToolbarContainer = styled('div')(({ theme }) => ({
+const StyledToolbarContainer = styled("div")(({ theme }) => ({
   flex: 1,
   display: "flex",
   flexDirection: "column",
   minHeight: theme.spacing(6)
 }));
 
-const StyledOptions = styled('div')(({ theme }) => ({
+const StyledOptions = styled("div")(({ theme }) => ({
   flex: 1,
   display: "flex",
   flexDirection: "row",
@@ -46,14 +46,14 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   fontSize: theme.spacing(3)
 }));
 
-const StyledProfile = styled('div')(({ theme }) => ({
+const StyledProfile = styled("div")(({ theme }) => ({
   flex: 1,
   display: "flex",
   justifyContent: "flex-end",
   alignItems: "center"
 }));
 
-const StyledUserInfo = styled('div')(({ theme }) => ({
+const StyledUserInfo = styled("div")(({ theme }) => ({
   marginTop: "2%"
 }));
 
@@ -65,8 +65,20 @@ const StyledUserIconButton = styled(IconButton)(({ theme }) => ({
   color: "white"
 }));
 
-const AppBar = ({ getUserInfo, component, position, userInfo, organisation, user, history, organisations, handleDrawer, enableLeftMenuButton, title }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+const AppBar = ({
+  getUserInfo,
+  component,
+  position,
+  userInfo,
+  organisation,
+  user,
+  history,
+  organisations,
+  handleDrawer,
+  enableLeftMenuButton,
+  title
+}) => {
+  const [anchorEl, setAnchorEl] = useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [error, setError] = useState(null);
 
@@ -108,19 +120,11 @@ const AppBar = ({ getUserInfo, component, position, userInfo, organisation, user
           <StyledToolbarContainer>
             <StyledOptions>
               {enableLeftMenuButton && (
-                <StyledMenuIconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={handleDrawer}
-                  edge="start"
-                  size="large"
-                >
+                <StyledMenuIconButton color="inherit" aria-label="open drawer" onClick={handleDrawer} edge="start" size="large">
                   <MenuIcon />
                 </StyledMenuIconButton>
               )}
-              <StyledTypography variant="h5">
-                {title}
-              </StyledTypography>
+              <StyledTypography variant="h5">{title}</StyledTypography>
               <StyledProfile>
                 <OrganisationOptions
                   getUserInfo={getUserInfo}
@@ -146,10 +150,7 @@ const AppBar = ({ getUserInfo, component, position, userInfo, organisation, user
                   <UserIcon />
                 </StyledUserIconButton>
                 <Menu id="long-menu" anchorEl={anchorEl} keepMounted open={!!anchorEl} onClose={handleClose}>
-                  <LogoutButton
-                    onChangePassword={() => setShowChangePassword(true)}
-                    lastSessionTimeMillis={userInfo.lastSessionTime}
-                  />
+                  <LogoutButton onChangePassword={() => setShowChangePassword(true)} lastSessionTimeMillis={userInfo.lastSessionTime} />
                 </Menu>
               </StyledProfile>
             </StyledOptions>

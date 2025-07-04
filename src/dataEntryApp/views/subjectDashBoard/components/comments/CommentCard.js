@@ -1,6 +1,6 @@
 import { Grid, Typography, Chip, IconButton, Menu, MenuItem, Fade } from "@mui/material";
 import { AccountCircle, MoreVert } from "@mui/icons-material";
-import React from "react";
+import { useState } from "react";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";
 import { useSelector } from "react-redux";
 import { onCommentDelete, selectDisplayUsername, setNewCommentText } from "../../../../reducers/CommentReducer";
@@ -14,8 +14,8 @@ export const CommentCard = ({ comment, displayMenu, status, dispatch, setComment
   const displayUsername = comment.displayUsername === myUsername ? "You" : comment.displayUsername;
   const textBreakPoint = displayMenu ? 10 : 9;
   const optionBreakPoint = displayMenu ? 1 : 2;
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [openDelete, setOpenDelete] = React.useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openDelete, setOpenDelete] = useState(false);
   const open = Boolean(anchorEl);
 
   const options = [

@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button, Grid } from "@mui/material";
 import Select from "react-select";
 import _, { map } from "lodash";
@@ -6,11 +6,11 @@ import WebDashboardSection from "../../../common/model/reports/WebDashboardSecti
 import DashboardService from "../../../common/service/DashboardService";
 
 export const SelectCardsView = ({ dashboardSection, addCards }) => {
-  const [allCards, setAllCards] = React.useState([]);
-  const [cardsToBeAdded, setCardsToBeAdded] = React.useState([]);
-  const cardSelectRef = React.useRef(null);
+  const [allCards, setAllCards] = useState([]);
+  const [cardsToBeAdded, setCardsToBeAdded] = useState([]);
+  const cardSelectRef = useRef(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     DashboardService.getAllReportCards().then(res => setAllCards(res));
   }, []);
 

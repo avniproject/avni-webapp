@@ -1,4 +1,3 @@
-import React from "react";
 import { FormControl, FormControlLabel, FormGroup, FormLabel, FormHelperText, Box } from "@mui/material";
 import { xor, first, filter, find, isEmpty } from "lodash";
 import Checkbox from "./Checkbox";

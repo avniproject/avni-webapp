@@ -1,6 +1,6 @@
 import { Grid } from "@mui/material";
 import TutorialCard from "./TutorialCard";
-import React from "react";
+
 import { ConfirmationNumber, Description, Event, Forum, VideoLibrary } from "@mui/icons-material";
 
 const Resources = () => {

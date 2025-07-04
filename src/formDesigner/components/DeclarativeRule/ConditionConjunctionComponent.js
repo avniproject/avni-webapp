@@ -1,4 +1,3 @@
-import React from "react";
 import { Condition } from "rules-config";
 import { Grid, Chip } from "@mui/material";
 import { toUpper } from "lodash";

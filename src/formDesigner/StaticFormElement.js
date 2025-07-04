@@ -1,94 +1,107 @@
-import React from "react";
+import { styled } from "@mui/material/styles";
 import { Accordion, Typography, Tooltip, Grid, InputLabel, AccordionSummary } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { ToolTip } from "../common/components/ToolTip";
 import { dataTypeIcons } from "./components/FormElement";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: "100%"
+const StyledAccordion = styled(Accordion)({
+  width: "100%",
+  "&.Mui-expanded": {
+    margin: 0
+  }
+});
+
+const StyledAccordionSummary = styled(AccordionSummary)({
+  paddingRight: 0,
+  backgroundColor: "#dbdbdb",
+  border: "1px solid #2196F3",
+  paddingLeft: 0,
+  minHeight: 56,
+  "&.Mui-expanded": {
+    minHeight: 56
   },
-  iconlay: {
-    paddingTop: "3px"
+  "&.Mui-focused": {
+    backgroundColor: "#dbdbdb"
   },
-  expandIcon: {
-    paddingTop: "3px",
-    paddingRight: "0px"
-  },
-  iconDataType: {
-    padding: "10px"
-  },
-  questionCount: {
-    paddingTop: "20px"
-  },
-  heading: {
+  "& .MuiAccordionSummary-content": {
+    margin: "0",
+    "&.Mui-expanded": {
+      margin: "0"
+    }
+  }
+});
+
+const StyledTypography = styled(Typography)(({ theme, variant }) => ({
+  ...(variant === "heading" && {
     fontSize: theme.typography.pxToRem(15),
     flexBasis: "33.33%",
     flexShrink: 0,
     paddingTop: "10px"
-  },
-  secondaryHeading: {
+  }),
+  ...(variant === "secondaryHeading" && {
     flexBasis: "70%",
     fontSize: theme.typography.pxToRem(15)
-  },
-  asterisk: {
-    color: "red"
-  }
+  })
 }));
 
+const StyledDiv = styled("div")(({ variant }) => ({
+  ...(variant === "iconlay" && {
+    paddingTop: "3px"
+  }),
+  ...(variant === "iconDataType" && {
+    padding: "10px"
+  })
+}));
+
+const StyledInputLabel = styled(InputLabel)({
+  display: "inline-block",
+  "& .MuiInputLabel-asterisk": {
+    color: "red"
+  }
+});
+
+const StyledGridContainer = styled(Grid)({
+  alignItems: "center"
+});
+
+const StyledGrid = styled(Grid)({
+  paddingTop: "10px"
+});
+
 const StaticFormElement = ({ groupIndex, index, dataType, name, ...props }) => {
-  const classes = useStyles();
-  const panel = "panel" + groupIndex.toString() + index.toString();
+  const panel = `panel${groupIndex}${index}`;
 
   return (
-    <Accordion TransitionProps={{ mountOnEnter: false, unmountOnExit: false }} expanded={false} className={classes.root}>
-      <AccordionSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
-        <div className={classes.iconlay}>
-          <Typography component="div" className={classes.secondaryHeading}>
+    <StyledAccordion TransitionProps={{ mountOnEnter: false, unmountOnExit: false }} expanded={false}>
+      <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`}>
+        <StyledDiv variant="iconlay">
+          <StyledTypography component="div" variant="secondaryHeading">
             {["Date", "Numeric", "Text"].includes(dataType) && (
-              <div className={classes.iconDataType}>
+              <StyledDiv variant="iconDataType">
                 <Tooltip title={dataType}>{dataTypeIcons[dataType]}</Tooltip>
-              </div>
+              </StyledDiv>
             )}
             {dataType === "Coded" && (
-              <div className={classes.iconDataType}>
-                <Tooltip title={dataType + " : SingleSelect"}>{dataTypeIcons["concept"]["SingleSelect"]}</Tooltip>
-              </div>
+              <StyledDiv variant="iconDataType">
+                <Tooltip title={`${dataType} : SingleSelect`}>{dataTypeIcons["concept"]["SingleSelect"]}</Tooltip>
+              </StyledDiv>
             )}
-          </Typography>
-        </div>
-        <Grid
-          container
-          sx={{
-            alignItems: "center"
-          }}
-          size={{
-            sm: 12
-          }}
-        >
-          <Grid
-            style={{ paddingTop: "10px" }}
-            size={{
-              sm: 11
-            }}
-          >
-            <Typography component="span" className={classes.heading}>
-              <InputLabel name={"name" + panel} style={{ display: "inline-block" }} required classes={{ asterisk: classes.asterisk }}>
+          </StyledTypography>
+        </StyledDiv>
+        <StyledGridContainer container size={{ sm: 12 }}>
+          <StyledGrid size={{ sm: 11 }}>
+            <StyledTypography component="span" variant="heading">
+              <StyledInputLabel name={`name${panel}`} required>
                 {name}
-              </InputLabel>
-            </Typography>
-          </Grid>
-          <Grid
-            direction="row"
-            size={{
-              sm: 1
-            }}
-          >
+              </StyledInputLabel>
+            </StyledTypography>
+          </StyledGrid>
+          <Grid direction="row" size={{ sm: 1 }}>
             <ToolTip toolTipKey="APP_DESIGNER_FORM_ELEMENT_NAME" onHover displayPosition="bottom" />
           </Grid>
-        </Grid>
-      </AccordionSummary>
-    </Accordion>
+        </StyledGridContainer>
+      </StyledAccordionSummary>
+    </StyledAccordion>
   );
 };
+
 export default StaticFormElement;

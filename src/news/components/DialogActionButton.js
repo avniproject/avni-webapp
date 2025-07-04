@@ -1,5 +1,4 @@
 import { Button } from "@mui/material";
-import React from "react";
 
 export const DialogActionButton = ({ onClick, color, text, textColor, ...props }) => {
   return (

@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from "react";
 import _, { get, identity } from "lodash";
 import EditIcon from "@mui/icons-material/Edit";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";

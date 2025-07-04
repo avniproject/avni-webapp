@@ -1,6 +1,6 @@
 import { Grid, FormHelperText } from "@mui/material";
 import AsyncSelect from "react-select/async";
-import React from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { subjectService } from "../services/SubjectService";
@@ -14,7 +14,7 @@ const SubjectFormElement = props => {
   const isMultiSelect = props.formElement.type === "MultiSelect";
   const isMandatory = props.formElement.mandatory;
   const fieldLabel = props.formElement.name;
-  const [selectedSubjects, setSelectedSubjects] = React.useState();
+  const [selectedSubjects, setSelectedSubjects] = useState();
 
   const constructSubjectLabel = (subject, isSearchFlow = false) => {
     if (isSearchFlow) {
@@ -24,7 +24,7 @@ const SubjectFormElement = props => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (props.value === null) return;
     if (isMultiSelect) {
       setSelectedSubjects(

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import http from "../../../common/utils/httpClient";
+import { httpClient as http } from "../../../common/utils/httpClient";
 import { get } from "lodash";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import Modal from "@mui/material/Modal";
@@ -24,7 +24,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper
 }));
 
-const StyledCreateContainer = styled('div')({
+const StyledCreateContainer = styled("div")({
   float: "right",
   right: "50px",
   marginTop: "15px"
@@ -130,30 +130,30 @@ const ReportingViews = ({ userInfo }) => {
     () =>
       hasEditPrivilege(userInfo)
         ? [
-          row =>
-            row.original.legacyView
-              ? null
-              : {
-                icon: Delete,
-                tooltip: "Delete View",
-                onClick: (event, row) => {
-                  const voidedMessage = `Do you really want to delete view ${row.original.viewName}?`;
-                  if (window.confirm(voidedMessage)) {
-                    http
-                      .delete(`/reportingView/${row.original.viewName}`)
-                      .then(response => {
-                        if (response.status === 200 && tableRef.current) {
-                          tableRef.current.refresh();
-                        }
-                      })
-                      .catch(error => {
-                        console.error("Failed to delete view:", error);
-                        alert("Failed to delete view. Please try again.");
-                      });
+            row =>
+              row.original.legacyView
+                ? null
+                : {
+                    icon: Delete,
+                    tooltip: "Delete View",
+                    onClick: (event, row) => {
+                      const voidedMessage = `Do you really want to delete view ${row.original.viewName}?`;
+                      if (window.confirm(voidedMessage)) {
+                        http
+                          .delete(`/reportingView/${row.original.viewName}`)
+                          .then(response => {
+                            if (response.status === 200 && tableRef.current) {
+                              tableRef.current.refresh();
+                            }
+                          })
+                          .catch(error => {
+                            console.error("Failed to delete view:", error);
+                            alert("Failed to delete view. Please try again.");
+                          });
+                      }
+                    }
                   }
-                }
-              }
-        ]
+          ]
         : [],
     [userInfo]
   );

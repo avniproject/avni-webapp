@@ -1,4 +1,3 @@
-import React from "react";
 import { PlatformDocumentation } from "./PlatformDocumentation";
 import { Grid } from "@mui/material";
 

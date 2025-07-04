@@ -1,7 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
-import React from "react";
-import http from "common/utils/httpClient";
+import { useState } from "react";
+import { httpClient as http } from "common/utils/httpClient";
 import { getOperationalModules } from "../../reports/reducers";
 import { useDispatch } from "react-redux";
 import { noop, toNumber } from "lodash";
@@ -10,13 +10,13 @@ import { setOrganisationConfig } from "../../rootApp/ducks";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
 export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
-  const [orgSettings, setOrgSettings] = React.useState();
-  const [showEncryptionWarningMessage, setShowEncryptionWarningMessage] = React.useState(false);
-  const [defaultSnackbarStatus, setDefaultSnackbarStatus] = React.useState(true);
+  const [orgSettings, setOrgSettings] = useState();
+  const [showEncryptionWarningMessage, setShowEncryptionWarningMessage] = useState(false);
+  const [defaultSnackbarStatus, setDefaultSnackbarStatus] = useState(true);
 
   const dispatch = useDispatch();
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(getOperationalModules());
     http
       .fetchJson("/web/organisationConfig")

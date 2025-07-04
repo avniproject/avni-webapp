@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import moment from "moment";
 import Colors from "../Colors";

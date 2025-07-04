@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState, useMemo } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import _, { isEmpty } from "lodash";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { MaterialReactTable } from "material-react-table";
 import Paper from "@mui/material/Paper";
 import { Title } from "react-admin";
@@ -20,20 +20,20 @@ import Delete from "@mui/icons-material/DeleteOutline";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   width: "100%",
-  overflowX: "auto",
+  overflowX: "auto"
 }));
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(2),
+  margin: theme.spacing(2)
 }));
 
 const StyledButtonContainer = styled(Box)(({ theme }) => ({
   display: "flex",
-  gap: theme.spacing(1),
+  gap: theme.spacing(1)
 }));
 
 const StyledTableHeadCell = styled(Box)(({ theme }) => ({
-  zIndex: 1,
+  zIndex: 1
 }));
 
 function hasEditPrivilege(userInfo) {
@@ -50,7 +50,7 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
   const emptyOrgSettings = {
     uuid: UUID.v4(),
     settings: { languages: [], myDashboardFilters: [], searchFilters: [] },
-    worklistUpdationRule: "",
+    worklistUpdationRule: ""
   };
 
   const [settings, setSettings] = useState(emptyOrgSettings);
@@ -65,8 +65,8 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
       settings: {
         languages: _.isNil(languages) ? [] : languages,
         myDashboardFilters: _.isNil(myDashboardFilters) ? [] : myDashboardFilters,
-        searchFilters: _.isNil(searchFilters) ? [] : searchFilters,
-      },
+        searchFilters: _.isNil(searchFilters) ? [] : searchFilters
+      }
     };
   };
 
@@ -76,9 +76,9 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
       const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
       res.data._embedded.organisationConfig[0] &&
-      setWorklistUpdationRule(
-        res.data._embedded.organisationConfig[0].worklistUpdationRule ? res.data._embedded.organisationConfig[0].worklistUpdationRule : ""
-      );
+        setWorklistUpdationRule(
+          res.data._embedded.organisationConfig[0].worklistUpdationRule ? res.data._embedded.organisationConfig[0].worklistUpdationRule : ""
+        );
     });
   }, [organisation.id]);
 
@@ -92,11 +92,11 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
     () => [
       {
         accessorKey: "titleKey",
-        header: "TaskAssignmentFilter Name",
+        header: "TaskAssignmentFilter Name"
       },
       {
         accessorKey: "conceptName",
-        header: "Concept Name",
+        header: "Concept Name"
       },
       {
         id: "Subject",
@@ -104,23 +104,23 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
         Cell: ({ row }) => {
           const subject = _.head(subjectTypes?.filter(s => s.uuid === row.original.subjectTypeUUID));
           return (subject && subject.name) || "";
-        },
+        }
       },
       {
         id: "Filter Type",
         header: "Filter Type",
-        Cell: ({ row }) => _.startCase(row.original.type),
+        Cell: ({ row }) => _.startCase(row.original.type)
       },
       {
         id: "widget",
         header: "Widget",
-        Cell: ({ row }) => row.original.widget || "Default",
+        Cell: ({ row }) => row.original.widget || "Default"
       },
       {
         id: "Scope",
         header: "Search Scope",
-        Cell: ({ row }) => _.startCase(row.original.scope),
-      },
+        Cell: ({ row }) => _.startCase(row.original.scope)
+      }
     ],
     [subjectTypes]
   );
@@ -136,10 +136,10 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
           operationalModules,
           title,
           worklistUpdationRule,
-          filename,
-        },
+          filename
+        }
       });
-    },
+    }
   });
 
   const deleteFilter = filterType => ({
@@ -152,16 +152,16 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
           settings: {
             languages: settings.settings.languages,
             myDashboardFilters: filterType === "myDashboardFilters" ? filteredFilters : settings.settings.myDashboardFilters,
-            searchFilters: filterType === "searchFilters" ? filteredFilters : settings.settings.searchFilters,
+            searchFilters: filterType === "searchFilters" ? filteredFilters : settings.settings.searchFilters
           },
-          worklistUpdationRule: worklistUpdationRule,
+          worklistUpdationRule: worklistUpdationRule
         };
         const response = await http.put("/organisationConfig", newSettings);
         if (response.status === 200 || response.status === 201) {
           setSettings(newSettings);
         }
       }
-    },
+    }
   });
 
   const renderFilterTable = filterType => (
@@ -190,8 +190,8 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
                       operationalModules,
                       title: `Add ${_.startCase(filterType)}`,
                       worklistUpdationRule,
-                      filename,
-                    },
+                      filename
+                    }
                   });
                 }}
               >
@@ -219,8 +219,8 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
         )}
         muiTableHeadCellProps={{
           sx: {
-            zIndex: 1,
-          },
+            zIndex: 1
+          }
         }}
       />
     </StyledBox>
@@ -241,7 +241,7 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
 
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules,
-  userInfo: state.app.userInfo,
+  userInfo: state.app.userInfo
 });
 
 export default withRouter(

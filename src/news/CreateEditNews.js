@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useEffect, useReducer, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { convertToRaw } from "draft-js";
 import { Dialog, Box, DialogContent, Grid, Typography, TextField } from "@mui/material";
 import RichTextEditor from "./components/RichTextEditor";
@@ -20,37 +20,37 @@ import { createServerError } from "../formDesigner/common/ErrorUtil";
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
     minHeight: "90%",
-    minWidth: "80%",
-  },
+    minWidth: "80%"
+  }
 }));
 
 const StyledBox = styled(Box)(({ theme }) => ({
   border: 1,
   marginTop: theme.spacing(2),
   borderColor: "#ddd",
-  padding: theme.spacing(2),
+  padding: theme.spacing(2)
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   margin: theme.spacing(1),
-  width: "100%",
+  width: "100%"
 }));
 
 const StyledActionButton = styled(ActionButton)(({ theme }) => ({
-  padding: theme.spacing(0, 1.25),
+  padding: theme.spacing(0, 1.25)
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  opacity: 0.5,
+  opacity: 0.5
 }));
 
 export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingNews }) => {
-  const [news, dispatch] = React.useReducer(NewsReducer, newsInitialState);
-  const [file, setFile] = React.useState();
-  const [error, setError] = React.useState([]);
-  const [saving, setSaving] = React.useState(false);
+  const [news, dispatch] = useReducer(NewsReducer, newsInitialState);
+  const [file, setFile] = useState();
+  const [error, setError] = useState([]);
+  const [saving, setSaving] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (open && edit) {
       dispatch({ type: "setData", payload: existingNews });
     }
@@ -97,7 +97,7 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
         publishedDate: news.publishedDate,
         heroImage: s3FileKey,
         content,
-        contentHtml,
+        contentHtml
       };
 
       const response = edit ? API.editNews(payload) : API.createNews(payload);

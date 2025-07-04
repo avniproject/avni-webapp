@@ -1,4 +1,3 @@
-import React from "react";
 import { FormControl } from "@mui/material";
 import Select from "react-select";
 import { filter, includes, map } from "lodash";

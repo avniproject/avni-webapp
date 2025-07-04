@@ -1,5 +1,5 @@
 import { Select, InputLabel, FormControl } from "@mui/material";
-import React from "react";
+
 import { ToolTipContainer } from "./ToolTipContainer";
 
 export const AvniSelect = ({ options, toolTipKey, ...props }) => {

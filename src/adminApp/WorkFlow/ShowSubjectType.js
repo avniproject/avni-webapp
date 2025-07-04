@@ -1,4 +1,3 @@
-import React from "react";
 import { Remove } from "@mui/icons-material";
 
 export const ShowSubjectType = props => {

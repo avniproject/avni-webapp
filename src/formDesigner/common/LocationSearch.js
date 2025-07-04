@@ -1,12 +1,12 @@
 import http from "../../common/utils/httpClient";
 import { get, map } from "lodash";
 import CommonSearch from "./CommonSearch";
-import React from "react";
+import { useState, useEffect } from "react";
 
 const LocationSearch = ({ value, onChange, isMulti }) => {
-  const [defaultOptions, setDefaultOptions] = React.useState([]);
+  const [defaultOptions, setDefaultOptions] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadLocation("", setDefaultOptions);
   }, []);
 

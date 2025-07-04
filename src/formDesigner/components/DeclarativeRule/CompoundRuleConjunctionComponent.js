@@ -1,6 +1,5 @@
 import { RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import { CompoundRule } from "rules-config";
-import React from "react";
 
 const CompoundRuleConjunctionComponent = ({ onConjunctionChange, value, ...props }) => {
   const Conjunction = ({ value, label, onChange }) => {

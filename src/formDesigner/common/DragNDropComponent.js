@@ -1,24 +1,24 @@
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { map, orderBy, isNil } from "lodash";
 import { Grid, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
-import React from "react";
+import { useState } from "react";
 import { DragHandle } from "@mui/icons-material";
 
-const StyledDroppableContainer = styled('div')(({ isDraggingOver }) => ({
-  background: "#FFFFFF",
+const StyledDroppableContainer = styled("div")(({ isDraggingOver }) => ({
+  background: "#FFFFFF"
 }));
 
-const StyledDraggableContainer = styled('div')(({ isDragging }) => ({
+const StyledDraggableContainer = styled("div")(({ isDragging }) => ({
   cursor: "pointer",
   background: "#FFFFFF",
-  margin: "8px 1px",
+  margin: "8px 1px"
 }));
 
 const StyledAccordion = styled(Accordion)({
   "&.Mui-expanded": {
-    margin: 0,
-  },
+    margin: 0
+  }
 });
 
 const StyledAccordionSummary = styled(AccordionSummary)({
@@ -28,35 +28,35 @@ const StyledAccordionSummary = styled(AccordionSummary)({
   paddingLeft: 0,
   minHeight: 56,
   "&.Mui-expanded": {
-    minHeight: 56,
+    minHeight: 56
   },
   "&.Mui-focused": {
-    backgroundColor: "#dbdbdb",
+    backgroundColor: "#dbdbdb"
   },
   "& .MuiAccordionSummary-content": {
     margin: "0",
     "&.Mui-expanded": {
-      margin: "0",
-    },
+      margin: "0"
+    }
   },
   "& .MuiAccordionSummary-expandIconWrapper": {
     marginHorizontal: "8px",
-    display: "inline",
-  },
+    display: "inline"
+  }
 });
 
 const StyledGrid = styled(Grid)({
   alignItems: "center",
-  justifyContent: "center",
+  justifyContent: "center"
 });
 
-const StyledDragIconContainer = styled('div')({
+const StyledDragIconContainer = styled("div")({
   height: 5,
-  align: "center",
+  align: "center"
 });
 
 const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetails, dataList, summaryDirection }) => {
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleChange = panel => (event, isExpanded) => {
     !isNil(renderDetails) && setExpanded(isExpanded ? panel : false);
@@ -76,11 +76,7 @@ const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetails, data
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="drop_card">
         {(provided, snapshot) => (
-          <StyledDroppableContainer
-            ref={provided.innerRef}
-            isDraggingOver={snapshot.isDraggingOver}
-            {...provided.droppableProps}
-          >
+          <StyledDroppableContainer ref={provided.innerRef} isDraggingOver={snapshot.isDraggingOver} {...provided.droppableProps}>
             {map(orderBy(dataList, "displayOrder"), (data, index) => (
               <Draggable isDragDisabled={expanded !== false} key={data.uuid} draggableId={data.uuid} index={index}>
                 {(provided, snapshot) => (
@@ -90,20 +86,14 @@ const DragNDropComponent = ({ onDragEnd, renderOtherSummary, renderDetails, data
                     {...provided.dragHandleProps}
                     isDragging={snapshot.isDragging}
                   >
-                    <StyledAccordion
-                      key={index}
-                      expanded={expanded === "panel" + index}
-                      onChange={handleChange("panel" + index)}
-                    >
+                    <StyledAccordion key={index} expanded={expanded === "panel" + index} onChange={handleChange("panel" + index)}>
                       <StyledAccordionSummary
                         aria-controls={"panel" + index + "bh-content"}
                         id={"panel" + index + "bh-header"}
                         {...provided.dragHandleProps}
                       >
                         <Grid container direction={summaryDirection}>
-                          <StyledGrid container>
-                            {renderDragIcon(data.uuid)}
-                          </StyledGrid>
+                          <StyledGrid container>{renderDragIcon(data.uuid)}</StyledGrid>
                           {renderOtherSummary(data, index, expanded)}
                         </Grid>
                       </StyledAccordionSummary>

@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import {
   AccordionSummary,
   Typography,
@@ -10,51 +10,51 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Accordion,
+  Accordion
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { DeleteButton } from "../../../components/DeleteButton";
-import React, { Fragment } from "react";
+import { useState, Fragment } from "react";
 import Observations from "../../../components/Observations";
 
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
   marginBottom: "11px",
   borderRadius: "5px",
-  boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)",
+  boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
 }));
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
-  '& .MuiAccordionSummary-content': {
+  "& .MuiAccordionSummary-content": {
     fontSize: theme.typography.pxToRem(16),
     flexBasis: "33.33%",
     flexShrink: 0,
-    fontWeight: "500",
-  },
+    fontWeight: "500"
+  }
 }));
 
 const StyledExpandMore = styled(ExpandMore)(({ theme }) => ({
-  color: "#0e6eff",
+  color: "#0e6eff"
 }));
 
 const StyledAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
-  paddingTop: "0px",
+  paddingTop: "0px"
 }));
 
 export const EnrolmentDetails = ({
-                                   t,
-                                   isExit,
-                                   label,
-                                   programData,
-                                   programEnrolmentForm,
-                                   subjectUuid,
-                                   subjectProfile,
-                                   undoExitEnrolment,
-                                   handleUpdateComponent,
-                                   setVoidConfirmation,
-                                 }) => {
-  const [open, setOpen] = React.useState(false);
+  t,
+  isExit,
+  label,
+  programData,
+  programEnrolmentForm,
+  subjectUuid,
+  subjectProfile,
+  undoExitEnrolment,
+  handleUpdateComponent,
+  setVoidConfirmation
+}) => {
+  const [open, setOpen] = useState(false);
 
   const getURLOfFormType = formType =>
     `/app/subject/enrol?uuid=${subjectUuid}&programName=${
@@ -69,7 +69,7 @@ export const EnrolmentDetails = ({
     setOpen(false);
   };
 
-  const handleUndoExit = (programEnrolmentUuid) => {
+  const handleUndoExit = programEnrolmentUuid => {
     undoExitEnrolment(programEnrolmentUuid);
     handleClose();
     handleUpdateComponent(subjectUuid);
@@ -79,8 +79,8 @@ export const EnrolmentDetails = ({
     return [
       {
         label: "Exit Enrolment Date",
-        value: moment(programData.programExitDateTime).format("DD-MMM-YYYY"),
-      },
+        value: moment(programData.programExitDateTime).format("DD-MMM-YYYY")
+      }
     ];
   };
 
@@ -88,8 +88,8 @@ export const EnrolmentDetails = ({
     return [
       {
         label: "Enrolment Date",
-        value: moment(programData.enrolmentDateTime).format("DD-MMM-YYYY"),
-      },
+        value: moment(programData.enrolmentDateTime).format("DD-MMM-YYYY")
+      }
     ];
   };
 
@@ -143,11 +143,7 @@ export const EnrolmentDetails = ({
             <Button onClick={handleClose} color="primary">
               Cancel
             </Button>
-            <Button
-              onClick={() => handleUndoExit(programData.uuid)}
-              color="primary"
-              autoFocus
-            >
+            <Button onClick={() => handleUndoExit(programData.uuid)} color="primary" autoFocus>
               Undo Exit
             </Button>
           </DialogActions>

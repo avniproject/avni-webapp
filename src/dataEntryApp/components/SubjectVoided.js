@@ -1,40 +1,38 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Paper, Grid, Button, Typography } from "@mui/material";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: 20,
-    marginBottom: 10
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: 20,
+  marginBottom: 10,
+  elevation: 2
+}));
+
+const StyledGrid = styled(Grid)({
+  alignItems: "flex-start"
+});
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+  marginBottom: 8
 }));
 
 const SubjectVoided = ({ onUnVoid, showUnVoid }) => {
-  const classes = useStyles();
-
   return (
-    <Paper className={classes.root}>
-      <Grid
-        container
-        direction={"column"}
-        sx={{
-          alignItems: "flex-start"
-        }}
-      >
-        <Grid>
-          <Typography variant="h4" sx={{ color: theme => theme.palette.error.main, mb: 1 }}>
-            {"THE SUBJECT HAS BEEN VOIDED"}
-          </Typography>
-        </Grid>
-        <Grid>
+    <StyledPaper>
+      <StyledGrid container direction="column">
+        <StyledGrid>
+          <StyledTypography variant="h4">{"THE SUBJECT HAS BEEN VOIDED"}</StyledTypography>
+        </StyledGrid>
+        <StyledGrid>
           {showUnVoid && (
             <Button onClick={onUnVoid} color="primary">
               {"Unvoid"}
             </Button>
           )}
-        </Grid>
-      </Grid>
-    </Paper>
+        </StyledGrid>
+      </StyledGrid>
+    </StyledPaper>
   );
 };
+
 export default SubjectVoided;

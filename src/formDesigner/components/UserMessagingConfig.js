@@ -1,6 +1,6 @@
-import React, { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import _, { identity, isEmpty } from "lodash";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import Paper from "@mui/material/Paper";
 import { Title } from "react-admin";
 import Box from "@mui/material/Box";
@@ -40,7 +40,7 @@ export const UserMessagingConfig = () => {
     setEnableMessagingConfigSave(true);
   };
 
-  const [enableMessagingConfigSave, setEnableMessagingConfigSave] = React.useState(false);
+  const [enableMessagingConfigSave, setEnableMessagingConfigSave] = useState(false);
   const [notificationAlert, setNotificationAlert] = useState(false);
   const [msgError, setMsgError] = useState("");
 

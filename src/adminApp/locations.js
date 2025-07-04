@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import {
   Datagrid,
   List,
@@ -110,7 +110,7 @@ const LocationTypeSelectInput = props => {
 
 const isRequired = required("This field is required");
 
-export class LocationForm extends React.Component {
+export class LocationForm extends Component {
   componentDidUpdate() {
     if (this.changed) {
       store.dispatch(change(REDUX_FORM_NAME, "parentId", ""));

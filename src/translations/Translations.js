@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { find, isEmpty } from "lodash";
 import DropDown from "../common/components/DropDown";

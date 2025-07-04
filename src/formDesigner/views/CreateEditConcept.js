@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import NumericConcept from "../components/NumericConcept";
 import CodedConcept from "../components/CodedConcept";
 import { LocationConcept } from "../components/LocationConcept";

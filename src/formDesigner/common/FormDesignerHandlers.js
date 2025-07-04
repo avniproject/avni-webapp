@@ -1,6 +1,6 @@
 import _, { cloneDeep, includes, isEmpty, replace, split } from "lodash";
 import { default as UUID } from "uuid";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { alphabeticalSort, moveDown, moveUp, validateCodedConceptAnswers } from "../views/CreateEditConcept";
 
 export const formDesignerUpdateConceptElementData = (draftFormElement, propertyName, value) => {

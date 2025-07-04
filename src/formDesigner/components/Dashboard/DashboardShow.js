@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
 import ResourceShowView from "../../common/ResourceShowView";
 import { FormLabel } from "@mui/material";
@@ -31,7 +31,7 @@ function render(dashboard, operationalModules) {
 }
 
 const DashboardShow = props => {
-  React.useEffect(() => {
+  useEffect(() => {
     props.getOperationalModules();
   }, []);
 

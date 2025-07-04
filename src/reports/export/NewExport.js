@@ -1,6 +1,5 @@
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Typography, Grid, Button, Paper, Box } from "@mui/material";
-import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
@@ -13,30 +12,31 @@ import api from "../api";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
 
 const StyledButton = styled(Button)({
-  color: "#3f51b5",
+  color: "#3f51b5"
 });
 
-const StyledTypography = styled(Typography)({
+const StyledTypography = styled(Typography)(({ theme }) => ({
   fontSize: "20px",
   fontWeight: "500",
   marginLeft: theme.spacing(1.25), // 10px
-  marginBottom: theme.spacing(1.25), // 10px
-});
+  marginBottom: theme.spacing(1.25) // 10px
+}));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  marginBottom: theme.spacing(12.5), // 100px
+  marginBottom: theme.spacing(12.5) // 100px
 }));
 
 const NewExport = ({ operationalModules, getOperationalModules, getUploadStatuses, exportJobStatuses, userInfo }) => {
   const { t } = useTranslation();
 
-  React.useEffect(() => {
+  useEffect(() => {
     getOperationalModules();
   }, []);
 
-  const [customRequest, setCustomRequest] = React.useState(undefined);
+  const [customRequest, setCustomRequest] = useState(undefined);
   const exportRequest = require("./ExportV2ReferenceRequest.json");
 
   function safeParseCustomRequestJson() {
@@ -71,7 +71,7 @@ const NewExport = ({ operationalModules, getOperationalModules, getUploadStatuse
               border: 1,
               mb: 2,
               borderColor: "#ddd",
-              p: 2,
+              p: 2
             }}
           >
             <DocumentationContainer filename={"Report.md"}>
@@ -105,10 +105,15 @@ const NewExport = ({ operationalModules, getOperationalModules, getUploadStatuse
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules,
   exportJobStatuses: state.reports.exportJobStatuses,
-  userInfo: state.app.userInfo,
+  userInfo: state.app.userInfo
 });
 
-export default withRouter(connect(mapStateToProps, { getOperationalModules, getUploadStatuses })(NewExport));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    { getOperationalModules, getUploadStatuses }
+  )(NewExport)
+);

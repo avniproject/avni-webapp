@@ -1,8 +1,8 @@
-import React from "react";
+import { useEffect } from "react";
 import ReactImageVideoLightbox from "react-image-video-lightbox";
 
 const MediaObservations = ({ mediaDataList, currentMediaItemIndex, onClose, showResourceCount }) => {
-  React.useEffect(() => {
+  useEffect(() => {
     const LightboxContainer = document.querySelector("div.mediaObservationContainer");
     LightboxContainer.firstChild.style.zIndex = 2;
   });

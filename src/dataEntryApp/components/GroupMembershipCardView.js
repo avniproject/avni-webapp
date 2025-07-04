@@ -1,4 +1,3 @@
-import React from "react";
 import SubjectCardView from "./SubjectCardView";
 import { Typography } from "@mui/material";
 

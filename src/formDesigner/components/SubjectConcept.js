@@ -1,13 +1,13 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { get } from "lodash";
 
 export const SubjectConcept = props => {
   const subjectTypeOptions = get(props.operationalModules, "subjectTypes", []);
-  const [subjectType, setSubjectType] = React.useState("");
+  const [subjectType, setSubjectType] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (props.isCreatePage || props.keyValues === undefined || props.keyValues.length === 0) {
     } else {
       const subjectType =

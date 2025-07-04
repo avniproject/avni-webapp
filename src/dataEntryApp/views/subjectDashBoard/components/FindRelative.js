@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -10,8 +9,8 @@ import FindRelativeTable from "./FindRelativeTable";
 import { SearchForm } from "../../GlobalSearch/SearchFilterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
-const StyledContainer = styled('div')(({ theme }) => ({
-  margin: theme.spacing(3.75),
+const StyledContainer = styled("div")(({ theme }) => ({
+  margin: theme.spacing(3.75)
 }));
 
 const filterButtonStyle = {
@@ -19,7 +18,7 @@ const filterButtonStyle = {
   zIndex: 1,
   marginTop: "1px",
   boxShadow: "none",
-  backgroundColor: "#0e6eff",
+  backgroundColor: "#0e6eff"
 };
 
 const applyButtonStyle = {
@@ -28,21 +27,21 @@ const applyButtonStyle = {
   height: "30px",
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: "#f27510",
-  },
+    backgroundColor: "#f27510"
+  }
 };
 
 const FindRelative = ({
-                        subjectType,
-                        subjectProfile,
-                        operationalModules,
-                        genders,
-                        organisationConfigs,
-                        searchRequest,
-                        load,
-                        setError,
-                        ...props
-                      }) => {
+  subjectType,
+  subjectProfile,
+  operationalModules,
+  genders,
+  organisationConfigs,
+  searchRequest,
+  load,
+  setError,
+  ...props
+}) => {
   const { t } = useTranslation();
 
   const close = () => {
@@ -93,26 +92,26 @@ const FindRelative = ({
         {
           buttonType: "openButton",
           label: t("searchRelative"),
-          sx: filterButtonStyle,
+          sx: filterButtonStyle
         },
         props.subjects && props.subjects.listOfRecords
           ? {
-            buttonType: "applyFloating",
-            label: "OK",
-            sx: applyButtonStyle,
-            click: applyHandler,
-            left: 40,
-          }
+              buttonType: "applyFloating",
+              label: "OK",
+              sx: applyButtonStyle,
+              click: applyHandler,
+              left: 40
+            }
           : "",
         props.subjects && props.subjects.listOfRecords
           ? {
-            buttonType: "modifySearchFloating",
-            label: "Modify search",
-            sx: applyButtonStyle,
-            click: modifySearch,
-            left: 95,
-          }
-          : "",
+              buttonType: "modifySearchFloating",
+              label: "Modify search",
+              sx: applyButtonStyle,
+              click: modifySearch,
+              left: 95
+            }
+          : ""
       ]}
       title={t("searchRelative")}
       btnHandleClose={close}
@@ -125,12 +124,12 @@ const mapStateToProps = state => ({
   subjects: state.dataEntry.search.subjects,
   searchParams: state.dataEntry.search.subjectSearchParams,
   subjectType: state.dataEntry.subjectProfile.subjectProfile.subjectType,
-  load: state.dataEntry.loadReducer.load,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
   search: searchSubjects,
-  setSubjects,
+  setSubjects
 };
 
 export default withRouter(

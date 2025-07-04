@@ -1,5 +1,5 @@
-import React, { useEffect, useReducer, useState } from "react";
-import http from "common/utils/httpClient";
+import { useEffect, useReducer, useState } from "react";
+import { httpClient as http } from "common/utils/httpClient";
 import { Redirect, withRouter } from "react-router-dom";
 import { Box, Button, FormLabel, Grid } from "@mui/material";
 import { Title } from "react-admin";
@@ -34,8 +34,8 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
   const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] = useState(false);
   const [subjectTypes, setSubjectTypes] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
-  const [file, setFile] = React.useState();
-  const [removeFile, setRemoveFile] = React.useState(false);
+  const [file, setFile] = useState();
+  const [removeFile, setRemoveFile] = useState(false);
   const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []

@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
   Button,
   Dialog,
@@ -19,11 +19,11 @@ import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
 export default function PasswordDialog({ username, open, onClose, onConfirm, serverError }) {
   let initialPassword = { password: undefined, showPassword: false };
-  const [password, setPassword] = React.useState(initialPassword);
-  const [confirmPassword, setConfirmPassword] = React.useState(initialPassword);
-  const [error, setError] = React.useState();
+  const [password, setPassword] = useState(initialPassword);
+  const [confirmPassword, setConfirmPassword] = useState(initialPassword);
+  const [error, setError] = useState();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setPassword(initialPassword);
     setConfirmPassword(initialPassword);
   }, [open]);

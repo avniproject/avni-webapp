@@ -1,4 +1,3 @@
-import React from "react";
 import { Create, Datagrid, Edit, List, Show, SimpleForm, SimpleShowLayout, TextField, TextInput, Toolbar, SaveButton } from "react-admin";
 import { Title } from "./components/Title";
 

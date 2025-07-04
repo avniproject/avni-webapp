@@ -1,73 +1,51 @@
 import React, { Fragment } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Grid, Button } from "@mui/material";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";
 import { sortBy } from "lodash";
 
-const useStyles = makeStyles(theme => ({
-  selectedButton: {
-    margin: theme.spacing(1),
-    color: theme.palette.getContrastText("rgba(0,108,235,0.85)"),
-    background: "rgba(0,108,235,0.85)",
-    "&:hover": {
-      backgroundColor: "rgb(0,108,235)"
-    }
-  },
-  unSelectedButton: {
-    margin: theme.spacing(1),
-    color: theme.palette.getContrastText("rgb(252,252,252)"),
-    background: "rgb(252,252,252)",
-    "&:hover": {
-      backgroundColor: "rgb(0,108,235)"
-    }
+const StyledGridContainer = styled(Grid)({
+  alignItems: "center"
+});
+
+const StyledGridItem = styled(Grid)({
+  alignItems: "center"
+});
+
+const StyledButton = styled(Button)(({ theme, isSelected }) => ({
+  margin: theme.spacing(1),
+  color: theme.palette.getContrastText(isSelected ? "rgba(0,108,235,0.85)" : "rgb(252,252,252)"),
+  background: isSelected ? "rgba(0,108,235,0.85)" : "rgb(252,252,252)",
+  "&:hover": {
+    backgroundColor: "rgb(0,108,235)"
   }
 }));
 
 const SubjectTypeOptions = ({ t, operationalModules, onSubjectTypeChange, selectedSubjectTypeUUID }) => {
-  const classes = useStyles();
-
-  function getClassName(subjectType) {
-    return selectedSubjectTypeUUID === subjectType.uuid ? classes.selectedButton : classes.unSelectedButton;
-  }
-
   return (
     <Fragment>
-      <Grid
-        container
-        direction={"row"}
-        spacing={1}
-        sx={{
-          alignItems: "center"
-        }}
-      >
+      <StyledGridContainer container direction="row" spacing={1}>
         {operationalModules.subjectTypes
           ? sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map((subjectType, index) => (
-              <Grid key={index}>
-                <Button
-                  key={index}
+              <StyledGridItem key={index}>
+                <StyledButton
                   variant="outlined"
                   onClick={() => onSubjectTypeChange(subjectType.uuid)}
-                  className={getClassName(subjectType)}
+                  isSelected={selectedSubjectTypeUUID === subjectType.uuid}
                 >
-                  <Grid
-                    container
-                    direction={"row"}
-                    spacing={1}
-                    sx={{
-                      alignItems: "center"
-                    }}
-                  >
-                    <Grid>
+                  <StyledGridContainer container direction="row" spacing={1}>
+                    <StyledGridItem>
                       <SubjectTypeIcon size={25} subjectType={subjectType} />
-                    </Grid>
-                    <Grid>{subjectType.name}</Grid>
-                  </Grid>
-                </Button>
-              </Grid>
+                    </StyledGridItem>
+                    <StyledGridItem>{subjectType.name}</StyledGridItem>
+                  </StyledGridContainer>
+                </StyledButton>
+              </StyledGridItem>
             ))
           : ""}
-      </Grid>
+      </StyledGridContainer>
     </Fragment>
   );
 };
+
 export default SubjectTypeOptions;

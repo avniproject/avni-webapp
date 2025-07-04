@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import _, { isEmpty } from "lodash";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { Paper, Box, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
@@ -20,8 +20,8 @@ export const WorklistUpdationRule = () => {
   const [worklistUpdationRule, setWorklistUpdationRule] = useState("");
   const [notificationAlert, setNotificationAlert] = useState(false);
   const [settings, setSettings] = useState(emptyOrgSettings);
-  const [subjectTypes, setSubjectTypes] = React.useState();
-  const [enableRuleSave, setEnableRuleSave] = React.useState(false);
+  const [subjectTypes, setSubjectTypes] = useState();
+  const [enableRuleSave, setEnableRuleSave] = useState(false);
 
   const setRule = rule => {
     setWorklistUpdationRule(rule);

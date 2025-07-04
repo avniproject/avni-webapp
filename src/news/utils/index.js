@@ -1,6 +1,5 @@
 import { find, isEmpty } from "lodash";
 import { FormLabel } from "@mui/material";
-import React from "react";
 
 export const dispatchActionAndClearError = (type, payload, errorKey, dispatch, error, setError) => {
   setError(error.filter(({ key }) => key !== errorKey));

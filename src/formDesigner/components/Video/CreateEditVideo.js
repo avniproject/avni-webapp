@@ -1,4 +1,4 @@
-import React from "react";
+import { useReducer, useState, useEffect } from "react";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import Box from "@mui/material/Box";
@@ -7,7 +7,7 @@ import { isEmpty, isNil } from "lodash";
 import { AvniTextField } from "../../../common/components/AvniTextField";
 import { VideoReducer } from "./VideoReducer";
 import { Redirect } from "react-router-dom";
-import http from "../../../common/utils/httpClient";
+import { httpClient as http } from "../../../common/utils/httpClient";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Grid } from "@mui/material";
@@ -16,12 +16,12 @@ import { createServerError, getErrorByKey } from "../../common/ErrorUtil";
 
 const initialState = { title: "", fileName: "", duration: "", description: "" };
 export const CreateEditVideo = ({ edit, ...props }) => {
-  const [video, dispatch] = React.useReducer(VideoReducer, initialState);
-  const [error, setError] = React.useState([]);
-  const [id, setId] = React.useState();
-  const [redirectAfterDelete, setRedirectAfterDelete] = React.useState(false);
+  const [video, dispatch] = useReducer(VideoReducer, initialState);
+  const [error, setError] = useState([]);
+  const [id, setId] = useState();
+  const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (edit) {
       http
         .get(`/web/video/${props.match.params.id}`)

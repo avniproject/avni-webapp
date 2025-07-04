@@ -1,69 +1,70 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Card, CardContent, Grid, Typography } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import SubjectProfilePicture from "./SubjectProfilePicture";
 
-const useStyles = () =>
-  makeStyles(() => ({
-    card: {
-      boxShadow: "0px 0px 0px 0px",
-      borderRadius: "0",
-      width: 100,
-      whiteSpace: "pre-wrap",
-      overflowWrap: "break-word",
-      height: 150,
-      justify: "center",
-      margin: 20,
-      textDecoration: "none",
-      alignItems: "center"
-    }
-  }));
+const StyledCard = styled(Card)({
+  boxShadow: "0px 0px 0px 0px",
+  borderRadius: "0",
+  width: 100,
+  whiteSpace: "pre-wrap",
+  overflowWrap: "break-word",
+  height: 150,
+  justifyContent: "center",
+  margin: 20,
+  textDecoration: "none",
+  alignItems: "center"
+});
+
+const StyledGridContainer = styled(Grid)({
+  justifyContent: "center",
+  alignItems: "center"
+});
+
+const StyledTypography = styled(Typography)({
+  textAlign: "center",
+  marginBottom: 8
+});
+
+const StyledSubjectProfilePicture = styled(SubjectProfilePicture)({
+  margin: "0px"
+});
 
 const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, subjectTypeName, ...props }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   return (
-    <Card className={classes.card} key={uuid}>
-      <CardContent className={classes.cardContent}>
-        <Grid
-          container
-          direction="row"
-          spacing={1}
-          sx={{
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
+    <StyledCard key={uuid}>
+      <CardContent>
+        <StyledGridContainer container direction="row" spacing={1}>
           <Grid>
-            <SubjectProfilePicture
+            <StyledSubjectProfilePicture
               allowEnlargementOnClick={true}
               firstName={name}
               profilePicture={profilePicture}
               subjectType={null}
               subjectTypeName={subjectTypeName}
               size={25}
-              style={{ margin: "0px" }}
             />
           </Grid>
           <Grid>
             <InternalLink to={`/app/subject?uuid=${uuid}`}>{name}</InternalLink>
           </Grid>
-        </Grid>
+        </StyledGridContainer>
         {[gender, age, location].map((element, index) => {
           return (
             element && (
-              <Typography component={"div"} className={classes[element]} sx={{ textAlign: "center", mb: 1 }} key={index}>
+              <StyledTypography component="div" key={index}>
                 {t(element)}
-              </Typography>
+              </StyledTypography>
             )
           );
         })}
       </CardContent>
       {props.children && <CardContent>{props.children}</CardContent>}
-    </Card>
+    </StyledCard>
   );
 };
+
 export default SubjectCardView;

@@ -1,5 +1,5 @@
 import { SubjectTypeSelect } from "./SubjectTypeSelect";
-import React from "react";
+
 import { ProgramSelect } from "./ProgramSelect";
 import { EncounterTypeSelect } from "./EncounterTypeSelect";
 

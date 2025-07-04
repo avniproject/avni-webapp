@@ -1,4 +1,3 @@
-import React from "react";
 import { map, find, isEmpty, size } from "lodash";
 import ActionComponent from "./ActionComponent";
 import ConditionComponent from "./ConditionComponent";

@@ -1,31 +1,31 @@
-import React, { Fragment } from "react";
-import { styled } from '@mui/material/styles';
+import { useState, Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { Dialog, DialogContent, DialogActions, IconButton, Box, Typography, Button } from "@mui/material";
 import { Close, CheckCircleOutline } from "@mui/icons-material";
 import { LineBreak } from "../../common/components/utils";
 
-const StyledDialogTitle = styled('div')(({ theme }) => ({
+const StyledDialogTitle = styled("div")(({ theme }) => ({
   padding: theme.spacing(2),
   margin: "0 50",
-  position: "relative",
+  position: "relative"
 }));
 
 const StyledCloseButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
   right: theme.spacing(1),
   top: theme.spacing(1),
-  color: theme.palette.grey[500],
+  color: theme.palette.grey[500]
 }));
 
 const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   padding: theme.spacing(2),
-  margin: "0px 20px",
+  margin: "0px 20px"
 }));
 
 const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   margin: 0,
   padding: theme.spacing(1),
-  justifyContent: "center",
+  justifyContent: "center"
 }));
 
 const StyledOkButton = styled(Button)(({ theme }) => ({
@@ -36,14 +36,14 @@ const StyledOkButton = styled(Button)(({ theme }) => ({
   width: 100,
   cursor: "pointer",
   borderRadius: 50,
-  padding: "4px 25px",
+  padding: "4px 25px"
 }));
 
 const StyledCheckCircleOutline = styled(CheckCircleOutline)(({ theme }) => ({
   fontSize: "4rem",
   fontFamily: "Roboto, Helvetica, Arial, sans-serif",
   fontWeight: 400,
-  color: "gray",
+  color: "gray"
 }));
 
 const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDialogContainer, onOk }) => {
@@ -76,7 +76,7 @@ const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDial
               flexDirection: "column",
               flexWrap: "wrap",
               justifyContent: "space-between",
-              alignItems: "center",
+              alignItems: "center"
             }}
           >
             {showSuccessIcon && <StyledCheckCircleOutline />}
@@ -92,7 +92,7 @@ const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDial
                 flexDirection: "row",
                 flexWrap: "wrap",
                 justifyContent: "flex-start",
-                alignItems: "center",
+                alignItems: "center"
               }}
             >
               <StyledOkButton onClick={handleOk} color="primary">

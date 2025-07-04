@@ -1,4 +1,3 @@
-import React from "react";
 import { Route } from "react-router-dom";
 import { CreateEditLanguages } from "./components/CreateEditLanguages";
 import { CreateEditFiltersHOC } from "./components/CreateEditFiltersHOC";
@@ -55,22 +54,10 @@ export default [
   <Route exact path="/video/create" component={WithProps({ edit: false }, CreateEditVideo)} />,
   <Route exact path="/video/:id" component={WithProps({ edit: true }, CreateEditVideo)} />,
   <Route exact path="/video/:id/show" component={VideoShow} />,
-  <Route
-    exact
-    path="/reportCard/create"
-    component={WithProps({ edit: false }, CreateEditReportCard)}
-  />,
-  <Route
-    exact
-    path="/reportCard/:id"
-    component={WithProps({ edit: true }, CreateEditReportCard)}
-  />,
+  <Route exact path="/reportCard/create" component={WithProps({ edit: false }, CreateEditReportCard)} />,
+  <Route exact path="/reportCard/:id" component={WithProps({ edit: true }, CreateEditReportCard)} />,
   <Route exact path="/reportCard/:id/show" component={ReportCardShow} />,
-  <Route
-    exact
-    path="/dashboard/create"
-    component={WithProps({ edit: false }, CreateEditDashboard)}
-  />,
+  <Route exact path="/dashboard/create" component={WithProps({ edit: false }, CreateEditDashboard)} />,
   <Route exact path="/dashboard/:id" component={WithProps({ edit: true }, CreateEditDashboard)} />,
   <Route exact path="/dashboard/:id/show" component={DashboardShow} />,
   <Route exact path="/applicationMenu/create" component={ApplicationMenuEdit} />,

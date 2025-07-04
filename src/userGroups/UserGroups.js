@@ -1,12 +1,11 @@
 import { connect } from "react-redux";
-import { styled } from '@mui/material/styles';
-import React from "react";
+import { styled } from "@mui/material/styles";
+import { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { getGroups } from "./reducers";
-import { Input, InputLabel } from "@mui/material";
+import { Input, InputLabel, Grid } from "@mui/material";
 import { map } from "lodash";
 import { GroupCard } from "./components/GroupCard";
-import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import FormControl from "@mui/material/FormControl";
@@ -22,7 +21,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper
 }));
 
-const StyledModalPaper = styled('div')(({ theme }) => ({
+const StyledModalPaper = styled("div")(({ theme }) => ({
   position: "absolute",
   width: 400,
   backgroundColor: theme.palette.background.paper,
@@ -45,13 +44,13 @@ const StyledModalButtonContainer = styled(Box)(({ theme }) => ({
 }));
 
 const UserGroups = ({ getGroups, groups, ...props }) => {
-  React.useEffect(() => {
+  useEffect(() => {
     getGroups();
   }, []);
 
-  const [openModal, setOpenModal] = React.useState(false);
-  const [groupName, setGroupName] = React.useState("");
-  const [groupNameError, setGroupNameError] = React.useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [groupNameError, setGroupNameError] = useState(false);
 
   const groupCreationHandler = async () => {
     if (!groupName.trim().length > 0) {

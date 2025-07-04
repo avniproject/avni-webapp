@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useState, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { newsInitialState, NewsReducer } from "./reducers";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { Paper } from "@mui/material";
@@ -10,27 +10,27 @@ import { DeleteBroadcast } from "./components/DeleteBroadcast";
 import API from "./api";
 import NewsDetailsCard from "./components/NewsDetailsCard";
 
-const StyledContainer = styled('div')({
-  flexGrow: 1,
+const StyledContainer = styled("div")({
+  flexGrow: 1
 });
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1.25), // 10px
   margin: "auto",
-  maxWidth: "70%",
+  maxWidth: "70%"
 }));
 
 export default function NewsDetails({ history, ...props }) {
-  const [news, dispatch] = React.useReducer(NewsReducer, newsInitialState);
-  const [openEdit, setOpenEdit] = React.useState(false);
-  const [redirectToListing, setRedirectToListing] = React.useState(false);
-  const [deleteAlert, setDeleteAlert] = React.useState(false);
-  const [publishAlert, setPublishAlert] = React.useState(false);
+  const [news, dispatch] = useReducer(NewsReducer, newsInitialState);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [redirectToListing, setRedirectToListing] = useState(false);
+  const [deleteAlert, setDeleteAlert] = useState(false);
+  const [publishAlert, setPublishAlert] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     API.getNewsById(props.match.params.id)
-      .then((res) => res.data)
-      .then((res) => {
+      .then(res => res.data)
+      .then(res => {
         dispatch({ type: "setData", payload: res });
       });
   }, [openEdit]);

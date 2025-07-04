@@ -1,85 +1,78 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Link, Paper, Box, Grid, Typography } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
 import SideImage from "formDesigner/styles/images/background.jpg";
 
+const StyledRootGrid = styled(Grid)({
+  height: "100vh"
+});
+
+const StyledImageGrid = styled(Grid)(({ theme }) => ({
+  backgroundImage: `url(${SideImage})`,
+  backgroundRepeat: "no-repeat",
+  backgroundColor: theme.palette.mode === "light" ? theme.palette.grey[50] : theme.palette.grey[900],
+  backgroundSize: "cover",
+  backgroundPosition: "center"
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  margin: theme.spacing(8, 4),
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center"
+}));
+
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+  margin: theme.spacing(1),
+  backgroundColor: theme.palette.secondary.main
+}));
+
+const StyledForm = styled("form")(({ theme }) => ({
+  width: "100%",
+  marginTop: theme.spacing(1)
+}));
+
+const StyledSubmitButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(3, 0, 2)
+}));
+
+const StyledCopyrightBox = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(5)
+}));
+
+const StyledCopyrightTypography = styled(Typography)(({ theme }) => ({
+  variant: "body2",
+  color: theme.palette.text.secondary,
+  textAlign: "center"
+}));
+
 function Copyright() {
   return (
-    <Typography variant="body2" sx={{ color: theme => theme.palette.text.secondary, textAlign: "center" }}>
+    <StyledCopyrightTypography>
       {"Copyright © "}
       <Link color="inherit" href="https://material-ui.com/">
         Your Website
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
-    </Typography>
+    </StyledCopyrightTypography>
   );
 }
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    height: "100vh"
-  },
-  image: {
-    // backgroundImage: 'url(https://source.unsplash.com/random)',
-    backgroundImage: `url(${SideImage})`,
-    backgroundRepeat: "no-repeat",
-    backgroundColor: theme.palette.mode === "light" ? theme.palette.grey[50] : theme.palette.grey[900],
-    backgroundSize: "cover",
-    backgroundPosition: "center"
-  },
-  paper: {
-    margin: theme.spacing(8, 4),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
-}));
-
 export default function SignInSide() {
-  const classes = useStyles();
-
   return (
-    <Grid container component="main" className={classes.root}>
+    <StyledRootGrid container component="main">
       <CssBaseline />
-      <Grid
-        className={classes.image}
-        size={{
-          xs: false,
-          sm: 4,
-          md: 7
-        }}
-      />
-      <Grid
-        component={Paper}
-        elevation={6}
-        square
-        size={{
-          xs: 12,
-          sm: 8,
-          md: 5
-        }}
-      >
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
+      <StyledImageGrid size={{ xs: false, sm: 4, md: 7 }} />
+      <Grid component={StyledPaper} elevation={6} square size={{ xs: 12, sm: 8, md: 5 }}>
+        <StyledPaper>
+          <StyledAvatar>
             <LockOutlined />
-          </Avatar>
+          </StyledAvatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
+          <StyledForm noValidate>
             <TextField
               variant="outlined"
               margin="normal"
@@ -103,9 +96,9 @@ export default function SignInSide() {
               autoComplete="current-password"
             />
             <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
-            <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
+            <StyledSubmitButton type="submit" fullWidth variant="contained" color="primary">
               Sign In
-            </Button>
+            </StyledSubmitButton>
             <Grid container>
               <Grid size="grow">
                 <Link href="#" variant="body2">
@@ -114,20 +107,16 @@ export default function SignInSide() {
               </Grid>
               <Grid>
                 <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                  Don't have an account? Sign Up
                 </Link>
               </Grid>
             </Grid>
-            <Box
-              sx={{
-                mt: 5
-              }}
-            >
+            <StyledCopyrightBox>
               <Copyright />
-            </Box>
-          </form>
-        </div>
+            </StyledCopyrightBox>
+          </StyledForm>
+        </StyledPaper>
       </Grid>
-    </Grid>
+    </StyledRootGrid>
   );
 }

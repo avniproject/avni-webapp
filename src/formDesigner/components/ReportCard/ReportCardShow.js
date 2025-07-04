@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect, Fragment } from "react";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
 import { FormLabel } from "@mui/material";
 import ColorValue from "../../common/ColorValue";
@@ -14,9 +14,9 @@ import WebReportCard from "../../../common/model/WebReportCard";
 function RenderCard({ reportCard }) {
   if (!(reportCard instanceof WebReportCard)) return null;
 
-  const [iconPreviewUrl, setIconPreviewUrl] = React.useState("");
+  const [iconPreviewUrl, setIconPreviewUrl] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!_.isNil(reportCard.iconFileS3Key) && !_.isEmpty(reportCard.iconFileS3Key)) {
       MediaService.getMedia(reportCard.iconFileS3Key).then(res => {
         setIconPreviewUrl(res);
@@ -31,24 +31,24 @@ function RenderCard({ reportCard }) {
       <ShowLabelValue label={"Description"} value={reportCard.description} />
       <p />
       {reportCard.colour && (
-        <React.Fragment>
+        <Fragment>
           <FormLabel style={{ fontSize: "13px" }}>{"Colour"}</FormLabel>
           <br />
           <ColorValue colour={reportCard.colour} />
-        </React.Fragment>
+        </Fragment>
       )}
       <p />
       {!reportCard.isStandardReportType() && (
-        <React.Fragment>
+        <Fragment>
           <BooleanStatusInShow status={reportCard.nested} label={"Is nested?"} />
-        </React.Fragment>
+        </Fragment>
       )}
       <p />
       {!reportCard.isStandardReportType() && reportCard.nested && (
-        <React.Fragment>
+        <Fragment>
           <ShowLabelValue label={"Number of Cards"} value={reportCard.count} />
           <p />
-        </React.Fragment>
+        </Fragment>
       )}
       <p />
       <div>

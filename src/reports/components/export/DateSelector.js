@@ -2,7 +2,6 @@ import Box from "@mui/material/Box";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { TextField } from "@mui/material";
-import React from "react";
 
 export const DateSelector = ({ label, value, onChange }) => {
   return (

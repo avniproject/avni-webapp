@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import { reportSideBarOptions } from "../Common";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import AggregateReport from "./AggregateReport";
@@ -8,9 +8,9 @@ import { AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
 import { Equalizer, FormatListNumbered } from "@mui/icons-material";
 import { some } from "lodash";
 
-const StyledContainer = styled('div')(({ theme }) => ({
+const StyledContainer = styled("div")(({ theme }) => ({
   flexGrow: 1,
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.background.paper
 }));
 
 function TabPanel(props) {
@@ -57,7 +57,7 @@ function renderComingSoon() {
 const displayCannedReport = some(["localhost", "staging"], env => window.location.href.includes(env));
 
 const CannedReport = () => {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   return (
     <ScreenWithAppBar appbarTitle={`Aggregate reports`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>

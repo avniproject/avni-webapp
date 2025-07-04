@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl, Box } from "@mui/material";
 import Select from "react-select";
 import { deburr, filter, find, get, head, identity, includes, isEmpty, isNil, map, pickBy, reject, startCase, values } from "lodash";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";
@@ -98,7 +98,7 @@ export const CreateEditFilters = ({
   );
   const [selectedGroupSubject, setGroupSubjectType] = useState(mapPreviousToOptions(groupSubjectTypeUUID, subjectTypeOptions));
   const [selectedType, setType] = useState(mapPreviousToOptions(type, typeOptions));
-  const [selectedConcept, setConcept] = React.useState(
+  const [selectedConcept, setConcept] = useState(
     (conceptName && {
       label: conceptName,
       value: { uuid: conceptUUID, dataType: conceptDataType }
@@ -210,7 +210,7 @@ export const CreateEditFilters = ({
     );
   };
 
-  const [suggestions, setSuggestions] = React.useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const loadConcept = (value, callback) => {
     if (!value) {
       callback([]);

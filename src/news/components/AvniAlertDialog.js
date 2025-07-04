@@ -1,4 +1,3 @@
-import React from "react";
 import { Dialog, DialogActions, DialogContent, DialogContentText } from "@mui/material";
 import { CustomDialogTitle } from "./CustomDialogTitle";
 import MuiComponentHelper from "../../common/utils/MuiComponentHelper";

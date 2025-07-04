@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import http from "../../common/utils/httpClient";
 import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -20,7 +20,7 @@ const ResourceShowView = ({
   editPrivilegeType,
   defaultResource
 }) => {
-  const [resource, setResource] = React.useState(defaultResource);
+  const [resource, setResource] = useState(defaultResource);
   const [editAlert, setEditAlert] = useState(false);
 
   useEffect(() => {

@@ -1,17 +1,16 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Button, Grid } from "@mui/material";
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
-  justifyContent: "flex-start",
+  justifyContent: "flex-start"
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  marginLeft: theme.spacing(2),
+  marginLeft: theme.spacing(2)
 }));
 
-const StyledInput = styled('input')(({ theme }) => ({
-  display: "none",
+const StyledInput = styled("input")(({ theme }) => ({
+  display: "none"
 }));
 
 const FileUpload = ({ onSelect, onUpload, canSelect, canUpload }) => {
@@ -39,13 +38,7 @@ const FileUpload = ({ onSelect, onUpload, canSelect, canUpload }) => {
         Choose File
         <StyledInput type="file" onChange={onSelectWrapper} onClick={handleClick} />
       </StyledButton>
-      <StyledButton
-        variant="contained"
-        color="primary"
-        aria-haspopup="false"
-        onClick={onUploadWrapper}
-        disabled={!canUpload}
-      >
+      <StyledButton variant="contained" color="primary" aria-haspopup="false" onClick={onUploadWrapper} disabled={!canUpload}>
         Upload
       </StyledButton>
     </StyledGrid>

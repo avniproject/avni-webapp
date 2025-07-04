@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import Body from "./Body";
 import AppBar from "./AppBar";
 import { Drawer, List, IconButton, ListItemIcon, ListItemText } from "@mui/material";
@@ -10,11 +10,11 @@ import ListItemButton from "@mui/material/ListItemButton";
 
 const drawerWidth = 240;
 
-const StyledContainer = styled('div')({
+const StyledContainer = styled("div")({
   margin: "0px 15px 0px 15px"
 });
 
-const StyledAppBar = styled('main')(({ theme, open }) => ({
+const StyledAppBar = styled("main")(({ theme, open }) => ({
   paddingLeft: open ? drawerWidth : 70,
   width: open ? `calc(100%)` : undefined,
   transition: theme.transitions.create(["width", "margin"], {
@@ -28,7 +28,7 @@ const StyledDrawer = styled(Drawer)(({ theme, open }) => ({
   flexShrink: 0,
   whiteSpace: "nowrap",
   zIndex: 1,
-  '& .MuiDrawer-paper': {
+  "& .MuiDrawer-paper": {
     width: open ? drawerWidth : theme.spacing(7) + 1,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -41,7 +41,7 @@ const StyledDrawer = styled(Drawer)(({ theme, open }) => ({
   }
 }));
 
-const StyledToolbar = styled('div')(({ theme }) => ({
+const StyledToolbar = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
@@ -100,14 +100,14 @@ const getSelectedListItem = sidebarOptions => {
   return _.isEmpty(sidebarOptions)
     ? 0
     : _.map(sidebarOptions, (option, i) => ({
-    selected: window.location.href.includes(option.href.replace("#", "")),
-    index: i
-  })).filter(option => option.selected)[0]?.index || 0;
+        selected: window.location.href.includes(option.href.replace("#", "")),
+        index: i
+      })).filter(option => option.selected)[0]?.index || 0;
 };
 
 const ScreenWithAppBar = props => {
-  const [open, setOpen] = React.useState(true);
-  const [selectedIndex, setSelectedIndex] = React.useState(getSelectedListItem(props.sidebarOptions));
+  const [open, setOpen] = useState(true);
+  const [selectedIndex, setSelectedIndex] = useState(getSelectedListItem(props.sidebarOptions));
 
   function handleListItemClick(event, index) {
     setSelectedIndex(index);

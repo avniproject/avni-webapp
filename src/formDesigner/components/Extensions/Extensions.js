@@ -1,4 +1,4 @@
-import React from "react";
+import { useReducer, useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Title } from "react-admin";
@@ -7,7 +7,7 @@ import { checkForErrors, ExtensionReducer, extensionScopeTypes } from "./Extensi
 import { get, isEmpty, map } from "lodash";
 import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
 import { getErrorByKey } from "../../common/ErrorUtil";
 import { connect } from "react-redux";
@@ -21,12 +21,12 @@ const initialState = {
 };
 
 const Extensions = ({ userInfo }) => {
-  const [print, dispatch] = React.useReducer(ExtensionReducer, initialState);
-  const [value, setValue] = React.useState("");
-  const [load, setLoad] = React.useState(false);
+  const [print, dispatch] = useReducer(ExtensionReducer, initialState);
+  const [value, setValue] = useState("");
+  const [load, setLoad] = useState(false);
   const { errors, file, labelFileNames, scopeOptions } = print;
 
-  React.useEffect(() => {
+  useEffect(() => {
     http
       .fetchJson("/web/organisationConfig")
       .then(response => response.json)
@@ -35,7 +35,7 @@ const Extensions = ({ userInfo }) => {
       });
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     http
       .fetchJson("/web/operationalModules")
       .then(response => response.json)

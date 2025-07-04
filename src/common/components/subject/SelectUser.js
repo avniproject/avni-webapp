@@ -1,25 +1,29 @@
-import { makeStyles } from "@mui/styles";
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Typography, Table, TableHead, TableRow, TableCell, TableBody, Radio, Box } from "@mui/material";
-import React from "react";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: "100%",
-    marginTop: 20
-  },
-  paper: {
-    width: "100%",
-    marginBottom: theme.spacing(2)
-  },
-  tableContainer: {
-    marginTop: 20,
-    minWidth: 750
-  }
+const StyledContainer = styled(Box)({
+  width: "100%",
+  marginTop: 20
+});
+
+const StyledTable = styled(Table)({
+  marginTop: 20,
+  minWidth: 750
+});
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  variant: "h5",
+  marginBottom: theme.spacing(1)
+}));
+
+const StyledErrorTypography = styled(Typography)(({ theme }) => ({
+  variant: "subtitle2",
+  marginBottom: theme.spacing(1)
 }));
 
 const SelectUser = function({ users, errorMessage, onSelectedUser }) {
-  const classes = useStyles();
-  const [selectedValue, setSelectedValue] = React.useState(null);
+  const [selectedValue, setSelectedValue] = useState(null);
 
   const handleChange = (event, uuid, row) => {
     setSelectedValue(event.target.value);
@@ -27,24 +31,17 @@ const SelectUser = function({ users, errorMessage, onSelectedUser }) {
   };
 
   return (
-    <Box className={classes.root}>
-      {users && (
-        <Typography variant="h5" sx={{ mb: 1 }}>
-          {users.length === 0 ? "No users found" : `${users.length} - users found`}
-        </Typography>
-      )}
-      <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        {errorMessage}
-      </Typography>
-
+    <StyledContainer>
+      {users && <StyledTypography>{users.length === 0 ? "No users found" : `${users.length} - users found`}</StyledTypography>}
+      <StyledErrorTypography>{errorMessage}</StyledErrorTypography>
       {users && users.length !== 0 ? (
-        <Table className={classes.tableContainer} aria-labelledby="tableTitle" aria-label="enhanced table">
+        <StyledTable aria-labelledby="tableTitle" aria-label="enhanced table">
           <TableHead>
             <TableRow>
               <TableCell />
-              <TableCell align="left">{"Name"}</TableCell>
-              <TableCell align="left">{"Email"}</TableCell>
-              <TableCell align="left">{"Phone Number"}</TableCell>
+              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">Email</TableCell>
+              <TableCell align="left">Phone Number</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -62,7 +59,6 @@ const SelectUser = function({ users, errorMessage, onSelectedUser }) {
                       inputProps={{ "aria-label": "A" }}
                     />
                   </TableCell>
-
                   <TableCell align="left" scope="row" id={labelId}>
                     {row.name}
                   </TableCell>
@@ -72,11 +68,11 @@ const SelectUser = function({ users, errorMessage, onSelectedUser }) {
               );
             })}
           </TableBody>
-        </Table>
+        </StyledTable>
       ) : (
         ""
       )}
-    </Box>
+    </StyledContainer>
   );
 };
 

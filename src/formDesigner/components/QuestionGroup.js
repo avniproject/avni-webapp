@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, Fragment } from "react";
 import { getFormState, useSetFormState } from "../views/FormDesignerContext";
 import { Draggable } from "react-beautiful-dnd";
 import { isEqual, map, isEmpty, get, filter } from "lodash";
@@ -10,10 +10,7 @@ function QuestionGroup(props) {
   const { groupIndex, index, formElementData } = props;
   const setState = useSetFormState();
   const state = getFormState();
-  const allFormElementsWithIndex = map(
-    state.form.formElementGroups[groupIndex].formElements,
-    (fe, index) => [fe, index]
-  );
+  const allFormElementsWithIndex = map(state.form.formElementGroups[groupIndex].formElements, (fe, index) => [fe, index]);
   const childFormElementsWithIndex = filter(
     allFormElementsWithIndex,
     ([fe, index]) => get(fe, "parentFormElementUuid") === formElementData.uuid && !fe.voided
@@ -31,14 +28,14 @@ function QuestionGroup(props) {
     );
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isEmpty(childFormElementsWithIndex)) {
       btnGroupAdd(groupIndex, index);
     }
   }, [childFormElementsWithIndex]);
 
   return (
-    <React.Fragment key={formElementData.uuid}>
+    <Fragment key={formElementData.uuid}>
       {map(childFormElementsWithIndex, ([formElement, feIndex]) => {
         return (
           <Draggable
@@ -64,7 +61,7 @@ function QuestionGroup(props) {
           </Draggable>
         );
       })}
-    </React.Fragment>
+    </Fragment>
   );
 }
 
@@ -72,4 +69,4 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default React.memo(QuestionGroup, areEqual);
+export default memo(QuestionGroup, areEqual);

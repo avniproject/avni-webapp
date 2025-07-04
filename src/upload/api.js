@@ -1,4 +1,4 @@
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import files from "common/utils/files";
 import { get } from "lodash";
 

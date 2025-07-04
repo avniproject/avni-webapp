@@ -1,11 +1,11 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import http from "../../common/utils/httpClient";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import _ from "lodash";
 
 export const ConceptActiveSwitch = ({ active, handleActive, conceptUUID }) => {
-  const [conceptUsage, setConceptUsage] = React.useState({});
-  React.useEffect(() => {
+  const [conceptUsage, setConceptUsage] = useState({});
+  useEffect(() => {
     if (conceptUUID) {
       http.get("/web/concept/usage/" + conceptUUID).then(response => setConceptUsage(response.data));
     }

@@ -1,4 +1,3 @@
-import React from "react";
 import { Radio, RadioGroup, FormControlLabel, FormControl } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";

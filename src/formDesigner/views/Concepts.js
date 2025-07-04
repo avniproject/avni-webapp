@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback } from "react";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { isEqual, isEmpty } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import { Box } from "@mui/material";

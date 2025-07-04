@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import React from "react";
+import { useState } from "react";
 import { Grid } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { TabView } from "./components/TabbedView";
@@ -12,7 +12,7 @@ const UserGroupDetails = ({ ...props }) => {
   let parsedProps = queryString.parse(props.location.search);
   let groupName = parsedProps.groupName;
 
-  const [hasAllPrivileges, setHasAllPrivileges] = React.useState(parsedProps.hasAllPrivileges === "true");
+  const [hasAllPrivileges, setHasAllPrivileges] = useState(parsedProps.hasAllPrivileges === "true");
 
   return (
     <Box

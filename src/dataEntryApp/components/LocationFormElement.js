@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { Concept } from "avni-models";
 import LocationSelect from "./LocationSelect";
@@ -8,7 +8,7 @@ import { selectAllAddressLevelTypes } from "../reducers/metadataReducer";
 import { find, includes, isEmpty, isNil, orderBy } from "lodash";
 import { ValidationError } from "./ValidationError";
 import { addressLevelService } from "../services/AddressLevelService";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { selectOrganisationConfig } from "../sagas/selectors";
 import HierarchicalLocationSelect from "./HierarchicalLocationSelect";
 
@@ -34,11 +34,11 @@ export default function LocationFormElement({ obsHolder, formElement, update, va
   const applicableAddressLevelTypes = orderBy(allAddressLevelTypes, "level", "asc").filter(
     alt => alt.level <= highestAddressLevelType.level
   );
-  const [level, setLevel] = React.useState(lowestAddressLevelType);
+  const [level, setLevel] = useState(lowestAddressLevelType);
   const locationUUID = isNil(observation) ? null : observation.getReadableValue();
-  const [location, setLocation] = React.useState();
+  const [location, setLocation] = useState();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(locationUUID)) {
       http.get(`/locations/web?uuid=${locationUUID}`).then(response => {
         if (response.status === 200) {
@@ -55,7 +55,7 @@ export default function LocationFormElement({ obsHolder, formElement, update, va
   }, [locationUUID]);
 
   return (
-    <React.Fragment>
+    <Fragment>
       <RadioButtonsGroup
         label={`${t(name)}${mandatory ? "*" : ""}`}
         items={allowedLowerAddressLevelTypes.map(a => ({ id: a.id, name: a.name, level: a.level }))}
@@ -79,6 +79,6 @@ export default function LocationFormElement({ obsHolder, formElement, update, va
         />
       )}
       <ValidationError validationResult={validationResult} />
-    </React.Fragment>
+    </Fragment>
   );
 }

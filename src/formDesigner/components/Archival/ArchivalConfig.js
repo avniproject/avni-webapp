@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from "react";
-import http from "../../../common/utils/httpClient";
+import { httpClient as http } from "../../../common/utils/httpClient";
 import { Title } from "react-admin";
 import { Grid } from "@mui/material";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";

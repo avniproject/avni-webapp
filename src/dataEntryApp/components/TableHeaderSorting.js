@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import { TableSortLabel, TableCell, TableHead, TableRow } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -8,7 +7,7 @@ const StyledTableCell = styled(TableCell)({
   padding: "14px 40px 14px 0px"
 });
 
-const StyledVisuallyHidden = styled('span')({
+const StyledVisuallyHidden = styled("span")({
   border: 0,
   clip: "rect(0 0 0 0)",
   height: 1,

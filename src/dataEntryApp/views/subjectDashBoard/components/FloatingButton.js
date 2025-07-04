@@ -1,4 +1,3 @@
-import React from "react";
 import Button from "./Button";
 
 const FloatingButton = ({ btnLabel, btnClass, btnClick, btnDisabled, id, left }) => {
@@ -10,16 +9,7 @@ const FloatingButton = ({ btnLabel, btnClass, btnClick, btnDisabled, id, left })
     position: "fixed"
   };
 
-  return (
-    <Button
-      btnLabel={btnLabel}
-      btnClass={btnClass}
-      btnClick={btnClick}
-      btnDisabled={btnDisabled}
-      id={id}
-      style={floatingStyle}
-    />
-  );
+  return <Button btnLabel={btnLabel} btnClass={btnClass} btnClick={btnClick} btnDisabled={btnDisabled} id={id} style={floatingStyle} />;
 };
 
 export default FloatingButton;

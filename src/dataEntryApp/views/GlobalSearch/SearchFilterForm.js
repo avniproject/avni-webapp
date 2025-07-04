@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { LineBreak, withParams } from "../../../common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { makeStyles } from "@mui/styles";
 import { Paper, Typography, FormControl, Button, Grid } from "@mui/material";
 import { getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
 import BasicForm from "../GlobalSearch/BasicForm";
@@ -19,6 +19,26 @@ import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import SubjectTypeOptions from "./SubjectTypeOptions";
 
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(1, 3),
+  flexGrow: 1
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  fontSize: "20px"
+}));
+
+const StyledButtons = styled("div")(({ theme }) => ({
+  "& > *": {
+    margin: theme.spacing(1)
+  }
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  paddingLeft: 10
+}));
+
 const initialStates = {
   nameAgeSearchAll: {
     name: "",
@@ -32,27 +52,6 @@ const initialStates = {
     EncounterDate: { minValue: null, maxValue: null }
   }
 };
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1
-  },
-  mainHeading: {
-    fontSize: "20px"
-  },
-  buttons: {
-    "& > *": {
-      margin: theme.spacing(1)
-    }
-  },
-  formLabelRoot: {
-    color: "rgba(0, 0, 0, 0.54)",
-    "&$formLabelFocused": { color: "rgba(0, 0, 0, 0.54)" }
-  },
-  formLabelFocused: {}
-}));
 
 function SearchFilterFormContainer({
   match,
@@ -85,14 +84,12 @@ function SearchFilterFormContainer({
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    operationalModules: state.dataEntry.metadata.operationalModules,
-    genders: state.dataEntry.metadata.genders,
-    organisationConfigs: state.dataEntry.metadata.organisationConfigs,
-    searchRequest: state.dataEntry.searchFilterReducer.request
-  };
-};
+const mapStateToProps = state => ({
+  operationalModules: state.dataEntry.metadata.operationalModules,
+  genders: state.dataEntry.metadata.genders,
+  organisationConfigs: state.dataEntry.metadata.organisationConfigs,
+  searchRequest: state.dataEntry.searchFilterReducer.request
+});
 
 const mapDispatchToProps = {
   getGenders,
@@ -109,25 +106,22 @@ export default withRouter(
 );
 
 function SearchFilterForm({ match, operationalModules, genders, organisationConfigs, searchRequest }) {
-  const classes = useStyles();
   const { t } = useTranslation();
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
-        <Typography component={"span"} className={classes.mainHeading}>
-          {t("search")}
-        </Typography>
+      <StyledPaper>
+        <StyledTypography component="span">{t("search")}</StyledTypography>
         <LineBreak num={1} />
         <SearchForm
           operationalModules={operationalModules}
           genders={genders}
           organisationConfigs={organisationConfigs}
           searchRequest={searchRequest}
-          searchTo={"/app/search"}
-          cancelTo={"/app/"}
+          searchTo="/app/search"
+          cancelTo="/app/"
         />
-      </Paper>
+      </StyledPaper>
     </Fragment>
   );
 }
@@ -136,62 +130,41 @@ const searchFilterConcept = function(event, searchFilterForm, fieldName, setSele
   setSelectedConcept(previousSelectedConcepts =>
     previousSelectedConcepts.map(concept => {
       if (concept.conceptDataType === null) {
-      } else {
-        if (["Date", "DateTime", "Time"].includes(concept.conceptDataType)) {
-          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
-            return {
-              ...concept,
-              [fieldName]: event
-            };
-          } else {
-            return {
-              ...concept
-            };
-          }
-        } else if (concept.conceptDataType === "Coded") {
-          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
-            const selectedCodedValue = {};
-            concept.values.forEach(element => {
-              selectedCodedValue[element] = true;
-            });
-            selectedCodedValue[event.target.name] = event.target.checked;
-
-            return {
-              ...concept,
-              values: Object.keys(selectedCodedValue).filter(selectedId => selectedCodedValue[selectedId])
-            };
-          } else {
-            return {
-              ...concept
-            };
-          }
-        } else if (["Text", "Id"].includes(concept.conceptDataType)) {
-          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
-            const selectedText = event.target.value;
-            return {
-              ...concept,
-              value: selectedText
-            };
-          } else {
-            return {
-              ...concept
-            };
-          }
-        } else if (concept.conceptDataType === "Numeric") {
-          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
-            const selectedNumeric = event.target.value;
-            return {
-              ...concept,
-              [fieldName]: selectedNumeric
-            };
-          } else {
-            return {
-              ...concept
-            };
-          }
-        }
+        return concept;
       }
-      return null;
+      if (["Date", "DateTime", "Time"].includes(concept.conceptDataType)) {
+        if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+          return { ...concept, [fieldName]: event };
+        }
+        return concept;
+      }
+      if (concept.conceptDataType === "Coded") {
+        if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+          const selectedCodedValue = {};
+          concept.values.forEach(element => {
+            selectedCodedValue[element] = true;
+          });
+          selectedCodedValue[event.target.name] = event.target.checked;
+          return {
+            ...concept,
+            values: Object.keys(selectedCodedValue).filter(selectedId => selectedCodedValue[selectedId])
+          };
+        }
+        return concept;
+      }
+      if (["Text", "Id"].includes(concept.conceptDataType)) {
+        if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+          return { ...concept, value: event.target.value };
+        }
+        return concept;
+      }
+      if (concept.conceptDataType === "Numeric") {
+        if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+          return { ...concept, [fieldName]: event.target.value };
+        }
+        return concept;
+      }
+      return concept;
     })
   );
 };
@@ -210,12 +183,9 @@ const searchResult = function(
   const searchRequest = {
     subjectType: selectedSubjectTypeUUID,
     name: enterValue.name,
-    age: {
-      minValue: enterValue.age,
-      maxValue: null
-    },
-    includeVoided: includeVoided,
-    includeDisplayCount: includeDisplayCount,
+    age: { minValue: enterValue.age, maxValue: null },
+    includeVoided,
+    includeDisplayCount,
     addressIds: addressLevelIds,
     concept: conceptRequests,
     gender: selectedGenderSort,
@@ -245,30 +215,24 @@ const searchResult = function(
   }
 };
 
-//no idea what is the meaning Api here
 const getSelectedConceptApi = function(selectedConcepts) {
   return selectedConcepts.filter(selectedConcept => {
     if (selectedConcept.conceptDataType === null) {
-    } else {
-      if (["Date", "DateTime", "Time"].includes(selectedConcept.conceptDataType)) {
-        if (selectedConcept.widget === "Range") {
-          return selectedConcept.minValue && selectedConcept.maxValue;
-        } else {
-          return selectedConcept.minValue;
-        }
-      } else if (selectedConcept.conceptDataType === "Coded" && selectedConcept.values.length > 0) {
-        return selectedConcept.values;
-      } else if (["Text", "Id"].includes(selectedConcept.conceptDataType)) {
-        return selectedConcept.value;
-      } else if (selectedConcept.conceptDataType === "Numeric") {
-        if (selectedConcept.widget === "Range") {
-          return selectedConcept.minValue && selectedConcept.maxValue;
-        } else {
-          return selectedConcept.minValue;
-        }
-      }
+      return false;
     }
-    return null;
+    if (["Date", "DateTime", "Time"].includes(selectedConcept.conceptDataType)) {
+      return selectedConcept.widget === "Range" ? selectedConcept.minValue && selectedConcept.maxValue : selectedConcept.minValue;
+    }
+    if (selectedConcept.conceptDataType === "Coded") {
+      return selectedConcept.values.length > 0;
+    }
+    if (["Text", "Id"].includes(selectedConcept.conceptDataType)) {
+      return selectedConcept.value;
+    }
+    if (selectedConcept.conceptDataType === "Numeric") {
+      return selectedConcept.widget === "Range" ? selectedConcept.minValue && selectedConcept.maxValue : selectedConcept.minValue;
+    }
+    return false;
   });
 };
 
@@ -283,7 +247,8 @@ const getConceptRequests = function(selectedConcepts) {
         dataType: conceptRequest.conceptDataType,
         widget: conceptRequest.widget
       };
-    } else if (conceptRequest.conceptDataType === "Coded") {
+    }
+    if (conceptRequest.conceptDataType === "Coded") {
       return {
         uuid: conceptRequest.conceptUUID,
         searchScope: conceptRequest.scope,
@@ -291,7 +256,8 @@ const getConceptRequests = function(selectedConcepts) {
         widget: conceptRequest.widget,
         values: conceptRequest.values
       };
-    } else if (["Text", "Id"].includes(conceptRequest.conceptDataType)) {
+    }
+    if (["Text", "Id"].includes(conceptRequest.conceptDataType)) {
       return {
         uuid: conceptRequest.conceptUUID,
         searchScope: conceptRequest.scope,
@@ -299,7 +265,8 @@ const getConceptRequests = function(selectedConcepts) {
         widget: conceptRequest.widget,
         value: conceptRequest.value
       };
-    } else if (conceptRequest.conceptDataType === "Numeric") {
+    }
+    if (conceptRequest.conceptDataType === "Numeric") {
       return {
         uuid: conceptRequest.conceptUUID,
         minValue: conceptRequest.minValue,
@@ -308,9 +275,8 @@ const getConceptRequests = function(selectedConcepts) {
         dataType: conceptRequest.conceptDataType,
         widget: conceptRequest.widget
       };
-    } else {
-      return null;
     }
+    return null;
   });
 };
 
@@ -334,7 +300,6 @@ const getInitialConceptList = function(selectedSearchFilter) {
 };
 
 export const SearchForm = ({ operationalModules, genders, organisationConfigs, searchRequest, searchTo, cancelTo, onSearch }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const searchProps = _.isFunction(onSearch) ? {} : { to: searchTo, component: Link };
   const {
@@ -352,12 +317,10 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   } = searchRequest;
 
   const [selectedSubjectTypeUUID, setSelectedSubjectTypeUUID] = useState(subjectType || _.get(operationalModules.subjectTypes[0], "uuid"));
-
   const initialSubjectTypeSearchFilter =
     organisationConfigs &&
     organisationConfigs.organisationConfig.searchFilters &&
     organisationConfigs.organisationConfig.searchFilters.filter(searchFilter => searchFilter.subjectTypeUUID === selectedSubjectTypeUUID);
-
   const [selectedSearchFilter, setSelectedSearchFilter] = useState(initialSubjectTypeSearchFilter || []);
 
   // name age search all
@@ -368,24 +331,18 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   });
 
   const searchFilterValue = event => {
-    const value = event.target.value;
     setEnterValue({
       ...enterValue,
-      [event.target.name]: value
+      [event.target.name]: event.target.value
     });
   };
 
-  //Gender
   let g = {};
   _.forEach(gender, gender => _.assign(g, { [gender]: true }));
-  const [selectedGender, setSelectedGender] = React.useState(g);
+  const [selectedGender, setSelectedGender] = useState(g);
 
   const onGenderChange = event => {
-    if (event.target.checked) {
-      setSelectedGender({ ...selectedGender, [event.target.name]: event.target.checked });
-    } else {
-      setSelectedGender({ ...selectedGender, [event.target.name]: event.target.checked });
-    }
+    setSelectedGender({ ...selectedGender, [event.target.name]: event.target.checked });
   };
 
   const selectedGenderSort =
@@ -395,14 +352,13 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
           .map(String)
       : [];
 
-  // address
-  const [addressLevelIds, setAddressLevelIds] = React.useState(addressIds || []);
+  const [addressLevelIds, setAddressLevelIds] = useState(addressIds || []);
 
   const setPreviousMinMaxValues = registrationDate => ({
     minValue: (registrationDate && registrationDate.minValue) || null,
     maxValue: (registrationDate && registrationDate.maxValue) || null
   });
-  // date
+
   const [selectedDate, setSelectedDate] = useState({
     RegistrationDate: setPreviousMinMaxValues(registrationDate),
     EnrolmentDate: setPreviousMinMaxValues(programEnrolmentDate),
@@ -421,12 +377,9 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   };
 
   const initialConceptList = getInitialConceptList(selectedSearchFilter);
-
   const allConceptRelatedFilters = _.map(initialConceptList, item => _.merge(item, _.find(concept, { uuid: item.conceptUUID })));
   const [selectedConcepts, setSelectedConcept] = useState(allConceptRelatedFilters);
-
-  // is voided
-  const [checked, setChecked] = React.useState({
+  const [checked, setChecked] = useState({
     includeVoided: searchRequest.includeVoided || false,
     includeDisplayCount: searchRequest.includeDisplayCount || false
   });
@@ -457,100 +410,90 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   };
 
   return (
-    <React.Fragment>
-      <FormControl component="fieldset">
-        <SubjectTypeOptions
-          operationalModules={operationalModules}
-          onSubjectTypeChange={onSubjectTypeChange}
-          selectedSubjectTypeUUID={selectedSubjectTypeUUID}
-          t={t}
-        />
-        {selectedSearchFilter ? (
-          <div>
-            <Grid container style={{ paddingLeft: 10 }}>
-              <Grid size={12}>
-                <BasicForm
-                  searchFilterForms={selectedSearchFilter}
-                  onChange={searchFilterValue}
-                  enterValue={enterValue}
-                  genders={genders}
-                  onGenderChange={onGenderChange}
-                  selectedGender={selectedGender}
-                  addressLevelIds={addressLevelIds}
-                  setAddressLevelIds={setAddressLevelIds}
-                />
-              </Grid>
-              <Grid size={12}>
-                <NonCodedConceptForm
-                  searchFilterForms={selectedSearchFilter}
-                  onChange={(event, searchFilterForm, fieldName) =>
-                    searchFilterConcept(event, searchFilterForm, fieldName, setSelectedConcept)
-                  }
-                  selectedConcepts={selectedConcepts}
-                />
-              </Grid>
-              <Grid size={12}>
-                <NonConceptForm searchFilterForms={selectedSearchFilter} selectedDate={selectedDate} onDateChange={searchFilterDates} />
-              </Grid>
-              <Grid size={12}>
-                <CodedConceptForm
-                  searchFilterForms={selectedSearchFilter}
-                  conceptList={organisationConfigs.conceptList}
-                  onChange={(event, searchFilterForm, fieldName) =>
-                    searchFilterConcept(event, searchFilterForm, fieldName, setSelectedConcept)
-                  }
-                  selectedConcepts={selectedConcepts}
-                />
-              </Grid>
-              <Grid container spacing={3} direction="row">
-                <Grid>
-                  <CheckBoxSearchComponent
-                    label="Include Voided"
-                    checked={includeVoided}
-                    onChange={event => onChecked("includeVoided", event.target.checked)}
-                  />
-                </Grid>
-                <Grid>
-                  <CheckBoxSearchComponent
-                    label="Display Count"
-                    checked={includeDisplayCount}
-                    onChange={event => onChecked("includeDisplayCount", event.target.checked)}
-                  />
-                </Grid>
-              </Grid>
+    <FormControl component="fieldset">
+      <SubjectTypeOptions
+        operationalModules={operationalModules}
+        onSubjectTypeChange={onSubjectTypeChange}
+        selectedSubjectTypeUUID={selectedSubjectTypeUUID}
+        t={t}
+      />
+      {selectedSearchFilter ? (
+        <StyledGrid container>
+          <Grid size={12}>
+            <BasicForm
+              searchFilterForms={selectedSearchFilter}
+              onChange={searchFilterValue}
+              enterValue={enterValue}
+              genders={genders}
+              onGenderChange={onGenderChange}
+              selectedGender={selectedGender}
+              addressLevelIds={addressLevelIds}
+              setAddressLevelIds={setAddressLevelIds}
+            />
+          </Grid>
+          <Grid size={12}>
+            <NonCodedConceptForm
+              searchFilterForms={selectedSearchFilter}
+              onChange={(event, searchFilterForm, fieldName) => searchFilterConcept(event, searchFilterForm, fieldName, setSelectedConcept)}
+              selectedConcepts={selectedConcepts}
+            />
+          </Grid>
+          <Grid size={12}>
+            <NonConceptForm searchFilterForms={selectedSearchFilter} selectedDate={selectedDate} onDateChange={searchFilterDates} />
+          </Grid>
+          <Grid size={12}>
+            <CodedConceptForm
+              searchFilterForms={selectedSearchFilter}
+              conceptList={organisationConfigs.conceptList}
+              onChange={(event, searchFilterForm, fieldName) => searchFilterConcept(event, searchFilterForm, fieldName, setSelectedConcept)}
+              selectedConcepts={selectedConcepts}
+            />
+          </Grid>
+          <Grid container spacing={3} direction="row">
+            <Grid>
+              <CheckBoxSearchComponent
+                label="Include Voided"
+                checked={includeVoided}
+                onChange={event => onChecked("includeVoided", event.target.checked)}
+              />
             </Grid>
-          </div>
-        ) : (
-          ""
-        )}
-        <div className={classes.buttons}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() =>
-              searchResult(
-                selectedSubjectTypeUUID,
-                enterValue,
-                includeVoided,
-                includeDisplayCount,
-                addressLevelIds,
-                conceptRequests,
-                selectedGenderSort,
-                selectedDate,
-                onSearch
-              )
-            }
-            {...searchProps}
-          >
-            {t("search")}
+            <Grid>
+              <CheckBoxSearchComponent
+                label="Display Count"
+                checked={includeDisplayCount}
+                onChange={event => onChecked("includeDisplayCount", event.target.checked)}
+              />
+            </Grid>
+          </Grid>
+        </StyledGrid>
+      ) : null}
+      <StyledButtons>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() =>
+            searchResult(
+              selectedSubjectTypeUUID,
+              enterValue,
+              includeVoided,
+              includeDisplayCount,
+              addressLevelIds,
+              conceptRequests,
+              selectedGenderSort,
+              selectedDate,
+              onSearch
+            )
+          }
+          {...searchProps}
+        >
+          {t("search")}
+        </Button>
+        {cancelTo && (
+          <Button variant="contained" component={Link} to={cancelTo}>
+            {t("cancel")}
           </Button>
-          {cancelTo && (
-            <Button variant="contained" component={Link} to={cancelTo}>
-              {t("cancel")}
-            </Button>
-          )}
-        </div>
-      </FormControl>
-    </React.Fragment>
+        )}
+      </StyledButtons>
+    </FormControl>
   );
 };

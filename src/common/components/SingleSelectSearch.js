@@ -1,6 +1,5 @@
 import { FormLabel, FormControl } from "@mui/material";
 import Select from "react-select";
-import React from "react";
 
 const SingleSelectSearch = ({ title, placeholder, value, options, onChange }) => {
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { FormControl, FormLabel, Grid } from "@mui/material";
 import { debounce, deburr, get, isEqual, isFunction, map, noop, sortBy } from "lodash";
 import AsyncSelect from "react-select/async";
@@ -6,10 +6,10 @@ import httpClient from "../utils/httpClient";
 import { locationNameRenderer } from "../../dataEntryApp/utils/LocationUtil";
 
 const AddressLevelsByType = ({ label, addressLevelsIds = [], setAddressLevelsIds, setError = noop, skipGrid = false }) => {
-  const [selectedAddresses, setSelectedAddresses] = React.useState([]);
-  const [defaultOptions, setDefaultOptions] = React.useState([]);
+  const [selectedAddresses, setSelectedAddresses] = useState([]);
+  const [defaultOptions, setDefaultOptions] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const ids = map(selectedAddresses, ({ value }) => value);
     if (!isEqual(sortBy(ids), sortBy(addressLevelsIds))) {
       httpClient
@@ -18,7 +18,7 @@ const AddressLevelsByType = ({ label, addressLevelsIds = [], setAddressLevelsIds
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchLocation("", setDefaultOptions);
   }, []);
 

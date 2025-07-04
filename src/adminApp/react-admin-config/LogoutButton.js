@@ -1,4 +1,3 @@
-import React from "react";
 import { connect } from "react-redux";
 import { MenuItem } from "@mui/material";
 import { Logout, Person, Lock } from "@mui/icons-material";

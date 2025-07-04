@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import AppBar from "../common/components/AppBar";
 import { HomePageCard } from "../rootApp/views/HomePageCard";
 import { WhatsApp } from "@mui/icons-material";
@@ -19,7 +19,7 @@ import UserInfo from "../common/model/UserInfo";
 const BroadcastPage = function({ path, organisationConfig, userInfo }) {
   const showMessaging = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Messaging);
   return (
-    <React.Fragment>
+    <Fragment>
       <AppBar title={"Broadcast"} position={"sticky"} />
       <Grid
         container
@@ -36,7 +36,7 @@ const BroadcastPage = function({ path, organisationConfig, userInfo }) {
           />
         )}
       </Grid>
-    </React.Fragment>
+    </Fragment>
   );
 };
 const Broadcast = ({ match: { path }, organisationConfig, userInfo }) => {
@@ -45,7 +45,7 @@ const Broadcast = ({ match: { path }, organisationConfig, userInfo }) => {
     dispatch(getOrganisationConfig());
   }, []);
   return (
-    <React.Fragment>
+    <Fragment>
       <Route exact path={path} component={WithProps({ path: path, organisationConfig, userInfo }, BroadcastPage)} />
       <Route exact path={getRoutePath(path, BroadcastPath.News)} component={News} />
       <Route exact path={`${path}/news/:id/details`} component={NewsDetails} />
@@ -56,7 +56,7 @@ const Broadcast = ({ match: { path }, organisationConfig, userInfo }) => {
         component={WhatsAppContactGroup}
       />
       <Route exact path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab/:receiverId/messages`)} component={WhatsAppHome} />
-    </React.Fragment>
+    </Fragment>
   );
 };
 const mapStateToProps = state => ({

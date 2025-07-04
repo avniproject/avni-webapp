@@ -1,37 +1,23 @@
-import React from "react";
+import { Fragment } from "react";
 import { isEmpty } from "lodash";
 import { ExportOptions } from "./ExportOptions";
 import { DateOptions } from "./DateOptions";
 
-export const EnrolmentType = ({
-  subjectTypes,
-  subjectType,
-  startDate,
-  endDate,
-  dispatch,
-  setEnableExport,
-  programOptions,
-  program
-}) => {
+export const EnrolmentType = ({ subjectTypes, subjectType, startDate, endDate, dispatch, setEnableExport, programOptions, program }) => {
   const onProgramChange = program => {
     dispatch("program", program);
     !isEmpty(subjectType) && !isEmpty(program) ? setEnableExport(true) : setEnableExport(false);
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <ExportOptions
         options={subjectTypes}
         label={"Subject Type"}
         selectedOption={subjectType}
         onChange={st => dispatch("subjectType", st)}
       />
-      <ExportOptions
-        options={programOptions}
-        label={"Program"}
-        selectedOption={program}
-        onChange={program => onProgramChange(program)}
-      />
+      <ExportOptions options={programOptions} label={"Program"} selectedOption={program} onChange={program => onProgramChange(program)} />
       <DateOptions
         dispatch={dispatch}
         endDate={endDate}
@@ -39,6 +25,6 @@ export const EnrolmentType = ({
         startDateLabel={"Enrolment start date"}
         endDateLabel={"Enrolment end date"}
       />
-    </React.Fragment>
+    </Fragment>
   );
 };

@@ -1,6 +1,6 @@
-import React from "react";
+import { useState, useEffect, useReducer } from "react";
 import { DashboardReducer } from "./DashboardReducer";
-import http from "../../../common/utils/httpClient";
+import { httpClient as http } from "../../../common/utils/httpClient";
 import { isEmpty, isNil, reject } from "lodash";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Grid } from "@mui/material";
@@ -24,21 +24,21 @@ import OperationalModules from "../../../common/model/OperationalModules";
 import WebDashboard from "../../../common/model/reports/WebDashboard";
 
 const CreateEditDashboard = ({ edit, history, operationalModules, getOperationalModules, ...props }) => {
-  const [dashboard, dispatch] = React.useReducer(DashboardReducer, WebDashboard.createNew());
-  const [error, setError] = React.useState([]);
-  const [id, setId] = React.useState();
-  const [redirectAfterDelete, setRedirectAfterDelete] = React.useState(false);
-  const [showAddFilterModal, setShowAddFilterModal] = React.useState(false);
-  const [selectedFilter, setSelectedFilter] = React.useState(null);
-  React.useEffect(() => {
+  const [dashboard, dispatch] = useReducer(DashboardReducer, WebDashboard.createNew());
+  const [error, setError] = useState([]);
+  const [id, setId] = useState();
+  const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
+  const [showAddFilterModal, setShowAddFilterModal] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState(null);
+  useEffect(() => {
     getOperationalModules();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     selectedFilter && setShowAddFilterModal(true);
   }, [selectedFilter]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (edit && OperationalModules.isLoaded(operationalModules)) {
       DashboardService.getDashboard(props.match.params.id, operationalModules).then(dashboard => {
         dispatch({ type: "setData", payload: dashboard });

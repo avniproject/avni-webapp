@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useState, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { map, filter, get } from "lodash";
 import { Button, Grid } from "@mui/material";
 import { isDevEnv } from "../../../../../common/constants";
@@ -14,15 +14,15 @@ const StyledButton = styled(Button)(({ theme }) => ({
   color: "#FFFFFF",
   backgroundColor: "#0000ff",
   "&:hover": {
-    backgroundColor: "#0000A2",
+    backgroundColor: "#0000A2"
   },
-  marginBottom: theme.spacing(2),
+  marginBottom: theme.spacing(2)
 }));
 
 export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType, configExtensions }) => {
-  const [extensions, setExtensions] = React.useState([]);
+  const [extensions, setExtensions] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!configExtensions) {
       commonApi.fetchOrganisationConfigs().then(config => {
         const extensions = get(config, "organisationConfig.extensions", []);
@@ -55,10 +55,7 @@ export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType, c
     <Grid container direction="row-reverse" spacing={1} size={12}>
       {map(filteredSettings, ({ label, fileName }, index) => (
         <Grid key={label + index}>
-          <StyledButton
-            id={label}
-            onClick={() => clickHandler(fileName)}
-          >
+          <StyledButton id={label} onClick={() => clickHandler(fileName)}>
             {label}
           </StyledButton>
         </Grid>

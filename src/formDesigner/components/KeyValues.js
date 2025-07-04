@@ -1,4 +1,3 @@
-import React from "react";
 import { styled } from "@mui/material/styles";
 import { TextField, Box, Button, IconButton, Grid, FormHelperText } from "@mui/material";
 import { map } from "lodash";
@@ -8,29 +7,29 @@ import { ToolTip } from "../../common/components/ToolTip";
 const StyledForm = styled("form")(({ theme }) => ({
   "& > *": {
     marginRight: theme.spacing(1),
-    width: 150,
-  },
+    width: 150
+  }
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
   height: 35,
   width: "10%",
-  marginTop: theme.spacing(2.5), // 20px
+  marginTop: theme.spacing(2.5) // 20px
 }));
 
 const StyledTextField = styled(TextField)({
   "& .MuiInputBase-input": {
-    height: 20, // Adjusted from 10 for usability
-  },
+    height: 20 // Adjusted from 10 for usability
+  }
 });
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(5),
+  marginTop: theme.spacing(5)
 }));
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  marginTop: theme.spacing(1.25), // 10px
+  marginTop: theme.spacing(1.25) // 10px
 }));
 
 export default function KeyValues({ keyValues, onKeyValueChange, onAddNewKeyValue, onDeleteKeyValue, error, readOnlyKeys = [] }) {
@@ -45,11 +44,11 @@ export default function KeyValues({ keyValues, onKeyValueChange, onAddNewKeyValu
               variant="outlined"
               value={key}
               disabled={readOnlyKeys.includes(key)}
-              onChange={(event) =>
+              onChange={event =>
                 onKeyValueChange(
                   {
                     key: event.target.value,
-                    value,
+                    value
                   },
                   index
                 )
@@ -61,22 +60,18 @@ export default function KeyValues({ keyValues, onKeyValueChange, onAddNewKeyValu
               variant="outlined"
               value={value}
               disabled={readOnlyKeys.includes(key)}
-              onChange={(event) =>
+              onChange={event =>
                 onKeyValueChange(
                   {
                     key,
-                    value: event.target.value,
+                    value: event.target.value
                   },
                   index
                 )
               }
             />
           </StyledForm>
-          <StyledIconButton
-            aria-label="delete"
-            onClick={() => onDeleteKeyValue(index)}
-            disabled={readOnlyKeys.includes(key)}
-          >
+          <StyledIconButton aria-label="delete" onClick={() => onDeleteKeyValue(index)} disabled={readOnlyKeys.includes(key)}>
             <Delete fontSize="inherit" />
           </StyledIconButton>
         </Grid>

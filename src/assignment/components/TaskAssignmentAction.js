@@ -1,44 +1,45 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Grid, Button, Modal, Typography } from "@mui/material";
 import Select from "react-select";
 import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
-const useStyles = makeStyles(theme => ({
-  paper: {
-    position: "absolute",
-    width: 800,
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3)
-  }
+const StyledModalContent = styled(Grid)(({ theme }) => ({
+  position: "absolute",
+  width: 800,
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: theme.shadows[5],
+  padding: theme.spacing(2, 4, 3),
+  top: "25%",
+  left: "30%"
 }));
 
-const SelectAction = function({ dispatch, label, options, assignmentKeyName, isMulti, assignmentCriteria }) {
+const StyledSelectGrid = styled(Grid)({
+  alignItems: "center"
+});
+
+const StyledSelect = styled(Select)({
+  width: "auto"
+});
+
+const SelectAction = ({ dispatch, label, options, assignmentKeyName, isMulti, assignmentCriteria }) => {
   const onActionChange = (key, value) => dispatch({ type: "setAction", payload: { key, value } });
 
   return (
-    <Grid
-      spacing={3}
-      sx={{
-        alignItems: "center"
-      }}
-      size={12}
-    >
+    <StyledSelectGrid spacing={3} size={12}>
       <Typography variant="body1">{label}</Typography>
-      <Select
+      <StyledSelect
         isDisabled={options.length === 0}
         isClearable
         isSearchable
         isMulti={isMulti}
         value={assignmentCriteria[assignmentKeyName]}
         options={options}
-        style={{ width: "auto" }}
         onChange={event => onActionChange(assignmentKeyName, event)}
       />
-    </Grid>
+    </StyledSelectGrid>
   );
 };
+
 export const TaskAssignmentAction = ({
   openAction,
   onDone,
@@ -50,12 +51,12 @@ export const TaskAssignmentAction = ({
   userAssignmentKeyName = "assignToUserIds",
   statusAssignmentKeyName = "statusId"
 }) => {
-  const classes = useStyles();
   const onClose = () => dispatch({ type: "hideAction" });
+
   return (
     <Modal onClose={MuiComponentHelper.getDialogClosingHandler(onClose)} open={openAction}>
-      <Grid container direction={"column"} spacing={3} className={classes.paper} style={{ top: "25%", left: "30%" }}>
-        <Typography variant={"h6"}>{"Bulk Action"}</Typography>
+      <StyledModalContent container direction="column" spacing={3}>
+        <Typography variant="h6">{"Bulk Action"}</Typography>
         <SelectAction
           dispatch={dispatch}
           label="Set user to"
@@ -84,7 +85,7 @@ export const TaskAssignmentAction = ({
             </Button>
           </Grid>
         </Grid>
-      </Grid>
+      </StyledModalContent>
     </Modal>
   );
 };

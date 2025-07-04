@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { InsertDriveFile } from "@mui/icons-material";
 import { size, get, isNil } from "lodash";
 import { Box, Typography } from "@mui/material";
@@ -10,17 +9,17 @@ const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
-  padding: theme.spacing(1, 4),
+  padding: theme.spacing(1, 4)
 }));
 
 const StyledIcon = styled(InsertDriveFile)(({ theme }) => ({
   fontSize: 40,
   marginRight: theme.spacing(1.875), // 15px
-  color: "#FFF",
+  color: "#FFF"
 }));
 
 const StyledTypography = styled(Typography)({
-  color: "#FFF",
+  color: "#FFF"
 });
 
 // temp fix to ensure there is no crash. don't merge this.

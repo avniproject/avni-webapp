@@ -1,5 +1,5 @@
-import React, { Fragment } from "react";
-import { styled } from '@mui/material/styles';
+import { useState, Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { Typography, Dialog, DialogActions, IconButton, Fab } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { Link } from "react-router-dom";
@@ -7,18 +7,18 @@ import SubjectButton from "./Button";
 import FloatingButton from "./FloatingButton";
 import CustomizedDialog from "../../../components/Dialog";
 
-const StyledDialogTitle = styled('div')(({ theme }) => ({
+const StyledDialogTitle = styled("div")(({ theme }) => ({
   margin: 0,
   backgroundColor: "#555555",
   padding: "6px 16px",
-  color: "white",
+  color: "white"
 }));
 
 const StyledCloseButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
   right: theme.spacing(1),
   top: "0px",
-  color: "white",
+  color: "white"
 }));
 
 const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
@@ -26,12 +26,12 @@ const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   padding: "11px",
   backgroundColor: "#F8F9F9",
   float: "left",
-  display: "inline",
+  display: "inline"
 }));
 
 const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, ...props }) => {
-  const [open, setOpen] = React.useState(false);
-  const [validMsg, setValidationMsg] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [validMsg, setValidationMsg] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -92,12 +92,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
         {content}
         <StyledDialogActions>
           {cancelButton && (
-            <SubjectButton
-              btnLabel={cancelButton.label}
-              btnClass={cancelButton.sx}
-              btnClick={handleClose}
-              id="cancel-dialog-button"
-            />
+            <SubjectButton btnLabel={cancelButton.label} btnClass={cancelButton.sx} btnClick={handleClose} id="cancel-dialog-button" />
           )}
           {findButton && (
             <SubjectButton
@@ -137,12 +132,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           )}
           {saveButton && saveButton.requiredField ? (
             <Link to={saveButton.redirectTo}>
-              <SubjectButton
-                btnLabel={saveButton.label}
-                btnClass={saveButton.sx}
-                btnClick={handleClose}
-                id="save-required-dialog-button"
-              />
+              <SubjectButton btnLabel={saveButton.label} btnClass={saveButton.sx} btnClick={handleClose} id="save-required-dialog-button" />
             </Link>
           ) : (
             saveButton && (

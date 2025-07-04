@@ -1,6 +1,6 @@
-import React, { Fragment } from "react";
+import { useState, Fragment } from "react";
 import Button from "@mui/material/Button";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import fileDownload from "js-file-download";
 import { connect } from "react-redux";
 import Box from "@mui/material/Box";
@@ -14,8 +14,8 @@ import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
 function ImplementationBundle({ organisation, userInfo }) {
-  const [loading, setLoading] = React.useState(false);
-  const [includeLocations, setIncludeLocations] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const [includeLocations, setIncludeLocations] = useState(false);
   const hasDownloadPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.DownloadBundle);
 
   function onDownloadHandler() {

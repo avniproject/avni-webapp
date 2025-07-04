@@ -1,6 +1,6 @@
 import { JSEditor } from "../../../common/components/JSEditor";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
-import React from "react";
+
 import BorderBox from "../BorderBox";
 import { Delete } from "@mui/icons-material";
 import { Button } from "@mui/material";

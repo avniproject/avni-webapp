@@ -1,4 +1,3 @@
-import React from "react";
 import { CreateEditFilters } from "./CreateEditFilters";
 import { isNil } from "lodash";
 

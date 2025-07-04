@@ -1,4 +1,3 @@
-import React from "react";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 
 export const ImageV2Concept = ({ onKeyValueChange, checked }) => {

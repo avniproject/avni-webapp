@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableRow, Box, TablePagination, Button } from "@mui/material";
@@ -12,7 +12,7 @@ import FileDownloadButton from "../common/components/FileDownloadButton";
 import UploadTypes from "./UploadTypes";
 
 const StyledBox = styled(Box)({
-  display: 'block'
+  display: "block"
 });
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -32,7 +32,7 @@ const StyledDateCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadTypes = new UploadTypes() }) => {
-  React.useEffect(() => {
+  useEffect(() => {
     getStatuses(0);
   }, [viewVersion]);
 

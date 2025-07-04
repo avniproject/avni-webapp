@@ -1,4 +1,3 @@
-import React from "react";
 import { FormLabel } from "@mui/material";
 
 export const BooleanStatusInShow = ({ status, label }) => {

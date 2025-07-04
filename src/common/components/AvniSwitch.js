@@ -1,5 +1,5 @@
 import { Grid, Switch } from "@mui/material";
-import React from "react";
+
 import { ToolTipContainer } from "./ToolTipContainer";
 
 export const AvniSwitch = ({ toolTipKey, switchFirst, ...props }) => {

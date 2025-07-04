@@ -1,4 +1,3 @@
-import React from "react";
 import { TableHead, TableRow, TableCell, TableBody, Table } from "@mui/material";
 
 export const ConceptSyncAttributesShow = ({ subjectType, concept1Name, concept2Name }) => {

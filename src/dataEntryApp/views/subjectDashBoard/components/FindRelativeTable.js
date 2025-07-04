@@ -1,4 +1,3 @@
-import React from "react";
 import { first } from "lodash";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -12,14 +11,7 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
     sessionStorage.setItem("selectedRelative", JSON.stringify(row));
   };
 
-  return (
-    <SelectSubject
-      t={t}
-      errormsg={errormsg}
-      subjectData={subjectData}
-      onSelectedItem={onSelectedItem}
-    />
-  );
+  return <SelectSubject t={t} errormsg={errormsg} subjectData={subjectData} onSelectedItem={onSelectedItem} />;
 };
 
 const mapStateToProps = state => ({

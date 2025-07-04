@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useReducer, Fragment, useEffect } from "react";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import api from "./api";
 import { DocumentationReducer, initialState } from "./reducers";
@@ -27,7 +27,7 @@ function createDocumentationNode(
     const { uuid, name } = documentation;
     const childrenDocumentations = filter(allDocumentations, ad => uuid === get(ad, "parent.uuid"));
     return (
-      <React.Fragment key={uuid}>
+      <Fragment key={uuid}>
         <Item
           name={name}
           onAdd={hasEditPrivilege && (() => onDocumentationAdd(documentation))}
@@ -46,7 +46,7 @@ function createDocumentationNode(
           selectedDocumentationUUID,
           hasEditPrivilege
         )}
-      </React.Fragment>
+      </Fragment>
     );
   });
 }
@@ -54,7 +54,7 @@ function createDocumentationNode(
 const DocumentationList = ({ userInfo }) => {
   const location = useLocation();
   const documentationUUID = get(location, "state.documentationUUID");
-  const [state, dispatch] = React.useReducer(DocumentationReducer, initialState);
+  const [state, dispatch] = useReducer(DocumentationReducer, initialState);
   const { documentations, saving, selectedDocumentation } = state;
   const rootNodes = filter(documentations, d => isNil(d.parent));
 

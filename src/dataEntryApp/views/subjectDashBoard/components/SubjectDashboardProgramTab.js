@@ -1,29 +1,35 @@
-import React, { Fragment } from "react";
-import { makeStyles } from "@mui/styles";
+import { useState, Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { Paper, Typography, Grid } from "@mui/material";
-import ProgramDetails from "./subjectDashboardProgramDetails";
+import ProgramDetails from "./SubjectDashboardProgramDetails";
 import Program from "./Program";
 import { useTranslation } from "react-i18next";
 import SubjectVoided from "../../../components/SubjectVoided";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  },
-  programBar: {
-    height: "100px",
-    backgroundColor: "#f9f9f9"
-  },
-  infomsg: {
-    padding: 40
-  }
-}));
+const StyledPaper = styled(Paper)({
+  flexGrow: 1,
+  elevation: 2
+});
+
+const StyledProgramBar = styled("div")({
+  height: "100px",
+  backgroundColor: "#f9f9f9"
+});
+
+const StyledTypographyNoEnrolments = styled(Typography)({
+  padding: 40,
+  marginBottom: 8
+});
+
+const StyledGridSpacer = styled(Grid)({
+  width: "60px"
+});
 
 const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, subjectTypeUuid, subjectVoided }) => {
   let flagActive = false;
   let flagExited = false;
-  const [selectedTab, setSelectedTab] = React.useState(0);
-  const [selectedTabExited, setSelectedTabExited] = React.useState(false);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTabExited, setSelectedTabExited] = useState(false);
   const { t } = useTranslation();
 
   const handleTabChange = (event, newValue) => {
@@ -37,12 +43,8 @@ const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, subjectTyp
   };
 
   if (program && program.enrolments) {
-    program.enrolments.sort(function(left, right) {
-      return left.programExitDateTime ? 1 : right.programExitDateTime ? -1 : 0;
-    });
+    program.enrolments.sort((left, right) => (left.programExitDateTime ? 1 : right.programExitDateTime ? -1 : 0));
   }
-
-  const classes = useStyles();
 
   function isActive(element) {
     return element.programExitDateTime == null;
@@ -53,39 +55,30 @@ const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, subjectTyp
   }
 
   if (program && program.enrolments) {
-    flagActive = program && program.enrolments && program.enrolments.some(isActive);
-    flagExited = program && program.enrolments && program.enrolments.some(isExited);
+    flagActive = program.enrolments.some(isActive);
+    flagExited = program.enrolments.some(isExited);
   }
 
   return (
     <Fragment>
-      <Paper className={classes.root}>
+      <StyledPaper>
         {subjectVoided && <SubjectVoided showUnVoid={false} />}
-        <div className={classes.programBar}>
+        <StyledProgramBar>
           <Grid container spacing={1}>
-            {flagActive ? (
+            {flagActive && (
               <Fragment>
                 <Program type="active" program={program} selectedTab={selectedTab} handleTabChange={handleTabChange} />
-                <Grid style={{ width: "60px" }} />
+                <StyledGridSpacer />
               </Fragment>
-            ) : (
-              ""
             )}
-
-            {flagExited ? (
+            {flagExited && (
               <Program type="exited" program={program} selectedTab={selectedTabExited} handleTabChange={handleTabChangeExited} />
-            ) : (
-              ""
             )}
-
             {!(program && program.enrolments) && (
-              <Typography component={"span"} sx={{ mb: 1 }} className={classes.infomsg}>
-                {" "}
-                {t("notEnroledInAnyProgram")}{" "}
-              </Typography>
+              <StyledTypographyNoEnrolments component="span">{t("notEnroledInAnyProgram")}</StyledTypographyNoEnrolments>
             )}
           </Grid>
-        </div>
+        </StyledProgramBar>
         {selectedTab !== false ? (
           <ProgramDetails
             tabPanelValue={selectedTab}
@@ -103,7 +96,7 @@ const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, subjectTyp
             subjectVoided={subjectVoided}
           />
         )}
-      </Paper>
+      </StyledPaper>
     </Fragment>
   );
 };

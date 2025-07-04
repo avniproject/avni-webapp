@@ -1,11 +1,11 @@
-import React from "react";
+import { useState } from "react";
 import { Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { filter, find, get } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
 
 export const EncounterConcept = props => {
-  const [keyValues, setKeyValues] = React.useState(get(props, "keyValues", []));
+  const [keyValues, setKeyValues] = useState(get(props, "keyValues", []));
 
   const getValueOfKey = keyToSearch => get(find(keyValues, ({ key }) => key === keyToSearch), "value");
   const encounterTypeOptions = get(props.operationalModules, "encounterTypes", []);

@@ -1,4 +1,3 @@
-import React from "react";
 import Select from "react-select";
 import { FormLabel } from "@mui/material";
 import { find, get } from "lodash";

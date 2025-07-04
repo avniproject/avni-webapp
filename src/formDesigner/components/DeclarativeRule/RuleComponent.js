@@ -1,4 +1,3 @@
-import React from "react";
 import LHSComponent from "./LHSComponent";
 import RHSComponent from "./RHSComponent";
 import OperatorComponent from "./OperatorComponent";

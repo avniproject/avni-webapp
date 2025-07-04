@@ -1,4 +1,3 @@
-import React from "react";
 import MessageRule from "./MessageRule";
 import IconButton from "../IconButton";
 import { AddCircle } from "@mui/icons-material";

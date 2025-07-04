@@ -1,4 +1,3 @@
-import React from "react";
 import { Dialog, DialogContent, DialogTitle, Box, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { CreateEditFiltersV2 } from "../../../adminApp/components/CreateEditFiltersV2";

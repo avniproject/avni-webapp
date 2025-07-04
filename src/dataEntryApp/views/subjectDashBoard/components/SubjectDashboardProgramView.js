@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { useState, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Grid, Paper, Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -13,7 +13,7 @@ import { clearVoidServerError, voidProgramEncounter, voidProgramEnrolment } from
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import MessageDialog from "../../../components/MessageDialog";
 import { fetchProgramSummary, selectFetchingRulesResponse, selectProgramSummary } from "../../../reducers/serverSideRulesReducer";
-import { RuleSummary } from "./RuleSummary";
+import RuleSummary from "./RuleSummary";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { EnrolmentDetails } from "./EnrolmentDetails";
@@ -21,104 +21,51 @@ import PlannedVisitsTable from "../PlannedVisitsTable";
 import CompletedVisits from "./CompletedVisits";
 import { NewProgramEncounterButton } from "./NewProgramEncounterButton";
 
-const useStyles = makeStyles(theme => ({
-  programLabel: {
-    fontSize: "18px",
-    fontWeight: "500"
-  },
-  growthButtonStyle: {
-    marginBottom: theme.spacing(2),
-    height: "28px",
-    boxShadow: "none",
-    marginRight: "10px",
-    marginLeft: "120px",
-    backgroundColor: "#0e6eff"
-  },
-  vaccinationButtonStyle: {
-    marginBottom: theme.spacing(2),
-    boxShadow: "none",
-    height: "28px",
-    backgroundColor: "#0e6eff"
-  },
-  newProgVisitButtonStyle: {
-    marginBottom: theme.spacing(2),
-    boxShadow: "none",
-    height: "28px",
-    marginLeft: "10px",
-    backgroundColor: "#0e6eff"
-  },
-  root: {
-    flexGrow: 1,
-    padding: theme.spacing(2),
-    boxShadow: "0px 0px 4px 0px rgba(0,0,0,0.3)"
-  },
-  expansionPanel: {
-    marginBottom: "11px",
-    borderRadius: "5px",
-    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-  },
-  paper: {
-    textAlign: "left",
-    boxShadow: "none",
-    borderRadius: "0px",
-    borderRight: "1px solid #dcdcdc",
-    padding: "0px"
-  },
-  programStatusStyle: {
-    color: "red",
-    backgroundColor: "#ffeaea",
-    fontSize: "12px",
-    padding: "2px 5px"
-  },
-  expansionHeading: {
-    fontSize: theme.typography.pxToRem(16),
-    flexBasis: "33.33%",
-    flexShrink: 0,
-    fontWeight: "500"
-  },
-  listItem: {
-    paddingBottom: "0px",
-    paddingTop: "0px"
-  },
-  ListItemText: {
-    "& span": {
-      fontSize: "14px"
-    },
-    color: "#2196f3",
-    fontSize: "14px",
-    textTransform: "uppercase"
-  },
-  listItemTextDate: {
-    "& span": {
-      fontSize: "15px",
-      color: "#555555"
-    }
-  },
-  tableContainer: {
-    border: "1px solid rgba(224, 224, 224, 1)"
-  },
-  abnormalColor: {
-    color: "#ff4f33"
-  },
-  expandMoreHoriz: {
-    color: "#0e6eff"
-  },
-  visitButton: {
-    marginLeft: "8px",
-    fontSize: "14px"
-  },
-  gridBottomBorder: {
-    borderBottom: "1px solid rgba(0,0,0,0.12)",
-    paddingBottom: "10px"
-  },
-  infomsg: {
-    marginLeft: 10
-  },
-  visitAllButton: {
-    marginLeft: "20px",
-    marginBottom: "10px"
-  }
+const StyledGridContainer = styled(Grid)({
+  // Root container styles, if needed
+});
+
+const StyledProgramLabel = styled("label")({
+  fontSize: "18px",
+  fontWeight: "500"
+});
+
+const StyledGridLabel = styled(Grid)(({ theme }) => ({
+  justifyContent: "flex-start",
+  alignItems: "flex-start",
+  flexGrow: 1
 }));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(2),
+  boxShadow: "0px 0px 4px 0px rgba(0,0,0,0.3)",
+  elevation: 2
+}));
+
+const StyledAccordion = styled(Accordion)({
+  marginBottom: "11px",
+  borderRadius: "5px",
+  boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+});
+
+const StyledAccordionSummary = styled(AccordionSummary)({});
+
+const StyledAccordionDetails = styled(AccordionDetails)({
+  padding: 0,
+  display: "block"
+});
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  fontSize: theme.typography.pxToRem(16),
+  flexBasis: "33.33%",
+  flexShrink: 0,
+  fontWeight: "500"
+}));
+
+const StyledExpandMore = styled(ExpandMore)({
+  color: "#0e6eff"
+});
 
 const ProgramView = ({
   programData,
@@ -136,18 +83,17 @@ const ProgramView = ({
   voidProgramEncounter,
   organisationConfigs
 }) => {
-  React.useEffect(() => {
+  useEffect(() => {
     const formType = programData.programExitDateTime ? "ProgramExit" : "ProgramEnrolment";
     getProgramEnrolmentForm(subjectProfile.subjectType.name, programData.program.operationalProgramName, formType);
   }, [programData.program.operationalProgramName]);
 
-  const classes = useStyles();
   const { t } = useTranslation();
   const isNotExited = isNil(programData.programExitDateTime);
 
-  const [voidConfirmation, setVoidConfirmation] = React.useState(false);
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = React.useState();
+  const [voidConfirmation, setVoidConfirmation] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = useState();
   const dispatch = useDispatch();
 
   const programSummary = useSelector(selectProgramSummary);
@@ -163,37 +109,27 @@ const ProgramView = ({
   );
 
   return (
-    <div>
-      <Grid container>
-        <ExtensionOption
-          subjectUUIDs={subjectProfile.uuid}
-          typeUUID={programData.program.uuid}
-          typeName={programData.program.operationalProgramName}
-          scopeType={extensionScopeTypes.programEnrolment}
-          configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
-        />
-        <Grid
-          container
-          direction="row"
-          sx={{
-            justifyContent: "flex-start",
-            alignItems: "flex-start"
-          }}
-          size={4}
-        >
-          <label className={classes.programLabel}>
-            {t(programData.program.operationalProgramName)} {t("programdetails")}
-          </label>
-        </Grid>
-        {!subjectVoided && isNotExited && <NewProgramEncounterButton enrolmentUUID={programData.uuid} />}
-      </Grid>
-      <Paper className={classes.root}>
-        <RuleSummary title={"programSummary"} isFetching={isFetchingSummary} summaryObservations={programSummary} />
+    <StyledGridContainer container>
+      <ExtensionOption
+        subjectUUIDs={subjectProfile.uuid}
+        typeUUID={programData.program.uuid}
+        typeName={programData.program.operationalProgramName}
+        scopeType={extensionScopeTypes.programEnrolment}
+        configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
+      />
+      <StyledGridLabel container direction="row" size={4}>
+        <StyledProgramLabel>
+          {t(programData.program.operationalProgramName)} {t("programdetails")}
+        </StyledProgramLabel>
+      </StyledGridLabel>
+      {!subjectVoided && isNotExited && <NewProgramEncounterButton enrolmentUUID={programData.uuid} />}
+      <StyledPaper>
+        <RuleSummary title="programSummary" isFetching={isFetchingSummary} summaryObservations={programSummary} />
         {programData && programData.programExitDateTime && (
           <EnrolmentDetails
             t={t}
             isExit={true}
-            label={"programExitDetails"}
+            label="programExitDetails"
             programData={programData}
             programEnrolmentForm={programEnrolmentForm}
             subjectUuid={subjectUuid}
@@ -206,7 +142,7 @@ const ProgramView = ({
         <EnrolmentDetails
           t={t}
           isExit={false}
-          label={"enrolmentDetails"}
+          label="enrolmentDetails"
           programData={programData}
           programEnrolmentForm={programEnrolmentForm}
           subjectUuid={subjectUuid}
@@ -215,17 +151,15 @@ const ProgramView = ({
           handleUpdateComponent={handleUpdateComponent}
           setVoidConfirmation={setVoidConfirmation}
         />
-        <Accordion className={classes.expansionPanel}>
-          <AccordionSummary
-            expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
+        <StyledAccordion>
+          <StyledAccordionSummary
+            expandIcon={<StyledExpandMore />}
             aria-controls="plannedVisitPanelbh-content"
             id="planned-program-encounter-details"
           >
-            <Typography component={"span"} className={classes.expansionHeading}>
-              {t("plannedVisits")}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails style={{ padding: 0, display: "block" }}>
+            <StyledTypography component="span">{t("plannedVisits")}</StyledTypography>
+          </StyledAccordionSummary>
+          <StyledAccordionDetails>
             <PlannedVisitsTable
               plannedVisits={plannedVisits || []}
               doBaseUrl={`/app/subject/programEncounter?encounterUuid`}
@@ -243,23 +177,21 @@ const ProgramView = ({
                 voidProgramEncounter(plannedEncounterUUIDToBeVoided);
               }}
             />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion className={classes.expansionPanel} onChange={() => setIsExpanded(p => !p)}>
-          <AccordionSummary
-            expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
+          </StyledAccordionDetails>
+        </StyledAccordion>
+        <StyledAccordion onChange={() => setIsExpanded(p => !p)}>
+          <StyledAccordionSummary
+            expandIcon={<StyledExpandMore />}
             aria-controls="completedVisitPanelbh-content"
             id="completed-program-encounter-details"
           >
-            <Typography component={"span"} className={classes.expansionHeading}>
-              {t("completedVisits")}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails style={{ padding: 0, display: "block" }}>
+            <StyledTypography component="span">{t("completedVisits")}</StyledTypography>
+          </StyledAccordionSummary>
+          <StyledAccordionDetails>
             {isExpanded && <CompletedVisits entityUuid={programData.uuid} isForProgramEncounters={true} />}
-          </AccordionDetails>
-        </Accordion>
-      </Paper>
+          </StyledAccordionDetails>
+        </StyledAccordion>
+      </StyledPaper>
       <ConfirmDialog
         title={t("ProgramEnrolmentVoidAlertTitle")}
         open={voidConfirmation}
@@ -268,7 +200,7 @@ const ProgramView = ({
         onConfirm={() => voidProgramEnrolment(programData.uuid)}
       />
       <MessageDialog title={t("ProgramEnrolmentErrorTitle")} open={!isEmpty(voidError)} message={voidError} onOk={clearVoidServerError} />
-    </div>
+    </StyledGridContainer>
   );
 };
 

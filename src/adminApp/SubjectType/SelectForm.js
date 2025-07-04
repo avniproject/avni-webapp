@@ -1,5 +1,5 @@
 import _ from "lodash";
-import React from "react";
+
 import { FormControl, InputLabel, Select } from "@mui/material";
 
 const blankOption = { name: "New Form", value: "__blankForm__" };

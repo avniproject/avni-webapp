@@ -1,10 +1,10 @@
-import { styled } from '@mui/material/styles';
-import React from "react";
+import { styled } from "@mui/material/styles";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 
-const StyledRoot = styled('div')(({ theme }) => ({
+const StyledRoot = styled("div")(({ theme }) => ({
   opacity: 0.5,
   backgroundColor: "#f6f6f6",
   borderRadius: 10,
@@ -24,9 +24,9 @@ export const LinkRenderer = ({ href, children }) => {
 };
 
 export const PlatformDocumentation = ({ fileName }) => {
-  const [markdown, setMarkdown] = React.useState("");
+  const [markdown, setMarkdown] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetch(`/documentation/sideBarDocumentation/${fileName}`)
       .then(res => res.text())
       .then(setMarkdown);

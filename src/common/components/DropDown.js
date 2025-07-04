@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { InputLabel, FormHelperText, FormControl, Select } from "@mui/material";
 import _ from "lodash";
 
@@ -7,7 +6,7 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
   margin: 0,
   width: "100%",
   display: "flex",
-  flexWrap: "nowrap",
+  flexWrap: "nowrap"
 }));
 
 const DropDown = ({ name, value, onChange, options, required = true, disabled = false }) => {

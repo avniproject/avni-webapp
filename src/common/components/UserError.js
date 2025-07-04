@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import React from "react";
+
 import _ from "lodash";
 
 export default function({ error }) {

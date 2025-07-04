@@ -3,7 +3,7 @@ import Select from "react-select";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { localeChoices } from "../../common/constants";
 import { Box } from "@mui/material";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import _ from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";

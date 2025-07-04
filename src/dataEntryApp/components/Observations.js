@@ -1,9 +1,7 @@
-import React, { Fragment } from "react";
-import { Grid, Table } from "@mui/material";
-import { TableBody } from "@mui/material";
-import { TableCell } from "@mui/material";
-import { TableRow } from "@mui/material";
-
+import { Fragment, useState, useEffect } from "react";
+import { styled } from "@mui/material/styles";
+import { Grid, Table, TableBody, TableCell, TableRow, Typography, Box, TextField, Collapse, IconButton } from "@mui/material";
+import { ReportProblem, KeyboardArrowDown, KeyboardArrowUp, VerifiedUser, Error } from "@mui/icons-material";
 import { Concept, findMediaObservations, Individual, Observation } from "avni-models";
 import { conceptService, i18n } from "../services/ConceptService";
 import { addressLevelService } from "../services/AddressLevelService";
@@ -17,45 +15,86 @@ import { Link } from "react-router-dom";
 import MediaObservations from "./MediaObservations";
 import http from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
-import { TextField } from "@mui/material";
-import { Typography } from "@mui/material";
-import { Box } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import { Collapse, IconButton, styled } from "@mui/material";
-import { ReportProblem, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { VerifiedUser } from "@mui/icons-material";
-import { Error } from "@mui/icons-material";
 
-const useStyles = makeStyles(theme => ({
-  listItem: {
-    paddingBottom: "0px",
-    paddingTop: "0px"
+const StyledTable = styled(Table)(({ highlight }) => ({
+  borderRadius: "3px",
+  boxShadow: "0px 0px 1px",
+  backgroundColor: highlight ? Colors.HighlightBackgroundColor : undefined
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover
   },
-  abnormalColor: {
-    color: "#ff4f33"
-  },
-  highlightBackground: {
-    backgroundColor: Colors.HighlightBackgroundColor
-  },
-  tableContainer: {
-    borderRadius: "3px",
-    boxShadow: "0px 0px 1px"
-  },
-  verifiedIconStyle: {
-    color: Colors.SuccessColor,
-    fontSize: 20,
-    marginLeft: theme.spacing(1)
-  },
-  unverifiedIconStyle: {
-    color: Colors.ValidationError,
-    fontSize: 20,
-    marginLeft: theme.spacing(1)
-  },
-  boxStyle: {
-    minWidth: 200,
-    minHeight: 50,
-    marginTop: 5
+  "&:last-child td, &:last-child th": {
+    border: 0
   }
+}));
+
+const StyledTableCell = styled(TableCell)(({ variant }) => ({
+  padding: variant === "spacer" ? "6px 4px 6px 6px" : "6px 4px 6px 6px",
+  color: variant === "label" ? "#555555" : undefined,
+  background: variant === "groupHeader" ? "rgb(232 232 232)" : variant === "fegHeader" ? "lightgray" : undefined
+}));
+
+const StyledTableBody = styled(TableBody)({
+  background: "white"
+});
+
+const StyledTypography = styled(Typography)(({ theme, variant }) => ({
+  marginLeft: variant === "group" ? "10px" : undefined,
+  color: variant ? theme.palette.text.secondary : undefined,
+  marginBottom: theme.spacing(1)
+}));
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  margin: theme.spacing(2)
+}));
+
+const StyledErrorSpan = styled("span")({
+  color: "#ff4f33"
+});
+
+const StyledMediaError = styled("p")({
+  color: "orangered",
+  margin: "5px",
+  padding: "5px",
+  border: "1px solid #999",
+  width: "200px",
+  height: "200px",
+  textAlign: "center",
+  overflow: "scroll"
+});
+
+const StyledMediaBox = styled(Box)({
+  minWidth: 200,
+  minHeight: 50,
+  marginTop: 5,
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "flex-start"
+});
+
+const StyledMediaGrid = styled(Grid)({
+  alignItems: "center"
+});
+
+const StyledToggleBox = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between"
+});
+
+const StyledVerifiedIcon = styled(VerifiedUser)(({ theme }) => ({
+  color: Colors.SuccessColor,
+  fontSize: 20,
+  marginLeft: theme.spacing(1)
+}));
+
+const StyledUnverifiedIcon = styled(ReportProblem)(({ theme }) => ({
+  color: Colors.ValidationError,
+  fontSize: 20,
+  marginLeft: theme.spacing(1)
 }));
 
 class MediaData {
@@ -75,13 +114,13 @@ function includeAdditionalRows(additionalRows, fegIndex, t, renderText, renderFE
     additionalRows.forEach((row, index) => {
       additionalObsRows.unshift(
         <StyledTableRow key={"feg-" + fegIndex + "fe-" + index}>
-          <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
-          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="25%">
+          <StyledTableCell variant="spacer" width={"0.1%"} />
+          <StyledTableCell variant="label" component="th" scope="row" width="25%">
             {t(row.label)}
-          </TableCell>
-          <TableCell align="left" width="75%" style={{ padding: "6px 4px 6px 6px" }}>
-            <div>{renderText(t(row.value), row.abnormal)}</div>
-          </TableCell>
+          </StyledTableCell>
+          <StyledTableCell align="left" width="75%">
+            {renderText(t(row.value), row.abnormal)}
+          </StyledTableCell>
         </StyledTableRow>
       );
     });
@@ -95,13 +134,13 @@ function renderSingleQuestionGroup(valueWrapper, index, customKey, t, observatio
     <div style={{ borderStyle: "inset", borderWidth: "2px" }}>
       {map(groupObservations, (obs, i) => (
         <StyledTableRow key={`${index}-${i}-${customKey}`}>
-          <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
-          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="25%">
+          <StyledTableCell variant="spacer" width={"0.1%"} />
+          <StyledTableCell variant="label" component="th" scope="row" width="25%">
             {t(obs.concept["name"])}
-          </TableCell>
-          <TableCell align="left" width="75%" style={{ padding: "6px 4px 6px 6px" }}>
+          </StyledTableCell>
+          <StyledTableCell align="left" width="75%">
             {renderValue(obs)}
-          </TableCell>
+          </StyledTableCell>
         </StyledTableRow>
       ))}
     </div>
@@ -128,12 +167,10 @@ function initMediaObservations(observations) {
 const Observations = ({ observations, additionalRows, form, customKey, highlight }) => {
   const i = new i18n();
   const { t } = useTranslation();
-  const classes = useStyles();
-
-  const [showMedia, setShowMedia] = React.useState(false);
-  const [currentMediaItem, setCurrentMediaItem] = React.useState(null);
-  const [mediaDataList, setMediaDataList] = React.useState([]);
-  const [open, setOpen] = React.useState({});
+  const [showMedia, setShowMedia] = useState(false);
+  const [currentMediaItem, setCurrentMediaItem] = useState(null);
+  const [mediaDataList, setMediaDataList] = useState([]);
+  const [open, setOpen] = useState({});
 
   if (isNil(observations)) {
     return <div />;
@@ -141,10 +178,9 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
 
   const renderText = (value, isAbnormal) => {
     return isAbnormal ? (
-      <span className={classes.abnormalColor}>
-        {" "}
+      <StyledErrorSpan>
         <Error /> {value}
-      </span>
+      </StyledErrorSpan>
     ) : (
       value
     );
@@ -159,9 +195,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       i18n: i
     });
     if (observation.concept.datatype === "Subject") {
-      return displayable.map((subject, index) => {
-        return renderSubject(subject, index < displayable.length - 1);
-      });
+      return displayable.map((subject, index) => renderSubject(subject, index < displayable.length - 1));
     } else if (Concept.dataType.Media.includes(observation.concept.datatype)) {
       return renderMedia(displayable.displayValue, observation.concept);
     } else if (observation.concept.isPhoneNumberConcept()) {
@@ -173,11 +207,10 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
 
   const renderPhoneNumber = phoneNumber => {
     const isVerified = phoneNumber.isVerified();
-    const Icon = isVerified ? VerifiedUser : ReportProblem;
-    const className = isVerified ? classes.verifiedIconStyle : classes.unverifiedIconStyle;
+    const Icon = isVerified ? StyledVerifiedIcon : StyledUnverifiedIcon;
     return (
       <span>
-        {phoneNumber.getValue()} <Icon className={className} />
+        {phoneNumber.getValue()} <Icon />
       </span>
     );
   };
@@ -196,7 +229,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       <img
         src={signedMediaUrl}
         alt={MediaData.MissingSignedMediaMessage}
-        align={"center"}
+        align="center"
         width={200}
         height={200}
         onClick={event => {
@@ -221,36 +254,19 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     )
   });
 
-  /**
-   * We use observationValue to maintain state of corresponding media observation's collapse state,
-   * as use of concept could be a problem with QuestionGroups and RepeatableQG able to re-use same concept
-   * @param observationValue
-   */
-  function updateOpen(observationValue) {
-    setOpen(oldOpen => {
-      return { ...oldOpen, [observationValue]: !oldOpen[observationValue] };
-    });
-  }
+  const updateOpen = observationValue => {
+    setOpen(oldOpen => ({ ...oldOpen, [observationValue]: !oldOpen[observationValue] }));
+  };
 
   const imageVideoOptions = (observationValue, concept) => {
-    let isMultiSelect = observationValue && _.isArrayLikeObject(observationValue);
+    const isMultiSelect = observationValue && _.isArrayLikeObject(observationValue);
     const mediaUrls = isMultiSelect ? observationValue : [observationValue];
     return (
       <Fragment>
-        <Grid
-          onClick={event => {
-            updateOpen(observationValue);
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between"
-            }}
-          >
+        <StyledMediaGrid onClick={() => updateOpen(observationValue)}>
+          <StyledToggleBox>
             <Link
-              to={"#"}
+              to="#"
               onClick={event => {
                 event.preventDefault();
               }}
@@ -260,18 +276,10 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
             <IconButton aria-label="expand row" size="small">
               {open[observationValue] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </IconButton>
-          </Box>
-        </Grid>
+          </StyledToggleBox>
+        </StyledMediaGrid>
         <Collapse in={open[observationValue]} timeout="auto" unmountOnExit>
-          <Grid
-            container
-            direction="row"
-            spacing={1}
-            onClick={() => updateOpen(observationValue)}
-            sx={{
-              alignItems: "center"
-            }}
-          >
+          <StyledMediaGrid container direction="row" spacing={1}>
             {mediaUrls.map((unsignedMediaUrl, index) => {
               const mediaData = _.find(mediaDataList, x => x.unsignedUrl === unsignedMediaUrl);
               const couldntSignMessage = MediaData.MissingSignedMediaMessage;
@@ -279,45 +287,16 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
               return (
                 <Grid key={index}>
                   {_.isNil(signedMediaUrl) ? (
-                    <Box
-                      className={classes.boxStyle}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "flex-start"
-                      }}
-                    >
-                      <p
-                        style={{
-                          color: "orangered",
-                          margin: "5px",
-                          padding: "5px",
-                          border: "1px solid #999",
-                          width: "200px",
-                          height: "200px",
-                          textAlign: "center",
-                          overflow: "scroll"
-                        }}
-                      >
-                        {couldntSignMessage}
-                      </p>
-                    </Box>
+                    <StyledMediaBox>
+                      <StyledMediaError>{couldntSignMessage}</StyledMediaError>
+                    </StyledMediaBox>
                   ) : (
-                    <Box
-                      className={classes.boxStyle}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "flex-start"
-                      }}
-                    >
-                      {mediaPreviewMap(signedMediaUrl)[concept.datatype]}
-                    </Box>
+                    <StyledMediaBox>{mediaPreviewMap(signedMediaUrl)[concept.datatype]}</StyledMediaBox>
                   )}
                 </Grid>
               );
             })}
-          </Grid>
+          </StyledMediaGrid>
         </Collapse>
       </Fragment>
     );
@@ -326,23 +305,22 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const fileOptions = conceptName => {
     const signedURLS = mediaDataList.filter(mediaData => mediaData.altTag === conceptName).map(mediaData => mediaData.url);
     return _.isEmpty(signedURLS) ? (
-      <TextField>MediaData.MissingSignedMediaMessage</TextField>
+      <TextField>{MediaData.MissingSignedMediaMessage}</TextField>
     ) : (
       <>
         {signedURLS.map((signedURL, index) => (
-          <React.Fragment key={index}>
+          <Fragment key={index}>
             <Link
-              to={"#"}
+              to="#"
               onClick={event => {
                 event.preventDefault();
                 window.open(signedURL, "_blank");
               }}
-              key={index}
             >
               {t("View/Download File")}
             </Link>
             <br />
-          </React.Fragment>
+          </Fragment>
         ))}
       </>
     );
@@ -375,7 +353,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       return await Promise.all(
         mediaObservations.flatMap(obs => {
           const observationValue = obs.valueJSON.answer;
-          let isMultiSelect = observationValue && _.isArrayLikeObject(observationValue);
+          const isMultiSelect = observationValue && _.isArrayLikeObject(observationValue);
           const mediaUrls = isMultiSelect ? observationValue : [observationValue];
           return mediaUrls.map(async unsignedMediaUrl => {
             const signedUrl = await getSignedUrl(unsignedMediaUrl);
@@ -392,28 +370,18 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     setShowMedia(true);
   };
 
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover
-    },
-    // hide last border
-    "&:last-child td, &:last-child th": {
-      border: 0
-    }
-  }));
-
   const isNotAssociatedWithForm = isNil(form);
   const orderedObs = isNotAssociatedWithForm ? observations : form.orderObservationsPerFEG(observations);
   const mediaObservations = initMediaObservations(observations);
 
-  React.useEffect(() => {
+  useEffect(() => {
     refreshSignedUrlsForMedia().then(mediaDataList => setMediaDataList(mediaDataList));
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const refreshedMediaUrls = setInterval(async () => {
       refreshSignedUrlsForMedia().then(signedUrls => setMediaDataList(signedUrls));
-    }, 110000); //config on server for signed url expiry is 2 minutes. Refreshing it before that.
+    }, 110000);
 
     return () => clearInterval(refreshedMediaUrls);
   }, []);
@@ -441,39 +409,34 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     return (
       <Fragment>
         <TableRow key={`${index}-${customKey}`}>
-          <TableCell style={{ padding: 0, background: "rgb(232 232 232)" }} colSpan={6}>
-            <Box sx={{ margin: 2 }}>
-              <Typography
-                style={{ marginLeft: "10px" }}
-                sx={{ color: theme => theme.palette.text.secondary, mb: 1 }}
-                variant="body1"
-                component="div"
-              >
+          <StyledTableCell variant="header" colSpan={6}>
+            <StyledBox>
+              <StyledTypography variant="body1" component="div">
                 {t(observation.concept["name"])}
-              </Typography>
+              </StyledTypography>
               <Table size="small" aria-label="questionGroupRows">
-                <TableBody style={{ background: "white" }}> {questionGroupRows}</TableBody>
+                <StyledTableBody>{questionGroupRows}</StyledTableBody>
               </Table>
-            </Box>
-          </TableCell>
+            </StyledBox>
+          </StyledTableCell>
         </TableRow>
       </Fragment>
     );
   };
 
-  const renderFEGView = (fegName, index, fegRows, customKey) => {
+  const renderFEGView = (fegName, index, fegRows) => {
     return (
       <TableRow key={`${index}-${customKey}`}>
-        <TableCell style={{ padding: 0, background: "lightgray" }} colSpan={6}>
-          <Box sx={{ margin: 2 }}>
-            <Typography sx={{ color: theme => theme.palette.text.secondary, mb: 1 }} variant="h6" component="div">
+        <StyledTableCell variant="fegHeader" colSpan={6}>
+          <StyledBox>
+            <StyledTypography variant="h6" component="div">
               {t(fegName)}
-            </Typography>
+            </StyledTypography>
             <Table size="small" aria-label="fegRows">
-              <TableBody style={{ background: "white" }}>{fegRows}</TableBody>
+              <StyledTableBody>{fegRows}</StyledTableBody>
             </Table>
-          </Box>
-        </TableCell>
+          </StyledBox>
+        </StyledTableCell>
       </TableRow>
     );
   };
@@ -481,13 +444,13 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const renderNormalView = (observation, index) => {
     return (
       <StyledTableRow key={`${index}-${customKey}`}>
-        <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
-        <TableCell style={{ color: "#555555" }} component="th" scope="row" width="25%">
+        <StyledTableCell variant="spacer" width={"0.1%"} />
+        <StyledTableCell variant="label" component="th" scope="row" width="25%">
           {t(observation.concept["name"])}
-        </TableCell>
-        <TableCell align="left" width="75%" style={{ padding: "6px 4px 6px 6px" }}>
+        </StyledTableCell>
+        <StyledTableCell align="left" width="75%">
           {renderValue(observation)}
-        </TableCell>
+        </StyledTableCell>
       </StyledTableRow>
     );
   };
@@ -515,9 +478,9 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     <div />
   ) : (
     <div>
-      <Table className={clsx(classes.tableContainer, highlight && classes.highlightBackground)} size="small" aria-label="a dense table">
+      <StyledTable size="small" aria-label="a dense table" highlight={highlight}>
         <TableBody>{rows}</TableBody>
-      </Table>
+      </StyledTable>
       {showMedia && (
         <MediaObservations
           mediaDataList={[currentMediaItem]}

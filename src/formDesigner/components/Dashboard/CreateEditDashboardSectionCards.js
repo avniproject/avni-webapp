@@ -3,7 +3,7 @@ import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText } fro
 import { Delete } from "@mui/icons-material";
 import { Visibility } from "@mui/icons-material";
 import { isEmpty } from "lodash";
-import { DragNDropComponent } from "../../common/DragNDropComponent";
+import DragNDropComponent from "../../common/DragNDropComponent";
 import PropTypes from "prop-types";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 import { dashboardReducerActions } from "./DashboardReducer";

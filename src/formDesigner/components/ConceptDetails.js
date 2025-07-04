@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
@@ -258,7 +258,7 @@ function ConceptDetails({ userInfo, ...props }) {
   const [data, setData] = useState({});
   const [usage, setUsage] = useState({});
   const [addressLevelTypes, setAddressLevelTypes] = useState([]);
-  const [subjectTypeOptions, setSubjectTypeOptions] = React.useState([]);
+  const [subjectTypeOptions, setSubjectTypeOptions] = useState([]);
 
   async function onLoad() {
     const conceptRes = (await http.get("/web/concept/" + props.match.params.uuid)).data;

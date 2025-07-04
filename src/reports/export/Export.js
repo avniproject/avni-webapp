@@ -1,6 +1,6 @@
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { FormControl, FormLabel, Typography, Grid, Button, Paper, Box, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
-import React from "react";
+import { useEffect, useState, useReducer, Fragment } from "react";
 import api from "../api";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -25,39 +25,39 @@ import { useTranslation } from "react-i18next";
 const StyledBox = styled(Box)(({ theme }) => ({
   border: "1px solid #ddd",
   marginBottom: theme.spacing(2),
-  padding: theme.spacing(2),
+  padding: theme.spacing(2)
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  marginBottom: theme.spacing(12.5),
+  marginBottom: theme.spacing(12.5)
 }));
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
   justifyContent: "flex-start",
-  alignItems: "baseline",
+  alignItems: "baseline"
 }));
 
 const StyledWarningText = styled(Typography)(({ theme }) => ({
   fontSize: "20px",
   fontWeight: "500",
   marginLeft: theme.spacing(1.25),
-  marginBottom: theme.spacing(1.25),
+  marginBottom: theme.spacing(1.25)
 }));
 
-const StyledErrorText = styled('div')(({ theme }) => ({
+const StyledErrorText = styled("div")(({ theme }) => ({
   color: "red",
-  marginBottom: theme.spacing(1.25),
+  marginBottom: theme.spacing(1.25)
 }));
 
 const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, exportJobStatuses, userInfo }) => {
   const { t } = useTranslation();
 
-  React.useEffect(() => {
+  useEffect(() => {
     getOperationalModules();
   }, []);
 
-  const [exportRequest, dispatchFun] = React.useReducer(ExportReducer, initialState);
-  const [enableExport, setEnableExport] = React.useState(false);
+  const [exportRequest, dispatchFun] = useReducer(ExportReducer, initialState);
+  const [enableExport, setEnableExport] = useState(false);
   const {
     reportType,
     subjectType,
@@ -67,7 +67,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
     endDate,
     addressLevelIds,
     addressLevelError,
-    includeVoided,
+    includeVoided
   } = exportRequest;
   const dispatch = (type, payload) => dispatchFun({ type, payload });
   const subjectTypes = _.get(operationalModules, "subjectTypes");
@@ -148,11 +148,11 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
         encounterType={encounterType}
       />
     ),
-    [reportTypes.GroupSubject]: <GroupSubjectType {...commonProps} />,
+    [reportTypes.GroupSubject]: <GroupSubjectType {...commonProps} />
   };
 
   const renderReportTypeOptions = () => {
-    return reportType.name ? reportTypeMap[reportType.name] : <React.Fragment />;
+    return reportType.name ? reportTypeMap[reportType.name] : <Fragment />;
   };
 
   const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
@@ -173,18 +173,10 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
               )}
               {allowReportGeneration && (
                 <StyledGrid container direction="row">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    aria-haspopup="false"
-                    onClick={onStartExportHandler}
-                    disabled={!enableExport}
-                  >
+                  <Button variant="contained" color="primary" aria-haspopup="false" onClick={onStartExportHandler} disabled={!enableExport}>
                     Generate Export
                   </Button>
-                  <StyledWarningText component="span">
-                    {t("legacyLongitudinalExportWarningMessage")}
-                  </StyledWarningText>
+                  <StyledWarningText component="span">{t("legacyLongitudinalExportWarningMessage")}</StyledWarningText>
                 </StyledGrid>
               )}
             </DocumentationContainer>
@@ -203,7 +195,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules,
   exportJobStatuses: state.reports.exportJobStatuses,
-  userInfo: state.app.userInfo,
+  userInfo: state.app.userInfo
 });
 
 export default withRouter(

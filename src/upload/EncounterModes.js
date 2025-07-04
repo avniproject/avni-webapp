@@ -1,15 +1,14 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Tooltip } from "@mui/material";
 
 export const ENCOUNTER_MODES = {
   SCHEDULE: "schedule_a_visit",
-  UPLOAD: "upload_visit_details",
+  UPLOAD: "upload_visit_details"
 };
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
-  marginTop: theme.spacing(2),
+  marginTop: theme.spacing(2)
 }));
 
 const EncounterModes = ({ mode, setMode }) => {
@@ -34,11 +33,11 @@ const EncounterModes = ({ mode, setMode }) => {
 
 EncounterModes.propTypes = {
   mode: PropTypes.string,
-  setMode: PropTypes.func.isRequired,
+  setMode: PropTypes.func.isRequired
 };
 
 EncounterModes.defaultProps = {
-  mode: ENCOUNTER_MODES.SCHEDULE,
+  mode: ENCOUNTER_MODES.SCHEDULE
 };
 
 export default EncounterModes;

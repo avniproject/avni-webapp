@@ -1,4 +1,3 @@
-import React from "react";
 import { AutocompleteArrayInput } from "react-admin";
 import { localeChoices } from "../../common/constants";
 

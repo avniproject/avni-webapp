@@ -1,10 +1,9 @@
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { get } from "lodash";
 
 export default {
   fetchAllDashboards: () => http.fetchJson("/web/dashboard").then(response => response.json),
-  fetchGroupDashboards: group_id =>
-    http.fetchJson(`/groups/${group_id}/dashboards`).then(response => response.json),
+  fetchGroupDashboards: group_id => http.fetchJson(`/groups/${group_id}/dashboards`).then(response => response.json),
   addDashboardsToGroup: body =>
     http
       .postJson("/web/groupDashboard", body)
@@ -39,10 +38,8 @@ export default {
       .then(r => [r.data, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   fetchAllUsers: () => http.fetchJson("/user/search/findAll").then(response => response.json),
-  fetchGroupUsers: group_id =>
-    http.fetchJson(`/groups/${group_id}/users`).then(response => response.json),
-  fetchGroupPrivileges: group_id =>
-    http.fetchJson(`/groups/${group_id}/privileges`).then(response => response.json),
+  fetchGroupUsers: group_id => http.fetchJson(`/groups/${group_id}/users`).then(response => response.json),
+  fetchGroupPrivileges: group_id => http.fetchJson(`/groups/${group_id}/privileges`).then(response => response.json),
   addUsersToGroup: users =>
     http
       .postJson("/userGroup", users)

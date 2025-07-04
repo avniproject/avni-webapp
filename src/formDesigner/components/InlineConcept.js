@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import NumericConcept from "./NumericConcept";
 import { Button, FormControl, Input, Grid, MenuItem, Box } from "@mui/material";
 import { CodedConceptAnswer } from "./CodedConcept";
@@ -18,8 +18,8 @@ function getKeyValues(obj) {
 }
 
 function InlineConcept(props) {
-  const [operationalModules, setOperationalModules] = React.useState({});
-  React.useEffect(() => {
+  const [operationalModules, setOperationalModules] = useState({});
+  useEffect(() => {
     http.get("/web/operationalModules").then(response => {
       setOperationalModules(response.data);
     });

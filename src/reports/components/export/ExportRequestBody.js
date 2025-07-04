@@ -1,4 +1,3 @@
-import React from "react";
 import { isUndefined } from "lodash";
 import { Box, Typography } from "@mui/material";
 import { JsonEditor } from "../../../formDesigner/components/JsonEditor";

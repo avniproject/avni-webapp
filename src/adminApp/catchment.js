@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import {
   Datagrid,
   List,
@@ -54,7 +54,7 @@ export const CatchmentCreate = props => (
 );
 
 export const CatchmentEdit = props => {
-  const [displayWarning, setDisplayWarning] = React.useState(true);
+  const [displayWarning, setDisplayWarning] = useState(true);
   return (
     <Edit {...props} title="Edit Catchment" undoable={false}>
       <CatchmentForm edit displayWarning={displayWarning} setDisplayWarning={setDisplayWarning} />

@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from "react";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";

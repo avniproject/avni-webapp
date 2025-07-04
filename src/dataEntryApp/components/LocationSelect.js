@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { debounce, deburr, get, isEmpty, map } from "lodash";
 import { locationNameRenderer } from "../utils/LocationUtil";
@@ -8,16 +8,16 @@ import httpClient from "../../common/utils/httpClient";
 
 const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, parentId }) => {
   const { t } = useTranslation();
-  const [selectedLocationValue, setSelectedLocationValue] = React.useState();
-  const [defaultOptions, setDefaultOptions] = React.useState([]);
+  const [selectedLocationValue, setSelectedLocationValue] = useState();
+  const [defaultOptions, setDefaultOptions] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedLocationValue && selectedLocationValue.typeId !== typeId) {
       setSelectedLocationValue(null);
     }
   }, [typeId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(selectedLocation)) {
       setSelectedLocationValue({
         label: selectedLocation.name,
@@ -29,7 +29,7 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, paren
     }
   }, [selectedLocation]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchLocation("", setDefaultOptions);
   }, [parentId, typeId]);
 

@@ -1,6 +1,6 @@
 import { Grid, Input, IconButton } from "@mui/material";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
-import React from "react";
+
 import { RemoveCircle } from "@mui/icons-material";
 import Select from "react-select";
 

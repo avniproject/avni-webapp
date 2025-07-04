@@ -1,63 +1,60 @@
-import React, { Fragment } from "react";
-import { makeStyles } from "@mui/styles";
+import { useState, Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { AppBar, Tabs, Tab, Typography, Paper, Box } from "@mui/material";
 import PropTypes from "prop-types";
 import SubjectDashboardProfileTab from "./SubjectDashboardProfileTab";
-import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
-import SubjectDashboardProgramTab from "./subjectDashboardProgramTab";
+import SubjectDashboardGeneralTab from "./SubjectDashboardGeneralTab";
+import SubjectDashboardProgramTab from "./SubjectDashboardProgramTab";
 import { Description, List, Assessment } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 
-const useStyles = makeStyles(theme => ({
-  tabsDisplay: {
-    margin: "-23px"
-  },
-  tabView: {
-    backgroundColor: "white",
-    boxShadow: "none"
-  },
-  MuiTab: {
-    wrapper: {
-      flexDirection: "row"
-    }
-  },
-  wrapper: {
-    "& span": {
-      flexDirection: "row",
-      "& svg": {
-        marginRight: "6px",
-        marginTop: "3px"
-      }
-    },
-    "& button": {
-      marginTop: "20px",
-      minHeight: "0px"
+const StyledAppBar = styled(AppBar)({
+  backgroundColor: "white",
+  boxShadow: "none"
+});
+
+const StyledTabs = styled(Tabs)({
+  "& button": {
+    marginTop: "20px",
+    minHeight: "0px"
+  }
+});
+
+const StyledTab = styled(Tab)({
+  "& span": {
+    flexDirection: "row",
+    "& svg": {
+      marginRight: "6px",
+      marginTop: "3px"
     }
   }
+});
+
+const StyledPaper = styled(Paper)({
+  margin: "-23px",
+  elevation: 2
+});
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(3)
 }));
+
+const StyledTabContent = styled(Typography)({});
 
 function TabContent(props) {
   const { children, value, index, ...other } = props;
 
   return (
-    <Typography
-      component={"span"}
+    <StyledTabContent
+      component="span"
       role="tabpanel"
       hidden={value !== index}
       id={`scrollable-auto-tabpanel-${index}`}
       aria-labelledby={`scrollable-auto-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box
-          sx={{
-            p: 3
-          }}
-        >
-          {children}
-        </Box>
-      )}
-    </Typography>
+      {value === index && <StyledBox>{children}</StyledBox>}
+    </StyledTabContent>
   );
 }
 
@@ -67,7 +64,7 @@ TabContent.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export default ({
+const SubjectDashboardTabs = ({
   profile,
   general,
   program,
@@ -84,7 +81,6 @@ export default ({
   clearVoidServerError,
   unVoidErrorKey
 }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const {
     showProgramTab,
@@ -99,7 +95,8 @@ export default ({
     showMessagesTab
   } = tabsStatus;
 
-  const [value, setValue] = React.useState(tab && tab > 0 ? (showProgramTab ? tab : tab - 1) : defaultTabIndex);
+  const [value, setValue] = useState(tab && tab > 0 ? (showProgramTab ? tab : tab - 1) : defaultTabIndex);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -113,9 +110,9 @@ export default ({
 
   return (
     <Fragment>
-      <AppBar className={classes.tabView} position="static" color="default">
+      <StyledAppBar position="static" color="default">
         {showProgramTab && (
-          <Tabs
+          <StyledTabs
             value={value}
             onChange={handleChange}
             indicatorColor="primary"
@@ -123,28 +120,27 @@ export default ({
             variant="scrollable"
             scrollButtons="auto"
             aria-label="scrollable auto tabs example"
-            className={classes.wrapper}
           >
-            {showProgramTab && <Tab label={t("programs")} icon={<Assessment id={"program-tab"} />} {...a11yProps(0)} />}
-            <Tab label={t("profile")} icon={<Description id={"profile-tab"} />} {...a11yProps(registrationTabIndex)} />
-            {showGeneralTab && <Tab label={t("General")} icon={<List id={"general-tab"} />} {...a11yProps(generalTabIndex)} />}
-          </Tabs>
+            {showProgramTab && <StyledTab label={t("programs")} icon={<Assessment id="program-tab" />} {...a11yProps(0)} />}
+            <StyledTab label={t("profile")} icon={<Description id="profile-tab" />} {...a11yProps(registrationTabIndex)} />
+            {showGeneralTab && <StyledTab label={t("General")} icon={<List id="general-tab" />} {...a11yProps(generalTabIndex)} />}
+          </StyledTabs>
         )}
-      </AppBar>
+      </StyledAppBar>
       {showProgramTab && (
         <TabContent value={value} index={0}>
-          <Paper className={classes.tabsDisplay}>
+          <StyledPaper>
             <SubjectDashboardProgramTab
               program={program}
               handleUpdateComponent={handleUpdateComponent}
               subjectTypeUuid={profile.subjectType.uuid}
               subjectVoided={profile.voided}
             />
-          </Paper>
+          </StyledPaper>
         </TabContent>
       )}
       <TabContent value={value} index={registrationTabIndex}>
-        <Paper className={classes.tabsDisplay}>
+        <StyledPaper>
           <SubjectDashboardProfileTab
             unVoidErrorKey={unVoidErrorKey}
             profile={profile}
@@ -163,11 +159,11 @@ export default ({
             msgs={msgs}
             showMessagesTab={showMessagesTab}
           />
-        </Paper>
+        </StyledPaper>
       </TabContent>
       {showGeneralTab && (
         <TabContent value={value} index={generalTabIndex}>
-          <Paper className={classes.tabsDisplay}>
+          <StyledPaper>
             <SubjectDashboardGeneralTab
               subjectUuid={profile.uuid}
               general={general}
@@ -175,9 +171,11 @@ export default ({
               subjectVoided={profile.voided}
               voidError={voidError}
             />
-          </Paper>
+          </StyledPaper>
         </TabContent>
       )}
     </Fragment>
   );
 };
+
+export default SubjectDashboardTabs;

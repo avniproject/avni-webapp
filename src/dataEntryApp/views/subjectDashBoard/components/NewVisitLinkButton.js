@@ -1,4 +1,3 @@
-import React from "react";
 import SubjectButton from "./Button";
 import { Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";

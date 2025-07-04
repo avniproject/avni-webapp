@@ -1,31 +1,26 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Grid, CardActionArea, CardContent, Typography, Card } from "@mui/material";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   minHeight: theme.spacing(20),
-  width: "100%",
+  width: "100%"
 }));
 
 const StyledCardActionArea = styled(CardActionArea)({
   "&:hover .MuiCardActionArea-focusHighlight": {
-    opacity: 0,
-  },
+    opacity: 0
+  }
 });
 
-const StyledImagePlaceholder = styled('div')({
+const StyledImagePlaceholder = styled("div")({
   width: "204px",
-  height: "120px",
+  height: "120px"
 });
 
 const NewsCard = ({ signedHeroImage, title, publishedDate, id }) => {
   const renderImage = () =>
-    signedHeroImage ? (
-      <img src={signedHeroImage} alt={title} width="204px" height="120px" />
-    ) : (
-      <StyledImagePlaceholder />
-    );
+    signedHeroImage ? <img src={signedHeroImage} alt={title} width="204px" height="120px" /> : <StyledImagePlaceholder />;
 
   return (
     <StyledCard>

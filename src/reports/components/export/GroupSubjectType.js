@@ -1,23 +1,16 @@
-import React from "react";
+import { Fragment } from "react";
 import { filter } from "lodash";
 import { ExportOptions } from "./ExportOptions";
 import { DateOptions } from "./DateOptions";
 
-export const GroupSubjectType = ({
-  subjectTypes,
-  subjectType,
-  startDate,
-  endDate,
-  dispatch,
-  setEnableExport
-}) => {
+export const GroupSubjectType = ({ subjectTypes, subjectType, startDate, endDate, dispatch, setEnableExport }) => {
   const onSubjectTypeChange = st => {
     dispatch("subjectType", st);
     setEnableExport(true);
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <ExportOptions
         options={filter(subjectTypes, ({ group }) => !!group)}
         label={"Group Subject Type"}
@@ -31,6 +24,6 @@ export const GroupSubjectType = ({
         startDateLabel={"Registration start date"}
         endDateLabel={"Registration end date"}
       />
-    </React.Fragment>
+    </Fragment>
   );
 };

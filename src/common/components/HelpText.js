@@ -1,12 +1,11 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { isEmpty } from "lodash";
 import ShowMoreText from "react-show-more-text";
 
-const StyledContainer = styled('div')(({ theme }) => ({
+const StyledContainer = styled("div")(({ theme }) => ({
   width: "50%",
   marginBottom: theme.spacing(2.5), // 20px
-  color: "rgba(69,69,69,0.54)",
+  color: "rgba(69,69,69,0.54)"
 }));
 
 export const HelpText = ({ text, t }) => {

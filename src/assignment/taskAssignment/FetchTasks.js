@@ -1,4 +1,4 @@
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { getFilterPayload } from "../reducers/TaskAssignmentReducer";
 import { isEmpty } from "lodash";
 

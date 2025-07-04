@@ -1,37 +1,87 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
-import { Grid, Typography, FormControl, Input, Tooltip, AccordionDetails } from "@mui/material";
+import { useState } from "react";
 import { ExpandMore, ExpandLess, Group } from "@mui/icons-material";
 import { ToolTip } from "../../common/components/ToolTip";
-import { StyledAccordion, StyledAccordionSummary } from "./FormElementGroup";
 import StaticFormElement from "../StaticFormElement";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: "100%"
-  },
-  questionCount: {
-    paddingTop: "5px"
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15)
-  },
-  icon: {
-    marginRight: "8px"
+const StyledAccordion = styled(Accordion)({
+  width: "100%",
+  "&.Mui-expanded": {
+    margin: 0
   }
+});
+
+const StyledAccordionSummary = styled(AccordionSummary)({
+  paddingRight: 0,
+  backgroundColor: "#dbdbdb",
+  border: "1px solid #2196F3",
+  paddingLeft: 0,
+  minHeight: 56,
+  "&.Mui-expanded": {
+    minHeight: 56
+  },
+  "&.Mui-focused": {
+    backgroundColor: "#dbdbdb"
+  },
+  "& .MuiAccordionSummary-content": {
+    margin: "0",
+    "&.Mui-expanded": {
+      margin: "0"
+    }
+  }
+});
+
+const StyledTypography = styled(Typography)(({ theme, variant }) => ({
+  ...(variant === "heading" && {
+    fontSize: theme.typography.pxToRem(15)
+  }),
+  ...(variant === "questionCount" && {
+    paddingTop: "5px"
+  })
 }));
 
+const StyledGroupIcon = styled(Group)({
+  marginLeft: 12,
+  marginRight: 4
+});
+
+const StyledExpandIcon = styled(({ component: Component, ...props }) => <Component {...props} />)({
+  marginRight: "8px"
+});
+
+const StyledGridContainer = styled(Grid)({
+  alignItems: "center"
+});
+
+const StyledAccordionDetails = styled(AccordionDetails)({
+  padding: 0
+});
+
+const StyledFormElementContainer = styled("div")({
+  paddingLeft: "20px",
+  paddingBottom: "30px"
+});
+
+const StyledContentGrid = styled(Grid)({
+  width: "100%",
+  alignContent: "center",
+  marginBottom: 8
+});
+
+const StyledOuterGrid = styled(Grid)({
+  width: "100%",
+  marginTop: 20
+});
+
 const StaticFormElementGroup = ({ name, formElements }) => {
-  const classes = useStyles();
   const panel = "static-panel";
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const renderFormElements = () => {
     const groupIndex = 1;
     return formElements.map(({ dataType, name }, index) => (
-      <div key={index} style={{ paddingLeft: "20px", paddingBottom: "30px" }}>
+      <StyledFormElementContainer key={index}>
         <StaticFormElement name={name} index={index} dataType={dataType} groupIndex={groupIndex} />
-      </div>
+      </StyledFormElementContainer>
     ));
   };
 
@@ -40,36 +90,19 @@ const StaticFormElementGroup = ({ name, formElements }) => {
       <StyledAccordion
         TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
         expanded={expanded}
-        className={classes.root}
         onChange={() => setExpanded(!expanded)}
-        style={{ backgroundColor: "#E0E0E0" }}
+        sx={{ backgroundColor: "#E0E0E0" }}
       >
         <StyledAccordionSummary aria-controls={`${panel}-bh-content`} id={`${panel}-bh-header`}>
-          <Grid
-            container
-            sx={{
-              alignItems: "center"
-            }}
-            size={{
-              sm: 12
-            }}
-          >
-            <Grid
-              size={{
-                sm: 1
-              }}
-            >
+          <StyledGridContainer container size={{ sm: 12 }}>
+            <Grid size={{ sm: 1 }}>
               <Tooltip title="Grouped Questions">
-                <Group style={{ marginLeft: 12, marginRight: 4 }} />
+                <StyledGroupIcon />
               </Tooltip>
-              {expanded ? <ExpandLess className={classes.icon} /> : <ExpandMore className={classes.icon} />}
+              {expanded ? <StyledExpandIcon component={ExpandLess} /> : <StyledExpandIcon component={ExpandMore} />}
             </Grid>
-            <Grid
-              size={{
-                sm: 6
-              }}
-            >
-              <Typography className={classes.heading}>
+            <Grid size={{ sm: 6 }}>
+              <StyledTypography variant="heading">
                 <FormControl fullWidth>
                   <Input
                     type="text"
@@ -81,37 +114,26 @@ const StaticFormElementGroup = ({ name, formElements }) => {
                     disabled
                   />
                 </FormControl>
-              </Typography>
+              </StyledTypography>
             </Grid>
-            <Grid
-              size={{
-                sm: 4
-              }}
-            >
-              <Typography component="div" className={classes.questionCount}>
+            <Grid size={{ sm: 4 }}>
+              <StyledTypography component="div" variant="questionCount">
                 {formElements.length} questions
-              </Typography>
+              </StyledTypography>
             </Grid>
-            <Grid
-              size={{
-                sm: 1
-              }}
-            >
+            <Grid size={{ sm: 1 }}>
               <ToolTip title="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME" displayPosition="bottom" />
             </Grid>
-          </Grid>
+          </StyledGridContainer>
         </StyledAccordionSummary>
-        <AccordionDetails style={{ padding: 0 }}>
-          <Grid direction="column" style={{ width: "100%", marginTop: 20 }}>
-            <Grid style={{ width: "100%", alignContent: "center", marginBottom: 8 }}>
-              <Typography component="span" className={classes.root}>
-                {renderFormElements()}
-              </Typography>
-            </Grid>
-          </Grid>
-        </AccordionDetails>
+        <StyledAccordionDetails>
+          <StyledOuterGrid direction="column">
+            <StyledContentGrid>{renderFormElements()}</StyledContentGrid>
+          </StyledOuterGrid>
+        </StyledAccordionDetails>
       </StyledAccordion>
     </Grid>
   );
 };
+
 export default StaticFormElementGroup;

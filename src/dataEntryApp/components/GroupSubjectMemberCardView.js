@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { CardActions, Button, Typography, DialogContent, Grid } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
@@ -10,16 +9,16 @@ import SubjectCardView from "./SubjectCardView";
 
 const StyledCardActions = styled(CardActions)({
   display: "flex",
-  justifyContent: "space-between",
+  justifyContent: "space-between"
 });
 
 const StyledDialogContent = styled(DialogContent)({
   width: 600,
-  height: "auto",
+  height: "auto"
 });
 
 const StyledEditButton = styled(Button)({
-  minWidth: "0px",
+  minWidth: "0px"
 });
 
 const removeButtonStyle = {
@@ -31,8 +30,8 @@ const removeButtonStyle = {
   backgroundColor: "#fff",
   "&:hover": {
     color: "#0e6eff",
-    backgroundColor: "#fff",
-  },
+    backgroundColor: "#fff"
+  }
 };
 
 const applyButtonStyle = {
@@ -41,8 +40,8 @@ const applyButtonStyle = {
   height: "30px",
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: "#f27510",
-  },
+    backgroundColor: "#f27510"
+  }
 };
 
 const cancelButtonStyle = {
@@ -53,18 +52,18 @@ const cancelButtonStyle = {
   height: "30px",
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: "#F8F9F9",
-  },
+    backgroundColor: "#F8F9F9"
+  }
 };
 
 const GroupSubjectMemberCardView = ({
-                                      setMembersChanged,
-                                      groupSubject: {
-                                        memberSubject,
-                                        encounterMetadata: { dueEncounters, overdueEncounters },
-                                        uuid,
-                                      },
-                                    }) => {
+  setMembersChanged,
+  groupSubject: {
+    memberSubject,
+    encounterMetadata: { dueEncounters, overdueEncounters },
+    uuid
+  }
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -110,7 +109,7 @@ const GroupSubjectMemberCardView = ({
             {
               buttonType: "openButton",
               label: t("remove"),
-              sx: removeButtonStyle,
+              sx: removeButtonStyle
             },
             {
               buttonType: "applyButton",
@@ -119,13 +118,13 @@ const GroupSubjectMemberCardView = ({
               sx: applyButtonStyle,
               click: () => {
                 api.deleteGroupSubject(uuid).then(() => setTimeout(() => setMembersChanged(true), 250));
-              },
+              }
             },
             {
               buttonType: "cancelButton",
               label: t("cancel"),
-              sx: cancelButtonStyle,
-            },
+              sx: cancelButtonStyle
+            }
           ]}
           title="Remove Member"
           btnHandleClose={noop}

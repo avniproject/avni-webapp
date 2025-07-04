@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Dialog, DialogActions, DialogContentText, DialogTitle, DialogContent } from "@mui/material";
 
 const MessageDialog = ({ title, message, open, onOk }) => {

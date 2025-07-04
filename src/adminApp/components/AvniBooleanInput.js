@@ -1,4 +1,3 @@
-import React from "react";
 import { BooleanInput } from "react-admin";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
 import { Grid } from "@mui/material";

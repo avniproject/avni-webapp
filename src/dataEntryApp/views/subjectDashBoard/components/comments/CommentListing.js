@@ -1,7 +1,7 @@
 import { get, isEmpty, map, sortBy } from "lodash";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Box, Paper, Typography, TextField, Button, IconButton } from "@mui/material";
-import { addNewComment, getCommentThreads, onCommentEdit, onThreadResolve, selectCommentState } from "../../../../reducers/Comment/reducer";
+import { addNewComment, getCommentThreads, onCommentEdit, onThreadResolve, selectCommentState } from "../../../../reducers/CommentReducer";
 import React, { useState, Fragment } from "react";
 import { Comment, ChevronRight, ChevronLeft } from "@mui/icons-material";
 import { CommentCard } from "./CommentCard";
@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import { useTranslation } from "react-i18next";
 
-const StyledHeader = styled('div')(({ theme }) => ({
+const StyledHeader = styled("div")(({ theme }) => ({
   width: 500,
   display: "flex",
   flexDirection: "row",
@@ -17,16 +17,16 @@ const StyledHeader = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 1),
   ...theme.mixins.toolbar,
   justifyContent: "space-between",
-  backgroundColor: "#313a46",
+  backgroundColor: "#313a46"
 }));
 
-const StyledIconContainer = styled('div')(({ theme }) => ({
+const StyledIconContainer = styled("div")(({ theme }) => ({
   display: "flex",
   backgroundColor: "#556479",
   height: 40,
   width: 50,
   alignItems: "center",
-  marginLeft: 5,
+  marginLeft: 5
 }));
 
 const StyledCommentButton = styled(Button)(({ theme }) => ({
@@ -34,8 +34,8 @@ const StyledCommentButton = styled(Button)(({ theme }) => ({
   background: "#fff",
   textTransform: "none",
   "&:hover": {
-    backgroundColor: "#bababa",
-  },
+    backgroundColor: "#bababa"
+  }
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -43,43 +43,43 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   flexDirection: "column",
   width: 500,
   backgroundColor: "#f5f5f5",
-  minHeight: "100vh",
+  minHeight: "100vh"
 }));
 
 const StyledFirstComment = styled(Paper)(({ theme }) => ({
   width: 500,
   flexWrap: "wrap",
-  padding: theme.spacing(3),
+  padding: theme.spacing(3)
 }));
 
 const StyledComment = styled(Paper)(({ theme }) => ({
   width: 450,
   flexWrap: "wrap",
-  padding: theme.spacing(3),
+  padding: theme.spacing(3)
 }));
 
 const StyledInputText = styled(Paper)(({ theme }) => ({
-  width: 450,
+  width: 450
 }));
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  marginBottom: theme.spacing(2),
+  marginBottom: theme.spacing(2)
 }));
 
 const StyledCommentHeader = styled(Typography)(({ theme }) => ({
-  color: "#fff",
+  color: "#fff"
 }));
 
 const StyledChevronIcon = styled(ChevronLeft)(({ theme }) => ({
-  color: "#fff",
+  color: "#fff"
 }));
 
 const StyledCommentIcon = styled(Comment)(({ theme }) => ({
   color: "#fff",
   marginRight: 5,
-  marginLeft: 5,
+  marginLeft: 5
 }));
 
 export const CommentListing = ({ comments, dispatch, newCommentText, onCommentChange, subjectUUID, setOpen }) => {
@@ -109,10 +109,7 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
           <StyledCommentHeader>{t("Comments")}</StyledCommentHeader>
         </Box>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <StyledCommentButton
-            disabled={disableResolve}
-            onClick={() => setOpenResolve(true)}
-          >
+          <StyledCommentButton disabled={disableResolve} onClick={() => setOpenResolve(true)}>
             {t("resolveThread")}
           </StyledCommentButton>
           <StyledIconContainer>
@@ -127,7 +124,7 @@ export const CommentListing = ({ comments, dispatch, newCommentText, onCommentCh
           <StyledBox
             key={comment.id}
             sx={{
-              justifyContent: index === 0 ? "flex-start" : "center",
+              justifyContent: index === 0 ? "flex-start" : "center"
             }}
           >
             <Paper elevation={0} component={index === 0 ? StyledFirstComment : StyledComment}>

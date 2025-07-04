@@ -1,5 +1,5 @@
 import "es6-shim";
-import React from "react";
+
 import ReactDOM from "react-dom/client";
 import * as serviceWorker from "./serviceWorker";
 import MainApp from "./MainApp";

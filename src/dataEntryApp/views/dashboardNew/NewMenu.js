@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { List, ListItemIcon, ListItemText, Divider } from "@mui/material";
 import { ChevronRight } from "@mui/icons-material";
 import { withRouter } from "react-router-dom";
@@ -10,21 +10,21 @@ import SubjectTypeIcon from "../../components/SubjectTypeIcon";
 import { sortBy } from "lodash";
 import ListItemButton from "@mui/material/ListItemButton";
 
-const StyledContainer = styled('div')(({ theme }) => ({
+const StyledContainer = styled("div")(({ theme }) => ({
   width: "100%",
   display: "flex",
   flexDirection: "column",
   padding: theme.spacing(2.5), // 20px
   color: "blue",
-  borderRadius: "3px",
+  borderRadius: "3px"
 }));
 
 const StyledInternalLink = styled(InternalLink)({
-  color: "blue",
+  color: "blue"
 });
 
 const StyledDivider = styled(Divider)({
-  backgroundColor: "grey",
+  backgroundColor: "grey"
 });
 
 function NewMenu({ operationalModules, handleClose }) {
@@ -34,7 +34,7 @@ function NewMenu({ operationalModules, handleClose }) {
     <StyledContainer>
       <List component="nav" aria-labelledby="nested-list-subheader">
         {sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map((element, index) => (
-          <React.Fragment key={index}>
+          <Fragment key={index}>
             <StyledInternalLink to={`/app/register?type=${element.name}`}>
               <ListItemButton onClick={handleClose}>
                 <ListItemIcon>
@@ -45,15 +45,15 @@ function NewMenu({ operationalModules, handleClose }) {
               </ListItemButton>
             </StyledInternalLink>
             <StyledDivider />
-          </React.Fragment>
+          </Fragment>
         ))}
       </List>
     </StyledContainer>
   );
 }
 
-const mapStateToProps = (state) => ({
-  operationalModules: state.dataEntry.metadata.operationalModules,
+const mapStateToProps = state => ({
+  operationalModules: state.dataEntry.metadata.operationalModules
 });
 
 export default withRouter(connect(mapStateToProps)(NewMenu));

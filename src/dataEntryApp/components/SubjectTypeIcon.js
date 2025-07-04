@@ -1,13 +1,13 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { isEmpty, toLower } from "lodash";
 import MediaService from "../../adminApp/service/MediaService";
 
 const SubjectTypeIcon = ({ subjectType, size, style }) => {
   const label = subjectType.name;
   const isIconSetup = !isEmpty(subjectType.iconFileS3Key);
-  const [signedURL, setSignedURL] = React.useState();
+  const [signedURL, setSignedURL] = useState();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isIconSetup && isEmpty(signedURL)) {
       MediaService.getMedia(subjectType.iconFileS3Key).then(res => setSignedURL(res));
     }

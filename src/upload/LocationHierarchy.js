@@ -1,4 +1,3 @@
-import React from "react";
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 
 export const LocationHierarchy = ({ hierarchy, setHierarchy, configuredHierarchies }) => {

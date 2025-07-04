@@ -1,15 +1,14 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Button } from "@mui/material";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(1),
   paddingLeft: 0,
-  marginBottom: theme.spacing(1),
+  marginBottom: theme.spacing(1)
 }));
 
-const StyledIcon = styled('span')(({ theme }) => ({
-  marginRight: theme.spacing(1), // 8px
+const StyledIcon = styled("span")(({ theme }) => ({
+  marginRight: theme.spacing(1) // 8px
 }));
 
 const IconButton = ({ onClick, Icon, label, disabled }) => (

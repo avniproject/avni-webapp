@@ -1,4 +1,4 @@
-import React from "react";
+import { Fragment } from "react";
 import { isEmpty } from "lodash";
 import { ExportOptions } from "./ExportOptions";
 import { DateOptions } from "./DateOptions";
@@ -21,7 +21,7 @@ export const EncounterType = ({
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <ExportOptions
         options={subjectTypes}
         label={"Subject Type"}
@@ -47,6 +47,6 @@ export const EncounterType = ({
         startDateLabel={"Visit start date"}
         endDateLabel={"Visit end date"}
       />
-    </React.Fragment>
+    </Fragment>
   );
 };

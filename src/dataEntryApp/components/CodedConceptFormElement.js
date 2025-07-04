@@ -1,4 +1,3 @@
-import React from "react";
 import { CodedFormElement } from "./CodedFormElement";
 import { sortBy, assign } from "lodash";
 

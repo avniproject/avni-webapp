@@ -1,5 +1,5 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Box, Paper, Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -13,51 +13,39 @@ import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import MessageDialog from "../../../components/MessageDialog";
 
-const useStyles = makeStyles(theme => ({
-  label: {
-    marginLeft: theme.spacing(2),
-    marginBottom: theme.spacing(2)
-  },
-  expansionPanel: {
-    marginBottom: "11px",
-    borderRadius: "5px",
-    boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-  },
-  root: {
-    flexGrow: 1,
-    padding: theme.spacing(2),
-    boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)"
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: "left"
-  },
-  programStatusStyle: {
-    color: "red",
-    backgroundColor: "#FFB6C1",
-    borderRadius: "5px"
-  },
-  expansionHeading: {
-    fontSize: theme.typography.pxToRem(16),
-    flexBasis: "33.33%",
-    flexShrink: 0,
-    fontWeight: "500"
-  },
-  listItem: {
-    paddingBottom: "0px",
-    paddingTop: "0px"
-  },
-  infomsg: {
-    marginLeft: 10
-  },
-  expandMoreHoriz: {
-    color: "#0e6eff"
-  },
-  visitAllButton: {
-    marginLeft: "20px",
-    marginBottom: "10px"
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(2),
+  boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)"
 }));
+
+const StyledBox = styled(Box)({
+  flexGrow: 1
+});
+
+const StyledAccordion = styled(Accordion)({
+  marginBottom: "11px",
+  borderRadius: "5px",
+  boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+});
+
+const StyledAccordionSummary = styled(AccordionSummary)({});
+
+const StyledAccordionDetails = styled(AccordionDetails)({
+  padding: 0,
+  display: "block"
+});
+
+const StyledTypography = styled(Typography)({
+  fontSize: "1rem",
+  flexBasis: "33.33%",
+  flexShrink: 0,
+  fontWeight: "500"
+});
+
+const StyledExpandMore = styled(ExpandMore)({
+  color: "#0e6eff"
+});
 
 const SubjectDashboardGeneralTab = ({
   general,
@@ -70,31 +58,28 @@ const SubjectDashboardGeneralTab = ({
   clearVoidServerError
 }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = React.useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = useState("");
 
   const plannedVisits = filter(
     general,
     ({ voided, encounterDateTime, cancelDateTime }) => !voided && isNil(encounterDateTime) && isNil(cancelDateTime)
   );
-  const ContainerComponent = displayGeneralInfoInProfileTab ? Box : Paper;
+  const ContainerComponent = displayGeneralInfoInProfileTab ? StyledBox : StyledPaper;
 
   return (
-    <ContainerComponent className={displayGeneralInfoInProfileTab ? "" : classes.root}>
+    <ContainerComponent>
       {subjectVoided && <SubjectVoided showUnVoid={false} />}
       {!subjectVoided && !displayGeneralInfoInProfileTab && <NewGeneralEncounterButton subjectUuid={subjectUuid} />}
-      <Accordion className={classes.expansionPanel}>
-        <AccordionSummary
-          expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
+      <StyledAccordion>
+        <StyledAccordionSummary
+          expandIcon={<StyledExpandMore />}
           aria-controls="plannedVisitPanelbh-content"
           id="planned-general-encounter-details"
         >
-          <Typography component={"span"} className={classes.expansionHeading}>
-            {t("plannedVisits")}
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails style={{ padding: 0, display: "block" }}>
+          <StyledTypography component="span">{t("plannedVisits")}</StyledTypography>
+        </StyledAccordionSummary>
+        <StyledAccordionDetails>
           <PlannedVisitsTable
             plannedVisits={plannedVisits || []}
             doBaseUrl={`/app/subject/encounter?encounterUuid`}
@@ -105,29 +90,27 @@ const SubjectDashboardGeneralTab = ({
           />
           <ConfirmDialog
             title={t("GeneralEncounterVoidAlertTitle")}
-            open={!_.isEmpty(plannedEncounterUUIDToBeVoided)}
+            open={!isEmpty(plannedEncounterUUIDToBeVoided)}
             setOpen={() => setPlannedEncounterUUIDToBeVoided()}
             message={t("GeneralEncounterVoidAlertMessage")}
             onConfirm={() => {
               voidGeneralEncounter(plannedEncounterUUIDToBeVoided);
             }}
           />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion className={classes.expansionPanel} onChange={() => setIsExpanded(p => !p)}>
-        <AccordionSummary
-          expandIcon={<ExpandMore className={classes.expandMoreHoriz} />}
+        </StyledAccordionDetails>
+      </StyledAccordion>
+      <StyledAccordion onChange={() => setIsExpanded(p => !p)}>
+        <StyledAccordionSummary
+          expandIcon={<StyledExpandMore />}
           aria-controls="completedVisitPanelbh-content"
           id="completed-general-encounter-details"
         >
-          <Typography component={"span"} className={classes.expansionHeading}>
-            {t("completedVisits")}
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails style={{ padding: 0, display: "block" }}>
+          <StyledTypography component="span">{t("completedVisits")}</StyledTypography>
+        </StyledAccordionSummary>
+        <StyledAccordionDetails>
           {isExpanded && <CompletedVisits entityUuid={subjectUuid} isForProgramEncounters={false} />}
-        </AccordionDetails>
-      </Accordion>
+        </StyledAccordionDetails>
+      </StyledAccordion>
       <MessageDialog title={t("SubjectErrorTitle")} open={!isEmpty(voidError)} message={t(voidError)} onOk={clearVoidServerError} />
     </ContainerComponent>
   );

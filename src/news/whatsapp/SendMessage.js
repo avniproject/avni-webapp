@@ -1,22 +1,19 @@
 import React, { useState } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Button } from "@mui/material";
 import ComposeMessageView from "./ComposeMessageView";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
-const useStyle = makeStyles(theme => ({
-  root: {
-    margin: "10px",
-    paddingTop: "10px",
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "flex-end"
-  }
-}));
+const StyledContainer = styled("div")({
+  margin: "10px",
+  paddingTop: "10px",
+  display: "flex",
+  alignItems: "center",
+  flexDirection: "row",
+  justifyContent: "flex-end"
+});
 
 const SendMessage = ({ receiverId, receiverType, onComposedMessage }) => {
-  const classes = useStyle();
   const [sendingMessage, setSendingMessage] = useState(false);
   const [scheduled, setScheduled] = useState(false);
 
@@ -27,7 +24,7 @@ const SendMessage = ({ receiverId, receiverType, onComposedMessage }) => {
   };
 
   return (
-    <div className={classes.root}>
+    <StyledContainer>
       {sendingMessage && (
         <ComposeMessageView
           receiverId={receiverId}
@@ -36,7 +33,6 @@ const SendMessage = ({ receiverId, receiverType, onComposedMessage }) => {
           onSchedulingAttempted={onSchedulingAttempted}
         />
       )}
-
       {scheduled && (
         <CustomizedSnackbar
           variant={scheduled}
@@ -46,9 +42,9 @@ const SendMessage = ({ receiverId, receiverType, onComposedMessage }) => {
         />
       )}
       <Button variant="contained" color="primary" onClick={() => setSendingMessage(true)}>
-        {"Send Message"}
+        Send Message
       </Button>
-    </div>
+    </StyledContainer>
   );
 };
 

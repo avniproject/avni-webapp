@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Button, AppBar, Toolbar, Typography } from "@mui/material";
 import _, { isFunction } from "lodash";
 import logo from "../formDesigner/styles/images/avniLogo.png";
@@ -7,34 +7,34 @@ import Colors from "./Colors";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   position: "relative",
-  background: "white",
+  background: "white"
 }));
 
-const StyledContainer = styled('div')(({ theme }) => ({
+const StyledContainer = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   marginTop: "50px",
   marginBottom: "50px",
   marginRight: "20%",
-  marginLeft: "20%",
+  marginLeft: "20%"
 }));
 
-const StyledButtonContainer = styled('div')(({ theme }) => ({
+const StyledButtonContainer = styled("div")(({ theme }) => ({
   marginTop: "50px",
   flex: 1,
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "center",
-  gap: theme.spacing(2.5),
+  gap: theme.spacing(2.5)
 }));
 
-const StyledErrorContainer = styled('div')(({ theme }) => ({
+const StyledErrorContainer = styled("div")(({ theme }) => ({
   padding: "5px",
   backgroundColor: Colors.HighlightBackgroundColor,
   border: "2px solid #d1d2d2",
   borderRadius: 5,
-  marginTop: "10px",
+  marginTop: "10px"
 }));
 
 function ErrorItem({ fieldName, fieldValue }) {
@@ -51,7 +51,7 @@ function ErrorItem({ fieldName, fieldValue }) {
 }
 
 export function ErrorFallback({ error, onClose }) {
-  const [showError, setShowError] = React.useState(false);
+  const [showError, setShowError] = useState(false);
 
   const closeDialogIfRequired = () => {
     if (isFunction(onClose)) {

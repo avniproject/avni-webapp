@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { DeleteOutline } from "@mui/icons-material";
 import { Grid, CardActions, Button, CardContent, Typography, CardActionArea, Card } from "@mui/material";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Grid, Button, MenuItem, IconButton } from "@mui/material";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { Title } from "react-admin";
@@ -11,21 +11,21 @@ import { isNil, isEmpty } from "lodash";
 import CustomizedSnackbar from "../formDesigner/components/CustomizedSnackbar";
 
 const Msg91Config = () => {
-  const [msg91Config, setMsg91Config] = React.useState({
+  const [msg91Config, setMsg91Config] = useState({
     authKey: "",
     otpSmsTemplateId: "",
     otpLength: 4
   });
-  React.useEffect(() => {
+  useEffect(() => {
     api.getMsg91Config().then(response => {
       setMsg91Config(response);
       setAuthKeyChanged(isNil(response.authKey));
     });
   }, []);
 
-  const [authKeyChanged, setAuthKeyChanged] = React.useState(false);
-  const [authKeyVerified, setAuthKeyVerified] = React.useState(false);
-  const [dataChanged, setDataChanged] = React.useState(false);
+  const [authKeyChanged, setAuthKeyChanged] = useState(false);
+  const [authKeyVerified, setAuthKeyVerified] = useState(false);
+  const [dataChanged, setDataChanged] = useState(false);
   const [messageStatus, setMessageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { styled } from '@mui/material/styles';
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { styled } from "@mui/material/styles";
 import { Box, Grid, IconButton } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { find, isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { mapObservations } from "common/subjectModelMapper";
@@ -19,16 +19,16 @@ import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
 const StyledLink = styled(Link)(({ theme }) => ({
   textTransform: "uppercase",
-  fontWeight: 500,
+  fontWeight: 500
 }));
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
   alignItems: "center",
-  alignContent: "center",
+  alignContent: "center"
 }));
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(1),
+  margin: theme.spacing(1)
 }));
 
 const transformApiResponse = response => {
@@ -40,13 +40,7 @@ const EditVisitLink = ({ editEncounterUrl, encounter, isForProgramEncounters, en
   const { t } = useTranslation();
   const isFormAvailable = isForProgramEncounters ? programEncounterFormMapping : encounterFormMapping;
 
-  return isFormAvailable ? (
-    <StyledLink to={`${editEncounterUrl}?uuid=${encounter.uuid}`}>
-      {t("edit visit")}
-    </StyledLink>
-  ) : (
-    "-"
-  );
+  return isFormAvailable ? <StyledLink to={`${editEncounterUrl}?uuid=${encounter.uuid}`}>{t("edit visit")}</StyledLink> : "-";
 };
 
 const mapStateToProps = (state, props) => ({
@@ -61,24 +55,24 @@ const mapStateToProps = (state, props) => ({
       state.dataEntry.programEncounterReducer.programEnrolment.program.uuid,
       state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
     )(state),
-  encounterForms: state.dataEntry.subjectProgram.encounterForms,
+  encounterForms: state.dataEntry.subjectProgram.encounterForms
 });
 
 const EditVisit = connect(mapStateToProps)(EditVisitLink);
 
 const EncounterObs = ({
-                        encounter,
-                        isForProgramEncounters,
-                        encounterFormMapping,
-                        programEncounterFormMapping,
-                        encounterForms,
-                        getEncounterForm,
-                      }) => {
+  encounter,
+  isForProgramEncounters,
+  encounterFormMapping,
+  programEncounterFormMapping,
+  encounterForms,
+  getEncounterForm
+}) => {
   const formMapping = isForProgramEncounters ? programEncounterFormMapping : encounterFormMapping;
   const formUUID = formMapping.formUUID;
   const requiredFormDetails = find(encounterForms, ef => ef.formUUID === formUUID);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!requiredFormDetails) {
       getEncounterForm(formUUID);
     }
@@ -97,7 +91,7 @@ const EncounterObs = ({
 };
 
 const mapDispatchToProps = {
-  getEncounterForm,
+  getEncounterForm
 };
 
 const EncounterObservations = connect(
@@ -105,13 +99,7 @@ const EncounterObservations = connect(
   mapDispatchToProps
 )(EncounterObs);
 
-const CompletedVisitsTable = ({
-                                apiUrl,
-                                filterParams,
-                                editEncounterUrl,
-                                isForProgramEncounters,
-                                onDelete,
-                              }) => {
+const CompletedVisitsTable = ({ apiUrl, filterParams, editEncounterUrl, isForProgramEncounters, onDelete }) => {
   const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -124,22 +112,22 @@ const CompletedVisitsTable = ({
       {
         accessorKey: "name",
         header: t("visitName"),
-        Cell: ({ row }) => t(row.original.name || row.original.encounterType.name),
+        Cell: ({ row }) => t(row.original.name || row.original.encounterType.name)
       },
       {
         accessorKey: "encounterDateTime",
         header: t("visitcompleteddate"),
-        Cell: ({ row }) => formatDate(row.original.encounterDateTime),
+        Cell: ({ row }) => formatDate(row.original.encounterDateTime)
       },
       {
         accessorKey: "cancelDateTime",
         header: t("visitCanceldate"),
-        Cell: ({ row }) => formatDate(row.original.cancelDateTime),
+        Cell: ({ row }) => formatDate(row.original.cancelDateTime)
       },
       {
         accessorKey: "earliestVisitDateTime",
         header: t("visitscheduledate"),
-        Cell: ({ row }) => formatDate(row.original.earliestVisitDateTime),
+        Cell: ({ row }) => formatDate(row.original.earliestVisitDateTime)
       },
       {
         id: "actions",
@@ -158,8 +146,8 @@ const CompletedVisitsTable = ({
               <DeleteButton onDelete={() => onDelete(row.original)} />
             </Grid>
           </StyledGrid>
-        ),
-      },
+        )
+      }
     ],
     [t, editEncounterUrl, isForProgramEncounters, onDelete]
   );
@@ -212,13 +200,9 @@ const CompletedVisitsTable = ({
           <EncounterObservations encounter={row.original} isForProgramEncounters={isForProgramEncounters} />
         </StyledBox>
       )}
-      renderExpandIcon={({ row }) => (
-        <IconButton>
-          {row.getIsExpanded() ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-        </IconButton>
-      )}
+      renderExpandIcon={({ row }) => <IconButton>{row.getIsExpanded() ? <KeyboardArrowUp /> : <KeyboardArrowDown />}</IconButton>}
       initialState={{
-        sorting: [{ id: "encounterDateTime", desc: true }],
+        sorting: [{ id: "encounterDateTime", desc: true }]
       }}
     />
   );

@@ -1,7 +1,7 @@
-import React, { Fragment } from "react";
+import { useEffect, Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { withRouter } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
-import { makeStyles } from "@mui/styles";
 import { Paper, Typography } from "@mui/material";
 import { AddressLevel, Individual } from "avni-models";
 import {
@@ -45,117 +45,31 @@ import HierarchicalLocationSelect from "../../components/HierarchicalLocationSel
 import LocationSelect from "../../components/LocationSelect";
 import { selectOrganisationConfig } from "../../sagas/selectors";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(4),
-    flexGrow: 1
-  },
-  form: {
-    border: "1px solid #f1ebeb"
-  },
-  villagelabel: {
-    color: "rgba(0, 0, 0, 0.54)",
-    padding: 0,
-    fontSize: "1rem",
-    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-    fontWeight: 400,
-    lineHeight: 1,
-    letterSpacing: "0.00938em",
-    marginBottom: 20
-  },
-  topcaption: {
-    color: "rgba(0, 0, 0, 0.54)",
-    backgroundColor: "#f8f4f4",
-    height: 40,
-    width: "100%",
-    padding: 8
-  },
-  caption: {
-    color: "rgba(0, 0, 0, 0.54)"
-  },
-  topprevnav: {
-    color: "#cecdcd",
-    fontSize: "13px",
-    border: "none",
-    background: "white"
-  },
-  toppagenum: {
-    backgroundColor: "silver",
-    color: "black",
-    fontSize: 12,
-    padding: 3
-  },
-  topnextnav: {
-    color: "orange",
-    fontSize: "13px",
-    cursor: "pointer",
-    border: "none",
-    background: "white",
-
-    "&:hover": {
-      background: "none",
-      border: "none"
-    },
-
-    "&:active": {
-      border: "none",
-      outlineColor: "white"
-    }
-  },
-  prevbuttonspace: {
-    color: "#cecdcd",
-    marginRight: 27,
-    width: 100
-  },
-  iconcolor: {
-    color: "blue"
-  },
-  topboxstyle: {
-    padding: theme.spacing(3, 3)
-  },
-  buttomboxstyle: {
-    backgroundColor: "#f8f4f4",
-    height: 80,
-    width: "100%",
-    padding: 25
-  },
-  errmsg: {
-    color: "#f44336",
-    "font-family": "Roboto",
-    "font-weight": 400,
-    "font-size": "0.75rem"
-  },
-  nextBtn: {
-    color: "white",
-    width: 110,
-    cursor: "pointer",
-    height: 30,
-    padding: "4px 25px",
-    fontSize: 12,
-    borderRadius: 50,
-    backgroundColor: "orange"
-  },
-  noUnderline: {
-    "&:hover, &:focus": {
-      textDecoration: "none"
-    }
-  },
-  lableStyle: {
-    width: "50%",
-    marginBottom: 10,
-    color: "rgba(0, 0, 0, 0.54)"
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(4),
+  flexGrow: 1,
+  elevation: 2
 }));
 
+const StyledTypography = styled(Typography)({
+  marginBottom: 8
+});
+
+const StyledErrorSpan = styled("span")({
+  color: "#f44336",
+  fontFamily: "Roboto",
+  fontWeight: 400,
+  fontSize: "0.75rem"
+});
+
 const SubjectRegister = props => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const match = props.match;
   const edit = match.path === "/app/editSubject";
   const orgConfig = useSelector(selectOrganisationConfig);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (edit) {
       const subjectUuid = props.match.queryParams.uuid;
       props.onLoadEdit(subjectUuid);
@@ -167,7 +81,6 @@ const SubjectRegister = props => {
   const loaded = props.loaded;
 
   const dobError = commonFormUtil.getValidationResult(props.validationResults, Individual.validationKeys.DOB);
-
   const genderError = commonFormUtil.getValidationResult(props.validationResults, Individual.validationKeys.GENDER);
 
   function renderAddress() {
@@ -231,7 +144,7 @@ const SubjectRegister = props => {
               )}
             </div>
           )}
-          {error && <span className={classes.errmsg}>{t(error.messageKey)}</span>}
+          {error && <StyledErrorSpan>{t(error.messageKey)}</StyledErrorSpan>}
         </div>
       </>
     );
@@ -260,11 +173,11 @@ const SubjectRegister = props => {
   return loaded ? (
     <Fragment>
       <Breadcrumbs path={props.match.path} />
-      <Paper className={classes.root}>
+      <StyledPaper>
         <div>
-          <Typography variant="h6" sx={{ mb: 1 }}>
+          <StyledTypography variant="h6">
             {t("register")} {t(props.subject.subjectType.name)}
-          </Typography>
+          </StyledTypography>
           <LineBreak num={2} />
           <div>
             {props.subject && (
@@ -276,7 +189,6 @@ const SubjectRegister = props => {
                   validationResults={props.validationResults}
                   update={props.setRegistrationDate}
                 />
-
                 <LineBreak num={3} />
                 {props.subject.subjectType.isPerson() && (
                   <>
@@ -353,7 +265,7 @@ const SubjectRegister = props => {
             )}
           </div>
         </div>
-      </Paper>
+      </StyledPaper>
     </Fragment>
   ) : (
     <CustomizedBackdrop load={false} />

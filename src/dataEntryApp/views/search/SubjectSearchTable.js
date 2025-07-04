@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { Box, Chip, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { filter, find, flatten, get, head, isEmpty, isNil, join, map, reject, size, uniqBy } from "lodash";

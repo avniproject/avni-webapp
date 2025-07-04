@@ -1,6 +1,5 @@
-import React from "react";
+import { useState, memo } from "react";
 import _, { get, isEqual } from "lodash";
-import { withStyles, makeStyles } from "@mui/styles";
 import {
   Accordion,
   AccordionDetails,
@@ -26,86 +25,115 @@ import { FormElementGroupRule } from "./FormElementGroupRule";
 import { ToolTip } from "../../common/components/ToolTip";
 import { ColourStyle } from "./ColourStyle";
 
-const useStyles = makeStyles(theme => ({
-  parent: {
-    paddingLeft: 0,
-    paddingBottom: 30
-  },
-  root: {
-    width: "100%"
-  },
-  rootError: {
-    width: "100%",
-    border: "1px solid red"
-  },
-  iconlay: {
-    flex: 1,
-    alignItems: "center"
-  },
-  questionCount: {
-    paddingTop: "5px"
-  },
-  absolute: {
-    position: "absolute",
-    marginLeft: -35,
-    marginTop: -5
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15)
-  },
-  secondaryHeading: {
-    flexBasis: "70%",
-    fontSize: theme.typography.pxToRem(15)
-  },
-  tabs: {
-    minHeight: "26px",
-    height: "26px"
-  },
-  tab: {
-    minHeight: "26px",
-    height: "26px"
+const StyledParent = styled("div")(({ theme }) => ({
+  paddingLeft: 0,
+  paddingBottom: 30
+}));
+
+const StyledAccordion = styled(Accordion)(({ theme, hasError }) => ({
+  width: "100%",
+  border: hasError ? "1px solid red" : undefined,
+  "&.Mui-expanded": {
+    margin: 0
   }
 }));
 
-export const StyledAccordion = withStyles({
-  root: {
-    "&$expanded": {
+const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+  paddingRight: 0,
+  backgroundColor: "#dbdbdb",
+  border: "1px solid #2196F3",
+  paddingLeft: 0,
+  minHeight: 56,
+  "&.Mui-expanded": {
+    minHeight: 56
+  },
+  "&.Mui-focused": {
+    backgroundColor: "#dbdbdb"
+  },
+  "& .MuiAccordionSummary-content": {
+    margin: 0,
+    "&.Mui-expanded": {
       margin: 0
     }
   },
-  expanded: {}
-})(Accordion);
-
-export const StyledAccordionSummary = withStyles({
-  root: {
-    paddingRight: 0,
-    backgroundColor: "#dbdbdb",
-    border: "1px solid #2196F3",
-    paddingLeft: 0,
-    minHeight: 56,
-    "&$expanded": {
-      minHeight: 56
-    },
-    "&$focused": {
-      backgroundColor: "#dbdbdb"
-    }
-  },
-  focused: {},
-  content: {
-    margin: "0",
-    "&$expanded": { margin: "0" }
-  },
-  expanded: {},
-  icon: {
+  "& .MuiAccordionSummary-icon": {
     marginHorizontal: "8px",
     display: "inline"
   }
-})(AccordionSummary);
+}));
+
+const StyledDragHandler = styled("div")({
+  height: 5
+});
+
+const StyledDragHandleContainer = styled("div")(({ show }) => ({
+  display: show ? "block" : "none"
+}));
+
+const StyledGroupIcon = styled(Group)({
+  marginLeft: 12,
+  marginRight: 4
+});
+
+const StyledExpandIcon = styled(({ expanded, ...props }) => (expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />))({
+  marginHorizontal: "8px",
+  display: "inline"
+});
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  fontSize: theme.typography.pxToRem(15)
+}));
+
+const StyledQuestionCount = styled(Typography)({
+  paddingTop: "5px"
+});
+
+const StyledTabs = styled(Tabs)(({ theme }) => ({
+  background: "#2196f3",
+  color: "white",
+  width: "100%",
+  marginBottom: 24,
+  height: 40,
+  minHeight: "26px"
+}));
+
+const StyledTab = styled(Tab)({
+  minHeight: "26px",
+  height: "26px"
+});
+
+const StyledErrorText = styled("div")({
+  color: "red"
+});
+
+const StyledDetailsContainer = styled(Grid)(({ theme }) => ({
+  width: "100%",
+  alignContent: "center",
+  marginBottom: 8
+}));
+
+const StyledFormControlLabel = styled(FormControlLabel)({
+  marginLeft: 10
+});
+
+const StyledFlexContainer = styled("div")({
+  display: "flex",
+  flexDirection: "row"
+});
+
+const StyledFlexItem = styled("div")({
+  flex: 0.2
+});
+
+const StyledFab = styled(Fab)(({ theme }) => ({
+  position: "absolute",
+  marginLeft: -35,
+  marginTop: -5
+}));
 
 function FormElementGroup(props) {
-  const classes = useStyles();
-  const [hover, setHover] = React.useState(false);
-  const [tabIndex, setTabIndex] = React.useState(0);
+  const [hover, setHover] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
   const panel = "panel" + props.index.toString();
   let questionCount = 0;
 
@@ -207,24 +235,23 @@ function FormElementGroup(props) {
     return formElements;
   };
 
-  const [dragGroup, setDragGroup] = React.useState(false);
+  const [dragGroup, setDragGroup] = useState(false);
   const disableGroup = props.disableGroup;
 
-  const DragHandler = props => (
-    <div style={{ height: 5 }} {...props}>
-      <div hidden={!dragGroup || disableGroup}>
+  const DragHandler = ({ dragHandleProps }) => (
+    <StyledDragHandler {...dragHandleProps}>
+      <StyledDragHandleContainer hidden={!dragGroup || disableGroup}>
         <DragHandle color="disabled" />
-      </div>
-    </div>
+      </StyledDragHandleContainer>
+    </StyledDragHandler>
   );
 
   return (
     <Draggable key={`Element${props.index}`} draggableId={`Element${props.index}`} index={props.index} isDragDisabled={disableGroup}>
       {provided => (
-        <div
+        <StyledParent
           {...provided.draggableProps}
           ref={provided.innerRef}
-          className={classes.parent}
           onMouseEnter={hoverDisplayAddGroup}
           onMouseLeave={hoverHideAddGroup}
         >
@@ -232,50 +259,28 @@ function FormElementGroup(props) {
             <StyledAccordion
               TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
               expanded={props.groupData.expanded}
-              className={props.groupData.error ? classes.rootError : classes.root}
+              hasError={props.groupData.error}
               onChange={event => props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)}
             >
               <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`} {...provided.dragHandleProps}>
                 <Grid container direction="row">
-                  <Grid
-                    container
-                    sx={{
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    <DragHandler />
+                  <Grid container sx={{ alignItems: "center", justifyContent: "center" }}>
+                    <DragHandler dragHandleProps={provided.dragHandleProps} />
                   </Grid>
-                  <Grid
-                    container
-                    sx={{
-                      alignItems: "center"
-                    }}
-                    size={{
-                      sm: 12
-                    }}
-                  >
-                    <Grid
-                      size={{
-                        sm: 1
-                      }}
-                    >
+                  <Grid container sx={{ alignItems: "center" }} size={{ sm: 12 }}>
+                    <Grid size={{ sm: 1 }}>
                       <Tooltip title="Grouped Questions">
-                        <Group style={{ marginLeft: 12, marginRight: 4 }} />
+                        <StyledGroupIcon />
                       </Tooltip>
-                      {props.groupData.expanded ? <ExpandLess className={classes.icon} /> : <ExpandMore className={classes.icon} />}
+                      <StyledExpandIcon expanded={props.groupData.expanded} />
                     </Grid>
-                    <Grid
-                      size={{
-                        sm: 6
-                      }}
-                    >
-                      <Typography className={classes.heading}>
+                    <Grid size={{ sm: 6 }}>
+                      <StyledTypography>
                         {props.groupData.errorMessage && props.groupData.errorMessage.name && (
-                          <div style={{ color: "red" }}>Please enter Page name.</div>
+                          <StyledErrorText>Please enter Page name.</StyledErrorText>
                         )}
                         {get(props.groupData, "errorMessage.ruleError") && (
-                          <div style={{ color: "red" }}>Please check the rule validation errors</div>
+                          <StyledErrorText>Please check the rule validation errors</StyledErrorText>
                         )}
                         <FormControl fullWidth>
                           <Input
@@ -290,20 +295,12 @@ function FormElementGroup(props) {
                             disabled={disableGroup}
                           />
                         </FormControl>
-                      </Typography>
+                      </StyledTypography>
                     </Grid>
                     {props.groupData.timed && (
-                      <Grid
-                        size={{
-                          sm: 3
-                        }}
-                      >
+                      <Grid size={{ sm: 3 }}>
                         <Grid container direction="row">
-                          <Grid
-                            size={{
-                              sm: 6
-                            }}
-                          >
+                          <Grid size={{ sm: 6 }}>
                             <TextField
                               type="number"
                               label="Start time (Seconds)"
@@ -315,11 +312,7 @@ function FormElementGroup(props) {
                               disabled={disableGroup}
                             />
                           </Grid>
-                          <Grid
-                            size={{
-                              sm: 6
-                            }}
-                          >
+                          <Grid size={{ sm: 6 }}>
                             <TextField
                               type="number"
                               label="Stay time (Seconds)"
@@ -334,20 +327,10 @@ function FormElementGroup(props) {
                         </Grid>
                       </Grid>
                     )}
-                    <Grid
-                      size={{
-                        sm: props.groupData.timed ? 1 : 3
-                      }}
-                    >
-                      <Typography component="div" className={classes.questionCount}>
-                        {questionCount} questions
-                      </Typography>
+                    <Grid size={{ sm: props.groupData.timed ? 1 : 3 }}>
+                      <StyledQuestionCount component="div">{questionCount} questions</StyledQuestionCount>
                     </Grid>
-                    <Grid
-                      size={{
-                        sm: 1
-                      }}
-                    >
+                    <Grid size={{ sm: 1 }}>
                       <IconButton aria-label="delete" onClick={handleDelete} disabled={disableGroup} size="large">
                         <Delete />
                       </IconButton>
@@ -358,71 +341,57 @@ function FormElementGroup(props) {
               </StyledAccordionSummary>
               <AccordionDetails style={{ padding: 0 }}>
                 <Grid direction="column" style={{ width: "100%" }}>
-                  <Tabs
-                    style={{
-                      background: "#2196f3",
-                      color: "white",
-                      width: "100%",
-                      marginBottom: 24,
-                      height: 40
-                    }}
-                    className={classes.tabs}
-                    value={tabIndex}
-                    onChange={(event, value) => setTabIndex(value)}
-                  >
-                    <Tab label="Details" className={classes.tab} />
-                    <Tab label="Rules" className={classes.tab} />
-                  </Tabs>
-                  <Grid hidden={tabIndex !== 0} style={{ width: "100%", alignContent: "center", marginBottom: 8 }}>
-                    <Typography component="span" className={classes.root}>
-                      <Droppable droppableId={`Group${props.index}`} type="task">
-                        {provided => (
-                          <div ref={provided.innerRef} {...provided.droppableProps}>
-                            {renderFormElements()}
-                            {provided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                      {questionCount === 0 && (
-                        <FormControl fullWidth>
-                          <Button variant="contained" color="secondary" onClick={separateAddElement} disabled={disableGroup}>
-                            Add Question
-                          </Button>
-                        </FormControl>
+                  <StyledTabs value={tabIndex} onChange={(event, value) => setTabIndex(value)}>
+                    <StyledTab label="Details" />
+                    <StyledTab label="Rules" />
+                  </StyledTabs>
+                  <StyledDetailsContainer hidden={tabIndex !== 0}>
+                    <Droppable droppableId={`Group${props.index}`} type="task">
+                      {provided => (
+                        <div ref={provided.innerRef} {...provided.droppableProps}>
+                          {renderFormElements()}
+                          {provided.placeholder}
+                        </div>
                       )}
-                      <div style={{ display: "flex", flexDirection: "row" }}>
-                        <div style={{ flex: 0.2 }}>
-                          <FormControlLabel
-                            style={{ marginLeft: 10 }}
-                            control={
-                              <Checkbox
-                                id="isTimed"
-                                checked={props.groupData.timed}
-                                onChange={event => props.handleGroupElementChange(props.index, "timed", event.target.checked)}
-                              />
-                            }
-                            label="Timed Page"
-                          />
-                        </div>
-                        <div style={{ flex: 0.2 }}>
-                          <ColourStyle
-                            label="Text colour"
-                            colour={props.groupData.textColour}
-                            onChange={colour => props.handleGroupElementChange(props.index, "textColour", colour)}
-                            title="APP_DESIGNER_GROUP_TEXT_COLOUR"
-                          />
-                        </div>
-                        <div style={{ flex: 0.2 }}>
-                          <ColourStyle
-                            label="Background colour"
-                            colour={props.groupData.backgroundColour}
-                            onChange={colour => props.handleGroupElementChange(props.index, "backgroundColour", colour)}
-                            title="APP_DESIGNER_GROUP_BACKGROUND_COLOUR"
-                          />
-                        </div>
-                      </div>
-                    </Typography>
-                  </Grid>
+                    </Droppable>
+                    {questionCount === 0 && (
+                      <FormControl fullWidth>
+                        <Button variant="contained" color="secondary" onClick={separateAddElement} disabled={disableGroup}>
+                          Add Question
+                        </Button>
+                      </FormControl>
+                    )}
+                    <StyledFlexContainer>
+                      <StyledFlexItem>
+                        <StyledFormControlLabel
+                          control={
+                            <Checkbox
+                              id="isTimed"
+                              checked={props.groupData.timed}
+                              onChange={event => props.handleGroupElementChange(props.index, "timed", event.target.checked)}
+                            />
+                          }
+                          label="Timed Page"
+                        />
+                      </StyledFlexItem>
+                      <StyledFlexItem>
+                        <ColourStyle
+                          label="Text colour"
+                          colour={props.groupData.textColour}
+                          onChange={colour => props.handleGroupElementChange(props.index, "textColour", colour)}
+                          title="APP_DESIGNER_GROUP_TEXT_COLOUR"
+                        />
+                      </StyledFlexItem>
+                      <StyledFlexItem>
+                        <ColourStyle
+                          label="Background colour"
+                          colour={props.groupData.backgroundColour}
+                          onChange={colour => props.handleGroupElementChange(props.index, "backgroundColour", colour)}
+                          title="APP_DESIGNER_GROUP_BACKGROUND_COLOUR"
+                        />
+                      </StyledFlexItem>
+                    </StyledFlexContainer>
+                  </StyledDetailsContainer>
                   <Grid hidden={tabIndex !== 1}>
                     <FormElementGroupRule groupData={props.groupData} disable={disableGroup} {...props} />
                   </Grid>
@@ -431,20 +400,14 @@ function FormElementGroup(props) {
             </StyledAccordion>
           </Grid>
           {hover && (
-            <Fab
-              color="primary"
-              aria-label="add"
-              onClick={separateAddGroup}
-              className={classes.absolute}
-              size="small"
-              disabled={disableGroup}
-            >
+            <StyledFab color="primary" aria-label="add" onClick={separateAddGroup} size="small" disabled={disableGroup}>
               <Add />
-            </Fab>
+            </StyledFab>
           )}
-        </div>
+        </StyledParent>
       )}
     </Draggable>
   );
 }
-export default React.memo(FormElementGroup, isEqual);
+
+export default memo(FormElementGroup, isEqual);

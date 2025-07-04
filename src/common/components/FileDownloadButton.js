@@ -1,7 +1,6 @@
-import React from "react";
 import { Link, IconButton } from "@mui/material";
 import { CloudDownload } from "@mui/icons-material";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 
 const FileDownloadButton = ({ url, filename, disabled, buttonColor = "primary" }) => {
   const DownloadButton = () => (

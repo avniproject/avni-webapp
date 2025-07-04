@@ -1,8 +1,8 @@
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Grid, FormControlLabel, Checkbox, Button, Modal, TextField } from "@mui/material";
 import React, { useEffect, useState, Fragment } from "react";
 import { get } from "lodash";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { AlertModal } from "./AlertModal";
 import { Warning } from "@mui/icons-material";
 import ActivityIndicatorModal from "../../common/components/ActivityIndicatorModal";
@@ -15,25 +15,25 @@ const StyledModalContent = styled(Grid)(({ theme }) => ({
   boxShadow: theme.shadows[5],
   padding: theme.spacing(2, 4, 3),
   top: "25%",
-  left: "30%",
+  left: "30%"
 }));
 
 const StyledDeleteButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "red",
+  backgroundColor: "red"
 }));
 
 const StyledWarningIcon = styled(Warning)(({ theme }) => ({
-  fontSize: "40px",
+  fontSize: "40px"
 }));
 
 export const DeleteData = ({
-                             openModal,
-                             setOpenModal,
-                             orgName,
-                             hasOrgMetadataDeletionPrivilege,
-                             hasOrgAdminConfigDeletionPrivilege,
-                             setDataDeletedIndicator,
-                           }) => {
+  openModal,
+  setOpenModal,
+  orgName,
+  hasOrgMetadataDeletionPrivilege,
+  hasOrgAdminConfigDeletionPrivilege,
+  setDataDeletedIndicator
+}) => {
   const [deleteMetadata, setDeleteMetadata] = useState(false);
   const [deleteAdminConfig, setDeleteAdminConfig] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -131,12 +131,7 @@ export const DeleteData = ({
               </Button>
             </Grid>
             <Grid>
-              <StyledDeleteButton
-                variant="contained"
-                color="secondary"
-                onClick={deleteData}
-                disabled={orgName !== confirmText}
-              >
+              <StyledDeleteButton variant="contained" color="secondary" onClick={deleteData} disabled={orgName !== confirmText}>
                 Delete
               </StyledDeleteButton>
             </Grid>

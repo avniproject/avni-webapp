@@ -1,10 +1,10 @@
-import React from "react";
+import { useState } from "react";
 import _, { deburr } from "lodash";
 import Autosuggest from "react-autosuggest";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { TextField, Paper, MenuItem } from "@mui/material";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps;
@@ -75,10 +75,10 @@ export default function AutoSuggestSingleSelection(props) {
   const ignoredDatatypesFromProps = props.dataTypesToIgnore || [];
   const classes = useStyles();
   const dataTypesToIgnore = [...ignoredDatatypesFromProps, "NA"];
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     single: ""
   });
-  const [stateSuggestions, setSuggestions] = React.useState([]);
+  const [stateSuggestions, setSuggestions] = useState([]);
 
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();

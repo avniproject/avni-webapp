@@ -1,5 +1,5 @@
 import SelectForm from "../../adminApp/SubjectType/SelectForm";
-import React from "react";
+
 import { ToolTipContainer } from "./ToolTipContainer";
 
 export const AvniSelectForm = ({ toolTipKey, ...props }) => {

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import http from "common/utils/httpClient";
+import { memo, useState } from "react";
+import { httpClient as http } from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import { Button, Select, MenuItem, InputLabel, FormControl, Chip } from "@mui/material";
 import { default as UUID } from "uuid";
@@ -215,4 +215,4 @@ function areEqual(prevProps, nextProps) {
 
 WorkFlowFormCreation.defaultProps = { isProgramEncounter: false };
 
-export default React.memo(WorkFlowFormCreation, areEqual);
+export default memo(WorkFlowFormCreation, areEqual);

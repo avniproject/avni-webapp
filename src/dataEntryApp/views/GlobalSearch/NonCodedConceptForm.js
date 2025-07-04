@@ -1,46 +1,46 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useTranslation } from "react-i18next";
 import { DatePicker, DateTimePicker, TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import _ from "lodash";
-import { dateFormat, dateTimeFormat, timeFormat } from "dataEntryApp/constants";
+import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
   marginTop: "1%",
-  marginBottom: "1%",
+  marginBottom: "1%"
 }));
 
 const StyledTypography = styled(Typography)({
   marginBottom: 10,
-  color: "rgba(0, 0, 0, 0.54)",
+  color: "rgba(0, 0, 0, 0.54)"
 });
 
 const StyledTextField = styled(TextField)({
-  width: "30%",
+  width: "30%"
 });
 
 const StyledTextFieldRangeFrom = styled(TextField)({
   width: "14%",
-  marginRight: "1%",
+  marginRight: "1%"
 });
 
 const StyledTextFieldRangeTo = styled(TextField)({
   width: "14%",
-  marginLeft: "1%",
+  marginLeft: "1%"
 });
 
 function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) {
   const { t } = useTranslation();
 
   return searchFilterForms ? (
-    <React.Fragment key={searchFilterForms.uuid}>
+    <Fragment key={searchFilterForms.uuid}>
       <StyledGrid container spacing={3}>
         {searchFilterForms.map((searchFilterForm, index) => {
           const selectedValue = _.head(
-            selectedConcepts.filter((selectedConcept) => selectedConcept.conceptUUID === searchFilterForm.conceptUUID)
+            selectedConcepts.filter(selectedConcept => selectedConcept.conceptUUID === searchFilterForm.conceptUUID)
           );
           return searchFilterForm.type === "Concept" && searchFilterForm.conceptDataType !== "Coded" ? (
             ["Text", "Id"].includes(searchFilterForm.conceptDataType) ? (
@@ -52,7 +52,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                   id={searchFilterForm.titleKey}
                   autoComplete="off"
                   type="text"
-                  onChange={(event) => onChange(event, searchFilterForm)}
+                  onChange={event => onChange(event, searchFilterForm)}
                   value={selectedValue?.value || null}
                 />
               </Grid>
@@ -67,22 +67,22 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       id={`date-picker-${searchFilterForm.titleKey}-min`}
                       format={dateFormat}
                       value={selectedValue?.minValue || null}
-                      onChange={(event) => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={(params) => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
+                      renderInput={params => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
                       slotProps={{
                         actionBar: { actions: ["clear"] },
-                        openPickerButton: { "aria-label": "change date", color: "primary" },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
                     <DatePicker
                       id={`date-picker-${searchFilterForm.titleKey}-max`}
                       format={dateFormat}
                       value={selectedValue?.maxValue || null}
-                      onChange={(event) => onChange(event, searchFilterForm, "maxValue")}
-                      renderInput={(params) => <StyledTextFieldRangeTo {...params} placeholder="To" />}
+                      onChange={event => onChange(event, searchFilterForm, "maxValue")}
+                      renderInput={params => <StyledTextFieldRangeTo {...params} placeholder="To" />}
                       slotProps={{
                         actionBar: { actions: ["clear"] },
-                        openPickerButton: { "aria-label": "change date", color: "primary" },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
                   </LocalizationProvider>
@@ -97,22 +97,22 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       id={`datetime-picker-${searchFilterForm.titleKey}-min`}
                       format={dateTimeFormat}
                       value={selectedValue?.minValue || null}
-                      onChange={(event) => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={(params) => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
+                      renderInput={params => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
                       slotProps={{
                         actionBar: { actions: ["clear"] },
-                        openPickerButton: { "aria-label": "change datetime", color: "primary" },
+                        openPickerButton: { "aria-label": "change datetime", color: "primary" }
                       }}
                     />
                     <DateTimePicker
                       id={`datetime-picker-${searchFilterForm.titleKey}-max`}
                       format={dateTimeFormat}
                       value={selectedValue?.maxValue || null}
-                      onChange={(event) => onChange(event, searchFilterForm, "maxValue")}
-                      renderInput={(params) => <StyledTextFieldRangeTo {...params} placeholder="To" />}
+                      onChange={event => onChange(event, searchFilterForm, "maxValue")}
+                      renderInput={params => <StyledTextFieldRangeTo {...params} placeholder="To" />}
                       slotProps={{
                         actionBar: { actions: ["clear"] },
-                        openPickerButton: { "aria-label": "change datetime", color: "primary" },
+                        openPickerButton: { "aria-label": "change datetime", color: "primary" }
                       }}
                     />
                   </LocalizationProvider>
@@ -125,24 +125,24 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     </StyledTypography>
                     <TimePicker
                       id={`time-picker-${searchFilterForm.titleKey}-min`}
-                      format={timeFormat || "HH:mm"}
+                      format={"HH:mm"}
                       value={selectedValue?.minValue || null}
-                      onChange={(event) => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={(params) => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
+                      renderInput={params => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
                       slotProps={{
                         actionBar: { actions: ["clear"] },
-                        openPickerButton: { "aria-label": "change time", color: "primary" },
+                        openPickerButton: { "aria-label": "change time", color: "primary" }
                       }}
                     />
                     <TimePicker
                       id={`time-picker-${searchFilterForm.titleKey}-max`}
-                      format={timeFormat || "HH:mm"}
+                      format={"HH:mm"}
                       value={selectedValue?.maxValue || null}
-                      onChange={(event) => onChange(event, searchFilterForm, "maxValue")}
-                      renderInput={(params) => <StyledTextFieldRangeTo {...params} placeholder="To" />}
+                      onChange={event => onChange(event, searchFilterForm, "maxValue")}
+                      renderInput={params => <StyledTextFieldRangeTo {...params} placeholder="To" />}
                       slotProps={{
                         actionBar: { actions: ["clear"] },
-                        openPickerButton: { "aria-label": "change time", color: "primary" },
+                        openPickerButton: { "aria-label": "change time", color: "primary" }
                       }}
                     />
                   </LocalizationProvider>
@@ -157,7 +157,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     autoComplete="off"
                     type="number"
                     placeholder="From"
-                    onChange={(event) => onChange(event, searchFilterForm, "minValue")}
+                    onChange={event => onChange(event, searchFilterForm, "minValue")}
                     value={selectedValue?.minValue || null}
                   />
                   <StyledTextFieldRangeTo
@@ -165,7 +165,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     autoComplete="off"
                     type="number"
                     placeholder="To"
-                    onChange={(event) => onChange(event, searchFilterForm, "maxValue")}
+                    onChange={event => onChange(event, searchFilterForm, "maxValue")}
                     value={selectedValue?.maxValue || null}
                   />
                 </Grid>
@@ -180,7 +180,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     id={searchFilterForm.titleKey}
                     autoComplete="off"
                     type="number"
-                    onChange={(event) => onChange(event, searchFilterForm, "minValue")}
+                    onChange={event => onChange(event, searchFilterForm, "minValue")}
                     value={selectedValue?.minValue || null}
                   />
                 </Grid>
@@ -194,11 +194,11 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       id={`date-picker-${searchFilterForm.titleKey}`}
                       format={dateFormat}
                       value={selectedValue?.minValue || null}
-                      onChange={(event) => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={(params) => <StyledTextField {...params} />}
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
+                      renderInput={params => <StyledTextField {...params} />}
                       slotProps={{
                         actionBar: { actions: ["clear"] },
-                        openPickerButton: { "aria-label": "change date", color: "primary" },
+                        openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
                     />
                   </LocalizationProvider>
@@ -213,11 +213,11 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       id={`datetime-picker-${searchFilterForm.titleKey}`}
                       format={dateTimeFormat}
                       value={selectedValue?.minValue || null}
-                      onChange={(event) => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={(params) => <StyledTextField {...params} />}
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
+                      renderInput={params => <StyledTextField {...params} />}
                       slotProps={{
                         actionBar: { actions: ["clear"] },
-                        openPickerButton: { "aria-label": "change datetime", color: "primary" },
+                        openPickerButton: { "aria-label": "change datetime", color: "primary" }
                       }}
                     />
                   </LocalizationProvider>
@@ -232,11 +232,11 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       id={`time-picker-${searchFilterForm.titleKey}`}
                       format={timeFormat || "HH:mm"}
                       value={selectedValue?.minValue || null}
-                      onChange={(event) => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={(params) => <StyledTextField {...params} />}
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
+                      renderInput={params => <StyledTextField {...params} />}
                       slotProps={{
                         actionBar: { actions: ["clear"] },
-                        openPickerButton: { "aria-label": "change time", color: "primary" },
+                        openPickerButton: { "aria-label": "change time", color: "primary" }
                       }}
                     />
                   </LocalizationProvider>
@@ -246,12 +246,12 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
           ) : null;
         })}
       </StyledGrid>
-    </React.Fragment>
+    </Fragment>
   ) : null;
 }
 
 NonCodedConceptForm.defaultProps = {
-  searchFilterForms: {},
+  searchFilterForms: {}
 };
 
 export default NonCodedConceptForm;

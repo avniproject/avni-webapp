@@ -1,4 +1,3 @@
-import React from "react";
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Tooltip } from "@mui/material";
 
 export const LocationModes = ({ mode, setMode }) => {

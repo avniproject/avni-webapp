@@ -1,10 +1,10 @@
-import React, { useState, useRef, useMemo, useCallback } from "react";
+import { memo, useState, useRef, useMemo, useCallback } from "react";
 import { isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import { Box } from "@mui/material";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import { Title } from "react-admin";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
@@ -153,4 +153,4 @@ function areEqual(prevProps, nextProps) {
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-export default withRouter(connect(mapStateToProps)(React.memo(VideoList, areEqual)));
+export default withRouter(connect(mapStateToProps)(memo(VideoList, areEqual)));

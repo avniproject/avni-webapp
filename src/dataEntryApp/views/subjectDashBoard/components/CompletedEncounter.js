@@ -1,5 +1,5 @@
-import React, { Fragment } from "react";
-import { styled } from '@mui/material/styles';
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Paper, Button, Grid, List, ListItem, ListItemText } from "@mui/material";
 import moment from "moment/moment";
 import { defaultTo, isEmpty, isEqual } from "lodash";
@@ -17,54 +17,54 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
   padding: theme.spacing(2),
   borderRight: "1px solid rgba(0,0,0,0.12)",
   "&:nth-child(4n),&:last-child": {
-    borderRight: "0px solid rgba(0,0,0,0.12)",
-  },
+    borderRight: "0px solid rgba(0,0,0,0.12)"
+  }
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   textAlign: "left",
   boxShadow: "none",
   borderRadius: "0px",
-  padding: "0px",
+  padding: "0px"
 }));
 
 const StyledList = styled(List)(({ theme }) => ({
-  paddingBottom: "0px",
+  paddingBottom: "0px"
 }));
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   paddingBottom: "0px",
-  paddingTop: "0px",
+  paddingTop: "0px"
 }));
 
 const StyledListItemText = styled(ListItemText)(({ theme }) => ({
   color: "#2196f3",
   fontSize: "14px",
-  textTransform: "uppercase",
+  textTransform: "uppercase"
 }));
 
 const StyledListItemTextDate = styled(ListItemText)(({ theme }) => ({
   color: "#555555",
-  fontSize: "15px",
+  fontSize: "15px"
 }));
 
-const StyledStatusLabel = styled('label')(({ theme, isCancelled }) => ({
+const StyledStatusLabel = styled("label")(({ theme, isCancelled }) => ({
   fontSize: "12px",
   padding: "2px 5px",
   ...(isCancelled
     ? {
-      color: "gray",
-      backgroundColor: "#DCDCDC",
-    }
+        color: "gray",
+        backgroundColor: "#DCDCDC"
+      }
     : {
-      color: "red",
-      backgroundColor: "#ffeaea",
-    }),
+        color: "red",
+        backgroundColor: "#ffeaea"
+      })
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
   marginLeft: "8px",
-  fontSize: "14px",
+  fontSize: "14px"
 }));
 
 const truncate = input => {
@@ -73,19 +73,19 @@ const truncate = input => {
 };
 
 const CompletedEncounter = ({
-                              index,
-                              encounter,
-                              subjectTypeUuid,
-                              encounterFormMapping,
-                              cancelEncounterFormMapping,
-                              voidGeneralEncounter,
-                            }) => {
+  index,
+  encounter,
+  subjectTypeUuid,
+  encounterFormMapping,
+  cancelEncounterFormMapping,
+  voidGeneralEncounter
+}) => {
   const { t } = useTranslation();
   const encounterId = isEmpty(encounter.earliestVisitDateTime)
     ? encounter.encounterType.name.replaceAll(" ", "-")
     : encounter.name.replaceAll(" ", "-");
   const statusMap = {
-    cancelled: t("Cancelled"),
+    cancelled: t("Cancelled")
   };
   let status;
   let visitUrl;
@@ -94,14 +94,14 @@ const CompletedEncounter = ({
   } else {
     visitUrl = `/app/subject/viewEncounter?uuid=${encounter.uuid}`;
   }
-  const [voidConfirmation, setVoidConfirmation] = React.useState(false);
+  const [voidConfirmation, setVoidConfirmation] = useState(false);
 
   return (
     <StyledGrid
       key={index}
       size={{
         xs: 6,
-        sm: 3,
+        sm: 3
       }}
     >
       <StyledPaper>
@@ -129,24 +129,18 @@ const CompletedEncounter = ({
           {status && (
             <StyledListItem>
               <ListItemText>
-                <StyledStatusLabel isCancelled={isEqual(status, "cancelled")}>
-                  {statusMap[status]}
-                </StyledStatusLabel>
+                <StyledStatusLabel isCancelled={isEqual(status, "cancelled")}>{statusMap[status]}</StyledStatusLabel>
               </ListItemText>
             </StyledListItem>
           )}
         </StyledList>
         {encounter.encounterDateTime && encounter.uuid && !isEmpty(encounterFormMapping) ? (
           <InternalLink id={`edit-visit-${encounterId}`} to={`/app/subject/editEncounter?uuid=${encounter.uuid}`}>
-            <StyledButton color="primary">
-              {t("edit visit")}
-            </StyledButton>
+            <StyledButton color="primary">{t("edit visit")}</StyledButton>
           </InternalLink>
         ) : encounter.cancelDateTime && encounter.uuid && !isEmpty(cancelEncounterFormMapping) ? (
           <InternalLink id={`edit-cancel-visit-${encounterId}`} to={`/app/subject/editCancelEncounter?uuid=${encounter.uuid}`}>
-            <StyledButton color="primary">
-              {t("edit visit")}
-            </StyledButton>
+            <StyledButton color="primary">{t("edit visit")}</StyledButton>
           </InternalLink>
         ) : null}
         <DeleteButton onDelete={() => setVoidConfirmation(true)} />
@@ -164,11 +158,11 @@ const CompletedEncounter = ({
 
 const mapStateToProps = (state, props) => ({
   encounterFormMapping: selectFormMappingForEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state),
-  cancelEncounterFormMapping: selectFormMappingForCancelEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state),
+  cancelEncounterFormMapping: selectFormMappingForCancelEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state)
 });
 
 const mapDispatchToProps = {
-  voidGeneralEncounter,
+  voidGeneralEncounter
 };
 
 export default connect(

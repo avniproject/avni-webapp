@@ -1,5 +1,3 @@
-import React from "react";
-
 class SubjectValidation {
   constructor(success, formIdentifier, messageKey, extra) {
     this.success = success;

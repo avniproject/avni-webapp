@@ -1,4 +1,3 @@
-import React from "react";
 import { styled } from "@mui/material/styles";
 import { Typography, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";

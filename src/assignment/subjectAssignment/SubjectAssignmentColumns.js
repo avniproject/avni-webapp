@@ -1,6 +1,6 @@
 import _, { split, map, isEmpty, isNil } from "lodash";
 import { getSyncAttributes } from "../reducers/SubjectAssignmentReducer";
-import React from "react";
+
 import { Chip } from "@mui/material";
 import SubjectAssignmentMultiSelect from "./SubjectAssignmentMultiSelect";
 import GroupModel from "../../common/model/GroupModel";

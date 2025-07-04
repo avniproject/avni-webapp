@@ -1,6 +1,5 @@
-import React from "react";
 import { includes, map } from "lodash";
-import http from "../../../common/utils/httpClient";
+import { httpClient as http } from "../../../common/utils/httpClient";
 import CommonSearch from "../../common/CommonSearch";
 
 const ConceptSearch = ({ value, onChange, nonSupportedTypes = [], isMulti, placeholder, defaultOptions = [] }) => {

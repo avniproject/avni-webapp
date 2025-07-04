@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelect } from "../../common/components/AvniSelect";
@@ -6,14 +6,14 @@ import _ from "lodash";
 import http from "../../common/utils/httpClient";
 
 export const LocationConcept = props => {
-  const [addressLevelTypes, setAddressLevelTypes] = React.useState([]);
-  const [addressLevelTypeHierarchy, setAddressLevelTypeHierarchy] = React.useState(new Map());
-  const [isWithinCatchment, setWithinCatchment] = React.useState(true);
-  const [lowestAddressLevelTypes, setLowestAddressLevelTypes] = React.useState([]);
-  const [highestAddressLevelTypeOptions, setHighestAddressLevelTypeOptions] = React.useState([]);
-  const [highestAddressLevelType, setHighestAddressLevelType] = React.useState("");
+  const [addressLevelTypes, setAddressLevelTypes] = useState([]);
+  const [addressLevelTypeHierarchy, setAddressLevelTypeHierarchy] = useState(new Map());
+  const [isWithinCatchment, setWithinCatchment] = useState(true);
+  const [lowestAddressLevelTypes, setLowestAddressLevelTypes] = useState([]);
+  const [highestAddressLevelTypeOptions, setHighestAddressLevelTypeOptions] = useState([]);
+  const [highestAddressLevelType, setHighestAddressLevelType] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     http.get("/addressLevelType?page=0&size=10&sort=level%2CDESC").then(response => {
       if (response.status === 200) {
         const addressLevelTypes = response.data.content.map(addressLevelType => ({
@@ -31,7 +31,7 @@ export const LocationConcept = props => {
 
   const keyValuesArr = useMemo(() => [...props.keyValues], [...props.keyValues]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (props.isCreatePage || props.keyValues.length === 0) {
       updateIsWithinCatchment();
     } else {
@@ -55,16 +55,16 @@ export const LocationConcept = props => {
     }
   }, [keyValuesArr]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setAddressLevelTypeHierarchy(generateAddressLevelTypeHierarchy());
     setHighestAddressLevelTypeOptions(addressLevelTypes);
   }, [addressLevelTypes]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     refreshHighestAddressLevelTypeOptions();
   }, [lowestAddressLevelTypes, addressLevelTypeHierarchy]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     _.isEmpty(lowestAddressLevelTypes) && defaultLowestAddressLevelIfSingleHierarchy();
   }, [addressLevelTypeHierarchy]);
 

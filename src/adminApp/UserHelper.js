@@ -1,4 +1,3 @@
-import React from "react";
 import { isEmpty, isEqual } from "lodash";
 import { email, Filter, minLength, regex, required, SaveButton, TextInput, Toolbar } from "react-admin";
 import { isValidPhoneNumber } from "libphonenumber-js";

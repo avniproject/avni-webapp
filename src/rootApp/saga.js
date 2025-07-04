@@ -1,6 +1,6 @@
 import { call, put, take, takeLatest } from "redux-saga/effects";
 import { getUserInfo, sendInitComplete, setAdminOrgs, setOrganisationConfig, setUserInfo, types } from "./ducks";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";

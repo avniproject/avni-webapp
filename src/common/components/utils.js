@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { forwardRef } from "react";
+import { styled } from "@mui/material/styles";
 import _, { get, merge } from "lodash";
 import { Link as RouterLink, withRouter } from "react-router-dom";
 import { Link, SvgIcon } from "@mui/material";
@@ -14,7 +14,7 @@ const StyledLink = styled(Link)({
 
 export const InternalLink = ({ children, noUnderline, ...props }) => (
   <StyledLink
-    component={React.forwardRef((props, ref) => (
+    component={forwardRef((props, ref) => (
       <RouterLink innerRef={ref} {...props} />
     ))}
     className={noUnderline ? "noUnderline" : ""}

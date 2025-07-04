@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Typography, Grid, Card, CardActions, CardContent } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
@@ -9,33 +8,33 @@ import { Individual } from "avni-models";
 
 const StyledGridContainer = styled(Grid)(({ theme }) => ({
   borderBottom: "1px solid rgba(0,0,0,0.12)",
-  paddingBottom: theme.spacing(1.25), // 10px
+  paddingBottom: theme.spacing(1.25) // 10px
 }));
 
 const StyledGridItem = styled(Grid)(({ theme }) => ({
   borderRight: "1px solid rgba(0,0,0,0.12)",
   "&:nth-of-type(4n), &:last-child": {
-    borderRight: "0px solid rgba(0,0,0,0.12)",
-  },
+    borderRight: "0px solid rgba(0,0,0,0.12)"
+  }
 }));
 
 const StyledCard = styled(Card)({
   boxShadow: "0px 0px 0px 0px",
-  borderRadius: 0,
+  borderRadius: 0
 });
 
 const StyledTypographyTitle = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.secondary,
-  marginBottom: theme.spacing(1),
+  marginBottom: theme.spacing(1)
 }));
 
 const StyledTypographyLink = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.main,
+  color: theme.palette.primary.main
 }));
 
 const StyledCardActions = styled(CardActions)({
-  padding: "8px 8px 8px 0px",
+  padding: "8px 8px 8px 0px"
 });
 
 const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
@@ -45,7 +44,7 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
     <StyledGridContainer container size={12}>
       {gridListDetails &&
         gridListDetails
-          .filter((relative) => relative !== undefined && !relative.voided)
+          .filter(relative => relative !== undefined && !relative.voided)
           .map((relative, index) => (
             <StyledGridItem key={index} size={3}>
               <StyledCard>

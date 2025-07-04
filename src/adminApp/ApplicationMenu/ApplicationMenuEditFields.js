@@ -1,4 +1,3 @@
-import React from "react";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import PropTypes from "prop-types";
 import _ from "lodash";

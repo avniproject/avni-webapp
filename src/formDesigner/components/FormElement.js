@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useState, memo } from "react";
+import { styled } from "@mui/material/styles";
 import { Accordion, AccordionDetails, AccordionSummary, Typography, Grid, InputLabel, IconButton, Tooltip } from "@mui/material";
 import {
   ExpandMore,
@@ -28,11 +28,11 @@ import { ToolTip } from "../../common/components/ToolTip";
 const StyledAccordion = styled(Accordion)(({ error }) => ({
   width: "100%",
   ...(error && {
-    border: "1px solid red",
+    border: "1px solid red"
   }),
   "&.Mui-expanded": {
-    margin: 0,
-  },
+    margin: 0
+  }
 }));
 
 const StyledAccordionSummary = styled(AccordionSummary)({
@@ -42,71 +42,71 @@ const StyledAccordionSummary = styled(AccordionSummary)({
   border: "2px solid #bdc6cf",
   minHeight: 56,
   "&.Mui-expanded": {
-    minHeight: 56,
+    minHeight: 56
   },
   "&.Mui-focused": {
-    backgroundColor: "#dbdbdb",
+    backgroundColor: "#dbdbdb"
   },
   "& .MuiAccordionSummary-content": {
     margin: "0px 0 0 0",
     "&.Mui-expanded": {
-      margin: "0px 0 0 0",
-    },
-  },
+      margin: "0px 0 0 0"
+    }
+  }
 });
 
 const StyledAccordionDetails = styled(AccordionDetails)({
   backgroundColor: "#fff",
   border: "2px solid #bdc6cf",
-  padding: 10,
+  padding: 10
 });
 
-const StyledDragHandler = styled('div')({
-  height: 5,
+const StyledDragHandler = styled("div")({
+  height: 5
 });
 
-const StyledIconContainer = styled('div')({
-  padding: "10px",
+const StyledIconContainer = styled("div")({
+  padding: "10px"
 });
 
 const StyledHeadingContainer = styled(Grid)({
-  paddingTop: "10px",
+  paddingTop: "10px"
 });
 
 const StyledTypographyHeading = styled(Typography)(({ theme }) => ({
   fontSize: theme.typography.pxToRem(15),
   flexBasis: "33.33%",
-  flexShrink: 0,
+  flexShrink: 0
 }));
 
 const StyledTypographySecondary = styled(Typography)(({ theme }) => ({
   flexBasis: "70%",
-  fontSize: theme.typography.pxToRem(15),
+  fontSize: theme.typography.pxToRem(15)
 }));
 
-const StyledExpandIcon = styled('span')({
+const StyledExpandIcon = styled("span")({
   paddingTop: "3px",
-  paddingRight: "0px",
+  paddingRight: "0px"
 });
 
 const StyledGridAlignCenter = styled(Grid)({
   alignItems: "center",
-  justifyContent: "center",
+  justifyContent: "center"
 });
 
 const StyledGridAlignItems = styled(Grid)({
-  alignItems: "center",
+  alignItems: "center"
 });
 
 const StyledInputLabel = styled(InputLabel)({
   display: "inline-block",
   "& .MuiInputLabel-asterisk": {
-    color: "red",
-  },
+    color: "red"
+  }
 });
 
 const StyledDeleteIconContainer = styled(Grid)({
-  padding: "10px 30px -1px 0px",
+  padding: "10px 30px -1px 0px"
 });
 
 function areEqual(prevProps, nextProps) {
@@ -117,7 +117,7 @@ export const dataTypeIcons = {
   concept: {
     SingleSelect: <RadioButtonChecked />,
     MultiSelect: <CheckCircleOutline />,
-    "": <b />,
+    "": <b />
   },
   Date: <CalendarToday />,
   Numeric: <b>123</b>,
@@ -138,15 +138,15 @@ export const dataTypeIcons = {
   QuestionGroup: <b>QG</b>,
   Audio: <Audiotrack />,
   File: <InsertDriveFile />,
-  "": <b />,
+  "": <b />
 };
 
-const FormElement = (props) => {
+const FormElement = props => {
   const panel = "panel" + props.groupIndex.toString() + props.index.toString();
-  const [dragElement, setDragElement] = React.useState(false);
+  const [dragElement, setDragElement] = useState(false);
   const disableFormElement = props.disableFormElement;
 
-  const DragHandler = (dragProps) => (
+  const DragHandler = dragProps => (
     <StyledDragHandler {...dragProps}>
       <div hidden={!dragElement || disableFormElement}>
         <DragHandle color="disabled" />
@@ -154,7 +154,7 @@ const FormElement = (props) => {
     </StyledDragHandler>
   );
 
-  const handleDelete = (event) => {
+  const handleDelete = event => {
     props.deleteGroup(props.groupIndex, props.index);
     event.stopPropagation();
   };
@@ -164,7 +164,7 @@ const FormElement = (props) => {
       TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
       expanded={props.formElementData.expanded}
       error={props.formElementData.error}
-      onChange={(event) => props.handleGroupElementChange(props.groupIndex, "expanded", !props.formElementData.expanded, props.index)}
+      onChange={event => props.handleGroupElementChange(props.groupIndex, "expanded", !props.formElementData.expanded, props.index)}
       onMouseEnter={() => setDragElement(true)}
       onMouseLeave={() => setDragElement(false)}
     >
@@ -176,7 +176,7 @@ const FormElement = (props) => {
           <StyledGridAlignItems
             container
             size={{
-              sm: 12,
+              sm: 12
             }}
           >
             <Grid>
@@ -200,7 +200,7 @@ const FormElement = (props) => {
                   "Audio",
                   "File",
                   "QuestionGroup",
-                  "Encounter",
+                  "Encounter"
                 ].includes(props.formElementData.concept.dataType) && (
                   <StyledIconContainer>
                     <Tooltip title={props.formElementData.concept.dataType}>
@@ -219,23 +219,19 @@ const FormElement = (props) => {
             </Grid>
             <StyledHeadingContainer
               size={{
-                sm: 10,
+                sm: 10
               }}
             >
               <StyledTypographyHeading>
                 <StyledExpandIcon>{props.formElementData.expanded ? <ExpandLess /> : <ExpandMore />}</StyledExpandIcon>
-                <StyledInputLabel
-                  name={"name" + panel}
-                  required={props.formElementData.mandatory}
-                  disabled={disableFormElement}
-                >
+                <StyledInputLabel name={"name" + panel} required={props.formElementData.mandatory} disabled={disableFormElement}>
                   {props.formElementData.name}
                 </StyledInputLabel>
               </StyledTypographyHeading>
             </StyledHeadingContainer>
             <StyledDeleteIconContainer
               size={{
-                sm: 1,
+                sm: 1
               }}
             >
               <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement} size="small">
@@ -253,4 +249,4 @@ const FormElement = (props) => {
   );
 };
 
-export default React.memo(FormElement, areEqual);
+export default memo(FormElement, areEqual);

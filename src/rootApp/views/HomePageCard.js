@@ -1,5 +1,4 @@
 import { Card, CardContent, Grid, Typography, CardActionArea } from "@mui/material";
-import React from "react";
 
 const classes = {
   card: {

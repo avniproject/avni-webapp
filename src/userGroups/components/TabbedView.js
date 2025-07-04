@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { AppBar, Tabs, Tab, Typography, Box } from "@mui/material";
 import GroupUsers from "./GroupUsers";
@@ -6,6 +5,7 @@ import GroupPrivileges from "./GroupPrivileges";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import GroupDashboards from "./GroupDashboards";
+import { useState } from "react";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -38,8 +38,8 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export const TabView = ({ groupId, groupName, hasAllPrivileges, userList, ...props }) => {
-  const [value, setValue] = React.useState(0);
+export const TabView = ({ groupId, groupName, hasAllPrivileges, ...props }) => {
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

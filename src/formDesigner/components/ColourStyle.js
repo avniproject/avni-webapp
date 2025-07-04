@@ -1,4 +1,3 @@
-import React from "react";
 import { Grid } from "@mui/material";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { PopoverColorPicker } from "../../common/components/PopoverColorPicker";

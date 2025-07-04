@@ -1,4 +1,3 @@
-import React from "react";
 import RuleComponent from "./RuleComponent";
 import { isEmpty, map, toUpper } from "lodash";
 import { Box, Grid, Button, Chip } from "@mui/material";

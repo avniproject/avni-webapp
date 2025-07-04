@@ -1,11 +1,4 @@
-import React from "react";
-import {
-  getForm,
-  getFormType,
-  getIsPerson,
-  getParentConceptUuid,
-  useDeclarativeRuleDispatch
-} from "./DeclarativeRuleContext";
+import { getForm, getFormType, getIsPerson, getParentConceptUuid, useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 import ConceptAndScope from "./ConceptAndScope";
 import { findOrDefault } from "../../util";
 import { isEmpty } from "lodash";
@@ -40,9 +33,7 @@ const LHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
       }
       defaultOptions={lhs.getDefaultTypeOptions(getForm(), getIsPerson())}
       displayScope={!isEmpty(lhs.conceptName)}
-      getScopeValue={scopeOptions =>
-        findOrDefault(scopeOptions, ({ value }) => value === lhs.scope, null)
-      }
+      getScopeValue={scopeOptions => findOrDefault(scopeOptions, ({ value }) => value === lhs.scope, null)}
       formType={formType}
       onScopeChange={value => onLHSChange("scope", value)}
     />

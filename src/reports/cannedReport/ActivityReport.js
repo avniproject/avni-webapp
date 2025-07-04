@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import ActivityCard from "../components/ActivityCard";
 import { Grid } from "@mui/material";
 import { connect } from "react-redux";
@@ -7,7 +7,7 @@ import { withRouter } from "react-router-dom";
 import BorderBox from "../../formDesigner/components/BorderBox";
 
 const ActivityReport = ({ activityReport, getActivityReport }) => {
-  React.useEffect(() => {
+  useEffect(() => {
     getActivityReport();
   }, []);
 

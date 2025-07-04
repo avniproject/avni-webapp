@@ -1,4 +1,5 @@
-import React, { useEffect, useReducer, useState, useCallback, useMemo, useRef } from "react";
+import { useImperativeHandle, useEffect, useReducer, useState, useCallback, useMemo, useRef } from "react";
+import { styled } from "@mui/material/styles";
 import api from "../api";
 import {
   getAssignmentValue,
@@ -12,7 +13,6 @@ import { MaterialReactTable } from "material-react-table";
 import { fetchTasks } from "./FetchTasks";
 import { includes, isEmpty, map, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import { makeStyles } from "@mui/styles";
 import { Grid } from "@mui/material";
 import { TaskAssignmentFilter } from "../components/TaskAssignmentFilter";
 import { TaskAssignmentAction } from "../components/TaskAssignmentAction";
@@ -20,15 +20,27 @@ import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop";
 import { labelValue, refreshTable } from "../util/util";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    height: "85vh",
-    backgroundColor: "#FFF"
+const StyledContainer = styled("div")({
+  height: "85vh",
+  backgroundColor: "#FFF"
+});
+
+const StyledTable = styled(MaterialReactTable)(({ theme }) => ({
+  "& .MuiTableHeadCell-root": {
+    zIndex: 2
+  },
+  "& .MuiTableContainer-root": {
+    maxHeight: "75vh",
+    minHeight: "75vh",
+    overflowY: "auto",
+    position: "relative"
+  },
+  "& .MuiPaper-root": {
+    elevation: 0
   }
 }));
 
 const TaskAssignment = ({ history, ...props }) => {
-  const classes = useStyles();
   const [state, dispatch] = useReducer(TaskAssignmentReducer, initialState);
   const { filterCriteria, taskMetadata, displayAction, assignmentCriteria, applyableTaskStatuses } = state;
   const { taskTypeOptions, taskStatusOptions, userOptions } = getMetadataOptions(taskMetadata, filterCriteria);
@@ -107,13 +119,14 @@ const TaskAssignment = ({ history, ...props }) => {
     ];
   }, [taskMetadata]);
 
-  React.useImperativeHandle(tableRef, () => ({
+  useImperativeHandle(tableRef, () => ({
     refresh: loadData
   }));
 
   const onFilterApply = () => {
     refreshTable(tableRef);
   };
+
   const onActionDone = async () => {
     dispatch({ type: "onSave", payload: { saveStart: true } });
     dispatch({ type: "hideAction" });
@@ -132,10 +145,10 @@ const TaskAssignment = ({ history, ...props }) => {
   };
 
   const renderContent = () => (
-    <div className={classes.root}>
+    <StyledContainer>
       <Grid container>
         <Grid size={8}>
-          <MaterialReactTable
+          <StyledTable
             columns={columns}
             data={data}
             manualPagination
@@ -153,15 +166,6 @@ const TaskAssignment = ({ history, ...props }) => {
             }}
             muiTablePaginationProps={{
               rowsPerPageOptions: [10, 15, 25]
-            }}
-            muiTableHeadCellProps={{
-              sx: { zIndex: 2 }
-            }}
-            muiTableContainerProps={{
-              sx: { maxHeight: "75vh", minHeight: "75vh", overflowY: "auto", position: "relative" }
-            }}
-            muiTablePaperProps={{
-              elevation: 0
             }}
             renderTopToolbar={({ table }) => (
               <AssignmentToolBar
@@ -197,7 +201,7 @@ const TaskAssignment = ({ history, ...props }) => {
           assignmentCriteria={assignmentCriteria}
         />
       </Grid>
-    </div>
+    </StyledContainer>
   );
 
   return (

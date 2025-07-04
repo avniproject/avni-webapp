@@ -1,9 +1,9 @@
-import React from "react";
+import { Fragment } from "react";
 import { TextField, Select, InputLabel } from "@mui/material";
 
 export const ValueTextUnitSelect = ({ label, value, unit, units, textProps, selectProps, errorMsg, onValueChange, onUnitChange }) => {
   return (
-    <React.Fragment>
+    <Fragment>
       <p />
       <div style={{ display: "flex", alignItems: "baseline" }}>
         {label && <InputLabel>{label}</InputLabel>}
@@ -19,6 +19,6 @@ export const ValueTextUnitSelect = ({ label, value, unit, units, textProps, sele
         </Select>
       </div>
       {errorMsg && errorMsg}
-    </React.Fragment>
+    </Fragment>
   );
 };

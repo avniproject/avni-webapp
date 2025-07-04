@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
-import http from "common/utils/httpClient";
+import { memo, useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { httpClient as http } from "common/utils/httpClient";
 import { get, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@mui/material/Box";
@@ -194,4 +194,4 @@ function areEqual(prevProps, nextProps) {
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-export default withRouter(connect(mapStateToProps)(React.memo(Relationships, areEqual)));
+export default withRouter(connect(mapStateToProps)(memo(Relationships, areEqual)));

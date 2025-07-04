@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Paper } from "@mui/material";
 import ProfileDetails from "./components/ProfileDetails";
 import SubjectDashboardTabs from "./components/SubjectDashboardTabs";
@@ -17,12 +17,10 @@ import { withParams } from "common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(1, 3),
-    flexGrow: 1
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 2),
+  margin: theme.spacing(1, 3),
+  flexGrow: 1
 }));
 
 const SubjectDashboard = ({
@@ -45,7 +43,6 @@ const SubjectDashboard = ({
   clearVoidServerError,
   unVoidErrorKey
 }) => {
-  const classes = useStyles();
   let paperInfo;
 
   const handleUpdateComponent = () => {
@@ -58,7 +55,7 @@ const SubjectDashboard = ({
 
   if (subjectProfile !== undefined) {
     paperInfo = (
-      <Paper className={classes.root}>
+      <StyledPaper elevation={2}>
         <ProfileDetails profileDetails={subjectProfile} subjectUuid={match.queryParams.uuid} />
         <SubjectDashboardTabs
           unVoidErrorKey={unVoidErrorKey}
@@ -77,7 +74,7 @@ const SubjectDashboard = ({
           getGroupMembers={getGroupMembers}
           groupMembers={groupMembers}
         />
-      </Paper>
+      </StyledPaper>
     );
   }
 

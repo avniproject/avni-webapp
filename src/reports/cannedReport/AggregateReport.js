@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect, Fragment } from "react";
 import { Grid, Button } from "@mui/material";
 import { chain, find, get, isEmpty, map } from "lodash";
 import { connect } from "react-redux";
@@ -12,11 +12,11 @@ import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop
 import BorderBox from "../../formDesigner/components/BorderBox";
 
 const AggregateReport = ({ operationalModules, getOperationalModules }) => {
-  const [selectedForm, setForm] = React.useState({});
-  const [loading, setLoading] = React.useState(false);
-  const [aggregatedResult, setAggregatedResult] = React.useState();
+  const [selectedForm, setForm] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [aggregatedResult, setAggregatedResult] = useState();
 
-  React.useEffect(() => {
+  useEffect(() => {
     getOperationalModules();
   }, []);
 
@@ -65,7 +65,7 @@ const AggregateReport = ({ operationalModules, getOperationalModules }) => {
         .value();
 
   return (
-    <React.Fragment>
+    <Fragment>
       {operationalModules && (
         <BorderBox>
           <Grid container direction={"column"} spacing={2}>
@@ -88,7 +88,7 @@ const AggregateReport = ({ operationalModules, getOperationalModules }) => {
         </BorderBox>
       )}
       <CustomizedBackdrop load={!loading} />
-    </React.Fragment>
+    </Fragment>
   );
 };
 

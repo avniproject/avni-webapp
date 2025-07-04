@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { FormControl, FormLabel } from "@mui/material";
 import Select from "react-select";
 

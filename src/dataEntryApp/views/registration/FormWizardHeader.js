@@ -1,28 +1,28 @@
 import { useTranslation } from "react-i18next";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
 import { LineBreak } from "common/components/utils";
-import React from "react";
+
 import { isNil, isDate } from "lodash";
 import { AgeUtil } from "openchs-models";
 
-const StyledRoot = styled('div')(({ theme }) => ({
+const StyledRoot = styled("div")(({ theme }) => ({
   color: "rgba(0, 0, 0, 0.54)",
   backgroundColor: "#F8F9F9",
   height: 40,
   width: "100%",
   padding: theme.spacing(1),
-  marginBottom: theme.spacing(1.25), // 10px
+  marginBottom: theme.spacing(1.25) // 10px
 }));
 
 const StyledTypographyValue = styled(Typography)({
   color: "#000",
-  fontWeight: "bold",
+  fontWeight: "bold"
 });
 
-const StyledTypographyLabel = styled(Typography)({
-  marginBottom: theme.spacing(1),
-});
+const StyledTypographyLabel = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(1)
+}));
 
 function addElement(label, value, headerElements, key) {
   const insertSeparator = headerElements.length !== 0;

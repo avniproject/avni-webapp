@@ -1,4 +1,3 @@
-import React from "react";
 import { AutocompleteInput } from "react-admin";
 
 export const CatchmentSelectInput = props => {

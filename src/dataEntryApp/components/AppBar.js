@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { useState, useEffect, useRef } from "react";
+import { styled } from "@mui/material/styles";
 import { AppBar, Toolbar, IconButton, Typography, MenuItem, Menu, Button, ClickAwayListener, Grow, Paper, Popper } from "@mui/material";
 import { AccountCircle, MoreHoriz, ExpandMore, Home } from "@mui/icons-material";
 import NewMenu from "../views/dashboardNew/NewMenu";
@@ -11,7 +11,7 @@ import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
 
-const StyledRoot = styled('div')({
+const StyledRoot = styled("div")({
   flexGrow: 1
 });
 
@@ -44,32 +44,32 @@ const StyledLinkButton = styled(Button)(({ theme }) => ({
   borderRadius: "3px"
 }));
 
-const StyledUsers = styled('div')({
+const StyledUsers = styled("div")({
   marginRight: "3px"
 });
 
-const StyledUserName = styled('p')({
+const StyledUserName = styled("p")({
   fontSize: "15px",
   marginBottom: "0px",
   fontWeight: "600",
   color: "blue"
 });
 
-const StyledSectionDesktop = styled('div')(({ theme }) => ({
+const StyledSectionDesktop = styled("div")(({ theme }) => ({
   display: "none",
   [theme.breakpoints.up("md")]: {
     display: "flex"
   }
 }));
 
-const StyledSectionMobile = styled('div')(({ theme }) => ({
+const StyledSectionMobile = styled("div")(({ theme }) => ({
   display: "flex",
   [theme.breakpoints.up("md")]: {
     display: "none"
   }
 }));
 
-const StyledUserOptionContainer = styled('div')(({ theme }) => ({
+const StyledUserOptionContainer = styled("div")(({ theme }) => ({
   width: "100%",
   color: "blue",
   maxWidth: 360,
@@ -85,17 +85,17 @@ const StyledPopper = styled(Popper)({
 const PrimarySearchAppBar = ({ user, history }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
-  const [userOption, setUserOption] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef(null);
+  const [userOption, setUserOption] = useState(false);
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen);
   };
 
-  const prevOpen = React.useRef(open);
+  const prevOpen = useRef(open);
   useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
@@ -159,11 +159,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
   );
 
   const LinkButton = ({ link, label }) => (
-    <StyledLinkButton
-      variant="contained"
-      component={Link}
-      to={link}
-    >
+    <StyledLinkButton variant="contained" component={Link} to={link}>
       {t(label)}
     </StyledLinkButton>
   );

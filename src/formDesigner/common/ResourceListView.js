@@ -1,10 +1,10 @@
-import React, { useState, useRef, useMemo, useCallback, useEffect } from "react";
+import { memo, useState, useRef, useMemo, useCallback, useEffect } from "react";
 import { isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import { Title } from "react-admin";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../common/model/UserInfo";
 import Edit from "@mui/icons-material/Edit";
@@ -174,4 +174,4 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
-export default withRouter(React.memo(ResourceListView, areEqual));
+export default withRouter(memo(ResourceListView, areEqual));

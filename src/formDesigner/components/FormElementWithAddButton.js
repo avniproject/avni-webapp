@@ -1,19 +1,19 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useState, memo } from "react";
+import { styled } from "@mui/material/styles";
 import { Fab } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { isEqual } from "lodash";
 import FormElement from "./FormElement";
 
-const StyledRoot = styled('div')({
+const StyledRoot = styled("div")({
   paddingLeft: 20,
-  paddingBottom: 30,
+  paddingBottom: 30
 });
 
-const StyledFabContainer = styled('div')({
+const StyledFabContainer = styled("div")({
   position: "absolute",
   marginLeft: -35,
-  marginTop: -5,
+  marginTop: -5
 });
 
 function areEqual(prevProps, nextProps) {
@@ -21,7 +21,7 @@ function areEqual(prevProps, nextProps) {
 }
 
 function FormElementWithAddButton(props) {
-  const [hover, setHover] = React.useState(false);
+  const [hover, setHover] = useState(false);
 
   const hoverDisplayAddGroup = () => {
     setHover(true);
@@ -39,7 +39,7 @@ function FormElementWithAddButton(props) {
           <Fab
             color="secondary"
             aria-label="add"
-            onClick={(event) => props.btnGroupAdd(props.groupIndex, props.index)}
+            onClick={event => props.btnGroupAdd(props.groupIndex, props.index)}
             size="small"
             disabled={props.disableFormElement}
           >
@@ -51,4 +51,4 @@ function FormElementWithAddButton(props) {
   );
 }
 
-export default React.memo(FormElementWithAddButton, areEqual);
+export default memo(FormElementWithAddButton, areEqual);

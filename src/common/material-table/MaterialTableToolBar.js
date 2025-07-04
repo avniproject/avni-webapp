@@ -1,6 +1,5 @@
 import { size } from "lodash";
 import { Box, Button } from "@mui/material";
-import React from "react";
 
 export class MaterialTableToolBarButton {
   eventHandler: (selectedRows: any[]) => void;

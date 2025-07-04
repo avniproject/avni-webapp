@@ -1,4 +1,3 @@
-import React from "react";
 import { Route, Switch, useRouteMatch, withRouter } from "react-router-dom";
 import DocumentationList from "./DocumentationList";
 

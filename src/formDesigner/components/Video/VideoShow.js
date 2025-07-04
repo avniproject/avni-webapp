@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import http from "../../../common/utils/httpClient";
+import { useEffect, useState } from "react";
+import { httpClient as http } from "../../../common/utils/httpClient";
 import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
@@ -12,7 +12,7 @@ import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
 const VideoShow = props => {
-  const [video, setVideo] = React.useState({});
+  const [video, setVideo] = useState({});
   const [editAlert, setEditAlert] = useState(false);
 
   useEffect(() => {

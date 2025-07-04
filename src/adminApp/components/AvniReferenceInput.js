@@ -1,4 +1,3 @@
-import React from "react";
 import { ReferenceInput } from "react-admin";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
 

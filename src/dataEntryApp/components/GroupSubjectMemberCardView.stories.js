@@ -1,4 +1,3 @@
-import React from "react";
 import GroupSubjectMemberCardView from "./GroupSubjectMemberCardView";
 import { GroupSubject, Individual, GroupRole } from "avni-models";
 

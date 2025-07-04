@@ -1,4 +1,3 @@
-import React from "react";
 import { ToolTip } from "./ToolTip";
 
 export const ToolTipContainer = ({ toolTipKey, styles, onHover, position, ...props }) => {

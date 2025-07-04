@@ -1,4 +1,3 @@
-import React from "react";
 import { Box } from "@mui/material";
 import { sampleFormElementGroupRule } from "../common/SampleRule";
 import { confirmBeforeRuleEdit } from "../util";

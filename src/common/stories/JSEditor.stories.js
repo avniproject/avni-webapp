@@ -1,4 +1,3 @@
-import React from "react";
 import { JSEditor } from "../components/JSEditor";
 
 export default {

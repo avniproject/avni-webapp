@@ -1,6 +1,6 @@
 import http from "../../common/utils/httpClient";
 import { Edit } from "@mui/icons-material";
-import React from "react";
+
 import { Delete } from "@mui/icons-material";
 
 class EntityListUtil {

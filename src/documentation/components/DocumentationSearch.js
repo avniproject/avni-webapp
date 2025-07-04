@@ -1,6 +1,5 @@
-import React from "react";
 import { get, isEmpty, isNil, map } from "lodash";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import CommonSearch from "../../formDesigner/common/CommonSearch";
 import { Link } from "react-router-dom";
 import { Delete } from "@mui/icons-material";

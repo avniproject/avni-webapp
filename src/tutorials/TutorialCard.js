@@ -1,38 +1,46 @@
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Card, CardContent, Typography, CardActionArea, Grid } from "@mui/material";
-import React from "react";
 
-const useStyles = makeStyles({
-  root: {
-    maxWidth: 500,
-    backgroundColor: "#FFF"
-  }
+const StyledCard = styled(Card)({
+  maxWidth: 500,
+  backgroundColor: "#FFF"
 });
 
-const TutorialCard = ({ href, title, content, footer, iconComponent }) => {
-  const classes = useStyles();
+const StyledCardActionArea = styled(CardActionArea)({
+  color: "inherit",
+  textDecoration: "inherit"
+});
 
+const StyledTitleTypography = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(1)
+}));
+
+const StyledContentTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary
+}));
+
+const TutorialCard = ({ href, title, content, footer, iconComponent }) => {
   return (
-    <Card className={classes.root}>
-      <CardActionArea href={href} target={"_blank"} style={{ color: "inherit", textDecoration: "inherit" }}>
+    <StyledCard>
+      <StyledCardActionArea href={href} target="_blank">
         <CardContent>
-          <Grid container wrap={"wrap"}>
-            <Grid container direction={"row"} spacing={1}>
+          <Grid container wrap="wrap">
+            <Grid container direction="row" spacing={1}>
               <Grid>{iconComponent}</Grid>
               <Grid size={10}>
-                <Typography sx={{ mb: 1 }} variant="h5" component="h2">
+                <StyledTitleTypography variant="h5" component="h2">
                   {title}
-                </Typography>
-                <Typography variant="body2" sx={{ color: theme => theme.palette.text.secondary }} component="p">
+                </StyledTitleTypography>
+                <StyledContentTypography variant="body2" component="p">
                   {content}
                   {footer}
-                </Typography>
+                </StyledContentTypography>
               </Grid>
             </Grid>
           </Grid>
         </CardContent>
-      </CardActionArea>
-    </Card>
+      </StyledCardActionArea>
+    </StyledCard>
   );
 };
 

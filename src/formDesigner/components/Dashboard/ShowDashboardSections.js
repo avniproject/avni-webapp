@@ -1,144 +1,89 @@
-import React from "react";
+import { useState } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Tooltip, Typography, Grid } from "@mui/material";
 import { ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty, map, orderBy } from "lodash";
-import { withStyles, makeStyles } from "@mui/styles";
 import ShowDashboardSectionCards from "./ShowDashboardSectionCards";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 
-const useStyles = makeStyles(theme => ({
-  parent: {
-    paddingLeft: 0,
-    paddingBottom: 30
-  },
-  root: {
-    width: "100%"
-  },
-  rootError: {
-    width: "100%",
-    border: "1px solid red"
-  },
-  iconlay: {
-    flex: 1,
-    alignItems: "center"
-  },
-  questionCount: {
-    paddingTop: "5px"
-  },
-  absolute: {
-    position: "absolute",
-    marginLeft: 20,
-    marginTop: -20
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15)
-  },
-  secondaryHeading: {
-    flexBasis: "70%",
-    fontSize: theme.typography.pxToRem(15)
-  },
-  tabs: {
-    minHeight: "26px",
-    height: "26px"
-  },
-  tab: {
-    minHeight: "26px",
-    height: "26px"
-  },
-  formElementGroupInputText: {
-    lineHeight: "56px"
+const StyledContainer = styled("div")({
+  paddingLeft: 0,
+  paddingBottom: 30
+});
+
+const StyledAccordion = styled(Accordion)({
+  "&.Mui-expanded": {
+    margin: 0
   }
+});
+
+const StyledAccordionSummary = styled(AccordionSummary)({
+  paddingRight: 0,
+  backgroundColor: "#dbdbdb",
+  border: "1px solid #2196F3",
+  paddingLeft: 0,
+  minHeight: 56,
+  "&.Mui-expanded": {
+    minHeight: 56
+  },
+  "&.Mui-focused": {
+    backgroundColor: "#dbdbdb"
+  },
+  "& .MuiAccordionSummary-content": {
+    margin: "0",
+    "&.Mui-expanded": {
+      margin: "0"
+    }
+  }
+});
+
+const StyledIconContainer = styled(Grid)({
+  alignItems: "center"
+});
+
+const StyledListIcon = styled(List)({
+  marginLeft: 12,
+  marginRight: 4
+});
+
+const StyledHeading = styled(Typography)(({ theme }) => ({
+  fontSize: theme.typography.pxToRem(15)
 }));
 
-const StyledAccordion = withStyles({
-  root: {
-    "&$expanded": {
-      margin: 0
-    }
-  },
-  expanded: {}
-})(Accordion);
-
-const StyledAccordionSummary = withStyles({
-  root: {
-    paddingRight: 0,
-    backgroundColor: "#dbdbdb",
-    border: "1px solid #2196F3",
-    paddingLeft: 0,
-    minHeight: 56,
-    "&$expanded": {
-      minHeight: 56
-    },
-    "&$focused": {
-      backgroundColor: "#dbdbdb"
-    }
-  },
-  focused: {},
-  content: {
-    margin: "0",
-    "&$expanded": { margin: "0" }
-  },
-  expanded: {},
-  icon: {
-    marginHorizontal: "8px",
-    display: "inline"
-  }
-})(AccordionSummary);
+const StyledQuestionCount = styled(Typography)({
+  paddingTop: "5px"
+});
 
 const ShowDashboardSections = ({ sections, history }) => {
-  const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
   return (
-    <React.Fragment>
+    <StyledContainer>
       {!isEmpty(sections) && (
         <div>
           {map(orderBy(sections, "displayOrder"), (section, index) => (
             <div key={index}>
               <StyledAccordion expanded={expanded === "panel" + index} onChange={handleChange("panel" + index)}>
-                <StyledAccordionSummary aria-controls={"panel" + index + "bh-content"} id={"panel" + index + "bh-header"}>
+                <StyledAccordionSummary aria-controls={`panel${index}bh-content`} id={`panel${index}bh-header`}>
                   <Grid container direction="row">
-                    <Grid
-                      container
-                      sx={{
-                        alignItems: "center"
-                      }}
-                      size={{
-                        sm: 12
-                      }}
-                    >
-                      <Grid
-                        size={{
-                          sm: 1
-                        }}
-                      >
+                    <StyledIconContainer container size={{ sm: 12 }}>
+                      <Grid size={{ sm: 1 }}>
                         <Tooltip title="Grouped Questions">
-                          <List style={{ marginLeft: 12, marginRight: 4 }} />
+                          <StyledListIcon />
                         </Tooltip>
-                        {expanded === "panel" + index ? <ExpandLess className={classes.icon} /> : <ExpandMore className={classes.icon} />}
+                        {expanded === `panel${index}` ? <ExpandLess /> : <ExpandMore />}
                       </Grid>
-                      <Grid
-                        size={{
-                          sm: 5
-                        }}
-                      >
-                        <Typography className={classes.heading}>{section.name}</Typography>
+                      <Grid size={{ sm: 5 }}>
+                        <StyledHeading>{section.name}</StyledHeading>
                       </Grid>
-                      <Grid
-                        size={{
-                          sm: 3
-                        }}
-                      >
-                        <Typography className={classes.questionCount}>
-                          {WebDashboardSection.getReportCards(section).length} cards
-                        </Typography>
+                      <Grid size={{ sm: 3 }}>
+                        <StyledQuestionCount>{WebDashboardSection.getReportCards(section).length} cards</StyledQuestionCount>
                       </Grid>
-                    </Grid>
+                    </StyledIconContainer>
                   </Grid>
                 </StyledAccordionSummary>
                 <AccordionDetails>
@@ -159,7 +104,8 @@ const ShowDashboardSections = ({ sections, history }) => {
           ))}
         </div>
       )}
-    </React.Fragment>
+    </StyledContainer>
   );
 };
+
 export default ShowDashboardSections;

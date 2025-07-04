@@ -1,27 +1,28 @@
+import { styled } from "@mui/material/styles";
 import { FormControl, FormLabel, TextField as MuiTextField } from "@mui/material";
-import React from "react";
-import { Filter, TextField } from "../util/FilterStyles";
+import { Filter } from "../util/FilterStyles";
+
+const StyledTextField = styled(MuiTextField)(({ theme }) => ({
+  backgroundColor: "#FFF",
+  "& .MuiInputBase-input": {
+    padding: 10
+  }
+}));
 
 const TextFilter = ({ label, value, filterCriteria, onFilterChange, isNumeric }) => {
   return (
     <Filter>
       <FormControl fullWidth>
         <FormLabel component="legend">{label}</FormLabel>
-        <TextField>
-          <MuiTextField
-            inputProps={{
-              style: {
-                padding: 10
-              }
-            }}
-            variant="outlined"
-            value={value}
-            onChange={event => onFilterChange(event.target.value)}
-            type={isNumeric ? "number" : "text"}
-          />
-        </TextField>
+        <StyledTextField
+          variant="outlined"
+          value={value}
+          onChange={event => onFilterChange(event.target.value)}
+          type={isNumeric ? "number" : "text"}
+        />
       </FormControl>
     </Filter>
   );
 };
+
 export default TextFilter;

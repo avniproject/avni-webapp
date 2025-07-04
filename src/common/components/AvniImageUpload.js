@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect, Fragment } from "react";
 import { isEmpty } from "lodash";
 import { Dialog, DialogContent, Grid, IconButton, Typography, Snackbar, FormControl } from "@mui/material";
 import { ToolTipContainer } from "./ToolTipContainer";
@@ -53,12 +53,12 @@ export const AvniImageUpload = ({
   maxFileSize,
   uniqueName = "0"
 }) => {
-  const [, setValue] = React.useState("");
-  const [file, setFile] = React.useState();
-  const [iconPreview, setIconPreview] = React.useState();
-  const [fileSizeError, setFileSizeError] = React.useState("");
+  const [, setValue] = useState("");
+  const [file, setFile] = useState();
+  const [iconPreview, setIconPreview] = useState();
+  const [fileSizeError, setFileSizeError] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!file) {
       setIconPreview();
       return;
@@ -71,7 +71,7 @@ export const AvniImageUpload = ({
     return () => URL.revokeObjectURL(objectUrl);
   }, [file]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(oldImgUrl)) {
       MediaService.getMedia(oldImgUrl).then(res => {
         setIconPreview(res);
@@ -108,7 +108,7 @@ export const AvniImageUpload = ({
 
   function UploadImage() {
     return (
-      <React.Fragment>
+      <Fragment>
         <FormControl>
           <Grid
             container
@@ -156,7 +156,7 @@ export const AvniImageUpload = ({
             </Typography>
           </div>
         </Snackbar>
-      </React.Fragment>
+      </Fragment>
     );
   }
 

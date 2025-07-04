@@ -1,4 +1,3 @@
-import React from "react";
 import { Layout, Notification } from "react-admin";
 import AdminAppBar from "./AdminAppBar";
 

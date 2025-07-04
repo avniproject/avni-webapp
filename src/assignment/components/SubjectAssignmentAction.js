@@ -1,16 +1,15 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Grid, Button, Modal, Typography, RadioGroup } from "@mui/material";
 import Select from "react-select";
 
-const useStyles = makeStyles(theme => ({
-  paper: {
-    position: "absolute",
-    width: "40%",
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3)
-  }
+const StyledModalContent = styled(Grid)(({ theme }) => ({
+  position: "absolute",
+  width: "40%",
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: theme.shadows[5],
+  padding: theme.spacing(2, 4, 3),
+  top: "25%",
+  left: "30%"
 }));
 
 const SelectAction = function({ dispatch, label, options, assignmentKeyName, isMulti, assignmentCriteria }) {
@@ -44,7 +43,6 @@ export const SubjectAssignmentAction = ({
   userAssignmentKeyName = "assignToUserIds",
   actionAssignmentKeyName = "actionId"
 }) => {
-  const classes = useStyles();
   const onClose = () => dispatch({ type: "hideAction" });
 
   const checkValues = () => {
@@ -60,8 +58,8 @@ export const SubjectAssignmentAction = ({
         }
       }}
     >
-      <Grid container direction={"column"} spacing={3} className={classes.paper} style={{ top: "25%", left: "30%" }}>
-        <Typography variant={"h6"}>{"Bulk action"}</Typography>
+      <StyledModalContent container direction="column" spacing={3}>
+        <Typography variant="h6">Bulk action</Typography>
         <Grid container spacing={3}>
           <Grid>
             <RadioGroup
@@ -88,20 +86,19 @@ export const SubjectAssignmentAction = ({
           options={userOptions}
           assignmentCriteria={assignmentCriteria}
         />
-
         <Grid container spacing={3}>
           <Grid>
             <Button variant="outlined" color="secondary" onClick={onClose}>
-              {"Cancel"}
+              Cancel
             </Button>
           </Grid>
           <Grid>
             <Button variant="contained" color="primary" onClick={onDone} disabled={checkValues()}>
-              {"Done"}
+              Done
             </Button>
           </Grid>
         </Grid>
-      </Grid>
+      </StyledModalContent>
     </Modal>
   );
 };

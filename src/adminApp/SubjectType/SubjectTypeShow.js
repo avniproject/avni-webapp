@@ -1,6 +1,6 @@
-import React, { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Edit } from "@mui/icons-material";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import { Box, Button, FormLabel, Grid } from "@mui/material";
 import { Title } from "react-admin";
@@ -25,7 +25,7 @@ const SubjectTypeShow = props => {
   const [editAlert, setEditAlert] = useState(false);
   const [formMappings, setFormMappings] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
-  const [iconPreviewUrl, setIconPreviewUrl] = React.useState("");
+  const [iconPreviewUrl, setIconPreviewUrl] = useState("");
   const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []
@@ -52,7 +52,7 @@ const SubjectTypeShow = props => {
       });
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (subjectType.iconFileS3Key != null) {
       MediaService.getMedia(subjectType.iconFileS3Key).then(res => {
         setIconPreviewUrl(res);

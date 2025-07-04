@@ -1,7 +1,6 @@
 import http from "../../common/utils/httpClient";
 import { map } from "lodash";
 import CommonSearch from "./CommonSearch";
-import React from "react";
 
 const LocationTypeSearch = ({ value, onChange, isMulti }) => {
   const loadLocation = (value, callback) => {

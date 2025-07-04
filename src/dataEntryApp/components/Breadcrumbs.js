@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Typography, Breadcrumbs as MUIBreadcrumb, Link } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -9,12 +8,12 @@ import { defaultTo } from "lodash";
 
 const StyledBreadcrumbs = styled(MUIBreadcrumb)(({ theme }) => ({
   margin: "12px 24px",
-  fontSize: "12px",
+  fontSize: "12px"
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   fontSize: "12px",
-  color: theme.palette.text.primary,
+  color: theme.palette.text.primary
 }));
 
 const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter, viewVisit, ...props }) => {
@@ -46,7 +45,7 @@ const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter,
     EDIT_SUBJECT: "editSubject",
     SEARCH: "searchFilter",
     REGISTER: "register",
-    EDIT_GROUP_MEMBERSHIP: "editGroupMembership",
+    EDIT_GROUP_MEMBERSHIP: "editGroupMembership"
   };
   const currentPage = parts[parts.length - 1];
   const isSubjectEdit = currentPage === urlPartLabels.EDIT_SUBJECT;
@@ -60,26 +59,26 @@ const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter,
         if (subjectName && subjectUuid) {
           return {
             breadcrumb: subjectName,
-            url: "#/app/subject?uuid=" + subjectUuid,
+            url: "#/app/subject?uuid=" + subjectUuid
           };
         } else {
           return {
             breadcrumb: t("Dashboard"),
-            url: "#/app",
+            url: "#/app"
           };
         }
       }
       case urlPartLabels.SUBJECT_PROFILE: {
         return {
           breadcrumb: t(urlPartLabels.SUBJECT_PROFILE),
-          url: "#/app",
+          url: "#/app"
         };
       }
       case urlPartLabels.VIEW_VISIT: {
         if (viewVisitName) {
           return {
             breadcrumb: `${t(viewVisitName)}`,
-            url: "#/app",
+            url: "#/app"
           };
         } else {
           return { breadcrumb: `${t("ViewVisit")}`, url: "#/app" };
@@ -92,7 +91,7 @@ const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter,
         if (viewVisitName) {
           return {
             breadcrumb: `${t(viewVisitName)}`,
-            url: "#/app",
+            url: "#/app"
           };
         } else {
           return { breadcrumb: "View Visit", url: "#/app" };
@@ -104,25 +103,25 @@ const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter,
       case urlPartLabels.EDIT_CANCEL_PROGRAM_ENCOUNTER: {
         return {
           breadcrumb: `${t("Edit Cancel Program Encounter")} : ${t(programEncounterName)}`,
-          url: "#/app",
+          url: "#/app"
         };
       }
       case urlPartLabels.CANCEL_PROGRAM_ENCOUNTER: {
         return {
           breadcrumb: `${t("Cancel Program Encounter")} : ${t(programEncounterName)}`,
-          url: "#/app",
+          url: "#/app"
         };
       }
       case urlPartLabels.PROGRAM_ENCOUNTER: {
         return {
           breadcrumb: `${t("Program Encounter")} : ${t(programEncounterName)}`,
-          url: "#/app",
+          url: "#/app"
         };
       }
       case urlPartLabels.EDIT_PROGRAM_ENCOUNTER: {
         return {
           breadcrumb: `${t("Edit Program Encounter")} : ${t(programEncounterName)}`,
-          url: "#/app",
+          url: "#/app"
         };
       }
       case urlPartLabels.NEW_PROGRAM_VISIT: {
@@ -146,7 +145,7 @@ const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter,
       case urlPartLabels.EDIT_SUBJECT: {
         return {
           breadcrumb: subjectName,
-          url: "#/app/subject?uuid=" + subjectUuid,
+          url: "#/app/subject?uuid=" + subjectUuid
         };
       }
       case urlPartLabels.SEARCH: {
@@ -170,9 +169,7 @@ const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter,
           {urlMapper(part).breadcrumb}
         </Link>
       ))}
-      <StyledTypography component="span">
-        {isSubjectEdit ? t("editSubject") : urlMapper(currentPage).breadcrumb}
-      </StyledTypography>
+      <StyledTypography component="span">{isSubjectEdit ? t("editSubject") : urlMapper(currentPage).breadcrumb}</StyledTypography>
     </StyledBreadcrumbs>
   );
 };
@@ -181,7 +178,7 @@ const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   viewVisit: state.dataEntry.viewVisitReducer.encounter,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  encounter: state.dataEntry.encounterReducer.encounter,
+  encounter: state.dataEntry.encounterReducer.encounter
 });
 
 export default withRouter(

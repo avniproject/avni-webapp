@@ -1,6 +1,6 @@
-import React from "react";
+import { useState, useReducer, useEffect, Fragment } from "react";
 import { ReportCardReducer, ReportCardReducerKeys } from "./ReportCardReducer";
-import http from "../../../common/utils/httpClient";
+import { httpClient as http } from "../../../common/utils/httpClient";
 import { get, isNil, sortBy } from "lodash";
 import Box from "@mui/material/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
@@ -30,15 +30,15 @@ import { ValueTextUnitSelect } from "../../../common/components/ValueTextUnitSel
 import CustomizedSnackbar from "../CustomizedSnackbar";
 
 export const CreateEditReportCard = ({ edit, ...props }) => {
-  const [card, dispatch] = React.useReducer(ReportCardReducer, WebReportCard.createNewReportCard());
-  const [error, setError] = React.useState([]);
-  const [id, setId] = React.useState();
-  const [redirectAfterDelete, setRedirectAfterDelete] = React.useState(false);
-  const [isStandardReportCard, setIsStandardReportCard] = React.useState(false);
-  const [standardReportCardTypes, setStandardReportCardTypes] = React.useState([]);
-  const [file, setFile] = React.useState();
+  const [card, dispatch] = useReducer(ReportCardReducer, WebReportCard.createNewReportCard());
+  const [error, setError] = useState([]);
+  const [id, setId] = useState();
+  const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
+  const [isStandardReportCard, setIsStandardReportCard] = useState(false);
+  const [standardReportCardTypes, setStandardReportCardTypes] = useState([]);
+  const [file, setFile] = useState();
 
-  React.useEffect(() => {
+  useEffect(() => {
     DashboardService.getStandardReportCardTypes().then(setStandardReportCardTypes);
     if (edit) {
       DashboardService.getReportCard(props.match.params.id).then(res => {
@@ -49,13 +49,13 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (edit) {
       setIsStandardReportCard(!isNil(card.standardReportCardType));
     }
   }, [isNil(card.standardReportCardType)]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isStandardReportCard) {
       dispatch({ type: ReportCardReducerKeys.query, payload: null });
       dispatch({ type: ReportCardReducerKeys.nested, payload: { nested: false, count: WebReportCard.MinimumNumberOfNestedCards } });
@@ -64,7 +64,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
     }
   }, [isStandardReportCard]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     //to handle existing recent type cards without duration configured
     if (card.isRecentType() && isNil(card.standardReportCardInputRecentDuration)) {
       dispatch({ type: ReportCardReducerKeys.duration, payload: { value: "1", unit: "days" } });
@@ -277,13 +277,13 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           </>
         )}
         {!isStandardReportCard && (
-          <React.Fragment>
+          <Fragment>
             <AvniFormLabel label={"Query"} toolTipKey={"APP_DESIGNER_CARD_QUERY"} />
             <JSEditor
               value={card.query || sampleCardQuery(card.nested)}
               onValueChange={event => dispatch({ type: ReportCardReducerKeys.query, payload: event })}
             />
-          </React.Fragment>
+          </Fragment>
         )}
         {getErrorByKey(error, "EMPTY_TYPE")}
         <p />

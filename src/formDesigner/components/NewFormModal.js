@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Button } from "@mui/material";
 import { FormControl, Input, InputLabel, Select } from "@mui/material";
 import { MenuItem } from "@mui/material";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import { FormHelperText } from "@mui/material";
 import CustomizedSnackbar from "./CustomizedSnackbar";

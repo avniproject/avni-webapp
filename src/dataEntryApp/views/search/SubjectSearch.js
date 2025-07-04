@@ -1,60 +1,45 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import { useEffect } from "react";
 import { Paper, Typography, Grid, Button } from "@mui/material";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
 import { Cancel } from "@mui/icons-material";
 import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
 import { useTranslation } from "react-i18next";
 import { store } from "../../../common/store";
 import { types } from "../../reducers/searchFilterReducer";
 import { isEmpty } from "lodash";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { getOrganisationConfig } from "../../reducers/metadataReducer";
 
-const useStyle = makeStyles(theme => ({
-  root: {
-    width: "100%",
-    marginTop: theme.spacing(3),
-    overflowX: "auto",
-    flexShrink: 0,
-    marginLeft: theme.spacing(2.5)
-  },
-  searchCreateToolbar: {
-    display: "flex"
-  },
-  searchForm: {
-    marginLeft: theme.spacing(3),
-    marginBottom: theme.spacing(8),
-    display: "flex",
-    alignItems: "flex-end",
-    flex: 8
-  },
-  searchFormItem: {
-    margin: theme.spacing(1)
-  },
-  searchBtnShadow: {
-    boxShadow: "none",
-    backgroundColor: "#0e6eff",
-    marginRight: 10
-  },
-  resetBtnShadow: {
-    boxShadow: "none",
-    backgroundColor: "#FF8C00",
-    marginRight: 10
-  },
-  createButtonHolder: {
-    flex: 1
-  },
-  searchBox: {
-    padding: "1.5rem",
-    margin: "2rem 1rem"
-  }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: "1.5rem",
+  margin: "2rem 1rem",
+  elevation: 2
 }));
 
-const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfigs }) => {
-  const classes = useStyle();
+const StyledGrid = styled(Grid)({
+  marginBottom: "1%",
+  justifyContent: "space-between",
+  alignItems: "baseline"
+});
 
-  React.useEffect(() => {
+const StyledTypography = styled(Typography)({
+  fontSize: "22px",
+  fontWeight: "500",
+  float: "left",
+  paddingTop: "1%",
+  paddingLeft: "4px"
+});
+
+const StyledButton = styled(Button)({
+  color: "#212529"
+});
+
+const StyledCancel = styled(Cancel)({
+  fontSize: "12px"
+});
+
+const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfigs }) => {
+  useEffect(() => {
     if (!organisationConfigs) {
       getOrganisationConfig();
     }
@@ -66,45 +51,27 @@ const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfi
   };
 
   return (
-    <Paper className={classes.searchBox}>
-      <Grid
-        container
-        direction="row"
-        style={{ marginBottom: "1%" }}
-        sx={{
-          justifyContent: "space-between",
-          alignItems: "baseline"
-        }}
-      >
-        <Typography
-          component={"span"}
-          style={{
-            fontSize: "22px",
-            fontWeight: "500",
-            float: "left",
-            paddingTop: "1%",
-            paddingLeft: "4px"
-          }}
-        >
-          {!isEmpty(searchRequest.subjectType) ? t("searchResults") : ""}
-        </Typography>
-        <Button onClick={() => resetClick()} aria-label="add an alarm" style={{ color: "#212529" }}>
-          <Cancel style={{ fontSize: "12px" }} /> {t("resetFilter")}
-        </Button>
-      </Grid>
+    <StyledPaper>
+      <StyledGrid container direction="row">
+        <StyledTypography component="span">{!isEmpty(searchRequest.subjectType) ? t("searchResults") : ""}</StyledTypography>
+        <StyledButton onClick={resetClick} aria-label="add an alarm">
+          <StyledCancel /> {t("resetFilter")}
+        </StyledButton>
+      </StyledGrid>
       <SubjectSearchTable searchRequest={searchRequest} organisationConfigs={organisationConfigs} />
-    </Paper>
+    </StyledPaper>
   );
 };
-const mapStateToProps = state => {
-  return {
-    searchRequest: state.dataEntry.searchFilterReducer.request,
-    organisationConfigs: state.dataEntry.metadata.organisationConfigs
-  };
-};
+
+const mapStateToProps = state => ({
+  searchRequest: state.dataEntry.searchFilterReducer.request,
+  organisationConfigs: state.dataEntry.metadata.organisationConfigs
+});
+
 const mapDispatchToProps = {
   getOrganisationConfig
 };
+
 export default withRouter(
   connect(
     mapStateToProps,

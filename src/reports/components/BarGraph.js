@@ -1,5 +1,5 @@
 import { ResponsiveBar } from "@nivo/bar";
-import React from "react";
+
 import { Grid, Typography, Box } from "@mui/material";
 import _ from "lodash";
 

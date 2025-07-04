@@ -1,6 +1,5 @@
 import { find, get, isEmpty, isNil, join, replace, split } from "lodash";
 import { FormLabel } from "@mui/material";
-import React from "react";
 
 export const getErrorByKey = (errors, errorKey) => {
   const errorByKey = find(errors, ({ key }) => key === errorKey);

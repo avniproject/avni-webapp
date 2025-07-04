@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Typography, Accordion, AccordionDetails, Box, Input } from "@mui/material";
 import { AddressLevelSetting } from "./AddressLevelSetting";
@@ -29,8 +29,8 @@ const CustomAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
 }));
 CustomAccordionDetails.muiName = "AccordionDetails";
 
-const StyledSettingsContainer = styled('div')({
-  display: 'flex',
+const StyledSettingsContainer = styled("div")({
+  display: "flex",
   flexDirection: "row",
   justifyContent: "space-between"
 });
@@ -52,8 +52,8 @@ const StyledSyncSettingsTypography = styled(Typography)(({ theme }) => ({
 
 const syncAttributeDataTypes = ["Numeric", "Coded", "Text"];
 export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMappings, isEdit }) => {
-  const [expanded, setExpanded] = React.useState(false);
-  const [syncAttributes, setSyncAttributes] = React.useState([]);
+  const [expanded, setExpanded] = useState(false);
+  const [syncAttributes, setSyncAttributes] = useState([]);
   const formUuid = findFormUuidForSubjectType(subjectType, formMappings);
   const changeSyncAttribute = (name, value) => dispatch({ type: "syncAttribute", payload: { name, value } });
 
@@ -231,9 +231,7 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
             </div>
           )}
           <StyledSyncSettingsBox component="div">
-            <StyledSyncSettingsTypography variant="subtitle1">
-              {"Sync Settings"}
-            </StyledSyncSettingsTypography>
+            <StyledSyncSettingsTypography variant="subtitle1">{"Sync Settings"}</StyledSyncSettingsTypography>
             {subjectType.type === SubjectTypeType.User ? (
               <Typography>Determined by Subject Type</Typography>
             ) : (

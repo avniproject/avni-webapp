@@ -1,46 +1,46 @@
 import { connect } from "react-redux";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { getUploadStatuses } from "../../reducers";
 import { withRouter } from "react-router-dom";
-import React from "react";
+import { useState, useEffect } from "react";
 import { Table, TableHead, TableRow, TableCell, TableBody, Box, Grid, TablePagination, Button } from "@mui/material";
 import { find, get, isNil, map } from "lodash";
 import moment from "moment";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import fileDownload from "js-file-download";
 import { Refresh, CloudDownload } from "@mui/icons-material";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
   marginTop: theme.spacing(3),
-  overflowX: "hidden",
+  overflowX: "hidden"
 }));
 
 const StyledTable = styled(Table)({
-  minWidth: 340,
+  minWidth: 340
 });
 
 const StyledTableCellHeader = styled(TableCell)({
   paddingRight: 4,
   paddingLeft: 5,
-  fontWeight: "bold",
+  fontWeight: "bold"
 });
 
 const StyledTableCellRow = styled(TableCell)({
   paddingRight: 4,
-  paddingLeft: 5,
+  paddingLeft: 5
 });
 
 const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: { subjectTypes, programs, encounterTypes } }) => {
-  React.useEffect(() => {
+  useEffect(() => {
     getUploadStatuses(0);
   }, []);
 
   const rowsPerPage = 10;
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = useState(0);
 
-  const formatDate = (date) => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
-  const isoDateFormat = (date) => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
+  const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
+  const isoDateFormat = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
   const getDateParams = ({ startDate, endDate }) =>
     isNil(startDate) || isNil(endDate) ? "" : `${isoDateFormat(startDate)} to ${isoDateFormat(endDate)}`;
 
@@ -57,16 +57,16 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
       findEntityByUUID(programs, programUUID).operationalProgramName,
       findEntityByUUID(encounterTypes, encounterTypeUUID).operationalEncounterTypeName,
       isoDateFormat(startDate),
-      isoDateFormat(endDate),
+      isoDateFormat(endDate)
     ]
       .filter(Boolean)
       .join("_");
     http
       .get(`/export/download?fileName=${fileName}`, { responseType: "blob" })
-      .then((response) => {
+      .then(response => {
         fileDownload(response.data, `${outFileName}.csv`);
       })
-      .catch((error) => alert(`${error.message} Error occurred while downloading file`));
+      .catch(error => alert(`${error.message} Error occurred while downloading file`));
   };
 
   return (
@@ -92,7 +92,7 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
           </TableRow>
         </TableHead>
         <TableBody>
-          {map(get(exportJobStatuses, "content"), (status) => (
+          {map(get(exportJobStatuses, "content"), status => (
             <TableRow key={status.uuid}>
               <StyledTableCellRow>{status.reportType}</StyledTableCellRow>
               <StyledTableCellRow>{findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}</StyledTableCellRow>
@@ -128,8 +128,13 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
   );
 };
 
-const mapStateToProps = (state) => ({
-  exportJobStatuses: state.reports.exportJobStatuses,
+const mapStateToProps = state => ({
+  exportJobStatuses: state.reports.exportJobStatuses
 });
 
-export default withRouter(connect(mapStateToProps, { getUploadStatuses })(JobStatus));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    { getUploadStatuses }
+  )(JobStatus)
+);

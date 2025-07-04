@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Select from "@mui/material/Select";

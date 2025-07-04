@@ -1,4 +1,5 @@
-import React, { useEffect, useReducer, useState, useRef, useCallback, useMemo } from "react";
+import { useImperativeHandle, useEffect, useReducer, useState, useRef, useCallback, useMemo } from "react";
+import { styled } from "@mui/material/styles";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { MaterialReactTable } from "material-react-table";
 import api from "../api";
@@ -11,28 +12,40 @@ import {
 } from "../reducers/SubjectAssignmentReducer";
 import { getColumns } from "./SubjectAssignmentColumns";
 import { fetchSubjectData } from "./SubjectAssignmentData";
-import { makeStyles } from "@mui/styles";
-import { Grid, FormControlLabel, Radio, Paper } from "@mui/material";
+import { Grid, FormControlLabel, Radio } from "@mui/material";
 import SubjectAssignmentFilter from "./SubjectAssignmentFilter";
 import { refreshTable } from "../util/util";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import { includes, map, mapValues } from "lodash";
 import { SubjectAssignmentAction } from "../components/SubjectAssignmentAction";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    height: "85vh",
-    backgroundColor: "#FFF",
-    overflow: "visible"
+const StyledRootDiv = styled("div")({
+  height: "85vh",
+  backgroundColor: "#FFF",
+  overflow: "visible"
+});
+
+const StyledTableContainer = styled("div")({
+  overflowX: "auto",
+  overflowY: "hidden"
+});
+
+const StyledMaterialReactTable = styled(MaterialReactTable)(({ theme }) => ({
+  "& .MuiTableHeadCell-root": {
+    zIndex: 2
   },
-  tableContainer: {
-    overflowX: "auto", // Enable horizontal scrolling
-    overflowY: "hidden" // Let table handle vertical scrolling
+  "& .MuiTableContainer-root": {
+    maxHeight: "75vh",
+    minHeight: "75vh",
+    overflowY: "auto",
+    position: "relative"
+  },
+  "& .MuiPaper-root": {
+    elevation: 0
   }
 }));
 
 const SubjectAssignment = () => {
-  const classes = useStyles();
   const [state, updateState] = useReducer(SubjectAssignmentReducer, initialState);
   const dispatch = (type, payload) => updateState({ type, payload });
   const {
@@ -139,7 +152,7 @@ const SubjectAssignment = () => {
     updateState({ type: "onSave", payload: { saveStart: false } });
   };
 
-  React.useImperativeHandle(tableRef, () => ({
+  useImperativeHandle(tableRef, () => ({
     refresh: loadData
   }));
 
@@ -151,11 +164,11 @@ const SubjectAssignment = () => {
     }
     console.log("renderData columns:", columns);
     return (
-      <div className={classes.root}>
+      <StyledRootDiv>
         <Grid container>
           <Grid size={8}>
-            <div className={classes.tableContainer}>
-              <MaterialReactTable
+            <StyledTableContainer>
+              <StyledMaterialReactTable
                 columns={columns}
                 data={data}
                 manualPagination
@@ -174,15 +187,6 @@ const SubjectAssignment = () => {
                 muiTablePaginationProps={{
                   rowsPerPageOptions: [10, 15, 25]
                 }}
-                muiTableHeadCellProps={{
-                  sx: { zIndex: 2 }
-                }}
-                muiTableContainerProps={{
-                  sx: { maxHeight: "75vh", minHeight: "75vh", overflowY: "auto", position: "relative" }
-                }}
-                muiTablePaperProps={{
-                  elevation: 0
-                }}
                 renderTopToolbar={({ table }) => (
                   <AssignmentToolBar
                     dispatch={updateState}
@@ -196,7 +200,7 @@ const SubjectAssignment = () => {
                   />
                 )}
               />
-            </div>
+            </StyledTableContainer>
           </Grid>
           <Grid size={1} />
           <Grid size={3}>
@@ -224,11 +228,11 @@ const SubjectAssignment = () => {
             actionAssignmentKeyName="actionId"
           />
         </Grid>
-      </div>
+      </StyledRootDiv>
     );
   };
 
-  return <ScreenWithAppBar appbarTitle={"Subject Assignment"}>{renderData()}</ScreenWithAppBar>;
+  return <ScreenWithAppBar appbarTitle="Subject Assignment">{renderData()}</ScreenWithAppBar>;
 };
 
 export default SubjectAssignment;

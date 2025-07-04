@@ -8,35 +8,35 @@ import CreateEditDashboardSectionCards from "./CreateEditDashboardSectionCards";
 import { AvniTextField } from "../../../common/components/AvniTextField";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import { AvniSelect } from "../../../common/components/AvniSelect";
-import { DragNDropComponent } from "../../common/DragNDropComponent";
+import DragNDropComponent from "../../common/DragNDropComponent";
 import { dashboardReducerActions } from "./DashboardReducer";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
-  alignItems: "center",
+  alignItems: "center"
 }));
 
 const StyledTypography = styled(Typography)(({ theme, variant }) => ({
   ...(variant === "heading" && {
-    fontSize: theme.typography.pxToRem(15),
+    fontSize: theme.typography.pxToRem(15)
   }),
   ...(variant === "questionCount" && {
-    paddingTop: "5px",
-  }),
+    paddingTop: "5px"
+  })
 }));
 
 const StyledIcon = styled("span")(({ theme, variant }) => ({
   ...(variant === "list" && {
     marginLeft: 12,
-    marginRight: 4,
+    marginRight: 4
   }),
   ...(variant !== "list" && {
-    marginRight: "8px",
-  }),
+    marginRight: "8px"
+  })
 }));
 
 const StyledSelect = styled(AvniSelect)(({ theme }) => ({
-  width: "200px",
+  width: "200px"
 }));
 
 function EditSection({ section, index, dispatch, history }) {
@@ -93,12 +93,12 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
     <StyledGrid
       container
       size={{
-        sm: 12,
+        sm: 12
       }}
     >
       <Grid
         size={{
-          sm: 2,
+          sm: 2
         }}
       >
         <Tooltip title={"Grouped Questions"}>
@@ -108,7 +108,7 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
       </Grid>
       <Grid
         size={{
-          sm: 5,
+          sm: 5
         }}
       >
         <StyledTypography variant="heading">
@@ -128,16 +128,14 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
       </Grid>
       <Grid
         size={{
-          sm: 3,
+          sm: 3
         }}
       >
-        <StyledTypography variant="questionCount">
-          {WebDashboardSection.getReportCards(section).length} cards
-        </StyledTypography>
+        <StyledTypography variant="questionCount">{WebDashboardSection.getReportCards(section).length} cards</StyledTypography>
       </Grid>
       <Grid
         size={{
-          sm: 2,
+          sm: 2
         }}
       >
         <IconButton
@@ -159,7 +157,7 @@ const CreateEditDashboardSections = props => {
     }
     props.dispatch({
       type: dashboardReducerActions.changeSectionDisplayOrder,
-      payload: { sourceIndex: result.source.index, destIndex: result.destination.index },
+      payload: { sourceIndex: result.source.index, destIndex: result.destination.index }
     });
   };
 

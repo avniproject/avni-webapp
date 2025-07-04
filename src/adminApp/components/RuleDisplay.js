@@ -1,4 +1,3 @@
-import React from "react";
 import { FormLabel } from "@mui/material";
 import PropTypes from "prop-types";
 import { JSEditor } from "../../common/components/JSEditor";

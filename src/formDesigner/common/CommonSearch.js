@@ -1,4 +1,3 @@
-import React from "react";
 import { deburr, isEmpty } from "lodash";
 import AsyncSelect from "react-select/async";
 

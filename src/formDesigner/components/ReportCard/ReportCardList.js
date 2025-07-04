@@ -1,4 +1,3 @@
-import React from "react";
 import ColorValue from "../../common/ColorValue";
 import ResourceListView from "../../common/ResourceListView";
 import { connect } from "react-redux";

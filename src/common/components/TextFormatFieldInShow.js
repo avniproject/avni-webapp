@@ -1,4 +1,3 @@
-import React from "react";
 import { TextFieldInShow } from "./TextFieldInShow";
 
 export const TextFormatFieldInShow = ({ format, label }) => {

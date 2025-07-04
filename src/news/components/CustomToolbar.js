@@ -1,6 +1,5 @@
 import { Typography } from "@mui/material";
 import { ActionButton } from "./ActionButton";
-import React from "react";
 
 export const CustomToolbar = ({ totalNews, setOpenCreate }) => {
   return (

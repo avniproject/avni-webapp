@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { useState, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import {
   Table,
   TableBody,
@@ -30,7 +30,7 @@ import { extensionScopeTypes } from "../../../../formDesigner/components/Extensi
 import SubjectProfilePicture from "../../../components/SubjectProfilePicture";
 import { AgeUtil } from "openchs-models";
 
-const StyledTableView = styled('div')(({ theme }) => ({
+const StyledTableView = styled("div")(({ theme }) => ({
   flexGrow: 1,
   alignItems: "center",
   justifyContent: "center",
@@ -96,13 +96,13 @@ const StyledCommentButton = styled(Fab)(({ theme }) => ({
   whiteSpace: "nowrap"
 }));
 
-const StyledSaveButton = styled('button')({
+const StyledSaveButton = styled("button")({
   float: "left",
   backgroundColor: "#fc9153",
   height: "30px"
 });
 
-const StyledCancelButton = styled('button')({
+const StyledCancelButton = styled("button")({
   float: "left",
   backgroundColor: "#F8F9F9",
   color: "#fc9153",
@@ -110,7 +110,7 @@ const StyledCancelButton = styled('button')({
   height: "30px"
 });
 
-const StyledForm = styled('form')({
+const StyledForm = styled("form")({
   display: "flex",
   flexDirection: "column",
   margin: "auto",
@@ -132,7 +132,7 @@ const StyledNativeSelect = styled(NativeSelect)({
   width: "211px"
 });
 
-const StyledError = styled('div')({
+const StyledError = styled("div")({
   color: "red",
   padding: "3px",
   fontSize: "12px"
@@ -143,9 +143,9 @@ const StyledProfilePicture = styled(SubjectProfilePicture)({
 });
 
 const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match, load, tabsStatus, organisationConfigs }) => {
-  const [selectedProgram, setSelectedProgram] = React.useState("");
-  const [openComment, setOpenComment] = React.useState(false);
-  const [errorStatus, setError] = React.useState(false);
+  const [selectedProgram, setSelectedProgram] = useState("");
+  const [openComment, setOpenComment] = useState(false);
+  const [errorStatus, setError] = useState(false);
   const orgConfig = useSelector(selectOrganisationConfig);
   const enableComment = get(orgConfig, "settings.enableComments", false);
   const handleChange = event => {
@@ -188,10 +188,10 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             <option key={"emptyElement"} value="" />
             {programs
               ? programs.map((element, index) => (
-                <option key={index} value={element.name}>
-                  {t(element.name)}
-                </option>
-              ))
+                  <option key={index} value={element.name}>
+                    {t(element.name)}
+                  </option>
+                ))
               : ""}
           </StyledNativeSelect>
           {errorStatus && <StyledError>Please select program to enrol.</StyledError>}
@@ -254,13 +254,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           />
           <Grid>
             {enableComment && (
-              <StyledCommentButton
-                id="comments"
-                variant="extended"
-                color="primary"
-                aria-label="add"
-                onClick={() => setOpenComment(true)}
-              >
+              <StyledCommentButton id="comments" variant="extended" color="primary" aria-label="add" onClick={() => setOpenComment(true)}>
                 <Comment style={{ marginRight: 4 }} />
                 {t("comments")}
               </StyledCommentButton>

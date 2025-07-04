@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useCallback } from "react";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import http from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import moment from "moment";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";

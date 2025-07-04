@@ -1,9 +1,9 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Typography, Table, TableHead, TableRow, TableCell, TableBody, Radio } from "@mui/material";
 import _ from "lodash";
 
-const StyledContainer = styled('div')({
+const StyledContainer = styled("div")({
   width: "100%"
 });
 
@@ -22,7 +22,7 @@ const StyledErrorTypography = styled(Typography)(({ theme }) => ({
 }));
 
 const SelectSubject = function({ subjectData, errormsg, onSelectedItem, t = _.identity }) {
-  const [selectedValue, setSelectedValue] = React.useState("1");
+  const [selectedValue, setSelectedValue] = useState("1");
 
   const handleChange = (event, uuid, row) => {
     setSelectedValue(event.target.value);
@@ -31,9 +31,7 @@ const SelectSubject = function({ subjectData, errormsg, onSelectedItem, t = _.id
 
   return (
     <StyledContainer>
-      <StyledTypography>
-        {subjectData ? (subjectData.length === 0 ? "No" : subjectData.length) : ""} Results found
-      </StyledTypography>
+      <StyledTypography>{subjectData ? (subjectData.length === 0 ? "No" : subjectData.length) : ""} Results found</StyledTypography>
       <StyledErrorTypography>{errormsg}</StyledErrorTypography>
       {subjectData && subjectData.length !== 0 ? (
         <StyledTable aria-labelledby="tableTitle" aria-label="enhanced table">

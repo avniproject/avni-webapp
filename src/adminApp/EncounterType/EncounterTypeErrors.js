@@ -1,5 +1,4 @@
 import { FormLabel } from "@mui/material";
-import React from "react";
 
 const EncounterTypeErrors = ({ nameValidation, subjectValidation, error }) => {
   return (

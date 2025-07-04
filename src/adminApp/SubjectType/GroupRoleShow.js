@@ -1,5 +1,5 @@
 import { FormLabel, Box, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
-import React from "react";
+
 import { filter } from "lodash";
 
 export const GroupRoleShow = ({ groupRoles }) => {

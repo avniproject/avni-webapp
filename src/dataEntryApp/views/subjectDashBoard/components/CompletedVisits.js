@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { useState, Fragment, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Paper, Grid } from "@mui/material";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -14,45 +14,41 @@ import ConfirmDialog from "../../../components/ConfirmDialog";
 
 const StyledSearchBox = styled(Paper)(({ theme }) => ({
   padding: "1.5rem",
-  margin: "0rem 1rem",
+  margin: "0rem 1rem"
 }));
 
 const StyledTableBox = styled(Paper)(({ theme }) => ({
-  padding: "1.5rem",
+  padding: "1.5rem"
 }));
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
-  justifyContent: "flex-end",
+  justifyContent: "flex-end"
 }));
 
 const CompleteVisit = ({
-                         entityUuid,
-                         isForProgramEncounters,
-                         encounterTypes,
-                         load,
-                         loadProgramEncounters,
-                         loadEncounters,
-                         voidGeneralEncounter,
-                         voidProgramEncounter,
-                       }) => {
+  entityUuid,
+  isForProgramEncounters,
+  encounterTypes,
+  load,
+  loadProgramEncounters,
+  loadEncounters,
+  voidGeneralEncounter,
+  voidProgramEncounter
+}) => {
   const { t } = useTranslation();
-  const [filterParams, setFilterParams] = React.useState({});
-  const [encounterUUID, setEncounterUUID] = React.useState();
+  const [filterParams, setFilterParams] = useState({});
+  const [encounterUUID, setEncounterUUID] = useState();
 
   const filterQueryString = new URLSearchParams(filterParams).toString();
 
-  const apiUrl = isForProgramEncounters
-    ? `/web/programEnrolment/${entityUuid}/completed`
-    : `/web/subject/${entityUuid}/completed`;
+  const apiUrl = isForProgramEncounters ? `/web/programEnrolment/${entityUuid}/completed` : `/web/subject/${entityUuid}/completed`;
   const viewEncounterUrl = (action = "") =>
     isForProgramEncounters ? `/app/subject/view${action}ProgramEncounter` : `/app/subject/view${action}Encounter`;
   const editEncounterUrl = (action = "") =>
     isForProgramEncounters ? `/app/subject/edit${action}ProgramEncounter` : `/app/subject/edit${action}Encounter`;
 
   useEffect(() => {
-    isForProgramEncounters
-      ? loadProgramEncounters(entityUuid, filterQueryString)
-      : loadEncounters(entityUuid, filterQueryString);
+    isForProgramEncounters ? loadProgramEncounters(entityUuid, filterQueryString) : loadEncounters(entityUuid, filterQueryString);
   }, [entityUuid, filterQueryString]);
 
   const voidEncounter = isForProgramEncounters ? voidProgramEncounter : voidGeneralEncounter;
@@ -89,14 +85,14 @@ const CompleteVisit = ({
 
 const mapStateToProps = state => ({
   encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
-  load: state.dataEntry.loadReducer.load,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
   loadEncounters,
   loadProgramEncounters,
   voidGeneralEncounter,
-  voidProgramEncounter,
+  voidProgramEncounter
 };
 
 export default withRouter(

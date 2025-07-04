@@ -1,46 +1,46 @@
 import { isEmpty, map, sortBy, trim } from "lodash";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { FormControl, InputLabel, Select, MenuItem, Button } from "@mui/material";
-import React from "react";
+
 import CurrentUserService from "../service/CurrentUserService";
 
-const StyledContainer = styled('div')({
+const StyledContainer = styled("div")({
   display: "flex",
   flexDirection: "row",
-  alignItems: "center",
+  alignItems: "center"
 });
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   margin: theme.spacing(1),
   minWidth: 200,
-  color: "white",
+  color: "white"
 }));
 
 const StyledInputLabel = styled(InputLabel)({
-  color: "white",
+  color: "white"
 });
 
 const StyledSelect = styled(Select)({
   color: "white",
   "& .MuiSelect-icon": {
-    color: "white",
-  },
+    color: "white"
+  }
 });
 
 const StyledButton = styled(Button)({
-  color: "white",
+  color: "white"
 });
 
 export const OrganisationOptions = ({ getUserInfo, history, organisations, userInfo }) => {
   const options = [
     { name: "", value: "" },
-    ...map(sortBy(organisations, (organisation) => trim(organisation.name).toLowerCase()), ({ name, uuid }) => ({
+    ...map(sortBy(organisations, organisation => trim(organisation.name).toLowerCase()), ({ name, uuid }) => ({
       name,
-      value: uuid,
-    })),
+      value: uuid
+    }))
   ];
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     if (event.target.value !== "") {
       localStorage.setItem("ORGANISATION_UUID", event.target.value);
       history.push("/home");

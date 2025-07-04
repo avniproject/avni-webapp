@@ -1,5 +1,5 @@
 import { Link, IconButton } from "@mui/material";
-import React from "react";
+
 import { Feedback } from "@mui/icons-material";
 
 const Footer = () => (

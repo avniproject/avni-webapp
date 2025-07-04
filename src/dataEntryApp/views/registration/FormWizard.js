@@ -1,7 +1,7 @@
-import React, { Fragment } from "react";
-import { css } from '@emotion/react';
+import { useState, Fragment } from "react";
+import { css } from "@emotion/react";
 import { Redirect } from "react-router-dom";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Box, Paper, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
@@ -15,7 +15,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   height: "auto",
   border: "1px solid #f1ebeb",
   position: "relative",
-  minHeight: "600px",
+  minHeight: "600px"
 }));
 
 const StyledButtonContainer = styled(Box)(({ theme }) => ({
@@ -26,18 +26,18 @@ const StyledButtonContainer = styled(Box)(({ theme }) => ({
   height: 80,
   width: "100%",
   padding: theme.spacing(3.125), // 25px
-  display: "flex",
+  display: "flex"
 }));
 
 const StyledButtonWrapper = styled(Box)(({ theme }) => ({
-  marginRight: theme.spacing(2.5), // 20px
+  marginRight: theme.spacing(2.5) // 20px
 }));
 
 const StyledTitleContainer = styled(Box)({
   display: "flex",
   flexDirection: "row",
   flexWrap: "wrap",
-  justifyContent: "space-between",
+  justifyContent: "space-between"
 });
 
 const prevButtonStyle = css({
@@ -49,7 +49,7 @@ const prevButtonStyle = css({
   cursor: "pointer",
   borderRadius: 50,
   padding: "4px 25px",
-  backgroundColor: "white",
+  backgroundColor: "white"
 });
 
 const nextButtonStyle = css({
@@ -60,34 +60,34 @@ const nextButtonStyle = css({
   width: 110,
   cursor: "pointer",
   borderRadius: 50,
-  padding: "4px 25px",
+  padding: "4px 25px"
 });
 
 const FormWizard = ({
-                      form,
-                      obsHolder,
-                      updateObs,
-                      observations,
-                      saved,
-                      onSaveGoto,
-                      onSave,
-                      message,
-                      subject,
-                      validationResults,
-                      additionalRows,
-                      registrationFlow,
-                      children,
-                      filteredFormElements,
-                      fetchRulesResponse,
-                      formElementGroup,
-                      onNext,
-                      onPrevious,
-                      onSummaryPage,
-                      wizard,
-                      addNewQuestionGroup,
-                      removeQuestionGroup,
-                      saveErrorMessageKey,
-                    }) => {
+  form,
+  obsHolder,
+  updateObs,
+  observations,
+  saved,
+  onSaveGoto,
+  onSave,
+  message,
+  subject,
+  validationResults,
+  additionalRows,
+  registrationFlow,
+  children,
+  filteredFormElements,
+  fetchRulesResponse,
+  formElementGroup,
+  onNext,
+  onPrevious,
+  onSummaryPage,
+  wizard,
+  addNewQuestionGroup,
+  removeQuestionGroup,
+  saveErrorMessageKey
+}) => {
   if (!form) return <div />;
 
   if (saved) {
@@ -96,7 +96,7 @@ const FormWizard = ({
     }, 1000);
   }
 
-  const [redirect, setRedirect] = React.useState(false);
+  const [redirect, setRedirect] = useState(false);
   const { t } = useTranslation();
 
   const isFirstPage = wizard.isFirstPage();
@@ -118,12 +118,7 @@ const FormWizard = ({
           </StyledTitleContainer>
           <StyledPaper>
             {onSummaryPage ? (
-              <Summary
-                observations={observations}
-                additionalRows={additionalRows}
-                form={form}
-                fetchRulesResponse={fetchRulesResponse}
-              />
+              <Summary observations={observations} additionalRows={additionalRows} form={form} fetchRulesResponse={fetchRulesResponse} />
             ) : (
               <FormElementGroupComponent
                 key={formElementGroup.uuid}
@@ -157,9 +152,7 @@ const FormWizard = ({
                 />
               </Box>
               {!_.isEmpty(saveErrorMessageKey) && (
-                <Typography sx={{ ml: 2.5, color: theme => theme.palette.error.main }}>
-                  {t(saveErrorMessageKey)}
-                </Typography>
+                <Typography sx={{ ml: 2.5, color: theme => theme.palette.error.main }}>{t(saveErrorMessageKey)}</Typography>
               )}
             </StyledButtonContainer>
             {redirect && <Redirect to={onSaveGoto} />}

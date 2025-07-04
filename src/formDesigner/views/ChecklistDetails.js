@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import { Grid } from "@mui/material";
-import React from "react";
+import { useState, useEffect } from "react";
 import { JsonEditor } from "../components/JsonEditor";
 import _ from "lodash";
 import FormLabel from "@mui/material/FormLabel";
@@ -18,13 +18,13 @@ import { Privilege } from "openchs-models";
 import Save from "@mui/icons-material/Save";
 
 const ChecklistDetails = ({ userInfo }) => {
-  const [checklistDetails, setChecklistDetails] = React.useState();
-  const [validationErrors, setValidationErrors] = React.useState();
-  const [foldCard, setFoldCard] = React.useState(true);
-  const [disableSave, setDisableSave] = React.useState(true);
-  const [success, setSuccess] = React.useState(false);
+  const [checklistDetails, setChecklistDetails] = useState();
+  const [validationErrors, setValidationErrors] = useState();
+  const [foldCard, setFoldCard] = useState(true);
+  const [disableSave, setDisableSave] = useState(true);
+  const [success, setSuccess] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     api.getChecklistDetails().then(({ json }) => {
       const details = _.map(json, j => JSON.stringify(j, null, 4));
       setChecklistDetails(_.isEmpty(details) ? "" : details[0]);

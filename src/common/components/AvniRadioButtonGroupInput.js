@@ -1,4 +1,3 @@
-import React from "react";
 import { ToolTipContainer } from "./ToolTipContainer";
 import { RadioButtonGroupInput } from "react-admin";
 import { Grid } from "@mui/material";

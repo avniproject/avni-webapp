@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { find, get, isEmpty, isNaN, isNil, size } from "lodash";
 import { PhoneNumber } from "avni-models";
@@ -18,7 +17,7 @@ const StyledError = styled(Typography)({
 
 const StyledTextField = styled(TextField)(({ textColor }) => ({
   width: "30%",
-  '& .MuiInputBase-input': {
+  "& .MuiInputBase-input": {
     color: textColor
   }
 }));
@@ -56,11 +55,7 @@ export default function PhoneNumberFormElement({ obsHolder, formElement, update,
   };
 
   const renderUnverifiedMessage = () => {
-    return (
-      <StyledError variant="body1">
-        {t("phoneNumberUnverified")}
-      </StyledError>
-    );
+    return <StyledError variant="body1">{t("phoneNumberUnverified")}</StyledError>;
   };
 
   return (

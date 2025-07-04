@@ -1,5 +1,4 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { LineBreak } from "../../common/components/utils";
 import TextFormElement from "./TextFormElement";
 import NotesFormElement from "./NotesFormElement";
@@ -17,12 +16,12 @@ import LandingSubjectFormElement from "./LandingSubjectFormElement";
 import QuestionGroupFormElement from "./QuestionGroupFormElement";
 import { RepeatableQuestionGroupElement } from "./RepeatableQuestionGroupElement";
 
-const StyledContainer = styled('div')(({ isGrid }) => ({
+const StyledContainer = styled("div")(({ isGrid }) => ({
   ...(isGrid && {
     borderWidth: "2px",
     borderStyle: "inset",
-    padding: "5px",
-  }),
+    padding: "5px"
+  })
 }));
 
 const div = () => <div />;
@@ -48,24 +47,24 @@ const elements = {
   Subject: LandingSubjectFormElement,
   Location: LocationFormElement,
   QuestionGroup: QuestionGroupFormElement,
-  RepeatableQuestionGroup: RepeatableQuestionGroupElement,
+  RepeatableQuestionGroup: RepeatableQuestionGroupElement
 };
 
 export const FormElement = ({
-                              children: formElement,
-                              value,
-                              update,
-                              obsHolder,
-                              validationResults,
-                              uuid,
-                              feIndex,
-                              filteredFormElements,
-                              ignoreLineBreak,
-                              isGrid,
-                              updateObs,
-                              addNewQuestionGroup,
-                              removeQuestionGroup,
-                            }) => {
+  children: formElement,
+  value,
+  update,
+  obsHolder,
+  validationResults,
+  uuid,
+  feIndex,
+  filteredFormElements,
+  ignoreLineBreak,
+  isGrid,
+  updateObs,
+  addNewQuestionGroup,
+  removeQuestionGroup
+}) => {
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
     formElement.keyValues = [...formElement.keyValues, KeyValue.fromResource({ key: "editable", value: false })];
@@ -83,7 +82,7 @@ export const FormElement = ({
     isGrid,
     updateObs,
     addNewQuestionGroup,
-    removeQuestionGroup,
+    removeQuestionGroup
   };
   const Element = elements[type];
   return (

@@ -1,10 +1,9 @@
-import React, { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, memo } from "react";
 import { isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
-import EntityListUtil from "../Util/EntityListUtil";
 import ApplicationMenuService from "../service/ApplicationMenuService";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
@@ -141,4 +140,4 @@ function areEqual(prevProps, nextProps) {
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-export default withRouter(connect(mapStateToProps)(React.memo(ApplicationMenuList, areEqual)));
+export default withRouter(connect(mapStateToProps)(memo(ApplicationMenuList, areEqual)));

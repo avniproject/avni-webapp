@@ -1,4 +1,3 @@
-import React from "react";
 import { useDeclarativeRuleDispatch, useDeclarativeRuleState } from "./DeclarativeRuleContext";
 import { map, startCase, get } from "lodash";
 import { Grid } from "@mui/material";

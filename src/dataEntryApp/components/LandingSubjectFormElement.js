@@ -1,4 +1,3 @@
-import React from "react";
 import { FormElement } from "avni-models";
 import AttendanceFormElement from "./AttendanceFormElement";
 import SubjectFormElement from "./SubjectFormElement";

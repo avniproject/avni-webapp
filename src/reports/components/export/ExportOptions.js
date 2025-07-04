@@ -1,7 +1,6 @@
 import { FormControl, FormLabel, FormGroup, FormControlLabel } from "@mui/material";
 import { isEmpty } from "lodash";
 import Radio from "../../../dataEntryApp/components/Radio";
-import React from "react";
 
 export const ExportOptions = ({ options, label, selectedOption, onChange }) => {
   return isEmpty(options) ? null : (
