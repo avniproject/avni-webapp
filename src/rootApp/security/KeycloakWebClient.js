@@ -19,10 +19,23 @@ class KeycloakWebClient extends BaseIdp {
   }
 
   updateRequestWithSession(options, axios) {
-    if (options) {
-      options.headers.set("AUTH-TOKEN", this.getAccessToken());
+    const token = this.getAccessToken();
+    if (token) {
+      if (options) {
+        options.headers.set("AUTH-TOKEN", token);
+      } else {
+        axios.defaults.headers.common["AUTH-TOKEN"] = token;
+      }
     } else {
-      axios.defaults.headers.common["AUTH-TOKEN"] = this.getAccessToken();
+      if (options) {
+        if (options.headers.has("AUTH-TOKEN")) {
+          options.headers.delete("AUTH-TOKEN");
+        }
+      } else {
+        delete axios.defaults.headers.common["AUTH-TOKEN"];
+      }
+    }
+    if (!options) {
       axios.defaults.withCredentials = true;
     }
   }
@@ -45,8 +58,7 @@ class KeycloakWebClient extends BaseIdp {
 
   static isAuthenticatedWithKeycloak() {
     return (
-      !_.isNil(LocalStorageLocator.getLocalStorage().getItem(IdpDetails.AuthTokenName)) &&
-      !CognitoWebClient.isAuthenticatedWithCognito()
+      !_.isNil(LocalStorageLocator.getLocalStorage().getItem(IdpDetails.AuthTokenName)) && !CognitoWebClient.isAuthenticatedWithCognito()
     );
   }
 }

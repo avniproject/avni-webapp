@@ -7,7 +7,7 @@ import Select from "react-select";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { AvniTextField } from "../../common/components/AvniTextField";
-import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import { Close } from "@mui/icons-material";
 
@@ -128,8 +128,12 @@ const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAtt
                 format={dateTimeFormat}
                 value={rules[0].scheduledDateTime}
                 onChange={value => onRuleChange({ scheduledDateTime: value })}
-                renderInput={params => <TextField {...params} style={{ width: "20%", marginRight: "1%" }} placeholder="Date and Time" />}
                 slotProps={{
+                  textField: {
+                    style: { width: "20%", marginRight: "1%" },
+                    placeholder: "Date and Time",
+                    variant: "outlined"
+                  },
                   actionBar: { actions: ["clear"] },
                   openPickerButton: { "aria-label": "change date", color: "primary" }
                 }}

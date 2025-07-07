@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { LineBreak } from "common/components/utils";
-import { Grid, FormControl, FormLabel, FormGroup, FormControlLabel, Checkbox, TextField, IconButton } from "@mui/material";
+import { Grid, FormControl, FormLabel, FormGroup, FormControlLabel, Checkbox, IconButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Modal from "../components/CommonModal";
 import DialogContent from "@mui/material/DialogContent";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import moment from "moment/moment";
+import { format, isValid, startOfDay } from "date-fns";
 import { noop, isNil, isEmpty } from "lodash";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { dateFormat } from "dataEntryApp/constants";
@@ -93,8 +93,8 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
   };
 
   const close = () => {
-    if (!moment(selectedScheduleDate).isValid()) setSelectedScheduleDate(null);
-    if (!moment(selectedCompletedDate).isValid()) setSelectedCompletedDate(null);
+    if (!isValid(selectedScheduleDate)) setSelectedScheduleDate(null);
+    if (!isValid(selectedCompletedDate)) setSelectedCompletedDate(null);
     filterDateErrors["COMPLETED_DATE"] = "";
     filterDateErrors["SCHEDULED_DATE"] = "";
     setFilterDateErrors({ ...filterDateErrors });
@@ -103,7 +103,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
   const scheduleDateChange = scheduledDate => {
     setSelectedScheduleDate(scheduledDate);
     filterDateErrors["SCHEDULED_DATE"] = "";
-    if (!isNil(scheduledDate) && !moment(scheduledDate).isValid()) {
+    if (!isNil(scheduledDate) && !isValid(scheduledDate)) {
       filterDateErrors["SCHEDULED_DATE"] = "invalidDateFormat";
     }
     setFilterDateErrors({ ...filterDateErrors });
@@ -112,7 +112,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
   const completedDateChange = completedDate => {
     setSelectedCompletedDate(completedDate);
     filterDateErrors["COMPLETED_DATE"] = "";
-    if (!isNil(completedDate) && !moment(completedDate).isValid()) {
+    if (!isNil(completedDate) && !isValid(completedDate)) {
       filterDateErrors["COMPLETED_DATE"] = "invalidDateFormat";
     }
     setFilterDateErrors({ ...filterDateErrors });
@@ -120,15 +120,11 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
 
   const applyClick = () => {
     let filterParams = {};
-    if (selectedScheduleDate != null) {
-      let dateformat = moment(selectedScheduleDate).format("YYYY-MM-DD");
-      let earliestVisitDateTime = moment(dateformat).format("YYYY-MM-DDT00:00:00.000") + "Z";
-      filterParams.earliestVisitDateTime = earliestVisitDateTime;
+    if (selectedScheduleDate != null && isValid(selectedScheduleDate)) {
+      filterParams.earliestVisitDateTime = format(startOfDay(selectedScheduleDate), "yyyy-MM-dd'T00:00:00.000'") + "Z";
     }
-    if (selectedCompletedDate != null) {
-      let dateformat = moment(selectedCompletedDate).format("YYYY-MM-DD");
-      let encounterDateTime = moment(dateformat).format("YYYY-MM-DDT00:00:00.000") + "Z";
-      filterParams.encounterDateTime = encounterDateTime;
+    if (selectedCompletedDate != null && isValid(selectedCompletedDate)) {
+      filterParams.encounterDateTime = format(startOfDay(selectedCompletedDate), "yyyy-MM-dd'T00:00:00.000'") + "Z";
     }
 
     const SelectedvisitTypesListSort =
@@ -170,16 +166,14 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                   autoComplete="off"
                   value={selectedScheduleDate}
                   onChange={scheduleDateChange}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label={t("visitscheduledate")}
-                      margin="normal"
-                      error={!isEmpty(filterDateErrors["SCHEDULED_DATE"])}
-                      helperText={!isEmpty(filterDateErrors["SCHEDULED_DATE"]) && t(filterDateErrors["SCHEDULED_DATE"])}
-                    />
-                  )}
                   slotProps={{
+                    textField: {
+                      label: t("visitscheduledate"),
+                      margin: "normal",
+                      error: !isEmpty(filterDateErrors["SCHEDULED_DATE"]),
+                      helperText: !isEmpty(filterDateErrors["SCHEDULED_DATE"]) && t(filterDateErrors["SCHEDULED_DATE"]),
+                      variant: "outlined"
+                    },
                     actionBar: { actions: ["clear"] },
                     openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}
@@ -193,16 +187,14 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                   autoComplete="off"
                   value={selectedCompletedDate}
                   onChange={completedDateChange}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label={t("visitcompleteddate")}
-                      margin="normal"
-                      error={!isEmpty(filterDateErrors["COMPLETED_DATE"])}
-                      helperText={!isEmpty(filterDateErrors["COMPLETED_DATE"]) && t(filterDateErrors["COMPLETED_DATE"])}
-                    />
-                  )}
                   slotProps={{
+                    textField: {
+                      label: t("visitcompleteddate"),
+                      margin: "normal",
+                      error: !isEmpty(filterDateErrors["COMPLETED_DATE"]),
+                      helperText: !isEmpty(filterDateErrors["COMPLETED_DATE"]) && t(filterDateErrors["COMPLETED_DATE"]),
+                      variant: "outlined"
+                    },
                     actionBar: { actions: ["clear"] },
                     openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}

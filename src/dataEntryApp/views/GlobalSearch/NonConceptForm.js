@@ -17,20 +17,6 @@ const StyledTypography = styled(Typography)({
   color: "rgba(0, 0, 0, 0.54)"
 });
 
-const StyledTextField = styled(TextField)({
-  width: "30%"
-});
-
-const StyledTextFieldRangeFrom = styled(TextField)({
-  width: "14%",
-  marginRight: "1%"
-});
-
-const StyledTextFieldRangeTo = styled(TextField)({
-  width: "14%",
-  marginLeft: "1%"
-});
-
 function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
   const { t } = useTranslation();
 
@@ -53,8 +39,8 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                   format={dateFormat}
                   value={selectedDate[`${searchFilterForm.type}`].minValue}
                   onChange={minDate => onDateChange(minDate, null, searchFilterForm.type)}
-                  renderInput={params => <StyledTextField {...params} />}
                   slotProps={{
+                    textField: { variant: "outlined" },
                     actionBar: { actions: ["clear"] },
                     openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}
@@ -83,8 +69,8 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                       searchFilterForm.type
                     )
                   }
-                  renderInput={params => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
                   slotProps={{
+                    textField: { placeholder: "From", variant: "outlined" },
                     actionBar: { actions: ["clear"] },
                     openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}
@@ -101,8 +87,8 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                       searchFilterForm.type
                     )
                   }
-                  renderInput={params => <StyledTextFieldRangeTo {...params} placeholder="To" />}
                   slotProps={{
+                    textField: { placeholder: "To", variant: "outlined" },
                     actionBar: { actions: ["clear"] },
                     openPickerButton: { "aria-label": "change date", color: "primary" }
                   }}

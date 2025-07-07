@@ -68,8 +68,8 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format={dateFormat}
                       value={selectedValue?.minValue || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={params => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
                       slotProps={{
+                        textField: { placeholder: "From", variant: "outlined" },
                         actionBar: { actions: ["clear"] },
                         openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
@@ -79,8 +79,8 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format={dateFormat}
                       value={selectedValue?.maxValue || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
-                      renderInput={params => <StyledTextFieldRangeTo {...params} placeholder="To" />}
                       slotProps={{
+                        textField: { placeholder: "To", variant: "outlined" },
                         actionBar: { actions: ["clear"] },
                         openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
@@ -98,8 +98,8 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format={dateTimeFormat}
                       value={selectedValue?.minValue || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={params => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
                       slotProps={{
+                        textField: { placeholder: "From", variant: "outlined" },
                         actionBar: { actions: ["clear"] },
                         openPickerButton: { "aria-label": "change datetime", color: "primary" }
                       }}
@@ -109,8 +109,8 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format={dateTimeFormat}
                       value={selectedValue?.maxValue || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
-                      renderInput={params => <StyledTextFieldRangeTo {...params} placeholder="To" />}
                       slotProps={{
+                        textField: { placeholder: "To", variant: "outlined" },
                         actionBar: { actions: ["clear"] },
                         openPickerButton: { "aria-label": "change datetime", color: "primary" }
                       }}
@@ -128,8 +128,8 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format={"HH:mm"}
                       value={selectedValue?.minValue || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={params => <StyledTextFieldRangeFrom {...params} placeholder="From" />}
                       slotProps={{
+                        textField: { placeholder: "From", variant: "outlined" },
                         actionBar: { actions: ["clear"] },
                         openPickerButton: { "aria-label": "change time", color: "primary" }
                       }}
@@ -139,8 +139,8 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format={"HH:mm"}
                       value={selectedValue?.maxValue || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
-                      renderInput={params => <StyledTextFieldRangeTo {...params} placeholder="To" />}
                       slotProps={{
+                        textField: { placeholder: "To", variant: "outlined" },
                         actionBar: { actions: ["clear"] },
                         openPickerButton: { "aria-label": "change time", color: "primary" }
                       }}
@@ -195,8 +195,8 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format={dateFormat}
                       value={selectedValue?.minValue || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={params => <StyledTextField {...params} />}
                       slotProps={{
+                        textField: { variant: "outlined" },
                         actionBar: { actions: ["clear"] },
                         openPickerButton: { "aria-label": "change date", color: "primary" }
                       }}
@@ -214,8 +214,8 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format={dateTimeFormat}
                       value={selectedValue?.minValue || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={params => <StyledTextField {...params} />}
                       slotProps={{
+                        textField: { variant: "outlined" },
                         actionBar: { actions: ["clear"] },
                         openPickerButton: { "aria-label": "change datetime", color: "primary" }
                       }}
@@ -230,11 +230,11 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     </StyledTypography>
                     <TimePicker
                       id={`time-picker-${searchFilterForm.titleKey}`}
-                      format={timeFormat || "HH:mm"}
+                      format={"HH:mm"}
                       value={selectedValue?.minValue || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
-                      renderInput={params => <StyledTextField {...params} />}
                       slotProps={{
+                        textField: { variant: "outlined" },
                         actionBar: { actions: ["clear"] },
                         openPickerButton: { "aria-label": "change time", color: "primary" }
                       }}

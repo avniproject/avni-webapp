@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { TextField } from "@mui/material";
 
 export const DateSelector = ({ label, value, onChange }) => {
   return (
@@ -18,8 +17,12 @@ export const DateSelector = ({ label, value, onChange }) => {
           id={label}
           value={value}
           onChange={date => onChange(date)}
-          renderInput={params => <TextField {...params} label={label} margin="normal" />}
           slotProps={{
+            textField: {
+              label,
+              margin: "normal",
+              variant: "outlined"
+            },
             actionBar: { actions: ["clear"] },
             openPickerButton: { "aria-label": "change date" }
           }}

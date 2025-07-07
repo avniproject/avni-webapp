@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from "react";
 import { Box, TextField, Typography } from "@mui/material";
-import moment from "moment/moment";
+import { differenceInYears, differenceInMonths, subYears, subMonths, isValid } from "date-fns";
 import _ from "lodash";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -12,12 +12,13 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
   const [years, setYears] = useState(0);
   const [months, setMonths] = useState(0);
-  const dob = (dateOfBirth && moment(dateOfBirth).isValid() && new Date(dateOfBirth)) || null;
+  const dob = (dateOfBirth && isValid(new Date(dateOfBirth)) && new Date(dateOfBirth)) || null;
 
   useEffect(() => {
-    if (dateOfBirth) {
-      setYears(moment().diff(dateOfBirth, "years"));
-      setMonths(moment().diff(dateOfBirth, "months") % 12);
+    if (dateOfBirth && isValid(new Date(dateOfBirth))) {
+      const now = new Date();
+      setYears(differenceInYears(now, dateOfBirth));
+      setMonths(differenceInMonths(now, dateOfBirth) % 12);
     } else {
       setYears("");
       setMonths("");
@@ -26,12 +27,8 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
 
   const _onYearsChange = value => {
     setYears(value);
-    onChange(
-      moment()
-        .subtract(value, "years")
-        .subtract(months, "months")
-        .toDate()
-    );
+    const newDate = subMonths(subYears(new Date(), value), months);
+    onChange(newDate);
   };
 
   return (
@@ -54,20 +51,17 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             placeholder={dateFormat}
             format={dateFormat}
             name="dateOfBirth"
-            // label={t("date of birth")}
             value={_.isNil(dateOfBirth) ? null : dateOfBirth}
             onChange={date => onChange(date)}
-            renderInput={params => (
-              <TextField
-                {...params}
-                error={Boolean(!_.isEmpty(dobErrorMsg))}
-                helperText={t(dobErrorMsg)}
-                margin="normal"
-                style={{ width: "30%" }}
-                InputLabelProps={{ shrink: true }}
-              />
-            )}
             slotProps={{
+              textField: {
+                error: Boolean(!_.isEmpty(dobErrorMsg)),
+                helperText: t(dobErrorMsg),
+                margin: "normal",
+                style: { width: "30%" },
+                InputLabelProps: { shrink: true },
+                variant: "outlined"
+              },
               actionBar: { actions: ["clear"] },
               openPickerButton: { "aria-label": "change date", color: "primary" }
             }}
@@ -78,15 +72,12 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           {t("age")}
         </Typography>
         <TextField
-          // label={t("age")}
-          type={"numeric"}
+          type={"number"}
           autoComplete="off"
           required
           name="ageYearsPart"
           value={_.isNaN(years) ? "" : years}
           style={{ width: "30%" }}
-          // error={Boolean(_.isEmpty(dateOfBirth) && dobErrorMsg)}
-          // helperText={_.isEmpty(dateOfBirth) && t(dobErrorMsg)}
           error={Boolean(_.isNil(dob) && dobErrorMsg)}
           helperText={_.isNil(dob) && dobErrorMsg && t("emptyValidationMessage")}
           onChange={e => _onYearsChange(e.target.value)}

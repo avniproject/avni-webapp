@@ -1,9 +1,9 @@
-import { Typography, TextField } from "@mui/material";
+import { Typography } from "@mui/material";
 import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { find, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
-import moment from "moment";
+import { parse, format } from "date-fns";
 
 const TimeFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   const { t } = useTranslation();
@@ -20,22 +20,18 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
       </Typography>
       <TimePicker
         required={fe.mandatory}
-        value={!isNil(value) ? moment(value, "HH:mm").toDate() : value}
+        value={!isNil(value) ? parse(value, "HH:mm", new Date()) : null}
         ampm={false}
-        onChange={value => {
-          update(moment(value).format("HH:mm"));
-        }}
+        onChange={value => update(value ? format(value, "HH:mm") : null)}
         placeholder="HH:mm"
         format="HH:mm"
-        renderInput={params => (
-          <TextField
-            {...params}
-            error={validationResult && !validationResult.success}
-            helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
-            style={{ width: "30%" }}
-          />
-        )}
         slotProps={{
+          textField: {
+            error: validationResult && !validationResult.success,
+            helperText: validationResult && t(validationResult.messageKey, validationResult.extra),
+            style: { width: "30%" },
+            variant: "outlined"
+          },
           actionBar: { actions: ["clear"] },
           openPickerButton: { "aria-label": "change time", color: "primary" }
         }}

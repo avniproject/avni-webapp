@@ -3,10 +3,10 @@ import { styled } from "@mui/material/styles";
 import { DatePicker, DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
-import moment from "moment/moment";
 import { find, get, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
 import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
+import { differenceInYears, differenceInMonths, differenceInDays } from "date-fns";
 
 const StyledForm = styled("div")(({ theme }) => ({
   "& > *": {
@@ -50,14 +50,12 @@ export const DateTimeFormElement = ({ formElement: fe, value, update, validation
         onChange={update}
         placeholder={dateTimeFormat}
         format={dateTimeFormat}
-        renderInput={params => (
-          <StyledTextField
-            {...params}
-            error={validationResult && !validationResult.success}
-            helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
-          />
-        )}
         slotProps={{
+          textField: {
+            error: validationResult && !validationResult.success,
+            helperText: validationResult && t(validationResult.messageKey, validationResult.extra),
+            variant: "outlined"
+          },
           actionBar: { actions: ["clear"] },
           openPickerButton: { "aria-label": "change date", color: "primary" }
         }}
@@ -95,15 +93,13 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
         placeholder={dateFormat}
         format={dateFormat}
         disabled={!fe.editable}
-        renderInput={params => (
-          <StyledTextField
-            {...params}
-            error={validationResult && !validationResult.success}
-            helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
-            inputProps={{ ...params.inputProps, disableUnderline: !fe.editable }}
-          />
-        )}
         slotProps={{
+          textField: {
+            error: validationResult && !validationResult.success,
+            helperText: validationResult && t(validationResult.messageKey, validationResult.extra),
+            inputProps: { disableUnderline: !fe.editable },
+            variant: "outlined"
+          },
           actionBar: { actions: ["clear"] },
           openPickerButton: { "aria-label": "change date", color: "primary" }
         }}
@@ -116,9 +112,9 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update, val
   const { t } = useTranslation();
   const durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
   const [units, setUnit] = useState(durationValue[0]);
-  const today = moment();
+  const today = new Date();
   const [date, setDate] = useState(value);
-  const firstDuration = `${today.diff(value, units || "years")}`;
+  const firstDuration = value ? String(differenceInYears(today, value)) : "";
   const [duration, setDuration] = useState(firstDuration);
 
   const onDateChange = dateValue => {
@@ -127,12 +123,15 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update, val
       setDate(null);
       setDuration("");
     } else {
-      const currentDate = moment();
-      const selectedDate = moment(dateValue);
-      update(selectedDate);
-      const extractDuration = `${currentDate.diff(selectedDate, units)}`;
+      update(dateValue);
+      const diffFunctions = {
+        years: differenceInYears,
+        months: differenceInMonths,
+        days: differenceInDays
+      };
+      const extractDuration = String(diffFunctions[units](today, dateValue));
       setDuration(extractDuration);
-      setDate(selectedDate);
+      setDate(dateValue);
     }
   };
 
@@ -143,7 +142,12 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update, val
       setDate(null);
       update(null);
     } else {
-      const durationDate = today.clone().subtract(newDuration, units);
+      const diffFunctions = {
+        years: (date, amount) => new Date(date.setFullYear(date.getFullYear() - amount)),
+        months: (date, amount) => new Date(date.setMonth(date.getMonth() - amount)),
+        days: (date, amount) => new Date(date.setDate(date.getDate() - amount))
+      };
+      const durationDate = diffFunctions[units](new Date(today), Number(newDuration));
       setDate(durationDate);
       setDuration(newDuration);
       update(durationDate);
@@ -154,7 +158,12 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update, val
     const newUnit = unitsValue.target.value;
     setUnit(newUnit);
     if (duration !== "") {
-      const durationDate = today.clone().subtract(duration, newUnit);
+      const diffFunctions = {
+        years: (date, amount) => new Date(date.setFullYear(date.getFullYear() - amount)),
+        months: (date, amount) => new Date(date.setMonth(date.getMonth() - amount)),
+        days: (date, amount) => new Date(date.setDate(date.getDate() - amount))
+      };
+      const durationDate = diffFunctions[newUnit](new Date(today), Number(duration));
       setDate(durationDate);
       update(durationDate);
     }
@@ -177,15 +186,13 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update, val
           placeholder={dateFormat}
           format={dateFormat}
           disabled={!fe.editable}
-          renderInput={params => (
-            <StyledTextField
-              {...params}
-              error={validationResult && !validationResult.success}
-              helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
-              inputProps={{ ...params.inputProps, disableUnderline: !fe.editable }}
-            />
-          )}
           slotProps={{
+            textField: {
+              error: validationResult && !validationResult.success,
+              helperText: validationResult && t(validationResult.messageKey, validationResult.extra),
+              inputProps: { disableUnderline: !fe.editable },
+              variant: "outlined"
+            },
             actionBar: { actions: ["clear"] },
             openPickerButton: { "aria-label": "change date", color: "primary" }
           }}

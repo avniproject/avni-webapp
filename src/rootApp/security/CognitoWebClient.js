@@ -19,8 +19,18 @@ class CognitoWebClient extends BaseIdp {
         options.headers.set("AUTH-TOKEN", token);
       } else {
         axios.defaults.headers.common["AUTH-TOKEN"] = token;
-        axios.defaults.withCredentials = true;
       }
+    } else {
+      if (options) {
+        if (options.headers.has("AUTH-TOKEN")) {
+          options.headers.delete("AUTH-TOKEN");
+        }
+      } else {
+        delete axios.defaults.headers.common["AUTH-TOKEN"];
+      }
+    }
+    if (!options) {
+      axios.defaults.withCredentials = true;
     }
   }
 
