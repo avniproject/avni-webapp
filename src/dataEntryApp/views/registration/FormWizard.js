@@ -1,9 +1,8 @@
-import { useState, Fragment } from "react";
-import { css } from "@emotion/react";
-import { Redirect } from "react-router-dom";
+import { Fragment, useState } from "react";
 import { styled } from "@mui/material/styles";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { Redirect } from "react-router-dom";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";
 import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
@@ -18,19 +17,19 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   minHeight: "600px"
 }));
 
-const StyledButtonContainer = styled(Box)(({ theme }) => ({
+const StyledButtonContainer = styled(Box)({
   position: "absolute",
   bottom: 0,
   left: 0,
   backgroundColor: "#f8f4f4",
   height: 80,
   width: "100%",
-  padding: theme.spacing(3.125), // 25px
+  padding: "25px",
   display: "flex"
-}));
+});
 
 const StyledButtonWrapper = styled(Box)(({ theme }) => ({
-  marginRight: theme.spacing(2.5) // 20px
+  marginRight: theme.spacing(2.5)
 }));
 
 const StyledTitleContainer = styled(Box)({
@@ -40,7 +39,7 @@ const StyledTitleContainer = styled(Box)({
   justifyContent: "space-between"
 });
 
-const prevButtonStyle = css({
+const StyledPrevButton = styled(Button)({
   color: "orange",
   width: 110,
   height: 30,
@@ -52,7 +51,7 @@ const prevButtonStyle = css({
   backgroundColor: "white"
 });
 
-const nextButtonStyle = css({
+const StyledNextButton = styled(Button)({
   backgroundColor: "orange",
   color: "white",
   height: 30,
@@ -60,8 +59,16 @@ const nextButtonStyle = css({
   width: 110,
   cursor: "pointer",
   borderRadius: 50,
-  padding: "4px 25px"
+  padding: "4px 25px",
+  "&:hover": {
+    backgroundColor: "#e69500"
+  }
 });
+
+const StyledErrorTypography = styled(Typography)(({ theme }) => ({
+  marginLeft: theme.spacing(2.5),
+  color: theme.palette.error.main
+}));
 
 const FormWizard = ({
   form,
@@ -88,6 +95,9 @@ const FormWizard = ({
   removeQuestionGroup,
   saveErrorMessageKey
 }) => {
+  const [redirect, setRedirect] = useState(false);
+  const { t } = useTranslation();
+
   if (!form) return <div />;
 
   if (saved) {
@@ -95,9 +105,6 @@ const FormWizard = ({
       setRedirect(true);
     }, 1000);
   }
-
-  const [redirect, setRedirect] = useState(false);
-  const { t } = useTranslation();
 
   const isFirstPage = wizard.isFirstPage();
   const isRegistrationFirstPage = registrationFlow && isFirstPage;
@@ -136,24 +143,22 @@ const FormWizard = ({
             <StyledButtonContainer>
               <StyledButtonWrapper>
                 <FormWizardButton
-                  css={prevButtonStyle}
+                  component={StyledPrevButton}
                   text={t("previous")}
                   disabled={!onSummaryPage && isFirstPage}
                   onClick={onPrevious}
-                  id={"previous"}
+                  id="previous"
                 />
               </StyledButtonWrapper>
               <Box>
                 <FormWizardButton
-                  css={nextButtonStyle}
+                  component={StyledNextButton}
                   onClick={onSummaryPage ? onSave : onNext}
                   text={onSummaryPage ? t("save") : t("next")}
                   id={onSummaryPage ? "save" : "next"}
                 />
               </Box>
-              {!_.isEmpty(saveErrorMessageKey) && (
-                <Typography sx={{ ml: 2.5, color: theme => theme.palette.error.main }}>{t(saveErrorMessageKey)}</Typography>
-              )}
+              {!_.isEmpty(saveErrorMessageKey) && <StyledErrorTypography>{t(saveErrorMessageKey)}</StyledErrorTypography>}
             </StyledButtonContainer>
             {redirect && <Redirect to={onSaveGoto} />}
             {saved && <CustomizedSnackbar message={t(message || "Your details have been successfully registered.")} />}

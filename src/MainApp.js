@@ -4,7 +4,6 @@ import { HashRouter } from "react-router-dom";
 
 import "./index.css";
 import "@aws-amplify/ui-react/styles.css";
-import "jquery";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap";
 import "./formDesigner/App.css";
