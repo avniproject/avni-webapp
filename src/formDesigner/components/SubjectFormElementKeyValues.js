@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { Grid, Checkbox, FormControlLabel } from "@mui/material";
 import { AvniFormControl } from "../../common/components/AvniFormControl";
 import { FormElement } from "avni-models";

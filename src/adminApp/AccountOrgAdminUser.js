@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import {
   AutocompleteArrayInput,
   Create,

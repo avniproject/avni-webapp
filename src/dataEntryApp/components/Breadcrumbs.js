@@ -6,10 +6,10 @@ import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { defaultTo } from "lodash";
 
-const StyledBreadcrumbs = styled(MUIBreadcrumb)(({ theme }) => ({
+const StyledBreadcrumbs = styled(MUIBreadcrumb)({
   margin: "12px 24px",
   fontSize: "12px"
-}));
+});
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   fontSize: "12px",

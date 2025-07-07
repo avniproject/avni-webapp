@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
-import httpClient from "../common/utils/httpClient";
+import { httpClient } from "../common/utils/httpClient";
 import IdpFactory from "./security/IdpFactory";
 import IdpDetails from "./security/IdpDetails";
 

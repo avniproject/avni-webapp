@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import { httpClient as http } from "common/utils/httpClient";
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
@@ -11,8 +11,7 @@ import { Grid } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { withRouter } from "react-router-dom";
-import { isEmpty, isNil, orderBy } from "lodash";
+import _, { isEmpty, isNil, orderBy } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { SystemInfo } from "./SystemInfo";
 import UserInfo from "../../common/model/UserInfo";
@@ -20,7 +19,6 @@ import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 import MediaService from "adminApp/service/MediaService";
 import { ImagePreview } from "../../common/components/AvniImageUpload";
-import _ from "lodash";
 
 function NumericDetails({ data }) {
   return (

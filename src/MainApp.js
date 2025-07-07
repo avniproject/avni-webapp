@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { HashRouter } from "react-router-dom";
 
@@ -14,7 +14,7 @@ import { App, SecureApp } from "./rootApp";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { StyledEngineProvider } from "@mui/system";
 import * as Colors from "@mui/material/colors";
-import http, { httpClient } from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import IdpDetails from "./rootApp/security/IdpDetails";
 import { configureAuth } from "./rootApp/utils";
 import IdpFactory from "./rootApp/security/IdpFactory";
@@ -29,7 +29,7 @@ const theme = createTheme({
   }
 });
 
-httpClient.initHeadersForDevEnv();
+http.initHeadersForDevEnv();
 
 // Wrapper to debug if the error is reported by the fallback or unhandled rejection
 function ErrorBoundaryFallback({ error, onClose }) {
@@ -47,7 +47,7 @@ const MainApp = () => {
       .then(response => response.json)
       .then(idpDetails => {
         if (IdpDetails.cognitoEnabled(idpDetails)) configureAuth(idpDetails.cognito);
-        httpClient.setIdp(IdpFactory.createIdp(idpDetails.idpType, idpDetails));
+        http.setIdp(IdpFactory.createIdp(idpDetails.idpType, idpDetails));
         setGenericConfig(idpDetails.genericConfig);
         setInitialised(true);
       });
@@ -70,9 +70,7 @@ const MainApp = () => {
         {!unhandledRejectionError && (
           <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
             <Provider store={store}>
-              <HashRouter>
-                {httpClient.idp.idpType === IdpDetails.none ? <App /> : <SecureApp genericConfig={genericConfig} />}
-              </HashRouter>
+              <HashRouter>{http.idp.idpType === IdpDetails.none ? <App /> : <SecureApp genericConfig={genericConfig} />}</HashRouter>
             </Provider>
           </ErrorBoundary>
         )}

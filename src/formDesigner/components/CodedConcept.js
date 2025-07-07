@@ -14,22 +14,22 @@ const StyledButton = styled(Button)(({ theme }) => ({
   marginTop: 20
 }));
 
-const StyledGridContainer = styled(Grid)(({ theme }) => ({
+const StyledGridContainer = styled(Grid)({
   marginTop: 20
-}));
+});
 
-const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
+const StyledFormControlLabel = styled(FormControlLabel)({
   marginTop: 15,
   marginLeft: 2
-}));
+});
 
-const StyledDeleteButton = styled(Button)(({ theme }) => ({
+const StyledDeleteButton = styled(Button)({
   color: "#ff0000"
-}));
+});
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   alignItems: "center"
-}));
+});
 
 export const CodedConceptAnswer = ({
   answer,

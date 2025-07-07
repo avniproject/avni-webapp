@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { isEmpty, find } from "lodash";
 import { localeChoices } from "../common/constants";
 
@@ -10,9 +10,7 @@ export const TranslationDashboard = props => {
     props.data &&
       props.data.forEach(({ language, translationJson }) => {
         const total = Object.keys(translationJson).length;
-        const incomplete = Object.values(translationJson).filter(
-          t => isEmpty(t) || t === props.emptyTranslationKey
-        ).length;
+        const incomplete = Object.values(translationJson).filter(t => isEmpty(t) || t === props.emptyTranslationKey).length;
         const complete = total - incomplete;
         keyCounts.push({
           Language: find(localeChoices, locale => locale.id === language).name,

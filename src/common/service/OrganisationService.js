@@ -1,4 +1,4 @@
-import http from "../utils/httpClient";
+import { httpClient as http } from "../utils/httpClient";
 import CurrentUserService from "./CurrentUserService";
 
 class OrganisationService {

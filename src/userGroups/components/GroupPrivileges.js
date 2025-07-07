@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { Switch, FormGroup, FormControlLabel } from "@mui/material";
 import { withRouter } from "react-router-dom";

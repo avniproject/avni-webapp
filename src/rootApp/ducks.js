@@ -1,5 +1,5 @@
 import CognitoAuthSession from "./security/CognitoAuthSession";
-import httpClient from "../common/utils/httpClient";
+import { httpClient } from "../common/utils/httpClient";
 import IdpDetails from "./security/IdpDetails";
 import KeycloakAuthSession from "./security/KeycloakAuthSession";
 import _ from "lodash";

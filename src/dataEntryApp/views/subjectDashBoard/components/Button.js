@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { Fab } from "@mui/material";
-import clsx from "clsx";
+import { clsx } from "clsx";
 
 const StyledFab = styled(Fab)(({ theme }) => ({
   marginBottom: theme.spacing(2),

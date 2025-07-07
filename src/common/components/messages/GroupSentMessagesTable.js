@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { styled } from "@mui/material/styles";
 import { MaterialReactTable } from "material-react-table";
@@ -8,23 +8,23 @@ import { formatDateTime } from "../../utils/General";
 import { formatMsgTemplate } from "../utils";
 import MaterialTableIcons from "../../material-table/MaterialTableIcons";
 
-const StyledAccordion = styled(Accordion)(({ theme }) => ({
+const StyledAccordion = styled(Accordion)({
   marginBottom: "11px",
   borderRadius: "5px",
   boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-}));
+});
 
-const ExpansionHeading = styled(Typography)(({ theme }) => ({
+const ExpansionHeading = styled(Typography)({
   fontSize: "1rem",
   flexBasis: "33.33%",
   flexShrink: 0,
   fontWeight: "500",
   margin: "0"
-}));
+});
 
-const ExpandMoreIcon = styled(ExpandMore)(({ theme }) => ({
+const ExpandMoreIcon = styled(ExpandMore)({
   color: "#0e6eff"
-}));
+});
 
 const GroupMessagesTable = ({ messages, title, showDeliveryDetails }) => {
   const { t } = useTranslation();

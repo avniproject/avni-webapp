@@ -4,7 +4,7 @@ import { adminHistory, store } from "../common/store";
 import { WithProps } from "../common/components/utils";
 import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
-import React, { Component } from "react";
+import { Component } from "react";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";

@@ -2,7 +2,7 @@ import { get, isEmpty, map, sortBy } from "lodash";
 import { styled } from "@mui/material/styles";
 import { Box, Paper, Typography, TextField, Button, IconButton } from "@mui/material";
 import { addNewComment, getCommentThreads, onCommentEdit, onThreadResolve, selectCommentState } from "../../../../reducers/CommentReducer";
-import React, { useState, Fragment } from "react";
+import { useState, Fragment } from "react";
 import { Comment, ChevronRight, ChevronLeft } from "@mui/icons-material";
 import { CommentCard } from "./CommentCard";
 import { useSelector } from "react-redux";
@@ -20,31 +20,31 @@ const StyledHeader = styled("div")(({ theme }) => ({
   backgroundColor: "#313a46"
 }));
 
-const StyledIconContainer = styled("div")(({ theme }) => ({
+const StyledIconContainer = styled("div")({
   display: "flex",
   backgroundColor: "#556479",
   height: 40,
   width: 50,
   alignItems: "center",
   marginLeft: 5
-}));
+});
 
-const StyledCommentButton = styled(Button)(({ theme }) => ({
+const StyledCommentButton = styled(Button)({
   color: "#3949ab",
   background: "#fff",
   textTransform: "none",
   "&:hover": {
     backgroundColor: "#bababa"
   }
-}));
+});
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
+const StyledPaper = styled(Paper)({
   display: "flex",
   flexDirection: "column",
   width: 500,
   backgroundColor: "#f5f5f5",
   minHeight: "100vh"
-}));
+});
 
 const StyledFirstComment = styled(Paper)(({ theme }) => ({
   width: 500,
@@ -58,9 +58,9 @@ const StyledComment = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3)
 }));
 
-const StyledInputText = styled(Paper)(({ theme }) => ({
+const StyledInputText = styled(Paper)({
   width: 450
-}));
+});
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -68,19 +68,19 @@ const StyledBox = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2)
 }));
 
-const StyledCommentHeader = styled(Typography)(({ theme }) => ({
+const StyledCommentHeader = styled(Typography)({
   color: "#fff"
-}));
+});
 
-const StyledChevronIcon = styled(ChevronLeft)(({ theme }) => ({
+const StyledChevronIcon = styled(ChevronLeft)({
   color: "#fff"
-}));
+});
 
-const StyledCommentIcon = styled(Comment)(({ theme }) => ({
+const StyledCommentIcon = styled(Comment)({
   color: "#fff",
   marginRight: 5,
   marginLeft: 5
-}));
+});
 
 export const CommentListing = ({ comments, dispatch, newCommentText, onCommentChange, subjectUUID, setOpen }) => {
   const { t } = useTranslation();

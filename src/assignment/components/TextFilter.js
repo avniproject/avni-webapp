@@ -2,12 +2,12 @@ import { styled } from "@mui/material/styles";
 import { FormControl, FormLabel, TextField as MuiTextField } from "@mui/material";
 import { Filter } from "../util/FilterStyles";
 
-const StyledTextField = styled(MuiTextField)(({ theme }) => ({
+const StyledTextField = styled(MuiTextField)({
   backgroundColor: "#FFF",
   "& .MuiInputBase-input": {
     padding: 10
   }
-}));
+});
 
 const TextFilter = ({ label, value, filterCriteria, onFilterChange, isNumeric }) => {
   return (

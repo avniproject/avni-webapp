@@ -1,4 +1,4 @@
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 import { get, map } from "lodash";
 import CommonSearch from "./CommonSearch";
 import { useState, useEffect } from "react";

@@ -1,11 +1,11 @@
 import { styled } from "@mui/material/styles";
 import { TextField } from "@mui/material";
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)({
   "& .MuiInputBase-input": {
     height: 20 // Adjusted from 0 to a reasonable value for usability
   }
-}));
+});
 
 const InputField = ({ type, value, onChange, ...props }) => {
   const getValue = () => {

@@ -1,13 +1,13 @@
 import { styled } from "@mui/material/styles";
 import { Typography, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { MaterialReactTable } from "material-react-table"; // Correct import
+import { MaterialReactTable } from "material-react-table";
 import { formatDateTime } from "../../utils/General";
 import MaterialTableIcons from "../../material-table/MaterialTableIcons";
 
-const InfoMsg = styled(Typography)(({ theme }) => ({
+const InfoMsg = styled(Typography)({
   marginLeft: 10
-}));
+});
 
 const SentMessagesTable = ({ sentMessages, isMsgsSentAvailable }) => {
   const { t } = useTranslation();

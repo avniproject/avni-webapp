@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -52,7 +52,7 @@ export default function PasswordDialog({ username, open, onClose, onConfirm, ser
     onConfirm(password.password);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setError(serverError);
   }, [serverError]);
 

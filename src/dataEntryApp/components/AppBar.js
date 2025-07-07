@@ -15,9 +15,9 @@ const StyledRoot = styled("div")({
   flexGrow: 1
 });
 
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
+const StyledAppBar = styled(AppBar)({
   background: "white"
-}));
+});
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   flexGrow: 1,

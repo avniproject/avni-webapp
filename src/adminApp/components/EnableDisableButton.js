@@ -1,4 +1,4 @@
-import React, { Fragment, Component } from "react";
+import { Fragment, Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Confirm, crudUpdate } from "react-admin";

@@ -19,11 +19,11 @@ import { DeleteButton } from "../../../components/DeleteButton";
 import { useState, Fragment } from "react";
 import Observations from "../../../components/Observations";
 
-const StyledAccordion = styled(Accordion)(({ theme }) => ({
+const StyledAccordion = styled(Accordion)({
   marginBottom: "11px",
   borderRadius: "5px",
   boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
-}));
+});
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   "& .MuiAccordionSummary-content": {
@@ -34,13 +34,13 @@ const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   }
 }));
 
-const StyledExpandMore = styled(ExpandMore)(({ theme }) => ({
+const StyledExpandMore = styled(ExpandMore)({
   color: "#0e6eff"
-}));
+});
 
-const StyledAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
+const StyledAccordionDetails = styled(AccordionDetails)({
   paddingTop: "0px"
-}));
+});
 
 export const EnrolmentDetails = ({
   t,

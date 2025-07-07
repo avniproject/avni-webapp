@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MessagesView from "../../common/components/messages/MessagesView";
 import API from "../../dataEntryApp/api";
 import ErrorMessage from "../../common/components/ErrorMessage";

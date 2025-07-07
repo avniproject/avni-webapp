@@ -1,9 +1,8 @@
 import { connect } from "react-redux";
-import { styled } from "@mui/material/styles";
 import { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { getGroups } from "./reducers";
-import { Input, InputLabel, Grid } from "@mui/material";
+import { Input, InputLabel, Grid, Box, styled } from "@mui/material";
 import { map } from "lodash";
 import { GroupCard } from "./components/GroupCard";
 import Button from "@mui/material/Button";

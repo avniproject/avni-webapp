@@ -6,7 +6,7 @@ import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { ValidFormat } from "./ValidFormat";
 import { CustomisedAccordionSummary } from "../components/CustomisedExpansionPanelSummary";
 import { findFormUuidForSubjectType } from "../domain/formMapping";
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 import { forEach, get, includes, isEmpty } from "lodash";
 import { OptionSelect } from "./OptionSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";

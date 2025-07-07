@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { Grid } from "@mui/material";
 import { getFormType, useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 import { flatten, get, isEmpty, map, startCase, toNumber, zip } from "lodash";

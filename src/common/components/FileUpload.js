@@ -1,17 +1,17 @@
 import { styled } from "@mui/material/styles";
 import { Button, Grid } from "@mui/material";
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   justifyContent: "flex-start"
-}));
+});
 
 const StyledButton = styled(Button)(({ theme }) => ({
   marginLeft: theme.spacing(2)
 }));
 
-const StyledInput = styled("input")(({ theme }) => ({
+const StyledInput = styled("input")({
   display: "none"
-}));
+});
 
 const FileUpload = ({ onSelect, onUpload, canSelect, canUpload }) => {
   const onSelectWrapper = event => {

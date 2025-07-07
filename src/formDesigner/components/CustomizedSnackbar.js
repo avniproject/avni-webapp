@@ -18,7 +18,7 @@ const textColors = {
 
 const StyledSnackbarContent = styled(SnackbarContent, {
   shouldForwardProp: prop => !["variant"].includes(prop)
-})(({ theme, variant }) => ({
+})(({ variant }) => ({
   ...(variant === "success" && {
     backgroundColor: green[600]
   }),
@@ -30,12 +30,12 @@ const StyledSnackbarContent = styled(SnackbarContent, {
   })
 }));
 
-const StyledMessage = styled("span")(({ theme }) => ({
+const StyledMessage = styled("span")({
   display: "flex",
   alignItems: "center"
-}));
+});
 
-const StyledMessageText = styled("h5")(({ theme, variant }) => ({
+const StyledMessageText = styled("h5")(({ variant }) => ({
   color: textColors[variant]
 }));
 
@@ -45,9 +45,9 @@ const StyledIcon = styled("span")(({ theme }) => ({
   marginRight: theme.spacing(1)
 }));
 
-const StyledCloseIcon = styled(Close)(({ theme }) => ({
+const StyledCloseIcon = styled(Close)({
   fontSize: 20
-}));
+});
 
 function MySnackbarContentWrapper({ message, onClose, variant = "success", ...other }) {
   const Icon = variantIcon[variant];

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Paper } from "@mui/material";
 import ProfileDetails from "./components/ProfileDetails";

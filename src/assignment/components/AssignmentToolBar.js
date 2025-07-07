@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { isEmpty, map, size, uniq } from "lodash";
 import { Typography, Button } from "@mui/material";
 
-const StyledRoot = styled('div')(({ theme }) => ({
+const StyledRoot = styled("div")({
   margin: "10px",
   paddingTop: "10px",
   display: "flex",
   alignItems: "center",
   flexDirection: "row",
   justifyContent: "flex-end"
-}));
+});
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   marginLeft: theme.spacing(10),
@@ -47,9 +47,7 @@ export const AssignmentToolBar = ({ assignmentCriteria, dispatch, showSelect1000
   return (
     <StyledRoot>
       {selectedRowSize > 0 && (
-        <StyledTypography variant="body1">
-          {`Selected ${assignmentCriteria.allSelected ? 1000 : selectedRowSize} tasks`}
-        </StyledTypography>
+        <StyledTypography variant="body1">{`Selected ${assignmentCriteria.allSelected ? 1000 : selectedRowSize} tasks`}</StyledTypography>
       )}
       {showSelect1000 && selectedRowSize > 0 && selectedRowSize === size(data) && (
         <StyledSelectButton color="primary" onClick={on1000Selected}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ChooseSubject from "./ChooseSubject";
 import { Box, LinearProgress, Button } from "@mui/material";
 import { useHistory, withRouter } from "react-router-dom";

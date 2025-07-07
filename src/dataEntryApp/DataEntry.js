@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Route, withRouter } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import SubjectSearch from "./views/search/SubjectSearch";
@@ -9,7 +9,7 @@ import {
   getLegacyRulesBundle,
   getOperationalModules,
   selectLegacyRulesBundleLoaded,
-  selectLegacyRulesLoaded,
+  selectLegacyRulesLoaded
 } from "dataEntryApp/reducers/metadataReducer";
 import { getOrgConfigInfo } from "i18nTranslations/TranslationReducers";
 import Loading from "./components/Loading";
@@ -33,13 +33,13 @@ import { NewsList } from "./views/subjectDashBoard/components/news/NewsList";
 import NewsDetails from "./views/subjectDashBoard/components/news/NewsDetails";
 import Player from "./views/audio/Player";
 
-const StyledRoot = styled('div')(({ theme }) => ({
-  flexGrow: 1,
-}));
+const StyledRoot = styled("div")({
+  flexGrow: 1
+});
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
-  justifyContent: "center",
-}));
+const StyledGrid = styled(Grid)({
+  justifyContent: "center"
+});
 
 const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
   const dispatch = useDispatch();
@@ -68,7 +68,7 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
               <Route path={`${path}/register`} component={SubjectRegister} />
               <Route path={`${path}/editSubject`} component={SubjectRegister} />
               <Route exact path={`${path}/subject`} component={SubjectDashboard} />
-              <Route exact path={`${path}/subject/subjectProfile`} component={(props) => <SubjectDashboard tab={1} {...props} />} />
+              <Route exact path={`${path}/subject/subjectProfile`} component={props => <SubjectDashboard tab={1} {...props} />} />
               {/* <Route exact path={`${path}/subject`} component={SubjectDashboard} /> */}
               <Route exact path={`${path}/subject/enrol`} component={ProgramEnrol} />
               <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />
@@ -102,7 +102,7 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
 const mapStateToProps = state => ({
   operationalModules: state.dataEntry.metadata.operationalModules,
   orgConfig: state.translationsReducer.orgConfig,
-  sagaErrorState: state.sagaErrorState,
+  sagaErrorState: state.sagaErrorState
 });
 
 export default withRouter(

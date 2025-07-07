@@ -4,7 +4,7 @@ import { debounce, deburr, get, isEmpty, map } from "lodash";
 import { locationNameRenderer } from "../utils/LocationUtil";
 import { addressLevelService } from "../services/AddressLevelService";
 import AsyncSelect from "react-select/async";
-import httpClient from "../../common/utils/httpClient";
+import { httpClient } from "../../common/utils/httpClient";
 
 const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, parentId }) => {
   const { t } = useTranslation();

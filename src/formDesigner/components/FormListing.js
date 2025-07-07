@@ -1,6 +1,5 @@
-import React, { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
-import _ from "lodash";
 import { withRouter } from "react-router-dom";
 import { FormTypeEntities } from "../common/constants";
 import { Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";

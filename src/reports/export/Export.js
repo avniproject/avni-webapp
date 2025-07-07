@@ -32,10 +32,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(12.5)
 }));
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   justifyContent: "flex-start",
   alignItems: "baseline"
-}));
+});
 
 const StyledWarningText = styled(Typography)(({ theme }) => ({
   fontSize: "20px",

@@ -1,5 +1,5 @@
 import { every, find, isEmpty, some } from "lodash";
-import http from "../utils/httpClient";
+import { httpClient as http } from "../utils/httpClient";
 import { CustomFilter, DashboardFilterConfig, GroupSubjectTypeFilter, ObservationBasedFilter } from "openchs-models";
 import EntityService from "./EntityService";
 import WebReportCard from "../model/WebReportCard";

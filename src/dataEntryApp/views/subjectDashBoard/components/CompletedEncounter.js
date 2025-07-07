@@ -21,34 +21,34 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
   }
 }));
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
+const StyledPaper = styled(Paper)({
   textAlign: "left",
   boxShadow: "none",
   borderRadius: "0px",
   padding: "0px"
-}));
+});
 
-const StyledList = styled(List)(({ theme }) => ({
+const StyledList = styled(List)({
   paddingBottom: "0px"
-}));
+});
 
-const StyledListItem = styled(ListItem)(({ theme }) => ({
+const StyledListItem = styled(ListItem)({
   paddingBottom: "0px",
   paddingTop: "0px"
-}));
+});
 
-const StyledListItemText = styled(ListItemText)(({ theme }) => ({
+const StyledListItemText = styled(ListItemText)({
   color: "#2196f3",
   fontSize: "14px",
   textTransform: "uppercase"
-}));
+});
 
-const StyledListItemTextDate = styled(ListItemText)(({ theme }) => ({
+const StyledListItemTextDate = styled(ListItemText)({
   color: "#555555",
   fontSize: "15px"
-}));
+});
 
-const StyledStatusLabel = styled("label")(({ theme, isCancelled }) => ({
+const StyledStatusLabel = styled("label")(({ isCancelled }) => ({
   fontSize: "12px",
   padding: "2px 5px",
   ...(isCancelled
@@ -62,10 +62,10 @@ const StyledStatusLabel = styled("label")(({ theme, isCancelled }) => ({
       })
 }));
 
-const StyledButton = styled(Button)(({ theme }) => ({
+const StyledButton = styled(Button)({
   marginLeft: "8px",
   fontSize: "14px"
-}));
+});
 
 const truncate = input => {
   if (input && input.length > 20) return input.substring(0, 20) + "...";

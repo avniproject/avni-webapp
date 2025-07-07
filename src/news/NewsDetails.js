@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import { styled } from "@mui/material/styles";
 import { newsInitialState, NewsReducer } from "./reducers";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";

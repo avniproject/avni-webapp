@@ -10,7 +10,7 @@ import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";
 import { PhoneNumberConcept } from "./PhoneNumberConcept";
 import { filter, includes, replace, size } from "lodash";
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 import { EncounterConcept } from "./EncounterConcept";
 
 function getKeyValues(obj) {

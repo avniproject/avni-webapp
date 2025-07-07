@@ -11,12 +11,12 @@ const StyledGridContainer = styled(Grid)(({ theme }) => ({
   paddingBottom: theme.spacing(1.25) // 10px
 }));
 
-const StyledGridItem = styled(Grid)(({ theme }) => ({
+const StyledGridItem = styled(Grid)({
   borderRight: "1px solid rgba(0,0,0,0.12)",
   "&:nth-of-type(4n), &:last-child": {
     borderRight: "0px solid rgba(0,0,0,0.12)"
   }
-}));
+});
 
 const StyledCard = styled(Card)({
   boxShadow: "0px 0px 0px 0px",

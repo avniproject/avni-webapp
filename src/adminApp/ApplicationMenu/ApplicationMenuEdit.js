@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Redirect } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";

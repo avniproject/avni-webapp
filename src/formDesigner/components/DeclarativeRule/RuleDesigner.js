@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import DeclarativeRules from "./DeclarativeRules";
 import { JSEditor } from "../../../common/components/JSEditor";
 
@@ -31,11 +31,7 @@ const RuleDesigner = ({
         form={form}
         parentConceptUuid={parentConceptUuid}
       />
-      <JSEditor
-        value={jsCode || sampleRule}
-        disabled={disableEditor}
-        onValueChange={onJsCodeChange}
-      />
+      <JSEditor value={jsCode || sampleRule} disabled={disableEditor} onValueChange={onJsCodeChange} />
     </Fragment>
   );
 };

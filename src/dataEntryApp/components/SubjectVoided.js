@@ -1,11 +1,11 @@
 import { styled } from "@mui/material/styles";
 import { Paper, Grid, Button, Typography } from "@mui/material";
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
+const StyledPaper = styled(Paper)({
   padding: 20,
   marginBottom: 10,
   elevation: 2
-}));
+});
 
 const StyledGrid = styled(Grid)({
   alignItems: "flex-start"

@@ -1,18 +1,18 @@
-import React, { Fragment } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { Typography, Grid, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   marginTop: "1%",
-  marginBottom: "1%",
-}));
+  marginBottom: "1%"
+});
 
-const StyledLabel = styled(Typography)(({ theme }) => ({
+const StyledLabel = styled(Typography)({
   marginBottom: 10,
-  color: "rgba(0, 0, 0, 0.54)",
-}));
+  color: "rgba(0, 0, 0, 0.54)"
+});
 
 function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedConcepts }) {
   const { t } = useTranslation();
@@ -25,26 +25,24 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedCo
           selectedValue && _.forEach(selectedValue.values, sv => _.assign(selected, { [sv]: true }));
           return searchFilterForm.type === "Concept" && searchFilterForm.conceptDataType === "Coded" ? (
             <Grid key={index} size={12}>
-              <StyledLabel variant="body1">
-                {t(searchFilterForm.titleKey)}
-              </StyledLabel>
+              <StyledLabel variant="body1">{t(searchFilterForm.titleKey)}</StyledLabel>
               <FormGroup row key={index}>
                 {conceptList.map((concept, index) =>
                   concept.uuid === searchFilterForm.conceptUUID
                     ? concept.conceptAnswers.map((conceptAnswer, index) => (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={selected != null ? selected[conceptAnswer.answerConcept.uuid] : false}
-                            onChange={event => onChange(event, searchFilterForm)}
-                            name={conceptAnswer.answerConcept.uuid}
-                            color="primary"
-                          />
-                        }
-                        label={t(conceptAnswer.answerConcept.name)}
-                        key={index}
-                      />
-                    ))
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={selected != null ? selected[conceptAnswer.answerConcept.uuid] : false}
+                              onChange={event => onChange(event, searchFilterForm)}
+                              name={conceptAnswer.answerConcept.uuid}
+                              color="primary"
+                            />
+                          }
+                          label={t(conceptAnswer.answerConcept.name)}
+                          key={index}
+                        />
+                      ))
                     : ""
                 )}
               </FormGroup>
@@ -61,7 +59,7 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedCo
 }
 
 CodedConceptForm.defaultProps = {
-  searchFilterForms: [],
+  searchFilterForms: []
 };
 
 export default CodedConceptForm;

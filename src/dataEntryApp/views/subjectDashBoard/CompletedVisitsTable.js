@@ -17,15 +17,15 @@ import { DeleteButton } from "../../components/DeleteButton";
 import { formatDate } from "../../../common/utils/General";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
-const StyledLink = styled(Link)(({ theme }) => ({
+const StyledLink = styled(Link)({
   textTransform: "uppercase",
   fontWeight: 500
-}));
+});
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   alignItems: "center",
   alignContent: "center"
-}));
+});
 
 const StyledBox = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1)

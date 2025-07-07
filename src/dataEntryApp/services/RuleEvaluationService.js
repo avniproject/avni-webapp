@@ -1,4 +1,5 @@
 import _ from "lodash";
+// eslint-disable-next-line no-duplicate-imports
 import lodash from "lodash";
 import moment from "moment";
 import * as models from "avni-models";
@@ -92,7 +93,7 @@ const runFormElementStatusRule = (formElement, entity, entityName, questionGroup
   try {
     /* eslint-disable-next-line no-unused-vars */
     const ruleServiceLibraryInterfaceForSharingModules = getRuleServiceLibraryInterfaceForSharingModules();
-    /* eslint-disable-next-line no-eval */
+
     const ruleFunc = eval(formElement.rule);
     return ruleFunc({
       params: { formElement, entity, questionGroupIndex, services },
@@ -144,7 +145,7 @@ const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBund
   try {
     /* eslint-disable-next-line no-unused-vars */
     const ruleServiceLibraryInterfaceForSharingModules = getRuleServiceLibraryInterfaceForSharingModules();
-    /* eslint-disable-next-line no-eval */
+
     const ruleFunc = eval(formElementGroup.rule);
     return ruleFunc({
       params: { formElementGroup, entity, services },

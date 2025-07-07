@@ -4,7 +4,7 @@ import { chain, find, get, isEmpty, map } from "lodash";
 import { connect } from "react-redux";
 import { getOperationalModules } from "../reducers";
 import { withRouter } from "react-router-dom";
-import httpClient from "../../common/utils/httpClient";
+import { httpClient } from "../../common/utils/httpClient";
 import SingleSelectSearch from "../../common/components/SingleSelectSearch";
 import BarGraph from "../components/BarGraph";
 import PieGraph from "../components/PieGraph";

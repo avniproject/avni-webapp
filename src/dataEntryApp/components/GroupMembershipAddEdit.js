@@ -58,14 +58,14 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
   const { t } = useTranslation();
 
   const memberGroupSubject = memberGroupSubjects && memberGroupSubjects.find(mgs => mgs.uuid === match.queryParams.uuid);
-  const [memberSubject, setMemberSubject] = React.useState(
+  const [memberSubject, setMemberSubject] = useState(
     memberGroupSubject && {
       label: constructSubjectLabel(memberGroupSubject.memberSubject),
       value: memberGroupSubject.memberSubject
     }
   );
   const groupRole = memberGroupSubject && memberGroupSubject.groupRole;
-  const [selectedRole, setSelectedRole] = React.useState(groupRole ? groupRoles.find(role => role.uuid === groupRole.uuid) : null);
+  const [selectedRole, setSelectedRole] = useState(groupRole ? groupRoles.find(role => role.uuid === groupRole.uuid) : null);
   // const isHousehold = groupSubject.isHousehold();
   const editFlow = match.queryParams.uuid != null && memberGroupSubject != null && groupRole != null;
 

@@ -5,7 +5,7 @@ import { Button, Grid } from "@mui/material";
 import { isDevEnv } from "../../../../../common/constants";
 import { extensionScopeTypes } from "../../../../../formDesigner/components/Extensions/ExtensionReducer";
 import commonApi from "../../../../../common/service";
-import httpClient from "../../../../../common/utils/httpClient";
+import { httpClient } from "../../../../../common/utils/httpClient";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   textTransform: "none",

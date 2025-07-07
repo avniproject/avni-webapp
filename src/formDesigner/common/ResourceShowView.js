@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";

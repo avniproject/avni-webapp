@@ -1,7 +1,5 @@
-import http from "../../common/utils/httpClient";
-import { Edit } from "@mui/icons-material";
-
-import { Delete } from "@mui/icons-material";
+import { httpClient as http } from "../../common/utils/httpClient";
+import { Edit, Delete } from "@mui/icons-material";
 
 class EntityListUtil {
   static refreshTable = ref => ref.current && ref.current.onQueryChange();

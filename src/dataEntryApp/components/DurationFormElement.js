@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { styled } from '@mui/material/styles';
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import { TextField, FormLabel, FormControl } from "@mui/material";
 import { isEmpty, find } from "lodash";
 import { CompositeDuration } from "avni-models";
 import { useTranslation } from "react-i18next";
 
-const StyledForm = styled('div')(({ theme }) => ({
-  '& > *': {
+const StyledForm = styled("div")(({ theme }) => ({
+  "& > *": {
     margin: theme.spacing(1),
-    width: "20ch",
-  },
+    width: "20ch"
+  }
 }));
 
 const DurationFormElement = ({ duration, mandatory, name, update, validationResult }) => {

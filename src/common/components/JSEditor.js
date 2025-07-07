@@ -2,7 +2,7 @@ import Editor from "react-simple-code-editor";
 import Prism from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import * as esprima from "esprima";
 
 const styles = {

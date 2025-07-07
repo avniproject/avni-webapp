@@ -17,12 +17,12 @@ import API from "./api";
 import MuiComponentHelper from "../common/utils/MuiComponentHelper";
 import { createServerError } from "../formDesigner/common/ErrorUtil";
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
+const StyledDialog = styled(Dialog)({
   "& .MuiDialog-paper": {
     minHeight: "90%",
     minWidth: "80%"
   }
-}));
+});
 
 const StyledBox = styled(Box)(({ theme }) => ({
   border: 1,
@@ -40,9 +40,9 @@ const StyledActionButton = styled(ActionButton)(({ theme }) => ({
   padding: theme.spacing(0, 1.25)
 }));
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
+const StyledTypography = styled(Typography)({
   opacity: 0.5
-}));
+});
 
 export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingNews }) => {
   const [news, dispatch] = useReducer(NewsReducer, newsInitialState);

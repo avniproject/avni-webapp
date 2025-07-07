@@ -5,19 +5,19 @@ import _, { isFunction } from "lodash";
 import logo from "../formDesigner/styles/images/avniLogo.png";
 import Colors from "./Colors";
 
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
+const StyledAppBar = styled(AppBar)({
   position: "relative",
   background: "white"
-}));
+});
 
-const StyledContainer = styled("div")(({ theme }) => ({
+const StyledContainer = styled("div")({
   display: "flex",
   flexDirection: "column",
   marginTop: "50px",
   marginBottom: "50px",
   marginRight: "20%",
   marginLeft: "20%"
-}));
+});
 
 const StyledButtonContainer = styled("div")(({ theme }) => ({
   marginTop: "50px",
@@ -29,13 +29,13 @@ const StyledButtonContainer = styled("div")(({ theme }) => ({
   gap: theme.spacing(2.5)
 }));
 
-const StyledErrorContainer = styled("div")(({ theme }) => ({
+const StyledErrorContainer = styled("div")({
   padding: "5px",
   backgroundColor: Colors.HighlightBackgroundColor,
   border: "2px solid #d1d2d2",
   borderRadius: 5,
   marginTop: "10px"
-}));
+});
 
 function ErrorItem({ fieldName, fieldValue }) {
   return (

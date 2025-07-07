@@ -27,9 +27,9 @@ const StyledFileNameCell = styled(TableCell)({
   whiteSpace: "nowrap"
 });
 
-const StyledDateCell = styled(TableCell)(({ theme }) => ({
+const StyledDateCell = styled(TableCell)({
   minWidth: 160
-}));
+});
 
 const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadTypes = new UploadTypes() }) => {
   useEffect(() => {

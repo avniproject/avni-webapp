@@ -1,5 +1,5 @@
 import _ from "lodash";
-import httpClient from "../../common/utils/httpClient";
+import { httpClient } from "../../common/utils/httpClient";
 
 export const CHANGE_TYPE = {
   ADDED: "Added",

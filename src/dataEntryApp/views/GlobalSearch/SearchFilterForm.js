@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -25,9 +25,9 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   flexGrow: 1
 }));
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
+const StyledTypography = styled(Typography)({
   fontSize: "20px"
-}));
+});
 
 const StyledButtons = styled("div")(({ theme }) => ({
   "& > *": {
@@ -35,9 +35,9 @@ const StyledButtons = styled("div")(({ theme }) => ({
   }
 }));
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   paddingLeft: 10
-}));
+});
 
 const initialStates = {
   nameAgeSearchAll: {

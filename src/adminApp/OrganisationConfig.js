@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { localeChoices } from "../common/constants";
 import { isEmpty } from "lodash";
@@ -35,7 +35,7 @@ const StyledSpan = styled("span")({
 });
 
 const OrganisationConfig = ({ getOperationalModules, history, organisation, hasEditPrivilege }) => {
-  React.useEffect(() => {
+  useEffect(() => {
     getOperationalModules();
   }, []);
 
@@ -72,7 +72,7 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
     });
   }, []);
 
-  const [subjectTypes, setSubjectTypes] = React.useState();
+  const [subjectTypes, setSubjectTypes] = useState();
 
   useEffect(() => {
     const fetchSubjectTypes = async () => setSubjectTypes(await commonApi.fetchSubjectTypes());

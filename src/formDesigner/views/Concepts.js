@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { isEqual, isEmpty } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";

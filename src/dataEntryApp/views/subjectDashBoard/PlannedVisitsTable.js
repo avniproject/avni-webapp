@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { useMemo, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Button, Grid, Typography } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import { useTranslation } from "react-i18next";
@@ -9,7 +9,7 @@ import moment from "moment";
 import { size } from "lodash";
 import { formatDate } from "../../../common/utils/General";
 
-const StyledLabel = styled('label')({
+const StyledLabel = styled("label")({
   color: "red",
   backgroundColor: "#ffeaea",
   fontSize: "12px",

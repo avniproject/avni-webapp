@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Fragment, useMemo, useCallback } from "react";
-import { styled } from '@mui/material/styles';
+import { useState, useEffect, Fragment, useMemo, useCallback } from "react";
+import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { find, get, map, includes, sortBy, join, size } from "lodash";
 import { Concept } from "openchs-models";
@@ -10,15 +10,15 @@ import { mapGroupMembers, mapIndividual } from "../../common/subjectModelMapper"
 import { subjectService } from "../services/SubjectService";
 import Checkbox from "./Checkbox";
 
-const StyledGridContainer = styled(Grid)(({ theme }) => ({
+const StyledGridContainer = styled(Grid)({
   height: "100%"
-}));
+});
 
-const StyledSelectAllGrid = styled(Grid)(({ theme }) => ({
+const StyledSelectAllGrid = styled(Grid)({
   justifyContent: "flex-end"
-}));
+});
 
-const StyledMemberGrid = styled(Grid)(({ theme, index }) => ({
+const StyledMemberGrid = styled(Grid)(({ index }) => ({
   backgroundColor: index % 2 === 0 ? "#ececec" : "#FFF",
   paddingLeft: 10,
   paddingRight: 15,
@@ -112,20 +112,15 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
       <FormGroup>
         {memberSubjects.length > 0
           ? map(memberSubjects, ({ uuid, nameString }, index) => (
-            <StyledMemberGrid
-              key={uuid}
-              container
-              index={index}
-              size={4}
-            >
-              <Grid size={11}>
-                <div>{nameString}</div>
-              </Grid>
-              <Grid size={1}>
-                <Checkbox checked={includes(value, uuid)} onChange={onsSwitchChange} value={uuid} />
-              </Grid>
-            </StyledMemberGrid>
-          ))
+              <StyledMemberGrid key={uuid} container index={index} size={4}>
+                <Grid size={11}>
+                  <div>{nameString}</div>
+                </Grid>
+                <Grid size={1}>
+                  <Checkbox checked={includes(value, uuid)} onChange={onsSwitchChange} value={uuid} />
+                </Grid>
+              </StyledMemberGrid>
+            ))
           : null}
       </FormGroup>
       <FormHelperText>{validationResult && t(validationResult.messageKey, validationResult.extra)}</FormHelperText>

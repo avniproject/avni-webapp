@@ -4,21 +4,55 @@ import Autosuggest from "react-autosuggest";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { TextField, Paper, MenuItem } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { httpClient as http } from "common/utils/httpClient";
 
+const StyledContainer = styled("div")({
+  flexGrow: 1,
+  height: 250
+});
+
+const StyledAutosuggestContainer = styled("div")(({ theme }) => ({
+  position: "relative",
+  marginTop: theme.spacing(1.25), // 10px
+  width: "100%"
+}));
+
+const StyledSuggestionsContainer = styled("div")({
+  position: "absolute",
+  zIndex: 1,
+  left: 0,
+  right: 0,
+  overflow: "auto",
+  maxHeight: "400%"
+});
+
+const StyledSuggestionsList = styled("ul")({
+  margin: 0,
+  padding: 0,
+  listStyleType: "none"
+});
+
+const StyledSuggestion = styled("li")({
+  display: "block"
+});
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  width: "100%",
+  "& .MuiInputBase-input": {
+    padding: theme.spacing(1)
+  }
+}));
+
 function renderInputComponent(inputProps) {
-  const { classes, inputRef = () => {}, ref, ...other } = inputProps;
+  const { inputRef = () => {}, ref, ...other } = inputProps;
 
   return (
-    <TextField
-      fullWidth
+    <StyledTextField
       InputProps={{
         inputRef: node => {
           ref(node);
           inputRef(node);
-        },
-        classes: {
-          input: classes.input
         }
       }}
       {...other}
@@ -43,37 +77,8 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   );
 }
 
-const useStyles = theme => ({
-  root: {
-    height: 250,
-    flexGrow: 1
-  },
-  container: {
-    position: "relative",
-    marginTop: 10,
-    width: "100%"
-  },
-  suggestionsContainerOpen: {
-    position: "absolute",
-    zIndex: 1,
-    left: 0,
-    right: 0,
-    overflow: "auto",
-    maxHeight: "400%"
-  },
-  suggestion: {
-    display: "block"
-  },
-  suggestionsList: {
-    margin: 0,
-    padding: 0,
-    listStyleType: "none"
-  }
-});
-
 export default function AutoSuggestSingleSelection(props) {
   const ignoredDatatypesFromProps = props.dataTypesToIgnore || [];
-  const classes = useStyles();
   const dataTypesToIgnore = [...ignoredDatatypesFromProps, "NA"];
   const [state, setState] = useState({
     single: ""
@@ -90,18 +95,16 @@ export default function AutoSuggestSingleSelection(props) {
 
     http.get(`/search/concept?${queryString}`).then(response => {
       const suggestions = response.data;
-      _.sortBy(suggestions, function(concept) {
-        return concept.name;
-      });
+      _.sortBy(suggestions, concept => concept.name);
       if (props.showSuggestionStartsWith) {
-        const filteredSuggestions = suggestions.filter(suggestion => {
-          return !suggestion.voided && suggestion.name.slice(0, inputLength).toLowerCase() === inputValue;
-        });
+        const filteredSuggestions = suggestions.filter(
+          suggestion => !suggestion.voided && suggestion.name.slice(0, inputLength).toLowerCase() === inputValue
+        );
         setSuggestions(filteredSuggestions);
       } else {
-        const filteredSuggestions = suggestions.filter(suggestion => {
-          return !suggestion.voided && !_.includes(dataTypesToIgnore, suggestion.dataType);
-        });
+        const filteredSuggestions = suggestions.filter(
+          suggestion => !suggestion.voided && !_.includes(dataTypesToIgnore, suggestion.dataType)
+        );
         setSuggestions(filteredSuggestions);
       }
     });
@@ -131,13 +134,8 @@ export default function AutoSuggestSingleSelection(props) {
       ...state,
       [name]: autoSuggestedName
     });
-    //    if (!props.finalReturn) {
     !props.inlineConcept && props.onChangeAnswerName(autoSuggestedName, props.index, false);
-    props.inlineConcept &&
-      props.inlineConcept &&
-      props.onChangeAnswerName(autoSuggestedName, props.groupIndex, props.elementIndex, props.index);
-
-    //    }
+    props.inlineConcept && props.onChangeAnswerName(autoSuggestedName, props.groupIndex, props.elementIndex, props.index);
   };
 
   const autosuggestProps = {
@@ -150,11 +148,10 @@ export default function AutoSuggestSingleSelection(props) {
   };
 
   return (
-    <div className={classes.root}>
+    <StyledContainer>
       <Autosuggest
         {...autosuggestProps}
         inputProps={{
-          classes,
           required: true,
           label: props.label,
           placeholder: props.placeholder,
@@ -164,10 +161,10 @@ export default function AutoSuggestSingleSelection(props) {
           autoFocus: true
         }}
         theme={{
-          container: classes.container,
-          suggestionsContainerOpen: classes.suggestionsContainerOpen,
-          suggestionsList: classes.suggestionsList,
-          suggestion: classes.suggestion
+          container: StyledAutosuggestContainer,
+          suggestionsContainerOpen: StyledSuggestionsContainer,
+          suggestionsList: StyledSuggestionsList,
+          suggestion: StyledSuggestion
         }}
         renderSuggestionsContainer={options => (
           <Paper {...options.containerProps} square>
@@ -175,9 +172,7 @@ export default function AutoSuggestSingleSelection(props) {
           </Paper>
         )}
       />
-
-      <div className={classes.divider} />
-    </div>
+    </StyledContainer>
   );
 }
 

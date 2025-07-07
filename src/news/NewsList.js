@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";

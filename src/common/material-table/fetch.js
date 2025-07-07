@@ -1,5 +1,5 @@
 import _ from "lodash";
-import http from "../utils/httpClient";
+import { httpClient as http } from "../utils/httpClient";
 
 const baseUrl = "/web";
 

@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { validateRule } from "../../formDesigner/util";
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 
 class ProgramService {
   static validateProgram(program, subjectType) {

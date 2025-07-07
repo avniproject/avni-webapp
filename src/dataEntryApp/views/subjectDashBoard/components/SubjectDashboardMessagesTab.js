@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
 import { Paper, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";

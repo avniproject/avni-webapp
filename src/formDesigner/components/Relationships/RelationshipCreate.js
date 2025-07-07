@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";

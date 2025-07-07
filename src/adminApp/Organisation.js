@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BooleanField,
   Datagrid,
@@ -28,7 +28,7 @@ import { AvniTextField } from "../common/components/AvniTextField";
 import { SaveComponent } from "../common/components/SaveComponent";
 import { AvniSelect } from "../common/components/AvniSelect";
 import useGetData from "../custom-hooks/useGetData";
-import httpClient from "../common/utils/httpClient";
+import { httpClient } from "../common/utils/httpClient";
 import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";

@@ -5,7 +5,7 @@ import { logout } from "../../rootApp/ducks";
 import _ from "lodash";
 import moment from "moment";
 import ApplicationContext from "../../ApplicationContext";
-import httpClient from "../../common/utils/httpClient";
+import { httpClient } from "../../common/utils/httpClient";
 
 const styles = {
   userIcon: {

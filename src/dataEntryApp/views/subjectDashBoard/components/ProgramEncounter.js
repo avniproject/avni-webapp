@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Grid, Paper } from "@mui/material";
 import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";

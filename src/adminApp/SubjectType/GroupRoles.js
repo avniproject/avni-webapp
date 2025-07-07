@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import { TextField, Box, Button, IconButton, Grid, FormHelperText, MenuItem } from "@mui/material";
 import { map, includes, filter } from "lodash";
 import { Delete } from "@mui/icons-material";
-import httpClient from "../../common/utils/httpClient";
+import { httpClient } from "../../common/utils/httpClient";
 import { default as UUID } from "uuid";
 import Types from "./Types";
 import { AvniSelect } from "../../common/components/AvniSelect";
@@ -24,9 +24,9 @@ const StyledInputContainer = styled(Box)(({ theme }) => ({
   }
 }));
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   alignItems: "center"
-}));
+});
 
 const StyledAddButton = styled(Button)(({ theme }) => ({
   height: 35,

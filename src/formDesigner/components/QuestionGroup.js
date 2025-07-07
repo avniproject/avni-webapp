@@ -1,8 +1,8 @@
-import { useEffect, Fragment } from "react";
+import { memo, useEffect, Fragment } from "react";
 import { getFormState, useSetFormState } from "../views/FormDesignerContext";
 import { Draggable } from "react-beautiful-dnd";
 import { isEqual, map, isEmpty, get, filter } from "lodash";
-import produce from "immer";
+import { produce } from "immer";
 import { formDesignerGetEmptyFormElement } from "../common/FormDesignerHandlers";
 import FormElementWithAddButton from "./FormElementWithAddButton";
 

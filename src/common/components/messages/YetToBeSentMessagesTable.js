@@ -6,9 +6,9 @@ import { formatDateTime } from "../../utils/General";
 import { formatMsgTemplate } from "../utils";
 import MaterialTableIcons from "../../material-table/MaterialTableIcons";
 
-const InfoMsg = styled(Typography)(({ theme }) => ({
+const InfoMsg = styled(Typography)({
   marginLeft: 10
-}));
+});
 
 const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }) => {
   const { t } = useTranslation();

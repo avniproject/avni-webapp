@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
 import { Paper, Typography, Button } from "@mui/material";
 import { Filter, Header } from "../util/FilterStyles";

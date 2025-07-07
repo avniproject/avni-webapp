@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from "react";
+import { useEffect, useState, useReducer } from "react";
 import DeclarativeRuleComponent from "./DeclarativeRuleComponent";
 import { isEmpty, map, size, noop, get } from "lodash";
 import RuleSummaryComponent from "./RuleSummaryComponent";

@@ -7,12 +7,12 @@ import SubjectButton from "./Button";
 import FloatingButton from "./FloatingButton";
 import CustomizedDialog from "../../../components/Dialog";
 
-const StyledDialogTitle = styled("div")(({ theme }) => ({
+const StyledDialogTitle = styled("div")({
   margin: 0,
   backgroundColor: "#555555",
   padding: "6px 16px",
   color: "white"
-}));
+});
 
 const StyledCloseButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
@@ -21,13 +21,13 @@ const StyledCloseButton = styled(IconButton)(({ theme }) => ({
   color: "white"
 }));
 
-const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
+const StyledDialogActions = styled(DialogActions)({
   margin: 0,
   padding: "11px",
   backgroundColor: "#F8F9F9",
   float: "left",
   display: "inline"
-}));
+});
 
 const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, ...props }) => {
   const [open, setOpen] = useState(false);

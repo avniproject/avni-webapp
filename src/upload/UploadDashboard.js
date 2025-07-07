@@ -1,12 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { styled, Paper, Grid, Box, Button, Checkbox, FormControlLabel, Typography, Tooltip } from "@mui/material";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import _, { concat, get, isEmpty, isNil } from "lodash";
-import Paper from "@mui/material/Paper";
-import { Grid } from "@mui/material";
 import CloudDownload from "@mui/icons-material/CloudDownload";
-import Button from "@mui/material/Button";
 import FileUpload from "../common/components/FileUpload";
 import { staticTypesWithDynamicDownload, staticTypesWithStaticDownload } from "./Types";
 import api from "./api";
@@ -15,17 +12,12 @@ import { getStatuses, getUploadTypes } from "./reducers";
 import UploadTypes from "./UploadTypes";
 import { Title } from "react-admin";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import { LocationModes } from "./LocationModes";
 import EncounterModes, { ENCOUNTER_MODES } from "./EncounterModes";
-import Tooltip from "@mui/material/Tooltip";
 import { LocationHierarchy } from "./LocationHierarchy";
-import Typography from "@mui/material/Typography";
-import { Box } from "@mui/material";
 import MetadataDiff from "./MetadataDiff";
 import CompareMetadataService from "../adminApp/service/CompareMetadataService";
-import httpClient from "../common/utils/httpClient";
+import { httpClient } from "../common/utils/httpClient";
 import UploadStatus from "./UploadStatus";
 
 const StyledRootGrid = styled(Grid)(({ theme }) => ({
@@ -33,10 +25,10 @@ const StyledRootGrid = styled(Grid)(({ theme }) => ({
   spacing: theme.spacing(2)
 }));
 
-const StyledMainGrid = styled(Grid)(({ theme }) => ({
+const StyledMainGrid = styled(Grid)({
   minWidth: 1200,
   maxWidth: 1400
-}));
+});
 
 const StyledUploadPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2)
@@ -64,7 +56,7 @@ const StyledFormGrid = styled(Grid)(({ theme }) => ({
   alignItems: "flex-start"
 }));
 
-const StyledFileName = styled('span')(({ theme }) => ({
+const StyledFileName = styled("span")(({ theme }) => ({
   marginLeft: theme.spacing(1)
 }));
 
@@ -303,9 +295,7 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                 </StyledFormGrid>
                 {isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
                   <Grid>
-                    <StyledReviewButton onClick={handleReviewClick}>
-                      Review
-                    </StyledReviewButton>
+                    <StyledReviewButton onClick={handleReviewClick}>Review</StyledReviewButton>
                   </Grid>
                 )}
                 <StyledFormGrid size={{ xs: 8, sm: 4 }}>
@@ -350,9 +340,7 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                     <LocationHierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} configuredHierarchies={configuredHierarchies} />
                   ) : (
                     <Box>
-                      <StyledErrorTypography>
-                        Invalid or missing Location Hierarchy.
-                      </StyledErrorTypography>
+                      <StyledErrorTypography>Invalid or missing Location Hierarchy.</StyledErrorTypography>
                     </Box>
                   ))}
               </Grid>

@@ -25,7 +25,7 @@ const StyledContainer = styled("div")({
   backgroundColor: "#FFF"
 });
 
-const StyledTable = styled(MaterialReactTable)(({ theme }) => ({
+const StyledTable = styled(MaterialReactTable)({
   "& .MuiTableHeadCell-root": {
     zIndex: 2
   },
@@ -38,7 +38,7 @@ const StyledTable = styled(MaterialReactTable)(({ theme }) => ({
   "& .MuiPaper-root": {
     elevation: 0
   }
-}));
+});
 
 const TaskAssignment = ({ history, ...props }) => {
   const [state, dispatch] = useReducer(TaskAssignmentReducer, initialState);

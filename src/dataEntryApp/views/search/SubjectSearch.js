@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Paper, Typography, Grid, Button } from "@mui/material";
+import { Paper, Typography, Grid, Button, styled } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
 import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
 import { useTranslation } from "react-i18next";
@@ -10,11 +10,11 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { getOrganisationConfig } from "../../reducers/metadataReducer";
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
+const StyledPaper = styled(Paper)({
   padding: "1.5rem",
   margin: "2rem 1rem",
   elevation: 2
-}));
+});
 
 const StyledGrid = styled(Grid)({
   marginBottom: "1%",

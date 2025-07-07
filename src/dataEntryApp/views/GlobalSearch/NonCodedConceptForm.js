@@ -8,10 +8,10 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import _ from "lodash";
 import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   marginTop: "1%",
   marginBottom: "1%"
-}));
+});
 
 const StyledTypography = styled(Typography)({
   marginBottom: 10,

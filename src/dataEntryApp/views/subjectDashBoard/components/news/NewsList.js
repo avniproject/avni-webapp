@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { getNews, selectNewsList } from "../../../../reducers/NewsReducer";

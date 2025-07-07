@@ -1,4 +1,4 @@
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 
 const NEWS_API_ENDPOINT = "/web/news";
 export default {

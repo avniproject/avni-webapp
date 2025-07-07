@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Paper, Typography, Grid, Button } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getEncounter, getProgramEncounter } from "../../../reducers/viewVisitReducer";
@@ -20,28 +20,28 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
 }));
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   justifyContent: "space-between",
   alignItems: "baseline"
-}));
+});
 
-const StyledMainHeading = styled(Typography)(({ theme }) => ({
+const StyledMainHeading = styled(Typography)({
   fontSize: "20px",
   fontWeight: "500",
   marginLeft: 10,
   marginBottom: 10
-}));
+});
 
-const StyledScheduledHeading = styled(Typography)(({ theme }) => ({
+const StyledScheduledHeading = styled(Typography)({
   fontSize: "1vw",
   fontWeight: "300",
   marginBottom: 10
-}));
+});
 
-const StyledSubHeading = styled(Typography)(({ theme }) => ({
+const StyledSubHeading = styled(Typography)({
   fontSize: "1vw",
   fontWeight: "bold"
-}));
+});
 
 const StyledProgramStatus = styled(Typography)(({ theme }) => ({
   backgroundColor: "#54fb36a8",
@@ -50,15 +50,15 @@ const StyledProgramStatus = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(1, 1)
 }));
 
-const StyledScheduledDateContainer = styled('div')(({ theme }) => ({
+const StyledScheduledDateContainer = styled("div")({
   marginBottom: 20,
   marginTop: 10
-}));
+});
 
-const StyledVisitButton = styled(Button)(({ theme }) => ({
+const StyledVisitButton = styled(Button)({
   marginLeft: "8px",
   fontSize: "14px"
-}));
+});
 
 const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }) => {
   const { t } = useTranslation();
@@ -80,9 +80,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
       <Breadcrumbs path={match.path} />
       <StyledPaper>
         <StyledGrid container direction="row">
-          <StyledMainHeading component="span">
-            {t(defaultTo(encounter.name, encounter.encounterType.name))}
-          </StyledMainHeading>
+          <StyledMainHeading component="span">{t(defaultTo(encounter.name, encounter.encounterType.name))}</StyledMainHeading>
           {encounter.earliestVisitDateTime ? (
             <StyledScheduledHeading component="span">
               {t("Scheduledon")}: {moment(new Date(encounter.earliestVisitDateTime)).format("DD-MM-YYYY")}
@@ -90,18 +88,12 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
           ) : null}
         </StyledGrid>
         <StyledScheduledDateContainer>
-          <StyledProgramStatus component="span">
-            {t("Completed")}
-          </StyledProgramStatus>
-          <StyledSubHeading component="span">
-            {moment(new Date(encounter.encounterDateTime)).format("DD-MM-YYYY")}
-          </StyledSubHeading>
+          <StyledProgramStatus component="span">{t("Completed")}</StyledProgramStatus>
+          <StyledSubHeading component="span">{moment(new Date(encounter.encounterDateTime)).format("DD-MM-YYYY")}</StyledSubHeading>
         </StyledScheduledDateContainer>
         <Observations observations={encounter ? encounter.observations : []} form={form} />
         <InternalLink to={viewAllCompletedUrl}>
-          <StyledVisitButton color="primary">
-            {t("viewAllCompletedVisits")}
-          </StyledVisitButton>
+          <StyledVisitButton color="primary">{t("viewAllCompletedVisits")}</StyledVisitButton>
         </InternalLink>
         {/* Re-direct to Dashboard on Back Click*/}
         {/* <InternalLink to={`/app/subject?uuid=${encounter.subjectUuid}`}>

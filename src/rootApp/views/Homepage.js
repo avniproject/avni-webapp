@@ -1,6 +1,6 @@
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Grid } from "@mui/material";
-import httpClient from "../../common/utils/httpClient";
+import { httpClient } from "../../common/utils/httpClient";
 import { HomePageCard } from "./HomePageCard";
 import {
   SurroundSound,

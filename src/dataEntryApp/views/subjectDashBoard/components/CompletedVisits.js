@@ -12,18 +12,18 @@ import CompletedVisitsTable from "dataEntryApp/views/subjectDashBoard/CompletedV
 import { voidGeneralEncounter, voidProgramEncounter } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 
-const StyledSearchBox = styled(Paper)(({ theme }) => ({
+const StyledSearchBox = styled(Paper)({
   padding: "1.5rem",
   margin: "0rem 1rem"
-}));
+});
 
-const StyledTableBox = styled(Paper)(({ theme }) => ({
+const StyledTableBox = styled(Paper)({
   padding: "1.5rem"
-}));
+});
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   justifyContent: "flex-end"
-}));
+});
 
 const CompleteVisit = ({
   entityUuid,

@@ -10,11 +10,11 @@ import { LineBreak } from "../../common/components/utils";
 
 export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
-  const [years, setYears] = React.useState(0);
-  const [months, setMonths] = React.useState(0);
+  const [years, setYears] = useState(0);
+  const [months, setMonths] = useState(0);
   const dob = (dateOfBirth && moment(dateOfBirth).isValid() && new Date(dateOfBirth)) || null;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (dateOfBirth) {
       setYears(moment().diff(dateOfBirth, "years"));
       setMonths(moment().diff(dateOfBirth, "months") % 12);

@@ -8,7 +8,7 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 import { sampleEncounterEligibilityCheckRule } from "../../formDesigner/common/SampleRule";
 import { confirmBeforeRuleEdit } from "../../formDesigner/util";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   findEncounterCancellationForms,
   findEncounterForms,

@@ -19,9 +19,9 @@ export const Header = styled("div")(({ theme }) => ({
   marginBottom: theme.spacing(3)
 }));
 
-export const TextField = styled("div")(({ theme }) => ({
+export const TextField = styled("div")({
   backgroundColor: "#FFF"
-}));
+});
 
 export const ApplyButton = styled("div")(({ theme }) => ({
   position: "absolute",

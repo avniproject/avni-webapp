@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import Box from "@mui/material/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Title } from "react-admin";

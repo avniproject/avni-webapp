@@ -12,7 +12,7 @@ import {
   REDUX_FORM_NAME,
   FormDataConsumer
 } from "react-admin";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import Chip from "@mui/material/Chip";
 import { FormLabel, Paper } from "@mui/material";
 import { change } from "redux-form";

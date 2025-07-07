@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import ProgramView from "./SubjectDashboardProgramView";
 import { Typography, Box } from "@mui/material";
 import PropTypes from "prop-types";

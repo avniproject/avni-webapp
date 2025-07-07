@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
 import api from "./api/index";
 import { HomePageCard } from "../rootApp/views/HomePageCard";

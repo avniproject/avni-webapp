@@ -1,14 +1,9 @@
-import React, { Component } from "react";
-import Button from "@mui/material/Button";
-import { FormControl, Select } from "@mui/material";
-import MenuItem from "@mui/material/MenuItem";
+import { Component } from "react";
+import { Button, FormControl, Select, Grid, IconButton, MenuItem, FormHelperText } from "@mui/material";
 import { httpClient as http } from "common/utils/httpClient";
-import FormHelperText from "@mui/material/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 import _ from "lodash";
-import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton from "@mui/material/IconButton";
 import { default as UUID } from "uuid";
 import { FormTypeEntities, encounterFormTypes, programFormTypes } from "../common/constants";
 import Box from "@mui/material/Box";

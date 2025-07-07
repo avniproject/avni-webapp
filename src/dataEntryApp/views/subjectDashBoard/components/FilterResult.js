@@ -12,24 +12,24 @@ import { noop, isNil, isEmpty } from "lodash";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { dateFormat } from "dataEntryApp/constants";
 
-const StyledForm = styled("form")(({ theme }) => ({
+const StyledForm = styled("form")({
   display: "flex",
   flexDirection: "column",
   margin: "auto",
   width: "fit-content"
-}));
+});
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   justifyContent: "flex-end",
   alignItems: "flex-start"
-}));
+});
 
-const StyledDateGrid = styled(Grid)(({ theme }) => ({
+const StyledDateGrid = styled(Grid)({
   justifyContent: "flex-start",
   alignItems: "flex-start"
-}));
+});
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
+const StyledIconButton = styled(IconButton)({
   fontSize: "13px",
   color: "#212529",
   "&:hover": {
@@ -38,11 +38,11 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
   "&:focus": {
     outline: "0"
   }
-}));
+});
 
-const StyledCancelIcon = styled(CancelIcon)(({ theme }) => ({
+const StyledCancelIcon = styled(CancelIcon)({
   fontSize: "14px"
-}));
+});
 
 const filterButtonStyle = {
   height: "28px",

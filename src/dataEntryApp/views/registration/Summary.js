@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { makeStyles } from "@mui/styles";
 import { Typography, Box } from "@mui/material";
 import Observations from "dataEntryApp/components/Observations";

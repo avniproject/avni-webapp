@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash";
+import _, { isEmpty } from "lodash";
 import { fetchUtils } from "react-admin";
 import { stringify } from "query-string";
 import axios from "axios";
@@ -8,7 +8,6 @@ import { fetchAuthSession } from "aws-amplify/auth";
 import querystring from "querystring";
 import IdpDetails from "../../rootApp/security/IdpDetails";
 import CurrentUserService from "../service/CurrentUserService";
-import _ from "lodash";
 
 function getCsrfToken() {
   // eslint-disable-next-line no-useless-escape

@@ -1,5 +1,5 @@
 import Select from "react-select";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { FileFormat } from "avni-models";
 import { FormControl, TextField } from "@mui/material";
 import { filter, includes, isNil, toNumber, map } from "lodash";

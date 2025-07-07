@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Grid, Paper } from "@mui/material";
 import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
@@ -13,7 +13,7 @@ import {
   createEncounterForScheduled,
   editEncounter,
   fetchEncounterRulesResponse,
-  setEncounterDate,
+  setEncounterDate
 } from "dataEntryApp/reducers/encounterReducer";
 import EncounterForm from "./EncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -26,13 +26,13 @@ import { useTranslation } from "react-i18next";
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(1, 3),
-  flexGrow: 1,
+  flexGrow: 1
 }));
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   justifyContent: "center",
-  alignItems: "center",
-}));
+  alignItems: "center"
+});
 
 const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...props }) => {
   const editEncounter = isEqual(match.path, "/app/subject/editEncounter");
@@ -83,7 +83,7 @@ const mapStateToProps = state => ({
   encounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   encounter: state.dataEntry.encounterReducer.encounter,
-  validationResults: state.dataEntry.encounterReducer.validationResults,
+  validationResults: state.dataEntry.encounterReducer.validationResults
 });
 
 const mapDispatchToProps = {
@@ -92,7 +92,7 @@ const mapDispatchToProps = {
   createEncounter,
   createEncounterForScheduled,
   editEncounter,
-  setEncounterDate,
+  setEncounterDate
 };
 
 export default withRouter(

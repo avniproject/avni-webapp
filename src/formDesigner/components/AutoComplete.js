@@ -1,34 +1,34 @@
-import React, { useState } from "react";
-import { styled } from '@mui/material/styles';
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import deburr from "lodash/deburr";
 import Downshift from "downshift";
 import { TextField, Paper, MenuItem, Chip } from "@mui/material";
 
-const Container = styled('div')(({ theme }) => ({
+const Container = styled("div")({
   flexGrow: 1,
-  position: 'relative',
-}));
+  position: "relative"
+});
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  position: 'fixed',
+  position: "fixed",
   zIndex: 1,
-  marginTop: theme.spacing(1),
+  marginTop: theme.spacing(1)
 }));
 
 const StyledChip = styled(Chip)(({ theme }) => ({
-  margin: theme.spacing(0.5, 0.25),
+  margin: theme.spacing(0.5, 0.25)
 }));
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  '& .MuiInputBase-root': {
-    flexWrap: 'wrap',
+const StyledTextField = styled(TextField)({
+  "& .MuiInputBase-root": {
+    flexWrap: "wrap"
   },
-  '& .MuiInputBase-input': {
-    width: 'auto',
-    flexGrow: 1,
-  },
-}));
+  "& .MuiInputBase-input": {
+    width: "auto",
+    flexGrow: 1
+  }
+});
 
 function renderInput(inputProps) {
   const { InputProps, ref, ...other } = inputProps;
@@ -37,7 +37,7 @@ function renderInput(inputProps) {
     <StyledTextField
       InputProps={{
         inputRef: ref,
-        ...InputProps,
+        ...InputProps
       }}
       {...other}
     />
@@ -45,7 +45,7 @@ function renderInput(inputProps) {
 }
 
 renderInput.propTypes = {
-  InputProps: PropTypes.object,
+  InputProps: PropTypes.object
 };
 
 function renderSuggestion(suggestionProps) {
@@ -60,7 +60,7 @@ function renderSuggestion(suggestionProps) {
       selected={isHighlighted}
       component="div"
       style={{
-        fontWeight: isSelected ? 500 : 400,
+        fontWeight: isSelected ? 500 : 400
       }}
     >
       {suggestion.label}
@@ -74,8 +74,8 @@ renderSuggestion.propTypes = {
   itemProps: PropTypes.object.isRequired,
   selectedItem: PropTypes.string.isRequired,
   suggestion: PropTypes.shape({
-    label: PropTypes.string.isRequired,
-  }).isRequired,
+    label: PropTypes.string.isRequired
+  }).isRequired
 };
 
 function getSuggestions(suggestions, value, { showEmpty = false } = {}) {
@@ -86,12 +86,12 @@ function getSuggestions(suggestions, value, { showEmpty = false } = {}) {
   return inputLength === 0 && !showEmpty
     ? []
     : suggestions.filter(suggestion => {
-      const keep = count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
-      if (keep) {
-        count += 1;
-      }
-      return keep;
-    });
+        const keep = count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
+        if (keep) {
+          count += 1;
+        }
+        return keep;
+      });
 }
 
 function DownshiftMultiple(props) {
@@ -130,7 +130,7 @@ function DownshiftMultiple(props) {
       {({ getInputProps, getItemProps, getLabelProps, isOpen, inputValue: inputValue2, selectedItem: selectedItem2, highlightedIndex }) => {
         const { onBlur, onChange, onFocus, ...inputProps } = getInputProps({
           onKeyDown: handleKeyDown,
-          placeholder: "Select multiple encounter types",
+          placeholder: "Select multiple encounter types"
         });
 
         return (
@@ -148,9 +148,9 @@ function DownshiftMultiple(props) {
                   handleInputChange(event);
                   onChange(event);
                 },
-                onFocus,
+                onFocus
               },
-              inputProps,
+              inputProps
             })}
             {isOpen ? (
               <StyledPaper square>
@@ -160,7 +160,7 @@ function DownshiftMultiple(props) {
                     index,
                     itemProps: getItemProps({ item: suggestion.label }),
                     highlightedIndex,
-                    selectedItem: selectedItem2,
+                    selectedItem: selectedItem2
                   })
                 )}
               </StyledPaper>
@@ -175,7 +175,7 @@ function DownshiftMultiple(props) {
 DownshiftMultiple.propTypes = {
   suggestions: PropTypes.array.isRequired,
   OnGetSelectedValue: PropTypes.func.isRequired,
-  setEncounterTypes: PropTypes.array,
+  setEncounterTypes: PropTypes.array
 };
 
 export default DownshiftMultiple;

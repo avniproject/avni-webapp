@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Paper, Typography } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { withRouter } from "react-router-dom";
@@ -16,11 +16,11 @@ import { getNewEligibleProgramEncounters } from "../../../../common/mapper/Progr
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(1, 3),
-  flexGrow: 1,
+  flexGrow: 1
 }));
 
 const StyledTypography = styled(Typography)({
-  fontSize: "20px",
+  fontSize: "20px"
 });
 
 const NewProgramVisit = ({ match, ...props }) => {
@@ -68,15 +68,22 @@ const NewProgramVisit = ({ match, ...props }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   eligibleEncounters: state.dataEntry.programEncounterReducer.eligibleEncounters,
   operationalModules: state.dataEntry.metadata.operationalModules,
-  load: state.dataEntry.loadReducer.load,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
   getEligibleProgramEncounters,
-  resetState,
+  resetState
 };
 
-export default withRouter(withParams(connect(mapStateToProps, mapDispatchToProps)(NewProgramVisit)));
+export default withRouter(
+  withParams(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(NewProgramVisit)
+  )
+);

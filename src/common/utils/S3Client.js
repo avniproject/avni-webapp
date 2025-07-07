@@ -1,4 +1,4 @@
-import http from "./httpClient";
+import { httpClient as http } from "./httpClient";
 import { get } from "lodash";
 
 export const uploadImage = async (existingURL, file, folderName) => {

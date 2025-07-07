@@ -1,4 +1,4 @@
-import httpClient from "common/utils/httpClient";
+import { httpClient } from "common/utils/httpClient";
 import { get } from "lodash";
 import MessageService from "../../common/service/MessageService";
 

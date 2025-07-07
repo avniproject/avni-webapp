@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
 import { Grid, Button } from "@mui/material";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";

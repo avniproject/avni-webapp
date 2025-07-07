@@ -42,12 +42,12 @@ const StyledInnerDiv = styled("div")(({ theme }) => ({
   height: 500
 }));
 
-const StyledMainHeading = styled(Typography)(({ theme }) => ({
+const StyledMainHeading = styled(Typography)({
   fontSize: "20px",
   fontWeight: "500",
   marginLeft: 10,
   marginBottom: 10
-}));
+});
 
 const StyledSubHeading = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -56,12 +56,12 @@ const StyledSubHeading = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(1, 1)
 }));
 
-const StyledScheduledDateDiv = styled("div")(({ theme }) => ({
+const StyledScheduledDateDiv = styled("div")({
   marginBottom: 20,
   marginTop: 10
-}));
+});
 
-const StyledCancelButton = styled(Button)(({ theme }) => ({
+const StyledCancelButton = styled(Button)({
   color: "orange",
   width: 110,
   cursor: "pointer",
@@ -70,9 +70,9 @@ const StyledCancelButton = styled(Button)(({ theme }) => ({
   fontSize: 12,
   borderRadius: 50,
   borderColor: "orange"
-}));
+});
 
-const StyledAddButton = styled(Button)(({ theme }) => ({
+const StyledAddButton = styled(Button)({
   color: "white",
   width: 110,
   cursor: "pointer",
@@ -81,9 +81,9 @@ const StyledAddButton = styled(Button)(({ theme }) => ({
   fontSize: 12,
   borderRadius: 50,
   marginLeft: 20
-}));
+});
 
-const StyledButtonBox = styled(Box)(({ theme }) => ({
+const StyledButtonBox = styled(Box)({
   backgroundColor: "#f8f4f4",
   height: 80,
   width: "100%",
@@ -92,46 +92,46 @@ const StyledButtonBox = styled(Box)(({ theme }) => ({
   flexDirection: "row",
   flexWrap: "wrap",
   justifyContent: "flex-start"
-}));
+});
 
-const StyledTable = styled(Table)(({ theme }) => ({
+const StyledTable = styled(Table)({
   marginTop: "10px"
-}));
+});
 
-const StyledTableView = styled("div")(({ theme }) => ({
+const StyledTableView = styled("div")({
   flexGrow: 1,
   alignItems: "center",
   justifyContent: "center"
-}));
+});
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+const StyledTableCell = styled(TableCell)({
   color: "#555555",
   fontSize: "12px",
   borderBottom: "none",
   padding: "0px 0px 0px 11px",
   fontWeight: "500"
-}));
+});
 
-const StyledTableCellDetails = styled(TableCell)(({ theme }) => ({
+const StyledTableCellDetails = styled(TableCell)({
   borderBottom: "none",
   padding: "0px 21px 0px 11px",
   fontWeight: "500",
   color: "#1010101",
   fontSize: "14px"
-}));
+});
 
-const StyledLabelTypography = styled(Typography)(({ theme }) => ({
+const StyledLabelTypography = styled(Typography)({
   width: "50%",
   color: "rgba(0, 0, 0, 0.54)"
-}));
+});
 
-const StyledHorizontalLine = styled("hr")(({ theme }) => ({
+const StyledHorizontalLine = styled("hr")({
   padding: "0px",
   marginTop: "0px",
   marginBottom: "0px",
   border: "1px solid lightgray",
   width: "100%"
-}));
+});
 
 const StyledErrorTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
@@ -193,7 +193,7 @@ const AddRelative = ({
       return;
     } else {
       setError("");
-      nyl: true;
+      true;
     }
     const isReverseRelation = includes(get(relationshipType, "individualAIsToBRelation.uuid", []), selectedRelationUUID);
     setRelationData({

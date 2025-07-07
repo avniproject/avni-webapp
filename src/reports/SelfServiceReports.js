@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { reportSideBarOptions } from "./Common";
@@ -6,7 +6,7 @@ import { Card, CardContent, Typography, Box, Button, CircularProgress, Chip } fr
 import MetabaseSVG from "./Metabase_icon.svg";
 import { OpenInNew, Delete } from "@mui/icons-material";
 import { debounce } from "lodash";
-import httpClient from "../common/utils/httpClient";
+import { httpClient } from "../common/utils/httpClient";
 import MetabaseSetupStatus from "./domain/MetabaseSetupStatus";
 import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
 

@@ -16,7 +16,8 @@ import {
   Tab,
   Tooltip,
   TextField,
-  FormControlLabel
+  FormControlLabel,
+  styled
 } from "@mui/material";
 import { ExpandMore, ExpandLess, Delete, Add, Group, DragHandle } from "@mui/icons-material";
 import { Draggable, Droppable } from "react-beautiful-dnd";
@@ -25,12 +26,12 @@ import { FormElementGroupRule } from "./FormElementGroupRule";
 import { ToolTip } from "../../common/components/ToolTip";
 import { ColourStyle } from "./ColourStyle";
 
-const StyledParent = styled("div")(({ theme }) => ({
+const StyledParent = styled("div")({
   paddingLeft: 0,
   paddingBottom: 30
-}));
+});
 
-const StyledAccordion = styled(Accordion)(({ theme, hasError }) => ({
+const StyledAccordion = styled(Accordion)(({ hasError }) => ({
   width: "100%",
   border: hasError ? "1px solid red" : undefined,
   "&.Mui-expanded": {
@@ -38,7 +39,7 @@ const StyledAccordion = styled(Accordion)(({ theme, hasError }) => ({
   }
 }));
 
-const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+const StyledAccordionSummary = styled(AccordionSummary)({
   paddingRight: 0,
   backgroundColor: "#dbdbdb",
   border: "1px solid #2196F3",
@@ -60,7 +61,7 @@ const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
     marginHorizontal: "8px",
     display: "inline"
   }
-}));
+});
 
 const StyledDragHandler = styled("div")({
   height: 5
@@ -88,14 +89,14 @@ const StyledQuestionCount = styled(Typography)({
   paddingTop: "5px"
 });
 
-const StyledTabs = styled(Tabs)(({ theme }) => ({
+const StyledTabs = styled(Tabs)({
   background: "#2196f3",
   color: "white",
   width: "100%",
   marginBottom: 24,
   height: 40,
   minHeight: "26px"
-}));
+});
 
 const StyledTab = styled(Tab)({
   minHeight: "26px",
@@ -106,11 +107,11 @@ const StyledErrorText = styled("div")({
   color: "red"
 });
 
-const StyledDetailsContainer = styled(Grid)(({ theme }) => ({
+const StyledDetailsContainer = styled(Grid)({
   width: "100%",
   alignContent: "center",
   marginBottom: 8
-}));
+});
 
 const StyledFormControlLabel = styled(FormControlLabel)({
   marginLeft: 10
@@ -125,11 +126,11 @@ const StyledFlexItem = styled("div")({
   flex: 0.2
 });
 
-const StyledFab = styled(Fab)(({ theme }) => ({
+const StyledFab = styled(Fab)({
   position: "absolute",
   marginLeft: -35,
   marginTop: -5
-}));
+});
 
 function FormElementGroup(props) {
   const [hover, setHover] = useState(false);
@@ -142,7 +143,7 @@ function FormElementGroup(props) {
     props.handleGroupElementChange(index, "display", value);
   };
 
-  _.forEach(props.groupData.formElements, (element, index) => {
+  _.forEach(props.groupData.formElements, element => {
     if (!element.voided) {
       questionCount = questionCount + 1;
     }
@@ -153,11 +154,11 @@ function FormElementGroup(props) {
     event.stopPropagation();
   };
 
-  const separateAddGroup = event => {
+  const separateAddGroup = () => {
     props.btnGroupAdd(props.index);
   };
 
-  const separateAddElement = event => {
+  const separateAddElement = () => {
     props.btnGroupAdd(props.index, 0);
   };
 
@@ -260,7 +261,7 @@ function FormElementGroup(props) {
               TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
               expanded={props.groupData.expanded}
               hasError={props.groupData.error}
-              onChange={event => props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)}
+              onChange={() => props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)}
             >
               <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`} {...provided.dragHandleProps}>
                 <Grid container direction="row">

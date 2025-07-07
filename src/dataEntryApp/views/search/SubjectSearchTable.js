@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { httpClient as http } from "common/utils/httpClient";
 import { Box, Chip, Grid } from "@mui/material";

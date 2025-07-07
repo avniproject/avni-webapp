@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Paper, Typography, Grid } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
@@ -40,16 +40,16 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
 }));
 
 const ProgramEnrol = ({
-                        match,
-                        onLoad,
-                        enrolForm,
-                        getSubjectProfile,
-                        programEnrolment,
-                        load,
-                        validationResults,
-                        setEnrolmentDate,
-                        setExitDate
-                      }) => {
+  match,
+  onLoad,
+  enrolForm,
+  getSubjectProfile,
+  programEnrolment,
+  load,
+  validationResults,
+  setEnrolmentDate,
+  setExitDate
+}) => {
   const { t } = useTranslation();
   const formType = match.queryParams.formType;
   const subjectTypeName = match.queryParams.subjectTypeName;

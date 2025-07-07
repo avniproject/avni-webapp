@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
-import _, { get } from "lodash";
+import { get } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";

@@ -1,5 +1,5 @@
 import { deburr } from "lodash";
-import http from "../utils/httpClient";
+import { httpClient as http } from "../utils/httpClient";
 import { MediaFolder, uploadImage } from "../utils/S3Client";
 import { ConceptMapper } from "../mapper/ConceptMapper";
 import WebConcept from "../model/WebConcept";

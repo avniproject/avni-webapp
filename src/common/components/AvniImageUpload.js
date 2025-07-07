@@ -6,7 +6,7 @@ import { AddAPhoto, Close } from "@mui/icons-material";
 import MediaService from "../../adminApp/service/MediaService";
 
 export const ImagePreview = ({ iconPreview, width, height, onDelete }) => {
-  const [openPreview, setOpenPreview] = React.useState(false);
+  const [openPreview, setOpenPreview] = useState(false);
 
   return (
     <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>

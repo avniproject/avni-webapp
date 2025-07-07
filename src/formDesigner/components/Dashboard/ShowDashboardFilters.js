@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import _ from "lodash";
 import { IconButton, Box } from "@mui/material";

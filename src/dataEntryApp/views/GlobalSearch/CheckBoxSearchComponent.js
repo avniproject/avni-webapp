@@ -1,12 +1,12 @@
-import React, { Fragment } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import { FormControl, FormControlLabel, Checkbox, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   marginTop: "1%",
-  marginBottom: "1%",
-}));
+  marginBottom: "1%"
+});
 
 function CheckBoxSearchComponent({ label, checked, onChange }) {
   const { t } = useTranslation();

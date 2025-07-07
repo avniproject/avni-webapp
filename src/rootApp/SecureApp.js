@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import _ from "lodash";
@@ -7,7 +7,7 @@ import "@aws-amplify/ui-react/styles.css";
 import App from "./App";
 import { Authenticator } from "@aws-amplify/ui-react";
 import CognitoSignIn from "./CognitoSignIn";
-import httpClient from "../common/utils/httpClient";
+import { httpClient } from "../common/utils/httpClient";
 import IdpDetails from "./security/IdpDetails";
 import KeycloakSignInView from "./views/KeycloakSignInView";
 import { initGenericConfig, setAuthSession } from "./ducks";

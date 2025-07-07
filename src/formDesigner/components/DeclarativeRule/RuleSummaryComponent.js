@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { isEmpty, map, zip, toUpper } from "lodash";
 import { Typography, Chip } from "@mui/material";
 

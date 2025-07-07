@@ -1,4 +1,4 @@
-import httpClient from "../../../common/utils/httpClient";
+import { httpClient } from "../../../common/utils/httpClient";
 
 const JOB_BASE_URL = "/etl/job";
 

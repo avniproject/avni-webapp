@@ -1,5 +1,5 @@
-import React, { useEffect } from "react"; // eslint-disable-line no-unused-vars
-import http from "../../common/utils/httpClient";
+import { useEffect } from "react";
+import { httpClient as http } from "../../common/utils/httpClient";
 
 export const useFormMappings = cb =>
   useEffect(() => {

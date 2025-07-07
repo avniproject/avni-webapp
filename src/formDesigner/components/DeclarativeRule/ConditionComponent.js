@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import CompoundRuleComponent from "./CompoundRuleComponent";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 import ConditionConjunctionComponent from "./ConditionConjunctionComponent";
@@ -16,15 +16,8 @@ const ConditionComponent = ({ condition, index, declarativeRuleIndex, ...props }
 
   return (
     <Fragment>
-      <CompoundRuleComponent
-        compoundRule={compoundRule}
-        conditionIndex={index}
-        declarativeRuleIndex={declarativeRuleIndex}
-      />
-      <ConditionConjunctionComponent
-        onConjunctionChange={onConjunctionChange}
-        value={conjunction}
-      />
+      <CompoundRuleComponent compoundRule={compoundRule} conditionIndex={index} declarativeRuleIndex={declarativeRuleIndex} />
+      <ConditionConjunctionComponent onConjunctionChange={onConjunctionChange} value={conjunction} />
     </Fragment>
   );
 };

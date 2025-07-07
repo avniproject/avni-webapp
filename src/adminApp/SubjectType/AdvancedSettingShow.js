@@ -1,8 +1,8 @@
 import { FormLabel } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import _, { isEmpty } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 import { ConceptSyncAttributesShow } from "./ConceptSyncAttributeShow";
 import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
 import { TextFormatFieldInShow } from "../../common/components/TextFormatFieldInShow";

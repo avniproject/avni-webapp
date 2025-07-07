@@ -1,4 +1,4 @@
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied, WithProps } from "../common/components/utils";
 import "./SecureApp.css";
@@ -23,7 +23,6 @@ import { useIdleTimer } from "react-idle-timer";
 import { logout } from "./ducks";
 import BaseAuthSession from "./security/BaseAuthSession";
 import { Privilege } from "openchs-models";
-import { useHistory } from "react-router-dom";
 
 const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...rest }) => (
   <Route

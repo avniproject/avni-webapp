@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Tooltip, Typography, Grid } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Tooltip, Typography, Grid, styled } from "@mui/material";
 import { ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty, map, orderBy } from "lodash";
 import ShowDashboardSectionCards from "./ShowDashboardSectionCards";

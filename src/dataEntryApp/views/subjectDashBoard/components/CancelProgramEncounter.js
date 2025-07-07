@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Grid, Paper } from "@mui/material";
 import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
@@ -23,7 +23,7 @@ import { LineBreak } from "../../../../common/components/utils";
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(1, 3),
-  flexGrow: 1,
+  flexGrow: 1
 }));
 
 const CancelProgramEncounter = ({ match, programEncounter, ...props }) => {
@@ -48,7 +48,7 @@ const CancelProgramEncounter = ({ match, programEncounter, ...props }) => {
           spacing={3}
           sx={{
             justifyContent: "center",
-            alignItems: "center",
+            alignItems: "center"
           }}
         >
           <Grid size={12}>
@@ -74,14 +74,14 @@ const CancelProgramEncounter = ({ match, programEncounter, ...props }) => {
 const mapStateToProps = state => ({
   cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
+  programEncounter: state.dataEntry.programEncounterReducer.programEncounter
 });
 
 const mapDispatchToProps = {
   updateProgramEncounter,
   createCancelProgramEncounter,
   editCancelProgramEncounter,
-  resetState,
+  resetState
 };
 
 export default withRouter(

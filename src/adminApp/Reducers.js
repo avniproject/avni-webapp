@@ -85,11 +85,12 @@ export function subjectTypeReducer(subjectType, action) {
       return { ...subjectType, registrationForm: action.payload };
     case "active":
       return { ...subjectType, active: action.payload };
-    case "type":
+    case "type": {
       const type = action.payload;
       const { groupRoles, memberSubjectType } = WebSubjectType.updateType(subjectType, type);
       return { ...subjectType, type, groupRoles, memberSubjectType };
-    case "householdMemberSubject":
+    }
+    case "householdMemberSubject": {
       const roles = map(subjectType.groupRoles, ({ groupRoleUUID, role, minimumNumberOfMembers, maximumNumberOfMembers }) => ({
         subjectMemberName: action.payload,
         groupRoleUUID,
@@ -98,7 +99,8 @@ export function subjectTypeReducer(subjectType, action) {
         maximumNumberOfMembers
       }));
       return { ...subjectType, groupRoles: roles, memberSubjectType: action.payload };
-    case "setData":
+    }
+    case "setData": {
       return {
         ...subjectType,
         ...action.payload,
@@ -106,6 +108,7 @@ export function subjectTypeReducer(subjectType, action) {
           ? map(action.payload.groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
           : ""
       };
+    }
     case "subjectSummaryRule":
       return { ...subjectType, subjectSummaryRule: action.payload };
     case "programEligibilityCheckRule":
@@ -170,22 +173,24 @@ export function subjectTypeReducer(subjectType, action) {
           descriptionKey: _getNullOrValue(action.payload)
         }
       };
-    case "syncAttribute":
+    case "syncAttribute": {
       const { name, value } = action.payload;
       return {
         ...subjectType,
         [name]: value
       };
+    }
     case "nameHelpText":
       return {
         ...subjectType,
         nameHelpText: action.payload
       };
-    case "settings":
+    case "settings": {
       return {
         ...subjectType,
         settings: { ...subjectType.settings, [action.payload.setting]: action.payload.value }
       };
+    }
     default:
       return subjectType;
   }

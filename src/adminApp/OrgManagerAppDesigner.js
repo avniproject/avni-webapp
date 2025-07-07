@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Admin, Resource } from "react-admin";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { authProvider, dataProvider, LogoutButton } from "./react-admin-config";
-import { appDesignerHistory, store } from "../common/store";
+import { appDesignerHistory } from "../common/store";
 import SubjectTypesList from "./SubjectType/SubjectTypesList";
 import ProgramList from "./Program/ProgramList";
 import EncounterTypeList from "./EncounterType/EncounterTypeList";

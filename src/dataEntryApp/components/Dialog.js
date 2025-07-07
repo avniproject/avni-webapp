@@ -28,7 +28,7 @@ const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   justifyContent: "center"
 }));
 
-const StyledOkButton = styled(Button)(({ theme }) => ({
+const StyledOkButton = styled(Button)({
   backgroundColor: "orange",
   color: "white",
   height: 30,
@@ -37,17 +37,17 @@ const StyledOkButton = styled(Button)(({ theme }) => ({
   cursor: "pointer",
   borderRadius: 50,
   padding: "4px 25px"
-}));
+});
 
-const StyledCheckCircleOutline = styled(CheckCircleOutline)(({ theme }) => ({
+const StyledCheckCircleOutline = styled(CheckCircleOutline)({
   fontSize: "4rem",
   fontFamily: "Roboto, Helvetica, Arial, sans-serif",
   fontWeight: 400,
   color: "gray"
-}));
+});
 
 const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDialogContainer, onOk }) => {
-  const [open, setOpen] = React.useState(openDialogContainer || false);
+  const [open, setOpen] = useState(openDialogContainer || false);
 
   const handleClose = () => {
     setOpen(false);

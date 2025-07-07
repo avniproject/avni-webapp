@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Tabs, Box, Tab } from "@mui/material";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getHref } from "../../common/utils/routeUtil";

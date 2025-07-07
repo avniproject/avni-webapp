@@ -1,7 +1,7 @@
 import { styled } from "@mui/material/styles";
 import { Paper } from "@mui/material";
 
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { Info, Warning } from "@mui/icons-material";
 
 const StyledPaper = styled(Paper)(({ theme, variant, severity }) => ({
@@ -18,7 +18,7 @@ const StyledPaper = styled(Paper)(({ theme, variant, severity }) => ({
     })
 }));
 
-const IconWrapper = styled("div")(({ theme, severity }) => ({
+const IconWrapper = styled("div")(({ severity }) => ({
   display: "flex",
   alignItems: "center",
   ...(severity === "warning" && {

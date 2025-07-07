@@ -3,7 +3,7 @@ import { Grid, MenuItem, FormHelperText } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 
 export const LocationConcept = props => {
   const [addressLevelTypes, setAddressLevelTypes] = useState([]);

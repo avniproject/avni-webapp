@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { DatePicker, DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -15,15 +15,15 @@ const StyledForm = styled("div")(({ theme }) => ({
   }
 }));
 
-const StyledLabel = styled(Typography)(({ theme }) => ({
+const StyledLabel = styled(Typography)({
   width: "50%",
   marginBottom: 10,
   color: "rgba(0, 0, 0, 0.54)"
-}));
+});
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)({
   width: "30%"
-}));
+});
 
 const StyledRadioLabel = styled(FormControlLabel)(({ theme }) => ({
   marginLeft: theme.spacing(2.5)

@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
 import { IconButton, Input, MenuItem, Tooltip, Typography, Grid } from "@mui/material";
 import { Delete, ExpandMore, ExpandLess, List } from "@mui/icons-material";
@@ -12,9 +12,9 @@ import DragNDropComponent from "../../common/DragNDropComponent";
 import { dashboardReducerActions } from "./DashboardReducer";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 
-const StyledGrid = styled(Grid)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   alignItems: "center"
-}));
+});
 
 const StyledTypography = styled(Typography)(({ theme, variant }) => ({
   ...(variant === "heading" && {
@@ -25,7 +25,7 @@ const StyledTypography = styled(Typography)(({ theme, variant }) => ({
   })
 }));
 
-const StyledIcon = styled("span")(({ theme, variant }) => ({
+const StyledIcon = styled("span")(({ variant }) => ({
   ...(variant === "list" && {
     marginLeft: 12,
     marginRight: 4
@@ -35,9 +35,9 @@ const StyledIcon = styled("span")(({ theme, variant }) => ({
   })
 }));
 
-const StyledSelect = styled(AvniSelect)(({ theme }) => ({
+const StyledSelect = styled(AvniSelect)({
   width: "200px"
-}));
+});
 
 function EditSection({ section, index, dispatch, history }) {
   const viewTypes = section.viewType === "Default" ? ["Default", "Tile", "List"] : ["Tile", "List"];

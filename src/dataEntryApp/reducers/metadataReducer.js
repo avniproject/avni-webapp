@@ -69,11 +69,9 @@ export const selectLegacyRulesBundleLoaded = state => state.dataEntry.metadata.r
 export const selectLegacyRules = state => state.dataEntry.metadata.rules;
 export const selectLegacyRulesLoaded = state => state.dataEntry.metadata.rulesLoaded;
 
-export const selectAllAddressLevelTypes = state =>
-  defaultTo(get(state, "dataEntry.metadata.operationalModules.allAddressLevels"), []);
+export const selectAllAddressLevelTypes = state => defaultTo(get(state, "dataEntry.metadata.operationalModules.allAddressLevels"), []);
 
-export const selectSubjectTypes = state =>
-  get(state, "dataEntry.metadata.operationalModules.subjectTypes");
+export const selectSubjectTypes = state => get(state, "dataEntry.metadata.operationalModules.subjectTypes");
 const initialState = {
   rules: []
 };
@@ -110,9 +108,7 @@ export default function(state = initialState, action) {
         motherCalculations: motherCalculations,
         models: models
       };
-      let rulesConfig = isEmpty(action.rulesBundle)
-        ? {}
-        : eval(action.rulesBundle.concat("rulesConfig;")); // eslint-disable-line no-eval
+      let rulesConfig = isEmpty(action.rulesBundle) ? {} : eval(action.rulesBundle.concat("rulesConfig;"));
       /**********/
       const allRules = { ...rulesConfig };
 

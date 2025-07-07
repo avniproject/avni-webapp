@@ -30,11 +30,11 @@ const StyledProgramLabel = styled("label")({
   fontWeight: "500"
 });
 
-const StyledGridLabel = styled(Grid)(({ theme }) => ({
+const StyledGridLabel = styled(Grid)({
   justifyContent: "flex-start",
   alignItems: "flex-start",
   flexGrow: 1
-}));
+});
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   flexGrow: 1,

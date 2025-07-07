@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ExpandMore, ExpandLess, Group } from "@mui/icons-material";
 import { ToolTip } from "../../common/components/ToolTip";
 import StaticFormElement from "../StaticFormElement";
+import { Accordion, AccordionDetails, AccordionSummary, Grid, Typography, styled } from "@mui/material";
 
 const StyledAccordion = styled(Accordion)({
   width: "100%",

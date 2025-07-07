@@ -1,5 +1,5 @@
 import { get, isNil, isString } from "lodash";
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 
 export const getMessageRules = (entityType, entityTypeId, dispatch) => {
   if (isString(entityType) && !isNil(entityTypeId)) {

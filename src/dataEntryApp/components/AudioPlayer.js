@@ -1,33 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
-import http from "../../common/utils/httpClient";
+import { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
+import { httpClient as http } from "../../common/utils/httpClient";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { IconButton, Dialog, DialogContent } from "@mui/material";
 import { Close } from "@mui/icons-material";
 
-const StyledDialogTitle = styled('div')(({ theme }) => ({
+const StyledDialogTitle = styled("div")(({ theme }) => ({
   margin: 0,
   padding: theme.spacing(2),
-  '& .closeButton': {
-    position: 'absolute',
+  "& .closeButton": {
+    position: "absolute",
     right: theme.spacing(1),
     top: theme.spacing(0),
-    color: theme.palette.grey[500],
-  },
+    color: theme.palette.grey[500]
+  }
 }));
 
-const DialogTitle = (props) => {
+const DialogTitle = props => {
   const { children, onClose, ...other } = props;
   return (
     <StyledDialogTitle {...other}>
       {onClose ? (
-        <IconButton
-          aria-label="close"
-          className="closeButton"
-          onClick={onClose}
-          size="large"
-        >
+        <IconButton aria-label="close" className="closeButton" onClick={onClose} size="large">
           <Close />
         </IconButton>
       ) : null}
@@ -40,8 +35,7 @@ export const AudioPlayer = ({ url }) => {
   const [signedURL, setSignedURL] = useState();
   const [openModal, setOpenModal] = useState(false);
 
-  const updateSignedURL = () =>
-    http.get(`/media/signedUrl?url=${url}`).then(signedURL => setSignedURL(signedURL.data));
+  const updateSignedURL = () => http.get(`/media/signedUrl?url=${url}`).then(signedURL => setSignedURL(signedURL.data));
 
   useEffect(() => {
     updateSignedURL();

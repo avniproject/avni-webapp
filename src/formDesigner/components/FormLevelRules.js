@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { Accordion, AccordionSummary, AccordionDetails, Typography, Grid, Box } from "@mui/material";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import PropTypes from "prop-types";

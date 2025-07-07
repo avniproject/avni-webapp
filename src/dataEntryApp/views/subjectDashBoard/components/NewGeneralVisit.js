@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { Typography, Paper } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { withRouter } from "react-router-dom";
@@ -16,11 +16,11 @@ import { getNewEligibleEncounters } from "../../../../common/mapper/EncounterMap
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(1, 3),
-  flexGrow: 1,
+  flexGrow: 1
 }));
 
 const StyledTypography = styled(Typography)({
-  fontSize: "20px",
+  fontSize: "20px"
 });
 
 const NewGeneralVisit = ({ match, ...props }) => {
@@ -68,15 +68,22 @@ const NewGeneralVisit = ({ match, ...props }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   operationalModules: state.dataEntry.metadata.operationalModules,
   eligibleEncounters: state.dataEntry.encounterReducer.eligibleEncounters,
-  load: state.dataEntry.loadReducer.load,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
   getEligibleEncounters,
-  resetState,
+  resetState
 };
 
-export default withRouter(withParams(connect(mapStateToProps, mapDispatchToProps)(NewGeneralVisit)));
+export default withRouter(
+  withParams(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(NewGeneralVisit)
+  )
+);

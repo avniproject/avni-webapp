@@ -12,7 +12,7 @@ const variantIcon = {
 
 const StyledSnackbarContent = styled(SnackbarContent, {
   shouldForwardProp: prop => !["variant"].includes(prop)
-})(({ theme, variant }) => ({
+})(({ variant }) => ({
   ...(variant === "success" && {
     backgroundColor: green[600],
     minWidth: 220
@@ -23,10 +23,10 @@ const StyledSnackbarContent = styled(SnackbarContent, {
   })
 }));
 
-const StyledMessage = styled("span")(({ theme }) => ({
+const StyledMessage = styled("span")({
   display: "flex",
   alignItems: "center"
-}));
+});
 
 const StyledIcon = styled("span")(({ theme }) => ({
   fontSize: 20,

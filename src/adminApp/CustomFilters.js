@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState, useMemo } from "react";
+import { Fragment, useEffect, useState, useMemo } from "react";
 import { styled } from "@mui/material/styles";
 import _, { isEmpty } from "lodash";
 import { httpClient as http } from "common/utils/httpClient";
@@ -18,10 +18,10 @@ import { IconButton } from "@mui/material";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
+const StyledPaper = styled(Paper)({
   width: "100%",
   overflowX: "auto"
-}));
+});
 
 const StyledBox = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2)
@@ -32,9 +32,9 @@ const StyledButtonContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1)
 }));
 
-const StyledTableHeadCell = styled(Box)(({ theme }) => ({
+const StyledTableHeadCell = styled(Box)({
   zIndex: 1
-}));
+});
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOfflineDashboardAndReportCard);

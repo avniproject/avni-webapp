@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { find, isEmpty } from "lodash";

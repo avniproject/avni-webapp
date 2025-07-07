@@ -1,6 +1,6 @@
 import SignInView from "./SignInView";
-import React, { useState } from "react";
-import httpClient from "../../common/utils/httpClient";
+import { useState } from "react";
+import { httpClient } from "../../common/utils/httpClient";
 import { Typography } from "@mui/material";
 import _ from "lodash";
 import { connect } from "react-redux";

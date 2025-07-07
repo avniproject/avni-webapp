@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { getMessageTemplates, sendManualMessage } from "../../adminApp/service/MessageService";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import _ from "lodash";

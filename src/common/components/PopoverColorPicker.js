@@ -1,5 +1,5 @@
-import { styled } from '@mui/material/styles';
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { styled } from "@mui/material/styles";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 
 // Source: https://codesandbox.io/s/opmco
@@ -34,13 +34,13 @@ const useClickOutside = (ref, handler) => {
   }, [ref, handler]);
 };
 
-const StyledPicker = styled('div')({
+const StyledPicker = styled("div")({
   position: "relative",
   display: "flex",
   flexDirection: "row"
 });
 
-const StyledSwatch = styled('div')(({ color }) => ({
+const StyledSwatch = styled("div")(({ color }) => ({
   width: "28px",
   height: "28px",
   marginRight: "6px",
@@ -51,7 +51,7 @@ const StyledSwatch = styled('div')(({ color }) => ({
   backgroundColor: color
 }));
 
-const StyledPopOver = styled('div')({
+const StyledPopOver = styled("div")({
   position: "absolute",
   top: "calc(100% + 2px)",
   left: "0",

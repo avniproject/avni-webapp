@@ -1,15 +1,15 @@
-import React, { Fragment } from "react";
-import { styled } from '@mui/material/styles';
+import { Fragment } from "react";
+import { styled } from "@mui/material/styles";
 import _, { filter, map, sortBy, get } from "lodash";
 import { FormElement } from "./FormElement";
 import { Concept, QuestionGroup } from "avni-models";
 import { PrimitiveValue } from "openchs-models";
 
-const StyledGridContainer = styled('div')({
+const StyledGridContainer = styled("div")({
   border: "1px solid rgba(0, 0, 0, 0.12)"
 });
 
-const StyledGridLabel = styled('div')({
+const StyledGridLabel = styled("div")({
   color: "rgba(0, 0, 0, 0.54)",
   flex: 0.5,
   marginRight: "15px",
@@ -22,14 +22,14 @@ function getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex) {
 }
 
 export default function QuestionGroupFormElement({
-                                                   formElement,
-                                                   obsHolder,
-                                                   validationResults,
-                                                   filteredFormElements,
-                                                   updateObs,
-                                                   isRepeatable = false,
-                                                   questionGroupIndex
-                                                 }) {
+  formElement,
+  obsHolder,
+  validationResults,
+  filteredFormElements,
+  updateObs,
+  isRepeatable = false,
+  questionGroupIndex
+}) {
   const allChildren = sortBy(
     filter(
       filteredFormElements,

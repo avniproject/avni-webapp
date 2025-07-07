@@ -1,7 +1,7 @@
 import { AvniFormLabel } from "./AvniFormLabel";
 import Select from "react-select";
-import React, { useEffect, useState } from "react";
-import httpClient from "../utils/httpClient";
+import { useEffect, useState } from "react";
+import { httpClient } from "../utils/httpClient";
 import NamedSelectableEntities from "../model/NamedSelectableEntities";
 import WebEncounterType from "../model/WebEncounterType";
 import { Delete } from "@mui/icons-material";

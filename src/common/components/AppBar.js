@@ -15,7 +15,7 @@ import { OrganisationOptions } from "./OrganisationOptions";
 import { getUserInfo } from "../../rootApp/ducks";
 import { Box } from "@mui/material";
 import PasswordDialog from "../../adminApp/components/PasswordDialog";
-import httpClient from "../utils/httpClient";
+import { httpClient } from "../utils/httpClient";
 import { get } from "lodash";
 
 const StyledRoot = styled("div")(({ theme }) => ({
@@ -23,9 +23,9 @@ const StyledRoot = styled("div")(({ theme }) => ({
   marginBottom: theme.spacing(10)
 }));
 
-const StyledAppBar = styled(MuiAppBar)(({ theme }) => ({
+const StyledAppBar = styled(MuiAppBar)({
   position: "fixed"
-}));
+});
 
 const StyledToolbarContainer = styled("div")(({ theme }) => ({
   flex: 1,
@@ -34,36 +34,36 @@ const StyledToolbarContainer = styled("div")(({ theme }) => ({
   minHeight: theme.spacing(6)
 }));
 
-const StyledOptions = styled("div")(({ theme }) => ({
+const StyledOptions = styled("div")({
   flex: 1,
   display: "flex",
   flexDirection: "row",
   alignItems: "center"
-}));
+});
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   flex: 1,
   fontSize: theme.spacing(3)
 }));
 
-const StyledProfile = styled("div")(({ theme }) => ({
+const StyledProfile = styled("div")({
   flex: 1,
   display: "flex",
   justifyContent: "flex-end",
   alignItems: "center"
-}));
+});
 
-const StyledUserInfo = styled("div")(({ theme }) => ({
+const StyledUserInfo = styled("div")({
   marginTop: "2%"
-}));
+});
 
-const StyledMenuIconButton = styled(IconButton)(({ theme }) => ({
+const StyledMenuIconButton = styled(IconButton)({
   outline: "none"
-}));
+});
 
-const StyledUserIconButton = styled(IconButton)(({ theme }) => ({
+const StyledUserIconButton = styled(IconButton)({
   color: "white"
-}));
+});
 
 const AppBar = ({
   getUserInfo,

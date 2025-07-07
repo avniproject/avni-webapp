@@ -2,7 +2,7 @@ import _ from "lodash";
 import { SearchForm } from "../../dataEntryApp/views/GlobalSearch/SearchFilterForm";
 import { LinearProgress, Box, Button } from "@mui/material";
 import ErrorMessage from "../../common/components/ErrorMessage";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SubjectSearchService from "../../dataEntryApp/services/SubjectSearchService";
 import { connect, useDispatch } from "react-redux";
 import { getGenders, getOperationalModules, getOrganisationConfig } from "../reducers/metadataReducer";

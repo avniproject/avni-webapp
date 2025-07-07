@@ -1,4 +1,4 @@
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 
 class EntityEditUtil {
   static onDelete(resource, id, entityDisplayName, onSuccessfulDelete) {

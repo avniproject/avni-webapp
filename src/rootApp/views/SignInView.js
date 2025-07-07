@@ -15,7 +15,7 @@ import {
 import { styled } from "@mui/material/styles";
 import AvniLogo from "../../avni-logo-black.png";
 import { RemoveRedEye } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SideImage from "../../avni-background.jpeg";
 import ApplicationContext from "../../ApplicationContext";
 import { httpClient as http } from "common/utils/httpClient";
@@ -56,14 +56,14 @@ const StyledSubmitButton = styled(Button)(({ theme }) => ({
   }
 }));
 
-const StyledReportButton = styled(Button)(({ theme }) => ({
+const StyledReportButton = styled(Button)({
   backgroundColor: "#f27510",
   color: "white",
   boxShadow: "none",
   "&:hover": {
     backgroundColor: "#f27510"
   }
-}));
+});
 
 const StyledEyeIcon = styled(RemoveRedEye)({
   cursor: "pointer"

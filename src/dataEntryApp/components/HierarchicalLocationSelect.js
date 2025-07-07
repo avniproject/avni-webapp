@@ -1,8 +1,8 @@
 import LocationSelect from "./LocationSelect";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import _ from "lodash";
 import { useSelector } from "react-redux";
-import httpClient from "../../common/utils/httpClient";
+import { httpClient } from "../../common/utils/httpClient";
 import { Individual } from "openchs-models";
 
 const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect, selectedLocation }) => {

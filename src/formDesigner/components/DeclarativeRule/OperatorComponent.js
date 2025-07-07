@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { Grid } from "@mui/material";
 import { map, startCase } from "lodash";
 import Select from "react-select";

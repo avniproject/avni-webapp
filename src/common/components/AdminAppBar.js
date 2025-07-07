@@ -8,18 +8,17 @@ import { OrganisationOptions } from "./OrganisationOptions";
 import { Home } from "@mui/icons-material";
 import CurrentUserService from "../service/CurrentUserService";
 
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
+const StyledAppBar = styled(AppBar)({
   display: "flex",
-  flexDirection: "row",
-  alignItems: "center"
-}));
+  flexDirection: "row"
+});
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
+const StyledTypography = styled(Typography)({
   flex: 1,
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
   overflow: "hidden"
-}));
+});
 
 const AdminAppBar = ({ getUserInfo, organisation, authSession, history, organisations, userInfo, ...rest }) => {
   return (

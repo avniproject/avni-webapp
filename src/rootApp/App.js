@@ -1,9 +1,9 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import Routes from "./Routes";
 import { getUserInfo } from "./ducks";
 import IdpDetails from "./security/IdpDetails";
-import httpClient from "../common/utils/httpClient";
+import { httpClient } from "../common/utils/httpClient";
 
 class App extends Component {
   componentDidMount() {

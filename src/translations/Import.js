@@ -1,6 +1,6 @@
 import DropDown from "../common/components/DropDown";
 import FileUpload from "../common/components/FileUpload";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { filter, find, isEmpty, isString, size } from "lodash";
 import { Box, Grid } from "@mui/material";

@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { Grid, FormControlLabel, Checkbox, Button, Modal, TextField } from "@mui/material";
-import React, { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { get } from "lodash";
 import { httpClient as http } from "common/utils/httpClient";
 import { AlertModal } from "./AlertModal";
@@ -18,13 +18,13 @@ const StyledModalContent = styled(Grid)(({ theme }) => ({
   left: "30%"
 }));
 
-const StyledDeleteButton = styled(Button)(({ theme }) => ({
+const StyledDeleteButton = styled(Button)({
   backgroundColor: "red"
-}));
+});
 
-const StyledWarningIcon = styled(Warning)(({ theme }) => ({
+const StyledWarningIcon = styled(Warning)({
   fontSize: "40px"
-}));
+});
 
 export const DeleteData = ({
   openModal,

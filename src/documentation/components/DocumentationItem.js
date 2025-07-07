@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { getDocumentationState, useDocumentationDispatch } from "../hooks";
 import RichTextEditor from "../../news/components/RichTextEditor";
 import { isEmpty } from "lodash";

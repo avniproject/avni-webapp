@@ -1,11 +1,8 @@
-import httpClient from "../utils/httpClient";
+import { httpClient } from "../utils/httpClient";
 
 export default {
-  fetchOperationalModules: () =>
-    httpClient.fetchJson("/web/operationalModules").then(response => response.json),
+  fetchOperationalModules: () => httpClient.fetchJson("/web/operationalModules").then(response => response.json),
   fetchGenders: () => httpClient.fetchJson("/web/gender").then(response => response.json),
-  fetchOrganisationConfigs: () =>
-    httpClient.fetchJson("/web/organisationConfig").then(response => response.json),
-  fetchSubjectTypes: () =>
-    httpClient.get("/subjectType").then(res => res.data._embedded.subjectType)
+  fetchOrganisationConfigs: () => httpClient.fetchJson("/web/organisationConfig").then(response => response.json),
+  fetchSubjectTypes: () => httpClient.get("/subjectType").then(res => res.data._embedded.subjectType)
 };

@@ -11,7 +11,7 @@ const StyledContainer = styled("div")(({ isGrid }) => ({
   width: isGrid ? "50%" : undefined
 }));
 
-const StyledTypography = styled(Typography)(({ theme, isGrid, hasHelpText }) => ({
+const StyledTypography = styled(Typography)(({ isGrid, hasHelpText }) => ({
   width: !isGrid ? "50%" : undefined,
   marginBottom: !isGrid && !hasHelpText ? 8 : 0, // Converted from sx={{ mb: 1 }} (1 * 8px = 8px)
   color: "rgba(0, 0, 0, 0.54)",

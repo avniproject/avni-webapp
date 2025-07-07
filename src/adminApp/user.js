@@ -1,5 +1,5 @@
 import _, { filter, get, isEmpty, isFinite, isNil, map, some, sortBy, startCase } from "lodash";
-import React, { cloneElement, Fragment, useContext, useEffect, useState } from "react";
+import { cloneElement, Fragment, useContext, useEffect, useState } from "react";
 import {
   ArrayField,
   ArrayInput,
@@ -28,14 +28,13 @@ import {
   TextField,
   TextInput
 } from "react-admin";
-import Typography from "@mui/material/Typography";
-import CardActions from "@mui/material/CardActions";
+import { Paper, Grid, Chip, Typography, CardActions } from "@mui/material";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
 import { datePickerModes, localeChoices, timePickerModes } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
-import http, { httpClient } from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import {
   CustomToolbar,
   doesNotStartOrEndWithWhitespaces,
@@ -54,12 +53,9 @@ import { ToolTipContainer } from "../common/components/ToolTipContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniBooleanInput } from "./components/AvniBooleanInput";
 import { AvniRadioButtonGroupInput } from "../common/components/AvniRadioButtonGroupInput";
-import { Paper } from "@mui/material";
 import { activatedAudit, createdAudit, modifiedAudit } from "./components/AuditUtil";
 import ResetPasswordButton from "./components/ResetPasswordButton";
 import { AvniPasswordInput } from "./components/AvniPasswordInput";
-import Chip from "@mui/material/Chip";
-import { Grid } from "@mui/material";
 import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";
@@ -461,7 +457,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                 >
                   <span>@{nameSuffix}</span>
                 </AvniTextInput>
-                {httpClient.idp.idpType === IdpDetails.cognito && formData.username && (
+                {http.idp.idpType === IdpDetails.cognito && formData.username && (
                   <AvniBooleanInput
                     source={"customPassword"}
                     style={{ marginTop: "1em" }}
@@ -477,7 +473,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                     toolTipKey={"ADMIN_USER_SET_PASSWORD"}
                   />
                 )}
-                {(httpClient.idp.idpType === IdpDetails.keycloak || formData.customPassword) && (
+                {(http.idp.idpType === IdpDetails.keycloak || formData.customPassword) && (
                   <Fragment>
                     <AvniPasswordInput
                       resettable

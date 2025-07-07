@@ -3,13 +3,13 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuer
 import { onNewThread } from "../../../../reducers/CommentReducer";
 import { useTranslation } from "react-i18next";
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
+const StyledDialog = styled(Dialog)({
   "& .MuiDialog-paper": {
     position: "absolute",
     right: 0,
     width: 400
   }
-}));
+});
 
 export default function NewCommentThreadDialog({ open, setOpen, newCommentText, onCommentChange, dispatch, subjectUUID }) {
   const { t } = useTranslation();

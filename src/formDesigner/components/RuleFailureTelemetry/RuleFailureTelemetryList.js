@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { httpClient as http } from "common/utils/httpClient";

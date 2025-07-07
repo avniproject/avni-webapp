@@ -1,7 +1,6 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
-import { Delete } from "@mui/icons-material";
-import { Visibility } from "@mui/icons-material";
+import { Delete, Visibility } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import DragNDropComponent from "../../common/DragNDropComponent";
 import PropTypes from "prop-types";

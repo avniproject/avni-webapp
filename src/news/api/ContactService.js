@@ -1,4 +1,4 @@
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 import _ from "lodash";
 
 const contactGroupEndpoint = "/web/contactGroup";
@@ -9,15 +9,11 @@ class ContactService {
   }
 
   static getContactGroups(labelFilter, pageNumber, pageSize) {
-    return http.getData(
-      `${contactGroupEndpoint}?page=${pageNumber}&size=${pageSize}&label=${labelFilter}`
-    );
+    return http.getData(`${contactGroupEndpoint}?page=${pageNumber}&size=${pageSize}&label=${labelFilter}`);
   }
 
   static getContactGroupContacts(contactGroupId, pageNumber, pageSize) {
-    return http.getData(
-      `${contactGroupEndpoint}/${contactGroupId}?page=${pageNumber}&size=${pageSize}`
-    );
+    return http.getData(`${contactGroupEndpoint}/${contactGroupId}?page=${pageNumber}&size=${pageSize}`);
   }
 
   static addSubjectToContactGroup(contactGroupId, subject) {
@@ -29,8 +25,7 @@ class ContactService {
   }
 
   static addEditContactGroup(contactGroup, label, description) {
-    if (_.isNil(contactGroup))
-      return http.postJson(`${contactGroupEndpoint}`, { label: label, description: description });
+    if (_.isNil(contactGroup)) return http.postJson(`${contactGroupEndpoint}`, { label: label, description: description });
     else
       return http.putJson(`${contactGroupEndpoint}/${contactGroup.id}`, {
         label: label,

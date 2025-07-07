@@ -30,7 +30,7 @@ const StyledTableContainer = styled("div")({
   overflowY: "hidden"
 });
 
-const StyledMaterialReactTable = styled(MaterialReactTable)(({ theme }) => ({
+const StyledMaterialReactTable = styled(MaterialReactTable)({
   "& .MuiTableHeadCell-root": {
     zIndex: 2
   },
@@ -43,7 +43,7 @@ const StyledMaterialReactTable = styled(MaterialReactTable)(({ theme }) => ({
   "& .MuiPaper-root": {
     elevation: 0
   }
-}));
+});
 
 const SubjectAssignment = () => {
   const [state, updateState] = useReducer(SubjectAssignmentReducer, initialState);

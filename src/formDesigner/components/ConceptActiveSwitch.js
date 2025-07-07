@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import http from "../../common/utils/httpClient";
+import { httpClient as http } from "../../common/utils/httpClient";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import _ from "lodash";
 
