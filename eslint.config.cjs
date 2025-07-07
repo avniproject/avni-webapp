@@ -50,7 +50,12 @@ module.exports = [
       "no-undef": "error",
       "import/no-duplicates": ["error"],
       "no-duplicate-imports": "off",
-      "import/no-unresolved": "error",
+      "import/no-unresolved": [
+        "error",
+        {
+          ignore: ["\\.css$"]
+        }
+      ],
       "import/named": "error",
       "import/default": "error",
       "import/no-named-as-default": "warn",

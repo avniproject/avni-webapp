@@ -1,0 +1,546 @@
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/MainApp.js
+  18:24  error    Parse errors in imported module './rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  18:24  warning  Parse errors in imported module './rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  18:24  warning  Parse errors in imported module './rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/AccountOrgAdminUser.js
+  101:27  error  'user' is defined but never used      no-unused-vars
+  115:13  error  'formData' is defined but never used  no-unused-vars
+  115:23  error  'dispatch' is defined but never used  no-unused-vars
+  115:36  error  'rest' is defined but never used      no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/ApplicationMenu/ApplicationMenuList.js
+  123:30  error  'original' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/CustomFilters.js
+  35:7  error  'StyledTableHeadCell' is assigned a value but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/IdentifierSource.js
+  104:11  error  'formData' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/IdentifierUserAssignment.js
+  69:11  error  'formData' is defined but never used  no-unused-vars
+  89:11  error  'formData' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/OrgManager.js
+  30:32  error    Parse errors in imported module '../common/service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/default
+  30:32  warning  Parse errors in imported module '../common/service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default
+  30:32  warning  Parse errors in imported module '../common/service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/Organisation.js
+  42:36  error  'history' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/Reducers/ApplicationMenuReducer.js
+  36:9  error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/SubjectType/SubjectTypesList.js
+  3:15  error  'isEmpty' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/UserHelper.js
+  41:34  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/Util/EntityListUtil.js
+   7:70  error  'entityFieldName' is assigned a value but never used  no-unused-vars
+  28:27  error  'history' is defined but never used                   no-unused-vars
+  28:36  error  'entityName' is defined but never used                no-unused-vars
+  28:48  error  'entityDisplayName' is defined but never used         no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/WorkFlow/WorkFlowEncounterForm.js
+   28:19  error  'setClicked' is assigned a value but never used  no-unused-vars
+   66:66  error  'response' is defined but never used             no-unused-vars
+  125:15  error  'response' is defined but never used             no-unused-vars
+  149:17  error  'response' is defined but never used             no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/WorkFlow/WorkFlowFormCreation.js
+   20:19  error  'setClicked' is assigned a value but never used  no-unused-vars
+   61:66  error  'response' is defined but never used             no-unused-vars
+  115:15  error  'response' is defined but never used             no-unused-vars
+  138:17  error  'response' is defined but never used             no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/WorklistUpdationRule.js
+  62:38  error  'event' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/catchment.js
+  137:17  error  'formData' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/components/AlertModal.js
+  4:64  error  'className' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/components/LocationSaveButton.js
+  30:13  error  'handleSubmitWithRedirect' is assigned a value but never used  no-unused-vars
+  30:39  error  'saveLocation' is assigned a value but never used              no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/locations.js
+  142:15  error  'formData' is defined but never used  no-unused-vars
+  142:25  error  'dispatch' is defined but never used  no-unused-vars
+  159:25  error  'dispatch' is defined but never used  no-unused-vars
+  164:25  error  'dispatch' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/react-admin-config/authProvider.js
+  1:30  error  'type' is defined but never used    no-unused-vars
+  1:36  error  'params' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/react-admin-config/dataProvider.js
+  65:9  error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/react-admin-config/requestUtils.js
+  33:16  error  Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+  43:17  error  Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/service/MediaService.js
+  7:14  error  'exception' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/adminApp/user.js
+   62:24  error    Parse errors in imported module '../rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)  import/default
+   62:24  warning  Parse errors in imported module '../rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+   62:24  warning  Parse errors in imported module '../rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+  303:65  error    'edit' is defined but never used                                                                  no-unused-vars
+  303:74  error    'props' is defined but never used                                                                 no-unused-vars
+  504:13  error    'formData' is defined but never used                                                              no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/assignment/api/index.js
+   9:13  error  'r' is defined but never used  no-unused-vars
+  17:13  error  'r' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/assignment/components/TextFilter.js
+  12:37  error  'filterCriteria' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/assignment/taskAssignment/TaskAssignment.js
+  43:27  error  'history' is defined but never used  no-unused-vars
+  43:39  error  'props' is defined but never used    no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/AvniRouter.js
+  1:32  error    Parse errors in imported module './service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/default
+  1:32  warning  Parse errors in imported module './service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default
+  1:32  warning  Parse errors in imported module './service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/adapters.test.js
+    14:3  error  'FormElementGroup' is defined but never used                   no-unused-vars
+  1665:7  error  'sampleOperationalModules' is assigned a value but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/components/AdminAppBar.js
+  9:32  error    Parse errors in imported module '../service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/default
+  9:32  warning  Parse errors in imported module '../service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default
+  9:32  warning  Parse errors in imported module '../service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/components/Footer.js
+  1:16  error  'IconButton' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/components/OrganisationOptions.js
+  5:32  error    Parse errors in imported module '../service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/default
+  5:32  warning  Parse errors in imported module '../service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default
+  5:32  warning  Parse errors in imported module '../service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/components/utils.js
+  4:30  error  'withRouter' is defined but never used  no-unused-vars
+  5:16  error  'SvgIcon' is defined but never used     no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/material-table/MaterialTableToolBar.js
+  5:14  error  Parsing error: Unexpected token (5:14)
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/service/CurrentUserService.js
+  5:35  error  Parsing error: Unexpected token, expected "," (5:35)
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/service/OrganisationService.js
+  2:32  error    Parse errors in imported module './CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/default
+  2:32  warning  Parse errors in imported module './CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default
+  2:32  warning  Parse errors in imported module './CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/utils/httpClient.js
+   9:24  error    Parse errors in imported module '../../rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)            import/default
+   9:24  warning  Parse errors in imported module '../../rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)            import/no-named-as-default
+   9:24  warning  Parse errors in imported module '../../rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)            import/no-named-as-default-member
+  10:32  error    Parse errors in imported module '../service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/default
+  10:32  warning  Parse errors in imported module '../service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default
+  10:32  warning  Parse errors in imported module '../service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/common/utils/httpClient.test.js
+  5:24  error    Parse errors in imported module '../../rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  5:24  warning  Parse errors in imported module '../../rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  5:24  warning  Parse errors in imported module '../../rootApp/security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/api/index.js
+   78:14  error  'error' is defined but never used  no-unused-vars
+   88:14  error  'error' is defined but never used  no-unused-vars
+   98:14  error  'error' is defined but never used  no-unused-vars
+  112:20  error  'uuid' is defined but never used   no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/components/AudioPlayer.js
+  21:11  error  'children' is assigned a value but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/components/Breadcrumbs.js
+  19:30  error  'match' is defined but never used  no-unused-vars
+  19:96  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/components/Observations.js
+  345:14  error  'e' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/components/UserOption.js
+  60:44  error  'defaultLanguage' is defined but never used  no-unused-vars
+  72:30  error  'prevOpen' is not defined                    no-undef
+  75:5   error  'prevOpen' is not defined                    no-undef
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/reducers/commonFormUtil.js
+  51:31  error  'isIndividualRegistration' is assigned a value but never used  no-unused-vars
+  51:65  error  'isEdit' is assigned a value but never used                    no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/reducers/commonFormUtil.test.js
+  335:11  error  'emptyObservationsHolder' is assigned a value but never used  no-unused-vars
+  935:7   error  'observationsHolder' is assigned a value but never used       no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/sagas/completedVisitSaga.js
+  28:63  error  'filterQueryString' is defined but never used  no-unused-vars
+  44:41  error  'subjectUuid' is defined but never used        no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/sagas/encounterSaga.test.js
+  11:3  error  'test' is not defined  no-undef
+  36:3  error  'test' is not defined  no-undef
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/sagas/messagesSaga.js
+  28:12  error  'error' is defined but never used  no-unused-vars
+  40:12  error  'error' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/sagas/programEncounterSaga.test.js
+  11:3  error  'test' is not defined  no-undef
+  36:3  error  'test' is not defined  no-undef
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/sagas/selectors.test.js
+  1:10  error  'assert' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/sagas/subjectSaga.test.js
+  13:3  error  'test' is not defined  no-undef
+  38:3  error  'test' is not defined  no-undef
+  63:3  error  'test' is not defined  no-undef
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/services/IdentifierAssignmentService.test.js
+  10:3  error  'test' is not defined  no-undef
+  44:3  error  'test' is not defined  no-undef
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/services/IndividualService.js
+   8:25  error  'addressLevel' is defined but never used     no-unused-vars
+   8:39  error  'subjectTypeName' is defined but never used  no-unused-vars
+  35:42  error  'mobileNumber' is defined but never used     no-unused-vars
+  35:56  error  'subjectTypeUUID' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/services/RuleEvaluationService.js
+    1:15  error    '/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/node_modules/lodash/lodash.js' imported multiple times  import/no-duplicates
+    2:1   warning  Unused eslint-disable directive (no problems were reported from 'no-duplicate-imports')
+    3:20  error    '/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/node_modules/lodash/lodash.js' imported multiple times  import/no-duplicates
+  203:12  error    'error' is defined but never used                                                                    no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/GlobalSearch/CodedConceptForm.js
+  30:44  error  'index' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/GlobalSearch/NonCodedConceptForm.js
+  233:31  error  'timeFormat' is not defined  no-undef
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/audio/Player.js
+  17:34  error  'history' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/registration/FormWizardButton.js
+  3:46  error  'to' is defined but never used      no-unused-vars
+  3:50  error  'params' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/registration/SubjectValidation.js
+   9:53  error  'props' is defined but never used  no-unused-vars
+  24:54  error  'props' is defined but never used  no-unused-vars
+  37:54  error  'props' is defined but never used  no-unused-vars
+  52:54  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/search/SubjectSearchTable.js
+  6:71  error  'reject' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/AddRelative.js
+  128:7  error  'StyledHorizontalLine' is assigned a value but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/CompletedEncounter.js
+  78:3  error  'subjectTypeUuid' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/FindRelative.js
+  35:3  error  'subjectType' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/ProfileDetails.js
+  145:79  error  'match' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/Program.js
+  45:7  error  'type' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/ProgramEnrol.js
+  46:3  error  'getSubjectProfile' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/SubjectDashboardGeneralTab.js
+   6:8  error  '_' is defined but never used                no-unused-vars
+  53:3  error  'subjectTypeUuid' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/SubjectDashboardProfileTab.js
+  83:3  error  'path' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/SubjectDashboardProgramView.js
+  75:3  error  'subjectTypeUuid' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/dataEntryApp/views/subjectDashBoard/components/news/NewsList.js
+  22:28  error  'match' is defined but never used  no-unused-vars
+  22:38  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/documentation/DocumentationList.js
+  26:46  error  'idx' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/documentation/api/index.js
+  15:13  error  'r' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/documentation/components/Item.js
+  47:21  error  'setShowIcons' is assigned a value but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/documentation/reducers/index.js
+  19:34  error  'uuid' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/StaticFormElement.js
+  70:68  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/common/DragNDropComponent.js
+   8:51  error  'isDraggingOver' is defined but never used  no-unused-vars
+  12:51  error  'isDragging' is defined but never used      no-unused-vars
+  65:26  error  'sectionUUID' is defined but never used     no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/common/FormDesignerHandlers.js
+  16:72  error  'index' is defined but never used  no-unused-vars
+  26:52  error  'index' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/common/ResourceListView.js
+  17:10  error  'data' is assigned a value but never used        no-unused-vars
+  18:10  error  'totalCount' is assigned a value but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/ConceptDetails.js
+  290:70  error  'index' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/ActionComponent.js
+  7:90  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/CompoundRuleComponent.js
+  10:89  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/CompoundRuleConjunctionComponent.js
+  4:76  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/ConditionComponent.js
+  6:74  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/ConditionConjunctionComponent.js
+  5:73  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/DeclarativeRuleComponent.js
+  10:101  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/DeclarativeRules.js
+  23:6  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/LHSComponent.js
+  6:83  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/OperatorComponent.js
+  8:88  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/RHSComponent.js
+  15:83  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/DeclarativeRule/RuleComponent.js
+  10:84  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/Extensions/ExtensionReducer.js
+  23:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  27:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  29:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  34:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  37:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  42:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  43:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  48:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  53:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  58:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  63:7  error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/Extensions/Extensions.js
+  50:28  error  'event' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/FormElement.js
+  167:17  error  'event' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/FormElementDetails.js
+  605:33  error  'event' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/FormElementWithAddButton.js
+  42:22  error  'event' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/FormSettings.js
+  143:17   error  'response' is defined but never used                                       no-unused-vars
+  145:46   error  'index' is defined but never used                                          no-unused-vars
+  207:49   error  'index' is defined but never used                                          no-unused-vars
+  340:25   error  Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+  341:43   error  Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+  485:38   error  'event' is defined but never used                                          no-unused-vars
+  493:42   error  Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+  493:116  error  Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+  504:46   error  'event' is defined but never used                                          no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/InlineConcept.js
+   32:38  error  'index' is defined but never used  no-unused-vars
+  131:60  error  'event' is defined but never used  no-unused-vars
+  185:18  error  'event' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/NewFormModal.js
+  66:51  error  'reject' is defined but never used  no-unused-vars
+  81:15  error  'result' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/QuestionGroup.js
+  16:11  error  'index' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/ReportCard/CreateEditReportCard.js
+  177:21  error  'event' is defined but never used  no-unused-vars
+  186:23  error  'event' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/ReportCard/ReportCardReducer.js
+  39:7  error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/SubjectConcept.js
+  11:94  error  Empty block statement  no-empty
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/components/UserMessagingConfig.js
+  67:37  error  'event' is defined but never used     no-unused-vars
+  69:13  error  'response' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/views/ChecklistDetails.js
+  38:14  error  'e' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/views/Concepts.js
+  150:10  error  'areEqual' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/views/CreateEditConcept.js
+  454:63  error  'value' is defined but never used  no-unused-vars
+  466:70  error  'value' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/formDesigner/views/FormDetails.js
+  276:54  error  'index' is defined but never used   no-unused-vars
+  767:16  error  'event' is defined but never used   no-unused-vars
+  778:51  error  'index' is defined but never used   no-unused-vars
+  779:47  error  'index1' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/news/reducers/index.js
+  15:7  error  Unexpected lexical declaration in case block  no-case-declarations
+  17:7  error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/news/whatsapp/AddContactGroupUsers.js
+  64:25  error  'state' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/news/whatsapp/GroupsTab.js
+  1:10  error  'Fragment' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/news/whatsapp/SearchUserAndConfirm.js
+  91:25  error  'state' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/news/whatsapp/WhatsAppContactGroup.js
+  1:10  error  'Fragment' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/reports/api.js
+  21:17  error  'filename' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/App.js
+  5:24  error    Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  5:24  warning  Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  5:24  warning  Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/ChooseIdpView.js
+  4:24  error    Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  4:24  warning  Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  4:24  warning  Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/Routes.js
+  20:32  error    Parse errors in imported module '../common/service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/default
+  20:32  warning  Parse errors in imported module '../common/service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default
+  20:32  warning  Parse errors in imported module '../common/service/CurrentUserService': Unexpected token, expected "," (5:35) (5:35)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/SecureApp.js
+  11:24  error    Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  11:24  warning  Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  11:24  warning  Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/ducks.js
+  3:24  error    Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  3:24  warning  Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  3:24  warning  Parse errors in imported module './security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/security/CognitoWebClient.js
+  3:24  error    Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  3:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  3:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/security/IdpDetails.js
+  24:9  error  Parsing error: Unexpected token (24:9)
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/security/IdpFactory.js
+  1:24  error    Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  1:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  1:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/security/IdpFactory.test.js
+  2:24  error    Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)                         import/default
+  2:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)                         import/no-named-as-default
+  2:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)                         import/no-named-as-default-member
+  6:33  error    Parse errors in imported module './StubbedLocalStorage': Unexpected token, expected "," (2:21) (2:21)  import/default
+  6:33  warning  Parse errors in imported module './StubbedLocalStorage': Unexpected token, expected "," (2:21) (2:21)  import/no-named-as-default
+  6:33  warning  Parse errors in imported module './StubbedLocalStorage': Unexpected token, expected "," (2:21) (2:21)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/security/KeycloakWebClient.js
+  2:24  error    Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  2:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  2:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/security/NullIdp.js
+  3:24  error    Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  3:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  3:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/security/StubbedLocalStorage.js
+  2:21  error  Parsing error: Unexpected token, expected "," (2:21)
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/security/UndecidedIdp.js
+  2:24  error    Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  2:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  2:24  warning  Parse errors in imported module './IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/rootApp/views/KeycloakSignInView.js
+  8:24  error    Parse errors in imported module '../security/IdpDetails': Unexpected token (24:9) (24:9)  import/default
+  8:24  warning  Parse errors in imported module '../security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default
+  8:24  warning  Parse errors in imported module '../security/IdpDetails': Unexpected token (24:9) (24:9)  import/no-named-as-default-member
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/setupProxy.js
+  31:28  error  'req' is defined but never used  no-unused-vars
+  31:33  error  'res' is defined but never used  no-unused-vars
+  34:33  error  'res' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/translations/Import.js
+  39:14  error  'error' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/translations/Translations.js
+  17:32  error  'user' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/upload/UploadDashboard.js
+  92:90  error  'userRoles' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/userGroups/UserGroups.js
+  45:45  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/userGroups/components/GroupDashboards.js
+  39:110  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/userGroups/components/GroupUsers.js
+  12:85  error  'props' is defined but never used  no-unused-vars
+
+/Users/ombhardwaj/Desktop/v6/pr/avni-webapp/src/userGroups/components/TabbedView.js
+  70:25  error  'state' is defined but never used  no-unused-vars
+
+✖ 270 problems (223 errors, 47 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
+  143 - is defined but never used
+69 - Parse errors in imported module
+16 - Unexpected lexical declaration in cas

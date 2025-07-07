@@ -30,15 +30,6 @@ export const getOperationalModules = () => ({
   type: types.GET_OPERATIONAL_MODULES
 });
 
-export const getActivityReport = () => ({
-  type: types.GET_ACTIVITY_REPORT
-});
-
-export const setActivityReport = activityReport => ({
-  type: types.SET_ACTIVITY_REPORT,
-  activityReport
-});
-
 const initialState = { operationalModules: {} };
 
 // reducer

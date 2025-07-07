@@ -1,5 +1,5 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import { setActivityReport, setOperationalModules, setUploadStatus, types } from "./reducers";
+import { setOperationalModules, setUploadStatus, types } from "./reducers";
 import api from "./api";
 import { mapOperationalModules } from "../common/adapters";
 
@@ -21,15 +21,6 @@ export function* getExportJobStatusesWorker({ page }) {
   yield put(setUploadStatus(jobStatus));
 }
 
-export function* getActivityReportWatcher() {
-  yield takeLatest(types.GET_ACTIVITY_REPORT, getActivityReportWorker);
-}
-
-export function* getActivityReportWorker() {
-  const activityReport = yield call(api.getActivityReport);
-  yield put(setActivityReport(activityReport));
-}
-
 export default function* onLoadSaga() {
-  yield all([onLoadWatcher, getExportJobStatusesWatcher, getActivityReportWatcher].map(fork));
+  yield all([onLoadWatcher, getExportJobStatusesWatcher].map(fork));
 }

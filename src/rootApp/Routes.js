@@ -9,7 +9,6 @@ import Export from "../reports/export/Export";
 import OrgManagerAppDesigner from "../adminApp/OrgManagerAppDesigner";
 import Tutorials from "../tutorials/Tutorials";
 import SelfServiceReports from "../reports/SelfServiceReports";
-import CannedReport from "../reports/cannedReport/CannedReport";
 import DocumentationRoutes from "../documentation/DocumentationRoutes";
 import Assignment from "../assignment/Assignment";
 import SubjectAssignment from "../assignment/subjectAssignment/SubjectAssignment";
@@ -87,7 +86,6 @@ const Routes = ({ logout, user, userInfo, organisation, genericConfig }) => {
         userInfo={userInfo}
         component={WithProps({ user, organisation }, SelfServiceReports)}
       />
-      <RestrictedRoute exact path="/cannedreports" userInfo={userInfo} component={WithProps({ user, organisation }, CannedReport)} />
       <RestrictedRoute exact path="/help" userInfo={userInfo} component={WithProps({ user, organisation }, Tutorials)} />
       <RestrictedRoute path="/broadcast" userInfo={userInfo} component={WithProps({ user, organisation }, Broadcast)} />
       <Route

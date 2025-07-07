@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Typography, Box } from "@mui/material";
 import Observations from "dataEntryApp/components/Observations";
 import { useTranslation } from "react-i18next";
@@ -9,17 +9,25 @@ import ScheduledVisitsTable from "dataEntryApp/components/ScheduledVisitsTable";
 import { selectFetchingRulesResponse, selectRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
 import CustomizedBackdrop from "dataEntryApp/components/CustomizedBackdrop";
 
-const useStyle = makeStyles(theme => ({
-  form: {
-    padding: theme.spacing(4, 3)
-  },
-  tableContainer: {
-    maxWidth: "66.66%"
-  }
+const StyledForm = styled("div")(({ theme }) => ({
+  padding: theme.spacing(4, 3)
+}));
+
+const StyledTableContainer = styled(Box)(({ theme }) => ({
+  maxWidth: "66.66%",
+  paddingTop: theme.spacing(1)
+}));
+
+const StyledSection = styled(Box)(({ theme }) => ({
+  paddingBottom: theme.spacing(6)
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  display: "block",
+  marginBottom: theme.spacing(1)
 }));
 
 const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => {
-  const classes = useStyle();
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const rulesResponse = useSelector(selectRulesResponse);
@@ -34,83 +42,37 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
   }
 
   return (
-    <div className={classes.form}>
+    <StyledForm>
       {!isEmpty(rulesResponse.decisionObservations) && (
-        <Box
-          sx={{
-            pb: 6
-          }}
-        >
-          <Typography
-            variant="button"
-            sx={{
-              display: "block",
-              mb: 1
-            }}
-          >
-            {t("systemRecommendations")}
-          </Typography>
-          <Box
-            className={classes.tableContainer}
-            sx={{
-              pt: 1
-            }}
-          >
+        <StyledSection>
+          <StyledTypography variant="button">{t("systemRecommendations")}</StyledTypography>
+          <StyledTableContainer>
             <Observations observations={rulesResponse.decisionObservations} additionalRows={[]} highlight />
-          </Box>
-        </Box>
+          </StyledTableContainer>
+        </StyledSection>
       )}
       {!isEmpty(rulesResponse.visitSchedules) && (
-        <Box
-          sx={{
-            pb: 6
-          }}
-        >
-          <Typography
-            variant="button"
-            sx={{
-              display: "block",
-              mb: 1
-            }}
-          >
-            {t("visitsBeingScheduled")}
-          </Typography>
-          <Box
-            className={classes.tableContainer}
-            sx={{
-              pt: 1
-            }}
-          >
+        <StyledSection>
+          <StyledTypography variant="button">{t("visitsBeingScheduled")}</StyledTypography>
+          <StyledTableContainer>
             <ScheduledVisitsTable visitSchedules={rulesResponse.visitSchedules} />
-          </Box>
-        </Box>
+          </StyledTableContainer>
+        </StyledSection>
       )}
       {!isEmpty(observations) && (
-        <Box>
-          <Typography
-            variant="button"
-            sx={{
-              display: "block",
-              mb: 1
-            }}
-          >
-            {t("observations")}
-          </Typography>
-          <Box
-            className={classes.tableContainer}
-            sx={{
-              pt: 1
-            }}
-          >
+        <StyledSection>
+          <StyledTypography variant="button">{t("observations")}</StyledTypography>
+          <StyledTableContainer>
             <Observations
               observations={observations ? observations : []}
               additionalRows={additionalRows ? additionalRows : []}
               form={form}
             />
-          </Box>
-        </Box>
+          </StyledTableContainer>
+        </StyledSection>
       )}
-    </div>
+    </StyledForm>
   );
 };
+
 export default Summary;
