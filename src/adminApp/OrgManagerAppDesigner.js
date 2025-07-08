@@ -99,7 +99,7 @@ class OrgManagerAppDesigner extends Component {
           <Resource name="applicationMenu" options={{ label: "Application Menu" }} list={ApplicationMenuList} />
           <Resource name="extensions" options={{ label: "Extensions" }} list={Extensions} />
           {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOrganisationConfiguration) ? (
-            <Resource name="archivalConfig" options={{ label: "App Storage Config" }} list={ArchivalConfig} />
+            <Resource name="syncConfig" options={{ label: "Sync Config" }} list={ArchivalConfig} />
           ) : (
             <div />
           )}
