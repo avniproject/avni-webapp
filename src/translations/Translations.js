@@ -14,7 +14,7 @@ import { TranslationDashboard } from "./TranslationDashboard";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const EMPTY_TRANSLATION_KEY = "KEY_NOT_DEFINED";
-export const Translations = ({ user, organisationConfig, getOrgConfig, dashboardData, getDashboardData, history }) => {
+const Translations = ({ user, organisationConfig, getOrgConfig, dashboardData, getDashboardData, history }) => {
   useEffect(() => {
     getOrgConfig();
     getDashboardData("Android", EMPTY_TRANSLATION_KEY);

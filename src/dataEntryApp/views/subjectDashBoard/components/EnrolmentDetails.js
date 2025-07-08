@@ -13,7 +13,7 @@ import {
   Accordion
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import { Link } from "react-router-dom";
 import { DeleteButton } from "../../../components/DeleteButton";
 import { useState, Fragment } from "react";
@@ -79,7 +79,10 @@ export const EnrolmentDetails = ({
     return [
       {
         label: "Exit Enrolment Date",
-        value: moment(programData.programExitDateTime).format("DD-MMM-YYYY")
+        value:
+          programData.programExitDateTime && isValid(new Date(programData.programExitDateTime))
+            ? format(new Date(programData.programExitDateTime), "dd-MMM-yyyy")
+            : "-"
       }
     ];
   };
@@ -88,7 +91,10 @@ export const EnrolmentDetails = ({
     return [
       {
         label: "Enrolment Date",
-        value: moment(programData.enrolmentDateTime).format("DD-MMM-YYYY")
+        value:
+          programData.enrolmentDateTime && isValid(new Date(programData.enrolmentDateTime))
+            ? format(new Date(programData.enrolmentDateTime), "dd-MMM-yyyy")
+            : "-"
       }
     ];
   };

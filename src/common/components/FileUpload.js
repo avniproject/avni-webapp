@@ -1,12 +1,9 @@
 import { styled } from "@mui/material/styles";
-import { Button, Grid } from "@mui/material";
-
-const StyledGrid = styled(Grid)({
-  justifyContent: "flex-start"
-});
+import { Button, Stack } from "@mui/material";
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  marginLeft: theme.spacing(2)
+  marginLeft: theme.spacing(2),
+  whiteSpace: "nowrap"
 }));
 
 const StyledInput = styled("input")({
@@ -33,7 +30,7 @@ const FileUpload = ({ onSelect, onUpload, canSelect, canUpload }) => {
   };
 
   return (
-    <StyledGrid container direction="row" spacing={1}>
+    <Stack direction="row" spacing={2} alignItems="center">
       <StyledButton variant="contained" component="label" disabled={!canSelect}>
         Choose File
         <StyledInput type="file" onChange={onSelectWrapper} onClick={handleClick} />
@@ -41,7 +38,7 @@ const FileUpload = ({ onSelect, onUpload, canSelect, canUpload }) => {
       <StyledButton variant="contained" color="primary" aria-haspopup="false" onClick={onUploadWrapper} disabled={!canUpload}>
         Upload
       </StyledButton>
-    </StyledGrid>
+    </Stack>
   );
 };
 

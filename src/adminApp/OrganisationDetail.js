@@ -6,7 +6,7 @@ import { Title } from "react-admin";
 import { DeleteData } from "./components/DeleteData";
 import { OrgSettings } from "./components/OrgSettings";
 import OrganisationCategory from "./domain/OrganisationCategory";
-import OrganisationService from "../common/service";
+import OrganisationService from "../common/service/OrganisationService";
 import _ from "lodash";
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -60,6 +60,7 @@ export const OrganisationDetail = ({
               <Typography variant="h6" sx={{ mb: 1 }}>
                 Organisation Name : {name}
               </Typography>
+              <OrgSettings hasEditPrivilege={hasEditPrivilege} dataDeletedIndicator={dataDeletedIndicator} />
             </Grid>
             {hasEditPrivilege && !_.isNil(organisation) && (
               <Grid>
@@ -69,7 +70,6 @@ export const OrganisationDetail = ({
               </Grid>
             )}
           </Grid>
-          <OrgSettings hasEditPrivilege={hasEditPrivilege} dataDeletedIndicator={dataDeletedIndicator} />
         </Grid>
         {hasEditPrivilege && (
           <DeleteData

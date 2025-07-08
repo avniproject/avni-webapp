@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import Observations from "dataEntryApp/components/Observations";
 import { InternalLink } from "../../../../common/components/utils";
-import moment from "moment/moment";
+import { format, isValid } from "date-fns";
 import { useTranslation } from "react-i18next";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { defaultTo } from "lodash";
@@ -83,13 +83,20 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
           <StyledMainHeading component="span">{t(defaultTo(encounter.name, encounter.encounterType.name))}</StyledMainHeading>
           {encounter.earliestVisitDateTime ? (
             <StyledScheduledHeading component="span">
-              {t("Scheduledon")}: {moment(new Date(encounter.earliestVisitDateTime)).format("DD-MM-YYYY")}
+              {t("Scheduledon")}:{" "}
+              {encounter.earliestVisitDateTime && isValid(new Date(encounter.earliestVisitDateTime))
+                ? format(new Date(encounter.earliestVisitDateTime), "dd-MM-yyyy")
+                : "-"}
             </StyledScheduledHeading>
           ) : null}
         </StyledGrid>
         <StyledScheduledDateContainer>
           <StyledProgramStatus component="span">{t("Completed")}</StyledProgramStatus>
-          <StyledSubHeading component="span">{moment(new Date(encounter.encounterDateTime)).format("DD-MM-YYYY")}</StyledSubHeading>
+          <StyledSubHeading component="span">
+            {encounter.encounterDateTime && isValid(new Date(encounter.encounterDateTime))
+              ? format(new Date(encounter.encounterDateTime), "dd-MM-yyyy")
+              : "-"}
+          </StyledSubHeading>
         </StyledScheduledDateContainer>
         <Observations observations={encounter ? encounter.observations : []} form={form} />
         <InternalLink to={viewAllCompletedUrl}>

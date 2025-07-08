@@ -12,12 +12,10 @@ import {
   EncounterType,
   KeyValue
 } from "openchs-models";
-
 import _ from "lodash";
 import WebFormElement from "../../common/model/WebFormElement";
 import WebFormElementGroup from "../../common/model/WebFormElementGroup";
 import WebForm from "../../common/model/WebForm";
-import moment from "moment";
 
 class EntityFactory {
   static createSafeProgram(name) {
@@ -40,7 +38,7 @@ class EntityFactory {
     firstName,
     lastName,
     address,
-    registrationDate = moment().toDate(),
+    registrationDate = new Date(),
     observations = [],
     approvalStatuses = []
   }) {

@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useCallback } from "react";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { httpClient as http } from "common/utils/httpClient";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
@@ -72,13 +72,17 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
         accessorKey: "errorDateTime",
         header: "Error Date",
         enableSorting: true,
-        Cell: ({ row }) => moment(row.original.errorDateTime).format("YYYY-MM-DD HH:mm")
+        Cell: ({ row }) =>
+          isValid(new Date(row.original.errorDateTime)) ? format(new Date(row.original.errorDateTime), "yyyy-MM-dd HH:mm") : "-"
       },
       {
         accessorKey: "closedDateTime",
         header: "Closed Date",
         enableSorting: true,
-        Cell: ({ row }) => (row.original.closedDateTime ? moment(row.original.closedDateTime).format("YYYY-MM-DD HH:mm") : "-")
+        Cell: ({ row }) =>
+          row.original.closedDateTime && isValid(new Date(row.original.closedDateTime))
+            ? format(new Date(row.original.closedDateTime), "yyyy-MM-dd HH:mm")
+            : "-"
       },
       {
         accessorKey: "individualUuid",
@@ -328,7 +332,9 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
     </Box>
   );
 };
+
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
+
 export default connect(mapStateToProps)(RuleFailureTelemetryList);

@@ -94,7 +94,10 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
             onUpload={onUploadPressedHandler}
             canSelect={!isEmpty(language)}
             canUpload={
-              noOfKeysWithoutValues(file) === 0 && isEmpty(error) && UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditLanguage)
+              file &&
+              noOfKeysWithoutValues(file) === 0 &&
+              isEmpty(error) &&
+              UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditLanguage)
             }
           />
         </Grid>

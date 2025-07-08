@@ -2,7 +2,7 @@ import { useState, Fragment, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Accordion, AccordionDetails, AccordionSummary, Typography, List, Grid, Button, Paper } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
-import moment from "moment/moment";
+import { format, isValid } from "date-fns";
 import Observations from "dataEntryApp/components/Observations";
 import GridCommonList from "../components/GridCommonList";
 import { useTranslation } from "react-i18next";
@@ -145,11 +145,15 @@ const SubjectDashboardProfileTab = ({
           <StyledTypographyHeading component="div">
             {t("registrationDetails")}
             <StyledTypographySubHeading component="div">
-              {t("registrationDate")}: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
+              {t("registrationDate")}:{" "}
+              {profile.registrationDate && isValid(new Date(profile.registrationDate))
+                ? format(new Date(profile.registrationDate), "dd-MM-yyyy")
+                : "-"}
             </StyledTypographySubHeading>
             {!hideDOB && profile.dateOfBirth && (
               <StyledTypographySubHeading component="div">
-                {t("dateOfBirth")}: {moment(new Date(profile.dateOfBirth)).format("DD-MM-YYYY")}
+                {t("dateOfBirth")}:{" "}
+                {profile.dateOfBirth && isValid(new Date(profile.dateOfBirth)) ? format(new Date(profile.dateOfBirth), "dd-MM-yyyy") : "-"}
               </StyledTypographySubHeading>
             )}
           </StyledTypographyHeading>

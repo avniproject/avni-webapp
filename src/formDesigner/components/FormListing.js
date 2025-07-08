@@ -6,7 +6,7 @@ import { Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
 import { Close, Edit, LibraryAdd, Settings, Delete } from "@mui/icons-material";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import NewFormModal from "../components/NewFormModal";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
 
@@ -67,7 +67,10 @@ const FormListing = ({ history, userInfo }) => {
         accessorKey: "lastModifiedDateTime",
         header: "Last Modified",
         enableSorting: true,
-        Cell: ({ row }) => moment(row.original.lastModifiedDateTime).format("D/M/YYYY h:mm a")
+        Cell: ({ row }) =>
+          row.original.lastModifiedDateTime && isValid(new Date(row.original.lastModifiedDateTime))
+            ? format(new Date(row.original.lastModifiedDateTime), "d/M/yyyy h:mm a")
+            : "-"
       }
     ],
     []

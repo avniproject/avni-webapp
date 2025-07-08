@@ -1,4 +1,4 @@
-import moment from "moment";
+import { format, isValid } from "date-fns";
 
-export const formatDate = aDate => (aDate ? moment(aDate).format("DD-MM-YYYY") : "-");
-export const formatDateTime = aDate => (aDate ? moment(aDate).format("DD-MM-YYYY HH:mm") : "-");
+export const formatDate = aDate => (aDate && isValid(new Date(aDate)) ? format(new Date(aDate), "dd-MM-yyyy") : "-");
+export const formatDateTime = aDate => (aDate && isValid(new Date(aDate)) ? format(new Date(aDate), "dd-MM-yyyy HH:mm") : "-");

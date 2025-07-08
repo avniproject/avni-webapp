@@ -1,5 +1,5 @@
 import { Component } from "react";
-import moment from "moment";
+import { formatDistanceToNow, isValid } from "date-fns";
 import { Link } from "react-router-dom";
 
 class FormCard extends Component {
@@ -10,7 +10,10 @@ class FormCard extends Component {
 
   render() {
     const form = this.props.form;
-    const duration = moment(form.lastModifiedDateTime).fromNow(true);
+    const duration =
+      form.lastModifiedDateTime && isValid(new Date(form.lastModifiedDateTime))
+        ? formatDistanceToNow(new Date(form.lastModifiedDateTime), { addSuffix: true })
+        : "-";
     const linkProps = {
       pathname: `/forms/${form.uuid}`,
       state: { formName: form.name }

@@ -1,14 +1,14 @@
 import { filter, intersectionWith, isEmpty } from "lodash";
 import ReportTypes, { reportTypes } from "../ReportTypes";
-import moment from "moment";
+import { startOfDay, endOfDay, isValid } from "date-fns";
 
 export const initialState = {
   reportType: "",
   subjectType: {},
   program: {},
   encounterType: {},
-  startDate: moment().toDate(),
-  endDate: moment().toDate(),
+  startDate: new Date(),
+  endDate: new Date(),
   addressLevelIds: [],
   addressLevelError: "",
   includeVoided: false,
@@ -47,60 +47,26 @@ export function ExportReducer(exportRequest, action) {
   }
 }
 
-export const applicableOptions = (
-  { programs, formMappings, encounterTypes },
-  { subjectType, program }
-) => {
-  const validFormMappings = filter(
-    formMappings,
-    ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid
-  );
-  const programOptions = intersectionWith(
-    programs,
-    validFormMappings,
-    (a, b) => a.uuid === b.programUUID
-  );
+export const applicableOptions = ({ programs, formMappings, encounterTypes }, { subjectType, program }) => {
+  const validFormMappings = filter(formMappings, ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid);
+  const programOptions = intersectionWith(programs, validFormMappings, (a, b) => a.uuid === b.programUUID);
   if (isEmpty(programOptions)) {
-    const encounterTypeOptions = intersectionWith(
-      encounterTypes,
-      validFormMappings,
-      (a, b) => a.uuid === b.encounterTypeUUID
-    );
+    const encounterTypeOptions = intersectionWith(encounterTypes, validFormMappings, (a, b) => a.uuid === b.encounterTypeUUID);
     return { programOptions, encounterTypeOptions };
   } else {
-    const validFMForSelectedProgram = filter(
-      formMappings,
-      ({ programUUID }) => programUUID === program.uuid
-    );
-    const encounterTypeOptions = intersectionWith(
-      encounterTypes,
-      validFMForSelectedProgram,
-      (a, b) => a.uuid === b.encounterTypeUUID
-    );
+    const validFMForSelectedProgram = filter(formMappings, ({ programUUID }) => programUUID === program.uuid);
+    const encounterTypeOptions = intersectionWith(encounterTypes, validFMForSelectedProgram, (a, b) => a.uuid === b.encounterTypeUUID);
     return { programOptions, encounterTypeOptions };
   }
 };
 
-export const getRequestBody = ({
-  reportType,
-  subjectType,
-  program,
-  encounterType,
-  startDate,
-  endDate,
-  addressLevelIds,
-  includeVoided
-}) => {
+export const getRequestBody = ({ reportType, subjectType, program, encounterType, startDate, endDate, addressLevelIds, includeVoided }) => {
   return {
     subjectTypeUUID: subjectType.uuid,
     programUUID: program.uuid,
     encounterTypeUUID: encounterType.uuid,
-    startDate: moment(startDate)
-      .startOf("day")
-      .toDate(),
-    endDate: moment(endDate)
-      .endOf("day")
-      .toDate(),
+    startDate: isValid(new Date(startDate)) ? startOfDay(new Date(startDate)) : null,
+    endDate: isValid(new Date(endDate)) ? endOfDay(new Date(endDate)) : null,
     reportType: ReportTypes.getCode(reportType.name),
     addressLevelIds: addressLevelIds,
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -122,12 +88,8 @@ export const getNewRequestBody = ({
   const filters = {
     addressLevelIds: addressLevelIds,
     date: {
-      from: moment(startDate)
-        .startOf("day")
-        .toDate(),
-      to: moment(endDate)
-        .endOf("day")
-        .toDate()
+      from: isValid(new Date(startDate)) ? startOfDay(new Date(startDate)) : null,
+      to: isValid(new Date(endDate)) ? endOfDay(new Date(endDate)) : null
     },
     includeVoided
   };

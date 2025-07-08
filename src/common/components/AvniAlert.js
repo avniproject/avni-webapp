@@ -1,7 +1,5 @@
 import { styled } from "@mui/material/styles";
 import { Paper } from "@mui/material";
-
-import { clsx } from "clsx";
 import { Info, Warning } from "@mui/icons-material";
 
 const StyledPaper = styled(Paper)(({ theme, variant, severity }) => ({
@@ -21,6 +19,7 @@ const StyledPaper = styled(Paper)(({ theme, variant, severity }) => ({
 const IconWrapper = styled("div")(({ severity }) => ({
   display: "flex",
   alignItems: "center",
+  gap: "8px",
   ...(severity === "warning" && {
     color: "#ff9800"
   }),
@@ -31,7 +30,7 @@ const IconWrapper = styled("div")(({ severity }) => ({
 
 export const AvniAlert = ({ severity, variant, ...props }) => {
   return (
-    <StyledPaper square elevation={0} variant={variant} severity={severity} className={clsx("root")}>
+    <StyledPaper square elevation={0} variant={variant} severity={severity}>
       <IconWrapper severity={severity}>
         {severity === "warning" ? <Warning /> : <Info />}
         {props.children}

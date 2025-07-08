@@ -3,7 +3,7 @@ import { MenuItem } from "@mui/material";
 import { Logout, Person, Lock } from "@mui/icons-material";
 import { logout } from "../../rootApp/ducks";
 import _ from "lodash";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import ApplicationContext from "../../ApplicationContext";
 import { httpClient } from "../../common/utils/httpClient";
 
@@ -33,7 +33,9 @@ const LogoutButton = ({ doLogout, username, onChangePassword = _.noop, lastSessi
         <Logout /> Logout
       </MenuItem>
       {lastSessionTimeMillis > 0 && (
-        <span style={styles.lastLoginDate}>Last login: {moment(lastSessionTimeMillis).format("MMM Do YYYY h:mm:ss a")}</span>
+        <span style={styles.lastLoginDate}>
+          Last login: {isValid(new Date(lastSessionTimeMillis)) ? format(new Date(lastSessionTimeMillis), "MMM d yyyy h:mm:ss a") : "-"}
+        </span>
       )}
       {ApplicationContext.isDevEnv() && (
         <MenuItem

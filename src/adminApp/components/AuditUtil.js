@@ -1,4 +1,4 @@
-import moment from "moment";
+import { format, isValid } from "date-fns";
 
 export const modifiedAudit = ({ lastModifiedBy, lastModifiedDateTime, lastModifiedByUserName, modifiedDateTime }) => {
   const [date, time] = getFormattedDateTime(lastModifiedDateTime || modifiedDateTime);
@@ -6,10 +6,8 @@ export const modifiedAudit = ({ lastModifiedBy, lastModifiedDateTime, lastModifi
 };
 
 export const getFormattedDateTime = dateTime => {
-  const DATE_TIME_FORMAT = `MMMM D, YYYY _hh:mm a`;
-  return moment(dateTime)
-    .format(DATE_TIME_FORMAT)
-    .split("_");
+  const DATE_TIME_FORMAT = `MMMM d, yyyy hh:mm a`;
+  return isValid(new Date(dateTime)) ? format(new Date(dateTime), DATE_TIME_FORMAT).split("_") : ["-", "-"];
 };
 
 export const createdAudit = ({ createdBy, createdDateTime, createdByUserName }) => {

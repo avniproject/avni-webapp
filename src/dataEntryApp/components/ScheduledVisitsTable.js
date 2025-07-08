@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import Colors from "../Colors";
 import { useTranslation } from "react-i18next";
 
@@ -28,8 +28,12 @@ const ScheduledVisitsTable = ({ visitSchedules }) => {
             <TableCell align="left" component="th" scope="row">
               {t(row.name)}
             </TableCell>
-            <TableCell align="left">{moment(row.earliestDate).format("DD-MM-YYYY")}</TableCell>
-            <TableCell align="left">{moment(row.maxDate).format("DD-MM-YYYY")}</TableCell>
+            <TableCell align="left">
+              {row.earliestDate && isValid(new Date(row.earliestDate)) ? format(new Date(row.earliestDate), "dd-MM-yyyy") : "-"}
+            </TableCell>
+            <TableCell align="left">
+              {row.maxDate && isValid(new Date(row.maxDate)) ? format(new Date(row.maxDate), "dd-MM-yyyy") : "-"}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

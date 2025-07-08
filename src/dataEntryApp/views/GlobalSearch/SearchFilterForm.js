@@ -12,7 +12,7 @@ import NonConceptForm from "../GlobalSearch/NonConceptForm";
 import CodedConceptForm from "../GlobalSearch/CodedConceptForm";
 import CheckBoxSearchComponent from "./CheckBoxSearchComponent";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
-import moment from "moment/moment";
+import { format, isValid } from "date-fns";
 import { store } from "../../../common/store/createStore";
 import { types } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
@@ -241,8 +241,14 @@ const getConceptRequests = function(selectedConcepts) {
     if (["Date", "DateTime", "Time"].includes(conceptRequest.conceptDataType)) {
       return {
         uuid: conceptRequest.conceptUUID,
-        minValue: conceptRequest.minValue !== null ? moment(conceptRequest.minValue).format("YYYY-MM-DD") : null,
-        maxValue: conceptRequest.maxValue !== null ? moment(conceptRequest.maxValue).format("YYYY-MM-DD") : null,
+        minValue:
+          conceptRequest.minValue !== null && isValid(new Date(conceptRequest.minValue))
+            ? format(new Date(conceptRequest.minValue), "yyyy-MM-dd")
+            : null,
+        maxValue:
+          conceptRequest.maxValue !== null && isValid(new Date(conceptRequest.maxValue))
+            ? format(new Date(conceptRequest.maxValue), "yyyy-MM-dd")
+            : null,
         searchScope: conceptRequest.scope,
         dataType: conceptRequest.conceptDataType,
         widget: conceptRequest.widget
@@ -370,8 +376,8 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
     setSelectedDate({
       ...selectedDate,
       [type]: {
-        minValue: minDate !== null ? moment(minDate).format("YYYY-MM-DD") : null,
-        maxValue: maxDate !== null ? moment(maxDate).format("YYYY-MM-DD") : null
+        minValue: minDate !== null && isValid(new Date(minDate)) ? format(new Date(minDate), "yyyy-MM-dd") : null,
+        maxValue: maxDate !== null && isValid(new Date(maxDate)) ? format(new Date(maxDate), "yyyy-MM-dd") : null
       }
     });
   };

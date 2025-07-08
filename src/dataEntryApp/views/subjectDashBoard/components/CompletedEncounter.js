@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Paper, Button, Grid, List, ListItem, ListItemText } from "@mui/material";
-import moment from "moment/moment";
+import { format, isValid } from "date-fns";
 import { defaultTo, isEmpty, isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -123,7 +123,13 @@ const CompletedEncounter = ({
           </StyledListItem>
           <StyledListItem>
             <StyledListItemTextDate
-              primary={moment(new Date(encounter.encounterDateTime || encounter.cancelDateTime)).format("DD-MM-YYYY")}
+              primary={
+                encounter.encounterDateTime && isValid(new Date(encounter.encounterDateTime))
+                  ? format(new Date(encounter.encounterDateTime), "dd-MM-yyyy")
+                  : encounter.cancelDateTime && isValid(new Date(encounter.cancelDateTime))
+                  ? format(new Date(encounter.cancelDateTime), "dd-MM-yyyy")
+                  : "-"
+              }
             />
           </StyledListItem>
           {status && (

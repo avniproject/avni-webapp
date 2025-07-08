@@ -1,7 +1,6 @@
 import _ from "lodash";
-// eslint-disable-next-line no-duplicate-imports
 import lodash from "lodash";
-import moment from "moment";
+import { isValid } from "date-fns";
 import * as models from "avni-models";
 import { FormElementStatus } from "avni-models";
 import * as rulesConfig from "rules-config";
@@ -15,7 +14,7 @@ const services = {
 };
 
 const getImports = () => {
-  return { rulesConfig, common, lodash, moment, motherCalculations, log: console.log };
+  return { rulesConfig, common, lodash, date_fns: { isValid }, motherCalculations, log: console.log };
 };
 
 const updateMapUsingKeyPattern = () => {

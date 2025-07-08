@@ -5,7 +5,7 @@ import { MaterialReactTable } from "material-react-table";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../common/components/utils";
 import { DeleteButton } from "../../components/DeleteButton";
-import moment from "moment";
+import { isAfter, isValid } from "date-fns";
 import { size } from "lodash";
 import { formatDate } from "../../../common/utils/General";
 
@@ -38,10 +38,10 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
   const [sorting, setSorting] = useState([{ id: "earliestVisitDateTime", desc: true }]);
 
   const getStatus = ({ maxVisitDateTime, earliestVisitDateTime }) => {
-    if (moment().isAfter(moment(maxVisitDateTime))) {
+    if (maxVisitDateTime && isValid(new Date(maxVisitDateTime)) && isAfter(new Date(), new Date(maxVisitDateTime))) {
       return t("overdue");
     }
-    if (moment().isAfter(moment(earliestVisitDateTime))) {
+    if (earliestVisitDateTime && isValid(new Date(earliestVisitDateTime)) && isAfter(new Date(), new Date(earliestVisitDateTime))) {
       return t("due");
     }
     return "";

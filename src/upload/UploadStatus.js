@@ -7,7 +7,7 @@ import { Refresh } from "@mui/icons-material";
 import { getStatuses } from "./reducers";
 import { capitalize, get, isNil, map, includes } from "lodash";
 import { staticTypesWithStaticDownload, staticTypesWithDynamicDownload } from "./Types";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import FileDownloadButton from "../common/components/FileDownloadButton";
 import UploadTypes from "./UploadTypes";
 
@@ -39,6 +39,8 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
   const changePage = (event, newPage) => {
     getStatuses(newPage);
   };
+
+  const formatDate = date => (isNil(date) || !isValid(new Date(date)) ? date : format(new Date(date), "yyyy-MM-dd HH:mm"));
 
   return (
     <StyledBox>
@@ -121,8 +123,6 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
     </StyledBox>
   );
 };
-
-const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
 
 const mapStateToProps = state => ({
   statuses: state.bulkUpload.statuses,

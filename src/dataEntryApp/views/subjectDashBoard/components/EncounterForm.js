@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import { ObservationsHolder } from "avni-models";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
@@ -29,7 +29,11 @@ const mapFormStateToProps = state => ({
   additionalRows: [
     {
       label: "visitDate",
-      value: moment(state.dataEntry.encounterReducer.encounter.encounterDateTime).format("DD-MMM-YYYY")
+      value:
+        state.dataEntry.encounterReducer.encounter.encounterDateTime &&
+        isValid(new Date(state.dataEntry.encounterReducer.encounter.encounterDateTime))
+          ? format(new Date(state.dataEntry.encounterReducer.encounter.encounterDateTime), "dd-MMM-yyyy")
+          : "-"
     }
   ],
   filteredFormElements: state.dataEntry.encounterReducer.filteredFormElements,

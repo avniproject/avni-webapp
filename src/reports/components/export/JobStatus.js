@@ -5,7 +5,7 @@ import { withRouter } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Table, TableHead, TableRow, TableCell, TableBody, Box, Grid, TablePagination, Button } from "@mui/material";
 import { find, get, isNil, map } from "lodash";
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import { httpClient as http } from "common/utils/httpClient";
 import fileDownload from "js-file-download";
 import { Refresh, CloudDownload } from "@mui/icons-material";
@@ -39,8 +39,8 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
   const rowsPerPage = 10;
   const [page, setPage] = useState(0);
 
-  const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
-  const isoDateFormat = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
+  const formatDate = date => (isNil(date) || !isValid(new Date(date)) ? date : format(new Date(date), "yyyy-MM-dd HH:mm"));
+  const isoDateFormat = date => (isNil(date) || !isValid(new Date(date)) ? date : format(new Date(date), "yyyy-MM-dd"));
   const getDateParams = ({ startDate, endDate }) =>
     isNil(startDate) || isNil(endDate) ? "" : `${isoDateFormat(startDate)} to ${isoDateFormat(endDate)}`;
 

@@ -33,12 +33,7 @@ export const HomePageCard = ({ href, name, customIconComponent }) => (
         >
           <Grid>{customIconComponent}</Grid>
           <Grid>
-            <Typography
-              variant="h5"
-              component="h2"
-              sx={{ color: theme => theme.palette.secondary.main, textAlign: "center" }}
-              style={{ marginTop: 5 }}
-            >
+            <Typography variant="h5" component="h2" sx={{ color: "#000", textAlign: "center" }} style={{ marginTop: 5 }}>
               {name}
             </Typography>
           </Grid>

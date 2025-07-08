@@ -44,14 +44,47 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, ...props }) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
   return (
     <div style={{ width: "100%" }}>
       <h5>{groupName}</h5>
       <AppBar position="static">
-        <Tabs value={value} onChange={handleChange}>
-          <Tab label="Users" />
-          <Tab label="Permissions" />
-          <Tab label="Dashboards" />
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          sx={{
+            "& .MuiTabs-indicator": {
+              backgroundColor: "#fff"
+            }
+          }}
+        >
+          <Tab
+            label="Users"
+            sx={{
+              color: "#fff",
+              "&.Mui-selected": {
+                color: "#fff"
+              }
+            }}
+          />
+          <Tab
+            label="Permissions"
+            sx={{
+              color: "#fff",
+              "&.Mui-selected": {
+                color: "#fff"
+              }
+            }}
+          />
+          <Tab
+            label="Dashboards"
+            sx={{
+              color: "#fff",
+              "&.Mui-selected": {
+                color: "#fff"
+              }
+            }}
+          />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -69,9 +102,4 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, ...props }) => {
 
 const mapStateToProps = state => ({});
 
-export default withRouter(
-  connect(
-    mapStateToProps
-    //    mapDispatchToProps,
-  )(TabView)
-);
+export default withRouter(connect(mapStateToProps)(TabView));
