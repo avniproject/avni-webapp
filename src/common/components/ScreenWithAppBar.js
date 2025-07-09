@@ -11,32 +11,45 @@ import ListItemButton from "@mui/material/ListItemButton";
 const drawerWidth = 240;
 
 const StyledContainer = styled("div")({
-  margin: "0px 15px 0px 15px"
+  margin: 0,
+  display: "flex",
+  flexDirection: "column",
+  width: "100%",
+  boxSizing: "border-box"
 });
 
-const StyledAppBar = styled("main")(({ theme, open }) => ({
-  paddingLeft: open ? drawerWidth : 70,
-  width: open ? `calc(100%)` : undefined,
-  transition: theme.transitions.create(["width", "margin"], {
-    easing: theme.transitions.easing.sharp,
-    duration: open ? theme.transitions.duration.enteringScreen : theme.transitions.duration.leavingScreen
-  })
-}));
+const StyledAppBar = styled("main")(({ theme, open }) => {
+  const minimizedWidth = parseInt(theme.spacing(7)) + 1;
+  const minimizedWidthSm = parseInt(theme.spacing(9)) + 1;
+  return {
+    marginLeft: open ? drawerWidth + 10 : minimizedWidth + 10,
+    width: open ? `calc(100% - ${drawerWidth}px)` : `calc(100% - ${minimizedWidth}px)`,
+    boxSizing: "border-box",
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: open ? theme.transitions.duration.enteringScreen : theme.transitions.duration.leavingScreen
+    }),
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: open ? drawerWidth + 10 : minimizedWidthSm + 10,
+      width: open ? `calc(100% - ${drawerWidth}px)` : `calc(100% - ${minimizedWidthSm}px)`
+    }
+  };
+});
 
 const StyledDrawer = styled(Drawer)(({ theme, open }) => ({
   width: drawerWidth,
   flexShrink: 0,
   whiteSpace: "nowrap",
-  zIndex: 1,
+  zIndex: theme.zIndex.appBar - 1,
   "& .MuiDrawer-paper": {
-    width: open ? drawerWidth : theme.spacing(7) + 1,
+    width: open ? drawerWidth : parseInt(theme.spacing(7)) + 1,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: open ? theme.transitions.duration.enteringScreen : theme.transitions.duration.leavingScreen
     }),
     overflowX: "hidden",
     [theme.breakpoints.up("sm")]: {
-      width: open ? drawerWidth : theme.spacing(9) + 1
+      width: open ? drawerWidth : parseInt(theme.spacing(9)) + 1
     }
   }
 }));
@@ -119,7 +132,12 @@ const ScreenWithAppBar = props => {
 
   return (
     <StyledContainer>
-      <AppBar title={props.appbarTitle} handleDrawer={handleDrawer} enableLeftMenuButton={props.enableLeftMenuButton} />
+      <AppBar
+        title={props.appbarTitle}
+        handleDrawer={handleDrawer}
+        enableLeftMenuButton={props.enableLeftMenuButton}
+        sx={{ zIndex: theme => theme.zIndex.appBar }}
+      />
       {props.enableLeftMenuButton &&
         applyLeftMenu(open, handleDrawer, selectedIndex, handleListItemClick, props.children, props.sidebarOptions)}
       {!props.enableLeftMenuButton && <Body>{props.children}</Body>}

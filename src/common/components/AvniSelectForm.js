@@ -4,7 +4,7 @@ import { ToolTipContainer } from "./ToolTipContainer";
 
 export const AvniSelectForm = ({ toolTipKey, ...props }) => {
   return (
-    <ToolTipContainer toolTipKey={toolTipKey} styles={{ paddingTop: 10 }}>
+    <ToolTipContainer toolTipKey={toolTipKey}>
       <SelectForm {...props} />
     </ToolTipContainer>
   );

@@ -1,11 +1,9 @@
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { Redirect, withRouter } from "react-router-dom";
-import Box from "@mui/material/Box";
+import { Box, Grid, Button } from "@mui/material";
 import { Title } from "react-admin";
-import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
@@ -45,51 +43,114 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
   });
 
   useEffect(() => {
+    console.log("useEffect for message rules, entityType:", entityType, "encounterTypeId:", encounterType.encounterTypeId);
     getMessageRules(entityType, encounterType.encounterTypeId, rulesDispatch);
     return identity;
   }, [encounterType, entityType]);
 
   useEffect(() => {
+    console.log("Fetching message templates");
     getMessageTemplates(rulesDispatch);
     return identity;
   }, []);
 
   const onRulesChange = rules => {
+    console.log("Message rules updated:", rules);
     rulesDispatch({ type: "setRules", payload: rules });
   };
 
   useEffect(() => {
+    console.log("Fetching data for encounterTypeId:", props.match.params.id);
+    dispatch({ type: "reset", payload: encounterTypeInitialState });
+    setEncounterTypeData({});
+    setSubjectT({});
+    setProgramT({});
+    setFormMappings([]);
+    setFormList([]);
+    setSubjectType([]);
+    setAllPrograms([]);
+    setEntityType(null);
+
     http
       .get("/web/encounterType/" + props.match.params.id)
       .then(response => response.data)
       .then(result => {
+        console.log("Encounter type data:", result);
         setEncounterTypeData(result);
         dispatch({ type: "setData", payload: result });
-        http.get("/web/operationalModules").then(response => {
-          const formMap = response.data.formMappings;
-          formMap.map(l => (l["isVoided"] = false));
-          setFormMappings(formMap);
-          setFormList(response.data.forms);
-          setSubjectType(response.data.subjectTypes);
-          setAllPrograms(response.data.programs);
+        http
+          .get("/web/operationalModules")
+          .then(response => {
+            const formMap = response.data.formMappings || [];
+            formMap.forEach(l => (l["isVoided"] = false));
+            console.log("Form mappings:", formMap);
+            setFormMappings(formMap);
+            setFormList(response.data.forms || []);
+            setSubjectType(response.data.subjectTypes || []);
+            setAllPrograms(response.data.programs || []);
+            console.log("Programs:", response.data.programs || []);
 
-          const encounterTypeMappings = response.data.formMappings.filter(l => l.encounterTypeUUID === result.uuid);
+            const encounterTypeMappings = formMap.filter(l => l.encounterTypeUUID === result.uuid);
+            console.log("Encounter type mappings for UUID", result.uuid, ":", encounterTypeMappings);
 
-          _.isNil(encounterTypeMappings[0].programUUID) ? setEntityType("Encounter") : setEntityType("ProgramEncounter");
+            if (encounterTypeMappings.length === 0) {
+              console.warn("No encounter type mappings found for UUID:", result.uuid);
+              setEntityType("Encounter");
+              setProgramT({});
+              dispatch({ type: "programEncounterForm", payload: null });
+              dispatch({ type: "programEncounterCancellationForm", payload: null });
+              console.log("Current encounterType state after dispatch:", encounterType);
+              return;
+            }
 
-          setSubjectT(response.data.subjectTypes.filter(l => l.uuid === encounterTypeMappings[0].subjectTypeUUID)[0]);
-          setProgramT(response.data.programs.filter(l => l.uuid === encounterTypeMappings[0].programUUID)[0]);
+            const programUUID = encounterTypeMappings[0].programUUID;
+            console.log("Program UUID from mappings:", programUUID);
+            setEntityType(_.isNil(programUUID) ? "Encounter" : "ProgramEncounter");
 
-          const form = findProgramEncounterForm(formMap, result);
-          dispatch({ type: "programEncounterForm", payload: form });
+            const subject = (response.data.subjectTypes || []).find(l => l.uuid === encounterTypeMappings[0].subjectTypeUUID);
+            setSubjectT(subject || {});
+            console.log("Subject type:", subject);
 
-          const cancellationForm = findProgramEncounterCancellationForm(formMap, result);
-          dispatch({ type: "programEncounterCancellationForm", payload: cancellationForm });
-        });
+            const program = (response.data.programs || []).find(l => l.uuid === programUUID);
+            setProgramT(program || {});
+            console.log("Program set to programT:", program);
+
+            const form = findProgramEncounterForm(formMap, result);
+            console.log("Program encounter form:", form);
+            if (form) {
+              dispatch({ type: "programEncounterForm", payload: form });
+            } else {
+              console.warn("No program encounter form found for encounter type:", result);
+              dispatch({ type: "programEncounterForm", payload: null });
+            }
+
+            const cancellationForm = findProgramEncounterCancellationForm(formMap, result);
+            console.log("Program encounter cancellation form:", cancellationForm);
+            if (cancellationForm) {
+              dispatch({ type: "programEncounterCancellationForm", payload: cancellationForm });
+            } else {
+              console.warn("No program encounter cancellation form found for encounter type:", result);
+              dispatch({ type: "programEncounterCancellationForm", payload: null });
+            }
+
+            console.log("Current encounterType state after dispatch:", encounterType);
+          })
+          .catch(error => {
+            console.error("Failed to fetch operational modules:", error);
+          });
+      })
+      .catch(error => {
+        console.error("Failed to fetch encounter type:", error);
       });
-  }, []);
+
+    return () => {
+      console.log("Cleaning up for encounterTypeId:", props.match.params.id);
+      dispatch({ type: "reset", payload: encounterTypeInitialState });
+    };
+  }, [props.match.params.id]);
 
   const onSubmit = () => {
+    console.log("Submitting encounter type:", encounterType, "with programT:", programT);
     let hasError = false;
     if (encounterType.name.trim() === "") {
       setNameValidation(true);
@@ -110,6 +171,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
       encounterType.encounterEligibilityCheckRule = jsCode;
     }
     if (hasError) {
+      console.log("Validation errors detected:", { nameValidation, subjectValidation, ruleValidationError });
       return;
     }
 
@@ -130,26 +192,36 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
         if (response.status === 200) {
           setError("");
           setMsgError("");
+          console.log("Successfully saved encounter type:", props.match.params.id);
         }
       })
       .then(() => saveMessageRules(entityType, encounterType.encounterTypeId, rules))
       .then(() => setRedirectShow(true))
       .catch(error => {
+        console.error("Failed to save encounter type:", error);
         error.response.data.message ? setError(error.response.data.message) : setMsgError(getDBValidationError(error));
       });
   };
 
   const onDelete = () => {
+    console.log("Deleting encounter type:", props.match.params.id);
     if (window.confirm("Do you really want to delete encounter type?")) {
-      http.delete("/web/encounterType/" + props.match.params.id).then(response => {
-        if (response.status === 200) {
-          setDeleteAlert(true);
-        }
-      });
+      http
+        .delete("/web/encounterType/" + props.match.params.id)
+        .then(response => {
+          if (response.status === 200) {
+            setDeleteAlert(true);
+            console.log("Successfully deleted encounter type:", props.match.params.id);
+          }
+        })
+        .catch(error => {
+          console.error("Failed to delete encounter type:", error);
+        });
     }
   };
 
   function resetValue(type) {
+    console.log("Resetting value for type:", type);
     dispatch({
       type,
       payload: null
@@ -157,107 +229,114 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
   }
 
   function updateProgram(program) {
+    console.log("Updating programT to:", program);
     setProgramT(program);
     const formType = _.get(encounterType, "programEncounterForm.formType");
     const cancelFormType = _.get(encounterType, "programEncounterCancellationForm.formType");
 
-    if (_.isEmpty(programT)) {
+    if (_.isEmpty(program)) {
+      console.log("Program is empty, checking form types:", { formType, cancelFormType });
       if (formType === "ProgramEncounter") {
+        console.log("Resetting programEncounterForm");
         resetValue("programEncounterForm");
       }
       if (cancelFormType === "ProgramEncounterCancellation") {
+        console.log("Resetting programEncounterCancellationForm");
         resetValue("programEncounterCancellationForm");
       }
     } else {
+      console.log("Program is set, checking form types:", { formType, cancelFormType });
       if (formType === "Encounter") {
+        console.log("Resetting programEncounterForm due to Encounter form type");
         resetValue("programEncounterForm");
       }
       if (cancelFormType === "IndividualEncounterCancellation") {
+        console.log("Resetting programEncounterCancellationForm due to IndividualEncounterCancellation form type");
         resetValue("programEncounterCancellationForm");
       }
     }
+    console.log("EncounterType state after updateProgram:", encounterType);
   }
 
+  console.log("Rendering EditEncounterTypeFields with props:", {
+    encounterType,
+    subjectT,
+    programT,
+    formList,
+    formMappings,
+    allPrograms
+  });
+
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
-        }}
-      >
-        <Title title={"Edit Encounter Type "} />
-        <Grid container={12} style={{ justifyContent: "flex-end" }}>
-          <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
-            <VisibilityIcon /> Show
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100%"
+      }}
+    >
+      <Title title="Edit Encounter Type" />
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
+          <VisibilityIcon /> Show
+        </Button>
+      </Grid>
+      <Box sx={{ flexGrow: 1, mb: 2 }}>
+        {encounterType.loaded && (
+          <>
+            <EditEncounterTypeFields
+              encounterType={encounterType}
+              dispatch={dispatch}
+              subjectT={subjectT}
+              setSubjectT={setSubjectT}
+              subjectType={subjectType}
+              programT={programT}
+              updateProgram={updateProgram}
+              program={program}
+              formList={formList}
+              ruleValidationError={ruleValidationError}
+              formMappings={formMappings}
+              setProgram={setProgram}
+              allPrograms={allPrograms}
+            />
+            {organisationConfig && organisationConfig.enableMessaging ? (
+              <MessageRules
+                templateFetchError={templateFetchError}
+                rules={rules}
+                templates={templates}
+                onChange={onRulesChange}
+                entityType={entityType}
+                entityTypeId={encounterType.encounterTypeId}
+                msgError={msgError}
+              />
+            ) : (
+              <></>
+            )}
+            <EncounterTypeErrors nameValidation={nameValidation} subjectValidation={subjectValidation} error={error} />
+          </>
+        )}
+      </Box>
+      <Grid container sx={{ justifyContent: "space-between", alignItems: "center" }}>
+        <Grid item>
+          <SaveComponent name="save" onSubmit={onSubmit} />
+        </Grid>
+        <Grid item>
+          <Button color="error" onClick={() => onDelete()}>
+            <DeleteIcon /> Delete
           </Button>
         </Grid>
-        <div className="container" style={{ float: "left" }}>
-          {encounterType.loaded && (
-            <>
-              <EditEncounterTypeFields
-                encounterType={encounterType}
-                dispatch={dispatch}
-                subjectT={subjectT}
-                setSubjectT={setSubjectT}
-                subjectType={subjectType}
-                programT={programT}
-                updateProgram={updateProgram}
-                program={program}
-                formList={formList}
-                ruleValidationError={ruleValidationError}
-                formMappings={formMappings}
-                setProgram={setProgram}
-                allPrograms={allPrograms}
-              />
-              {organisationConfig && organisationConfig.enableMessaging ? (
-                <MessageRules
-                  templateFetchError={templateFetchError}
-                  rules={rules}
-                  templates={templates}
-                  onChange={onRulesChange}
-                  entityType={entityType}
-                  entityTypeId={encounterType.encounterTypeId}
-                  msgError={msgError}
-                />
-              ) : (
-                <></>
-              )}
-            </>
-          )}
-          <EncounterTypeErrors nameValidation={nameValidation} subjectValidation={subjectValidation} error={error} />
-        </div>
-        <Grid
-          container
-          size={{
-            sm: 12
-          }}
-        >
-          <Grid
-            size={{
-              sm: 1
-            }}
-          >
-            <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
-          </Grid>
-          <Grid
-            size={{
-              sm: 11
-            }}
-          >
-            <Button style={{ float: "right", color: "red" }} onClick={() => onDelete()}>
-              <DeleteIcon /> Delete
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
+      </Grid>
       {redirectShow && <Redirect to={`/appDesigner/encounterType/${props.match.params.id}/show`} />}
       {deleteAlert && <Redirect to="/appDesigner/encounterType" />}
-    </>
+    </Box>
   );
 };
+
 const mapStateToProps = state => ({
   organisationConfig: state.app.organisationConfig
 });
+
 export default withRouter(connect(mapStateToProps)(EncounterTypeEdit));

@@ -1,11 +1,9 @@
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { Redirect, withRouter } from "react-router-dom";
-import Box from "@mui/material/Box";
+import { Box, Grid, Button } from "@mui/material";
 import { Title } from "react-admin";
-import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { programInitialState } from "../Constant";
 import { programReducer } from "../Reducers";
@@ -106,28 +104,27 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
   };
 
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
-        }}
-      >
-        <Title title={"Edit Program "} />
-        <Grid
-          container
-          style={{ justifyContent: "flex-end" }}
-          size={{
-            sm: 12
-          }}
-        >
-          <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
-            <VisibilityIcon /> Show
-          </Button>
-        </Grid>
-        <div className="container" style={{ float: "left" }}>
-          {program.loaded && (
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100%"
+      }}
+    >
+      <Title title="Edit Program" />
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
+          <VisibilityIcon /> Show
+        </Button>
+      </Grid>
+      <Box sx={{ flexGrow: 1, mb: 2 }}>
+        {" "}
+        {/* Content area grows to push buttons down */}
+        {program.loaded && (
+          <>
             <EditProgramFields
               program={program}
               errors={errors}
@@ -137,63 +134,48 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
               onSubjectTypeChange={setSubjectType}
               subjectType={subjectType}
             />
-          )}
-          <br />
-          {program.loaded && (
+            <br />
             <AvniSwitch
               checked={program.active}
               onChange={event => dispatch({ type: "active", payload: event.target.checked })}
               name="Active"
-              toolTipKey={"APP_DESIGNER_PROGRAM_ACTIVE"}
+              toolTipKey="APP_DESIGNER_PROGRAM_ACTIVE"
             />
-          )}
-          <br />
-          {organisationConfig && organisationConfig.enableMessaging ? (
-            <MessageRules
-              templateFetchError={templateFetchError}
-              rules={rules}
-              templates={templates}
-              onChange={onRulesChange}
-              entityType={entityType}
-              entityTypeId={program.programId}
-              msgError={msgError}
-            />
-          ) : (
-            <></>
-          )}
-          <br />
-          <br />
-        </div>
-        <Grid
-          container
-          size={{
-            sm: 12
-          }}
-        >
-          <Grid
-            size={{
-              sm: 1
-            }}
-          >
-            <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
-          </Grid>
-          <Grid
-            size={{
-              sm: 11
-            }}
-          >
-            <Button style={{ float: "right", color: "red" }} onClick={() => onDelete()}>
-              <DeleteIcon /> Delete
-            </Button>
-          </Grid>
-        </Grid>
+            <br />
+            {organisationConfig && organisationConfig.enableMessaging ? (
+              <MessageRules
+                templateFetchError={templateFetchError}
+                rules={rules}
+                templates={templates}
+                onChange={onRulesChange}
+                entityType={entityType}
+                entityTypeId={program.programId}
+                msgError={msgError}
+              />
+            ) : (
+              <></>
+            )}
+          </>
+        )}
       </Box>
+      <Grid container sx={{ justifyContent: "space-between", alignItems: "center" }}>
+        <Grid item>
+          <SaveComponent name="save" onSubmit={onSubmit} />
+        </Grid>
+        <Grid item>
+          <Button color="error" onClick={() => onDelete()}>
+            <DeleteIcon /> Delete
+          </Button>
+        </Grid>
+      </Grid>
       {redirectShow && <Redirect to={`/appDesigner/program/${props.match.params.id}/show`} />}
       {deleteAlert && <Redirect to="/appDesigner/program" />}
-    </>
+    </Box>
   );
 };
+
 const mapStateToProps = state => ({
   organisationConfig: state.app.organisationConfig
 });
+
 export default withRouter(connect(mapStateToProps)(ProgramEdit));

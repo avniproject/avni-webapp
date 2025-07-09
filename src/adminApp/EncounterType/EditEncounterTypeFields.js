@@ -45,7 +45,6 @@ const EditEncounterTypeFields = ({
         formMapping => formMapping.subjectTypeUUID === subjectT.uuid && !_.isNil(formMapping.programUUID)
       );
       setProgram(allPrograms.filter(program => _.includes(matchingFormMappings.map(formMapping => formMapping.programUUID), program.uuid)));
-      updateProgram({});
     }
   }, [subjectT]);
 
@@ -165,4 +164,5 @@ const EditEncounterTypeFields = ({
     </div>
   );
 };
+
 export default EditEncounterTypeFields;

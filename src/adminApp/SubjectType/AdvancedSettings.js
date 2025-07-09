@@ -31,7 +31,7 @@ CustomAccordionDetails.muiName = "AccordionDetails";
 
 const StyledSettingsContainer = styled("div")({
   display: "flex",
-  flexDirection: "row",
+  flexDirection: "column",
   justifyContent: "space-between"
 });
 

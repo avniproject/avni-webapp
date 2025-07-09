@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import { getUploadStatuses } from "../../reducers";
 import { withRouter } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Table, TableHead, TableRow, TableCell, TableBody, Box, Grid, TablePagination, Button } from "@mui/material";
+import { Table, TableHead, TableRow, TableCell, TableBody, Box, TablePagination, Button } from "@mui/material";
 import { find, get, isNil, map } from "lodash";
 import { format, isValid } from "date-fns";
 import { httpClient as http } from "common/utils/httpClient";
@@ -12,8 +12,8 @@ import { Refresh, CloudDownload } from "@mui/icons-material";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
-  marginTop: theme.spacing(3),
-  overflowX: "hidden"
+  flexDirection: "column",
+  marginTop: theme.spacing(3)
 }));
 
 const StyledTable = styled(Table)({
@@ -29,6 +29,15 @@ const StyledTableCellHeader = styled(TableCell)({
 const StyledTableCellRow = styled(TableCell)({
   paddingRight: 4,
   paddingLeft: 5
+});
+
+const StyledPagination = styled(TablePagination)({
+  display: "flex",
+  justifyContent: "flex-end",
+  alignItems: "center",
+  "& .MuiTablePagination-displayedRows": {
+    margin: 0
+  }
 });
 
 const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: { subjectTypes, programs, encounterTypes } }) => {
@@ -71,12 +80,12 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
 
   return (
     <StyledBox>
-      <Grid container direction="row" sx={{ justifyContent: "flex-end" }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", marginBottom: 2 }}>
         <Button color="primary" onClick={() => getUploadStatuses(0)}>
           <Refresh />
           {" Refresh"}
         </Button>
-      </Grid>
+      </Box>
       <StyledTable>
         <TableHead>
           <TableRow>
@@ -114,14 +123,18 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
           ))}
         </TableBody>
       </StyledTable>
-      <TablePagination
+      <StyledPagination
         rowsPerPageOptions={[10]}
         component="div"
         count={get(exportJobStatuses, "totalElements") || 0}
         rowsPerPage={rowsPerPage}
         page={page}
-        backIconButtonProps={{ "aria-label": "previous page" }}
-        nextIconButtonProps={{ "aria-label": "next page" }}
+        slotProps={{
+          actions: {
+            previousButton: { "aria-label": "previous page" },
+            nextButton: { "aria-label": "next page" }
+          }
+        }}
         onPageChange={handleChangePage}
       />
     </StyledBox>

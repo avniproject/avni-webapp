@@ -8,7 +8,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import FormListing from "../components/FormListing";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import { CreateComponent } from "../../common/components/CreateComponent";
 
 const Forms = props => {
   const [showNewFormDialog, setShowNewFormDialog] = useState(false);
@@ -20,32 +19,26 @@ const Forms = props => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column"
       }}
     >
       <Title title="Forms" />
-      <div className="container">
-        <div>
-          <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-            <CreateComponent onSubmit={openNewFormDialog} name="New Form" />
-          </div>
-          <Dialog fullWidth maxWidth="xs" onClose={closeNewFormDialog} aria-labelledby="customized-dialog-title" open={showNewFormDialog}>
-            <DialogTitle id="customized-dialog-title" onClose={closeNewFormDialog}>
-              New Form
-              <IconButton style={{ float: "right" }} onClick={closeNewFormDialog} size="large">
-                <CloseIcon />
-              </IconButton>
-            </DialogTitle>
-            <DialogContent dividers>
-              <NewFormModal {...props} />
-            </DialogContent>
-          </Dialog>
-          <div style={{ maxWidth: "100%", overflowX: "auto" }}>
-            <FormListing />
-          </div>
-        </div>
-      </div>
+      <FormListing {...props} onNewFormClick={openNewFormDialog} />
+      <Dialog fullWidth maxWidth="xs" onClose={closeNewFormDialog} aria-labelledby="customized-dialog-title" open={showNewFormDialog}>
+        <DialogTitle id="customized-dialog-title" onClose={closeNewFormDialog}>
+          New Form
+          <IconButton style={{ float: "right" }} onClick={closeNewFormDialog} size="large">
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <NewFormModal {...props} />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
+
 export default Forms;

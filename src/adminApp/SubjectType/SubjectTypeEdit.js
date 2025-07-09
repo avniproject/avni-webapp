@@ -147,20 +147,22 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
   );
 
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
-        }}
-      >
-        <Title title={"Edit subject type "} />
-        <Grid container={12} style={{ justifyContent: "flex-end" }}>
-          <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
-            <Visibility /> Show
-          </Button>
-        </Grid>
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      <Title title={"Edit subject type"} />
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
+          <Visibility /> Show
+        </Button>
+      </Grid>
+      <Box sx={{ flexGrow: 1, mb: 2 }}>
         <div className="container" style={{ float: "left" }}>
           <EditSubjectTypeFields
             subjectType={subjectType}
@@ -192,7 +194,6 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
             formMappings={formMappings}
             isEdit={true}
           />
-          <div />
           {nameValidation && (
             <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
               Empty name is not allowed.
@@ -203,49 +204,32 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
               {error}
             </FormLabel>
           )}
-          <p />
         </div>
-        <Grid
-          container
-          size={{
-            sm: 12
-          }}
-        >
-          <Grid
-            size={{
-              sm: 1
-            }}
-          >
-            <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
-          </Grid>
-          <Grid
-            size={{
-              sm: 11
-            }}
-          >
-            <Button
-              disabled={!_.isEmpty(disableDelete)}
-              style={
-                !_.isEmpty(disableDelete)
-                  ? { float: "right" }
-                  : {
-                      float: "right",
-                      color: "red"
-                    }
-              }
-              onClick={() => onDelete()}
-            >
-              <Delete /> Delete
-            </Button>
-          </Grid>
-        </Grid>
       </Box>
+      <Grid container sx={{ justifyContent: "space-between", alignItems: "center" }}>
+        <Grid item>
+          <SaveComponent name="save" onSubmit={onSubmit} />
+        </Grid>
+        <Grid item>
+          <Button
+            disabled={!_.isEmpty(disableDelete)}
+            sx={{
+              color: !_.isEmpty(disableDelete) ? "default" : "red"
+            }}
+            onClick={() => onDelete()}
+          >
+            <Delete /> Delete
+          </Button>
+        </Grid>
+      </Grid>
       {redirectShow && <Redirect to={`/appDesigner/subjectType/${props.match.params.id}/show`} />}
       {deleteAlert && <Redirect to="/appDesigner/subjectType" />}
-    </>
+    </Box>
   );
 };
+
 const mapStateToProps = state => ({
   organisationConfig: state.app.organisationConfig
 });
+
 export default withRouter(connect(mapStateToProps)(SubjectTypeEdit));

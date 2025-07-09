@@ -32,7 +32,6 @@ const StyledParent = styled("div")({
 });
 
 const StyledAccordion = styled(Accordion)(({ hasError }) => ({
-  width: "100%",
   border: hasError ? "1px solid red" : undefined,
   "&.Mui-expanded": {
     margin: 0
@@ -40,14 +39,12 @@ const StyledAccordion = styled(Accordion)(({ hasError }) => ({
 }));
 
 const StyledAccordionSummary = styled(AccordionSummary)({
-  paddingRight: 0,
   backgroundColor: "#dbdbdb",
-  border: "1px solid #2196F3",
   paddingLeft: 0,
-  minHeight: 56,
-  "&.Mui-expanded": {
-    minHeight: 56
-  },
+  paddingRight: 0,
+  paddingTop: 0,
+  paddingBottom: 0,
+  minHeight: 40,
   "&.Mui-focused": {
     backgroundColor: "#dbdbdb"
   },
@@ -58,7 +55,6 @@ const StyledAccordionSummary = styled(AccordionSummary)({
     }
   },
   "& .MuiAccordionSummary-icon": {
-    marginHorizontal: "8px",
     display: "inline"
   }
 });
@@ -264,79 +260,77 @@ function FormElementGroup(props) {
               onChange={() => props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)}
             >
               <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`} {...provided.dragHandleProps}>
-                <Grid container direction="row">
-                  <Grid container sx={{ alignItems: "center", justifyContent: "center" }}>
-                    <DragHandler dragHandleProps={provided.dragHandleProps} />
+                <Grid container alignItems="center" wrap="nowrap">
+                  <Grid item sx={{ display: "flex", alignItems: "center" }}>
+                    <StyledExpandIcon expanded={props.groupData.expanded} />
                   </Grid>
-                  <Grid container sx={{ alignItems: "center" }} size={{ sm: 12 }}>
-                    <Grid size={{ sm: 1 }}>
-                      <Tooltip title="Grouped Questions">
-                        <StyledGroupIcon />
-                      </Tooltip>
-                      <StyledExpandIcon expanded={props.groupData.expanded} />
-                    </Grid>
-                    <Grid size={{ sm: 6 }}>
-                      <StyledTypography>
-                        {props.groupData.errorMessage && props.groupData.errorMessage.name && (
-                          <StyledErrorText>Please enter Page name.</StyledErrorText>
-                        )}
-                        {get(props.groupData, "errorMessage.ruleError") && (
-                          <StyledErrorText>Please check the rule validation errors</StyledErrorText>
-                        )}
-                        <FormControl fullWidth>
-                          <Input
-                            type="text"
-                            placeholder="Page name"
-                            name={`name${panel}`}
-                            disableUnderline
+
+                  <Grid item sx={{ display: "flex", alignItems: "center", flexGrow: 1, gap: 2, overflow: "hidden" }}>
+                    <DragHandler dragHandleProps={provided.dragHandleProps} />
+
+                    <StyledTypography sx={{ flexGrow: 1, minWidth: 120 }}>
+                      {props.groupData.errorMessage && props.groupData.errorMessage.name && (
+                        <StyledErrorText>Please enter Page name.</StyledErrorText>
+                      )}
+                      {get(props.groupData, "errorMessage.ruleError") && (
+                        <StyledErrorText>Please check the rule validation errors</StyledErrorText>
+                      )}
+                      <FormControl fullWidth>
+                        <Input
+                          type="text"
+                          placeholder="Page name"
+                          name={`name${panel}`}
+                          disableUnderline
+                          onClick={stopPropagation}
+                          value={props.groupData.name}
+                          onChange={event => eventCall(props.index, "name", event.target.value)}
+                          autoComplete="off"
+                          disabled={disableGroup}
+                        />
+                      </FormControl>
+                    </StyledTypography>
+
+                    {props.groupData.timed && (
+                      <Grid container sx={{ width: 250 }} spacing={2} wrap="nowrap">
+                        <Grid item xs={6}>
+                          <TextField
+                            type="number"
+                            label="Start time (Seconds)"
+                            value={props.groupData.startTime}
+                            InputProps={{ disableUnderline: true }}
                             onClick={stopPropagation}
-                            value={props.groupData.name}
-                            onChange={event => eventCall(props.index, "name", event.target.value)}
+                            onChange={event => props.handleGroupElementChange(props.index, "startTime", event.target.value)}
                             autoComplete="off"
                             disabled={disableGroup}
+                            fullWidth
                           />
-                        </FormControl>
-                      </StyledTypography>
-                    </Grid>
-                    {props.groupData.timed && (
-                      <Grid size={{ sm: 3 }}>
-                        <Grid container direction="row">
-                          <Grid size={{ sm: 6 }}>
-                            <TextField
-                              type="number"
-                              label="Start time (Seconds)"
-                              value={props.groupData.startTime}
-                              InputProps={{ disableUnderline: true }}
-                              onClick={stopPropagation}
-                              onChange={event => props.handleGroupElementChange(props.index, "startTime", event.target.value)}
-                              autoComplete="off"
-                              disabled={disableGroup}
-                            />
-                          </Grid>
-                          <Grid size={{ sm: 6 }}>
-                            <TextField
-                              type="number"
-                              label="Stay time (Seconds)"
-                              value={props.groupData.stayTime}
-                              InputProps={{ disableUnderline: true }}
-                              onClick={stopPropagation}
-                              onChange={event => props.handleGroupElementChange(props.index, "stayTime", event.target.value)}
-                              autoComplete="off"
-                              disabled={disableGroup}
-                            />
-                          </Grid>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <TextField
+                            type="number"
+                            label="Stay time (Seconds)"
+                            value={props.groupData.stayTime}
+                            InputProps={{ disableUnderline: true }}
+                            onClick={stopPropagation}
+                            onChange={event => props.handleGroupElementChange(props.index, "stayTime", event.target.value)}
+                            autoComplete="off"
+                            disabled={disableGroup}
+                            fullWidth
+                          />
                         </Grid>
                       </Grid>
                     )}
-                    <Grid size={{ sm: props.groupData.timed ? 1 : 3 }}>
-                      <StyledQuestionCount component="div">{questionCount} questions</StyledQuestionCount>
-                    </Grid>
-                    <Grid size={{ sm: 1 }}>
-                      <IconButton aria-label="delete" onClick={handleDelete} disabled={disableGroup} size="large">
-                        <Delete />
-                      </IconButton>
-                      <ToolTip title="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME" displayPosition="bottom" />
-                    </Grid>
+
+                    <StyledQuestionCount component="div" sx={{ whiteSpace: "nowrap" }}>
+                      {questionCount} questions
+                    </StyledQuestionCount>
+                  </Grid>
+
+                  <Grid item sx={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
+                    <IconButton aria-label="delete" onClick={handleDelete} disabled={disableGroup} size="small">
+                      <Delete fontSize="small" />
+                    </IconButton>
+                    <ToolTip title="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME" displayPosition="bottom" />
                   </Grid>
                 </Grid>
               </StyledAccordionSummary>

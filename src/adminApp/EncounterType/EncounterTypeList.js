@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { get } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
-import Box from "@mui/material/Box";
+import { Box, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { findProgramEncounterForm, findProgramEncounterCancellationForm } from "../domain/formMapping";
@@ -153,45 +153,47 @@ const EncounterTypeList = ({ history, userInfo }) => {
   );
 
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      <Title title="Encounter Types" />
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        {hasEditPrivilege(userInfo) && (
+          <Grid item>
+            <CreateComponent onSubmit={() => setRedirect(true)} name="New Encounter Type" />
+          </Grid>
+        )}
+      </Grid>
+      <AvniMaterialTable
+        title=""
+        ref={tableRef}
+        columns={columns}
+        fetchData={fetchData}
+        options={{
+          pageSize: 10,
+          sorting: true,
+          debounceInterval: 500,
+          search: false,
+          rowStyle: ({ original }) => ({
+            backgroundColor: original.voided ? "#DBDBDB" : "#fff"
+          })
         }}
-      >
-        <Title title="Encounter Types" />
-        <div className="container">
-          <div>
-            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={() => setRedirect(true)} name="New Encounter type" />}
-            </div>
-            <AvniMaterialTable
-              title=""
-              ref={tableRef}
-              columns={columns}
-              fetchData={fetchData}
-              options={{
-                pageSize: 10,
-                sorting: true,
-                debounceInterval: 500,
-                search: false,
-                rowStyle: ({ original }) => ({
-                  backgroundColor: original.voided ? "#DBDBDB" : "#fff"
-                })
-              }}
-              actions={actions}
-              route={"/appDesigner/encounterType"}
-            />
-          </div>
-        </div>
-      </Box>
-      {redirect && <Redirect to={"/appDesigner/encounterType/create"} />}
-    </>
+        actions={actions}
+        route="/appDesigner/encounterType"
+      />
+      {redirect && <Redirect to="/appDesigner/encounterType/create" />}
+    </Box>
   );
 };
+
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
+
 export default withRouter(connect(mapStateToProps)(EncounterTypeList));

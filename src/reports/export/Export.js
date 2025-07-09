@@ -29,12 +29,14 @@ const StyledBox = styled(Box)(({ theme }) => ({
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  marginBottom: theme.spacing(12.5)
+  marginBottom: theme.spacing(2)
 }));
 
 const StyledGrid = styled(Grid)({
+  display: "flex",
   justifyContent: "flex-start",
-  alignItems: "baseline"
+  alignItems: "center",
+  flexWrap: "nowrap"
 });
 
 const StyledWarningText = styled(Typography)(({ theme }) => ({

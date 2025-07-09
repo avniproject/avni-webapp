@@ -2,20 +2,22 @@ import { useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { withRouter } from "react-router-dom";
 import { FormTypeEntities } from "../common/constants";
-import { Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, IconButton, Box, Grid } from "@mui/material";
 import { Close, Edit, LibraryAdd, Settings, Delete } from "@mui/icons-material";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import NewFormModal from "../components/NewFormModal";
 import { format, isValid } from "date-fns";
 import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
+import { CreateComponent } from "../../common/components/CreateComponent";
+import { Title } from "react-admin";
 
 function isActionDisabled(rowData, userInfo) {
   // prettier-ignore
   return (rowData?.voided ?? false) || !UserInfo.hasFormEditPrivilege(userInfo, rowData?.formType);
 }
 
-const FormListing = ({ history, userInfo }) => {
+const FormListing = ({ history, userInfo, onNewFormClick }) => {
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
   const [uuid, setUUID] = useState(0);
   const tableRef = useRef(null);
@@ -91,7 +93,7 @@ const FormListing = ({ history, userInfo }) => {
           .then(result => {
             const forms = (result._embedded?.basicFormDetailses || []).map(form => ({
               ...form,
-              voided: form.voided ?? form.isVoided ?? false // Normalize voided
+              voided: form.voided ?? form.isVoided ?? false
             }));
             resolve({
               data: forms,
@@ -130,7 +132,7 @@ const FormListing = ({ history, userInfo }) => {
         disabled: row => isActionDisabled(row.original, userInfo)
       },
       {
-        icon: Delete, // Static icon, logic in tooltip and onClick
+        icon: Delete,
         tooltip: row => (row.original?.voided ? "Unvoid Form" : "Delete Form"),
         onClick: (event, row) => {
           const voidedMessage = row.original?.voided
@@ -174,6 +176,14 @@ const FormListing = ({ history, userInfo }) => {
 
   return (
     <>
+      <Title title="Forms" color="primary" />
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        {UserInfo.hasFormEditPrivilege(userInfo) && (
+          <Grid item>
+            <CreateComponent onSubmit={onNewFormClick} name="New Form" />
+          </Grid>
+        )}
+      </Grid>
       <AvniMaterialTable
         title=""
         ref={tableRef}
@@ -187,9 +197,10 @@ const FormListing = ({ history, userInfo }) => {
           search: true,
           rowStyle: ({ original }) => ({
             backgroundColor: original?.voided ?? false ? "#DBDBDB" : "#fff"
-          })
+          }),
+          maxWidth: "100%"
         }}
-        route={"/appdesigner/forms"}
+        route="/appdesigner/forms"
         actions={actions}
       />
       {cloneFormIndicator && showCloneForm()}

@@ -2,7 +2,7 @@ import { memo, useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { get, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
-import Box from "@mui/material/Box";
+import { Box, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
@@ -78,7 +78,7 @@ const ProgramList = ({ history, userInfo }) => {
         accessorKey: "colour",
         header: "Colour",
         enableSorting: true,
-        Cell: ({ row }) => <div style={{ width: "20px", height: "20px", border: "1px solid", background: row.original.colour }}>&nbsp;</div>
+        Cell: ({ row }) => <div style={{ width: "20px", height: "20px", border: "1px solid", background: row.original.colour }}> </div>
       }
     ],
     [formMappings, subjectType]
@@ -149,48 +149,51 @@ const ProgramList = ({ history, userInfo }) => {
   );
 
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      <Title title="Programs" />
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        {hasEditPrivilege(userInfo) && (
+          <Grid item>
+            <CreateComponent onSubmit={() => setRedirect(true)} name="New Program" />
+          </Grid>
+        )}
+      </Grid>
+      <AvniMaterialTable
+        title=""
+        ref={tableRef}
+        columns={columns}
+        fetchData={fetchData}
+        options={{
+          pageSize: 10,
+          sorting: true,
+          debounceInterval: 500,
+          search: false,
+          rowStyle: ({ original }) => ({
+            backgroundColor: original.voided ? "#DBDBDB" : "#fff"
+          })
         }}
-      >
-        <Title title="Programs" />
-        <div className="container">
-          <div>
-            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={() => setRedirect(true)} name="New Program" />}
-            </div>
-            <AvniMaterialTable
-              title=""
-              ref={tableRef}
-              columns={columns}
-              fetchData={fetchData}
-              options={{
-                pageSize: 10,
-                sorting: true,
-                debounceInterval: 500,
-                search: false,
-                rowStyle: ({ original }) => ({
-                  backgroundColor: original.voided ? "#DBDBDB" : "#fff"
-                })
-              }}
-              actions={actions}
-              route={"/appdesigner/program"}
-            />
-          </div>
-        </div>
-      </Box>
-      {redirect && <Redirect to={"/appDesigner/program/create"} />}
-    </>
+        actions={actions}
+        route="/appdesigner/program"
+      />
+      {redirect && <Redirect to="/appDesigner/program/create" />}
+    </Box>
   );
 };
+
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
+
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
+
 export default withRouter(connect(mapStateToProps)(memo(ProgramList, areEqual)));

@@ -63,8 +63,8 @@ export const areValidFormatValuesValid = formElement => {
   return isEmpty(formElement.validFormat.regex) === isEmpty(formElement.validFormat.descriptionKey);
 };
 
-export function TabContainer({ skipStyles, ...props }) {
-  const typographyCSS = skipStyles ? {} : { padding: 8 * 3 };
+export function TabContainer({ ...props }) {
+  const typographyCSS = { padding: 4 };
   return (
     <Typography {...props} component="div" sx={typographyCSS}>
       {props.children}
@@ -273,7 +273,7 @@ class FormDetails extends Component {
 
   countGroupElements(form) {
     let groupFlag = true;
-    _.forEach(form.formElementGroups, (groupElement, index) => {
+    _.forEach(form.formElementGroups, groupElement => {
       if (!groupElement.voided) {
         groupFlag = false;
       }
@@ -775,8 +775,8 @@ class FormDetails extends Component {
     let dataSend = cloneDeep(this.state.form);
     dataSend.name = this.state.name;
     dataSend.timed = this.state.timed;
-    _.forEach(dataSend.formElementGroups, (group, index) => {
-      _.forEach(group.formElements, (element, index1) => {
+    _.forEach(dataSend.formElementGroups, group => {
+      _.forEach(group.formElements, element => {
         if (element.concept.dataType === "Coded") {
           const excluded = element.concept.answers.map(answer => {
             return answer.excluded && !answer.voided && answer.name;
@@ -932,7 +932,6 @@ class FormDetails extends Component {
               margin="normal"
               onChange={event => this.onUpdateFormName(event.target.value)}
               value={this.state.name}
-              style={{ width: "50%" }}
               autoComplete="off"
               disabled={this.state.disableForm}
             />
@@ -969,7 +968,6 @@ class FormDetails extends Component {
                   marginBottom: "2px"
                 }}
                 disabledFlag={!this.state.detectBrowserCloseEvent || this.state.disableForm}
-                fullWidth={true}
               />
             </Grid>
           )}
@@ -993,9 +991,34 @@ class FormDetails extends Component {
             sm: 12
           }}
         >
-          <Tabs style={{ background: "#2196f3", color: "white" }} value={this.state.activeTabIndex} onChange={this.onTabHandleChange}>
-            <Tab label="Details" />
-            <Tab label="Rules" />
+          <Tabs
+            style={{ background: "#2196f3", color: "white" }}
+            value={this.state.activeTabIndex}
+            onChange={this.onTabHandleChange}
+            sx={{
+              "& .MuiTabs-indicator": {
+                backgroundColor: "#fff"
+              }
+            }}
+          >
+            <Tab
+              label="Details"
+              sx={{
+                color: "#fff",
+                "&.Mui-selected": {
+                  color: "#fff"
+                }
+              }}
+            />
+            <Tab
+              label="Rules "
+              sx={{
+                color: "#fff",
+                "&.Mui-selected": {
+                  color: "#fff"
+                }
+              }}
+            />
           </Tabs>
           <TabContainer hidden={this.state.activeTabIndex !== 0}>
             <Grid
