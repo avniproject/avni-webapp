@@ -70,6 +70,27 @@ class ReviewStatus {
 
 const isMetadataDiffReviewEnabled = true;
 
+const uploadTypesThatRequireId = [
+  "Child Test new update registration",
+  "Pulse Polio enrolment",
+  "Regular Assessment Encounter",
+  "Updated type registration"
+];
+
+function getCSVHeaders(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = event => {
+      const text = event.target.result;
+      const lines = text.split("\n");
+      const headers = lines[0].split(",").map(h => h.trim().replace(/"/g, ""));
+      resolve(headers);
+    };
+    reader.onerror = reject;
+    reader.readAsText(file);
+  });
+}
+
 const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
   const classes = useStyles();
 
@@ -123,6 +144,15 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
 
   const handleUploadFile = useCallback(async () => {
     try {
+      if (uploadTypesThatRequireId.includes(uploadType)) {
+        const headers = await getCSVHeaders(file);
+        const requiredColumn = "Id from previous system";
+        if (!headers.includes(requiredColumn)) {
+          alert(`The uploaded file must contain the "${requiredColumn}" column to prevent duplication.`);
+          return;
+        }
+      }
+
       const locationUploadModeValue = uploadType === UPLOAD_TYPES.LOCATIONS ? locationUploadMode : "";
       const encounterUploadModeValue = isEncounterType(uploadType) ? encounterUploadMode : "";
       const [ok, error] = await api.bulkUpload(
