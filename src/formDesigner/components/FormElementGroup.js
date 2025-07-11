@@ -15,103 +15,116 @@ import {
   Tabs,
   Tab,
   Tooltip,
-  TextField,
   FormControlLabel,
-  styled
+  styled,
+  useTheme
 } from "@mui/material";
-import { ExpandMore, ExpandLess, Delete, Add, Group, DragHandle } from "@mui/icons-material";
+import { ExpandMore, ExpandLess, Delete, Add, DragHandle, ViewList } from "@mui/icons-material";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import FormElementWithAddButton from "./FormElementWithAddButton";
 import { FormElementGroupRule } from "./FormElementGroupRule";
 import { ToolTip } from "../../common/components/ToolTip";
 import { ColourStyle } from "./ColourStyle";
 
-const StyledParent = styled("div")({
+const StyledParent = styled("div")(({ theme }) => ({
   paddingLeft: 0,
-  paddingBottom: 30
-});
+  paddingBottom: theme.spacing(4)
+}));
 
-const StyledAccordion = styled(Accordion)(({ hasError }) => ({
-  border: hasError ? "1px solid red" : undefined,
+const StyledAccordion = styled(Accordion)(({ hasError, theme }) => ({
+  border: hasError ? `1px solid ${theme.palette.error.main}` : undefined,
   "&.Mui-expanded": {
     margin: 0
   }
 }));
 
-const StyledAccordionSummary = styled(AccordionSummary)({
+const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+  position: "relative",
   backgroundColor: "#dbdbdb",
   paddingLeft: 0,
   paddingRight: 0,
-  paddingTop: 0,
-  paddingBottom: 0,
-  minHeight: 40,
+  minHeight: 56,
+  "&.Mui-expanded": {
+    minHeight: 56
+  },
   "&.Mui-focused": {
     backgroundColor: "#dbdbdb"
   },
   "& .MuiAccordionSummary-content": {
-    margin: 0,
+    margin: theme.spacing(1),
     "&.Mui-expanded": {
-      margin: 0
+      margin: theme.spacing(1)
     }
   },
-  "& .MuiAccordionSummary-icon": {
+  "& .MuiAccordionSummary-expandIconWrapper": {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     display: "inline"
   }
-});
+}));
 
-const StyledDragHandler = styled("div")({
-  height: 5
-});
+const StyledDragHandler = styled("div")(({ theme }) => ({
+  position: "absolute",
+  top: theme.spacing(0.5),
+  left: "50%",
+  transform: "translateX(-50%)",
+  height: 24,
+  width: 24,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center"
+}));
 
-const StyledDragHandleContainer = styled("div")(({ show }) => ({
+const StyledDragHandleContainer = styled("div", { shouldForwardProp: prop => prop !== "show" })(({ show }) => ({
   display: show ? "block" : "none"
 }));
 
-const StyledGroupIcon = styled(Group)({
-  marginLeft: 12,
-  marginRight: 4
-});
+const StyledGroupIcon = styled(ViewList)(({ theme }) => ({
+  marginLeft: theme.spacing(0.75),
+  marginRight: theme.spacing(0.25)
+}));
 
-const StyledExpandIcon = styled(({ expanded, ...props }) => (expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />))({
-  marginHorizontal: "8px",
-  display: "inline"
-});
+const StyledExpandIcon = styled(({ expanded, ...props }) => (expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />))(
+  ({ theme }) => ({
+    marginLeft: theme.spacing(0.25),
+    marginRight: theme.spacing(0.75),
+    display: "inline"
+  })
+);
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   fontSize: theme.typography.pxToRem(15)
 }));
 
-const StyledQuestionCount = styled(Typography)({
-  paddingTop: "5px"
-});
+const StyledQuestionCount = styled(Typography)(({ theme }) => ({
+  paddingTop: theme.spacing(0.625)
+}));
 
-const StyledTabs = styled(Tabs)({
+const StyledTabs = styled(Tabs)(({ theme }) => ({
   background: "#2196f3",
   color: "white",
   width: "100%",
-  marginBottom: 24,
+  marginBottom: theme.spacing(3),
   height: 40,
-  minHeight: "26px"
-});
-
-const StyledTab = styled(Tab)({
   minHeight: "26px",
-  height: "26px"
-});
+  "& .MuiTabs-indicator": {
+    backgroundColor: "#fff"
+  }
+}));
 
-const StyledErrorText = styled("div")({
-  color: "red"
-});
+const StyledErrorText = styled("div")(({ theme }) => ({
+  color: theme.palette.error.main
+}));
 
-const StyledDetailsContainer = styled(Grid)({
+const StyledDetailsContainer = styled(Grid)(({ theme }) => ({
   width: "100%",
   alignContent: "center",
-  marginBottom: 8
-});
+  marginBottom: theme.spacing(1)
+}));
 
-const StyledFormControlLabel = styled(FormControlLabel)({
-  marginLeft: 10
-});
+const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
+  marginLeft: theme.spacing(1.25)
+}));
 
 const StyledFlexContainer = styled("div")({
   display: "flex",
@@ -122,18 +135,18 @@ const StyledFlexItem = styled("div")({
   flex: 0.2
 });
 
-const StyledFab = styled(Fab)({
+const StyledFab = styled(Fab)(({ theme }) => ({
   position: "absolute",
-  marginLeft: -35,
-  marginTop: -5
-});
+  marginLeft: theme.spacing(-4.375),
+  marginTop: theme.spacing(-0.625)
+}));
 
 function FormElementGroup(props) {
   const [hover, setHover] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const panel = "panel" + props.index.toString();
   let questionCount = 0;
-
+  const theme = useTheme();
   const eventCall = (index, key, value) => {
     props.handleGroupElementChange(index, key, value);
     props.handleGroupElementChange(index, "display", value);
@@ -237,7 +250,7 @@ function FormElementGroup(props) {
 
   const DragHandler = ({ dragHandleProps }) => (
     <StyledDragHandler {...dragHandleProps}>
-      <StyledDragHandleContainer hidden={!dragGroup || disableGroup}>
+      <StyledDragHandleContainer show={dragGroup && !disableGroup}>
         <DragHandle color="disabled" />
       </StyledDragHandleContainer>
     </StyledDragHandler>
@@ -260,15 +273,16 @@ function FormElementGroup(props) {
               onChange={() => props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)}
             >
               <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`} {...provided.dragHandleProps}>
-                <Grid container alignItems="center" wrap="nowrap">
-                  <Grid item sx={{ display: "flex", alignItems: "center" }}>
+                <Grid container alignItems="center" wrap="nowrap" sx={{ width: "100%" }}>
+                  <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
+                    <Tooltip title={"Grouped Questions"}>
+                      <StyledGroupIcon />
+                    </Tooltip>
                     <StyledExpandIcon expanded={props.groupData.expanded} />
                   </Grid>
 
-                  <Grid item sx={{ display: "flex", alignItems: "center", flexGrow: 1, gap: 2, overflow: "hidden" }}>
-                    <DragHandler dragHandleProps={provided.dragHandleProps} />
-
-                    <StyledTypography sx={{ flexGrow: 1, minWidth: 120 }}>
+                  <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "35%" }}>
+                    <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
                       {props.groupData.errorMessage && props.groupData.errorMessage.name && (
                         <StyledErrorText>Please enter Page name.</StyledErrorText>
                       )}
@@ -289,56 +303,50 @@ function FormElementGroup(props) {
                         />
                       </FormControl>
                     </StyledTypography>
+                  </Grid>
 
-                    {props.groupData.timed && (
-                      <Grid container sx={{ width: 250 }} spacing={2} wrap="nowrap">
-                        <Grid item xs={6}>
-                          <TextField
-                            type="number"
-                            label="Start time (Seconds)"
-                            value={props.groupData.startTime}
-                            InputProps={{ disableUnderline: true }}
-                            onClick={stopPropagation}
-                            onChange={event => props.handleGroupElementChange(props.index, "startTime", event.target.value)}
-                            autoComplete="off"
-                            disabled={disableGroup}
-                            fullWidth
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <TextField
-                            type="number"
-                            label="Stay time (Seconds)"
-                            value={props.groupData.stayTime}
-                            InputProps={{ disableUnderline: true }}
-                            onClick={stopPropagation}
-                            onChange={event => props.handleGroupElementChange(props.index, "stayTime", event.target.value)}
-                            autoComplete="off"
-                            disabled={disableGroup}
-                            fullWidth
-                          />
-                        </Grid>
-                      </Grid>
-                    )}
+                  <Grid item sx={{ display: "flex", alignItems: "center", justifyContent: "center", flexBasis: "15%" }}>
+                    <DragHandler dragHandleProps={provided.dragHandleProps} />
+                  </Grid>
 
+                  <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%" }}>
                     <StyledQuestionCount component="div" sx={{ whiteSpace: "nowrap" }}>
                       {questionCount} questions
                     </StyledQuestionCount>
                   </Grid>
 
-                  <Grid item sx={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
+                  <Grid
+                    item
+                    sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%", justifyContent: "flex-end" }}
+                  >
                     <IconButton aria-label="delete" onClick={handleDelete} disabled={disableGroup} size="small">
                       <Delete fontSize="small" />
                     </IconButton>
-                    <ToolTip title="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME" displayPosition="bottom" />
+                    <ToolTip title="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME" displayPosition="top" />
                   </Grid>
                 </Grid>
               </StyledAccordionSummary>
               <AccordionDetails style={{ padding: 0 }}>
                 <Grid direction="column" style={{ width: "100%" }}>
                   <StyledTabs value={tabIndex} onChange={(event, value) => setTabIndex(value)}>
-                    <StyledTab label="Details" />
-                    <StyledTab label="Rules" />
+                    <Tab
+                      label="Details"
+                      sx={{
+                        color: "#fff",
+                        "&.Mui-selected": {
+                          color: "#fff"
+                        }
+                      }}
+                    />
+                    <Tab
+                      label="Rules"
+                      sx={{
+                        color: "#fff",
+                        "&.Mui-selected": {
+                          color: "#fff"
+                        }
+                      }}
+                    />
                   </StyledTabs>
                   <StyledDetailsContainer hidden={tabIndex !== 0}>
                     <Droppable droppableId={`Group${props.index}`} type="task">

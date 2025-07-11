@@ -10,17 +10,26 @@ import RuleDesigner from "./DeclarativeRule/RuleDesigner";
 const StyledRoot = styled("div")(({ theme }) => ({
   flexGrow: 1,
   backgroundColor: theme.palette.background.paper,
-  display: "flex"
+  display: "flex",
+  minHeight: "100%" // Ensure consistent height
 }));
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
-  marginLeft: -10,
-  borderRight: `1px solid ${theme.palette.divider}`
+  borderRight: `1px solid ${theme.palette.divider}`,
+  minWidth: theme.spacing(20), // Fixed minimum width for tabs
+  maxWidth: theme.spacing(20), // Prevent tabs from growing too wide
+  "& .MuiTab-root": {
+    paddingRight: theme.spacing(5),
+    paddingLeft: theme.spacing(2), // Consistent padding
+    textAlign: "left", // Align text for better UX
+    justifyContent: "flex-start" // Align content to start
+  }
 }));
 
 const StyledTabPanelContainer = styled("div")(({ theme }) => ({
   padding: theme.spacing(3),
-  width: "100%"
+  width: "100%",
+  boxSizing: "border-box" // Prevent padding from affecting width
 }));
 
 function TabPanel(props) {
@@ -65,7 +74,7 @@ function FormElementTabs(props) {
 
   return (
     <StyledRoot>
-      <StyledTabs orientation="vertical" variant="scrollable" value={value} onChange={handleChange} aria-label="Vertical tabs example">
+      <StyledTabs orientation="vertical" value={value} onChange={handleChange} aria-label="Vertical tabs for form element">
         <Tab label="Details" {...a11yProps(props.indexTab, 0)} />
         <Tab label="Rule" {...a11yProps(props.indexTab, 1)} />
       </StyledTabs>

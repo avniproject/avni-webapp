@@ -3,60 +3,51 @@ import { createdAudit, modifiedAudit } from "../../adminApp/components/AuditUtil
 import _ from "lodash";
 
 export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, modifiedDateTime, lastModifiedDateTime, direction }) => {
+  const containerDirection = direction || "column";
+  const rowAlignProps = containerDirection === "row" ? { ml: "auto" } : {};
+  const itemAlign = containerDirection === "row" ? "center" : "flex-start";
+  const textAlignValue = containerDirection === "row" ? "center" : "left";
+
   return (
-    <Grid
-      container
-      direction={direction || "column"}
-      spacing={2}
-      sx={{
-        justifyContent: "space-between"
-      }}
-    >
-      <Grid container direction={"column"} spacing={1} size={6}>
-        <Grid>
-          <FormLabel style={{ fontSize: "13px" }}>Created </FormLabel>
-        </Grid>
-        <Grid>
-          <span style={{ fontSize: "15px" }}>{createdAudit({ createdBy, createdDateTime })}</span>
+    <Grid container direction={containerDirection} spacing={2}>
+      <Grid item xs={containerDirection === "row" ? 4 : 12}>
+        <Grid container direction="column" spacing={1} alignItems={itemAlign} textAlign={textAlignValue}>
+          <Grid item>
+            <FormLabel sx={{ fontSize: "13px" }}>Created</FormLabel>
+          </Grid>
+          <Grid item>
+            <span style={{ fontSize: "15px" }}>{createdAudit({ createdBy, createdDateTime })}</span>
+          </Grid>
         </Grid>
       </Grid>
-      <Grid
-        container
-        direction={"column"}
-        spacing={1}
-        sx={[
-          direction
-            ? {
-                alignContent: "flex-end"
-              }
-            : {
-                alignContent: "flex-start"
-              }
-        ]}
-        size={6}
-      >
-        <Grid>
-          <FormLabel style={{ fontSize: "13px" }}>Modified </FormLabel>
+
+      <Grid item xs={containerDirection === "row" ? 4 : 12} sx={rowAlignProps}>
+        <Grid container direction="column" spacing={1} alignItems={itemAlign} textAlign={textAlignValue}>
+          <Grid item>
+            <FormLabel sx={{ fontSize: "13px" }}>Modified</FormLabel>
+          </Grid>
+          <Grid item>
+            <span style={{ fontSize: "15px" }}>
+              {modifiedAudit({
+                lastModifiedBy,
+                lastModifiedDateTime: modifiedDateTime || lastModifiedDateTime
+              })}
+            </span>
+          </Grid>
         </Grid>
-        <Grid>
-          <span style={{ fontSize: "15px" }}>
-            {modifiedAudit({
-              lastModifiedBy,
-              lastModifiedDateTime: modifiedDateTime || lastModifiedDateTime
-            })}
-          </span>
-        </Grid>
-        {!_.isEmpty(uuid) && (
-          <Grid container direction={"column"} spacing={1} size={8}>
-            <Grid>
-              <FormLabel style={{ fontSize: "13px" }}>UUID </FormLabel>
+      </Grid>
+      {!_.isEmpty(uuid) && (
+        <Grid item xs={containerDirection === "row" ? 4 : 12} sx={rowAlignProps}>
+          <Grid container direction="column" spacing={1} alignItems={itemAlign} textAlign={textAlignValue}>
+            <Grid item>
+              <FormLabel sx={{ fontSize: "13px" }}>UUID</FormLabel>
             </Grid>
-            <Grid>
+            <Grid item>
               <span style={{ fontSize: "15px" }}>{uuid}</span>
             </Grid>
           </Grid>
-        )}
-      </Grid>
+        </Grid>
+      )}
     </Grid>
   );
 };

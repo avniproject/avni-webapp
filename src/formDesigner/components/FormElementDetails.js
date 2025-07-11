@@ -16,7 +16,8 @@ import {
   TextField,
   Radio,
   RadioGroup,
-  Chip
+  Chip,
+  Stack
 } from "@mui/material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
@@ -77,10 +78,9 @@ const StyledFormLabel = styled(FormLabel)({
   fontSize: "13px"
 });
 
-const StyledLink = styled("a")({
-  color: "black",
-  textDecoration: "none"
-});
+const StyledLink = styled("a")(({ theme }) => ({
+  color: theme.palette.primary.main
+}));
 
 const StyledChipContainer = styled("div")({
   paddingTop: 10
@@ -543,99 +543,101 @@ const FormElementDetails = ({ userInfo, ...props }) => {
         )}
         {props.formElementData.concept.dataType === "DateTime" && showPicker("date", props, disableFormElement)}
         {props.formElementData.concept.dataType === "Time" && showPicker("time", props, disableFormElement)}
-        {["Text"].includes(props.formElementData.concept.dataType) && (
-          <Grid sm={12}>
-            {props.formElementData.errorMessage?.validFormat && (
-              <StyledErrorText>Validation Regex and description key both must be empty or both must be filled</StyledErrorText>
-            )}
-            <StyledFormControl disabled={disableFormElement}>
-              <AvniFormLabel label={"Validation Regex"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_REGEX"} />
-              <Input
-                id="validFormatRegex"
-                value={get(props.formElementData, "validFormat.regex", "")}
-                onChange={event => props.handleGroupElementKeyValueChange(props.groupIndex, "regex", event.target.value, props.index)}
-              />
-            </StyledFormControl>
-            <StyledFormControl disabled={disableFormElement}>
-              <AvniFormLabel label={"Validation Description Key"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_DESCRIPTION_KEY"} />
-              <Input
-                id="validFormatDescriptionKey"
-                value={get(props.formElementData, "validFormat.descriptionKey", "")}
-                onChange={event =>
-                  props.handleGroupElementKeyValueChange(props.groupIndex, "descriptionKey", event.target.value, props.index)
-                }
-              />
-            </StyledFormControl>
-          </Grid>
-        )}
-        <Grid container sm={12}>
-          {props.formElementData.concept.dataType !== "QuestionGroup" && (
-            <Grid sm={4}>
-              <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"} disabled={disableFormElement}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      id="mandatoryDetails"
-                      checked={!!props.formElementData.mandatory}
-                      value={props.formElementData.mandatory ? "yes" : "no"}
-                      onChange={event =>
-                        props.handleGroupElementChange(
-                          props.groupIndex,
-                          "mandatory",
-                          event.target.value === "yes" ? false : true,
-                          props.index
-                        )
-                      }
-                    />
-                  }
-                  label="Mandatory"
+        <Stack spacing={4} alignItems="center" flexWrap="wrap">
+          {["Text"].includes(props.formElementData.concept.dataType) && (
+            <Grid sm={12}>
+              {props.formElementData.errorMessage?.validFormat && (
+                <StyledErrorText>Validation Regex and description key both must be empty or both must be filled</StyledErrorText>
+              )}
+              <StyledFormControl disabled={disableFormElement}>
+                <AvniFormLabel label={"Validation Regex"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_REGEX"} />
+                <Input
+                  id="validFormatRegex"
+                  value={get(props.formElementData, "validFormat.regex", "")}
+                  onChange={event => props.handleGroupElementKeyValueChange(props.groupIndex, "regex", event.target.value, props.index)}
                 />
-              </AvniFormControl>
+              </StyledFormControl>
+              <StyledFormControl disabled={disableFormElement}>
+                <AvniFormLabel label={"Validation Description Key"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_DESCRIPTION_KEY"} />
+                <Input
+                  id="validFormatDescriptionKey"
+                  value={get(props.formElementData, "validFormat.descriptionKey", "")}
+                  onChange={event =>
+                    props.handleGroupElementKeyValueChange(props.groupIndex, "descriptionKey", event.target.value, props.index)
+                  }
+                />
+              </StyledFormControl>
             </Grid>
           )}
-          {props.formElementData.concept.dataType === "Subject" && <SubjectFormElementKeyValues {...props} />}
-          <Grid sm={4}>
-            {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(props.formElementData.concept.dataType) && (
-              <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"} disabled={disableFormElement}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      id="editable"
-                      checked={props.formElementData.keyValues.editable ?? false}
-                      onChange={event =>
-                        props.handleGroupElementKeyValueChange(
-                          props.groupIndex,
-                          "editable",
-                          !props.formElementData.keyValues.editable,
-                          props.index
-                        )
-                      }
-                    />
-                  }
-                  label="Read Only"
-                />
-              </AvniFormControl>
+          <Grid container sm={12}>
+            {props.formElementData.concept.dataType !== "QuestionGroup" && (
+              <Grid sm={4}>
+                <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"} disabled={disableFormElement}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="mandatoryDetails"
+                        checked={!!props.formElementData.mandatory}
+                        value={props.formElementData.mandatory ? "yes" : "no"}
+                        onChange={event =>
+                          props.handleGroupElementChange(
+                            props.groupIndex,
+                            "mandatory",
+                            event.target.value === "yes" ? false : true,
+                            props.index
+                          )
+                        }
+                      />
+                    }
+                    label="Mandatory"
+                  />
+                </AvniFormControl>
+              </Grid>
+            )}
+            {props.formElementData.concept.dataType === "Subject" && <SubjectFormElementKeyValues {...props} />}
+            <Grid sm={4}>
+              {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(props.formElementData.concept.dataType) && (
+                <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"} disabled={disableFormElement}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="editable"
+                        checked={props.formElementData.keyValues.editable ?? false}
+                        onChange={event =>
+                          props.handleGroupElementKeyValueChange(
+                            props.groupIndex,
+                            "editable",
+                            !props.formElementData.keyValues.editable,
+                            props.index
+                          )
+                        }
+                      />
+                    }
+                    label="Read Only"
+                  />
+                </AvniFormControl>
+              )}
+            </Grid>
+            {["Numeric", "Text", "PhoneNumber"].includes(props.formElementData.concept.dataType) && (
+              <Grid sm={4}>
+                <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"} disabled={disableFormElement}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="unique"
+                        checked={!!props.formElementData.keyValues.unique}
+                        onChange={event =>
+                          props.handleGroupElementKeyValueChange(props.groupIndex, "unique", event.target.checked, props.index)
+                        }
+                      />
+                    }
+                    label="Unique"
+                  />
+                </AvniFormControl>
+              </Grid>
             )}
           </Grid>
-          {["Numeric", "Text", "PhoneNumber"].includes(props.formElementData.concept.dataType) && (
-            <Grid sm={4}>
-              <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"} disabled={disableFormElement}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      id="unique"
-                      checked={!!props.formElementData.keyValues.unique}
-                      onChange={event =>
-                        props.handleGroupElementKeyValueChange(props.groupIndex, "unique", event.target.checked, props.index)
-                      }
-                    />
-                  }
-                  label="Unique"
-                />
-              </AvniFormControl>
-            </Grid>
-          )}
-        </Grid>
+        </Stack>
         {props.formElementData.concept.dataType === "Id" && (
           <Grid sm={6}>
             <StyledFormControl disabled={disableFormElement}>

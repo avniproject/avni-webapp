@@ -1,4 +1,5 @@
 import { styled } from "@mui/material/styles";
+import { forwardRef } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Error, Close, Warning } from "@mui/icons-material";
 import { IconButton, Snackbar, SnackbarContent } from "@mui/material";
@@ -49,11 +50,12 @@ const StyledCloseIcon = styled(Close)({
   fontSize: 20
 });
 
-function MySnackbarContentWrapper({ message, onClose, variant = "success", ...other }) {
+const MySnackbarContentWrapper = forwardRef(({ message, onClose, variant = "success", ...other }, ref) => {
   const Icon = variantIcon[variant];
 
   return (
     <StyledSnackbarContent
+      ref={ref}
       aria-describedby="client-snackbar"
       variant={variant}
       message={
@@ -70,7 +72,7 @@ function MySnackbarContentWrapper({ message, onClose, variant = "success", ...ot
       {...other}
     />
   );
-}
+});
 
 MySnackbarContentWrapper.propTypes = {
   message: PropTypes.string,
@@ -103,7 +105,7 @@ export default function CustomizedSnackbar({
       open={defaultSnackbarStatus}
       autoHideDuration={autoHideDuration}
       onClose={handleClose}
-      TransitionProps={{ onExited: onExited }}
+      slotProps={{ transition: { onExited: onExited } }}
     >
       <MySnackbarContentWrapper onClose={handleClose} variant={variant} message={message} />
     </Snackbar>

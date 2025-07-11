@@ -912,17 +912,8 @@ class FormDetails extends Component {
     const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(this.props.userInfo, this.state.formType);
     const form = (
       <Grid container>
-        <Grid
-          container
-          sx={{
-            alignContent: "flex-end"
-          }}
-        >
-          <Grid
-            size={{
-              sm: 10
-            }}
-          >
+        <Grid container sx={{ alignContent: "flex-end", justifyContent: "space-between", width: "100%" }}>
+          <Grid size={{ sm: 10 }}>
             {this.state.nameError && <FormHelperText error>Form name is empty</FormHelperText>}
             <TextField
               type="string"
@@ -937,11 +928,7 @@ class FormDetails extends Component {
             />
           </Grid>
           {this.state.createFlag && (
-            <Grid
-              size={{
-                sm: 2
-              }}
-            >
+            <Grid size={{ sm: 2 }}>
               <Button
                 fullWidth
                 variant="contained"
@@ -955,11 +942,7 @@ class FormDetails extends Component {
             </Grid>
           )}
           {hasFormEditPrivilege && !this.state.createFlag && (
-            <Grid
-              size={{
-                sm: 2
-              }}
-            >
+            <Grid size={{ sm: 2 }}>
               <SaveComponent
                 name="Save"
                 onSubmit={this.validateForm}
@@ -986,11 +969,7 @@ class FormDetails extends Component {
             </div>
           )}
         </Grid>
-        <Grid
-          size={{
-            sm: 12
-          }}
-        >
+        <Grid size={{ sm: 12 }}>
           <Tabs
             style={{ background: "#2196f3", color: "white" }}
             value={this.state.activeTabIndex}
@@ -1011,7 +990,7 @@ class FormDetails extends Component {
               }}
             />
             <Tab
-              label="Rules "
+              label="Rules"
               sx={{
                 color: "#fff",
                 "&.Mui-selected": {

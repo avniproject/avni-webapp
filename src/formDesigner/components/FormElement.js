@@ -1,5 +1,5 @@
 import { useState, memo } from "react";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import { Accordion, AccordionDetails, AccordionSummary, Typography, Grid, InputLabel, IconButton, Tooltip } from "@mui/material";
 import {
   ExpandMore,
@@ -22,96 +22,89 @@ import {
   InsertDriveFile
 } from "@mui/icons-material";
 import FormElementTabs from "./FormElementTabs";
-import { isEqual } from "lodash";
+import { areEqual, isEqual } from "lodash";
 import { ToolTip } from "../../common/components/ToolTip";
 
-const StyledAccordion = styled(Accordion)(({ error }) => ({
+const StyledAccordion = styled(Accordion)(({ error, theme }) => ({
   width: "100%",
-  ...(error && {
-    border: "1px solid red"
-  }),
   "&.Mui-expanded": {
     margin: 0
-  }
+  },
+  backgroundColor: "#E0E0E0"
 }));
 
-const StyledAccordionSummary = styled(AccordionSummary)({
-  paddingRight: 0,
-  paddingLeft: "10px",
+const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+  position: "relative",
   backgroundColor: "#dbdbdb",
-  border: "2px solid #bdc6cf",
-  minHeight: 56,
-  "&.Mui-expanded": {
-    minHeight: 56
-  },
+  paddingLeft: 0,
+  paddingRight: 0,
   "&.Mui-focused": {
     backgroundColor: "#dbdbdb"
   },
   "& .MuiAccordionSummary-content": {
-    margin: "0px 0 0 0",
+    margin: theme.spacing(1),
     "&.Mui-expanded": {
-      margin: "0px 0 0 0"
+      margin: theme.spacing(1)
     }
   }
-});
+}));
 
-const StyledAccordionDetails = styled(AccordionDetails)({
+const StyledAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
   backgroundColor: "#fff",
-  border: "2px solid #bdc6cf",
-  padding: 10
-});
-
-const StyledDragHandler = styled("div")({
-  height: 5
-});
-
-const StyledIconContainer = styled("div")({
-  padding: "10px"
-});
-
-const StyledHeadingContainer = styled(Grid)({
-  paddingTop: "10px"
-});
-
-const StyledTypographyHeading = styled(Typography)(({ theme }) => ({
-  fontSize: theme.typography.pxToRem(15),
-  flexBasis: "33.33%",
-  flexShrink: 0
+  padding: theme.spacing(1.25)
 }));
 
-const StyledTypographySecondary = styled(Typography)(({ theme }) => ({
-  flexBasis: "70%",
-  fontSize: theme.typography.pxToRem(15)
-}));
-
-const StyledExpandIcon = styled("span")({
-  paddingTop: "3px",
-  paddingRight: "0px"
-});
-
-const StyledGridAlignCenter = styled(Grid)({
+const StyledDragHandler = styled("div")(({ theme }) => ({
+  position: "absolute",
+  top: theme.spacing(0.5),
+  left: "50%",
+  transform: "translateX(-50%)",
+  height: 24,
+  width: 24,
+  display: "flex",
   alignItems: "center",
   justifyContent: "center"
-});
+}));
 
-const StyledGridAlignItems = styled(Grid)({
-  alignItems: "center"
-});
+const StyledDragHandleContainer = styled("div", { shouldForwardProp: prop => prop !== "show" })(({ show }) => ({
+  display: show ? "block" : "none"
+}));
 
-const StyledInputLabel = styled(InputLabel)({
-  display: "inline-block",
+const StyledIconContainer = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(1)
+}));
+
+const StyledExpandIcon = styled(({ expanded, ...props }) => (expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />))(
+  ({ theme }) => ({
+    marginLeft: theme.spacing(0.25),
+    marginRight: theme.spacing(0.75),
+    display: "inline"
+  })
+);
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  fontSize: theme.typography.pxToRem(15),
+  whiteSpace: "normal",
+  overflowWrap: "break-word",
+  wordBreak: "break-all"
+}));
+
+const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
+  display: "block",
+  whiteSpace: "normal",
+  overflowWrap: "anywhere",
+  wordBreak: "break-word",
   "& .MuiInputLabel-asterisk": {
-    color: "red"
+    color: theme.palette.error.main
   }
-});
+}));
 
-const StyledDeleteIconContainer = styled(Grid)({
-  padding: "10px 30px -1px 0px"
-});
-
-function areEqual(prevProps, nextProps) {
-  return isEqual(prevProps, nextProps);
-}
+const StyledGridContainer = styled(Grid)(({ theme }) => ({
+  alignItems: "center",
+  width: "100%"
+}));
 
 export const dataTypeIcons = {
   concept: {
@@ -142,108 +135,104 @@ export const dataTypeIcons = {
 };
 
 const FormElement = props => {
-  const panel = "panel" + props.groupIndex.toString() + props.index.toString();
+  const panel = `panel${props.groupIndex}${props.index}`;
   const [dragElement, setDragElement] = useState(false);
   const disableFormElement = props.disableFormElement;
+  const theme = useTheme();
 
-  const DragHandler = dragProps => (
-    <StyledDragHandler {...dragProps}>
-      <div hidden={!dragElement || disableFormElement}>
+  // Debug log: Inspect props
+  console.log("[FormElement] Props received:", {
+    groupIndex: props.groupIndex,
+    index: props.index,
+    formElementData: props.formElementData,
+    disableFormElement
+  });
+
+  const DragHandler = ({ dragHandleProps }) => (
+    <StyledDragHandler {...dragHandleProps}>
+      <StyledDragHandleContainer show={dragElement && !disableFormElement}>
         <DragHandle color="disabled" />
-      </div>
+      </StyledDragHandleContainer>
     </StyledDragHandler>
   );
 
   const handleDelete = event => {
+    console.log("[FormElement] Deleting element:", { groupIndex: props.groupIndex, index: props.index });
     props.deleteGroup(props.groupIndex, props.index);
     event.stopPropagation();
   };
 
+  const dataType = props.formElementData?.concept?.dataType || "";
+  const elementType = props.formElementData?.type || "";
+  const elementName = props.formElementData?.name || "";
+  const isMandatory = props.formElementData?.mandatory || false;
+
   return (
     <StyledAccordion
       TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
-      expanded={props.formElementData.expanded}
-      error={props.formElementData.error}
-      onChange={event => props.handleGroupElementChange(props.groupIndex, "expanded", !props.formElementData.expanded, props.index)}
+      expanded={props.formElementData?.expanded || false}
+      error={props.formElementData?.error || false}
+      onChange={() => {
+        console.log("[FormElement] Accordion toggled, expanded:", !props.formElementData?.expanded);
+        props.handleGroupElementChange(props.groupIndex, "expanded", !props.formElementData?.expanded, props.index);
+      }}
       onMouseEnter={() => setDragElement(true)}
       onMouseLeave={() => setDragElement(false)}
     >
-      <StyledAccordionSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"} {...props.dragHandleProps}>
-        <Grid container direction="row">
-          <StyledGridAlignCenter container>
-            <DragHandler />
-          </StyledGridAlignCenter>
-          <StyledGridAlignItems
-            container
-            size={{
-              sm: 12
-            }}
-          >
-            <Grid>
-              <StyledTypographySecondary>
-                {[
-                  "Date",
-                  "Numeric",
-                  "Text",
-                  "Notes",
-                  "Image",
-                  "ImageV2",
-                  "DateTime",
-                  "Time",
-                  "Duration",
-                  "Video",
-                  "Id",
-                  "Location",
-                  "Subject",
-                  "PhoneNumber",
-                  "GroupAffiliation",
-                  "Audio",
-                  "File",
-                  "QuestionGroup",
-                  "Encounter"
-                ].includes(props.formElementData.concept.dataType) && (
-                  <StyledIconContainer>
-                    <Tooltip title={props.formElementData.concept.dataType}>
-                      {dataTypeIcons[props.formElementData.concept.dataType]}
-                    </Tooltip>
-                  </StyledIconContainer>
-                )}
-                {props.formElementData.concept.dataType === "Coded" && (
-                  <StyledIconContainer>
-                    <Tooltip title={props.formElementData.concept.dataType + " : " + props.formElementData.type}>
-                      {dataTypeIcons["concept"][props.formElementData.type]}
-                    </Tooltip>
-                  </StyledIconContainer>
-                )}
-              </StyledTypographySecondary>
-            </Grid>
-            <StyledHeadingContainer
-              size={{
-                sm: 10
-              }}
-            >
-              <StyledTypographyHeading>
-                <StyledExpandIcon>{props.formElementData.expanded ? <ExpandLess /> : <ExpandMore />}</StyledExpandIcon>
-                <StyledInputLabel name={"name" + panel} required={props.formElementData.mandatory} disabled={disableFormElement}>
-                  {props.formElementData.name}
-                </StyledInputLabel>
-              </StyledTypographyHeading>
-            </StyledHeadingContainer>
-            <StyledDeleteIconContainer
-              size={{
-                sm: 1
-              }}
-            >
-              <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement} size="small">
-                <Delete />
-              </IconButton>
-              <ToolTip title="APP_DESIGNER_FORM_ELEMENT_NAME" />
-            </StyledDeleteIconContainer>
-          </StyledGridAlignItems>
-        </Grid>
+      <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`} {...props.dragHandleProps}>
+        <StyledGridContainer container wrap="nowrap">
+          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
+            <StyledIconContainer>
+              {[
+                "Date",
+                "Numeric",
+                "Text",
+                "Notes",
+                "Image",
+                "ImageV2",
+                "DateTime",
+                "Time",
+                "Duration",
+                "Video",
+                "Id",
+                "Location",
+                "Subject",
+                "PhoneNumber",
+                "GroupAffiliation",
+                "Audio",
+                "File",
+                "QuestionGroup",
+                "Encounter"
+              ].includes(dataType) && <Tooltip title={dataType}>{dataTypeIcons[dataType] || <b />}</Tooltip>}
+              {dataType === "Coded" && (
+                <Tooltip title={`${dataType}: ${elementType}`}>{dataTypeIcons.concept?.[elementType] || <b />}</Tooltip>
+              )}
+            </StyledIconContainer>
+            <StyledExpandIcon expanded={props.formElementData?.expanded || false} />
+          </Grid>
+
+          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "50%", flexShrink: 1, minWidth: 0 }}>
+            <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
+              <StyledInputLabel name={`name${panel}`} required={isMandatory} disabled={disableFormElement}>
+                {elementName}
+              </StyledInputLabel>
+            </StyledTypography>
+          </Grid>
+
+          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%" }}>
+            <DragHandler dragHandleProps={props.dragHandleProps} />
+          </Grid>
+
+          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%", justifyContent: "flex-end" }}>
+            <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement} size="small">
+              <Delete fontSize="small" />
+            </IconButton>
+            <ToolTip title="APP_DESIGNER_FORM_ELEMENT_NAME" displayPosition="top" />
+          </Grid>
+        </StyledGridContainer>
       </StyledAccordionSummary>
       <StyledAccordionDetails>
-        <FormElementTabs {...props} indexTab={props.groupIndex + "" + props.index} />
+        <FormElementTabs {...props} indexTab={`${props.groupIndex}${props.index}`} />
       </StyledAccordionDetails>
     </StyledAccordion>
   );
