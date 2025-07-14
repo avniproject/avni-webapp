@@ -27,11 +27,10 @@ const StyledTypography = styled(Typography)(({ theme, variant }) => ({
 
 const StyledIcon = styled("span")(({ variant }) => ({
   ...(variant === "list" && {
-    marginLeft: 12,
     marginRight: 4
   }),
   ...(variant !== "list" && {
-    marginRight: "8px"
+    marginRight: 4
   })
 }));
 
@@ -41,6 +40,10 @@ const StyledSelect = styled(AvniSelect)({
 
 function EditSection({ section, index, dispatch, history }) {
   const viewTypes = section.viewType === "Default" ? ["Default", "Tile", "List"] : ["Tile", "List"];
+  console.log("EditSection: Rendering", {
+    section: { uuid: section.uuid, name: section.name, cards: WebDashboardSection.getReportCards(section).length },
+    index
+  });
   return (
     <Grid container>
       <Grid size={12}>
@@ -89,65 +92,49 @@ function EditSection({ section, index, dispatch, history }) {
 function DashboardSectionSummary({ section, index, expanded, dispatch }) {
   const stopPropagation = e => e.stopPropagation();
 
-  return (
-    <StyledGrid
-      container
-      size={{
-        sm: 12
-      }}
-    >
-      <Grid
-        size={{
-          sm: 2
-        }}
+  return {
+    text: (
+      <div style={{ display: "flex", alignItems: "center", width: "100%", gap: "16px" }}>
+        {/* Icons (leftmost) */}
+        <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+          <Tooltip title={"Grouped Questions"}>
+            <StyledIcon as={List} variant="list" />
+          </Tooltip>
+          <StyledIcon as={expanded === "panel" + index ? ExpandLess : ExpandMore} />
+        </div>
+        {/* Name (centered between icons and midpoint) */}
+        <div style={{ flex: "1 1 0", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <StyledTypography variant="heading">
+            <Input
+              type="text"
+              placeholder="Section name"
+              name={"name" + index}
+              disableUnderline={true}
+              onClick={stopPropagation}
+              value={section.name}
+              onChange={event =>
+                dispatch({ type: dashboardReducerActions.updateSectionField, payload: { section, name: event.target.value } })
+              }
+              autoComplete="off"
+            />
+          </StyledTypography>
+        </div>
+        {/* Count (centered between midpoint and right) */}
+        <div style={{ flex: "1 1 0", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <StyledTypography variant="questionCount">{WebDashboardSection.getReportCards(section).length} cards</StyledTypography>
+        </div>
+      </div>
+    ),
+    actions: (
+      <IconButton
+        aria-label="delete"
+        onClick={() => dispatch({ type: dashboardReducerActions.deleteSection, payload: section })}
+        size="large"
       >
-        <Tooltip title={"Grouped Questions"}>
-          <StyledIcon as={List} variant="list" />
-        </Tooltip>
-        {expanded === "panel" + index ? <StyledIcon as={ExpandLess} /> : <StyledIcon as={ExpandMore} />}
-      </Grid>
-      <Grid
-        size={{
-          sm: 5
-        }}
-      >
-        <StyledTypography variant="heading">
-          <Input
-            type="text"
-            placeholder="Section name"
-            name={"name" + index}
-            disableUnderline={true}
-            onClick={stopPropagation}
-            value={section.name}
-            onChange={event =>
-              dispatch({ type: dashboardReducerActions.updateSectionField, payload: { section, name: event.target.value } })
-            }
-            autoComplete="off"
-          />
-        </StyledTypography>
-      </Grid>
-      <Grid
-        size={{
-          sm: 3
-        }}
-      >
-        <StyledTypography variant="questionCount">{WebDashboardSection.getReportCards(section).length} cards</StyledTypography>
-      </Grid>
-      <Grid
-        size={{
-          sm: 2
-        }}
-      >
-        <IconButton
-          aria-label="delete"
-          onClick={() => dispatch({ type: dashboardReducerActions.deleteSection, payload: section })}
-          size="large"
-        >
-          <Delete />
-        </IconButton>
-      </Grid>
-    </StyledGrid>
-  );
+        <Delete />
+      </IconButton>
+    )
+  };
 }
 
 const CreateEditDashboardSections = props => {
@@ -169,12 +156,20 @@ const CreateEditDashboardSections = props => {
         <DragNDropComponent
           dataList={props.sections}
           onDragEnd={onDragEnd}
-          renderOtherSummary={(section, index, expanded) => (
-            <DashboardSectionSummary index={index} section={section} expanded={expanded} dispatch={props.dispatch} />
-          )}
-          renderDetails={(section, index) => (
-            <EditSection dispatch={props.dispatch} section={section} history={props.history} index={index} />
-          )}
+          renderSummaryText={(section, index, expanded) =>
+            DashboardSectionSummary({ section, index, expanded, dispatch: props.dispatch }).text
+          }
+          renderSummaryActions={(section, index, expanded) =>
+            DashboardSectionSummary({ section, index, expanded, dispatch: props.dispatch }).actions
+          }
+          renderDetails={(section, index, expanded) => {
+            console.log("CreateEditDashboardSections: renderDetails", {
+              section: { uuid: section.uuid, name: section.name, cards: WebDashboardSection.getReportCards(section).length },
+              index,
+              expanded
+            });
+            return <EditSection dispatch={props.dispatch} section={section} history={props.history} index={index} />;
+          }}
           summaryDirection={"row"}
         />
       )}

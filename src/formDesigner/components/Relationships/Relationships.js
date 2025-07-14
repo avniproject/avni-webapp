@@ -151,7 +151,7 @@ const Relationships = ({ history, userInfo }) => {
         <Title title="Relationships" />
         <div className="container">
           {isIndividualSubjectTypeAvailable === "false" && (
-            <div style={{ color: "red", fontSize: 10 }}>
+            <div style={{ color: "red" }}>
               Please click <a href={`#/appDesigner/subjectType/create`}>here</a> and create a Person subject type to enable this screen.
             </div>
           )}

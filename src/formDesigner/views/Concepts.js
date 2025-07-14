@@ -1,8 +1,8 @@
-import { useState, useRef, useMemo, useCallback } from "react";
+import { memo, useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { isEqual, isEmpty } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
@@ -33,9 +33,8 @@ const Concepts = ({ history, userInfo }) => {
       },
       {
         accessorKey: "organisationId",
-        header: "OrganisationId",
-        type: "number",
-        muiTableBodyCellProps: { align: "right" }
+        header: "Organization Id",
+        type: "number"
       }
     ],
     []
@@ -77,13 +76,13 @@ const Concepts = ({ history, userInfo }) => {
         ? [
             {
               icon: Edit,
-              tooltip: row => (row.original.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept"),
+              tooltip: row => (row.original.organisationId === 1 ? "Cannot edit core concepts" : "Edit Concept"),
               onClick: (event, row) => history.push(`/appdesigner/concept/${row.original.uuid}/edit`),
               disabled: row => row.original.organisationId === 1 || row.original.voided
             },
             {
               icon: Delete,
-              tooltip: row => (row.original.organisationId === 1 ? "Can not delete core concepts" : "Delete Concept"),
+              tooltip: row => (row.original.organisationId === 1 ? "Cannot delete core concepts" : "Delete Concept"),
               onClick: (event, row) => {
                 const voidedMessage = `Do you want to delete the concept ${row.original.name}?`;
                 if (window.confirm(voidedMessage)) {
@@ -100,7 +99,7 @@ const Concepts = ({ history, userInfo }) => {
                     });
                 }
               },
-              disabled: row => row.original.organisationId === 1
+              disabled: row => row.original.organisationId === 1 || row.original.voided
             }
           ]
         : [],
@@ -108,49 +107,52 @@ const Concepts = ({ history, userInfo }) => {
   );
 
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      <Title title="Concepts" color="primary" />
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        {hasEditPrivilege(userInfo) && (
+          <Grid item>
+            <CreateComponent onSubmit={() => setRedirect(true)} name="New Concept" />
+          </Grid>
+        )}
+      </Grid>
+      <AvniMaterialTable
+        title=""
+        ref={tableRef}
+        columns={columns}
+        fetchData={fetchData}
+        options={{
+          pageSize: 10,
+          pageSizeOptions: [10, 15, 20],
+          sorting: true,
+          debounceInterval: 500,
+          search: true,
+          rowStyle: ({ original }) => ({
+            backgroundColor: original.voided ? "#DBDBDB" : "#fff"
+          })
         }}
-      >
-        <Title title="Concepts" color="primary" />
-        <Box className="container">
-          <Box component="div">
-            <Box sx={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={() => setRedirect(true)} name="New Concept" />}
-            </Box>
-            <AvniMaterialTable
-              title=""
-              ref={tableRef}
-              columns={columns}
-              fetchData={fetchData}
-              options={{
-                pageSize: 10,
-                pageSizeOptions: [10, 15, 20],
-                sorting: true,
-                debounceInterval: 500,
-                search: true,
-                rowStyle: ({ original }) => ({
-                  backgroundColor: original.voided ? "#DBDBDB" : "#fff"
-                })
-              }}
-              actions={actions}
-              route="/appdesigner/concepts"
-            />
-          </Box>
-        </Box>
-      </Box>
+        actions={actions}
+        route="/appdesigner/concepts"
+      />
       {redirect && <Redirect to="/appdesigner/concept/create" />}
-    </>
+    </Box>
   );
 };
+
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
+
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
-export default withRouter(connect(mapStateToProps)(Concepts));
+
+export default withRouter(connect(mapStateToProps)(memo(Concepts, areEqual)));

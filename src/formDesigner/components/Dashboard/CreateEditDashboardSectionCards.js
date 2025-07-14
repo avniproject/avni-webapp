@@ -1,5 +1,4 @@
-import { Component } from "react";
-import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
+import { IconButton, ListItemText } from "@mui/material";
 import { Delete, Visibility } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import DragNDropComponent from "../../common/DragNDropComponent";
@@ -7,58 +6,58 @@ import PropTypes from "prop-types";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 import { dashboardReducerActions } from "./DashboardReducer";
 
-class CreateEditDashboardSectionCards extends Component {
-  constructor(props) {
-    super(props);
-    this.onDragEnd = this.onDragEnd.bind(this);
-  }
-
-  static propTypes = {
-    section: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired
-  };
-
-  onDragEnd(result) {
+const CreateEditDashboardSectionCards = ({ section, dispatch, history, deleteCard }) => {
+  const onDragEnd = result => {
     if (!result.destination) {
       return;
     }
-    this.props.dispatch({
+    dispatch({
       type: dashboardReducerActions.reorderCards,
-      payload: { section: this.props.section, startIndex: result.source.index, endIndex: result.destination.index }
+      payload: { section, startIndex: result.source.index, endIndex: result.destination.index }
     });
-  }
+  };
 
-  renderCard(card) {
-    return (
-      <List>
-        <ListItem>
-          <ListItemText primary={card.name} secondary={card.description} />
-          <ListItemSecondaryAction>
-            <IconButton onClick={() => this.props.history.push(`/appDesigner/reportCard/${card.id}/show`)} size="large">
-              <Visibility />
-            </IconButton>
-            <IconButton onClick={() => this.props.deleteCard(card)} size="large">
-              <Delete />
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
-      </List>
-    );
-  }
-
-  render() {
-    const cards = WebDashboardSection.getReportCards(this.props.section);
-    return (
-      !isEmpty(cards) && (
-        <DragNDropComponent
-          dataList={cards}
-          onDragEnd={this.onDragEnd}
-          renderOtherSummary={card => this.renderCard(card)}
-          summaryDirection={"column"}
-        />
+  const renderCard = card => {
+    return {
+      text: <ListItemText primary={card.name} secondary={card.description} />,
+      actions: (
+        <>
+          <IconButton onClick={() => history.push(`/appDesigner/reportCard/${card.id}/show`)} size="large">
+            <Visibility />
+          </IconButton>
+          <IconButton onClick={() => deleteCard(card)} size="large">
+            <Delete />
+          </IconButton>
+        </>
       )
-    );
-  }
-}
+    };
+  };
+
+  const cards = WebDashboardSection.getReportCards(section);
+  console.log("CreateEditDashboardSectionCards: Rendering", {
+    section: { uuid: section.uuid, name: section.name },
+    cardCount: cards.length,
+    cards: cards.map(card => ({ id: card.id, name: card.name }))
+  });
+
+  return (
+    !isEmpty(cards) && (
+      <DragNDropComponent
+        dataList={cards}
+        onDragEnd={onDragEnd}
+        renderSummaryText={card => renderCard(card).text}
+        renderSummaryActions={card => renderCard(card).actions}
+        summaryDirection={"column"}
+      />
+    )
+  );
+};
+
+CreateEditDashboardSectionCards.propTypes = {
+  section: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  deleteCard: PropTypes.func.isRequired
+};
 
 export default CreateEditDashboardSectionCards;

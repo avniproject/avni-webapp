@@ -45,7 +45,6 @@ const EncounterTypeList = ({ history, userInfo }) => {
       {
         accessorKey: "subjectType",
         header: "Subject Type",
-        enableSorting: false,
         Cell: ({ row }) => (
           <ShowSubjectType
             rowDetails={row.original}
@@ -59,7 +58,6 @@ const EncounterTypeList = ({ history, userInfo }) => {
       {
         accessorKey: "programs",
         header: "Programs",
-        enableSorting: false,
         Cell: ({ row }) => (
           <ShowPrograms rowDetails={row.original} program={program} formMapping={formMappings} setMapping={setFormMappings} />
         )
@@ -67,7 +65,6 @@ const EncounterTypeList = ({ history, userInfo }) => {
       {
         accessorKey: "encounterForm",
         header: "Encounter Form",
-        enableSorting: false,
         Cell: ({ row }) => (
           <a href={`#/appdesigner/forms/${get(findProgramEncounterForm(formMappings, row.original), "formUUID")}`}>
             {get(findProgramEncounterForm(formMappings, row.original), "formName")}
@@ -77,7 +74,6 @@ const EncounterTypeList = ({ history, userInfo }) => {
       {
         accessorKey: "cancellationForm",
         header: "Cancellation Form",
-        enableSorting: false,
         Cell: ({ row }) => (
           <a href={`#/appdesigner/forms/${get(findProgramEncounterCancellationForm(formMappings, row.original), "formUUID")}`}>
             {get(findProgramEncounterCancellationForm(formMappings, row.original), "formName")}

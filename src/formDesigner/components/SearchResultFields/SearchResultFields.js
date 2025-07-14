@@ -12,7 +12,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import commonApi from "../../../common/service";
 import Select from "react-select";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
-import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from "@mui/material";
+import { IconButton, ListItemText, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import CustomizedSnackbar from "../CustomizedSnackbar";
@@ -104,26 +104,23 @@ const SearchResultFields = ({ userInfo }) => {
   );
 
   const renderCustomField = concept => {
-    return (
-      <List>
-        <ListItem>
-          <ListItemText primary={concept.name} />
-          <ListItemSecondaryAction>
-            <IconButton onClick={() => dispatch({ type: "deleteField", payload: { uuid: concept.uuid } })} size="large">
-              <DeleteIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
-      </List>
-    );
+    return {
+      text: <ListItemText primary={concept.name} />,
+      actions: (
+        <IconButton onClick={() => dispatch({ type: "deleteField", payload: { uuid: concept.uuid } })} size="large">
+          <DeleteIcon />
+        </IconButton>
+      )
+    };
   };
 
   const renderDraggableFields = () => (
     <DragNDropComponent
       dataList={selectedCustomFields}
       onDragEnd={onDragEnd}
-      renderOtherSummary={concept => renderCustomField(concept)}
-      summaryDirection={"column"}
+      renderSummaryText={concept => renderCustomField(concept).text}
+      renderSummaryActions={concept => renderCustomField(concept).actions}
+      summaryDirection={"row"}
     />
   );
 

@@ -29,13 +29,11 @@ const SubjectTypesList = ({ history, userInfo }) => {
       {
         accessorKey: "name",
         header: "Name",
-        enableSorting: false,
         Cell: ({ row }) => <a href={`#/appDesigner/subjectType/${row.original.id}/show`}>{row.original.name}</a>
       },
       {
         accessorKey: "formName",
         header: "Registration Form",
-        enableSorting: false,
         Cell: ({ row }) => {
           const formName = get(findRegistrationForm(formMappings, row.original), "formName");
           return hasEditPrivilege(userInfo) ? (

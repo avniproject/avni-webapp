@@ -9,7 +9,7 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../common/model/UserInfo";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
-import { LinearProgress } from "@mui/material";
+import { LinearProgress, Grid } from "@mui/material";
 
 const ResourceListView = ({ history, title, resourceName, resourceURLName, columns, userInfo, editPrivilegeType }) => {
   const [redirect, setRedirect] = useState(false);
@@ -128,50 +128,50 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
   );
 
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
-        }}
-      >
-        <Title title={title} color="primary" />
-        <Box className="container">
-          <Box component="div">
-            {!isLoading && UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
-              <Box sx={{ float: "right", right: "50px", marginTop: "15px" }}>
-                <CreateComponent onSubmit={() => setRedirect(true)} name={`New ${title}`} />
-              </Box>
-            )}
-            {isLoading && <LinearProgress />}
-            {!isLoading && (
-              <AvniMaterialTable
-                title=""
-                ref={tableRef}
-                columns={columns}
-                fetchData={fetchData}
-                options={{
-                  sorting: true,
-                  enableColumnFilters: false,
-                  pageSizeOptions: [10, 25, 100],
-                  pageSize: 10,
-                  rowStyle: ({ original }) => ({
-                    backgroundColor: original.voided ? "#DBDBDB" : "#fff"
-                  })
-                }}
-                actions={actions}
-                route={`/appdesigner/${resourceURLName}`}
-              />
-            )}
-          </Box>
-        </Box>
-      </Box>
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      <Title title={title} color="primary" />
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        {!isLoading && UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
+          <Grid item>
+            <CreateComponent onSubmit={() => setRedirect(true)} name={`New ${title}`} />
+          </Grid>
+        )}
+      </Grid>
+      {isLoading && <LinearProgress />}
+      {!isLoading && (
+        <AvniMaterialTable
+          title=""
+          ref={tableRef}
+          columns={columns}
+          fetchData={fetchData}
+          options={{
+            sorting: true,
+            enableColumnFilters: false,
+            pageSizeOptions: [10, 25, 100],
+            pageSize: 10,
+            rowStyle: ({ original }) => ({
+              backgroundColor: original.voided ? "#DBDBDB" : "#fff"
+            })
+          }}
+          actions={actions}
+          route={`/appdesigner/${resourceURLName}`}
+        />
+      )}
       {redirect && <Redirect to={`/appDesigner/${resourceURLName}/create`} />}
-    </>
+    </Box>
   );
 };
+
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
+
 export default withRouter(memo(ResourceListView, areEqual));

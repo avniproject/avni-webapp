@@ -17,18 +17,15 @@ import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MuiComponentHelper from "../../../common/utils/MuiComponentHelper";
 import { Delete } from "@mui/icons-material";
+import { Grid } from "@mui/material";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[2],
   padding: theme.spacing(5),
-  backgroundColor: theme.palette.background.paper
+  backgroundColor: theme.palette.background.paper,
+  display: "flex",
+  flexDirection: "column"
 }));
-
-const StyledCreateContainer = styled("div")({
-  float: "right",
-  right: "50px",
-  marginTop: "15px"
-});
 
 const StyledDetailPanel = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2)
@@ -130,29 +127,27 @@ const ReportingViews = ({ userInfo }) => {
     () =>
       hasEditPrivilege(userInfo)
         ? [
-            row =>
-              row.original.legacyView
-                ? null
-                : {
-                    icon: Delete,
-                    tooltip: "Delete View",
-                    onClick: (event, row) => {
-                      const voidedMessage = `Do you really want to delete view ${row.original.viewName}?`;
-                      if (window.confirm(voidedMessage)) {
-                        http
-                          .delete(`/reportingView/${row.original.viewName}`)
-                          .then(response => {
-                            if (response.status === 200 && tableRef.current) {
-                              tableRef.current.refresh();
-                            }
-                          })
-                          .catch(error => {
-                            console.error("Failed to delete view:", error);
-                            alert("Failed to delete view. Please try again.");
-                          });
+            {
+              icon: Delete,
+              tooltip: "Delete View",
+              disabled: row => row.original.legacyView,
+              onClick: (event, row) => {
+                const voidedMessage = `Do you really want to delete view ${row.original.viewName}?`;
+                if (window.confirm(voidedMessage)) {
+                  http
+                    .delete(`/reportingView/${row.original.viewName}`)
+                    .then(response => {
+                      if (response.status === 200 && tableRef.current) {
+                        tableRef.current.refresh();
                       }
-                    }
-                  }
+                    })
+                    .catch(error => {
+                      console.error("Failed to delete view:", error);
+                      alert("Failed to delete view. Please try again.");
+                    });
+                }
+              }
+            }
           ]
         : [],
     [userInfo]
@@ -188,36 +183,36 @@ const ReportingViews = ({ userInfo }) => {
     <StyledBox>
       <Title title="Reporting Views" />
       <DocumentationContainer filename="View.md">
-        <div className="container">
+        <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
           {hasEditPrivilege(userInfo) && (
-            <StyledCreateContainer>
+            <Grid item>
               <CreateComponent onSubmit={confirmViewCreation} name="Create/Refresh view" />
-            </StyledCreateContainer>
+            </Grid>
           )}
-          <AvniMaterialTable
-            title=""
-            ref={tableRef}
-            columns={columns}
-            fetchData={fetchData}
-            options={{
-              pageSize: 10,
-              pageSizeOptions: [10, 15, 20],
-              sorting: true,
-              debounceInterval: 500,
-              search: true,
-              rowStyle: ({ original }) => ({
-                backgroundColor: original.legacyView ? "#DBDBDB" : "#FFF"
-              })
-            }}
-            renderDetailPanel={({ row }) => (
-              <StyledDetailPanel>
-                <JSEditor readOnly value={row.original.viewDefinition} />
-              </StyledDetailPanel>
-            )}
-            actions={actions}
-            route="/appdesigner/reportingViews"
-          />
-        </div>
+        </Grid>
+        <AvniMaterialTable
+          title=""
+          ref={tableRef}
+          columns={columns}
+          fetchData={fetchData}
+          options={{
+            pageSize: 10,
+            pageSizeOptions: [10, 15, 20],
+            sorting: true,
+            debounceInterval: 500,
+            search: true,
+            rowStyle: ({ original }) => ({
+              backgroundColor: original.legacyView ? "#DBDBDB" : "#FFF"
+            })
+          }}
+          renderDetailPanel={({ row }) => (
+            <StyledDetailPanel>
+              <JSEditor readOnly value={row.original.viewDefinition} />
+            </StyledDetailPanel>
+          )}
+          actions={actions}
+          route="/appdesigner/reportingViews"
+        />
         <Modal onClose={MuiComponentHelper.getDialogClosingHandler()} open={loading}>
           <StyledCircularProgress size={150} />
         </Modal>

@@ -7,7 +7,7 @@ const Tutorials = () => {
   return (
     <Fragment>
       <AppBar title={`Customer training and resources `} component={Header} position={"sticky"} />
-      <div style={{ marginRight: "20%", marginLeft: "20%" }}>
+      <div style={{ marginRight: "20%", marginLeft: "20%", marginTop: "15%" }}>
         <Resources />
       </div>
     </Fragment>

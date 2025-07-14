@@ -43,7 +43,6 @@ const ProgramList = ({ history, userInfo }) => {
       {
         accessorKey: "subjectType",
         header: "Subject Type",
-        enableSorting: false,
         Cell: ({ row }) => (
           <ShowSubjectType
             rowDetails={row.original}
@@ -57,7 +56,6 @@ const ProgramList = ({ history, userInfo }) => {
       {
         accessorKey: "enrolmentForm",
         header: "Enrolment Form",
-        enableSorting: false,
         Cell: ({ row }) => (
           <a href={`#/appdesigner/forms/${get(findProgramEnrolmentForm(formMappings, row.original), "formUUID")}`}>
             {get(findProgramEnrolmentForm(formMappings, row.original), "formName")}
@@ -67,7 +65,6 @@ const ProgramList = ({ history, userInfo }) => {
       {
         accessorKey: "exitForm",
         header: "Exit Form",
-        enableSorting: false,
         Cell: ({ row }) => (
           <a href={`#/appdesigner/forms/${get(findProgramExitForm(formMappings, row.original), "formUUID")}`}>
             {get(findProgramExitForm(formMappings, row.original), "formName")}

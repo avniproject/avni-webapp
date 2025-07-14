@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { Edit, Delete } from "@mui/icons-material";
+import { Grid } from "@mui/material";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditApplicationMenu);
@@ -99,45 +100,48 @@ const ApplicationMenuList = ({ history, userInfo }) => {
         sx={{
           boxShadow: 2,
           p: 3,
-          bgcolor: "background.paper"
+          bgcolor: "background.paper",
+          display: "flex",
+          flexDirection: "column"
         }}
       >
         <Title title="Menu Items" />
-        <div className="container">
-          <div>
-            {hasEditPrivilege(userInfo) && (
-              <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-                <CreateComponent onSubmit={() => triggerCreate(true)} name="New Menu Item" />
-              </div>
-            )}
-            <AvniMaterialTable
-              title=""
-              ref={tableRef}
-              columns={columns}
-              fetchData={fetchData}
-              options={{
-                pageSize: 10,
-                sorting: false,
-                debounceInterval: 500,
-                search: false,
-                rowStyle: ({ original }) => ({
-                  backgroundColor: "#fff"
-                })
-              }}
-              actions={actions}
-              route={"/appdesigner/applicationMenu"}
-            />
-          </div>
-        </div>
+        <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+          {hasEditPrivilege(userInfo) && (
+            <Grid item>
+              <CreateComponent onSubmit={() => triggerCreate(true)} name="New Menu Item" />
+            </Grid>
+          )}
+        </Grid>
+        <AvniMaterialTable
+          title=""
+          ref={tableRef}
+          columns={columns}
+          fetchData={fetchData}
+          options={{
+            pageSize: 10,
+            sorting: false,
+            debounceInterval: 500,
+            search: false,
+            rowStyle: ({ original }) => ({
+              backgroundColor: "#fff"
+            })
+          }}
+          actions={actions}
+          route={"/appdesigner/applicationMenu"}
+        />
+        {createTriggered && <Redirect to={"/appDesigner/applicationMenu/create"} />}
       </Box>
-      {createTriggered && <Redirect to={"/appDesigner/applicationMenu/create"} />}
     </DocumentationContainer>
   );
 };
+
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
+
 const mapStateToProps = state => ({
   userInfo: state.app.userInfo
 });
+
 export default withRouter(connect(mapStateToProps)(memo(ApplicationMenuList, areEqual)));

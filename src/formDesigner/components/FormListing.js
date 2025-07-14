@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { withRouter } from "react-router-dom";
 import { FormTypeEntities } from "../common/constants";
-import { Dialog, DialogTitle, DialogContent, IconButton, Box, Grid } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, IconButton, Grid } from "@mui/material";
 import { Close, Edit, LibraryAdd, Settings, Delete } from "@mui/icons-material";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import NewFormModal from "../components/NewFormModal";
@@ -41,7 +41,6 @@ const FormListing = ({ history, userInfo, onNewFormClick }) => {
       {
         accessorKey: "formType",
         header: "Form Type",
-        enableSorting: false,
         Cell: ({ row }) => {
           const display = FormTypeEntities[row.original.formType]?.display;
           return typeof display === "string" ? display : "-";
@@ -50,19 +49,16 @@ const FormListing = ({ history, userInfo, onNewFormClick }) => {
       {
         accessorKey: "subjectName",
         header: "Subject Name",
-        enableSorting: false,
         Cell: ({ row }) => (row.original.subjectName ? row.original.subjectName : "-")
       },
       {
         accessorKey: "programName",
         header: "Program Name",
-        enableSorting: false,
         Cell: ({ row }) => (row.original.programName ? row.original.programName : "-")
       },
       {
         accessorKey: "taskTypeName",
         header: "Task Type",
-        enableSorting: false,
         Cell: ({ row }) => (row.original.taskTypeName ? row.original.taskTypeName : "-")
       },
       {

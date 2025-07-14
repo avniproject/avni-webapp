@@ -1,30 +1,26 @@
-import { Fragment, useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { styled } from "@mui/material/styles";
 import _, { isEmpty } from "lodash";
 import { httpClient as http } from "common/utils/httpClient";
-import { MaterialReactTable } from "material-react-table";
-import Paper from "@mui/material/Paper";
+import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
-import Box from "@mui/material/Box";
+import { Box, Grid, Paper, Button, IconButton } from "@mui/material";
 import { connect } from "react-redux";
 import { getOperationalModules } from "../reports/reducers";
 import { withRouter } from "react-router-dom";
-import Button from "@mui/material/Button";
 import commonApi from "../common/service";
 import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
-import { IconButton } from "@mui/material";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
 
-const StyledPaper = styled(Paper)({
-  width: "100%",
-  overflowX: "auto"
-});
-
-const StyledBox = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(2)
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  boxShadow: 2,
+  padding: theme.spacing(3),
+  backgroundColor: "background.paper",
+  display: "flex",
+  flexDirection: "column"
 }));
 
 const StyledButtonContainer = styled(Box)(({ theme }) => ({
@@ -32,15 +28,11 @@ const StyledButtonContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1)
 }));
 
-const StyledTableHeadCell = styled(Box)({
-  zIndex: 1
-});
-
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOfflineDashboardAndReportCard);
 }
 
-const CustomFilters = ({ operationalModules, getOperationalModules, history, organisation, filename, userInfo }) => {
+const CustomFilters = ({ history, operationalModules, getOperationalModules, organisation, filename, userInfo }) => {
   const typeOfFilter = history.location.pathname.endsWith("myDashboardFilters") ? "myDashboardFilters" : "searchFilters";
 
   useEffect(() => {
@@ -92,15 +84,25 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
     () => [
       {
         accessorKey: "titleKey",
-        header: "TaskAssignmentFilter Name"
+        header: "Task Assignment Filter Name",
+        enableSorting: true,
+        enableColumnFilter: true
       },
       {
         accessorKey: "conceptName",
-        header: "Concept Name"
+        header: "Concept Name",
+        enableSorting: true,
+        enableColumnFilter: true
       },
       {
         id: "Subject",
         header: "Subject Type",
+        accessorFn: row => {
+          const subject = _.head(subjectTypes?.filter(s => s.uuid === row.subjectTypeUUID));
+          return (subject && subject.name) || "";
+        },
+        enableSorting: true,
+        enableColumnFilter: true,
         Cell: ({ row }) => {
           const subject = _.head(subjectTypes?.filter(s => s.uuid === row.original.subjectTypeUUID));
           return (subject && subject.name) || "";
@@ -109,16 +111,25 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
       {
         id: "Filter Type",
         header: "Filter Type",
+        accessorFn: row => _.startCase(row.type),
+        enableSorting: true,
+        enableColumnFilter: true,
         Cell: ({ row }) => _.startCase(row.original.type)
       },
       {
-        id: "widget",
+        id: "Widget",
         header: "Widget",
+        accessorFn: row => row.widget || "Default",
+        enableSorting: true,
+        enableColumnFilter: true,
         Cell: ({ row }) => row.original.widget || "Default"
       },
       {
         id: "Scope",
         header: "Search Scope",
+        accessorFn: row => _.startCase(row.scope),
+        enableSorting: true,
+        enableColumnFilter: true,
         Cell: ({ row }) => _.startCase(row.original.scope)
       }
     ],
@@ -144,7 +155,7 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
 
   const deleteFilter = filterType => ({
     onClick: async row => {
-      const voidedMessage = `Do you want to delete ${row.original.titleKey} filter ?`;
+      const voidedMessage = `Do you want to delete ${row.original.titleKey} filter?`;
       if (window.confirm(voidedMessage)) {
         const filteredFilters = settings.settings[filterType].filter(f => f.titleKey !== row.original.titleKey);
         const newSettings = {
@@ -164,19 +175,49 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
     }
   });
 
-  const renderFilterTable = filterType => (
-    <StyledBox>
-      <MaterialReactTable
-        columns={columns}
-        data={settings.settings[filterType] || []}
-        enablePagination={false}
-        enableGlobalFilter={false}
-        enableColumnFilters={false}
-        enableTopToolbar={hasEditPrivilege(userInfo)}
-        enableRowActions={hasEditPrivilege(userInfo)}
-        renderTopToolbarCustomActions={() => (
-          <StyledButtonContainer>
-            {hasEditPrivilege(userInfo) && (
+  const table = useMaterialReactTable({
+    columns,
+    data: settings.settings[typeOfFilter] || [],
+    enablePagination: false,
+    enableGlobalFilter: true,
+    enableColumnFilters: true,
+    enableSorting: true,
+    enableTopToolbar: hasEditPrivilege(userInfo),
+    enableRowActions: hasEditPrivilege(userInfo),
+    renderRowActions: ({ row }) => (
+      <StyledButtonContainer>
+        {hasEditPrivilege(userInfo) && (
+          <>
+            <IconButton
+              onClick={() => editFilter(typeOfFilter, `Edit ${_.startCase(typeOfFilter)}`).onClick(row)}
+              title="Edit TaskAssignmentFilter"
+            >
+              <Edit />
+            </IconButton>
+            <IconButton onClick={() => deleteFilter(typeOfFilter).onClick(row)} title="Delete filter">
+              <Delete />
+            </IconButton>
+          </>
+        )}
+      </StyledButtonContainer>
+    ),
+    muiTableHeadCellProps: {
+      sx: { zIndex: 1 }
+    },
+    muiTableBodyCellProps: {
+      sx: { "& .MuiIconButton-root": { color: "text.primary" } }
+    }
+  });
+
+  return _.isNil(subjectTypes) ? (
+    <div />
+  ) : (
+    <StyledPaper>
+      <Title title={typeOfFilter === "myDashboardFilters" ? "My Dashboard Filters" : "Search Filters"} color="primary" />
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        {hasEditPrivilege(userInfo) && (
+          <Grid item>
+            <StyledButtonContainer>
               <Button
                 color="primary"
                 variant="outlined"
@@ -184,58 +225,25 @@ const CustomFilters = ({ operationalModules, getOperationalModules, history, org
                   history.push({
                     pathname: "/appdesigner/filters",
                     state: {
-                      filterType,
+                      filterType: typeOfFilter,
                       selectedFilter: null,
                       settings,
                       operationalModules,
-                      title: `Add ${_.startCase(filterType)}`,
+                      title: `Add ${_.startCase(typeOfFilter)}`,
                       worklistUpdationRule,
                       filename
                     }
                   });
                 }}
               >
-                NEW {_.startCase(filterType)}
+                NEW {_.startCase(typeOfFilter)}
               </Button>
-            )}
-          </StyledButtonContainer>
+            </StyledButtonContainer>
+          </Grid>
         )}
-        renderRowActions={({ row }) => (
-          <StyledButtonContainer>
-            {hasEditPrivilege(userInfo) && (
-              <>
-                <IconButton
-                  onClick={() => editFilter(filterType, `Edit ${_.startCase(filterType)}`).onClick(row)}
-                  title="Edit TaskAssignmentFilter"
-                >
-                  <Edit />
-                </IconButton>
-                <IconButton onClick={() => deleteFilter(filterType).onClick(row)} title="Delete filter">
-                  <Delete />
-                </IconButton>
-              </>
-            )}
-          </StyledButtonContainer>
-        )}
-        muiTableHeadCellProps={{
-          sx: {
-            zIndex: 1
-          }
-        }}
-      />
-    </StyledBox>
-  );
-
-  return _.isNil(subjectTypes) ? (
-    <div />
-  ) : (
-    <Fragment>
-      {typeOfFilter === "myDashboardFilters" ? <Title title="My Dashboard Filters" /> : <Title title="Search Filters" />}
-      <StyledPaper>
-        <p />
-        {renderFilterTable(typeOfFilter)}
-      </StyledPaper>
-    </Fragment>
+      </Grid>
+      <MaterialReactTable table={table} />
+    </StyledPaper>
   );
 };
 

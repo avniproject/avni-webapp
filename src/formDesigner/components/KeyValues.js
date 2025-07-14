@@ -14,13 +14,13 @@ const StyledForm = styled("form")(({ theme }) => ({
 const StyledButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
   height: 35,
-  width: "10%",
-  marginTop: theme.spacing(2.5) // 20px
+  marginTop: theme.spacing(2.5)
 }));
 
 const StyledTextField = styled(TextField)({
+  marginRight: 10,
   "& .MuiInputBase-input": {
-    height: 20 // Adjusted from 10 for usability
+    height: 20
   }
 });
 

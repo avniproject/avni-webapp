@@ -184,65 +184,65 @@ function FormElementGroup(props) {
   };
 
   const renderFormElements = () => {
-    const formElements = [];
-    const displayOrderFormElements = props.groupData.formElements;
+    // Filter out voided or child elements to get visible form elements
+    const visibleFormElements = props.groupData.formElements.filter(
+      formElement => !formElement.voided && _.isNil(formElement.parentFormElementUuid)
+    );
 
-    _.forEach(displayOrderFormElements, (formElement, index) => {
-      if (!formElement.voided && _.isNil(formElement.parentFormElementUuid)) {
-        let propsElement = {
-          key: `Element${props.index}${index}`,
-          formElementData: formElement,
-          groupIndex: props.index,
-          index: index,
-          btnGroupAdd: props.btnGroupAdd,
-          identifierSources: props.identifierSources,
-          groupSubjectTypes: props.groupSubjectTypes,
-          handleGroupElementChange: props.handleGroupElementChange,
-          deleteGroup: props.deleteGroup,
-          updateConceptElementData: props.updateConceptElementData,
-          handleGroupElementKeyValueChange: props.handleGroupElementKeyValueChange,
-          handleExcludedAnswers: props.handleExcludedAnswers,
-          updateSkipLogicRule: props.updateSkipLogicRule,
-          updateSkipLogicJSON: props.updateSkipLogicJSON,
-          handleModeForDate: props.handleModeForDate,
-          handleRegex: props.handleRegex,
-          handleConceptFormLibrary: props.handleConceptFormLibrary,
-          availableDataTypes: props.availableDataTypes,
-          onSaveInlineConcept: props.onSaveInlineConcept,
-          handleInlineNumericAttributes: props.handleInlineNumericAttributes,
-          handleInlineCodedConceptAnswers: props.handleInlineCodedConceptAnswers,
-          onToggleInlineConceptCodedAnswerAttribute: props.onToggleInlineConceptCodedAnswerAttribute,
-          onDeleteInlineConceptCodedAnswerDelete: props.onDeleteInlineConceptCodedAnswerDelete,
-          onMoveUp: props.onMoveUp,
-          onMoveDown: props.onMoveDown,
-          onAlphabeticalSort: props.onAlphabeticalSort,
-          handleInlineCodedAnswerAddition: props.handleInlineCodedAnswerAddition,
-          handleInlineLocationAttributes: props.handleInlineLocationAttributes,
-          handleInlineSubjectAttributes: props.handleInlineSubjectAttributes,
-          handleInlinePhoneNumberAttributes: props.handleInlinePhoneNumberAttributes,
-          entityName: props.entityName,
-          disableFormElement: props.disableGroup,
-          subjectType: props.subjectType,
-          form: props.form,
-          handleInlineEncounterAttributes: props.handleInlineEncounterAttributes
-        };
-        formElements.push(
-          <Draggable
-            key={`Element${props.index}${index}`}
-            draggableId={`Group${props.index}Element${index}`}
-            index={index}
-            isDragDisabled={props.disableGroup}
-          >
-            {provided => (
-              <div {...provided.draggableProps} ref={provided.innerRef}>
-                <FormElementWithAddButton {...propsElement} dragHandleProps={provided.dragHandleProps} />
-              </div>
-            )}
-          </Draggable>
-        );
-      }
+    return visibleFormElements.map((formElement, visibleIndex) => {
+      const propsElement = {
+        key: formElement.uuid, // Use UUID for stable key
+        formElementData: formElement,
+        groupIndex: props.index,
+        index: visibleIndex, // Use visibleIndex for correct ordering
+        btnGroupAdd: props.btnGroupAdd,
+        identifierSources: props.identifierSources,
+        groupSubjectTypes: props.groupSubjectTypes,
+        handleGroupElementChange: props.handleGroupElementChange,
+        deleteGroup: props.deleteGroup,
+        updateConceptElementData: props.updateConceptElementData,
+        handleGroupElementKeyValueChange: props.handleGroupElementKeyValueChange,
+        handleExcludedAnswers: props.handleExcludedAnswers,
+        updateSkipLogicRule: props.updateSkipLogicRule,
+        updateSkipLogicJSON: props.updateSkipLogicJSON,
+        handleModeForDate: props.handleModeForDate,
+        handleRegex: props.handleRegex,
+        handleConceptFormLibrary: props.handleConceptFormLibrary,
+        availableDataTypes: props.availableDataTypes,
+        onSaveInlineConcept: props.onSaveInlineConcept,
+        handleInlineNumericAttributes: props.handleInlineNumericAttributes,
+        handleInlineCodedConceptAnswers: props.handleInlineCodedConceptAnswers,
+        onToggleInlineConceptCodedAnswerAttribute: props.onToggleInlineConceptCodedAnswerAttribute,
+        onDeleteInlineConceptCodedAnswerDelete: props.onDeleteInlineConceptCodedAnswerDelete,
+        onMoveUp: props.onMoveUp,
+        onMoveDown: props.onMoveDown,
+        onAlphabeticalSort: props.onAlphabeticalSort,
+        handleInlineCodedAnswerAddition: props.handleInlineCodedAnswerAddition,
+        handleInlineLocationAttributes: props.handleInlineLocationAttributes,
+        handleInlineSubjectAttributes: props.handleInlineSubjectAttributes,
+        handleInlinePhoneNumberAttributes: props.handleInlinePhoneNumberAttributes,
+        entityName: props.entityName,
+        disableFormElement: props.disableGroup,
+        subjectType: props.subjectType,
+        form: props.form,
+        handleInlineEncounterAttributes: props.handleInlineEncounterAttributes
+      };
+
+      return (
+        <Draggable
+          key={formElement.uuid} // Use UUID for stable key
+          draggableId={`Group${props.groupData.uuid}Element${formElement.uuid}`} // Use UUIDs for stable draggableId
+          index={visibleIndex} // Use visibleIndex for correct ordering
+          isDragDisabled={props.disableGroup}
+        >
+          {provided => (
+            <div {...provided.draggableProps} ref={provided.innerRef}>
+              <FormElementWithAddButton {...propsElement} dragHandleProps={provided.dragHandleProps} />
+            </div>
+          )}
+        </Draggable>
+      );
     });
-    return formElements;
   };
 
   const [dragGroup, setDragGroup] = useState(false);
@@ -257,7 +257,12 @@ function FormElementGroup(props) {
   );
 
   return (
-    <Draggable key={`Element${props.index}`} draggableId={`Element${props.index}`} index={props.index} isDragDisabled={disableGroup}>
+    <Draggable
+      key={props.groupData.uuid} // Use UUID for stable key
+      draggableId={`Group${props.groupData.uuid}`} // Use UUID for stable draggableId
+      index={props.index}
+      isDragDisabled={disableGroup}
+    >
       {provided => (
         <StyledParent
           {...provided.draggableProps}
@@ -349,7 +354,7 @@ function FormElementGroup(props) {
                     />
                   </StyledTabs>
                   <StyledDetailsContainer hidden={tabIndex !== 0}>
-                    <Droppable droppableId={`Group${props.index}`} type="task">
+                    <Droppable droppableId={`Group${props.groupData.uuid}`} type="task">
                       {provided => (
                         <div ref={provided.innerRef} {...provided.droppableProps}>
                           {renderFormElements()}

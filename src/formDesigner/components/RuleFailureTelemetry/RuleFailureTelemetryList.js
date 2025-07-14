@@ -11,6 +11,7 @@ import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { Close, MenuOpen } from "@mui/icons-material";
 import Checkbox from "@mui/material/Checkbox";
+import { Grid } from "@mui/material";
 
 const STATUS = {
   OPEN: 1,
@@ -20,12 +21,12 @@ const STATUS = {
 
 const RuleFailureTelemetryList = ({ userInfo }) => {
   const [selectedStatus, setSelectedStatus] = useState(STATUS.OPEN);
-  const [selectedRows, setSelectedRows] = useState([]); // Fallback for custom selection
+  const [selectedRows, setSelectedRows] = useState([]);
   const tableRef = useRef(null);
 
   const onSelect = useCallback(status => {
     setSelectedStatus(status);
-    setSelectedRows([]); // Clear selection on filter change
+    setSelectedRows([]);
     if (tableRef.current) {
       tableRef.current.refresh({ page: 0 });
     }
@@ -44,11 +45,11 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
 
   const columns = useMemo(
     () => [
-      // Custom checkbox column as fallback
       {
         accessorKey: "select",
         header: "",
         enableSorting: false,
+        size: 50, // Reduced column width
         Cell: ({ row }) => (
           <Checkbox
             checked={selectedRows.some(r => (r.original?.id || r.id) === (row.original?.id || row.id))}
@@ -60,18 +61,21 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
         accessorKey: "errorMessage",
         header: "Message",
         enableSorting: true,
+        size: 200, // Reduced column width
         Cell: ({ row }) => row.original.errorMessage || "-"
       },
       {
         accessorKey: "closed",
         header: "Status",
         enableSorting: true,
+        size: 80, // Reduced column width
         Cell: ({ row }) => (row.original.closed ? "Closed" : "Open")
       },
       {
         accessorKey: "errorDateTime",
         header: "Error Date",
         enableSorting: true,
+        size: 120, // Reduced column width
         Cell: ({ row }) =>
           isValid(new Date(row.original.errorDateTime)) ? format(new Date(row.original.errorDateTime), "yyyy-MM-dd HH:mm") : "-"
       },
@@ -79,6 +83,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
         accessorKey: "closedDateTime",
         header: "Closed Date",
         enableSorting: true,
+        size: 120, // Reduced column width
         Cell: ({ row }) =>
           row.original.closedDateTime && isValid(new Date(row.original.closedDateTime))
             ? format(new Date(row.original.closedDateTime), "yyyy-MM-dd HH:mm")
@@ -88,18 +93,21 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
         accessorKey: "individualUuid",
         header: "Individual UUID",
         enableSorting: true,
+        size: 150, // Reduced column width
         Cell: ({ row }) => row.original.individualUuid || "-"
       },
       {
         accessorKey: "ruleUuid",
         header: "Rule UUID",
         enableSorting: true,
+        size: 150, // Reduced column width
         Cell: ({ row }) => row.original.ruleUuid || "-"
       },
       {
         accessorKey: "sourceId",
         header: "Source",
         enableSorting: true,
+        size: 120, // Reduced column width
         Cell: ({ row }) => (
           <>
             <span>{row.original.sourceId || ""}</span>
@@ -111,6 +119,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
         accessorKey: "entityId",
         header: "Entity",
         enableSorting: true,
+        size: 120, // Reduced column width
         Cell: ({ row }) => (
           <>
             <span>{row.original.entityId || ""}</span>
@@ -122,6 +131,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
         accessorKey: "appType",
         header: "App",
         enableSorting: true,
+        size: 100, // Reduced column width
         Cell: ({ row }) => row.original.appType || "-"
       }
     ],
@@ -212,7 +222,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
                   .then(() => {
                     if (tableRef.current) {
                       tableRef.current.refresh();
-                      setSelectedRows([]); // Clear custom selection
+                      setSelectedRows([]);
                     }
                   })
                   .catch(error => {
@@ -254,7 +264,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
                   .then(() => {
                     if (tableRef.current) {
                       tableRef.current.refresh();
-                      setSelectedRows([]); // Clear custom selection
+                      setSelectedRows([]);
                     }
                   })
                   .catch(error => {
@@ -273,16 +283,14 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column"
       }}
     >
       <Title title="Rule Failures" />
-      <div className="container">
-        <Box
-          sx={{
-            mb: 2
-          }}
-        >
+      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+        <Grid item>
           <ButtonGroup color="primary">
             <Button variant={selectedStatus === STATUS.OPEN ? "contained" : "outlined"} onClick={() => onSelect(STATUS.OPEN)}>
               Open
@@ -294,15 +302,17 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
               All
             </Button>
           </ButtonGroup>
-        </Box>
+        </Grid>
+      </Grid>
+      <Box sx={{ overflowX: "auto", maxWidth: "100%" }}>
         <AvniMaterialTable
           title=""
           ref={tableRef}
           columns={columns}
           fetchData={fetchData}
           options={{
-            enableRowSelection: true, // Enable native checkboxes
-            enableSelectAll: true, // Allow select all
+            enableRowSelection: true,
+            enableSelectAll: true,
             pageSize: 10,
             pageSizeOptions: [10, 20, 50],
             sorting: true,
@@ -310,7 +320,8 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
             search: false,
             rowStyle: ({ original }) => ({
               backgroundColor: original?.closed ?? false ? "#DBDBDB" : "#fff"
-            })
+            }),
+            maxBodyWidth: 1200
           }}
           renderDetailPanel={({ row }) => (
             <Box
@@ -328,7 +339,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
             console.log("Native selection changed:", selectedRowIds);
           }}
         />
-      </div>
+      </Box>
     </Box>
   );
 };

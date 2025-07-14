@@ -74,9 +74,13 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
       ) : (
         <div />
       )}
-      <Resource name="bundle" />
-      <Resource name="checklist" list={ChecklistDetails} list={ImplementationBundle} />
-      <Resource name="worklistUpdationRule" options={{ worklist: "Worklist" }} list={WorklistUpdationRule} />
+      <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
+      <Resource name="checklist" options={{ label: "Checklist" }} list={ChecklistDetails} />
+      <Resource
+        name="worklistUpdationRule"
+        options={{ label: "Worklist Updation Rule", worklist: "Worklist" }}
+        list={WorklistUpdationRule}
+      />
       <Resource name="relationship" options={{ label: "Relationships" }} list={Relationships} />
       <Resource name="relationshiptype" options={{ label: "Relationship Types" }} list={RelationshipTypeList} />
       <Resource name="video" options={{ label: "Video Playlist" }} list={VideoList} />

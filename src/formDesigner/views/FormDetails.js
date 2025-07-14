@@ -853,16 +853,27 @@ class FormDetails extends Component {
     }
 
     if (result.type === "task") {
-      const groupSourceIndex = result.source.droppableId.replace("Group", "");
-      const groupDestinationIndex = result.destination.droppableId.replace("Group", "");
-      const sourceElementIndex = result.source.index;
+      const sourceGroupUuid = result.source.droppableId.replace("Group", "");
+      const destGroupUuid = result.destination.droppableId.replace("Group", "");
+
+      const groupSourceIndex = this.state.form.formElementGroups.findIndex(g => g.uuid === sourceGroupUuid);
+      const groupDestinationIndex = this.state.form.formElementGroups.findIndex(g => g.uuid === destGroupUuid);
+      if (groupSourceIndex === -1 || groupDestinationIndex === -1) return;
+
+      const elementUuid = result.draggableId.split("Element")[1];
+      const sourceElementIndex = this.state.form.formElementGroups[groupSourceIndex].formElements.findIndex(fe => fe.uuid === elementUuid);
       const destinationElementIndex = result.destination.index;
+
+      if (sourceElementIndex === -1) return;
+
       this.onUpdateDragDropOrder(groupSourceIndex, sourceElementIndex, destinationElementIndex, 1, groupDestinationIndex);
     } else {
-      const groupSourceIndex = result.source.droppableId.replace("Group", "");
-      const sourceElementIndex = result.draggableId.replace("Element", "");
+      const groupUuid = result.draggableId.replace("Group", "");
+      const sourceElementIndex = this.state.form.formElementGroups.findIndex(g => g.uuid === groupUuid);
       const destinationElementIndex = result.destination.index;
-      this.onUpdateDragDropOrder(groupSourceIndex, sourceElementIndex, destinationElementIndex, 0, null);
+      if (sourceElementIndex === -1) return;
+
+      this.onUpdateDragDropOrder(null, sourceElementIndex, destinationElementIndex, 0, null);
     }
   };
 
