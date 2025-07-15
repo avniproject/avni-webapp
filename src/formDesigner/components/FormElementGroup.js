@@ -191,10 +191,10 @@ function FormElementGroup(props) {
 
     return visibleFormElements.map((formElement, visibleIndex) => {
       const propsElement = {
-        key: formElement.uuid, // Use UUID for stable key
+        key: formElement.uuid,
         formElementData: formElement,
         groupIndex: props.index,
-        index: visibleIndex, // Use visibleIndex for correct ordering
+        index: props.groupData.formElements.findIndex(fe => fe.uuid === formElement.uuid),
         btnGroupAdd: props.btnGroupAdd,
         identifierSources: props.identifierSources,
         groupSubjectTypes: props.groupSubjectTypes,

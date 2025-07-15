@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { styled, Paper, Grid, Box, Button, Checkbox, FormControlLabel, Typography, Tooltip } from "@mui/material";
+import { styled, Paper, Grid, Box, Button, Checkbox, FormControlLabel, Typography, Tooltip, Stack } from "@mui/material";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import _, { concat, get, isEmpty, isNil } from "lodash";
@@ -35,7 +35,7 @@ const StyledUploadPaper = styled(Paper)(({ theme }) => ({
 }));
 
 const StyledStatusPaper = styled(Paper)(({ theme }) => ({
-  marginBottom: theme.spacing(12.5)
+  marginTop: theme.spacing(2)
 }));
 
 const StyledReviewButton = styled(Button)(({ theme }) => ({
@@ -50,7 +50,12 @@ const StyledReviewButton = styled(Button)(({ theme }) => ({
 
 const StyledFormGrid = styled(Grid)(({ theme }) => ({
   container: true,
-  direction: "column",
+  spacing: theme.spacing(2),
+  justifyContent: "center",
+  alignItems: "flex-start"
+}));
+
+const StyledFormStack = styled(Stack)(({ theme }) => ({
   spacing: theme.spacing(2),
   justifyContent: "center",
   alignItems: "flex-start"
@@ -280,9 +285,8 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
         <StyledUploadPaper>
           <DocumentationContainer filename="Upload.md">
             <Grid container spacing={2}>
-              <Grid container>Upload</Grid>
               <Grid container>
-                <StyledFormGrid size={{ xs: 8, sm: 4 }}>
+                <StyledFormStack>
                   <DropDown name="Type" value={uploadType} onChange={handleDropdownChange} options={uploadAndDownloadOptions} />
                   <Tooltip title="Download Sample file for selected Upload type" placement="bottom-start" arrow>
                     <span>
@@ -292,13 +296,13 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
                       </Button>
                     </span>
                   </Tooltip>
-                </StyledFormGrid>
+                </StyledFormStack>
                 {isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
                   <Grid>
                     <StyledReviewButton onClick={handleReviewClick}>Review</StyledReviewButton>
                   </Grid>
                 )}
-                <StyledFormGrid size={{ xs: 8, sm: 4 }}>
+                <StyledFormGrid>
                   <Grid>
                     <FileUpload
                       canSelect={!isEmpty(uploadType)}
@@ -348,7 +352,7 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
           </DocumentationContainer>
         </StyledUploadPaper>
       </StyledMainGrid>
-      <Grid size={12}>
+      <Grid>
         <StyledStatusPaper>
           <UploadStatus />
         </StyledStatusPaper>

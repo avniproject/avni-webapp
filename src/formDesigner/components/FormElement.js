@@ -22,7 +22,7 @@ import {
   InsertDriveFile
 } from "@mui/icons-material";
 import FormElementTabs from "./FormElementTabs";
-import { areEqual, isEqual } from "lodash";
+import { isEqual } from "lodash";
 import { ToolTip } from "../../common/components/ToolTip";
 
 const StyledAccordion = styled(Accordion)(({ error, theme }) => ({
@@ -237,5 +237,9 @@ const FormElement = props => {
     </StyledAccordion>
   );
 };
+
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
 
 export default memo(FormElement, areEqual);

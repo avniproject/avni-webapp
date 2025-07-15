@@ -108,40 +108,38 @@ const Translations = ({ user, organisationConfig, getOrgConfig, dashboardData, g
             </Grid>
             <Grid
               container
-              direction="row"
+              spacing={2}
               sx={{
                 justifyContent: "flex-start",
                 alignItems: "center",
+                flexWrap: "nowrap",
                 m: 3
               }}
             >
-              <DropDown name="Platform" value={platform} onChange={setPlatform} style={{ width: 120 }} options={platforms} />
-              <Box
-                sx={{
-                  pl: 2
-                }}
-              >
-                <FormControlLabel
-                  control={<Checkbox checked={excludeLocations} onChange={() => setExcludeLocations(prev => !prev)} color="primary" />}
-                  label="Exclude Locations"
-                />
-              </Box>
-              <Box
-                sx={{
-                  pl: 2,
-                  pr: 4
-                }}
-              >
-                <Button
-                  variant="contained"
-                  onClick={onDownloadPressedHandler}
-                  color="primary"
-                  aria-haspopup="false"
-                  disabled={isEmpty(platform)}
-                >
-                  Download
-                </Button>
-              </Box>
+              <Grid item>
+                <DropDown name="Platform" value={platform} onChange={setPlatform} options={platforms} />
+              </Grid>
+              <Grid item>
+                <Box>
+                  <FormControlLabel
+                    control={<Checkbox checked={excludeLocations} onChange={() => setExcludeLocations(prev => !prev)} color="primary" />}
+                    label="Exclude Locations"
+                  />
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box>
+                  <Button
+                    variant="contained"
+                    onClick={onDownloadPressedHandler}
+                    color="primary"
+                    aria-haspopup="false"
+                    disabled={isEmpty(platform)}
+                  >
+                    Download
+                  </Button>
+                </Box>
+              </Grid>
             </Grid>
           </Box>
         </div>

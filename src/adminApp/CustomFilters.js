@@ -15,10 +15,12 @@ import UserInfo from "../common/model/UserInfo";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
 
+export const omitTableData = filters => _.map(filters, f => _.omit(f, ["tableData", "Scope", "Filter Type", "Subject"]));
+
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  boxShadow: 2,
+  boxShadow: theme.shadows[2],
   padding: theme.spacing(3),
-  backgroundColor: "background.paper",
+  backgroundColor: theme.palette.background.paper,
   display: "flex",
   flexDirection: "column"
 }));
@@ -37,7 +39,7 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
 
   useEffect(() => {
     getOperationalModules();
-  }, []);
+  }, [getOperationalModules]);
 
   const emptyOrgSettings = {
     uuid: UUID.v4(),
@@ -53,7 +55,7 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
     const { uuid, settings } = setting;
     const { languages, myDashboardFilters, searchFilters } = settings;
     return {
-      uuid: uuid,
+      uuid,
       settings: {
         languages: _.isNil(languages) ? [] : languages,
         myDashboardFilters: _.isNil(myDashboardFilters) ? [] : myDashboardFilters,
@@ -68,16 +70,13 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
       const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
       res.data._embedded.organisationConfig[0] &&
-        setWorklistUpdationRule(
-          res.data._embedded.organisationConfig[0].worklistUpdationRule ? res.data._embedded.organisationConfig[0].worklistUpdationRule : ""
-        );
+        setWorklistUpdationRule(res.data._embedded.organisationConfig[0].worklistUpdationRule || "");
     });
   }, [organisation.id]);
 
   useEffect(() => {
     const fetchSubjectTypes = async () => setSubjectTypes(await commonApi.fetchSubjectTypes());
     fetchSubjectTypes();
-    return () => {};
   }, []);
 
   const columns = useMemo(
@@ -144,6 +143,7 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
           filterType,
           selectedFilter: row.original,
           settings,
+          omitTableData,
           operationalModules,
           title,
           worklistUpdationRule,
@@ -157,7 +157,7 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
     onClick: async row => {
       const voidedMessage = `Do you want to delete ${row.original.titleKey} filter?`;
       if (window.confirm(voidedMessage)) {
-        const filteredFilters = settings.settings[filterType].filter(f => f.titleKey !== row.original.titleKey);
+        const filteredFilters = omitTableData(settings.settings[filterType].filter(f => f.titleKey !== row.original.titleKey));
         const newSettings = {
           uuid: settings.uuid,
           settings: {
@@ -165,7 +165,7 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
             myDashboardFilters: filterType === "myDashboardFilters" ? filteredFilters : settings.settings.myDashboardFilters,
             searchFilters: filterType === "searchFilters" ? filteredFilters : settings.settings.searchFilters
           },
-          worklistUpdationRule: worklistUpdationRule
+          worklistUpdationRule
         };
         const response = await http.put("/organisationConfig", newSettings);
         if (response.status === 200 || response.status === 201) {
@@ -209,11 +209,11 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
     }
   });
 
-  return _.isNil(subjectTypes) ? (
-    <div />
-  ) : (
+  if (subjectTypes === null) return <div />;
+
+  return (
     <StyledPaper>
-      <Title title={typeOfFilter === "myDashboardFilters" ? "My Dashboard Filters" : "Search Filters"} color="primary" />
+      <Title title={typeOfFilter === "myDashboardFilters" ? "My Dashboard Filters" : "Search Filters"} />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
           <Grid item>
@@ -228,6 +228,7 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
                       filterType: typeOfFilter,
                       selectedFilter: null,
                       settings,
+                      omitTableData,
                       operationalModules,
                       title: `Add ${_.startCase(typeOfFilter)}`,
                       worklistUpdationRule,

@@ -1,20 +1,25 @@
 import { styled } from "@mui/material/styles";
 import { InputLabel, FormHelperText, FormControl, Select } from "@mui/material";
-import _ from "lodash";
 
-const StyledFormControl = styled(FormControl)({
-  margin: 0,
-  width: "100%",
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  margin: theme.spacing(1),
+  width: "auto",
+  minWidth: 120,
+  maxWidth: 200,
   display: "flex",
   flexWrap: "nowrap"
-});
+}));
+
+const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
+  maxWidth: "100%",
+  textOverflow: "ellipsis",
+  paddingRight: theme.spacing(2)
+}));
 
 const DropDown = ({ name, value, onChange, options, required = true, disabled = false }) => {
   return (
     <StyledFormControl required={required}>
-      <InputLabel shrink={!_.isEmpty(value)} htmlFor={`${name}-required`}>
-        {name}
-      </InputLabel>
+      <StyledInputLabel htmlFor={`${name}-required`}>{name}</StyledInputLabel>
       <Select
         id={`${name}-required`}
         disabled={disabled}

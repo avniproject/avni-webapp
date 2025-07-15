@@ -66,29 +66,12 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
   return isEmpty(locales) ? (
     <div />
   ) : (
-    <Grid container direction="row" spacing={2}>
-      <Grid
-        container
-        direction="row"
-        sx={{
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}
-      >
-        <Grid
-          size={{
-            xs: 12,
-            sm: 4
-          }}
-        >
-          <DropDown name="Language" style={{ width: 120 }} value={language} onChange={setLanguage} options={locales} />
+    <Grid container spacing={2}>
+      <Grid container sx={{ justifyContent: "space-between", alignItems: "center" }}>
+        <Grid>
+          <DropDown name="Language" value={language} onChange={setLanguage} options={locales} />
         </Grid>
-        <Grid
-          size={{
-            xs: 12,
-            sm: 8
-          }}
-        >
+        <Grid>
           <FileUpload
             onSelect={onFileChooseHandler}
             onUpload={onUploadPressedHandler}
