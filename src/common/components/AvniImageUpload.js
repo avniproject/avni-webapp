@@ -74,7 +74,8 @@ export const AvniImageUpload = ({
   oldImgUrl,
   allowUpload = true,
   maxFileSize,
-  uniqueName = "0"
+  uniqueName = "0",
+  localMediaUrl
 }) => {
   const [, setValue] = React.useState("");
   const [file, setFile] = React.useState();
@@ -99,8 +100,12 @@ export const AvniImageUpload = ({
       MediaService.getMedia(oldImgUrl).then(res => {
         setIconPreview(res);
       });
+    } else if (!isEmpty(localMediaUrl)) {
+      setIconPreview(localMediaUrl);
+    } else if (isEmpty(oldImgUrl)) {
+      setIconPreview();
     }
-  }, [oldImgUrl]);
+  }, [oldImgUrl, localMediaUrl]);
 
   const handleFileChange = event => {
     const selectedFile = event.target.files[0];
@@ -161,7 +166,7 @@ export const AvniImageUpload = ({
             )}
             {iconPreview && (
               <Grid item>
-                <ImagePreview iconPreview={iconPreview} width={width} height={height} onDelete={deleteIcon} />
+                <ImagePreview iconPreview={iconPreview} width={width} height={height} onDelete={deleteIcon} key={uniqueName} />
               </Grid>
             )}
           </Grid>

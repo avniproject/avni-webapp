@@ -124,6 +124,7 @@ export const CodedConceptAnswer = ({
                 onDelete={() => onRemoveAnswerMedia(index)}
                 oldImgUrl={answer.mediaUrl}
                 uniqueName={"answer" + index}
+                localMediaUrl={answer.unSavedMediaFile && URL.createObjectURL(answer.unSavedMediaFile)}
               />
             </Grid>
           )}

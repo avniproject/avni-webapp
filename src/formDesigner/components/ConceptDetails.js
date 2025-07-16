@@ -76,18 +76,14 @@ function CodedConceptDetails({ conceptAnswers }) {
                   </Grid>
                   <Grid item>
                     <FormControlLabel
-                      control={<Checkbox checked={!!answerConcept.abnormal} name="abnormal" />}
+                      control={<Checkbox checked={!!answer.abnormal} name="abnormal" />}
                       label="abnormal"
                       style={{ marginLeft: "5px" }}
                       disabled={true}
                     />
                   </Grid>
                   <Grid item>
-                    <FormControlLabel
-                      control={<Checkbox checked={!!answerConcept.unique} name="unique" />}
-                      label="unique"
-                      disabled={true}
-                    />
+                    <FormControlLabel control={<Checkbox checked={!!answer.unique} name="unique" />} label="unique" disabled={true} />
                   </Grid>
                   {answerConcept.mediaUrl && (
                     <Grid item>

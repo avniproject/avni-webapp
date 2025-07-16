@@ -9,8 +9,7 @@ import { AvniTextField } from "../../common/components/AvniTextField";
 export const EncounterConcept = props => {
   const [keyValues, setKeyValues] = React.useState(get(props, "keyValues", []));
 
-  const getValueOfKey = keyToSearch =>
-    get(find(keyValues, ({ key }) => key === keyToSearch), "value");
+  const getValueOfKey = keyToSearch => get(find(keyValues, ({ key }) => key === keyToSearch), "value");
   const encounterTypeOptions = get(props.operationalModules, "encounterTypes", []);
   const encounterScopeOptions = [{ name: "Within Subject", uuid: "Within Subject" }];
   const selectedEncounterTypeUUID = getValueOfKey("encounterTypeUUID");
@@ -49,7 +48,7 @@ export const EncounterConcept = props => {
   );
 
   return (
-    <Grid container justify="flex-start">
+    <Grid container justifyContent="flex-start">
       <KeyValue
         options={encounterTypeOptions}
         keyOption={"encounterTypeUUID"}
@@ -76,6 +75,8 @@ export const EncounterConcept = props => {
         margin="normal"
         autoComplete="off"
         toolTipKey={"APP_DESIGNER_CONCEPT_ENCOUNTER_IDENTIFIER"}
+        error={props.error["encounterIdentifierRequired"]}
+        helperText={props.error["encounterIdentifierRequired"] ? "*Required" : ""}
       />
     </Grid>
   );

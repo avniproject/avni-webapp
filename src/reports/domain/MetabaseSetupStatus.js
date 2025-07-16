@@ -3,6 +3,7 @@ import _ from "lodash";
 class MetabaseBatchJobStatus {
   status;
   createDateTime;
+  startDateTime;
   endDateTime;
   exitMessage;
   exitCode;
@@ -10,14 +11,14 @@ class MetabaseBatchJobStatus {
   isRunning(timeOut) {
     if (!this.createDateTime) return false;
     const now = new Date();
-    const timeSinceCreation = now - this.createDateTime;
-    return this.status === "STARTED" && timeSinceCreation <= timeOut;
+    return (this.status === "STARTED" && now - this.startDateTime <= timeOut) || this.status === "STARTING";
   }
 
   static createFromResponse(batchJobResponse) {
     const metabaseBatchJobStatus = new MetabaseBatchJobStatus();
     metabaseBatchJobStatus.status = batchJobResponse.status;
     metabaseBatchJobStatus.createDateTime = new Date(batchJobResponse.createDateTime);
+    metabaseBatchJobStatus.startDateTime = new Date(batchJobResponse.startDateTime);
     metabaseBatchJobStatus.endDateTime = new Date(batchJobResponse.endDateTime);
     metabaseBatchJobStatus.exitMessage = batchJobResponse.exitMessage;
     metabaseBatchJobStatus.exitCode = batchJobResponse.exitCode;

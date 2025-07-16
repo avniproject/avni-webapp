@@ -41,8 +41,17 @@ class ConceptService {
       }
     }
 
-    const response = await http.post("/concepts", concept);
-    return { concept: ConceptMapper.mapFromResponse(response.data) };
+    try {
+      const response = await http.post("/concepts", concept);
+      return { concept: ConceptMapper.mapFromResponse(response.data) };
+    } catch (err) {
+      // Handle conflict (409) errors more gracefully
+      if (err.response && err.response.status === 409) {
+        return { error: "A concept with this name already exists. Please use a different name." };
+      }
+      // Handle other errors
+      return { error: err.message || "Failed to save concept. Please try again." };
+    }
   }
 
   static async getConcept(uuid) {

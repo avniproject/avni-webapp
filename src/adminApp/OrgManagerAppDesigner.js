@@ -32,7 +32,7 @@ import ApplicationMenuList from "./ApplicationMenu/ApplicationMenuList";
 import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
 import { UserMessagingConfig } from "../formDesigner/components/UserMessagingConfig";
-import { ArchivalConfig } from "../formDesigner/components/Archival/ArchivalConfig";
+import { StorageManagementConfig } from "../formDesigner/components/StorageManagement/StorageManagementConfig";
 
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
@@ -99,7 +99,7 @@ class OrgManagerAppDesigner extends Component {
           <Resource name="applicationMenu" options={{ label: "Application Menu" }} list={ApplicationMenuList} />
           <Resource name="extensions" options={{ label: "Extensions" }} list={Extensions} />
           {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOrganisationConfiguration) ? (
-            <Resource name="archivalConfig" options={{ label: "App Storage Config" }} list={ArchivalConfig} />
+            <Resource name="appStorageConfig" options={{ label: "App Storage Config" }} list={StorageManagementConfig} />
           ) : (
             <div />
           )}

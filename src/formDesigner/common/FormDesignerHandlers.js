@@ -328,20 +328,40 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
   }
 
   if (inlineConceptObject.dataType === "Numeric") {
-    if (parseInt(inlineConceptObject.lowAbsolute) === null || parseInt(inlineConceptObject.highAbsolute) === null) {
-      absoluteValidation = false;
-    } else if (parseInt(inlineConceptObject.lowAbsolute) > parseInt(inlineConceptObject.highAbsolute)) {
-      absoluteValidation = true;
-    } else {
-      absoluteValidation = false;
-    }
+    // Convert empty strings to null
+    const convertToNumberOrNull = value => {
+      if (value === "" || value == null) return null;
+      return Number(value);
+    };
 
-    if (parseInt(inlineConceptObject.lowNormal) === null || parseInt(inlineConceptObject.highNormal === null)) {
-      normalValidation = false;
-    } else if (parseInt(inlineConceptObject.lowNormal) > parseInt(inlineConceptObject.highNormal)) {
+    // Get numeric values, converting empty strings to null
+    const lowAbs = convertToNumberOrNull(inlineConceptObject.lowAbsolute);
+    const highAbs = convertToNumberOrNull(inlineConceptObject.highAbsolute);
+    const lowNorm = convertToNumberOrNull(inlineConceptObject.lowNormal);
+    const highNorm = convertToNumberOrNull(inlineConceptObject.highNormal);
+
+    // Initialize validation flags
+    absoluteValidation = false;
+    normalValidation = false;
+
+    // Helper function to check if values maintain proper ordering
+    const isNullOrLessThanOrEqual = (value, otherValue) => {
+      return value === null || otherValue === null || value <= otherValue;
+    };
+
+    // Check encapsulation rules
+    if (!isNullOrLessThanOrEqual(lowAbs, lowNorm)) {
+      absoluteValidation = true;
       normalValidation = true;
-    } else {
-      normalValidation = false;
+    }
+    let lowValue = lowNorm ? lowNorm : lowAbs;
+    if (!isNullOrLessThanOrEqual(lowValue, highNorm)) {
+      normalValidation = true;
+    }
+    lowValue = highNorm ? highNorm : lowValue;
+    if (!isNullOrLessThanOrEqual(lowValue, highAbs)) {
+      absoluteValidation = true;
+      normalValidation = true;
     }
   }
 
