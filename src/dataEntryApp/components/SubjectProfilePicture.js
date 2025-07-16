@@ -3,6 +3,7 @@ import { isEmpty, toLower } from "lodash";
 import { useSelector } from "react-redux";
 import { selectEnrolSubjectTypeFromName } from "../sagas/enrolmentSelectors";
 import MediaService from "../../adminApp/service/MediaService";
+import { Box, Dialog } from "@mui/material";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 
 const SubjectProfilePicture = ({ allowEnlargementOnClick, firstName, profilePicture, subjectType, subjectTypeName, size, style }) => {
@@ -32,19 +33,44 @@ const SubjectProfilePicture = ({ allowEnlargementOnClick, firstName, profilePict
 
   const renderIcon = url => {
     return (
-      <div>
+      <Box sx={{ display: "inline-block" }}>
         <CustomizedSnackbar
           defaultSnackbarStatus={errorLoadingProfileImage}
           message="Profile image URL is not correct or couldn't be loaded."
           onClose={() => setErrorLoadingProfileImage(false)}
         />
-        <img className="circular_image" onClick={handleShowDialog} src={url} height={size} width={size} alt={label} style={style} />
+        <Box
+          component="img"
+          sx={{
+            height: size,
+            width: size,
+            borderRadius: "50%",
+            objectFit: "cover",
+            cursor: allowEnlargementOnClick ? "pointer" : "default",
+            ...style
+          }}
+          onClick={handleShowDialog}
+          src={url}
+          alt={label}
+        />
         {allowEnlargementOnClick && modalState && isSubjectProfileIconSetup && (
-          <dialog className="modal_dialog" open onClick={handleShowDialog}>
-            <img className="modal_dialog_image" onClick={handleShowDialog} src={url} height={300} width={300} alt={label} style={style} />
-          </dialog>
+          <Dialog open={modalState} onClose={handleShowDialog} sx={{ "& .MuiDialog-paper": { maxWidth: "none" } }}>
+            <Box
+              component="img"
+              sx={{
+                height: 300,
+                width: 300,
+                borderRadius: "50%",
+                objectFit: "cover",
+                ...style
+              }}
+              onClick={handleShowDialog}
+              src={url}
+              alt={label}
+            />
+          </Dialog>
         )}
-      </div>
+      </Box>
     );
   };
 

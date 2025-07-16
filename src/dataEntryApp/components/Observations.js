@@ -493,7 +493,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
 };
 
 Observations.propTypes = {
-  observations: PropTypes.arrayOf(Observation).isRequired,
+  observations: PropTypes.arrayOf(PropTypes.instanceOf(Observation)).isRequired,
   additionalRows: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,

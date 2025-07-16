@@ -4,22 +4,24 @@ import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import SubjectProfilePicture from "./SubjectProfilePicture";
 
-const StyledCard = styled(Card)({
-  boxShadow: "0px 0px 0px 0px",
-  borderRadius: "0",
-  width: 100,
-  whiteSpace: "pre-wrap",
-  overflowWrap: "break-word",
+const StyledCard = styled(Card)(({ theme }) => ({
+  boxShadow: theme.shadows[2],
+  borderRadius: "2",
+  width: "auto",
+  whiteSpace: "nowrap",
+  overflowWrap: "normal",
   height: 150,
   justifyContent: "center",
   margin: 20,
   textDecoration: "none",
-  alignItems: "center"
-});
+  alignItems: "center",
+  background: theme.palette.background.paper
+}));
 
 const StyledGridContainer = styled(Grid)({
   justifyContent: "center",
-  alignItems: "center"
+  alignItems: "center",
+  flexWrap: "nowrap"
 });
 
 const StyledTypography = styled(Typography)({
@@ -38,7 +40,7 @@ const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, su
     <StyledCard key={uuid}>
       <CardContent>
         <StyledGridContainer container direction="row" spacing={1}>
-          <Grid>
+          <Grid item>
             <StyledSubjectProfilePicture
               allowEnlargementOnClick={true}
               firstName={name}
@@ -48,7 +50,7 @@ const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, su
               size={25}
             />
           </Grid>
-          <Grid>
+          <Grid item>
             <InternalLink to={`/app/subject?uuid=${uuid}`}>{name}</InternalLink>
           </Grid>
         </StyledGridContainer>

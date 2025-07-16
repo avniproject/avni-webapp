@@ -7,9 +7,15 @@ import qs from "query-string";
 import ScreenWithAppBar from "common/components/ScreenWithAppBar";
 
 const StyledLink = styled(Link)({
-  "&:hover, &:focus": {
-    textDecoration: "none"
-  }
+  textDecoration: "none"
+});
+
+const CenteredContainer = styled("div")({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "column",
+  height: "100%"
 });
 
 export const InternalLink = ({ children, noUnderline, ...props }) => (
@@ -17,7 +23,7 @@ export const InternalLink = ({ children, noUnderline, ...props }) => (
     component={forwardRef((props, ref) => (
       <RouterLink innerRef={ref} {...props} />
     ))}
-    className={noUnderline ? "noUnderline" : ""}
+    sx={noUnderline ? { textDecoration: "none" } : {}}
     {...props}
   >
     {children}
@@ -26,9 +32,9 @@ export const InternalLink = ({ children, noUnderline, ...props }) => (
 
 export const AccessDenied = () => (
   <ScreenWithAppBar appbarTitle="Access Denied">
-    <div className="centerContainer">
+    <CenteredContainer>
       <h2>Access denied</h2>
-    </div>
+    </CenteredContainer>
   </ScreenWithAppBar>
 );
 

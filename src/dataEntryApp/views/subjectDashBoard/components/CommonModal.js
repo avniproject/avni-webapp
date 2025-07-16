@@ -1,28 +1,25 @@
 import { useState, Fragment } from "react";
 import { styled } from "@mui/material/styles";
-import { Typography, Dialog, DialogActions, IconButton, Fab } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Typography, Dialog, DialogActions as MuiDialogActions, IconButton, Fab } from "@mui/material";
+import { Close as CloseIcon } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import SubjectButton from "./Button";
 import FloatingButton from "./FloatingButton";
 import CustomizedDialog from "../../../components/Dialog";
 
-const StyledDialogTitle = styled("div")({
-  margin: 0,
-  backgroundColor: "#555555",
-  padding: "6px 16px",
+const DialogTitleWrapper = styled("div")(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: "white",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between"
+}));
+
+const StyledCloseButton = styled(IconButton)({
   color: "white"
 });
 
-const StyledCloseButton = styled(IconButton)(({ theme }) => ({
-  position: "absolute",
-  right: theme.spacing(1),
-  top: "0px",
-  color: "white"
-}));
-
-const StyledDialogActions = styled(DialogActions)({
-  margin: 0,
+const DialogActions = styled(MuiDialogActions)({
   padding: "11px",
   backgroundColor: "#F8F9F9",
   float: "left",
@@ -44,33 +41,28 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
     btnHandleClose();
   };
 
-  const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
-  const filterButton = buttonsSet.filter(element => element.buttonType === "filterButton").shift();
-  const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
-  const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
-  const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();
-  const findButton = buttonsSet.filter(element => element.buttonType === "findButton").shift();
-  const modifySearchFloating = buttonsSet.filter(element => element.buttonType === "modifySearchFloating").shift();
-  const applyFloating = buttonsSet.filter(element => element.buttonType === "applyFloating").shift();
+  const pick = type => buttonsSet.find(btn => btn.buttonType === type);
+
+  const mainButton = pick("openButton");
+  const filterButton = pick("filterButton");
+  const saveButton = pick("saveButton");
+  const cancelButton = pick("cancelButton");
+  const applyButton = pick("applyButton");
+  const findButton = pick("findButton");
+  const modifySearchFloating = pick("modifySearchFloating");
+  const applyFloating = pick("applyFloating");
 
   return (
     <Fragment>
       {mainButton && (
-        <Fab
-          id={mainButton.label.replaceAll(" ", "-")}
-          sx={mainButton.sx}
-          variant="extended"
-          color="primary"
-          aria-label="add"
-          onClick={handleClickOpen}
-        >
+        <Fab id={mainButton.label.replaceAll(" ", "-")} variant="extended" color="primary" aria-label="add" onClick={handleClickOpen}>
           {mainButton.label}
         </Fab>
       )}
+
       {filterButton && (
         <Fab
           id={filterButton.label.replaceAll(" ", "-")}
-          sx={filterButton.sx}
           variant="extended"
           color="primary"
           aria-label="add"
@@ -82,92 +74,71 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
           {filterButton.label}
         </Fab>
       )}
+
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} {...props}>
-        <StyledDialogTitle id="customized-dialog-title">
+        <DialogTitleWrapper id="customized-dialog-title">
           <Typography variant="h6">{title}</Typography>
           <StyledCloseButton aria-label="close" onClick={handleClose} size="large">
-            <Close />
+            <CloseIcon />
           </StyledCloseButton>
-        </StyledDialogTitle>
+        </DialogTitleWrapper>
+
         {content}
-        <StyledDialogActions>
-          {cancelButton && (
-            <SubjectButton btnLabel={cancelButton.label} btnClass={cancelButton.sx} btnClick={handleClose} id="cancel-dialog-button" />
-          )}
+
+        <DialogActions>
+          {cancelButton && <SubjectButton id="cancel-dialog-button" btnLabel={cancelButton.label} btnClick={handleClose} />}
           {findButton && (
             <SubjectButton
-              btnLabel={findButton.label}
-              btnClass={findButton.sx}
-              btnClick={() => {
-                findButton.click();
-              }}
-              btnDisabled={findButton.disabled}
               id="find-dialog-button"
+              btnLabel={findButton.label}
+              btnClick={findButton.click}
+              btnDisabled={findButton.disabled}
             />
           )}
           {applyFloating && (
             <FloatingButton
+              id="apply-floating-dialog-button"
               btnLabel={applyFloating.label}
-              btnClass={applyFloating.sx}
               btnClick={() => {
                 applyFloating.click();
                 handleClose();
               }}
               btnDisabled={applyFloating.disabled}
-              id="apply-floating-dialog-button"
               left={applyFloating.left}
             />
           )}
           {modifySearchFloating && (
             <FloatingButton
-              btnLabel={modifySearchFloating.label}
-              btnClass={modifySearchFloating.sx}
-              btnClick={() => {
-                modifySearchFloating.click();
-              }}
-              btnDisabled={modifySearchFloating.disabled}
               id="modify-search-dialog-button"
+              btnLabel={modifySearchFloating.label}
+              btnClick={modifySearchFloating.click}
+              btnDisabled={modifySearchFloating.disabled}
               left={modifySearchFloating.left}
             />
           )}
-          {saveButton && saveButton.requiredField ? (
+          {saveButton?.requiredField ? (
             <Link to={saveButton.redirectTo}>
-              <SubjectButton btnLabel={saveButton.label} btnClass={saveButton.sx} btnClick={handleClose} id="save-required-dialog-button" />
+              <SubjectButton id="save-required-dialog-button" btnLabel={saveButton.label} btnClick={handleClose} />
             </Link>
           ) : (
-            saveButton && (
-              <SubjectButton
-                btnLabel={saveButton.label}
-                btnClass={saveButton.sx}
-                btnClick={handleError.bind(null, true)}
-                id="save-dialog-button"
-              />
-            )
+            saveButton && <SubjectButton id="save-dialog-button" btnLabel={saveButton.label} btnClick={() => handleError(true)} />
           )}
           {applyButton && (
             <SubjectButton
+              id="apply-dialog-button"
               btnLabel={applyButton.label}
-              btnClass={applyButton.sx}
               btnClick={() => {
                 applyButton.click();
                 handleClose();
               }}
               btnDisabled={applyButton.disabled}
-              id="apply-dialog-button"
             />
           )}
-        </StyledDialogActions>
+        </DialogActions>
       </Dialog>
+
       {validMsg && (
-        <CustomizedDialog
-          showSuccessIcon
-          message={validMsg}
-          showOkbtn={validMsg}
-          openDialogContainer={validMsg}
-          onOk={() => {
-            setValidationMsg(false);
-          }}
-        />
+        <CustomizedDialog showSuccessIcon message={validMsg} showOkbtn openDialogContainer onOk={() => setValidationMsg(false)} />
       )}
     </Fragment>
   );

@@ -118,7 +118,9 @@ export const EnrolmentDetails = ({
   return (
     <StyledAccordion>
       <StyledAccordionSummary expandIcon={<StyledExpandMore />} id="enrolment-details">
-        <Typography component="span">{t(label)}</Typography>
+        <Typography component="span" sx={{ fontWeight: "500" }}>
+          {t(label)}
+        </Typography>
       </StyledAccordionSummary>
       <StyledAccordionDetails>
         <Grid size={12}>

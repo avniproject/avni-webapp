@@ -12,7 +12,8 @@ import {
   FormControl,
   InputLabel,
   NativeSelect,
-  Fab
+  Fab,
+  Stack
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Modal from "./CommonModal";
@@ -48,16 +49,17 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
   alignItems: "center"
 }));
 
-const StyledProfileGrid = styled(Grid)({
+const StyledProfileStack = styled(Stack)({
   container: true,
-  alignItems: "center"
+  alignItems: "left"
 });
 
-const StyledRightGrid = styled(Grid)({
-  container: true,
+const StyledRightStack = styled(Stack)(({ theme }) => ({
   align: "right",
-  direction: "column"
-});
+  display: "inline-block",
+  width: "auto",
+  marginLeft: theme.spacing(10)
+}));
 
 const StyledTable = styled(Table)(({ theme }) => ({
   marginTop: theme.spacing(1.25)
@@ -139,7 +141,9 @@ const StyledError = styled("div")({
 });
 
 const StyledProfilePicture = styled(SubjectProfilePicture)({
-  margin: "0px"
+  margin: "0px",
+  display: "inline-block",
+  width: "auto"
 });
 
 const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match, load, tabsStatus, organisationConfigs }) => {
@@ -208,7 +212,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
       <CustomizedBackdrop load={load} />
       <StyledMainHeading component="span">{`${profileDetails.nameString}`}</StyledMainHeading>
       <StyledGrid>
-        <StyledProfileGrid size={4}>
+        <StyledProfileStack>
           <Grid>
             <StyledProfilePicture
               allowEnlargementOnClick={false}
@@ -216,8 +220,74 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
               profilePicture={profileDetails.profilePicture}
               subjectType={profileDetails.subjectType}
               subjectTypeName={profileDetails.subjectType.name}
-              size={200}
             />
+            <StyledRightStack>
+              <ExtensionOption
+                subjectUUIDs={profileDetails.uuid}
+                typeUUID={profileDetails.subjectType.uuid}
+                typeName={profileDetails.subjectType.name}
+                scopeType={extensionScopeTypes.subjectDashboard}
+                configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
+              />
+              <Grid>
+                {enableComment && (
+                  <StyledCommentButton
+                    id="comments"
+                    variant="extended"
+                    color="primary"
+                    aria-label="add"
+                    onClick={() => setOpenComment(true)}
+                  >
+                    <Comment style={{ marginRight: 4 }} />
+                    {t("comments")}
+                  </StyledCommentButton>
+                )}
+              </Grid>
+              <Grid>
+                {allowEnrolment ? (
+                  <Modal
+                    content={content}
+                    handleError={handleError}
+                    buttonsSet={[
+                      {
+                        buttonType: "openButton",
+                        label: t("enrolInProgram"),
+                        sx: StyledEnrollButton
+                      },
+                      {
+                        buttonType: "saveButton",
+                        label: t("Enrol"),
+                        sx: StyledSaveButton,
+                        redirectTo: `/app/subject/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
+                          profileDetails.subjectType.name
+                        }`,
+                        requiredField: selectedProgram,
+                        handleError: handleError
+                      },
+                      {
+                        buttonType: "cancelButton",
+                        label: t("Cancel"),
+                        sx: StyledCancelButton
+                      }
+                    ]}
+                    title={t("Enrol in program")}
+                    btnHandleClose={close}
+                  />
+                ) : (
+                  !isEmpty(programs) && (
+                    <Link
+                      to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
+                        programs[0].name
+                      }&formType=ProgramEnrolment&subjectTypeName=${profileDetails.subjectType.name}`}
+                    >
+                      <StyledEnrollButton id={programs[0].name} variant="extended" color="primary" aria-label="add">
+                        {t(`Enrol in ${programs[0].name}`)}
+                      </StyledEnrollButton>
+                    </Link>
+                  )
+                )}
+              </Grid>
+            </StyledRightStack>
           </Grid>
           <Grid>
             <StyledTable aria-label="caption table">
@@ -243,68 +313,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
               </TableBody>
             </StyledTable>
           </Grid>
-        </StyledProfileGrid>
-        <StyledRightGrid size={8}>
-          <ExtensionOption
-            subjectUUIDs={profileDetails.uuid}
-            typeUUID={profileDetails.subjectType.uuid}
-            typeName={profileDetails.subjectType.name}
-            scopeType={extensionScopeTypes.subjectDashboard}
-            configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
-          />
-          <Grid>
-            {enableComment && (
-              <StyledCommentButton id="comments" variant="extended" color="primary" aria-label="add" onClick={() => setOpenComment(true)}>
-                <Comment style={{ marginRight: 4 }} />
-                {t("comments")}
-              </StyledCommentButton>
-            )}
-          </Grid>
-          <Grid>
-            {allowEnrolment ? (
-              <Modal
-                content={content}
-                handleError={handleError}
-                buttonsSet={[
-                  {
-                    buttonType: "openButton",
-                    label: t("enrolInProgram"),
-                    sx: StyledEnrollButton
-                  },
-                  {
-                    buttonType: "saveButton",
-                    label: t("Enrol"),
-                    sx: StyledSaveButton,
-                    redirectTo: `/app/subject/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
-                      profileDetails.subjectType.name
-                    }`,
-                    requiredField: selectedProgram,
-                    handleError: handleError
-                  },
-                  {
-                    buttonType: "cancelButton",
-                    label: t("Cancel"),
-                    sx: StyledCancelButton
-                  }
-                ]}
-                title={t("Enrol in program")}
-                btnHandleClose={close}
-              />
-            ) : (
-              !isEmpty(programs) && (
-                <Link
-                  to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${programs[0].name}&formType=ProgramEnrolment&subjectTypeName=${
-                    profileDetails.subjectType.name
-                  }`}
-                >
-                  <StyledEnrollButton id={programs[0].name} variant="extended" color="primary" aria-label="add">
-                    {t(`Enrol in ${programs[0].name}`)}
-                  </StyledEnrollButton>
-                </Link>
-              )
-            )}
-          </Grid>
-        </StyledRightGrid>
+        </StyledProfileStack>
       </StyledGrid>
     </StyledTableView>
   );

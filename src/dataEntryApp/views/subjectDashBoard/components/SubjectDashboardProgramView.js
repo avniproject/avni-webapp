@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import { Grid, Paper, Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
+import { Grid, Paper, Accordion, AccordionDetails, AccordionSummary, Typography, Stack } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
@@ -22,6 +22,10 @@ import CompletedVisits from "./CompletedVisits";
 import { NewProgramEncounterButton } from "./NewProgramEncounterButton";
 
 const StyledGridContainer = styled(Grid)({
+  // Root container styles, if needed
+});
+
+const StyledStackContainer = styled(Stack)({
   // Root container styles, if needed
 });
 
@@ -109,20 +113,22 @@ const ProgramView = ({
   );
 
   return (
-    <StyledGridContainer container>
-      <ExtensionOption
-        subjectUUIDs={subjectProfile.uuid}
-        typeUUID={programData.program.uuid}
-        typeName={programData.program.operationalProgramName}
-        scopeType={extensionScopeTypes.programEnrolment}
-        configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
-      />
-      <StyledGridLabel container direction="row" size={4}>
-        <StyledProgramLabel>
-          {t(programData.program.operationalProgramName)} {t("programdetails")}
-        </StyledProgramLabel>
-      </StyledGridLabel>
-      {!subjectVoided && isNotExited && <NewProgramEncounterButton enrolmentUUID={programData.uuid} />}
+    <StyledStackContainer>
+      <StyledGridContainer container>
+        <ExtensionOption
+          subjectUUIDs={subjectProfile.uuid}
+          typeUUID={programData.program.uuid}
+          typeName={programData.program.operationalProgramName}
+          scopeType={extensionScopeTypes.programEnrolment}
+          configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
+        />
+        <StyledGridLabel container direction="row" size={4}>
+          <StyledProgramLabel>
+            {t(programData.program.operationalProgramName)} {t("programdetails")}
+          </StyledProgramLabel>
+        </StyledGridLabel>
+        {!subjectVoided && isNotExited && <NewProgramEncounterButton enrolmentUUID={programData.uuid} />}
+      </StyledGridContainer>
       <StyledPaper>
         <RuleSummary title="programSummary" isFetching={isFetchingSummary} summaryObservations={programSummary} />
         {programData && programData.programExitDateTime && (
@@ -200,7 +206,7 @@ const ProgramView = ({
         onConfirm={() => voidProgramEnrolment(programData.uuid)}
       />
       <MessageDialog title={t("ProgramEnrolmentErrorTitle")} open={!isEmpty(voidError)} message={voidError} onOk={clearVoidServerError} />
-    </StyledGridContainer>
+    </StyledStackContainer>
   );
 };
 

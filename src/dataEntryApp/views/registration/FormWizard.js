@@ -8,6 +8,7 @@ import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";
 import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
 import { FormElementGroup as FormElementGroupComponent } from "dataEntryApp/components/FormElementGroup";
 import _ from "lodash";
+import Summary from "./Summary";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(0, 3, 10, 3),
