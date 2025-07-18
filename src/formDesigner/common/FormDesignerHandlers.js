@@ -236,7 +236,10 @@ const formDesignerOnSubmitInlineConcept = (inlineConceptObject, formElement, upd
       }
     })
     .catch(error => {
-      const errorMessage = split(replace(error.response.data, /^org\..*: /, ""), /\n|\r/, 1);
+      let errorMessage = "Failed to save concept. Please try again." + split(replace(error.response.data, /^org\..*: /, ""), /\n|\r/, 1);
+      if (error.response && (error.response.status === 409 || error.response.status === 400)) {
+        errorMessage = "A concept with this name already exists. Please use a different name.";
+      }
       formElement.inlineConceptErrorMessage["inlineConceptError"] = errorMessage;
       updateState();
     });
