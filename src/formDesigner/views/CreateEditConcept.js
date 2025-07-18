@@ -521,9 +521,6 @@ class CreateEditConcept extends Component {
                 fullWidth
               />
               {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
-              {!this.state.error.isEmptyName && this.state.error.nameError && (
-                <FormHelperText error>Same name concept already exist.</FormHelperText>
-              )}
               {!this.state.error.isEmptyName && this.state.error.nameConflict && (
                 <FormHelperText error>{this.state.error.message}</FormHelperText>
               )}
