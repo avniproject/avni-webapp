@@ -87,6 +87,18 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
       return;
     }
 
+    // Duplicate name check (case-insensitive, exclude self)
+    const duplicate =
+      subjectTypes &&
+      subjectTypes.some(
+        st => st.id !== subjectType.id && st.name && st.name.trim().toLowerCase() === subjectType.name.trim().toLowerCase()
+      );
+    if (duplicate) {
+      setError("Subject type with this name already exists.");
+      setNameValidation(false);
+      return;
+    }
+
     setNameValidation(false);
     if (!groupValidationError) {
       const [s3FileKey, error] = await uploadImage(subjectType.iconFileS3Key, file, MediaFolder.ICONS);
