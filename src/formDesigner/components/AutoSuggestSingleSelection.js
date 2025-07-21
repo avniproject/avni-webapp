@@ -1,6 +1,5 @@
 import React from "react";
-import { deburr } from "lodash";
-import _ from "lodash";
+import _, { deburr } from "lodash";
 import Autosuggest from "react-autosuggest";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
@@ -58,7 +57,7 @@ const useStyles = theme => ({
   },
   suggestionsContainerOpen: {
     position: "absolute",
-    zIndex: 1,
+    zIndex: 2,
     left: 0,
     right: 0,
     overflow: "auto",
