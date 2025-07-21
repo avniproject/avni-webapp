@@ -100,7 +100,7 @@ class CreateEditConcept extends Component {
       dataTypes: [],
       defaultSnackbarStatus: true,
       redirectShow: false,
-      redirectOnDeleteOrCreate: false,
+      redirectOnDelete: false,
       active: false,
       readOnlyKeys: [
         "isWithinCatchment",
@@ -303,9 +303,9 @@ class CreateEditConcept extends Component {
     const newState = {
       conceptCreationAlert: true,
       defaultSnackbarStatus: true,
-      redirectShow: !this.props.isCreatePage,
-      redirectOnDeleteOrCreate: this.props.isCreatePage,
-      concept: this.props.isCreatePage ? WebConceptView.emptyConcept() : concept
+      redirectShow: true,
+      redirectOnDelete: false,
+      concept: concept
     };
 
     this.setState(newState);
@@ -375,7 +375,7 @@ class CreateEditConcept extends Component {
         if (response.status === 200) {
           this.setState({
             redirectShow: false,
-            redirectOnDeleteOrCreate: true
+            redirectOnDelete: true
           });
         }
       });
@@ -618,7 +618,7 @@ class CreateEditConcept extends Component {
           </Grid>
         </DocumentationContainer>
         {this.state.redirectShow && <Redirect to={`/appDesigner/concept/${concept.uuid}/show`} />}
-        {this.state.redirectOnDeleteOrCreate && <Redirect to={`/appDesigner/concepts`} />}
+        {this.state.redirectOnDelete && <Redirect to={`/appDesigner/concepts`} />}
       </Box>
     );
   }
