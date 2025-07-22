@@ -43,6 +43,7 @@ const EditProgramFields = props => {
         value={program.name}
         onChange={event => dispatch({ type: "name", payload: event.target.value })}
         toolTipKey={"APP_DESIGNER_PROGRAM_NAME"}
+        error={/\s/.test(program.name) ? "Spaces are not allowed in program name" : ""}
       />
       <br />
       {!_.isNil(errors.get("Name")) && (
