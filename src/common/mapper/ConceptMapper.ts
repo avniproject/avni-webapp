@@ -18,6 +18,7 @@ export class ConceptMapper {
         webConceptAnswerView.mediaUrl = conceptAnswer.answerConcept.mediaUrl;
         return webConceptAnswerView;
       });
+      answers = answers.filter((answer: any) => !answer.voided);
       answers.sort(function(conceptOrder1: any, conceptOrder2: any) {
         return conceptOrder1.order - conceptOrder2.order;
       });
