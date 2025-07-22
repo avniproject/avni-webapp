@@ -1,16 +1,18 @@
+import { AppBar, useLogout } from "react-admin";
+import { Typography, IconButton, Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { AppBar } from "react-admin";
-import { Typography, IconButton } from "@mui/material";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { getUserInfo } from "../../rootApp/ducks";
+import { Home, ExitToApp } from "@mui/icons-material";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { OrganisationOptions } from "./OrganisationOptions";
-import { Home } from "@mui/icons-material";
+import { getUserInfo } from "../../rootApp/ducks";
 import CurrentUserService from "../service/CurrentUserService";
 
 const StyledAppBar = styled(AppBar)({
   display: "flex",
-  flexDirection: "row"
+  flexDirection: "row",
+  alignItems: "center",
+  padding: "0 1em"
 });
 
 const StyledTypography = styled(Typography)({
@@ -20,40 +22,41 @@ const StyledTypography = styled(Typography)({
   overflow: "hidden"
 });
 
-const AdminAppBar = ({ getUserInfo, organisation, authSession, history, organisations, userInfo, ...rest }) => {
+const AdminAppBar = props => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const organisation = useSelector(state => state.app.organisation);
+  const authSession = useSelector(state => state.app.authSession);
+  const organisations = useSelector(state => state.app.organisations);
+  const userInfo = useSelector(state => state.app.userInfo);
+  const logout = useLogout();
+
   return (
-    <StyledAppBar {...rest}>
+    <StyledAppBar {...props}>
       <StyledTypography variant="h6" sx={{ color: "inherit" }} id="react-admin-title" />
       <OrganisationOptions
-        getUserInfo={getUserInfo}
+        getUserInfo={() => dispatch(getUserInfo())}
         user={authSession}
         userInfo={userInfo}
         organisation={organisation}
-        history={history}
         organisations={organisations}
       />
-      <div>
-        <b>{organisation.name} </b> ({authSession.username})
-      </div>
+      <Box sx={{ mx: 2 }}>
+        <b>{organisation?.name}</b> ({authSession?.username})
+      </Box>
       {CurrentUserService.hasOrganisationContext(userInfo) && (
-        <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit" size="large">
-          <Home />
-        </IconButton>
+        <Box>
+          <IconButton onClick={() => navigate("/home")} aria-label="Home" color="inherit" size="large">
+            <Home />
+          </IconButton>
+          <IconButton onClick={logout} aria-label="Logout" color="inherit" size="large">
+            <ExitToApp />
+          </IconButton>
+        </Box>
       )}
     </StyledAppBar>
   );
 };
 
-const mapStateToProps = state => ({
-  organisation: state.app.organisation,
-  authSession: state.app.authSession,
-  organisations: state.app.organisations,
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getUserInfo }
-  )(AdminAppBar)
-);
+export default AdminAppBar;

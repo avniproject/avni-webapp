@@ -1,4 +1,4 @@
-import { Redirect, Route, Switch, useHistory } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied, WithProps } from "../common/components/utils";
 import "./SecureApp.css";
@@ -23,14 +23,13 @@ import { logout } from "./ducks";
 import BaseAuthSession from "./security/BaseAuthSession";
 import { Privilege } from "openchs-models";
 
-const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...rest }) => (
-  <Route
-    {...rest}
-    render={routerProps => (CurrentUserService.isAllowedToAccess(userInfo, requiredPrivileges) ? <C {...routerProps} /> : <AccessDenied />)}
-  />
-);
+const RestrictedRoute = ({ element, requiredPrivileges = [], userInfo }) => {
+  return CurrentUserService.isAllowedToAccess(userInfo, requiredPrivileges) ? element : <AccessDenied />;
+};
 
-const Routes = ({ logout, user, userInfo, organisation, genericConfig }) => {
+const AppRoutes = ({ logout, user, userInfo, organisation, genericConfig }) => {
+  const navigate = useNavigate();
+
   const handleOnIdle = () => {
     console.log("User is idle, was last active at ", getLastActiveTime());
     console.log("A user has logged in?", hasSignedIn());
@@ -50,52 +49,62 @@ const Routes = ({ logout, user, userInfo, organisation, genericConfig }) => {
     leaderElection: true
   });
 
-  const history = useHistory();
-
   return (
-    <Switch>
-      <RestrictedRoute path="/admin" userInfo={userInfo} component={WithProps({ history }, OrgManager)} />
-      <RestrictedRoute
-        path="/app"
-        userInfo={userInfo}
-        requiredPrivileges={[Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp]}
-        component={DataEntry}
-      />
-      <Route exact path="/">
-        <Redirect to={AvniRouter.getRedirectRouteFromRoot(userInfo)} />
-      </Route>
-      <RestrictedRoute exact path="/home" userInfo={userInfo} requiredPrivileges={[]} component={WithProps({ user }, Homepage)} />
-      <Route path="/appdesigner">
-        <RestrictedRoute path="/" userInfo={userInfo} component={WithProps({ user, organisation, history }, OrgManagerAppDesigner)} />
-      </Route>
-      <RestrictedRoute exact path="/documentation" user={userInfo} component={WithProps({ user, organisation }, DocumentationRoutes)} />
-      <RestrictedRoute exact path="/assignment" userInfo={userInfo} component={WithProps({ user, organisation }, Assignment)} />
-      <RestrictedRoute exact path="/assignment/task" userInfo={userInfo} component={WithProps({ user, organisation }, TaskAssignment)} />
-      <RestrictedRoute
-        exact
-        path="/assignment/subject"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, SubjectAssignment)}
-      />
-      <RestrictedRoute exact path="/translations" userInfo={userInfo} component={WithProps({ user, organisation }, Translations)} />
-      <RestrictedRoute exact path="/export" userInfo={userInfo} component={WithProps({ user, organisation }, Export)} />
-      <RestrictedRoute exact path="/newExport" userInfo={userInfo} component={WithProps({ user, organisation }, NewExport)} />
-      <RestrictedRoute
-        exact
-        path="/selfservicereports"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, SelfServiceReports)}
-      />
-      <RestrictedRoute exact path="/help" userInfo={userInfo} component={WithProps({ user, organisation }, Tutorials)} />
-      <RestrictedRoute path="/broadcast" userInfo={userInfo} component={WithProps({ user, organisation }, Broadcast)} />
+    <Routes>
+      <Route path="/admin" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ navigate }, OrgManager)} />} />
       <Route
-        component={() => (
+        path="/app"
+        element={
+          <RestrictedRoute
+            requiredPrivileges={[Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp]}
+            userInfo={userInfo}
+            element={<DataEntry />}
+          />
+        }
+      />
+      <Route path="/" element={<Navigate to={AvniRouter.getRedirectRouteFromRoot(userInfo)} replace />} />
+      <Route
+        path="/home"
+        element={<RestrictedRoute requiredPrivileges={[]} userInfo={userInfo} element={WithProps({ user }, Homepage)} />}
+      />
+      <Route
+        path="/appdesigner/*"
+        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation, navigate }, OrgManagerAppDesigner)} />}
+      />
+      <Route
+        path="/documentation"
+        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, DocumentationRoutes)} />}
+      />
+      <Route path="/assignment" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Assignment)} />} />
+      <Route
+        path="/assignment/task"
+        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, TaskAssignment)} />}
+      />
+      <Route
+        path="/assignment/subject"
+        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, SubjectAssignment)} />}
+      />
+      <Route
+        path="/translations"
+        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Translations)} />}
+      />
+      <Route path="/export" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Export)} />} />
+      <Route path="/newExport" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, NewExport)} />} />
+      <Route
+        path="/selfservicereports"
+        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, SelfServiceReports)} />}
+      />
+      <Route path="/help" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Tutorials)} />} />
+      <Route path="/broadcast/*" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Broadcast)} />} />
+      <Route
+        path="*"
+        element={
           <div>
             <span>Page Not found</span>
           </div>
-        )}
+        }
       />
-    </Switch>
+    </Routes>
   );
 };
 
@@ -109,4 +118,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   { logout }
-)(Routes);
+)(AppRoutes);

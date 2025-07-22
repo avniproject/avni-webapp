@@ -1,39 +1,38 @@
-import { Component } from "react";
-import { connect } from "react-redux";
-import { crudCreate, SaveButton } from "react-admin";
+import { useCreate, SaveButton, useNotify, useRedirect } from "react-admin";
+import { useFormContext } from "react-hook-form";
 
-const saveLocation = (values, basePath, redirectTo) =>
-  crudCreate(
-    "locations",
-    [
+const LocationSaveButton = ({ resource = "locations", ...props }) => {
+  const [create, { isLoading }] = useCreate();
+  const notify = useNotify();
+  const redirect = useRedirect();
+  const { handleSubmit } = useFormContext();
+
+  const onSave = data => {
+    const payload = [
       {
-        name: values.title,
-        level: values.level,
-        type: values.type || values.typeString,
-        parents: [{ id: values.parentId }]
+        name: data.title,
+        level: data.level,
+        type: data.type || data.typeString,
+        parents: [{ id: data.parentId }]
       }
-    ],
-    basePath,
-    redirectTo
-  );
+    ];
 
-class LocationSaveButtonView extends Component {
-  handleClick = () => {
-    const { basePath, handleSubmit, redirect, saveLocation } = this.props;
-
-    return handleSubmit(values => {
-      saveLocation(values, basePath, redirect);
-    });
+    create(
+      resource,
+      { data: payload },
+      {
+        onSuccess: () => {
+          notify("Location created", { type: "info" });
+          redirect("list", resource);
+        },
+        onError: error => {
+          notify(`Error: ${error.message}`, { type: "error" });
+        }
+      }
+    );
   };
 
-  render() {
-    const { handleSubmitWithRedirect, saveLocation, ...props } = this.props;
+  return <SaveButton {...props} saving={isLoading} handleSubmitWithRedirect={handleSubmit(onSave)} />;
+};
 
-    return <SaveButton handleSubmitWithRedirect={this.handleClick} {...props} />;
-  }
-}
-
-export const LocationSaveButton = connect(
-  undefined,
-  { saveLocation }
-)(LocationSaveButtonView);
+export default LocationSaveButton;

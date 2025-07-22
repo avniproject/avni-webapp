@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
-import { Redirect, withRouter } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Box, Grid, Button } from "@mui/material";
 import { Title } from "react-admin";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -16,15 +17,16 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import { identity } from "lodash";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { connect } from "react-redux";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
-const ProgramEdit = ({ organisationConfig, ...props }) => {
+const ProgramEdit = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const organisationConfig = useSelector(state => state.app.organisationConfig);
+
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [errors, setErrors] = useState(new Map());
   const [msgError, setMsgError] = useState("");
-  const [redirectShow, setRedirectShow] = useState(false);
-  const [deleteAlert, setDeleteAlert] = useState(false);
   const [subjectType, setSubjectType] = useState(null);
   const [formList, setFormList] = useState([]);
   const [subjectTypes, setSubjectTypes] = useState([]);
@@ -33,6 +35,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
     templates: []
   });
   const entityType = "ProgramEnrolment";
+
   useEffect(() => {
     getMessageRules(entityType, program.programId, rulesDispatch);
     return identity;
@@ -49,7 +52,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
 
   useEffect(() => {
     http
-      .get("/web/program/" + props.match.params.id)
+      .get("/web/program/" + id)
       .then(response => response.data)
       .then(result => {
         dispatch({ type: "setData", payload: result });
@@ -68,7 +71,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
           dispatch({ type: "programExitForm", payload: exitForm });
         });
       });
-  }, []);
+  }, [id]);
 
   const onSubmit = () => {
     let [errors, jsCodeEECDR, jsCodeMEECDR] = ProgramService.validateProgram(program, subjectType);
@@ -79,7 +82,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
       return;
     }
 
-    return ProgramService.saveProgram(program, subjectType, props.match.params.id)
+    return ProgramService.saveProgram(program, subjectType, id)
       .then(saveResponse => {
         setErrors(saveResponse.errors);
         if (saveResponse.errors.size === 0) {
@@ -87,7 +90,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
         }
       })
       .then(() => saveMessageRules(entityType, program.programId, rules))
-      .then(() => setRedirectShow(true))
+      .then(() => navigate(`/appDesigner/program/${id}/show`))
       .catch(error => {
         !error.response.data.message && setMsgError(getDBValidationError(error));
       });
@@ -95,12 +98,16 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete program?")) {
-      http.delete("/web/program/" + props.match.params.id).then(response => {
+      http.delete("/web/program/" + id).then(response => {
         if (response.status === 200) {
-          setDeleteAlert(true);
+          navigate("/appDesigner/program");
         }
       });
     }
+  };
+
+  const handleShowClick = () => {
+    navigate(`/appDesigner/program/${id}/show`);
   };
 
   return (
@@ -116,7 +123,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
     >
       <Title title="Edit Program" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
-        <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
+        <Button color="primary" type="button" onClick={handleShowClick}>
           <VisibilityIcon /> Show
         </Button>
       </Grid>
@@ -168,14 +175,8 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
           </Button>
         </Grid>
       </Grid>
-      {redirectShow && <Redirect to={`/appDesigner/program/${props.match.params.id}/show`} />}
-      {deleteAlert && <Redirect to="/appDesigner/program" />}
     </Box>
   );
 };
 
-const mapStateToProps = state => ({
-  organisationConfig: state.app.organisationConfig
-});
-
-export default withRouter(connect(mapStateToProps)(ProgramEdit));
+export default ProgramEdit;

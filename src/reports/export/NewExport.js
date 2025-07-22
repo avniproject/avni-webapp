@@ -1,7 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { Typography, Grid, Button, Paper, Box } from "@mui/material";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getOperationalModules, getUploadStatuses } from "../reducers";
 import JobStatus from "../components/export/JobStatus";
@@ -29,12 +28,16 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(12.5) // 100px
 }));
 
-const NewExport = ({ operationalModules, getOperationalModules, getUploadStatuses, exportJobStatuses, userInfo }) => {
+const NewExport = () => {
+  const dispatch = useDispatch();
+  const operationalModules = useSelector(state => state.reports.operationalModules);
+  const exportJobStatuses = useSelector(state => state.reports.exportJobStatuses);
+  const userInfo = useSelector(state => state.app.userInfo);
   const { t } = useTranslation();
 
   useEffect(() => {
-    getOperationalModules();
-  }, []);
+    dispatch(getOperationalModules());
+  }, [dispatch]);
 
   const [customRequest, setCustomRequest] = useState(undefined);
   const exportRequest = require("./ExportV2ReferenceRequest.json");
@@ -57,7 +60,7 @@ const NewExport = ({ operationalModules, getOperationalModules, getUploadStatuse
     if (!ok && error) {
       alert(error);
     }
-    setTimeout(() => getUploadStatuses(0), 1000);
+    setTimeout(() => dispatch(getUploadStatuses(0)), 1000);
   };
 
   const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
@@ -105,15 +108,4 @@ const NewExport = ({ operationalModules, getOperationalModules, getUploadStatuse
   );
 };
 
-const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules,
-  exportJobStatuses: state.reports.exportJobStatuses,
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getOperationalModules, getUploadStatuses }
-  )(NewExport)
-);
+export default NewExport;

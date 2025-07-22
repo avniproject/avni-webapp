@@ -1,12 +1,12 @@
 import { memo, useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { get, isEqual } from "lodash";
-import { Redirect, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { Delete } from "@mui/icons-material";
@@ -15,8 +15,9 @@ function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType);
 }
 
-const RelationshipTypeList = ({ userInfo }) => {
-  const [redirect, setRedirect] = useState(false);
+const RelationshipTypeList = () => {
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
   const [result, setResult] = useState([]);
   const [isIndividualSubjectTypeAvailable, setIsIndividualSubjectTypeAvailable] = useState("");
   const tableRef = useRef(null);
@@ -122,63 +123,59 @@ const RelationshipTypeList = ({ userInfo }) => {
     [userInfo]
   );
 
-  const addNewConcept = useCallback(() => {
-    setRedirect(true);
-  }, []);
+  const handleCreateSubmit = useCallback(() => {
+    navigate("/appDesigner/relationshipType/create");
+  }, [navigate]);
 
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
-        }}
-      >
-        <Title title="Relationship Types" />
-        <div className="container">
-          {isIndividualSubjectTypeAvailable === "false" && (
-            <div style={{ color: "red" }}>
-              Please click <a href={`#/appDesigner/subjectType/create`}>here</a> and create a Person subject type to enable this screen.
-            </div>
-          )}
-          {isIndividualSubjectTypeAvailable === "true" && (
-            <div>
-              {hasEditPrivilege(userInfo) && (
-                <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-                  <CreateComponent onSubmit={addNewConcept} name="New Relationship type" />
-                </div>
-              )}
-              <AvniMaterialTable
-                title=""
-                ref={tableRef}
-                columns={columns}
-                fetchData={fetchData}
-                options={{
-                  pageSize: 10,
-                  pageSizeOptions: [10, 15, 20],
-                  sorting: true,
-                  debounceInterval: 500,
-                  search: false,
-                  rowStyle: ({ original }) => ({
-                    backgroundColor: original?.voided ?? false ? "#DBDBDB" : "#fff"
-                  })
-                }}
-                actions={actions}
-                route={"/appdesigner/relationshipType"}
-              />
-            </div>
-          )}
-        </div>
-      </Box>
-      {redirect && <Redirect to={"/appDesigner/relationshipType/create"} />}
-    </>
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
+      <Title title="Relationship Types" />
+      <div className="container">
+        {isIndividualSubjectTypeAvailable === "false" && (
+          <div style={{ color: "red" }}>
+            Please click <a href={`#/appDesigner/subjectType/create`}>here</a> and create a Person subject type to enable this screen.
+          </div>
+        )}
+        {isIndividualSubjectTypeAvailable === "true" && (
+          <div>
+            {hasEditPrivilege(userInfo) && (
+              <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+                <CreateComponent onSubmit={handleCreateSubmit} name="New Relationship type" />
+              </div>
+            )}
+            <AvniMaterialTable
+              title=""
+              ref={tableRef}
+              columns={columns}
+              fetchData={fetchData}
+              options={{
+                pageSize: 10,
+                pageSizeOptions: [10, 15, 20],
+                sorting: true,
+                debounceInterval: 500,
+                search: false,
+                rowStyle: ({ original }) => ({
+                  backgroundColor: original?.voided ?? false ? "#DBDBDB" : "#fff"
+                })
+              }}
+              actions={actions}
+              route={"/appdesigner/relationshipType"}
+            />
+          </div>
+        )}
+      </div>
+    </Box>
   );
 };
+
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-export default withRouter(connect(mapStateToProps)(memo(RelationshipTypeList, areEqual)));
+
+export default memo(RelationshipTypeList, areEqual);

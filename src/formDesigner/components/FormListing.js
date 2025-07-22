@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { FormTypeEntities } from "../common/constants";
 import { Dialog, DialogTitle, DialogContent, IconButton, Grid } from "@mui/material";
 import { Close, Edit, LibraryAdd, Settings, Delete } from "@mui/icons-material";
@@ -8,7 +9,6 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import NewFormModal from "../components/NewFormModal";
 import { format, isValid } from "date-fns";
 import UserInfo from "../../common/model/UserInfo";
-import { connect } from "react-redux";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import { Title } from "react-admin";
 
@@ -17,7 +17,9 @@ function isActionDisabled(rowData, userInfo) {
   return (rowData?.voided ?? false) || !UserInfo.hasFormEditPrivilege(userInfo, rowData?.formType);
 }
 
-const FormListing = ({ history, userInfo, onNewFormClick }) => {
+const FormListing = ({ onNewFormClick }) => {
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
   const [uuid, setUUID] = useState(0);
   const tableRef = useRef(null);
@@ -112,7 +114,7 @@ const FormListing = ({ history, userInfo, onNewFormClick }) => {
       {
         icon: Edit,
         tooltip: "Edit Form",
-        onClick: (event, row) => history.push(`/appdesigner/forms/${row.original.uuid}`),
+        onClick: (event, row) => navigate(`/appdesigner/forms/${row.original.uuid}`),
         disabled: row => isActionDisabled(row.original, userInfo)
       },
       {
@@ -124,7 +126,7 @@ const FormListing = ({ history, userInfo, onNewFormClick }) => {
       {
         icon: Settings,
         tooltip: "Form Setting",
-        onClick: (event, row) => history.push(`/appdesigner/forms/${row.original.uuid}/settings`),
+        onClick: (event, row) => navigate(`/appdesigner/forms/${row.original.uuid}/settings`),
         disabled: row => isActionDisabled(row.original, userInfo)
       },
       {
@@ -151,7 +153,7 @@ const FormListing = ({ history, userInfo, onNewFormClick }) => {
         disabled: row => isActionDisabled(row.original, userInfo)
       }
     ],
-    [history, userInfo, onSetUuidAndIndicator]
+    [navigate, userInfo, onSetUuidAndIndicator]
   );
 
   const showCloneForm = useCallback(() => {
@@ -204,8 +206,4 @@ const FormListing = ({ history, userInfo, onNewFormClick }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(connect(mapStateToProps)(FormListing));
+export default FormListing;

@@ -1,4 +1,4 @@
-import { Redirect, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import Box from "@mui/material/Box";
@@ -14,11 +14,14 @@ import EncounterTypeErrors from "./EncounterTypeErrors";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import Save from "@mui/icons-material/Save";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
-const EncounterTypeCreate = ({ organisationConfig }) => {
+const EncounterTypeCreate = () => {
+  const navigate = useNavigate();
+  const organisationConfig = useSelector(state => state.app.organisationConfig);
+
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [subjectValidation, setSubjectValidation] = useState(false);
@@ -60,6 +63,12 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
       setAllPrograms(response.data.programs);
     });
   }, []);
+
+  useEffect(() => {
+    if (alert && id) {
+      navigate(`/appDesigner/encounterType/${id}/show`);
+    }
+  }, [alert, id, navigate]);
 
   const onSubmit = event => {
     event.preventDefault();
@@ -143,59 +152,54 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
   }
 
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
-        }}
-      >
-        <DocumentationContainer filename={"EncounterType.md"}>
-          <Title title={"Create Encounter Type"} />
-          <div className="container">
-            <form onSubmit={onSubmit}>
-              <EditEncounterTypeFields
-                encounterType={encounterType}
-                dispatch={dispatch}
-                subjectT={subjectT}
-                setSubjectT={setSubjectT}
-                subjectType={subjectType}
-                programT={programT}
-                updateProgram={updateProgram}
-                program={program}
-                formList={formList}
-                ruleValidationError={ruleValidationError}
-                formMappings={formMappings}
-                setProgram={setProgram}
-                allPrograms={allPrograms}
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
+      <DocumentationContainer filename={"EncounterType.md"}>
+        <Title title={"Create Encounter Type"} />
+        <div className="container">
+          <form onSubmit={onSubmit}>
+            <EditEncounterTypeFields
+              encounterType={encounterType}
+              dispatch={dispatch}
+              subjectT={subjectT}
+              setSubjectT={setSubjectT}
+              subjectType={subjectType}
+              programT={programT}
+              updateProgram={updateProgram}
+              program={program}
+              formList={formList}
+              ruleValidationError={ruleValidationError}
+              formMappings={formMappings}
+              setProgram={setProgram}
+              allPrograms={allPrograms}
+            />
+            {organisationConfig && organisationConfig.enableMessaging ? (
+              <MessageRules
+                rules={rules}
+                templates={templates}
+                templateFetchError={templateFetchError}
+                onChange={onRulesChange}
+                entityType={entityType}
+                entityTypeId={encounterType.encounterTypeId}
+                msgError={msgError}
               />
-              {organisationConfig && organisationConfig.enableMessaging ? (
-                <MessageRules
-                  rules={rules}
-                  templates={templates}
-                  templateFetchError={templateFetchError}
-                  onChange={onRulesChange}
-                  entityType={entityType}
-                  entityTypeId={encounterType.encounterTypeId}
-                  msgError={msgError}
-                />
-              ) : (
-                <></>
-              )}
-              <EncounterTypeErrors nameValidation={nameValidation} subjectValidation={subjectValidation} error={error} />
-              <Button color="primary" variant="contained" type="submit" startIcon={<Save />}>
-                Save
-              </Button>
-            </form>
-          </div>
-        </DocumentationContainer>
-      </Box>
-      {alert && <Redirect to={"/appDesigner/encounterType/" + id + "/show"} />}
-    </>
+            ) : (
+              <></>
+            )}
+            <EncounterTypeErrors nameValidation={nameValidation} subjectValidation={subjectValidation} error={error} />
+            <Button color="primary" variant="contained" type="submit" startIcon={<Save />}>
+              Save
+            </Button>
+          </form>
+        </div>
+      </DocumentationContainer>
+    </Box>
   );
 };
-const mapStateToProps = state => ({
-  organisationConfig: state.app.organisationConfig
-});
-export default withRouter(connect(mapStateToProps)(EncounterTypeCreate));
+
+export default EncounterTypeCreate;

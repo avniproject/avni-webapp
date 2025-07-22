@@ -1,29 +1,26 @@
-import { isEmpty } from "lodash";
-import { Fragment, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AutocompleteArrayInput,
   Create,
   Datagrid,
-  DisabledInput,
   Edit,
   EditButton,
-  FormDataConsumer,
   FunctionField,
   List,
-  REDUX_FORM_NAME,
   ReferenceArrayField,
   ReferenceArrayInput,
   ReferenceField,
-  required,
   Show,
   SimpleForm,
   SimpleShowLayout,
   SingleFieldList,
   TextField,
-  TextInput
+  TextInput,
+  required,
+  useRecordContext
 } from "react-admin";
+import { useFormContext, useWatch } from "react-hook-form";
 import CardActions from "@mui/material/CardActions";
-import { change } from "redux-form";
 import EnableDisableButton from "./components/EnableDisableButton";
 import {
   CustomToolbar,
@@ -46,13 +43,13 @@ export const AccountOrgAdminUserCreate = ({ user, region, ...props }) => (
 );
 
 export const AccountOrgAdminUserEdit = ({ user, region, ...props }) => (
-  <Edit {...props} title={<UserTitle titlePrefix="Edit" />} undoable={false} filter={{ searchURI: "orgAdmin" }}>
+  <Edit {...props} title={<UserTitle titlePrefix="Edit" />} mutationMode="pessimistic" filter={{ searchURI: "orgAdmin" }}>
     <UserForm edit user={user} region={region} />
   </Edit>
 );
 
-export const AccountOrgAdminUserList = ({ ...props }) => (
-  <List {...props} bulkActions={false} filter={{ searchURI: "find" }} filters={<UserFilter />} title={`Admin Users`}>
+export const AccountOrgAdminUserList = props => (
+  <List {...props} bulkActionButtons={false} filters={<UserFilter />} filter={{ searchURI: "find" }} title="Admin Users">
     <Datagrid rowClick="show">
       <TextField label="Login ID" source="username" />
       <TextField source="name" label="Name of the Person" />
@@ -66,27 +63,25 @@ export const AccountOrgAdminUserList = ({ ...props }) => (
   </List>
 );
 
-const CustomShowActions = ({ basePath, data, resource }) => {
-  return (
-    (data && (
-      <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
-        <EditButton label="Edit User" basePath={basePath} record={data} />
-        <EnableDisableButton disabled={data.disabledInCognito} basePath={basePath} record={data} resource={resource} />
-      </CardActions>
-    )) ||
-    null
-  );
+const CustomShowActions = () => {
+  const record = useRecordContext();
+  return record ? (
+    <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
+      <EditButton label="Edit User" />
+      <EnableDisableButton disabled={record.disabledInCognito} record={record} />
+    </CardActions>
+  ) : null;
 };
 
 export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
-  <Show title={<UserTitle />} actions={<CustomShowActions user={user} />} {...props}>
+  <Show title={<UserTitle />} actions={<CustomShowActions />} {...props}>
     <SimpleShowLayout>
       <TextField source="username" label="Login ID (username)" />
       <TextField source="name" label="Name of the Person" />
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
       <FunctionField label="Role" render={user => formatRoles(user.roles)} />
-      <ReferenceField label="Organisation" source="organisationId" reference="organisation" linkType="show" allowEmpty>
+      <ReferenceField label="Organisation" source="organisationId" reference="organisation" link="show">
         <TextField source="name" />
       </ReferenceField>
       <ReferenceArrayField label="Accounts" reference="account" source="accountIds">
@@ -98,61 +93,50 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
   </Show>
 );
 
-const UserForm = ({ edit, user, region, ...props }) => {
+const UserForm = ({ edit = false, region }) => {
   const [nameSuffix, setNameSuffix] = useState("");
-  const getOrgData = id => id && OrganisationService.getOrganisation(id).then(data => setNameSuffix(data.usernameSuffix));
+  const { control, setValue } = useFormContext();
+  const organisationId = useWatch({ control, name: "organisationId" });
+  const ignored = useWatch({ control, name: "ignored" });
 
-  const sanitizeProps = ({ record, resource, save }) => ({
-    record,
-    resource,
-    save
-  });
   const autoComplete = ApplicationContext.isDevEnv() ? "on" : "off";
 
+  useEffect(() => {
+    if (organisationId) {
+      OrganisationService.getOrganisation(organisationId).then(data => {
+        setNameSuffix(data?.usernameSuffix || "");
+      });
+    }
+  }, [organisationId]);
+
+  useEffect(() => {
+    if (ignored && nameSuffix) {
+      setValue("username", `${ignored}@${nameSuffix}`);
+    }
+  }, [ignored, nameSuffix, setValue]);
+
   return (
-    <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="list">
-      <FormDataConsumer>
-        {({ formData, dispatch, ...rest }) => {
-          return (
-            <ReferenceArrayInput
-              reference="account"
-              source="accountIds"
-              perPage={1000}
-              label="Accounts"
-              validate={required("Please select one or more accounts")}
-              filterToQuery={searchText => ({ name: searchText })}
-            >
-              <AutocompleteArrayInput {...props} />
-            </ReferenceArrayInput>
-          );
-        }}
-      </FormDataConsumer>
+    <SimpleForm toolbar={<CustomToolbar />} redirect="list">
+      <ReferenceArrayInput
+        reference="account"
+        source="accountIds"
+        perPage={1000}
+        label="Accounts"
+        validate={required("Please select one or more accounts")}
+        filterToQuery={searchText => ({ name: searchText })}
+      >
+        <AutocompleteArrayInput />
+      </ReferenceArrayInput>
+
       {edit ? (
-        <DisabledInput source="username" label="Login ID (admin username)" />
+        <TextInput disabled source="username" label="Login ID (admin username)" />
       ) : (
-        <Fragment>
-          <FormDataConsumer>
-            {({ formData, dispatch, ...rest }) => {
-              formData && getOrgData(formData.organisationId);
-              const getSuffixIfApplicable = formData && formData.organisationId ? `@${nameSuffix}` : "";
-              return (
-                <Fragment>
-                  <TextInput
-                    source="ignored"
-                    validate={isRequired}
-                    label={"Login ID (username)"}
-                    onChange={(e, newVal) =>
-                      !isEmpty(newVal) && dispatch(change(REDUX_FORM_NAME, "username", newVal + getSuffixIfApplicable))
-                    }
-                    {...rest}
-                  />
-                  <span>{getSuffixIfApplicable}</span>
-                </Fragment>
-              );
-            }}
-          </FormDataConsumer>
-        </Fragment>
+        <>
+          <TextInput source="ignored" validate={isRequired} label="Login ID (username)" />
+          {nameSuffix && <span>@{nameSuffix}</span>}
+        </>
       )}
+
       {!edit && <PasswordTextField />}
       <TextInput source="name" label="Name of the Person" validate={isRequired} autoComplete={autoComplete} />
       <TextInput source="email" label="Email Address" validate={validateEmail} autoComplete={autoComplete} />

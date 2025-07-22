@@ -2,7 +2,7 @@ import { Fragment, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Box, Paper, Typography, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";
 import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
@@ -161,7 +161,7 @@ const FormWizard = ({
               </Box>
               {!_.isEmpty(saveErrorMessageKey) && <StyledErrorTypography>{t(saveErrorMessageKey)}</StyledErrorTypography>}
             </StyledButtonContainer>
-            {redirect && <Redirect to={onSaveGoto} />}
+            {redirect && <Navigate to={onSaveGoto} replace />}
             {saved && <CustomizedSnackbar message={t(message || "Your details have been successfully registered.")} />}
           </StyledPaper>
         </div>

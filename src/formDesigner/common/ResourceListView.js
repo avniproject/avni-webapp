@@ -1,6 +1,6 @@
 import { memo, useState, useRef, useMemo, useCallback, useEffect } from "react";
 import { isEqual } from "lodash";
-import { Redirect, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import { Title } from "react-admin";
@@ -11,7 +11,8 @@ import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
 import { LinearProgress, Grid } from "@mui/material";
 
-const ResourceListView = ({ history, title, resourceName, resourceURLName, columns, userInfo, editPrivilegeType }) => {
+const ResourceListView = ({ title, resourceName, resourceURLName, columns, userInfo, editPrivilegeType }) => {
+  const navigate = useNavigate();
   const [redirect, setRedirect] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -91,6 +92,12 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
     };
   }, [fetchData, resourceName]);
 
+  useEffect(() => {
+    if (redirect) {
+      navigate(`/appDesigner/${resourceURLName}/create`);
+    }
+  }, [redirect, navigate, resourceURLName]);
+
   const actions = useMemo(
     () =>
       UserInfo.hasPrivilege(userInfo, editPrivilegeType)
@@ -98,7 +105,7 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
             {
               icon: Edit,
               tooltip: `Edit ${title}`,
-              onClick: (event, row) => history.push(`/appDesigner/${resourceURLName}/${row.original.id}`),
+              onClick: (event, row) => navigate(`/appDesigner/${resourceURLName}/${row.original.id}`),
               disabled: row => row.original.voided ?? false
             },
             {
@@ -124,7 +131,7 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
             }
           ]
         : [],
-    [history, userInfo, editPrivilegeType, resourceName, resourceURLName, title]
+    [navigate, userInfo, editPrivilegeType, resourceName, resourceURLName, title]
   );
 
   return (
@@ -165,7 +172,7 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
           route={`/appdesigner/${resourceURLName}`}
         />
       )}
-      {redirect && <Redirect to={`/appDesigner/${resourceURLName}/create`} />}
+      {redirect && <div />}
     </Box>
   );
 };
@@ -174,4 +181,4 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default withRouter(memo(ResourceListView, areEqual));
+export default memo(ResourceListView, areEqual);

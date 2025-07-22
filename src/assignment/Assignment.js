@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { withRouter } from "react-router-dom";
+import { useSelector } from "react-redux";
 import api from "./api/index";
 import { HomePageCard } from "../rootApp/views/HomePageCard";
 import { Typography } from "@mui/material";
@@ -8,7 +8,6 @@ import TaskAssignment from "./taskAssignment/TaskAssignment";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import UserInfo from "../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-import { connect } from "react-redux";
 
 const initialState = { loaded: false };
 
@@ -46,8 +45,10 @@ function renderEmptyMessage() {
   );
 }
 
-function Assignment({ userInfo }) {
+function Assignment() {
   const [metadata, setMetadata] = useState(initialState);
+  const userInfo = useSelector(state => state.app.userInfo);
+
   const { isAnyDirectlyAssignable, isAnyTaskTypeSetup, loaded } = metadata;
 
   useEffect(() => {
@@ -72,7 +73,4 @@ function Assignment({ userInfo }) {
   }
 }
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-export default connect(mapStateToProps)(withRouter(Assignment));
+export default Assignment;

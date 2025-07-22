@@ -3,14 +3,13 @@ import AppBar from "../common/components/AppBar";
 import { HomePageCard } from "../rootApp/views/HomePageCard";
 import { WhatsApp } from "@mui/icons-material";
 import { Grid } from "@mui/material";
-import { Route, withRouter } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import News from "./News";
 import WhatsAppHome from "./whatsapp/WhatsAppHome";
 import WhatsAppContactGroup from "./whatsapp/WhatsAppContactGroup";
-import { WithProps } from "../common/components/utils";
 import { getHref, getRoutePath } from "../common/utils/routeUtil";
 import BroadcastPath from "./utils/BroadcastPath";
-import { connect, useDispatch } from "react-redux";
 import { getOrganisationConfig } from "./reducers/metadataReducer";
 import NewsDetails from "./NewsDetails";
 import { Privilege } from "openchs-models";
@@ -39,28 +38,29 @@ const BroadcastPage = function({ path, organisationConfig, userInfo }) {
     </Fragment>
   );
 };
-const Broadcast = ({ match: { path }, organisationConfig, userInfo }) => {
+
+const Broadcast = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const organisationConfig = useSelector(state => state.broadcast.organisationConfig);
+  const userInfo = useSelector(state => state.app.userInfo);
+
+  const path = location.pathname;
+
   useEffect(() => {
     dispatch(getOrganisationConfig());
-  }, []);
+  }, [dispatch]);
+
   return (
-    <Fragment>
-      <Route exact path={path} component={WithProps({ path: path, organisationConfig, userInfo }, BroadcastPage)} />
-      <Route exact path={getRoutePath(path, BroadcastPath.News)} component={News} />
-      <Route exact path={`${path}/news/:id/details`} component={NewsDetails} />
-      <Route exact path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab?`)} component={WhatsAppHome} />
-      <Route
-        exact
-        path={getRoutePath(path, `${BroadcastPath.WhatsApp}/${BroadcastPath.ContactGroup}/:contactGroupId`)}
-        component={WhatsAppContactGroup}
-      />
-      <Route exact path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab/:receiverId/messages`)} component={WhatsAppHome} />
-    </Fragment>
+    <Routes>
+      <Route index element={<BroadcastPage path={path} organisationConfig={organisationConfig} userInfo={userInfo} />} />
+      <Route path={BroadcastPath.News} element={<News />} />
+      <Route path="news/:id/details" element={<NewsDetails />} />
+      <Route path={`${BroadcastPath.WhatsApp}/:activeTab?`} element={<WhatsAppHome />} />
+      <Route path={`${BroadcastPath.WhatsApp}/${BroadcastPath.ContactGroup}/:contactGroupId`} element={<WhatsAppContactGroup />} />
+      <Route path={`${BroadcastPath.WhatsApp}/:activeTab/:receiverId/messages`} element={<WhatsAppHome />} />
+    </Routes>
   );
 };
-const mapStateToProps = state => ({
-  organisationConfig: state.broadcast.organisationConfig,
-  userInfo: state.app.userInfo
-});
-export default withRouter(connect(mapStateToProps)(Broadcast));
+
+export default Broadcast;

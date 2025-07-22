@@ -1,20 +1,18 @@
 import { ToolTipContainer } from "./ToolTipContainer";
 import { RadioButtonGroupInput } from "react-admin";
-import { Grid } from "@mui/material";
+import { Box } from "@mui/material";
 
 export const AvniRadioButtonGroupInput = ({ toolTipKey, ...props }) => {
   return (
-    <ToolTipContainer toolTipKey={toolTipKey} styles={{ paddingTop: 5 }}>
-      <Grid
+    <ToolTipContainer toolTipKey={toolTipKey} sx={{ pt: 5 }}>
+      <Box
         component="label"
-        container
-        spacing={2}
         sx={{
           alignItems: "center"
         }}
       >
         <RadioButtonGroupInput {...props} />
-      </Grid>
+      </Box>
     </ToolTipContainer>
   );
 };

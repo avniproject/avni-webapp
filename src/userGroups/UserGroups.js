@@ -1,6 +1,5 @@
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-import { withRouter } from "react-router-dom";
 import { getGroups } from "./reducers";
 import { Input, InputLabel, Grid, Box, styled } from "@mui/material";
 import { map } from "lodash";
@@ -42,10 +41,13 @@ const StyledModalButtonContainer = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(3)
 }));
 
-const UserGroups = ({ getGroups, groups, ...props }) => {
+const UserGroups = () => {
+  const dispatch = useDispatch();
+  const groups = useSelector(state => state.userGroups.groups);
+
   useEffect(() => {
-    getGroups();
-  }, []);
+    dispatch(getGroups());
+  }, [dispatch]);
 
   const [openModal, setOpenModal] = useState(false);
   const [groupName, setGroupName] = useState("");
@@ -60,7 +62,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
     if (!ok && error) {
       alert(error);
     }
-    setTimeout(() => getGroups(), 1000);
+    setTimeout(() => dispatch(getGroups()), 1000);
     setGroupName("");
     setOpenModal(false);
   };
@@ -72,7 +74,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
         if (error) {
           alert(error);
         } else {
-          getGroups();
+          dispatch(getGroups());
         }
       });
     }
@@ -150,13 +152,4 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  groups: state.userGroups.groups
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getGroups }
-  )(UserGroups)
-);
+export default UserGroups;

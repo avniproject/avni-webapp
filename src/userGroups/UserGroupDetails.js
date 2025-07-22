@@ -1,18 +1,15 @@
-import { connect } from "react-redux";
 import { useState } from "react";
 import { Grid } from "@mui/material";
-import { withRouter } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { TabView } from "./components/TabbedView";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 
-const queryString = require("query-string");
-
-const UserGroupDetails = ({ ...props }) => {
-  let parsedProps = queryString.parse(props.location.search);
-  let groupName = parsedProps.groupName;
-
-  const [hasAllPrivileges, setHasAllPrivileges] = useState(parsedProps.hasAllPrivileges === "true");
+const UserGroupDetails = () => {
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const groupName = searchParams.get("groupName");
+  const [hasAllPrivileges, setHasAllPrivileges] = useState(searchParams.get("hasAllPrivileges") === "true");
 
   return (
     <Box
@@ -24,15 +21,10 @@ const UserGroupDetails = ({ ...props }) => {
     >
       <Title title={"User Groups"} />
       <Grid container>
-        <TabView
-          groupId={props.match.params.id}
-          groupName={groupName}
-          hasAllPrivileges={hasAllPrivileges}
-          setHasAllPrivileges={setHasAllPrivileges}
-          {...props}
-        />
+        <TabView groupId={id} groupName={groupName} hasAllPrivileges={hasAllPrivileges} setHasAllPrivileges={setHasAllPrivileges} />
       </Grid>
     </Box>
   );
 };
-export default withRouter(connect()(UserGroupDetails));
+
+export default UserGroupDetails;

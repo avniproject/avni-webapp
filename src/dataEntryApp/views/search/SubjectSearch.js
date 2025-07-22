@@ -3,11 +3,9 @@ import { Paper, Typography, Grid, Button, styled } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
 import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
 import { useTranslation } from "react-i18next";
-import { store } from "../../../common/store";
+import { useSelector, useDispatch } from "react-redux";
 import { types } from "../../reducers/searchFilterReducer";
 import { isEmpty } from "lodash";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
 import { getOrganisationConfig } from "../../reducers/metadataReducer";
 
 const StyledPaper = styled(Paper)({
@@ -38,16 +36,20 @@ const StyledCancel = styled(Cancel)({
   fontSize: "12px"
 });
 
-const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfigs }) => {
+const SubjectSearch = () => {
+  const dispatch = useDispatch();
+  const searchRequest = useSelector(state => state.dataEntry.searchFilterReducer.request);
+  const organisationConfigs = useSelector(state => state.dataEntry.metadata.organisationConfigs);
+
   useEffect(() => {
     if (!organisationConfigs) {
-      getOrganisationConfig();
+      dispatch(getOrganisationConfig());
     }
-  }, []);
+  }, [dispatch, organisationConfigs]);
 
   const { t } = useTranslation();
   const resetClick = () => {
-    store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: { includeVoided: false } });
+    dispatch({ type: types.ADD_SEARCH_REQUEST, value: { includeVoided: false } });
   };
 
   return (
@@ -63,18 +65,4 @@ const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfi
   );
 };
 
-const mapStateToProps = state => ({
-  searchRequest: state.dataEntry.searchFilterReducer.request,
-  organisationConfigs: state.dataEntry.metadata.organisationConfigs
-});
-
-const mapDispatchToProps = {
-  getOrganisationConfig
-};
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(SubjectSearch)
-);
+export default SubjectSearch;

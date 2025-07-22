@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
@@ -112,9 +112,9 @@ const ApplicationMenuEdit = props => {
         </Grid>
       </Box>
       {(redirectShow || state.saved) && (
-        <Redirect to={isCreate() ? "/appDesigner/applicationMenu" : `/appDesigner/applicationMenu/${props.match.params.id}/show`} />
+        <Navigate to={isCreate() ? "/appDesigner/applicationMenu" : `/appDesigner/applicationMenu/${props.match.params.id}/show`} />
       )}
-      {deleteAlert && <Redirect to="/appDesigner/applicationMenu" />}
+      {deleteAlert && <Navigate to="/appDesigner/applicationMenu" />}
     </>
   );
 };

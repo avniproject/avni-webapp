@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Admin, Resource } from "react-admin";
-import { withRouter, useHistory } from "react-router-dom";
-import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import { authProvider, dataProvider, LogoutButton } from "./react-admin-config";
-import { appDesignerHistory } from "../common/store";
 import SubjectTypesList from "./SubjectType/SubjectTypesList";
 import ProgramList from "./Program/ProgramList";
 import EncounterTypeList from "./EncounterType/EncounterTypeList";
@@ -35,24 +33,22 @@ import { UserMessagingConfig } from "../formDesigner/components/UserMessagingCon
 import { ArchivalConfig } from "../formDesigner/components/Archival/ArchivalConfig";
 
 const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const currentPath = window.location.hash;
     if (["#/appdesigner", "#/appdesigner/"].includes(currentPath)) {
-      history.replace("/appdesigner/subjectType?page=0");
+      navigate("/appdesigner/subjectType?page=0", { replace: true });
     }
-  }, [history]);
+  }, [navigate]);
 
   return (
     <Admin
       title="Manage Organisation"
       authProvider={authProvider}
       dataProvider={dataProvider}
-      history={appDesignerHistory}
-      logoutButton={WithProps({ user }, LogoutButton)}
       customRoutes={customRoutes}
-      appLayout={AdminLayout}
+      layout={AdminLayout}
     >
       <Resource name="subjectType" options={{ label: "Subject Types" }} list={SubjectTypesList} />
       <Resource name="program" options={{ label: "Programs" }} list={ProgramList} />
@@ -69,10 +65,8 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         options={{ label: "Search Filters" }}
         list={WithProps({ organisation, filename: "SearchFilter.md" }, customFilters)}
       />
-      {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOfflineDashboardAndReportCard) ? (
+      {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOfflineDashboardAndReportCard) && (
         <Resource name="searchResultFields" options={{ label: "Search Result Fields" }} list={SearchResultFields} />
-      ) : (
-        <div />
       )}
       <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
       <Resource name="checklist" options={{ label: "Checklist" }} list={ChecklistDetails} />
@@ -87,17 +81,13 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
       <Resource name="reportingViews" options={{ label: "Reporting Views" }} list={ReportingViews} />
       <Resource name="reportCard" options={{ label: "Offline Report Card" }} list={ReportCardList} />
       <Resource name="dashboard" options={{ label: "Offline Dashboard" }} list={DashboardList} />
-      {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOrganisationConfiguration) ? (
+      {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOrganisationConfiguration) && (
         <Resource name="userMessagingConfig" options={{ label: "User Messaging Config" }} list={UserMessagingConfig} />
-      ) : (
-        <div />
       )}
       <Resource name="applicationMenu" options={{ label: "Application Menu" }} list={ApplicationMenuList} />
       <Resource name="extensions" options={{ label: "Extensions" }} list={Extensions} />
-      {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOrganisationConfiguration) ? (
+      {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOrganisationConfiguration) && (
         <Resource name="archivalConfig" options={{ label: "App Storage Config" }} list={ArchivalConfig} />
-      ) : (
-        <div />
       )}
       <Resource name="ruleFailures" options={{ label: "Rule Failures" }} list={RuleFailureTelemetryList} />
     </Admin>
@@ -110,14 +100,4 @@ OrgManagerAppDesigner.propTypes = {
   userInfo: PropTypes.object
 };
 
-const mapStateToProps = state => ({
-  user: state.app.authSession,
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(OrgManagerAppDesigner)
-);
+export default OrgManagerAppDesigner;

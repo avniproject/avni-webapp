@@ -1,13 +1,13 @@
-import { useState, useRef, useMemo, memo } from "react";
+import { useState, useRef, useMemo, memo, useEffect } from "react";
 import { isEqual } from "lodash";
-import { Redirect, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import ApplicationMenuService from "../service/ApplicationMenuService";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
-import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { Edit, Delete } from "@mui/icons-material";
@@ -17,7 +17,9 @@ function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditApplicationMenu);
 }
 
-const ApplicationMenuList = ({ history, userInfo }) => {
+const ApplicationMenuList = () => {
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
   const [createTriggered, triggerCreate] = useState(false);
   const tableRef = useRef(null);
 
@@ -71,7 +73,7 @@ const ApplicationMenuList = ({ history, userInfo }) => {
             {
               icon: Edit,
               tooltip: "Edit application menu",
-              onClick: (event, row) => history.push(`/appDesigner/applicationMenu/${row.original.id}`),
+              onClick: (event, row) => navigate(`/appDesigner/applicationMenu/${row.original.id}`),
               disabled: row => row.original.voided ?? false
             },
             {
@@ -91,8 +93,15 @@ const ApplicationMenuList = ({ history, userInfo }) => {
             }
           ]
         : [],
-    [history, userInfo]
+    [navigate, userInfo]
   );
+
+  useEffect(() => {
+    if (createTriggered) {
+      navigate("/appDesigner/applicationMenu/create");
+      triggerCreate(false);
+    }
+  }, [createTriggered, navigate]);
 
   return (
     <DocumentationContainer filename={"ApplicationMenu.md"}>
@@ -130,7 +139,6 @@ const ApplicationMenuList = ({ history, userInfo }) => {
           actions={actions}
           route={"/appdesigner/applicationMenu"}
         />
-        {createTriggered && <Redirect to={"/appDesigner/applicationMenu/create"} />}
       </Box>
     </DocumentationContainer>
   );
@@ -140,8 +148,4 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(connect(mapStateToProps)(memo(ApplicationMenuList, areEqual)));
+export default memo(ApplicationMenuList, areEqual);

@@ -4,9 +4,8 @@ import { LinearProgress, Box, Button } from "@mui/material";
 import ErrorMessage from "../../common/components/ErrorMessage";
 import { useEffect, useState } from "react";
 import SubjectSearchService from "../../dataEntryApp/services/SubjectSearchService";
-import { connect, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getGenders, getOperationalModules, getOrganisationConfig } from "../reducers/metadataReducer";
-import { withRouter } from "react-router-dom";
 import SelectSubject from "../../common/components/subject/SelectSubject";
 import { useTranslation } from "react-i18next";
 
@@ -43,14 +42,17 @@ const SelectSubjectAndConfirm = function({ subjects, onSubjectChosen, onCancel, 
   );
 };
 
-function ChooseSubject({ operationalModules, genders, organisationConfig, onSubjectChosen, onCancel, busy, confirmActionLabel }) {
+function ChooseSubject({ onSubjectChosen, onCancel, busy, confirmActionLabel }) {
   const dispatch = useDispatch();
+  const operationalModules = useSelector(state => state.broadcast.operationalModules);
+  const genders = useSelector(state => state.broadcast.genders);
+  const organisationConfig = useSelector(state => state.broadcast.organisationConfig);
 
   useEffect(() => {
     dispatch(getOperationalModules());
     dispatch(getOrganisationConfig());
     dispatch(getGenders());
-  }, []);
+  }, [dispatch]);
 
   const [subjects, setSubjects] = useState(null);
   const [error, setError] = useState(null);
@@ -96,10 +98,4 @@ function ChooseSubject({ operationalModules, genders, organisationConfig, onSubj
   );
 }
 
-const mapStateToProps = state => ({
-  operationalModules: state.broadcast.operationalModules,
-  genders: state.broadcast.genders,
-  organisationConfig: state.broadcast.organisationConfig
-});
-
-export default withRouter(connect(mapStateToProps)(ChooseSubject));
+export default ChooseSubject;

@@ -1,8 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { Typography, Breadcrumbs as MUIBreadcrumb, Link } from "@mui/material";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
+import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { defaultTo } from "lodash";
 
@@ -16,8 +14,14 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary
 }));
 
-const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter, viewVisit, ...props }) => {
+const Breadcrumbs = ({ path }) => {
   const { t } = useTranslation();
+
+  const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+  const viewVisit = useSelector(state => state.dataEntry.viewVisitReducer.encounter);
+  const programEncounter = useSelector(state => state.dataEntry.programEncounterReducer.programEncounter);
+  const encounter = useSelector(state => state.dataEntry.encounterReducer.encounter);
+
   const parts = path.split(/\/+/g).filter(Boolean);
   const subjectName = subjectProfile && subjectProfile.nameString;
   const subjectUuid = subjectProfile && subjectProfile.uuid;
@@ -174,18 +178,4 @@ const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter,
   );
 };
 
-const mapStateToProps = state => ({
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  viewVisit: state.dataEntry.viewVisitReducer.encounter,
-  programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  encounter: state.dataEntry.encounterReducer.encounter
-});
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      null
-    )(Breadcrumbs)
-  )
-);
+export default Breadcrumbs;

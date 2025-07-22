@@ -1,7 +1,6 @@
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { styled } from "@mui/material/styles";
 import { getUploadStatuses } from "../../reducers";
-import { withRouter } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Table, TableHead, TableRow, TableCell, TableBody, Box, TablePagination, Button } from "@mui/material";
 import { find, get, isNil, map } from "lodash";
@@ -40,10 +39,13 @@ const StyledPagination = styled(TablePagination)({
   }
 });
 
-const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: { subjectTypes, programs, encounterTypes } }) => {
+const JobStatus = ({ operationalModules: { subjectTypes, programs, encounterTypes } }) => {
+  const dispatch = useDispatch();
+  const exportJobStatuses = useSelector(state => state.reports.exportJobStatuses);
+
   useEffect(() => {
-    getUploadStatuses(0);
-  }, []);
+    dispatch(getUploadStatuses(0));
+  }, [dispatch]);
 
   const rowsPerPage = 10;
   const [page, setPage] = useState(0);
@@ -55,7 +57,7 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    getUploadStatuses(newPage);
+    dispatch(getUploadStatuses(newPage));
   };
 
   const findEntityByUUID = (entities, statusEntityTypeUUID) => find(entities, ({ uuid }) => uuid === statusEntityTypeUUID) || {};
@@ -81,7 +83,7 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
   return (
     <StyledBox>
       <Box sx={{ display: "flex", justifyContent: "flex-end", marginBottom: 2 }}>
-        <Button color="primary" onClick={() => getUploadStatuses(0)}>
+        <Button color="primary" onClick={() => dispatch(getUploadStatuses(0))}>
           <Refresh />
           {" Refresh"}
         </Button>
@@ -141,13 +143,4 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: {
   );
 };
 
-const mapStateToProps = state => ({
-  exportJobStatuses: state.reports.exportJobStatuses
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getUploadStatuses }
-  )(JobStatus)
-);
+export default JobStatus;

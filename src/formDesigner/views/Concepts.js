@@ -1,12 +1,12 @@
-import { memo, useState, useRef, useMemo, useCallback } from "react";
+import { memo, useState, useRef, useMemo, useCallback, useEffect } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { isEqual, isEmpty } from "lodash";
-import { withRouter, Redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { Edit, Delete } from "@mui/icons-material";
@@ -15,9 +15,17 @@ function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);
 }
 
-const Concepts = ({ history, userInfo }) => {
+const Concepts = () => {
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
   const [redirect, setRedirect] = useState(false);
   const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (redirect) {
+      navigate("/appdesigner/concept/create");
+    }
+  }, [redirect, navigate]);
 
   const columns = useMemo(
     () => [
@@ -77,7 +85,7 @@ const Concepts = ({ history, userInfo }) => {
             {
               icon: Edit,
               tooltip: row => (row.original.organisationId === 1 ? "Cannot edit core concepts" : "Edit Concept"),
-              onClick: (event, row) => history.push(`/appdesigner/concept/${row.original.uuid}/edit`),
+              onClick: (event, row) => navigate(`/appdesigner/concept/${row.original.uuid}/edit`),
               disabled: row => row.original.organisationId === 1 || row.original.voided
             },
             {
@@ -103,7 +111,7 @@ const Concepts = ({ history, userInfo }) => {
             }
           ]
         : [],
-    [history, userInfo, tableRef]
+    [navigate, userInfo, tableRef]
   );
 
   return (
@@ -142,7 +150,7 @@ const Concepts = ({ history, userInfo }) => {
         actions={actions}
         route="/appdesigner/concepts"
       />
-      {redirect && <Redirect to="/appdesigner/concept/create" />}
+      {redirect && <div />}
     </Box>
   );
 };
@@ -151,8 +159,4 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(connect(mapStateToProps)(memo(Concepts, areEqual)));
+export default memo(Concepts, areEqual);

@@ -2,10 +2,9 @@ import { Fragment, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Paper, Typography } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { isEmpty } from "lodash";
-import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { LineBreak } from "../../../../common/components/utils";
 import { getEligibleProgramEncounters, resetState } from "../../../reducers/programEncounterReducer";
@@ -23,19 +22,24 @@ const StyledTypography = styled(Typography)({
   fontSize: "20px"
 });
 
-const NewProgramVisit = ({ match, ...props }) => {
+const NewProgramVisit = () => {
   const { t } = useTranslation();
-  const enrolmentUuid = match.queryParams.enrolUuid;
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  const eligibleEncounters = useSelector(state => state.dataEntry.programEncounterReducer.eligibleEncounters);
+  const operationalModules = useSelector(state => state.dataEntry.metadata.operationalModules);
+  const load = useSelector(state => state.dataEntry.loadReducer.load);
+
+  const enrolmentUuid = searchParams.get("enrolUuid");
 
   useEffect(() => {
-    props.resetState();
-    props.getEligibleProgramEncounters(enrolmentUuid);
-  }, []);
+    dispatch(resetState());
+    dispatch(getEligibleProgramEncounters(enrolmentUuid));
+  }, [dispatch, enrolmentUuid]);
 
-  const { planEncounterList, unplanEncounterList } = getNewEligibleProgramEncounters(
-    props.operationalModules.encounterTypes,
-    props.eligibleEncounters
-  );
+  const { planEncounterList, unplanEncounterList } = getNewEligibleProgramEncounters(operationalModules.encounterTypes, eligibleEncounters);
 
   const sections = [];
   if (!isEmpty(planEncounterList)) {
@@ -45,9 +49,9 @@ const NewProgramVisit = ({ match, ...props }) => {
     sections.push({ title: t("unplannedVisits"), data: unplanEncounterList });
   }
 
-  return props.load ? (
+  return load ? (
     <Fragment>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={location.pathname} />
       <StyledPaper>
         {!isEmpty(sections) ? (
           <>
@@ -64,26 +68,8 @@ const NewProgramVisit = ({ match, ...props }) => {
       </StyledPaper>
     </Fragment>
   ) : (
-    <CustomizedBackdrop load={props.load} />
+    <CustomizedBackdrop load={load} />
   );
 };
 
-const mapStateToProps = state => ({
-  eligibleEncounters: state.dataEntry.programEncounterReducer.eligibleEncounters,
-  operationalModules: state.dataEntry.metadata.operationalModules,
-  load: state.dataEntry.loadReducer.load
-});
-
-const mapDispatchToProps = {
-  getEligibleProgramEncounters,
-  resetState
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(NewProgramVisit)
-  )
-);
+export default NewProgramVisit;

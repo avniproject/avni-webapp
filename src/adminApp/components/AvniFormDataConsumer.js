@@ -1,10 +1,9 @@
-import { FormDataConsumer } from "react-admin";
+import { useFormContext, useWatch } from "react-hook-form";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
 
-export const AvniFormDataConsumer = ({ toolTipKey, ...props }) => {
-  return (
-    <ToolTipContainer toolTipKey={toolTipKey}>
-      <FormDataConsumer {...props}>{props.children}</FormDataConsumer>
-    </ToolTipContainer>
-  );
+export const AvniFormDataConsumer = ({ toolTipKey, children, ...props }) => {
+  const form = useFormContext();
+  const formData = useWatch({ control: form.control });
+
+  return <ToolTipContainer toolTipKey={toolTipKey}>{children({ formData, ...form, ...props })}</ToolTipContainer>;
 };

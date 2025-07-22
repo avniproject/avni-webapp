@@ -6,9 +6,9 @@ import { MaterialReactTable, useMaterialReactTable } from "material-react-table"
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
 import { Box, Grid, Paper, Button, IconButton } from "@mui/material";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getOperationalModules } from "../reports/reducers";
-import { withRouter } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import commonApi from "../common/service";
 import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
@@ -34,12 +34,18 @@ function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOfflineDashboardAndReportCard);
 }
 
-const CustomFilters = ({ history, operationalModules, getOperationalModules, organisation, filename, userInfo }) => {
-  const typeOfFilter = history.location.pathname.endsWith("myDashboardFilters") ? "myDashboardFilters" : "searchFilters";
+const CustomFilters = ({ organisation, filename }) => {
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const operationalModules = useSelector(state => state.reports.operationalModules);
+  const userInfo = useSelector(state => state.app.userInfo);
+
+  const typeOfFilter = location.pathname.endsWith("myDashboardFilters") ? "myDashboardFilters" : "searchFilters";
 
   useEffect(() => {
-    getOperationalModules();
-  }, [getOperationalModules]);
+    dispatch(getOperationalModules());
+  }, [dispatch]);
 
   const emptyOrgSettings = {
     uuid: UUID.v4(),
@@ -118,14 +124,14 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
       {
         id: "Widget",
         header: "Widget",
-        accessorFn: row => row.widget || "Default",
+        accessorFn: row => _.startCase(row.widget),
         enableSorting: true,
         enableColumnFilter: true,
-        Cell: ({ row }) => row.original.widget || "Default"
+        Cell: ({ row }) => _.startCase(row.original.widget)
       },
       {
         id: "Scope",
-        header: "Search Scope",
+        header: "Scope",
         accessorFn: row => _.startCase(row.scope),
         enableSorting: true,
         enableColumnFilter: true,
@@ -137,8 +143,7 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
 
   const editFilter = (filterType, title) => ({
     onClick: row => {
-      history.push({
-        pathname: "/appdesigner/filters",
+      navigate("/appdesigner/filters", {
         state: {
           filterType,
           selectedFilter: row.original,
@@ -154,92 +159,103 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
   });
 
   const deleteFilter = filterType => ({
-    onClick: async row => {
-      const voidedMessage = `Do you want to delete ${row.original.titleKey} filter?`;
-      if (window.confirm(voidedMessage)) {
-        const filteredFilters = omitTableData(settings.settings[filterType].filter(f => f.titleKey !== row.original.titleKey));
-        const newSettings = {
-          uuid: settings.uuid,
+    onClick: row => {
+      if (window.confirm("Do you really want to delete the filter?")) {
+        const filtersOfType = settings.settings[filterType];
+        const updatedFilters = filtersOfType.filter(filter => filter.titleKey !== row.original.titleKey);
+        const updatedSettings = {
+          ...settings,
           settings: {
-            languages: settings.settings.languages,
-            myDashboardFilters: filterType === "myDashboardFilters" ? filteredFilters : settings.settings.myDashboardFilters,
-            searchFilters: filterType === "searchFilters" ? filteredFilters : settings.settings.searchFilters
-          },
-          worklistUpdationRule
+            ...settings.settings,
+            [filterType]: updatedFilters
+          }
         };
-        const response = await http.put("/organisationConfig", newSettings);
-        if (response.status === 200 || response.status === 201) {
-          setSettings(newSettings);
-        }
+        setSettings(updatedSettings);
+
+        http
+          .put("/organisationConfig", updatedSettings)
+          .then(response => {
+            if (response.status === 200) {
+              console.log("Filter deleted successfully");
+            }
+          })
+          .catch(error => {
+            console.error("Failed to delete filter:", error);
+            alert("Failed to delete filter. Please try again.");
+          });
       }
     }
   });
 
+  const actions = useMemo(
+    () =>
+      hasEditPrivilege(userInfo)
+        ? [
+            {
+              icon: Edit,
+              tooltip: `Edit ${_.startCase(typeOfFilter)}`,
+              ...editFilter(typeOfFilter, `Edit ${_.startCase(typeOfFilter)}`)
+            },
+            {
+              icon: Delete,
+              tooltip: `Delete ${_.startCase(typeOfFilter)}`,
+              ...deleteFilter(typeOfFilter)
+            }
+          ]
+        : [],
+    [userInfo, typeOfFilter, settings, operationalModules, worklistUpdationRule, filename]
+  );
+
   const table = useMaterialReactTable({
     columns,
     data: settings.settings[typeOfFilter] || [],
-    enablePagination: false,
-    enableGlobalFilter: true,
-    enableColumnFilters: true,
-    enableSorting: true,
-    enableTopToolbar: hasEditPrivilege(userInfo),
     enableRowActions: hasEditPrivilege(userInfo),
-    renderRowActions: ({ row }) => (
+    renderRowActions: ({ row, table }) => (
       <StyledButtonContainer>
-        {hasEditPrivilege(userInfo) && (
-          <>
-            <IconButton
-              onClick={() => editFilter(typeOfFilter, `Edit ${_.startCase(typeOfFilter)}`).onClick(row)}
-              title="Edit TaskAssignmentFilter"
-            >
-              <Edit />
-            </IconButton>
-            <IconButton onClick={() => deleteFilter(typeOfFilter).onClick(row)} title="Delete filter">
-              <Delete />
-            </IconButton>
-          </>
-        )}
+        {actions.map((action, index) => (
+          <IconButton key={index} onClick={() => action.onClick(row)} title={action.tooltip} size="small">
+            <action.icon />
+          </IconButton>
+        ))}
       </StyledButtonContainer>
     ),
-    muiTableHeadCellProps: {
-      sx: { zIndex: 1 }
+    muiTableBodyRowProps: {
+      hover: true
     },
-    muiTableBodyCellProps: {
-      sx: { "& .MuiIconButton-root": { color: "text.primary" } }
+    muiTablePaperProps: {
+      elevation: 0,
+      sx: {
+        borderRadius: "0"
+      }
     }
   });
 
-  if (subjectTypes === null) return <div />;
-
   return (
     <StyledPaper>
-      <Title title={typeOfFilter === "myDashboardFilters" ? "My Dashboard Filters" : "Search Filters"} />
+      <Title title={`${_.startCase(typeOfFilter)}`} />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
           <Grid item>
-            <StyledButtonContainer>
-              <Button
-                color="primary"
-                variant="outlined"
-                onClick={() => {
-                  history.push({
-                    pathname: "/appdesigner/filters",
-                    state: {
-                      filterType: typeOfFilter,
-                      selectedFilter: null,
-                      settings,
-                      omitTableData,
-                      operationalModules,
-                      title: `Add ${_.startCase(typeOfFilter)}`,
-                      worklistUpdationRule,
-                      filename
-                    }
-                  });
-                }}
-              >
-                NEW {_.startCase(typeOfFilter)}
-              </Button>
-            </StyledButtonContainer>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => {
+                navigate("/appdesigner/filters", {
+                  state: {
+                    filterType: typeOfFilter,
+                    selectedFilter: null,
+                    settings,
+                    omitTableData,
+                    operationalModules,
+                    title: `Add ${_.startCase(typeOfFilter)}`,
+                    worklistUpdationRule,
+                    filename
+                  }
+                });
+              }}
+            >
+              NEW {_.startCase(typeOfFilter)}
+            </Button>
           </Grid>
         )}
       </Grid>
@@ -248,14 +264,4 @@ const CustomFilters = ({ history, operationalModules, getOperationalModules, org
   );
 };
 
-const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules,
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getOperationalModules }
-  )(CustomFilters)
-);
+export default CustomFilters;

@@ -1,14 +1,14 @@
-import { memo, useState, useRef, useMemo, useCallback } from "react";
+import { memo, useState, useRef, useMemo, useCallback, useEffect } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { get, isEqual } from "lodash";
-import { Redirect, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { Edit, Delete } from "@mui/icons-material";
@@ -17,12 +17,20 @@ function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType);
 }
 
-const SubjectTypesList = ({ history, userInfo }) => {
+const SubjectTypesList = () => {
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
   const [formMappings, setFormMappings] = useState([]);
   const [redirect, setRedirect] = useState(false);
   const tableRef = useRef(null);
 
   useFormMappings(setFormMappings);
+
+  useEffect(() => {
+    if (redirect) {
+      navigate("/appDesigner/subjectType/create");
+    }
+  }, [redirect, navigate]);
 
   const columns = useMemo(
     () => [
@@ -93,7 +101,7 @@ const SubjectTypesList = ({ history, userInfo }) => {
               icon: Edit,
               tooltip: "Edit Subject Type",
               onClick: (event, row) => {
-                history.push(`/appDesigner/subjectType/${row.original.id}`);
+                navigate(`/appDesigner/subjectType/${row.original.id}`);
               },
               disabled: row => row.original.voided ?? false
             },
@@ -120,7 +128,7 @@ const SubjectTypesList = ({ history, userInfo }) => {
             }
           ]
         : [],
-    [history, userInfo, tableRef]
+    [navigate, userInfo, tableRef]
   );
 
   return (
@@ -158,7 +166,7 @@ const SubjectTypesList = ({ history, userInfo }) => {
         route="/appdesigner/subjectType"
         actions={actions}
       />
-      {redirect && <Redirect to="/appDesigner/subjectType/create" />}
+      {redirect && <div />}
     </Box>
   );
 };
@@ -167,8 +175,4 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(connect(mapStateToProps)(memo(SubjectTypesList, areEqual)));
+export default memo(SubjectTypesList, areEqual);

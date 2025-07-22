@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { Button, FormControl, Input, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
 import { httpClient as http } from "common/utils/httpClient";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 import { FormTypeEntities } from "../common/constants";
 import { default as UUID } from "uuid";
@@ -123,7 +123,7 @@ class NewFormModal extends Component {
   }
   render() {
     if (this.state.toFormDetails !== "") {
-      return <Redirect to={"/appdesigner/forms/" + this.state.toFormDetails} />;
+      return <Navigate to={"/appdesigner/forms/" + this.state.toFormDetails} />;
     }
 
     return (

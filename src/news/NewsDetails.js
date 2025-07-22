@@ -4,7 +4,7 @@ import { newsInitialState, NewsReducer } from "./reducers";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { Paper } from "@mui/material";
 import { CreateEditNews } from "./CreateEditNews";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { PublishBroadcast } from "./components/PublishBroadcast";
 import { DeleteBroadcast } from "./components/DeleteBroadcast";
 import API from "./api";
@@ -58,7 +58,7 @@ export default function NewsDetails({ history, ...props }) {
         <PublishBroadcast open={publishAlert} setOpen={setPublishAlert} setRedirect={setRedirectToListing} news={news} />
         <DeleteBroadcast open={deleteAlert} setOpen={setDeleteAlert} setRedirect={setRedirectToListing} news={news} />
       </StyledContainer>
-      {redirectToListing && <Redirect to="/broadcast/news" />}
+      {redirectToListing && <Navigate to="/broadcast/news" />}
     </ScreenWithAppBar>
   );
 }

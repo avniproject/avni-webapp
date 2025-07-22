@@ -1,9 +1,8 @@
 import { styled } from "@mui/material/styles";
 import { FormControl, FormLabel, Typography, Grid, Button, Paper, Box, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { useEffect, useState, useReducer, Fragment } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import api from "../api";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getOperationalModules, getUploadStatuses } from "../reducers";
 import JobStatus from "../components/export/JobStatus";
@@ -48,15 +47,19 @@ const StyledWarningText = styled(Typography)(({ theme }) => ({
 
 const StyledErrorText = styled("div")(({ theme }) => ({
   color: "red",
-  marginBottom: theme.spacing(1.25)
+  fontSize: "12px"
 }));
 
-const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, exportJobStatuses, userInfo }) => {
+const Export = () => {
+  const dispatch = useDispatch();
+  const operationalModules = useSelector(state => state.reports.operationalModules);
+  const exportJobStatuses = useSelector(state => state.reports.exportJobStatuses);
+  const userInfo = useSelector(state => state.app.userInfo);
   const { t } = useTranslation();
 
   useEffect(() => {
-    getOperationalModules();
-  }, []);
+    dispatch(getOperationalModules());
+  }, [dispatch]);
 
   const [exportRequest, dispatchFun] = useReducer(ExportReducer, initialState);
   const [enableExport, setEnableExport] = useState(false);
@@ -71,7 +74,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
     addressLevelError,
     includeVoided
   } = exportRequest;
-  const dispatch = (type, payload) => dispatchFun({ type, payload });
+  const dispatchExport = (type, payload) => dispatchFun({ type, payload });
   const subjectTypes = _.get(operationalModules, "subjectTypes");
   const { programOptions, encounterTypeOptions } = applicableOptions(operationalModules, exportRequest);
 
@@ -80,7 +83,7 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
     if (!ok && error) {
       alert(error);
     }
-    setTimeout(() => getUploadStatuses(0), 1000);
+    setTimeout(() => dispatch(getUploadStatuses(0)), 1000);
   };
 
   const renderAddressLevel = () => {
@@ -90,8 +93,8 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
           <AddressLevelsByType
             label="Address (Leave blank to consider all)"
             addressLevelsIds={addressLevelIds}
-            setAddressLevelsIds={ids => dispatch("addressLevelIds", ids)}
-            setError={error => dispatch("AddressLevelError", error)}
+            setAddressLevelsIds={ids => dispatchExport("addressLevelIds", ids)}
+            setError={error => dispatchExport("AddressLevelError", error)}
           />
         </Grid>
         <Grid size={12}>
@@ -101,108 +104,133 @@ const Export = ({ operationalModules, getOperationalModules, getUploadStatuses, 
     );
   };
 
-  const renderIncludeVoided = () => (
-    <FormControlLabel
-      control={
-        <Checkbox
-          color="primary"
-          checked={includeVoided}
-          name="Include voided entries"
-          onChange={event => dispatch("includeVoided", event.target.checked)}
-        />
-      }
-      label="Include voided entries"
-    />
-  );
+  useEffect(() => {
+    const isValidReportType = !_.isNil(reportType);
+    const isValidSubjectType = !_.isNil(subjectType);
+    const isValidProgram = reportType === reportTypes.Registration || reportType === reportTypes.Encounter || !_.isNil(program);
+    const isValidEncounterType = reportType !== reportTypes.Encounter || !_.isNil(encounterType);
+    const isValidDate = !_.isNil(startDate) && !_.isNil(endDate);
+    const isValidAddressLevel = _.isEmpty(addressLevelError);
 
-  const onReportTypeChange = type => {
-    dispatch("reportType", type);
-    setEnableExport(false);
-  };
-
-  const RenderReportTypes = () => {
-    return (
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Report Type</FormLabel>
-        <FormGroup row>
-          {ReportTypes.names.map(type => (
-            <FormControlLabel
-              key={type.name}
-              control={<Radio checked={type.name === reportType.name} onChange={() => onReportTypeChange(type)} value={type.name} />}
-              label={type.name}
-            />
-          ))}
-        </FormGroup>
-      </FormControl>
+    setEnableExport(
+      isValidReportType && isValidSubjectType && isValidProgram && isValidEncounterType && isValidDate && isValidAddressLevel
     );
-  };
+  }, [reportType, subjectType, program, encounterType, startDate, endDate, addressLevelError]);
 
-  const commonProps = { dispatch, startDate, endDate, subjectType, subjectTypes, setEnableExport };
-  const reportTypeMap = {
-    [reportTypes.Registration]: <RegistrationType {...commonProps} />,
-    [reportTypes.Enrolment]: <EnrolmentType {...commonProps} programOptions={programOptions} program={program} />,
-    [reportTypes.Encounter]: (
-      <EncounterType
-        {...commonProps}
-        programOptions={programOptions}
-        program={program}
-        encounterTypeOptions={encounterTypeOptions}
-        encounterType={encounterType}
-      />
-    ),
-    [reportTypes.GroupSubject]: <GroupSubjectType {...commonProps} />
-  };
+  const hasExportPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 
-  const renderReportTypeOptions = () => {
-    return reportType.name ? reportTypeMap[reportType.name] : <Fragment />;
-  };
-
-  const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
+  if (!hasExportPrivilege) {
+    return (
+      <ScreenWithAppBar appbarTitle={t("export")} enableLeftMenuButton={true}>
+        <DocumentationContainer filename={"Export.md"}>
+          <StyledWarningText>You don't have access to this functionality. Please contact your administrator.</StyledWarningText>
+        </DocumentationContainer>
+      </ScreenWithAppBar>
+    );
+  }
 
   return (
-    <ScreenWithAppBar appbarTitle="Longitudinal Export" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
-      {operationalModules && (
-        <div>
-          <StyledBox>
-            <DocumentationContainer filename="Report.md">
-              {allowReportGeneration && (
-                <Grid>
-                  {RenderReportTypes()}
-                  {renderReportTypeOptions()}
-                  {!_.isEmpty(reportType.name) && renderAddressLevel()}
-                  {!_.isEmpty(reportType.name) && renderIncludeVoided()}
-                </Grid>
-              )}
-              {allowReportGeneration && (
-                <StyledGrid container direction="row">
-                  <Button variant="contained" color="primary" aria-haspopup="false" onClick={onStartExportHandler} disabled={!enableExport}>
-                    Generate Export
-                  </Button>
-                  <StyledWarningText component="span">{t("legacyLongitudinalExportWarningMessage")}</StyledWarningText>
+    <ScreenWithAppBar appbarTitle={t("export")} enableLeftMenuButton={true}>
+      <DocumentationContainer filename={"Export.md"}>
+        <StyledPaper>
+          <Box p={3}>
+            <Typography variant="h5" gutterBottom>
+              {t("export")}
+            </Typography>
+            <StyledBox>
+              <FormControl component="fieldset">
+                <FormLabel component="legend">{t("reportType")}</FormLabel>
+                <ReportTypes reportType={reportType} onChange={reportType => dispatchExport("reportType", reportType)} />
+              </FormControl>
+            </StyledBox>
+
+            <StyledBox>
+              <FormControl component="fieldset">
+                <FormLabel component="legend">{t("subjectType")}</FormLabel>
+                <Radio
+                  value={subjectType}
+                  options={subjectTypes}
+                  labelKey="name"
+                  valueKey="uuid"
+                  onChange={subjectType => dispatchExport("subjectType", subjectType)}
+                />
+              </FormControl>
+            </StyledBox>
+
+            {reportType === reportTypes.Registration && (
+              <RegistrationType
+                subjectType={subjectType}
+                program={program}
+                onChange={program => dispatchExport("program", program)}
+                programOptions={programOptions}
+              />
+            )}
+
+            {reportType === reportTypes.Enrolment && (
+              <EnrolmentType program={program} onChange={program => dispatchExport("program", program)} programOptions={programOptions} />
+            )}
+
+            {reportType === reportTypes.Encounter && (
+              <EncounterType
+                encounterType={encounterType}
+                onChange={encounterType => dispatchExport("encounterType", encounterType)}
+                encounterTypeOptions={encounterTypeOptions}
+              />
+            )}
+
+            {reportType === reportTypes.GroupSubject && (
+              <GroupSubjectType
+                program={program}
+                onChange={program => dispatchExport("program", program)}
+                programOptions={programOptions}
+              />
+            )}
+
+            <StyledBox>
+              <FormControl component="fieldset">
+                <FormLabel component="legend">{t("dateRange")}</FormLabel>
+                <StyledGrid container spacing={2}>
+                  <Grid size={6}>
+                    <input
+                      type="date"
+                      value={startDate || ""}
+                      onChange={e => dispatchExport("startDate", e.target.value)}
+                      style={{ width: "100%", padding: "8px" }}
+                    />
+                  </Grid>
+                  <Grid size={6}>
+                    <input
+                      type="date"
+                      value={endDate || ""}
+                      onChange={e => dispatchExport("endDate", e.target.value)}
+                      style={{ width: "100%", padding: "8px" }}
+                    />
+                  </Grid>
                 </StyledGrid>
-              )}
-            </DocumentationContainer>
-          </StyledBox>
-          <Grid>
-            <StyledPaper>
-              <JobStatus exportJobStatuses={exportJobStatuses} operationalModules={operationalModules} />
-            </StyledPaper>
-          </Grid>
-        </div>
-      )}
+              </FormControl>
+            </StyledBox>
+
+            <StyledBox>{renderAddressLevel()}</StyledBox>
+
+            <StyledBox>
+              <FormGroup>
+                <FormControlLabel
+                  control={<Checkbox checked={includeVoided} onChange={e => dispatchExport("includeVoided", e.target.checked)} />}
+                  label={t("includeVoided")}
+                />
+              </FormGroup>
+            </StyledBox>
+
+            <Button variant="contained" color="primary" disabled={!enableExport} onClick={onStartExportHandler}>
+              {t("startExport")}
+            </Button>
+          </Box>
+        </StyledPaper>
+
+        <JobStatus operationalModules={operationalModules} />
+      </DocumentationContainer>
     </ScreenWithAppBar>
   );
 };
 
-const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules,
-  exportJobStatuses: state.reports.exportJobStatuses,
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getOperationalModules, getUploadStatuses }
-  )(Export)
-);
+export default Export;

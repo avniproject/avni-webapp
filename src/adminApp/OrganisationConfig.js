@@ -9,9 +9,9 @@ import { Add, Edit } from "@mui/icons-material";
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
 import Box from "@mui/material/Box";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getOperationalModules } from "../reports/reducers";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import commonApi from "../common/service";
 
 const StyledPaper = styled(Paper)({
@@ -34,10 +34,14 @@ const StyledSpan = styled("span")({
   marginLeft: 20
 });
 
-const OrganisationConfig = ({ getOperationalModules, history, organisation, hasEditPrivilege }) => {
+const OrganisationConfig = ({ organisation, hasEditPrivilege }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const operationalModules = useSelector(state => state.reports.operationalModules);
+
   useEffect(() => {
-    getOperationalModules();
-  }, []);
+    dispatch(getOperationalModules());
+  }, [dispatch]);
 
   const emptyOrgSettings = {
     uuid: UUID.v4(),
@@ -90,8 +94,7 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
     <IconButton
       label="Edit"
       onClick={() =>
-        history.push({
-          pathname: "/admin/editLanguages",
+        navigate("/admin/editLanguages", {
           state: { settings, worklistUpdationRule }
         })
       }
@@ -119,13 +122,4 @@ const OrganisationConfig = ({ getOperationalModules, history, organisation, hasE
   );
 };
 
-const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getOperationalModules }
-  )(OrganisationConfig)
-);
+export default OrganisationConfig;

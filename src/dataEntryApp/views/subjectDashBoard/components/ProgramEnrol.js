@@ -9,9 +9,8 @@ import {
   setEnrolmentDate,
   setExitDate
 } from "dataEntryApp/reducers/programEnrolReducer";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import ProgramEnrolmentForm from "./ProgramEnrolmentForm";
 import ProgramExitEnrolmentForm from "./ProgramExitEnrolmentForm";
@@ -39,30 +38,33 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
   alignItems: "center"
 }));
 
-const ProgramEnrol = ({
-  match,
-  onLoad,
-  enrolForm,
-  getSubjectProfile,
-  programEnrolment,
-  load,
-  validationResults,
-  setEnrolmentDate,
-  setExitDate
-}) => {
+const ProgramEnrol = () => {
   const { t } = useTranslation();
-  const formType = match.queryParams.formType;
-  const subjectTypeName = match.queryParams.subjectTypeName;
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  const enrolForm = useSelector(state => state.dataEntry.enrolmentReducer.enrolForm);
+  const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+  const programEnrolment = useSelector(state => state.dataEntry.enrolmentReducer.programEnrolment);
+  const load = useSelector(state => state.dataEntry.enrolmentReducer.load);
+  const validationResults = useSelector(state => state.dataEntry.enrolmentReducer.validationResults);
+
+  const formType = searchParams.get("formType");
+  const subjectTypeName = searchParams.get("subjectTypeName");
+  const programName = searchParams.get("programName");
+  const programEnrolmentUuid = searchParams.get("programEnrolmentUuid");
+  const uuid = searchParams.get("uuid");
 
   useEffect(() => {
-    onLoad(subjectTypeName, match.queryParams.programName, formType, match.queryParams.programEnrolmentUuid, match.queryParams.uuid);
-  }, []);
+    dispatch(onLoad(subjectTypeName, programName, formType, programEnrolmentUuid, uuid));
+  }, [dispatch, subjectTypeName, programName, formType, programEnrolmentUuid, uuid]);
 
   return load ? (
     <Fragment>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={location.pathname} />
       <StyledPaper>
-        <StyledTypography component="span">{t(match.queryParams.programName)}</StyledTypography>
+        <StyledTypography component="span">{t(programName)}</StyledTypography>
         <StyledGrid size={12}>
           {enrolForm && programEnrolment && formType === "ProgramEnrolment" ? (
             <ProgramEnrolmentForm formType={formType} fetchRulesResponse={fetchEnrolmentRulesResponse}>
@@ -71,7 +73,7 @@ const ProgramEnrol = ({
                 formElement={new StaticFormElement("Enrolment Date", true, true)}
                 value={programEnrolment.enrolmentDateTime}
                 validationResults={validationResults}
-                update={setEnrolmentDate}
+                update={value => dispatch(setEnrolmentDate(value))}
               />
               <LineBreak num={3} />
             </ProgramEnrolmentForm>
@@ -82,7 +84,7 @@ const ProgramEnrol = ({
                 formElement={new StaticFormElement("Exit Enrolment Date", true, true)}
                 value={programEnrolment.programExitDateTime}
                 validationResults={validationResults}
-                update={setExitDate}
+                update={value => dispatch(setExitDate(value))}
               />
               <LineBreak num={3} />
             </ProgramExitEnrolmentForm>
@@ -97,27 +99,4 @@ const ProgramEnrol = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment,
-  load: state.dataEntry.enrolmentReducer.load,
-  validationResults: state.dataEntry.enrolmentReducer.validationResults
-});
-
-const mapDispatchToProps = {
-  onLoad,
-  getSubjectProfile,
-  setProgramEnrolment,
-  setEnrolmentDate,
-  setExitDate
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(ProgramEnrol)
-  )
-);
+export default ProgramEnrol;

@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { get } from "lodash";
-import { Redirect, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { findProgramEncounterForm, findProgramEncounterCancellationForm } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { Edit, Delete } from "@mui/icons-material";
@@ -17,8 +17,9 @@ function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditEncounterType);
 }
 
-const EncounterTypeList = ({ history, userInfo }) => {
-  const [redirect, setRedirect] = useState(false);
+const EncounterTypeList = () => {
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
   const [formMappings, setFormMappings] = useState([]);
   const [subjectTypes, setSubjectTypes] = useState([]);
   const [program, setProgram] = useState([]);
@@ -119,7 +120,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
             {
               icon: Edit,
               tooltip: "Edit encounter type",
-              onClick: (event, row) => history.push(`/appDesigner/encounterType/${row.original.id}`),
+              onClick: (event, row) => navigate(`/appDesigner/encounterType/${row.original.id}`),
               disabled: row => row.original.voided ?? false
             },
             {
@@ -145,8 +146,12 @@ const EncounterTypeList = ({ history, userInfo }) => {
             }
           ]
         : [],
-    [history, userInfo]
+    [navigate, userInfo]
   );
+
+  const handleCreateSubmit = () => {
+    navigate("/appDesigner/encounterType/create");
+  };
 
   return (
     <Box
@@ -162,7 +167,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
           <Grid item>
-            <CreateComponent onSubmit={() => setRedirect(true)} name="New Encounter Type" />
+            <CreateComponent onSubmit={handleCreateSubmit} name="New Encounter Type" />
           </Grid>
         )}
       </Grid>
@@ -183,13 +188,8 @@ const EncounterTypeList = ({ history, userInfo }) => {
         actions={actions}
         route="/appDesigner/encounterType"
       />
-      {redirect && <Redirect to="/appDesigner/encounterType/create" />}
     </Box>
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(connect(mapStateToProps)(EncounterTypeList));
+export default EncounterTypeList;

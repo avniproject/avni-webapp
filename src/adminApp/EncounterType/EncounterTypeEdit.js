@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
-import { Redirect, withRouter } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Box, Grid, Button } from "@mui/material";
 import { Title } from "react-admin";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -16,10 +16,13 @@ import EncounterTypeErrors from "./EncounterTypeErrors";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
-const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
+const EncounterTypeEdit = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const organisationConfig = useSelector(state => state.app.organisationConfig);
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [error, setError] = useState("");
@@ -54,13 +57,25 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
     return identity;
   }, []);
 
+  useEffect(() => {
+    if (redirectShow) {
+      navigate(`/appDesigner/encounterType/${id}/show`);
+    }
+  }, [redirectShow, id, navigate]);
+
+  useEffect(() => {
+    if (deleteAlert) {
+      navigate("/appDesigner/encounterType");
+    }
+  }, [deleteAlert, navigate]);
+
   const onRulesChange = rules => {
     console.log("Message rules updated:", rules);
     rulesDispatch({ type: "setRules", payload: rules });
   };
 
   useEffect(() => {
-    console.log("Fetching data for encounterTypeId:", props.match.params.id);
+    console.log("Fetching data for encounterTypeId:", id);
     dispatch({ type: "reset", payload: encounterTypeInitialState });
     setEncounterTypeData({});
     setSubjectT({});
@@ -72,7 +87,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
     setEntityType(null);
 
     http
-      .get("/web/encounterType/" + props.match.params.id)
+      .get("/web/encounterType/" + id)
       .then(response => response.data)
       .then(result => {
         console.log("Encounter type data:", result);
@@ -144,10 +159,10 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
       });
 
     return () => {
-      console.log("Cleaning up for encounterTypeId:", props.match.params.id);
+      console.log("Cleaning up for encounterTypeId:", id);
       dispatch({ type: "reset", payload: encounterTypeInitialState });
     };
-  }, [props.match.params.id]);
+  }, [id]);
 
   const onSubmit = () => {
     console.log("Submitting encounter type:", encounterType, "with programT:", programT);
@@ -179,9 +194,9 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
     setSubjectValidation(false);
 
     return http
-      .put("/web/encounterType/" + props.match.params.id, {
+      .put("/web/encounterType/" + id, {
         ...encounterType,
-        id: props.match.params.id,
+        id: id,
         subjectTypeUuid: subjectT.uuid,
         programEncounterFormUuid: _.get(encounterType, "programEncounterForm.formUUID"),
         programEncounterCancelFormUuid: _.get(encounterType, "programEncounterCancellationForm.formUUID"),
@@ -192,7 +207,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
         if (response.status === 200) {
           setError("");
           setMsgError("");
-          console.log("Successfully saved encounter type:", props.match.params.id);
+          console.log("Successfully saved encounter type:", id);
         }
       })
       .then(() => saveMessageRules(entityType, encounterType.encounterTypeId, rules))
@@ -204,14 +219,14 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
   };
 
   const onDelete = () => {
-    console.log("Deleting encounter type:", props.match.params.id);
+    console.log("Deleting encounter type:", id);
     if (window.confirm("Do you really want to delete encounter type?")) {
       http
-        .delete("/web/encounterType/" + props.match.params.id)
+        .delete("/web/encounterType/" + id)
         .then(response => {
           if (response.status === 200) {
             setDeleteAlert(true);
-            console.log("Successfully deleted encounter type:", props.match.params.id);
+            console.log("Successfully deleted encounter type:", id);
           }
         })
         .catch(error => {
@@ -258,6 +273,10 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
     console.log("EncounterType state after updateProgram:", encounterType);
   }
 
+  const handleShowClick = () => {
+    setRedirectShow(true);
+  };
+
   console.log("Rendering EditEncounterTypeFields with props:", {
     encounterType,
     subjectT,
@@ -280,7 +299,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
     >
       <Title title="Edit Encounter Type" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
-        <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
+        <Button color="primary" type="button" onClick={handleShowClick}>
           <VisibilityIcon /> Show
         </Button>
       </Grid>
@@ -329,14 +348,8 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
           </Button>
         </Grid>
       </Grid>
-      {redirectShow && <Redirect to={`/appDesigner/encounterType/${props.match.params.id}/show`} />}
-      {deleteAlert && <Redirect to="/appDesigner/encounterType" />}
     </Box>
   );
 };
 
-const mapStateToProps = state => ({
-  organisationConfig: state.app.organisationConfig
-});
-
-export default withRouter(connect(mapStateToProps)(EncounterTypeEdit));
+export default EncounterTypeEdit;

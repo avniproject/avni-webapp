@@ -1,12 +1,12 @@
 import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
 import ResourceShowView from "../../common/ResourceShowView";
 import { FormLabel } from "@mui/material";
 import ShowDashboardSections from "./ShowDashboardSections";
 import ShowDashboardFilters from "./ShowDashboardFilters";
-import { connect } from "react-redux";
 import { getOperationalModules } from "../../../reports/reducers";
-import { withRouter } from "react-router-dom";
 import DashboardService from "../../../common/service/DashboardService";
 import OperationalModules from "../../../common/model/OperationalModules";
 import { Privilege } from "openchs-models";
@@ -30,12 +30,15 @@ function render(dashboard, operationalModules) {
   );
 }
 
-const DashboardShow = props => {
-  useEffect(() => {
-    props.getOperationalModules();
-  }, []);
+const DashboardShow = () => {
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const operationalModules = useSelector(state => state.reports.operationalModules);
+  const userInfo = useSelector(state => state.app.userInfo);
 
-  const { operationalModules } = props;
+  useEffect(() => {
+    dispatch(getOperationalModules());
+  }, [dispatch]);
 
   if (!OperationalModules.isLoaded(operationalModules)) return null;
 
@@ -43,26 +46,16 @@ const DashboardShow = props => {
     <ResourceShowView
       operationalModules={operationalModules}
       title={"Offline Dashboard"}
-      resourceId={props.match.params.id}
+      resourceId={id}
       resourceName={"dashboard"}
       resourceURLName={"dashboard"}
       render={dashboard => render(dashboard, operationalModules)}
       mapResource={resource => DashboardService.mapDashboardFromResource(resource, operationalModules)}
-      userInfo={props.userInfo}
+      userInfo={userInfo}
       editPrivilegeType={Privilege.PrivilegeType.EditOfflineDashboardAndReportCard}
       defaultResource={WebDashboard.createNew()}
     />
   );
 };
 
-const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules,
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getOperationalModules }
-  )(DashboardShow)
-);
+export default DashboardShow;

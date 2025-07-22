@@ -1,7 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Modal from "./CommonModal";
 import { noop } from "lodash";
 import { searchSubjects, setSubjects } from "../../../reducers/searchReducer";
@@ -31,31 +30,28 @@ const applyButtonStyle = {
   }
 };
 
-const FindRelative = ({
-  subjectType,
-  subjectProfile,
-  operationalModules,
-  genders,
-  organisationConfigs,
-  searchRequest,
-  load,
-  setError,
-  ...props
-}) => {
+const FindRelative = ({ subjectProfile, operationalModules, genders, organisationConfigs, searchRequest, setError }) => {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
+  const Relations = useSelector(state => state.dataEntry.relations);
+  const subjects = useSelector(state => state.dataEntry.search.subjects);
+  const searchParams = useSelector(state => state.dataEntry.search.subjectSearchParams);
+  const subjectType = useSelector(state => state.dataEntry.subjectProfile.subjectProfile.subjectType);
+  const load = useSelector(state => state.dataEntry.loadReducer.load);
+
   const close = () => {
-    props.setSubjects();
+    dispatch(setSubjects());
     sessionStorage.removeItem("selectedRelative");
   };
 
   const modifySearch = () => {
-    props.setSubjects();
+    dispatch(setSubjects());
     sessionStorage.removeItem("selectedRelative");
   };
 
   const applyHandler = () => {
-    props.setSubjects();
+    dispatch(setSubjects());
     let localSavedRelativeData = [];
     let localsSelctedRelative = JSON.parse(sessionStorage.getItem("selectedRelative"));
     localSavedRelativeData.push(localsSelctedRelative);
@@ -66,17 +62,21 @@ const FindRelative = ({
     setError("");
   };
 
+  const handleSearch = filterRequest => {
+    dispatch(searchSubjects(filterRequest));
+  };
+
   const searchContent = (
     <StyledContainer>
-      {props.subjects && props.subjects.listOfRecords ? (
-        <FindRelativeTable subjectData={props.subjects.listOfRecords.filter(subject => subjectProfile.uuid !== subject.uuid)} />
+      {subjects && subjects.listOfRecords ? (
+        <FindRelativeTable subjectData={subjects.listOfRecords.filter(subject => subjectProfile.uuid !== subject.uuid)} />
       ) : (
         <SearchForm
           operationalModules={operationalModules}
           genders={genders}
           organisationConfigs={organisationConfigs}
           searchRequest={searchRequest}
-          onSearch={filterRequest => props.search(filterRequest)}
+          onSearch={handleSearch}
         />
       )}
       <CustomizedBackdrop load={load} />
@@ -94,7 +94,7 @@ const FindRelative = ({
           label: t("searchRelative"),
           sx: filterButtonStyle
         },
-        props.subjects && props.subjects.listOfRecords
+        subjects && subjects.listOfRecords
           ? {
               buttonType: "applyFloating",
               label: "OK",
@@ -103,7 +103,7 @@ const FindRelative = ({
               left: 40
             }
           : "",
-        props.subjects && props.subjects.listOfRecords
+        subjects && subjects.listOfRecords
           ? {
               buttonType: "modifySearchFloating",
               label: "Modify search",
@@ -119,22 +119,4 @@ const FindRelative = ({
   );
 };
 
-const mapStateToProps = state => ({
-  Relations: state.dataEntry.relations,
-  subjects: state.dataEntry.search.subjects,
-  searchParams: state.dataEntry.search.subjectSearchParams,
-  subjectType: state.dataEntry.subjectProfile.subjectProfile.subjectType,
-  load: state.dataEntry.loadReducer.load
-});
-
-const mapDispatchToProps = {
-  search: searchSubjects,
-  setSubjects
-};
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(FindRelative)
-);
+export default FindRelative;

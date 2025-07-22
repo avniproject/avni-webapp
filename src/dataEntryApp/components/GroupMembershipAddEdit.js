@@ -3,9 +3,8 @@ import { styled } from "@mui/material/styles";
 import Breadcrumbs from "./Breadcrumbs";
 import { Box, Button, Grid, Paper, Typography, RadioGroup, FormControlLabel, Radio, FormLabel } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { withRouter } from "react-router-dom";
-import { withParams } from "../../common/components/utils";
-import { connect } from "react-redux";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import api from "../api/index";
 import AsyncSelect from "react-select/async";
 import SubjectSearchService from "../services/SubjectSearchService";
@@ -54,10 +53,24 @@ const constructSubjectLabel = (subject, isSearchFlow = false) => {
   return `${subject.nameString} | ${subject.addressLevel}`;
 };
 
-const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, groupRoles, ...props }) => {
+const GroupMembershipAddEdit = () => {
   const { t } = useTranslation();
 
-  const memberGroupSubject = memberGroupSubjects && memberGroupSubjects.find(mgs => mgs.uuid === match.queryParams.uuid);
+  // Use React Router hooks instead of withRouter and withParams
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Parse query parameters from location.search
+  const searchParams = new URLSearchParams(location.search);
+  const uuid = searchParams.get("uuid");
+  const path = location.pathname;
+
+  // Use Redux hooks instead of connect
+  const groupRoles = useSelector(state => state.dataEntry.subjectProfile.subjectProfile.roles);
+  const groupSubject = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+  const memberGroupSubjects = useSelector(state => state.dataEntry.subjectProfile.groupMembers);
+
+  const memberGroupSubject = memberGroupSubjects && memberGroupSubjects.find(mgs => mgs.uuid === uuid);
   const [memberSubject, setMemberSubject] = useState(
     memberGroupSubject && {
       label: constructSubjectLabel(memberGroupSubject.memberSubject),
@@ -67,10 +80,10 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
   const groupRole = memberGroupSubject && memberGroupSubject.groupRole;
   const [selectedRole, setSelectedRole] = useState(groupRole ? groupRoles.find(role => role.uuid === groupRole.uuid) : null);
   // const isHousehold = groupSubject.isHousehold();
-  const editFlow = match.queryParams.uuid != null && memberGroupSubject != null && groupRole != null;
+  const editFlow = uuid != null && memberGroupSubject != null && groupRole != null;
 
   const returnToGroupSubjectProfile = () => {
-    props.history.push(`/app/subject/subjectProfile?uuid=${groupSubject.uuid}`);
+    navigate(`/app/subject/subjectProfile?uuid=${groupSubject.uuid}`);
   };
 
   const searchSubjects = (subjectName, callback) => {
@@ -107,7 +120,7 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
   const handleSave = () => {
     api
       .addEditGroupSubject({
-        uuid: editFlow ? match.queryParams.uuid : null,
+        uuid: editFlow ? uuid : null,
         groupSubjectUUID: groupSubject.uuid,
         memberSubjectUUID: memberSubject.value.uuid,
         groupRoleUUID: selectedRole.uuid
@@ -128,7 +141,7 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
 
   return (
     <>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={path} />
       <StyledPaper>
         <StyledInnerContainer>
           <Grid container>
@@ -206,11 +219,4 @@ const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, grou
   );
 };
 
-const mapStateToProps = state => ({
-  subjectTypes: state.dataEntry.metadata.operationalModules.subjectTypes,
-  groupRoles: state.dataEntry.subjectProfile.subjectProfile.roles,
-  groupSubject: state.dataEntry.subjectProfile.subjectProfile,
-  memberGroupSubjects: state.dataEntry.subjectProfile.groupMembers
-});
-
-export default withRouter(withParams(connect(mapStateToProps)(GroupMembershipAddEdit)));
+export default GroupMembershipAddEdit;

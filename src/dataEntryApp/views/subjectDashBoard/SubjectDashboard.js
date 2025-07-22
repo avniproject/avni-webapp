@@ -1,6 +1,8 @@
 import { Fragment, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Paper } from "@mui/material";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import ProfileDetails from "./components/ProfileDetails";
 import SubjectDashboardTabs from "./components/SubjectDashboardTabs";
 import {
@@ -11,9 +13,6 @@ import {
   loadSubjectDashboard
 } from "../../reducers/subjectDashboardReducer";
 import { getSubjectProgram } from "../../reducers/programSubjectDashboardReducer";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 
@@ -23,32 +22,32 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   flexGrow: 1
 }));
 
-const SubjectDashboard = ({
-  match,
-  loadSubjectDashboard,
-  subjectProfile,
-  subjectGeneral,
-  getSubjectProgram,
-  subjectProgram,
-  msgs,
-  voidSubject,
-  unVoidSubject,
-  load,
-  registrationForm,
-  tab,
-  tabsStatus,
-  getGroupMembers,
-  groupMembers,
-  voidError,
-  clearVoidServerError,
-  unVoidErrorKey
-}) => {
+const SubjectDashboard = ({ tab }) => {
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  // Get UUID from search params
+  const uuid = searchParams.get("uuid");
+
+  // Use modern Redux hooks
+  const unVoidErrorKey = useSelector(state => state.dataEntry.subjectProfile.unVoidErrorKey);
+  const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+  const subjectGeneral = useSelector(state => state.dataEntry.subjectGenerel.subjectGeneral);
+  const subjectProgram = useSelector(state => state.dataEntry.subjectProgram.subjectProgram);
+  const load = useSelector(state => state.dataEntry.subjectProfile.dashboardLoaded);
+  const registrationForm = useSelector(state => state.dataEntry.registration.registrationForm);
+  const tabsStatus = useSelector(state => state.dataEntry.subjectProfile.tabsStatus);
+  const groupMembers = useSelector(state => state.dataEntry.subjectProfile.groupMembers);
+  const voidError = useSelector(state => state.dataEntry.subjectProfile.voidError);
+  const msgs = useSelector(state => state.dataEntry.msgs);
+
   let paperInfo;
 
   const handleUpdateComponent = () => {
     (async function fetchData() {
       await setTimeout(() => {
-        getSubjectProgram(match.queryParams.uuid);
+        dispatch(getSubjectProgram(uuid));
       }, 500);
     })();
   };
@@ -56,7 +55,7 @@ const SubjectDashboard = ({
   if (subjectProfile !== undefined) {
     paperInfo = (
       <StyledPaper elevation={2}>
-        <ProfileDetails profileDetails={subjectProfile} subjectUuid={match.queryParams.uuid} />
+        <ProfileDetails profileDetails={subjectProfile} subjectUuid={uuid} />
         <SubjectDashboardTabs
           unVoidErrorKey={unVoidErrorKey}
           profile={subjectProfile}
@@ -64,14 +63,14 @@ const SubjectDashboard = ({
           program={subjectProgram}
           msgs={msgs}
           handleUpdateComponent={handleUpdateComponent}
-          voidSubject={voidSubject}
+          voidSubject={subjectUuid => dispatch(voidSubject(subjectUuid))}
           voidError={voidError}
-          clearVoidServerError={clearVoidServerError}
-          unVoidSubject={unVoidSubject}
+          clearVoidServerError={() => dispatch(clearVoidServerError())}
+          unVoidSubject={subjectUuid => dispatch(unVoidSubject(subjectUuid))}
           registrationForm={registrationForm}
           tab={tab}
           tabsStatus={tabsStatus}
-          getGroupMembers={getGroupMembers}
+          getGroupMembers={subjectUuid => dispatch(getGroupMembers(subjectUuid))}
           groupMembers={groupMembers}
         />
       </StyledPaper>
@@ -79,45 +78,18 @@ const SubjectDashboard = ({
   }
 
   useEffect(() => {
-    loadSubjectDashboard(match.queryParams.uuid);
-  }, []);
+    if (uuid) {
+      dispatch(loadSubjectDashboard(uuid));
+    }
+  }, [dispatch, uuid]);
 
   return (
     <Fragment>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={location.pathname} />
       {paperInfo}
       <CustomizedBackdrop load={load} />
     </Fragment>
   );
 };
 
-const mapStateToProps = state => ({
-  unVoidErrorKey: state.dataEntry.subjectProfile.unVoidErrorKey,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
-  subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
-  load: state.dataEntry.subjectProfile.dashboardLoaded,
-  registrationForm: state.dataEntry.registration.registrationForm,
-  tabsStatus: state.dataEntry.subjectProfile.tabsStatus,
-  groupMembers: state.dataEntry.subjectProfile.groupMembers,
-  voidError: state.dataEntry.subjectProfile.voidError,
-  msgs: state.dataEntry.msgs
-});
-
-const mapDispatchToProps = {
-  getSubjectProgram,
-  getGroupMembers,
-  voidSubject,
-  unVoidSubject,
-  clearVoidServerError,
-  loadSubjectDashboard
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(SubjectDashboard)
-  )
-);
+export default SubjectDashboard;

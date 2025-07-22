@@ -1,55 +1,61 @@
-import { Fragment, Component } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { Confirm, crudUpdate } from "react-admin";
+import { useDataProvider, useNotify, useRefresh, Confirm } from "react-admin";
 import { Button } from "@mui/material";
 import Colors from "../../dataEntryApp/Colors";
 
-class EnableDisableButton extends Component {
-  static propTypes = {
-    disabled: PropTypes.bool.isRequired
+const EnableDisableButton = ({ record, resource, disabled }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dataProvider = useDataProvider();
+  const notify = useNotify();
+  const refresh = useRefresh();
+
+  const handleClick = () => {
+    setIsOpen(true);
   };
 
-  state = {
-    isOpen: false
+  const handleDialogClose = () => {
+    setIsOpen(false);
   };
 
-  handleClick = () => {
-    this.setState({ isOpen: true });
+  const handleConfirm = async () => {
+    try {
+      await dataProvider.update(resource, {
+        id: `${record.id}/disable?disable=${!disabled}`,
+        previousData: record,
+        data: record
+      });
+      notify(`${disabled ? "Enabled" : "Disabled"} successfully`, { type: "info" });
+      refresh();
+    } catch (error) {
+      notify(`Error: ${error.message}`, { type: "warning" });
+    } finally {
+      setIsOpen(false);
+    }
   };
 
-  handleDialogClose = () => {
-    this.setState({ isOpen: false });
-  };
+  const buttonLabel = disabled ? "Enable user" : "Disable user";
 
-  handleConfirm = () => {
-    const { basePath, crudUpdate, record, resource, disabled } = this.props;
-    // HACK: passing request param appended in id.
-    crudUpdate(`${resource}`, `${record.id}/disable?disable=${!disabled}`, record, record, basePath, basePath);
-    this.setState({ isOpen: true });
-  };
+  return (
+    <>
+      <Button onClick={handleClick} style={{ color: Colors.ValidationError }}>
+        {buttonLabel}
+      </Button>
+      <Confirm
+        isOpen={isOpen}
+        title={`${buttonLabel} ${record.username}`}
+        content={`Are you sure you want to ${buttonLabel}?`}
+        onConfirm={handleConfirm}
+        onClose={handleDialogClose}
+      />
+    </>
+  );
+};
 
-  render() {
-    const { disabled } = this.props;
-    const buttonLabel = disabled ? "Enable user" : "Disable user";
-    return (
-      <Fragment>
-        <Button onClick={this.handleClick} style={{ color: Colors.ValidationError }}>
-          {buttonLabel}
-        </Button>
-        <Confirm
-          isOpen={this.state.isOpen}
-          title={`${buttonLabel} ${this.props.record.username}`}
-          content={`Are you sure you want to ${buttonLabel} ?`}
-          onConfirm={this.handleConfirm}
-          onClose={this.handleDialogClose}
-        />
-      </Fragment>
-    );
-  }
-}
+EnableDisableButton.propTypes = {
+  record: PropTypes.object.isRequired,
+  resource: PropTypes.string.isRequired,
+  disabled: PropTypes.bool.isRequired
+};
 
-export default connect(
-  null,
-  { crudUpdate }
-)(EnableDisableButton);
+export default EnableDisableButton;

@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
 import { Dialog, DialogActions, DialogTitle, LinearProgress, Box, IconButton } from "@mui/material";
 
 import { Close } from "@mui/icons-material";
@@ -61,6 +59,4 @@ const AddContactGroupUser = ({ contactGroupId, onClose, onUserAdd }) => {
   );
 };
 
-const mapStateToProps = state => ({});
-
-export default withRouter(connect(mapStateToProps)(AddContactGroupUser));
+export default AddContactGroupUser;

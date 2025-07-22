@@ -14,7 +14,6 @@ import {
   required,
   AutocompleteInput
 } from "react-admin";
-import { change } from "redux-form";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
@@ -31,7 +30,7 @@ const Title = ({ record }) => {
 };
 
 export const IdentifierUserAssignmentList = props => (
-  <List {...props} bulkActions={false} title={"Identifier User Assignment"}>
+  <List {...props} title={"Identifier User Assignment"}>
     <Datagrid rowClick="show">
       <TextField source="name" label="Source name" />
       <TextField source="userName" label="User name" />
@@ -65,8 +64,8 @@ export const UserSelectInput = props => {
 
 const IdentifierUserAssignmentForm = props => (
   <SimpleForm {...props} redirect="show">
-    <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_USER_NAME"} {...props}>
-      {({ formData, dispatch, ...rest }) => (
+    <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_USER_NAME"}>
+      {({ formData, ...rest }) => (
         <Fragment>
           <ReferenceInput
             perPage={10}
@@ -75,9 +74,6 @@ const IdentifierUserAssignmentForm = props => (
             label="Which user?"
             validate={[required()]}
             filterToQuery={searchText => ({ name: searchText })}
-            onChange={(e, newVal) => {
-              dispatch(change(newVal));
-            }}
             {...rest}
           >
             <UserSelectInput source="name" />
@@ -85,17 +81,14 @@ const IdentifierUserAssignmentForm = props => (
         </Fragment>
       )}
     </AvniFormDataConsumer>
-    <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_SOURCE"} {...props}>
-      {({ formData, dispatch, ...rest }) => (
+    <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_SOURCE"}>
+      {({ formData, ...rest }) => (
         <Fragment>
           <ReferenceInput
             source="identifierSourceId"
             reference="identifierSource"
             label="Which IdentifierSource?"
             validate={[required()]}
-            onChange={(e, newVal) => {
-              dispatch(change(newVal));
-            }}
             {...rest}
           >
             <SelectInput source="name" />
@@ -110,7 +103,7 @@ const IdentifierUserAssignmentForm = props => (
 
 export const IdentifierUserAssignmentEdit = props => {
   return (
-    <Edit undoable={false} title="Edit Identifier User Assignment" {...props}>
+    <Edit title="Edit Identifier User Assignment" mutationMode="pessimistic" {...props}>
       <IdentifierUserAssignmentForm />
     </Edit>
   );

@@ -1,7 +1,6 @@
-import { connect } from "react-redux";
 import { MenuItem } from "@mui/material";
 import { Logout, Person, Lock } from "@mui/icons-material";
-import { logout } from "../../rootApp/ducks";
+import { useLogout } from "react-admin";
 import _ from "lodash";
 import { format, isValid } from "date-fns";
 import ApplicationContext from "../../ApplicationContext";
@@ -22,14 +21,18 @@ const styles = {
   }
 };
 
-const LogoutButton = ({ doLogout, username, onChangePassword = _.noop, lastSessionTimeMillis }) => {
+const LogoutButton = ({ username, onChangePassword = _.noop, lastSessionTimeMillis }) => {
+  const logout = useLogout();
+
   return (
     <div>
       <span style={styles.userIcon}>
-        <Person color={"primary"} /> {username}
+        <Person color="primary" /> {username}
       </span>
-      <MenuItem onClick={onChangePassword}>Change Password</MenuItem>
-      <MenuItem onClick={doLogout}>
+      <MenuItem onClick={onChangePassword}>
+        <Lock /> Change Password
+      </MenuItem>
+      <MenuItem onClick={() => logout()}>
         <Logout /> Logout
       </MenuItem>
       {lastSessionTimeMillis > 0 && (
@@ -38,11 +41,7 @@ const LogoutButton = ({ doLogout, username, onChangePassword = _.noop, lastSessi
         </span>
       )}
       {ApplicationContext.isDevEnv() && (
-        <MenuItem
-          onClick={() => {
-            navigator.clipboard.writeText(httpClient.getIdToken());
-          }}
-        >
+        <MenuItem onClick={() => navigator.clipboard.writeText(httpClient.getIdToken())}>
           <Lock /> Copy Token
         </MenuItem>
       )}
@@ -50,14 +49,4 @@ const LogoutButton = ({ doLogout, username, onChangePassword = _.noop, lastSessi
   );
 };
 
-const mapStateToProps = state => ({
-  username: state.app.authSession.username
-});
-const mapDispatchToProps = dispatch => ({
-  doLogout: () => dispatch(logout())
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(LogoutButton);
+export default LogoutButton;

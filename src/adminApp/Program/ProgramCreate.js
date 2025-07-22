@@ -1,4 +1,4 @@
-import { Redirect, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import Box from "@mui/material/Box";
@@ -13,11 +13,13 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { identity } from "lodash";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import Save from "@mui/icons-material/Save";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
-const ProgramCreate = ({ organisationConfig }) => {
+const ProgramCreate = () => {
+  const navigate = useNavigate();
+  const organisationConfig = useSelector(state => state.app.organisationConfig);
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [errors, setErrors] = useState(new Map());
   const [msgError, setMsgError] = useState("");
@@ -37,6 +39,12 @@ const ProgramCreate = ({ organisationConfig }) => {
     getMessageTemplates(rulesDispatch);
     return identity;
   }, []);
+
+  useEffect(() => {
+    if (saved && id) {
+      navigate(`/appDesigner/program/${id}/show`);
+    }
+  }, [saved, id, navigate]);
 
   const onRulesChange = rules => {
     rulesDispatch({ type: "setRules", payload: rules });
@@ -77,54 +85,49 @@ const ProgramCreate = ({ organisationConfig }) => {
   };
 
   return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
-        }}
-      >
-        <DocumentationContainer filename={"Program.md"}>
-          <Title title={"Create Program "} />
-          <div className="container" style={{ float: "left" }}>
-            <form onSubmit={onSubmit}>
-              <EditProgramFields
-                program={program}
-                errors={errors}
-                formList={formList}
-                subjectTypes={subjectTypes}
-                dispatch={dispatch}
-                onSubjectTypeChange={setSubjectType}
-                subjectType={subjectType}
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
+      <DocumentationContainer filename={"Program.md"}>
+        <Title title={"Create Program "} />
+        <div className="container" style={{ float: "left" }}>
+          <form onSubmit={onSubmit}>
+            <EditProgramFields
+              program={program}
+              errors={errors}
+              formList={formList}
+              subjectTypes={subjectTypes}
+              dispatch={dispatch}
+              onSubjectTypeChange={setSubjectType}
+              subjectType={subjectType}
+            />
+            {organisationConfig && organisationConfig.enableMessaging ? (
+              <MessageRules
+                templateFetchError={templateFetchError}
+                rules={rules}
+                templates={templates}
+                onChange={onRulesChange}
+                entityType={entityType}
+                entityTypeId={program.programId}
+                msgError={msgError}
               />
-              {organisationConfig && organisationConfig.enableMessaging ? (
-                <MessageRules
-                  templateFetchError={templateFetchError}
-                  rules={rules}
-                  templates={templates}
-                  onChange={onRulesChange}
-                  entityType={entityType}
-                  entityTypeId={program.programId}
-                  msgError={msgError}
-                />
-              ) : (
-                <></>
-              )}
-              <br />
-              <br />
-              <Button color="primary" variant="contained" type="submit" startIcon={<Save />}>
-                Save
-              </Button>
-            </form>
-          </div>
-        </DocumentationContainer>
-      </Box>
-      {saved && <Redirect to={"/appDesigner/program/" + id + "/show"} />}
-    </>
+            ) : (
+              <></>
+            )}
+            <br />
+            <br />
+            <Button color="primary" variant="contained" type="submit" startIcon={<Save />}>
+              Save
+            </Button>
+          </form>
+        </div>
+      </DocumentationContainer>
+    </Box>
   );
 };
-const mapStateToProps = state => ({
-  organisationConfig: state.app.organisationConfig
-});
-export default withRouter(connect(mapStateToProps)(ProgramCreate));
+
+export default ProgramCreate;

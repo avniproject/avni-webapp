@@ -14,7 +14,8 @@ import {
   SimpleForm,
   SimpleShowLayout,
   TextField,
-  Toolbar
+  Toolbar,
+  useRecordContext
 } from "react-admin";
 import { None } from "../common/components/utils";
 import { isNil } from "lodash";
@@ -31,7 +32,7 @@ export const LocationTypeList = props => (
     <Datagrid rowClick="show">
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />
-      <ReferenceField label="Parent" source="parentId" reference="addressLevelType" linkType="show" allowEmpty>
+      <ReferenceField label="Parent" source="parentId" reference="addressLevelType" link="show">
         <TextField source="name" />
       </ReferenceField>
     </Datagrid>
@@ -43,12 +44,22 @@ const ParentReferenceField = ({ showToolTip, ...props }) => {
   return isNil(props.record.parentId) ? (
     <None />
   ) : (
-    <Container toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"} styles={{ paddingTop: 10, marginRight: "10px" }}>
-      <ReferenceField {...props} source="parentId" linkType="show" reference="addressLevelType" allowEmpty>
+    <Container toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"} sx={{ pt: 10, mr: "10px" }}>
+      <ReferenceField {...props} source="parentId" link="show" reference="addressLevelType">
         <FunctionField render={record => record.name} />
       </ReferenceField>
     </Container>
   );
+};
+
+const CreatedAuditField = () => {
+  const record = useRecordContext();
+  return createdAudit(record);
+};
+
+const ModifiedAuditField = () => {
+  const record = useRecordContext();
+  return modifiedAudit(record);
 };
 
 ParentReferenceField.defaultProps = {
@@ -61,8 +72,8 @@ export const LocationTypeDetail = props => (
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />
       <ParentReferenceField label="Parent Type" showToolTip={false} />
-      <FunctionField label="Created" render={audit => createdAudit(audit)} />
-      <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
+      <CreatedAuditField label="Created" />
+      <ModifiedAuditField label="Modified" />
       <TextField source="uuid" label="UUID" />
     </SimpleShowLayout>
   </Show>
@@ -71,7 +82,7 @@ export const LocationTypeDetail = props => (
 const CreateEditToolbar = ({ edit, ...props }) => (
   <Toolbar {...props}>
     <SaveButton />
-    {edit && <DeleteButton undoable={false} style={{ marginLeft: "auto" }} />}
+    {edit && <DeleteButton undoable={false} sx={{ ml: "auto" }} />}
   </Toolbar>
 );
 

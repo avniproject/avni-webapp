@@ -11,7 +11,7 @@ import { AvniTextField } from "../../../common/components/AvniTextField";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { Title } from "react-admin";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import { sampleCardQuery } from "../../common/SampleRule";
 import { AvniSelect } from "../../../common/components/AvniSelect";
@@ -313,8 +313,8 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             variant={"error"}
           />
         )}
-        {!isNil(id) && <Redirect to={`/appDesigner/reportCard/${id}/show`} />}
-        {redirectAfterDelete && <Redirect to="/appDesigner/reportCard" />}
+        {!isNil(id) && <Navigate to={`/appDesigner/reportCard/${id}/show`} />}
+        {redirectAfterDelete && <Navigate to="/appDesigner/reportCard" />}
       </DocumentationContainer>
     </Box>
   );

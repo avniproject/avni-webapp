@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ChooseSubject from "./ChooseSubject";
 import { Box, LinearProgress, Button } from "@mui/material";
-import { useHistory, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import _ from "lodash";
 import WhatsAppMessagesView from "./WhatsAppMessagesView";
 import ReceiverType from "./ReceiverType";
@@ -16,6 +16,7 @@ const WorkflowStateNames = {
 
 function WhatsAppSubjectsTab({ receiverId }) {
   const [workflowState, setWorkflowState] = useState({ name: WorkflowStateNames.ChooseSubject });
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (receiverId) {
@@ -28,10 +29,11 @@ function WhatsAppSubjectsTab({ receiverId }) {
       );
     }
   }, [receiverId]);
-  const history = useHistory();
+
   const routeToMessages = subject => {
-    history.push(`${BroadcastPath.SubjectFullPath}/${subject.uuid}/messages`);
+    navigate(`${BroadcastPath.SubjectFullPath}/${subject.uuid}/messages`);
   };
+
   return (
     <div className="container">
       {workflowState.name === WorkflowStateNames.Searching && <LinearProgress />}
@@ -51,7 +53,7 @@ function WhatsAppSubjectsTab({ receiverId }) {
             receiverName={workflowState.subject.fullName}
           />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
-            <Button onClick={() => history.push(`${BroadcastPath.SubjectFullPath}`)} variant="outlined">
+            <Button onClick={() => navigate(`${BroadcastPath.SubjectFullPath}`)} variant="outlined">
               Back to search
             </Button>
           </Box>
@@ -61,4 +63,4 @@ function WhatsAppSubjectsTab({ receiverId }) {
   );
 }
 
-export default withRouter(WhatsAppSubjectsTab);
+export default WhatsAppSubjectsTab;

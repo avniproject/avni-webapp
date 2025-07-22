@@ -2,8 +2,7 @@ import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
 import { List, ListItemIcon, ListItemText, Divider } from "@mui/material";
 import { ChevronRight } from "@mui/icons-material";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { InternalLink } from "../../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";
@@ -27,8 +26,9 @@ const StyledDivider = styled(Divider)({
   backgroundColor: "grey"
 });
 
-function NewMenu({ operationalModules, handleClose }) {
+function NewMenu({ handleClose }) {
   const { t } = useTranslation();
+  const operationalModules = useSelector(state => state.dataEntry.metadata.operationalModules);
 
   return (
     <StyledContainer>
@@ -52,8 +52,4 @@ function NewMenu({ operationalModules, handleClose }) {
   );
 }
 
-const mapStateToProps = state => ({
-  operationalModules: state.dataEntry.metadata.operationalModules
-});
-
-export default withRouter(connect(mapStateToProps)(NewMenu));
+export default NewMenu;

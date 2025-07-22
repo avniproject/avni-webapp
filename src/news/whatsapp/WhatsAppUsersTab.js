@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-import { useHistory, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SearchUserAndConfirm from "./SearchUserAndConfirm";
 import { Box, LinearProgress, Button } from "@mui/material";
 import WhatsAppMessagesView from "./WhatsAppMessagesView";
@@ -16,6 +15,8 @@ const WorkflowStateNames = {
 
 function WhatsAppUsersTab({ receiverId }) {
   const [workflowState, setWorkflowState] = useState({ name: WorkflowStateNames.ChooseUser });
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (receiverId) {
       setWorkflowState({ name: WorkflowStateNames.Searching });
@@ -27,15 +28,16 @@ function WhatsAppUsersTab({ receiverId }) {
       );
     }
   }, [receiverId]);
-  const history = useHistory();
+
   const routeToMessages = user => {
-    history.push(`${BroadcastPath.UserFullPath}/${user.id}/messages`);
+    navigate(`${BroadcastPath.UserFullPath}/${user.id}/messages`);
   };
+
   return (
     <div className="container">
       {workflowState.name === WorkflowStateNames.Searching && <LinearProgress />}
       {workflowState.name === WorkflowStateNames.ChooseUser && (
-        <SearchUserAndConfirm onUserSelected={user => routeToMessages(user)} confirmButtonText={"View Messages"} />
+        <SearchUserAndConfirm onUserSelected={routeToMessages} confirmButtonText={"View Messages"} />
       )}
       {workflowState.name === WorkflowStateNames.ViewUserMessages && (
         <div>
@@ -44,8 +46,8 @@ function WhatsAppUsersTab({ receiverId }) {
             receiverType={ReceiverType.User}
             receiverName={workflowState.user.name}
           />
-          <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
-            <Button onClick={() => history.push(`${BroadcastPath.UserFullPath}`)} variant="outlined">
+          <Box sx={{ display: "flex", flexDirection: "row-reverse", mt: 2 }}>
+            <Button onClick={() => navigate(`${BroadcastPath.UserFullPath}`)} variant="outlined">
               Back to search
             </Button>
           </Box>
@@ -55,4 +57,4 @@ function WhatsAppUsersTab({ receiverId }) {
   );
 }
 
-export default withRouter(WhatsAppUsersTab);
+export default WhatsAppUsersTab;

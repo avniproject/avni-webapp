@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Title } from "react-admin";
 import _ from "lodash";
 import UserInfo from "../../common/model/UserInfo";
@@ -53,7 +53,7 @@ const ResourceShowView = ({
       <div className="container" style={{ float: "left" }}>
         {render(resource)}
       </div>
-      {editAlert && <Redirect to={`/appDesigner/${resourceURLName}/${resourceId}`} />}
+      {editAlert && <Navigate to={`/appDesigner/${resourceURLName}/${resourceId}`} />}
     </Box>
   );
 };

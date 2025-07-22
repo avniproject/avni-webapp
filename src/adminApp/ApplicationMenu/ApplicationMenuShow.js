@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
@@ -58,7 +58,7 @@ const ApplicationMenuShow = props => {
             )}
             <SystemInfo {...menuItem} />
           </div>
-          {editAlert && <Redirect to={"/appDesigner/applicationMenu/" + props.match.params.id} />}
+          {editAlert && <Navigate to={"/appDesigner/applicationMenu/" + props.match.params.id} />}
         </Box>
       </>
     )

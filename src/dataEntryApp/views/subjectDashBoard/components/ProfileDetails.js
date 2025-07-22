@@ -18,9 +18,8 @@ import {
 import { useTranslation } from "react-i18next";
 import Modal from "./CommonModal";
 import { getPrograms } from "../../../reducers/programReducer";
-import { Link, withRouter } from "react-router-dom";
-import { connect, useSelector } from "react-redux";
-import { withParams } from "common/components/utils";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { CommentDrawer } from "./comments/CommentDrawer";
 import { Comment } from "@mui/icons-material";
@@ -146,12 +145,21 @@ const StyledProfilePicture = styled(SubjectProfilePicture)({
   width: "auto"
 });
 
-const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match, load, tabsStatus, organisationConfigs }) => {
+const ProfileDetails = ({ profileDetails, subjectUuid }) => {
+  // Use Redux hooks instead of connect()
+  const dispatch = useDispatch();
+  const programs = useSelector(state => state.dataEntry.programs?.programs || "");
+  const load = useSelector(state => state.dataEntry.loadReducer.load);
+  const tabsStatus = useSelector(state => state.dataEntry.subjectProfile.tabsStatus);
+  const organisationConfigs = useSelector(state => state.dataEntry.metadata.organisationConfigs);
+
   const [selectedProgram, setSelectedProgram] = useState("");
   const [openComment, setOpenComment] = useState(false);
   const [errorStatus, setError] = useState(false);
+
   const orgConfig = useSelector(selectOrganisationConfig);
   const enableComment = get(orgConfig, "settings.enableComments", false);
+
   const handleChange = event => {
     setSelectedProgram(event.target.value);
     setError(!event.target.value);
@@ -164,8 +172,8 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
   const { i18n, t } = useTranslation();
 
   useEffect(() => {
-    getPrograms(subjectUuid);
-  }, []);
+    dispatch(getPrograms(subjectUuid));
+  }, [dispatch, subjectUuid]);
 
   const close = () => {
     return true;
@@ -319,22 +327,4 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
   );
 };
 
-const mapStateToProps = state => ({
-  programs: state.dataEntry.programs ? state.dataEntry.programs.programs : "",
-  load: state.dataEntry.loadReducer.load,
-  tabsStatus: state.dataEntry.subjectProfile.tabsStatus,
-  organisationConfigs: state.dataEntry.metadata.organisationConfigs
-});
-
-const mapDispatchToProps = {
-  getPrograms
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(ProfileDetails)
-  )
-);
+export default ProfileDetails;

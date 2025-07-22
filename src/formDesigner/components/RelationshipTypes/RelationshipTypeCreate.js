@@ -8,7 +8,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import _, { get, isEmpty } from "lodash";
 import { SaveComponent } from "../../../common/components/SaveComponent";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 
 function RelationshipTypeCreate() {
@@ -136,7 +136,7 @@ function RelationshipTypeCreate() {
             disabledFlag={!isIndividualSubjectTypeAvailable}
             styleClass={{ marginTop: "10px" }}
           />
-          {redirect && <Redirect to={"/appDesigner/relationshipType/"} />}
+          {redirect && <Navigate to={"/appDesigner/relationshipType/"} />}
         </DocumentationContainer>
       </Box>
     </>

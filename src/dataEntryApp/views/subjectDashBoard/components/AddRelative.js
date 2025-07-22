@@ -18,9 +18,8 @@ import {
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getRelationshipTypes, saveRelationShip } from "../../../reducers/relationshipReducer";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
-import { useHistory, withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { ModelGeneral as General } from "avni-models";
 import FindRelative from "../components/FindRelative";
 import { LineBreak } from "../../../../common/components/utils";
@@ -125,42 +124,48 @@ const StyledLabelTypography = styled(Typography)({
   color: "rgba(0, 0, 0, 0.54)"
 });
 
-const StyledHorizontalLine = styled("hr")({
-  padding: "0px",
-  marginTop: "0px",
-  marginBottom: "0px",
-  border: "1px solid lightgray",
-  width: "100%"
-});
-
 const StyledErrorTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
   marginTop: theme.spacing(1.25)
 }));
 
-const AddRelative = ({
-  match,
-  getRelationshipTypes,
-  relationshipTypes,
-  saveRelationShip,
-  getSubjectProfile,
-  subjectProfile,
-  operationalModules,
-  getGenders,
-  genders,
-  getOrganisationConfig,
-  organisationConfigs,
-  searchRequest
-}) => {
-  useEffect(() => {
-    getSubjectProfile(match.queryParams.uuid);
-    getRelationshipTypes();
-    getOrganisationConfig();
-    getGenders();
-  }, []);
-
+const AddRelative = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const params = useParams();
+  const location = useLocation();
   const { t } = useTranslation();
-  const history = useHistory();
+
+  // Get query params from URL
+  const searchParams = new URLSearchParams(location.search);
+  const uuid = searchParams.get("uuid");
+
+  // Redux selectors
+  const subjectTypes = useSelector(state => state.dataEntry.metadata.operationalModules.subjectTypes);
+  const relationshipTypes = useSelector(state => state.dataEntry.relations.relationshipTypes);
+  const RelationsData = useSelector(state => state.dataEntry.relations.relationData);
+  const subjects = useSelector(state => state.dataEntry.search.subjects);
+  const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+  const searchRequest = useSelector(state => state.dataEntry.searchFilterReducer.request);
+  const operationalModules = useSelector(state => state.dataEntry.metadata.operationalModules);
+  const genders = useSelector(state => state.dataEntry.metadata.genders);
+  const organisationConfigs = useSelector(state => state.dataEntry.metadata.organisationConfigs);
+
+  // Create match object for compatibility
+  const match = {
+    queryParams: { uuid },
+    path: location.pathname
+  };
+
+  useEffect(() => {
+    if (uuid) {
+      dispatch(getSubjectProfile(uuid));
+      dispatch(getRelationshipTypes());
+      dispatch(getOrganisationConfig());
+      dispatch(getGenders());
+    }
+  }, [dispatch, uuid]);
+
   const selectedRelative = head(JSON.parse(sessionStorage.getItem("selectedRelativeslist")));
   const [error, setError] = useState();
   const [state, setState] = useState({
@@ -199,23 +204,23 @@ const AddRelative = ({
     setRelationData({
       ...relationData,
       relationshipTypeUUID: relationshipType.uuid,
-      individualAUUID: isReverseRelation ? selectedRelative.uuid : match.queryParams.uuid,
-      individualBUUID: isReverseRelation ? match.queryParams.uuid : selectedRelative.uuid
+      individualAUUID: isReverseRelation ? selectedRelative.uuid : uuid,
+      individualBUUID: isReverseRelation ? uuid : selectedRelative.uuid
     });
   };
 
   const addRelatives = () => {
-    saveRelationShip(relationData);
+    dispatch(saveRelationShip(relationData));
     sessionStorage.removeItem("selectedRelativeslist");
     (async function fetchData() {
-      await getSubjectProfile(match.queryParams.uuid);
+      await dispatch(getSubjectProfile(uuid));
     })();
-    history.push(`/app/subject/subjectProfile?uuid=${match.queryParams.uuid}`);
+    navigate(`/app/subject/subjectProfile?uuid=${uuid}`);
   };
 
   const cancelRelation = () => {
     sessionStorage.removeItem("selectedRelativeslist");
-    history.push(`/app/subject/subjectProfile?uuid=${match.queryParams.uuid}`);
+    navigate(`/app/subject/subjectProfile?uuid=${uuid}`);
   };
 
   return subjectProfile ? (
@@ -345,31 +350,4 @@ const AddRelative = ({
   );
 };
 
-const mapStateToProps = state => ({
-  subjectTypes: state.dataEntry.metadata.operationalModules.subjectTypes,
-  relationshipTypes: state.dataEntry.relations.relationshipTypes,
-  RelationsData: state.dataEntry.relations.relationData,
-  subjects: state.dataEntry.search.subjects,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  searchRequest: state.dataEntry.searchFilterReducer.request,
-  operationalModules: state.dataEntry.metadata.operationalModules,
-  genders: state.dataEntry.metadata.genders,
-  organisationConfigs: state.dataEntry.metadata.organisationConfigs
-});
-
-const mapDispatchToProps = {
-  getRelationshipTypes,
-  saveRelationShip,
-  getSubjectProfile,
-  getGenders,
-  getOrganisationConfig
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(AddRelative)
-  )
-);
+export default AddRelative;

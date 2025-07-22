@@ -1,11 +1,14 @@
 import { first } from "lodash";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import SelectSubject from "../../../../common/components/subject/SelectSubject";
 
 const FindRelativeTable = ({ subjectData, errormsg }) => {
   const { t } = useTranslation();
+  const Relations = useSelector(state => state.dataEntry.relations);
+  const subjects = useSelector(state => state.dataEntry.search.subjects);
+  const searchParams = useSelector(state => state.dataEntry.search.subjectSearchParams);
+  const subjectTypes = useSelector(state => first(state.dataEntry.metadata.operationalModules.subjectTypes));
 
   const onSelectedItem = row => {
     sessionStorage.setItem("selectedRelative", JSON.stringify(row));
@@ -14,16 +17,4 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
   return <SelectSubject t={t} errormsg={errormsg} subjectData={subjectData} onSelectedItem={onSelectedItem} />;
 };
 
-const mapStateToProps = state => ({
-  Relations: state.dataEntry.relations,
-  subjects: state.dataEntry.search.subjects,
-  searchParams: state.dataEntry.search.subjectSearchParams,
-  subjectTypes: first(state.dataEntry.metadata.operationalModules.subjectTypes)
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(FindRelativeTable)
-);
+export default FindRelativeTable;

@@ -1,66 +1,48 @@
-import { Component, Fragment } from "react";
-import { connect } from "react-redux";
-import { fetchEnd, fetchStart, showNotification, Button } from "react-admin";
+import { useState, Fragment } from "react";
+import { useNotify, useRedirect, useResourceContext, useRecordContext, Button } from "react-admin";
 import { CircularProgress } from "@mui/material";
-
 import EtlJobService from "./service/etl/EtlJobService";
-import { Redirect } from "react-router-dom";
 
-class ToggleAnalyticsButton extends Component {
-  state = {
-    busy: false,
-    error: false,
-    actionCompleted: false
+const ToggleAnalyticsButton = () => {
+  const [busy, setBusy] = useState(false);
+  const [actionCompleted, setActionCompleted] = useState(false);
+
+  const notify = useNotify();
+  const redirect = useRedirect();
+  const resource = useResourceContext();
+  const record = useRecordContext(); // assumes button is rendered inside a RecordContextProvider
+
+  if (!record) return null;
+
+  const handleClick = async () => {
+    setBusy(true);
+
+    try {
+      const toggleFn = record.analyticsDataSyncActive ? EtlJobService.disableJob : EtlJobService.createOrEnableJob;
+
+      await toggleFn(record.uuid, resource);
+      setActionCompleted(true);
+    } catch (error) {
+      notify(error?.message || "Error toggling analytics sync", { type: "error" });
+    } finally {
+      setBusy(false);
+    }
   };
 
-  async handleClick() {
-    this.setState({ busy: true });
-
-    const { fetchStart, fetchEnd, showNotification, record, resource } = this.props;
-
-    // Dispatch an action letting react-admin know a API call is ongoing
-    fetchStart();
-
-    // As we want to know when the new post has been created in order to close the modal, we use the
-    // dataProvider directly
-    const toggleFn = record.analyticsDataSyncActive ? EtlJobService.disableJob : EtlJobService.createOrEnableJob;
-    toggleFn(record.uuid, resource)
-      .catch(error => {
-        showNotification(error.message, "error");
-      })
-      .finally(() => {
-        // Dispatch an action letting react-admin know a API call has ended
-        fetchEnd();
-        this.setState({ busy: false, actionCompleted: true });
-      });
+  if (actionCompleted) {
+    redirect(`/${resource}/${record.id}/show`);
+    return null;
   }
 
-  render() {
-    const { resource, record } = this.props;
-    const { analyticsDataSyncActive, id } = record;
-    const { busy, actionCompleted } = this.state;
+  const label = record.analyticsDataSyncActive ? "Disable" : "Enable";
 
-    if (actionCompleted) return <Redirect to={`/admin/${resource}/${id}/show`} />;
-
-    const label = analyticsDataSyncActive ? "Disable" : "Enable";
-
-    return (
-      <Fragment>
-        <Button disabled={busy} onClick={() => this.handleClick()} label={`${label} - Analytics Data Sync`} variant={"contained"}>
-          {busy && <CircularProgress />}
-        </Button>
-      </Fragment>
-    );
-  }
-}
-
-const mapDispatchToProps = {
-  fetchEnd,
-  fetchStart,
-  showNotification
+  return (
+    <Fragment>
+      <Button disabled={busy} onClick={handleClick} label={`${label} - Analytics Data Sync`} variant="contained">
+        {busy && <CircularProgress size={16} />}
+      </Button>
+    </Fragment>
+  );
 };
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(ToggleAnalyticsButton);
+export default ToggleAnalyticsButton;

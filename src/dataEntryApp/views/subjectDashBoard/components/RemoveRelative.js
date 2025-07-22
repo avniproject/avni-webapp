@@ -1,9 +1,9 @@
 import { styled } from "@mui/material/styles";
 import { Grid, DialogContent, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { first, noop } from "lodash";
-import { useHistory, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Modal from "./CommonModal";
 import { removeRelationShip, saveRelationShip } from "../../../reducers/relationshipReducer";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
@@ -55,7 +55,13 @@ const cancelButtonStyle = {
 
 const RemoveRelative = props => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const Relations = useSelector(state => state.dataEntry.relations);
+  const subjects = useSelector(state => state.dataEntry.search.subjects);
+  const searchParams = useSelector(state => state.dataEntry.search.subjectSearchParams);
+  const subjectTypes = useSelector(state => first(state.dataEntry.metadata.operationalModules.subjectTypes));
 
   const close = () => {};
 
@@ -67,13 +73,12 @@ const RemoveRelative = props => {
       uuid: props.relationuuid,
       voided: true
     };
-    props.saveRelationShip(RelationData);
-    (async function fetchData() {
-      await setTimeout(() => {
-        props.getSubjectProfile(props.relationAuuid);
-        history.push(`/app/subject/subjectProfile?uuid=${props.relationAuuid}`);
-      }, 500);
-    })();
+    dispatch(saveRelationShip(RelationData));
+
+    setTimeout(() => {
+      dispatch(getSubjectProfile(props.relationAuuid));
+      navigate(`/app/subject/subjectProfile?uuid=${props.relationAuuid}`);
+    }, 500);
   };
 
   const searchContent = (
@@ -115,22 +120,4 @@ const RemoveRelative = props => {
   );
 };
 
-const mapStateToProps = state => ({
-  Relations: state.dataEntry.relations,
-  subjects: state.dataEntry.search.subjects,
-  searchParams: state.dataEntry.search.subjectSearchParams,
-  subjectTypes: first(state.dataEntry.metadata.operationalModules.subjectTypes)
-});
-
-const mapDispatchToProps = {
-  removeRelationShip,
-  saveRelationShip,
-  getSubjectProfile
-};
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(RemoveRelative)
-);
+export default RemoveRelative;

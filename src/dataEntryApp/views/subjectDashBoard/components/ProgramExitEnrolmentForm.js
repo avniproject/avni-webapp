@@ -1,4 +1,4 @@
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import { ObservationsHolder } from "avni-models";
 import {
@@ -9,41 +9,35 @@ import {
   onNext,
   onPrevious
 } from "dataEntryApp/reducers/programEnrolReducer";
-import { withRouter } from "react-router-dom";
 
-const mapFormStateToProps = state => {
-  const enrolmentState = selectProgramEnrolmentState(state);
-  return {
+const ProgramExitEnrolmentForm = () => {
+  const dispatch = useDispatch();
+  const enrolmentState = useSelector(selectProgramEnrolmentState);
+  const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+
+  const formProps = {
     form: enrolmentState.enrolForm,
-    subject: state.dataEntry.subjectProfile.subjectProfile,
+    subject: subjectProfile,
     observations: enrolmentState.programEnrolment.programExitObservations,
     obsHolder: new ObservationsHolder(enrolmentState.programEnrolment.programExitObservations),
     title: `New Enrolment`,
     saved: enrolmentState.saved,
-    onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
+    onSaveGoto: "/app/subject?uuid=" + subjectProfile.uuid,
     validationResults: enrolmentState.validationResults,
     filteredFormElements: enrolmentState.filteredFormElements,
     entity: enrolmentState.programEnrolment,
     formElementGroup: enrolmentState.formElementGroup,
     onSummaryPage: enrolmentState.onSummaryPage,
     wizard: enrolmentState.wizard,
-    saveErrorMessageKey: enrolmentState.enrolmentSaveErrorKey
+    saveErrorMessageKey: enrolmentState.enrolmentSaveErrorKey,
+    updateObs: (formElement, value) => dispatch(updateObs(formElement, value)),
+    onSave: () => dispatch(saveProgramEnrolment(true)),
+    setValidationResults: results => dispatch(setValidationResults(results)),
+    onNext: () => dispatch(onNext(true)),
+    onPrevious: () => dispatch(onPrevious(true))
   };
-};
 
-const mapFormDispatchToProps = {
-  updateObs,
-  onSave: () => saveProgramEnrolment(true),
-  setValidationResults,
-  onNext: () => onNext(true),
-  onPrevious: () => onPrevious(true)
+  return <FormWizard {...formProps} />;
 };
-
-const ProgramExitEnrolmentForm = withRouter(
-  connect(
-    mapFormStateToProps,
-    mapFormDispatchToProps
-  )(FormWizard)
-);
 
 export default ProgramExitEnrolmentForm;

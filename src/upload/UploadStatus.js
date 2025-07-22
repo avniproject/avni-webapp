@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { Table, TableBody, TableCell, TableHead, TableRow, Box, TablePagination, Button } from "@mui/material";
 import { Refresh } from "@mui/icons-material";
 import { getStatuses } from "./reducers";
@@ -31,20 +30,30 @@ const StyledDateCell = styled(TableCell)({
   minWidth: 160
 });
 
-const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadTypes = new UploadTypes() }) => {
+const UploadStatus = () => {
+  const dispatch = useDispatch();
+  const statuses = useSelector(state => state.bulkUpload.statuses);
+  const page = useSelector(state => state.bulkUpload.page);
+  const viewVersion = useSelector(state => state.admin.ui.viewVersion);
+  const uploadTypes = useSelector(state => state.bulkUpload.uploadTypes) || new UploadTypes();
+
   useEffect(() => {
-    getStatuses(0);
-  }, [viewVersion]);
+    dispatch(getStatuses(0));
+  }, [dispatch, viewVersion]);
 
   const changePage = (event, newPage) => {
-    getStatuses(newPage);
+    dispatch(getStatuses(newPage));
   };
 
   const formatDate = date => (isNil(date) || !isValid(new Date(date)) ? date : format(new Date(date), "yyyy-MM-dd HH:mm"));
 
+  const handleRefresh = () => {
+    dispatch(getStatuses(page));
+  };
+
   return (
     <StyledBox>
-      <StyledButton color="primary" variant="contained" onClick={() => getStatuses(page)}>
+      <StyledButton color="primary" variant="contained" onClick={handleRefresh}>
         <Refresh style={{ marginRight: 5 }} />
         {"REFRESH STATUS"}
       </StyledButton>
@@ -115,7 +124,7 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
         component="div"
         count={get(statuses, "totalElements") || 0}
         rowsPerPage={5}
-        page={page}
+        page={page || 0}
         backIconButtonProps={{ "aria-label": "previous page" }}
         nextIconButtonProps={{ "aria-label": "next page" }}
         onPageChange={changePage}
@@ -124,16 +133,4 @@ const UploadStatus = ({ viewVersion, statuses, getStatuses, page = 0, uploadType
   );
 };
 
-const mapStateToProps = state => ({
-  statuses: state.bulkUpload.statuses,
-  page: state.bulkUpload.page,
-  viewVersion: state.admin.ui.viewVersion,
-  uploadTypes: state.bulkUpload.uploadTypes
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getStatuses }
-  )(UploadStatus)
-);
+export default UploadStatus;

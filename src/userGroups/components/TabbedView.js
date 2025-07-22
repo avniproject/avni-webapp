@@ -2,8 +2,6 @@ import PropTypes from "prop-types";
 import { AppBar, Tabs, Tab, Typography, Box } from "@mui/material";
 import GroupUsers from "./GroupUsers";
 import GroupPrivileges from "./GroupPrivileges";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
 import GroupDashboards from "./GroupDashboards";
 import { useState } from "react";
 
@@ -100,6 +98,4 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, ...props }) => {
   );
 };
 
-const mapStateToProps = state => ({});
-
-export default withRouter(connect(mapStateToProps)(TabView));
+export default TabView;

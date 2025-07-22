@@ -1,5 +1,4 @@
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { format, isValid } from "date-fns";
 import { ObservationsHolder } from "avni-models";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
@@ -11,48 +10,57 @@ import {
   onPrevious
 } from "dataEntryApp/reducers/programEncounterReducer";
 
-const mapFormStateToProps = state => ({
-  form: state.dataEntry.programEncounterReducer.programEncounterForm,
-  subject: state.dataEntry.subjectProfile.subjectProfile,
-  observations: state.dataEntry.programEncounterReducer.programEncounter.cancelObservations,
-  obsHolder: new ObservationsHolder(state.dataEntry.programEncounterReducer.programEncounter.cancelObservations),
-  saved: state.dataEntry.programEncounterReducer.saved,
-  onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-  validationResults: state.dataEntry.programEncounterReducer.validationResults,
-  message: state.dataEntry.programEncounterReducer.programEncounter.name
-    ? `${state.dataEntry.programEncounterReducer.programEncounter.name} Encounter Canceled`
-    : `Encounter Canceled`,
-  additionalRows: [
-    {
-      label: "Cancel Date",
-      value:
-        state.dataEntry.programEncounterReducer.programEncounter.cancelDateTime &&
-        isValid(new Date(state.dataEntry.programEncounterReducer.programEncounter.cancelDateTime))
-          ? format(new Date(state.dataEntry.programEncounterReducer.programEncounter.cancelDateTime), "dd-MMM-yyyy")
-          : "-"
-    }
-  ],
-  filteredFormElements: state.dataEntry.programEncounterReducer.filteredFormElements,
-  entity: state.dataEntry.programEncounterReducer.programEncounter,
-  formElementGroup: state.dataEntry.programEncounterReducer.formElementGroup,
-  onSummaryPage: state.dataEntry.programEncounterReducer.onSummaryPage,
-  wizard: state.dataEntry.programEncounterReducer.wizard,
-  saveErrorMessageKey: state.dataEntry.programEncounterReducer.encounterSaveErrorKey
-});
+const CancelProgramEncounterForm = () => {
+  const dispatch = useDispatch();
 
-const mapFormDispatchToProps = {
-  updateObs: updateCancelObs,
-  onSave: () => saveProgramEncounter(true),
-  setValidationResults,
-  onNext: () => onNext(true),
-  onPrevious: () => onPrevious(true)
+  const formState = useSelector(state => {
+    const programEncounterState = state.dataEntry.programEncounterReducer;
+    const subjectProfile = state.dataEntry.subjectProfile.subjectProfile;
+
+    return {
+      form: programEncounterState.programEncounterForm,
+      subject: subjectProfile,
+      observations: programEncounterState.programEncounter.cancelObservations,
+      obsHolder: new ObservationsHolder(programEncounterState.programEncounter.cancelObservations),
+      saved: programEncounterState.saved,
+      onSaveGoto: "/app/subject?uuid=" + subjectProfile.uuid,
+      validationResults: programEncounterState.validationResults,
+      message: programEncounterState.programEncounter.name
+        ? `${programEncounterState.programEncounter.name} Encounter Canceled`
+        : `Encounter Canceled`,
+      additionalRows: [
+        {
+          label: "Cancel Date",
+          value:
+            programEncounterState.programEncounter.cancelDateTime &&
+            isValid(new Date(programEncounterState.programEncounter.cancelDateTime))
+              ? format(new Date(programEncounterState.programEncounter.cancelDateTime), "dd-MMM-yyyy")
+              : "-"
+        }
+      ],
+      filteredFormElements: programEncounterState.filteredFormElements,
+      entity: programEncounterState.programEncounter,
+      formElementGroup: programEncounterState.formElementGroup,
+      onSummaryPage: programEncounterState.onSummaryPage,
+      wizard: programEncounterState.wizard,
+      saveErrorMessageKey: programEncounterState.encounterSaveErrorKey
+    };
+  });
+
+  const formActions = {
+    updateObs: obs => dispatch(updateCancelObs(obs)),
+    onSave: () => dispatch(saveProgramEncounter(true)),
+    setValidationResults: results => dispatch(setValidationResults(results)),
+    onNext: () => dispatch(onNext(true)),
+    onPrevious: () => dispatch(onPrevious(true))
+  };
+
+  const formWizardProps = {
+    ...formState,
+    ...formActions
+  };
+
+  return <FormWizard {...formWizardProps} />;
 };
-
-const CancelProgramEncounterForm = withRouter(
-  connect(
-    mapFormStateToProps,
-    mapFormDispatchToProps
-  )(FormWizard)
-);
 
 export default CancelProgramEncounterForm;

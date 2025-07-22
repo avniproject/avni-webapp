@@ -4,8 +4,6 @@ import { Box, Card, LinearProgress, TextField, Typography, Button } from "@mui/m
 import UserService from "../../common/service/UserService";
 import ErrorMessage from "../../common/components/ErrorMessage";
 import SelectUser from "../../common/components/subject/SelectUser";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
 
 const WorkflowStates = {
   Start: "Start",
@@ -88,5 +86,5 @@ const SearchUserAndConfirm = function({ onUserSelected, confirmButtonText = "Con
     </Box>
   );
 };
-const mapStateToProps = state => ({});
-export default withRouter(connect(mapStateToProps)(SearchUserAndConfirm));
+
+export default SearchUserAndConfirm;

@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import _, { get, identity } from "lodash";
 import EditIcon from "@mui/icons-material/Edit";
 import { httpClient as http } from "common/utils/httpClient";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
@@ -156,7 +156,7 @@ const EncounterTypeShow = props => {
           <SystemInfo {...encounterType} />
         </div>
 
-        {editAlert && <Redirect to={"/appDesigner/encounterType/" + props.match.params.id} />}
+        {editAlert && <Navigate to={"/appDesigner/encounterType/" + props.match.params.id} />}
       </Box>
     </>
   );

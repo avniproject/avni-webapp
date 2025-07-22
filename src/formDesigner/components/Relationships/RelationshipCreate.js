@@ -7,7 +7,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { cloneDeep, get } from "lodash";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 
 function RelationshipCreate() {
@@ -110,7 +110,7 @@ function RelationshipCreate() {
             <br />
             <SaveComponent name="save" onSubmit={() => onSubmitRelationship()} disabledFlag={!isIndividualSubjectTypeAvailable} />
           </div>
-          {id !== "" && <Redirect to={"/appDesigner/relationship/" + id + "/show"} />}
+          {id !== "" && <Navigate to={"/appDesigner/relationship/" + id + "/show"} />}
         </DocumentationContainer>
       </Box>
     </>

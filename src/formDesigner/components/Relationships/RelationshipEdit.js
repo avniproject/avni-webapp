@@ -11,7 +11,7 @@ import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 
 function RelationshipEdit(props) {
@@ -161,8 +161,8 @@ function RelationshipEdit(props) {
           </Grid>
         </DocumentationContainer>
       </Box>
-      {redirectShow && <Redirect to={`/appDesigner/relationship/${props.match.params.id}/show`} />}
-      {redirectAfterDelete && <Redirect to="/appDesigner/relationship" />}
+      {redirectShow && <Navigate to={`/appDesigner/relationship/${props.match.params.id}/show`} />}
+      {redirectAfterDelete && <Navigate to="/appDesigner/relationship" />}
     </>
   );
 }

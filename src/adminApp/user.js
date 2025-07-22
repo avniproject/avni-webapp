@@ -6,30 +6,29 @@ import {
   ChipField,
   Create,
   Datagrid,
-  DisabledInput,
   Edit,
   EditButton,
   FormDataConsumer,
   FunctionField,
   List,
-  REDUX_FORM_NAME,
   ReferenceArrayInput,
   ReferenceField,
   ReferenceInput,
   required,
   SelectArrayInput,
   SelectInput,
-  ShowController,
-  ShowView,
   SimpleForm,
   SimpleFormIterator,
   SimpleShowLayout,
   SingleFieldList,
   TextField,
-  TextInput
+  TextInput,
+  useRecordContext,
+  Show,
+  useResourceContext
 } from "react-admin";
+import { useFormContext, useWatch } from "react-hook-form";
 import { Paper, Grid, Chip, Typography, CardActions } from "@mui/material";
-import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
 import { datePickerModes, localeChoices, timePickerModes } from "../common/constants";
@@ -98,7 +97,7 @@ export const UserList = ({ ...props }) => {
   return (
     <List
       {...props}
-      bulkActions={false}
+      bulkActionButtons={false}
       filter={{ organisationId: organisation.id }}
       filters={<UserFilter />}
       title={`${organisation.name} Users`}
@@ -121,20 +120,21 @@ export const UserList = ({ ...props }) => {
   );
 };
 
-const CustomShowActions = ({ hasEditUserPrivilege, basePath, data, resource }) => {
+const CustomShowActions = ({ hasEditUserPrivilege }) => {
+  const record = useRecordContext();
+  const resource = useResourceContext();
+  if (!record) return null;
+
   return (
-    (data && (
+    hasEditUserPrivilege && (
       <CardActions style={{ zIndex: 2, display: "flex", float: "right", flexDirection: "row" }}>
-        {hasEditUserPrivilege && (
-          <Fragment>
-            <EditButton label="Edit User" basePath={basePath} record={data} />
-            <ResetPasswordButton basePath={basePath} record={data} resource={resource} />
-            <EnableDisableButton disabled={data.disabledInCognito} basePath={basePath} record={data} resource={resource} />
-          </Fragment>
-        )}
+        <>
+          <EditButton label="Edit User" />
+          <ResetPasswordButton record={record} resource={resource} />
+          <EnableDisableButton disabled={record.disabledInCognito} record={record} resource={resource} />
+        </>
       </CardActions>
-    )) ||
-    null
+    )
   );
 };
 
@@ -189,84 +189,78 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
   fetchSyncAttributeData(setSyncAttributesData);
 
   return (
-    <ShowController {...props}>
-      {controllerProps => (
-        <ShowView
-          title={<UserTitle />}
-          actions={<CustomShowActions hasEditUserPrivilege={hasEditUserPrivilege} user={user} />}
-          {...props}
-          {...controllerProps}
-        >
-          <SimpleShowLayout>
-            <TextField source="username" label="Login ID (username)" />
-            <TextField source="name" label="Name of the Person" />
-            <TextField source="email" label="Email Address" />
-            <TextField source="phoneNumber" label="Phone Number" />
-            <ReferenceField label="Catchment" source="catchmentId" reference="catchment" linkType="show" allowEmpty>
-              <TextField source="name" />
-            </ReferenceField>
-            <ArrayField style={{ maxWidth: "20em" }} label="User Groups" source="userGroupNames">
-              <SingleFieldList linkType={false}>
-                <StringToLabelObject>
-                  <ChipField source="label" />
-                </StringToLabelObject>
-              </SingleFieldList>
-            </ArrayField>
-            <FunctionField label="Operating Scope" render={user => formatOperatingScope(user.operatingIndividualScope)} />
-            <LineBreak />
-            <h4>Sync Settings</h4>
-            <FunctionField
-              label="Below Subject type Sync settings are to be ignored in the Data Entry app: "
-              render={user => (user.ignoreSyncSettingsInDEA ? "Yes" : "No")}
-            />
-            {map(syncAttributesData.subjectTypes, st => (
-              <SubjectTypeSyncAttributeShow
-                subjectType={st}
-                key={get(st, "name")}
-                syncConceptValueMap={syncAttributesData.syncConceptValueMap}
-              />
-            ))}
-            <FunctionField label="Preferred Language" render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")} />
-            <FunctionField label="Date Picker Mode" render={user => (!isNil(user.settings) ? user.settings.datePickerMode : "Calendar")} />
-            <FunctionField label="Time Picker Mode" render={user => (!isNil(user.settings) ? user.settings.timePickerMode : "Clock")} />
-            <FunctionField
-              label="Track Location"
-              render={user => (!isNil(user.settings) ? (user.settings.trackLocation ? "True" : "False") : "")}
-            />
-            <FunctionField
-              label="Is Allowed To Invoke Token Generation API"
-              render={user => (!isNil(user.settings) ? (user.settings.isAllowedToInvokeTokenGenerationAPI ? "True" : "False") : "")}
-            />
-            <FunctionField
-              label="Beneficiary Mode"
-              render={user => (!isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : "")}
-            />
-            <FunctionField
-              label="Disable dashboard auto refresh"
-              render={user => (!isNil(user.settings) ? (user.settings.disableAutoRefresh ? "True" : "False") : "")}
-            />
-            <FunctionField
-              label="Disable auto sync"
-              render={user => (!isNil(user.settings) ? (user.settings.disableAutoSync ? "True" : "False") : "")}
-            />
-            <FunctionField
-              label="Register + Enrol"
-              render={user => (!isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : "")}
-            />
-            <FunctionField
-              label="Enable Call Masking"
-              render={user => (!isNil(user.settings) ? (user.settings.enableCallMasking ? "True" : "False") : "")}
-            />
-            <TextField label="Identifier prefix" source="settings.idPrefix" />
-            <FunctionField label="Created" render={user => createdAudit(user)} />
-            {controllerProps.record && controllerProps.record.lastActivatedDateTime && (
-              <FunctionField label="Activated" render={user => activatedAudit(user)} />
-            )}
-            <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
-          </SimpleShowLayout>
-        </ShowView>
-      )}
-    </ShowController>
+    <Show {...props} actions={<CustomShowActions hasEditUserPrivilege={hasEditUserPrivilege} />}>
+      <SimpleShowLayout>
+        <TextField source="username" label="Login ID (username)" />
+        <TextField source="name" label="Name of the Person" />
+        <TextField source="email" label="Email Address" />
+        <TextField source="phoneNumber" label="Phone Number" />
+
+        <ReferenceField label="Catchment" source="catchmentId" reference="catchment" link="show">
+          <TextField source="name" />
+        </ReferenceField>
+
+        <ArrayField label="User Groups" source="userGroupNames">
+          <SingleFieldList linkType={false}>
+            <StringToLabelObject>
+              <ChipField source="label" />
+            </StringToLabelObject>
+          </SingleFieldList>
+        </ArrayField>
+
+        <FunctionField label="Operating Scope" render={user => formatOperatingScope(user.operatingIndividualScope)} />
+        <LineBreak />
+        <h4>Sync Settings</h4>
+        <FunctionField
+          label="Below Subject type Sync settings are to be ignored in the Data Entry app: "
+          render={user => (user.ignoreSyncSettingsInDEA ? "Yes" : "No")}
+        />
+
+        {map(syncAttributesData.subjectTypes, st => (
+          <SubjectTypeSyncAttributeShow
+            subjectType={st}
+            key={get(st, "name")}
+            syncConceptValueMap={syncAttributesData.syncConceptValueMap}
+          />
+        ))}
+
+        <FunctionField label="Preferred Language" render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")} />
+        <FunctionField label="Date Picker Mode" render={user => (!isNil(user.settings) ? user.settings.datePickerMode : "Calendar")} />
+        <FunctionField label="Time Picker Mode" render={user => (!isNil(user.settings) ? user.settings.timePickerMode : "Clock")} />
+        <FunctionField
+          label="Track Location"
+          render={user => (!isNil(user.settings) ? (user.settings.trackLocation ? "True" : "False") : "")}
+        />
+        <FunctionField
+          label="Is Allowed To Invoke Token Generation API"
+          render={user => (!isNil(user.settings) ? (user.settings.isAllowedToInvokeTokenGenerationAPI ? "True" : "False") : "")}
+        />
+        <FunctionField
+          label="Beneficiary Mode"
+          render={user => (!isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : "")}
+        />
+        <FunctionField
+          label="Disable dashboard auto refresh"
+          render={user => (!isNil(user.settings) ? (user.settings.disableAutoRefresh ? "True" : "False") : "")}
+        />
+        <FunctionField
+          label="Disable auto sync"
+          render={user => (!isNil(user.settings) ? (user.settings.disableAutoSync ? "True" : "False") : "")}
+        />
+        <FunctionField
+          label="Register + Enrol"
+          render={user => (!isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : "")}
+        />
+        <FunctionField
+          label="Enable Call Masking"
+          render={user => (!isNil(user.settings) ? (user.settings.enableCallMasking ? "True" : "False") : "")}
+        />
+        <TextField label="Identifier prefix" source="settings.idPrefix" />
+        <FunctionField label="Created" render={user => createdAudit(user)} />
+        <FunctionField label="Activated" render={user => user?.lastActivatedDateTime && activatedAudit(user)} />
+        <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
+      </SimpleShowLayout>
+    </Show>
   );
 };
 
@@ -288,89 +282,69 @@ const SubjectTypeSyncAttributes = ({ subjectType, ...props }) => (
   </div>
 );
 
-//workaround for the bug https://github.com/marmelab/react-admin/issues/3249
-//workaround source: https://github.com/marmelab/react-admin/pull/4394#issue-560679684
-//TODO: this should be removed after react-admin upgrade
-export const SimpleFormIteratorWithUndefinedDefault = props => {
-  const originPush = props.fields.push;
-  props.fields.push = data => {
-    originPush(JSON.stringify(data) === "{}" ? undefined : data);
-  };
+const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
+  const { setValue } = useFormContext();
+  const [answerConcepts, setAnswerConcepts] = useState([]);
 
-  return <SimpleFormIterator {...props} />;
-};
-
-const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }) => {
   return (
     <FormDataConsumer>
-      {({ formData, dispatch }) => {
-        const syncAttributeConceptUUID = get(formData, `syncSettings.${[subjectType.name]}.${syncAttributeName}`);
+      {({ formData }) => {
+        const syncAttributeConceptUUID = get(formData, `syncSettings.${subjectType.name}.${syncAttributeName}`);
         const syncAttributeConcept = subjectType[syncAttributeName];
-        const selectedValue = get(formData, `syncSettings.${[subjectType.name]}.${syncAttributeName}`);
-        const defaultValue = selectedValue ? { defaultValue: selectedValue } : {};
 
-        const [answerConcepts, setAnswerConcepts] = useState([]);
-        const syncAttributeValuesFieldName = `syncSettings.${[subjectType.name]}.${syncAttributeName}Values`;
-
+        const syncAttributeValuesFieldName = `syncSettings.${subjectType.name}.${syncAttributeName}Values`;
         const selectedSyncAttributeValueIds = get(formData, syncAttributeValuesFieldName);
         const selectedAnswerConcepts = filter(answerConcepts, x => some(selectedSyncAttributeValueIds, y => x.id === y));
 
         useEffect(() => {
-          if (isEmpty(syncAttributeConceptUUID)) setAnswerConcepts([]);
-          else ConceptService.getAnswerConcepts(syncAttributeConceptUUID).then(setAnswerConcepts);
+          if (isEmpty(syncAttributeConceptUUID)) {
+            setAnswerConcepts([]);
+          } else {
+            ConceptService.getAnswerConcepts(syncAttributeConceptUUID).then(setAnswerConcepts);
+          }
         }, [syncAttributeConceptUUID]);
 
-        //TODO : workaround for the bug https://github.com/marmelab/react-admin/issues/3249
-        //TODO : this should be removed after react-admin upgrade
         return (
           <Fragment>
-            <Grid
-              container
-              sx={{
-                alignItems: "center"
-              }}
-            >
-              <Grid size={3}>
+            <Grid container alignItems="center" spacing={2}>
+              <Grid item xs={3}>
                 <SelectInput
                   resettable
-                  source={`syncSettings.${[subjectType.name]}.${syncAttributeName}`}
+                  source={`syncSettings.${subjectType.name}.${syncAttributeName}`}
                   label={startCase(syncAttributeName)}
-                  choices={[subjectType[syncAttributeName]]}
+                  choices={[syncAttributeConcept]}
                   onChange={(e, newVal) => {
                     if (newVal !== syncAttributeConceptUUID) {
                       alert(catchmentChangeMessage);
-                      dispatch(change(REDUX_FORM_NAME, syncAttributeValuesFieldName, null));
+                      setValue(syncAttributeValuesFieldName, null);
                     }
                   }}
-                  {...defaultValue}
                 />
               </Grid>
-              <Grid size={9}>
-                {!isEmpty(syncAttributeConceptUUID) ? (
-                  get(syncAttributeConcept, "dataType") === "Coded" ? (
+              <Grid item xs={9}>
+                {!isEmpty(syncAttributeConceptUUID) &&
+                  (get(syncAttributeConcept, "dataType") === "Coded" ? (
                     <Select
                       isClearable
                       isSearchable
                       isMulti
                       value={selectedAnswerConcepts.map(ReactSelectHelper.toReactSelectItem)}
                       options={answerConcepts.map(ReactSelectHelper.toReactSelectItem)}
-                      style={{ width: "auto" }}
                       onChange={event => {
                         const selectedValues = ReactSelectHelper.getCurrentValues(event).map(x => x.id);
-                        dispatch(change(REDUX_FORM_NAME, syncAttributeValuesFieldName, selectedValues));
+                        setValue(syncAttributeValuesFieldName, selectedValues);
                       }}
                     />
                   ) : (
-                    <Fragment>
-                      <div style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginTop: "5px" }}>{"Values to sync"}</div>
-                      <ArrayInput source={`syncSettings.${[subjectType.name]}.${syncAttributeName}Values`} label={""} resettable>
-                        <SimpleFormIteratorWithUndefinedDefault>
+                    <>
+                      <div style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: 12, marginTop: 5 }}>Values to sync</div>
+                      <ArrayInput source={syncAttributeValuesFieldName} label="" resettable>
+                        <SimpleFormIterator>
                           <TextInput label={`${startCase(syncAttributeName)} Value`} validate={isRequired} />
-                        </SimpleFormIteratorWithUndefinedDefault>
+                        </SimpleFormIterator>
                       </ArrayInput>
-                    </Fragment>
-                  )
-                ) : null}
+                    </>
+                  ))}
               </Grid>
             </Grid>
           </Fragment>
@@ -419,10 +393,21 @@ function fetchSyncAttributeData(setSyncAttributesData) {
     };
   }, []);
 }
+
 const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
   const [languages, setLanguages] = useState([]);
   const [syncAttributesData, setSyncAttributesData] = useState(initialSyncAttributes);
   const isSyncSettingsRequired = syncAttributesData.subjectTypes.length > 0 || syncAttributesData.isAnySubjectTypeDirectlyAssignable;
+
+  const { setValue } = useFormContext();
+  const usernameIgnored = useWatch({ name: "ignored" });
+
+  useEffect(() => {
+    if (usernameIgnored) {
+      setValue("username", usernameIgnored + "@" + nameSuffix);
+    }
+  }, [usernameIgnored]);
+
   useEffect(() => {
     http.get("/organisationConfig").then(res => {
       const organisationLocales = isEmpty(res.data._embedded.organisationConfig)
@@ -431,7 +416,11 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
       setLanguages(organisationLocales);
     });
   }, []);
-  fetchSyncAttributeData(setSyncAttributesData);
+
+  useEffect(() => {
+    fetchSyncAttributeData(setSyncAttributesData);
+  }, []);
+
   const sanitizeProps = ({ record, resource, save }) => ({
     record,
     resource,
@@ -440,54 +429,52 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
   return (
     <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="show" validate={validatePasswords}>
       {edit ? (
-        <DisabledInput source="username" label="Login ID (username)" />
+        <TextInput disabled source="username" label="Login ID (username)" />
       ) : (
         <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) => {
+          {({ formData }) => {
+            const currentUsername = formData.username;
+            const isCognito = http.idp.idpType === IdpDetails.cognito;
+            const isKeycloak = http.idp.idpType === IdpDetails.keycloak;
+            const customPassword = formData.customPassword;
+
             return (
               <Fragment>
-                <AvniTextInput
-                  resettable
-                  source="ignored"
-                  validate={validateUserName}
-                  label={"Login ID (username)"}
-                  onChange={(e, newVal) => !isEmpty(newVal) && dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))}
-                  {...rest}
-                  toolTipKey={"ADMIN_USER_USER_NAME"}
-                >
+                <AvniTextInput source="username" validate={validateUserName} label="Login ID (username)" toolTipKey="ADMIN_USER_USER_NAME">
                   <span>@{nameSuffix}</span>
                 </AvniTextInput>
-                {http.idp.idpType === IdpDetails.cognito && formData.username && (
+
+                {isCognito && currentUsername && (
                   <AvniBooleanInput
-                    source={"customPassword"}
+                    source="customPassword"
                     style={{ marginTop: "1em" }}
                     label="Set a custom password. If custom password is not set, temporary password will be first 4 characters of username and last 4 characters of phone number."
                     onChange={(e, newVal) => {
                       if (!isNil(newVal)) {
-                        dispatch(change(REDUX_FORM_NAME, "customPassword", newVal));
-                        dispatch(change(REDUX_FORM_NAME, "password", null));
-                        dispatch(change(REDUX_FORM_NAME, "confirmPassword", null));
+                        setValue("customPassword", newVal);
+                        setValue("password", null);
+                        setValue("confirmPassword", null);
                       }
                     }}
-                    {...rest}
-                    toolTipKey={"ADMIN_USER_SET_PASSWORD"}
+                    toolTipKey="ADMIN_USER_SET_PASSWORD"
                   />
                 )}
-                {(http.idp.idpType === IdpDetails.keycloak || formData.customPassword) && (
+
+                {(isKeycloak || customPassword) && (
                   <Fragment>
                     <AvniPasswordInput
                       resettable
                       source="password"
                       label="Custom password"
                       validate={validatePassword}
-                      toolTipKey={"ADMIN_USER_CUSTOM_PASSWORD"}
+                      toolTipKey="ADMIN_USER_CUSTOM_PASSWORD"
                     />
                     <AvniPasswordInput
                       resettable
                       source="confirmPassword"
                       label="Verify password"
                       validate={validatePassword}
-                      toolTipKey={"ADMIN_USER_CUSTOM_PASSWORD"}
+                      toolTipKey="ADMIN_USER_CUSTOM_PASSWORD"
                     />
                   </Fragment>
                 )}
@@ -501,29 +488,28 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
       <AvniTextInput source="phoneNumber" validate={getPhoneValidator(organisation.region)} toolTipKey={"ADMIN_USER_PHONE_NUMBER"} />
       <LineBreak />
       <FormDataConsumer>
-        {({ formData, dispatch, ...rest }) => (
+        {({ formData }) => (
           <Fragment>
-            <ToolTipContainer toolTipKey={"ADMIN_USER_CATCHMENT"} alignItems={"center"}>
+            <ToolTipContainer toolTipKey="ADMIN_USER_CATCHMENT" alignItems="center">
               <Typography variant="title" component="h3">
                 Catchment
               </Typography>
             </ToolTipContainer>
+
             <ReferenceInput
               source="catchmentId"
               reference="catchment"
               label="Which catchment?"
               filterToQuery={searchText => ({ name: searchText })}
-              validate={syncAttributesData.isAnySubjectTypeSyncByLocation && required("Please select a catchment")}
+              validate={syncAttributesData?.isAnySubjectTypeSyncByLocation && required("Please select a catchment")}
               onChange={(e, newVal) => {
                 if (edit) alert(catchmentChangeMessage);
-                dispatch(
-                  change(REDUX_FORM_NAME, "operatingIndividualScope", isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE)
-                );
+                setValue("operatingIndividualScope", isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE);
               }}
-              {...rest}
             >
-              <CatchmentSelectInput source="name" resettable />
+              <CatchmentSelectInput />
             </ReferenceInput>
+
             <LineBreak num={1} />
           </Fragment>
         )}
@@ -539,7 +525,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
         </ReferenceArrayInput>
         <LineBreak num={1} />
       </Fragment>
-      <DisabledInput source="operatingIndividualScope" defaultValue={operatingScopes.NONE} style={{ display: "none" }} />
+      <TextInput disabled source="operatingIndividualScope" defaultValue={operatingScopes.NONE} style={{ display: "none" }} />
       <Fragment>
         <LineBreak num={1} />
         <ToolTipContainer toolTipKey={"ADMIN_USER_SETTINGS"} alignItems={"center"}>

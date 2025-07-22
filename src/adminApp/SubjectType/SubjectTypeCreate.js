@@ -1,4 +1,4 @@
-import { Redirect, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { Box, Button, FormLabel } from "@mui/material";
@@ -15,11 +15,14 @@ import EditSubjectTypeFields from "./EditSubjectTypeFields";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { Save } from "@mui/icons-material";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
-const SubjectTypeCreate = ({ organisationConfig }) => {
+const SubjectTypeCreate = () => {
+  const navigate = useNavigate();
+  const organisationConfig = useSelector(state => state.app.organisationConfig);
+
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [groupValidationError, setGroupValidationError] = useState(false);
@@ -42,6 +45,12 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
     getMessageTemplates(rulesDispatch);
     return identity;
   }, []);
+
+  useEffect(() => {
+    if (alert && id) {
+      navigate(`/appDesigner/subjectType/${id}/show`);
+    }
+  }, [alert, id, navigate]);
 
   const onRulesChange = rules => {
     rulesDispatch({ type: "setRules", payload: rules });
@@ -155,11 +164,9 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
           </div>
         </DocumentationContainer>
       </Box>
-      {alert && <Redirect to={"/appDesigner/subjectType/" + id + "/show"} />}
+      {alert && <div />}
     </>
   );
 };
-const mapStateToProps = state => ({
-  organisationConfig: state.app.organisationConfig
-});
-export default withRouter(connect(mapStateToProps)(SubjectTypeCreate));
+
+export default SubjectTypeCreate;

@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
 import { Edit } from "@mui/icons-material";
 import { httpClient as http } from "common/utils/httpClient";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Box, Button, FormLabel, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import _, { get, identity } from "lodash";
@@ -137,7 +137,7 @@ const SubjectTypeShow = props => {
             <AdvancedSettingShow locationTypes={locationTypes} subjectType={subjectType} />
             <SystemInfo {...subjectType} />
           </div>
-          {editAlert && <Redirect to={"/appDesigner/subjectType/" + props.match.params.id} />}
+          {editAlert && <Navigate to={"/appDesigner/subjectType/" + props.match.params.id} />}
         </Box>
       </>
     )

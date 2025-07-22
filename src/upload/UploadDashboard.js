@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { styled, Paper, Grid, Box, Button, Checkbox, FormControlLabel, Typography, Tooltip, Stack } from "@mui/material";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import _, { concat, get, isEmpty, isNil } from "lodash";
 import CloudDownload from "@mui/icons-material/CloudDownload";
 import FileUpload from "../common/components/FileUpload";
@@ -94,7 +93,11 @@ class ReviewStatus {
 
 const isMetadataDiffReviewEnabled = true;
 
-const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
+const UploadDashboard = () => {
+  const dispatch = useDispatch();
+  const uploadTypes = useSelector(state => state.bulkUpload.uploadTypes) || new UploadTypes();
+  const userRoles = useSelector(state => state.app.authSession.roles);
+
   const [uploadType, setUploadType] = useState("");
   const [entityForDownload, setEntityForDownload] = useState("");
   const [file, setFile] = useState(null);
@@ -170,11 +173,11 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
       setLocationUploadMode("");
       setEncounterUploadMode("");
       setHierarchy(null);
-      setTimeout(() => getStatuses(0), 1000);
+      setTimeout(() => dispatch(getStatuses(0)), 1000);
     } catch (err) {
       alert(`Upload error: ${err.message || "Unknown error"}`);
     }
-  }, [file, uploadType, autoApprove, locationUploadMode, hierarchy, getUploadTypeCode, getStatuses, encounterUploadMode]);
+  }, [file, uploadType, autoApprove, locationUploadMode, hierarchy, getUploadTypeCode, dispatch, encounterUploadMode]);
 
   const downloadStaticSample = useCallback(async code => {
     await api.downloadSample(code);
@@ -257,13 +260,13 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
   );
 
   useEffect(() => {
-    getUploadTypes();
+    dispatch(getUploadTypes());
     api.fetchLocationHierarchies().then(locHierarchies => {
       const firstHierarchy = get(locHierarchies, "[0].value", null);
       setHierarchy(firstHierarchy);
       setConfiguredHierarchies(locHierarchies);
     });
-  }, [getUploadTypes]);
+  }, [dispatch]);
 
   console.log("file:", file);
 
@@ -361,15 +364,4 @@ const UploadDashboard = ({ getStatuses, getUploadTypes, uploadTypes = new Upload
   );
 };
 
-const mapStateToProps = state => ({
-  statuses: state.bulkUpload.statuses,
-  uploadTypes: state.bulkUpload.uploadTypes,
-  userRoles: state.app.authSession.roles
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getUploadTypes, getStatuses }
-  )(UploadDashboard)
-);
+export default UploadDashboard;

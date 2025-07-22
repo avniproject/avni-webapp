@@ -1,22 +1,25 @@
 import { useState, useEffect, forwardRef, useImperativeHandle, useRef, useCallback, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IconButton, Box, Button } from "@mui/material";
 
 const AvniMaterialTable = forwardRef(
   ({ columns, fetchData, options = {}, route = "", components = {}, actions = [], ...restProps }, ref) => {
     const location = useLocation();
-    const history = useHistory();
+    const navigate = useNavigate();
     const currentPath = route || location.pathname;
     const isMounted = useRef(true);
     const abortControllerRef = useRef(null);
+
     const [data, setData] = useState([]);
     const [totalRecords, setTotalRecords] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+
     const [pagination, setPagination] = useState(() => ({
       pageIndex: Number(new URLSearchParams(location.search).get("page")) || 0,
       pageSize: options.pageSize || 10
     }));
+
     const [sorting, setSorting] = useState(() => {
       const query = new URLSearchParams(location.search);
       const orderBy = query.get("sortBy");
@@ -29,12 +32,9 @@ const AvniMaterialTable = forwardRef(
       const pageFromUrl = query.get("page");
       const pageNumber = Number(pageFromUrl);
       if (pageFromUrl !== null && isNaN(pageNumber)) {
-        history.replace({
-          pathname: currentPath,
-          search: `?page=0`
-        });
+        navigate(`${currentPath}?page=0`, { replace: true });
       }
-    }, [currentPath, history]);
+    }, [currentPath, location.search, navigate]);
 
     useEffect(() => {
       const query = new URLSearchParams(location.search);
@@ -48,6 +48,7 @@ const AvniMaterialTable = forwardRef(
       }));
 
       const newSorting = sortByFromUrl ? [{ id: sortByFromUrl, desc: sortDescFromUrl === "desc" }] : [];
+
       setSorting(prev => {
         if (prev.length !== newSorting.length || prev[0]?.id !== newSorting[0]?.id || prev[0]?.desc !== newSorting[0]?.desc) {
           return newSorting;
@@ -76,6 +77,7 @@ const AvniMaterialTable = forwardRef(
         const normalizedData = Array.isArray(response)
           ? { data: response, totalRecords: response.length }
           : response || { data: [], totalRecords: 0 };
+
         if (isMounted.current && !controller.signal.aborted) {
           setData(normalizedData.data || []);
           setTotalRecords(normalizedData.totalCount || normalizedData.totalRecords || 0);
@@ -109,21 +111,21 @@ const AvniMaterialTable = forwardRef(
         setPagination(prev => {
           const newState = typeof updater === "function" ? updater(prev) : updater;
           const newPageIndex = newState.pageIndex ?? 0;
+
           if (newPageIndex !== prev.pageIndex) {
             const queryParams = new URLSearchParams({
               page: newPageIndex.toString(),
               ...(sorting[0]?.id && { sortBy: sorting[0].id }),
               ...(sorting[0]?.desc && { sortDesc: "desc" })
             });
-            history.push({
-              pathname: currentPath,
-              search: queryParams.toString()
-            });
+
+            navigate(`${currentPath}?${queryParams.toString()}`);
           }
+
           return { ...prev, ...newState };
         });
       },
-      [currentPath, history, sorting]
+      [currentPath, navigate, sorting]
     );
 
     const memoizedColumns = useMemo(() => columns, [columns]);
@@ -164,6 +166,7 @@ const AvniMaterialTable = forwardRef(
                   .map((action, index) => {
                     const Icon = action.icon;
                     const disabled = typeof action.disabled === "function" ? action.disabled(row) : action.disabled || false;
+
                     return (
                       <IconButton
                         key={index}

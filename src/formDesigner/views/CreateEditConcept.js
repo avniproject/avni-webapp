@@ -20,7 +20,7 @@ import { AvniTextField } from "../../common/components/AvniTextField";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
 import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
@@ -612,8 +612,8 @@ class CreateEditConcept extends Component {
             </Grid>
           </Grid>
         </DocumentationContainer>
-        {this.state.redirectShow && <Redirect to={`/appDesigner/concept/${concept.uuid}/show`} />}
-        {this.state.redirectOnDeleteOrCreate && <Redirect to={`/appDesigner/concepts`} />}
+        {this.state.redirectShow && <Navigate to={`/appDesigner/concept/${concept.uuid}/show`} />}
+        {this.state.redirectOnDeleteOrCreate && <Navigate to={`/appDesigner/concepts`} />}
       </Box>
     );
   }

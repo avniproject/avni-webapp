@@ -1,4 +1,4 @@
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import { ObservationsHolder } from "avni-models";
 import {
@@ -11,18 +11,21 @@ import {
   addNewQuestionGroup,
   removeQuestionGroup
 } from "dataEntryApp/reducers/programEnrolReducer";
-import { withRouter } from "react-router-dom";
 
-const mapFormStateToProps = state => {
-  const enrolmentState = selectProgramEnrolmentState(state);
-  return {
+const ProgramEnrolmentForm = () => {
+  const dispatch = useDispatch();
+
+  const enrolmentState = useSelector(selectProgramEnrolmentState);
+  const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+
+  const formProps = {
     form: enrolmentState.enrolForm,
-    subject: state.dataEntry.subjectProfile.subjectProfile,
+    subject: subjectProfile,
     observations: enrolmentState.programEnrolment.observations,
     obsHolder: new ObservationsHolder(enrolmentState.programEnrolment.observations),
     title: `New Enrolment`,
     saved: enrolmentState.saved,
-    onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
+    onSaveGoto: "/app/subject?uuid=" + subjectProfile.uuid,
     validationResults: enrolmentState.validationResults,
     message: `${enrolmentState.programEnrolment.program.name} Enrolment Saved`,
     filteredFormElements: enrolmentState.filteredFormElements,
@@ -30,25 +33,17 @@ const mapFormStateToProps = state => {
     formElementGroup: enrolmentState.formElementGroup,
     onSummaryPage: enrolmentState.onSummaryPage,
     wizard: enrolmentState.wizard,
-    saveErrorMessageKey: enrolmentState.enrolmentSaveErrorKey
+    saveErrorMessageKey: enrolmentState.enrolmentSaveErrorKey,
+    updateObs: (formElement, value) => dispatch(updateObs(formElement, value)),
+    addNewQuestionGroup: (formElement, questionGroup) => dispatch(addNewQuestionGroup(formElement, questionGroup)),
+    removeQuestionGroup: (formElement, questionGroupIndex) => dispatch(removeQuestionGroup(formElement, questionGroupIndex)),
+    onSave: () => dispatch(saveProgramEnrolment(false)),
+    setValidationResults: validationResults => dispatch(setValidationResults(validationResults)),
+    onNext: () => dispatch(onNext(false)),
+    onPrevious: () => dispatch(onPrevious(false))
   };
-};
 
-const mapFormDispatchToProps = {
-  updateObs,
-  addNewQuestionGroup,
-  removeQuestionGroup,
-  onSave: () => saveProgramEnrolment(false),
-  setValidationResults,
-  onNext: () => onNext(false),
-  onPrevious: () => onPrevious(false)
+  return <FormWizard {...formProps} />;
 };
-
-const ProgramEnrolmentForm = withRouter(
-  connect(
-    mapFormStateToProps,
-    mapFormDispatchToProps
-  )(FormWizard)
-);
 
 export default ProgramEnrolmentForm;

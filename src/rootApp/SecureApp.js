@@ -1,6 +1,5 @@
-import { Component } from "react";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import _ from "lodash";
 import "./SecureApp.css";
 import "@aws-amplify/ui-react/styles.css";
@@ -15,57 +14,47 @@ import BaseAuthSession from "./security/BaseAuthSession";
 import ChooseIdpView from "./ChooseIdpView";
 import KeycloakWebClient from "./security/KeycloakWebClient";
 
-class SecureApp extends Component {
-  constructor(props) {
-    super(props);
-  }
+function SecureApp({ genericConfig }) {
+  const dispatch = useDispatch();
+  const authSession = useSelector(state => state.app.authSession);
 
-  componentDidMount() {
+  useEffect(() => {
     if (KeycloakWebClient.isAuthenticatedWithKeycloak()) {
-      this.props.setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak);
+      dispatch(setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak));
     }
-    this.props.genericConfig && this.props.initGenericConfig(this.props.genericConfig);
+    if (genericConfig) {
+      dispatch(initGenericConfig(genericConfig));
+    }
+  }, [dispatch, genericConfig]);
+
+  const hasSignedIn = () => {
+    return _.get(authSession, "authState") === BaseAuthSession.AuthStates.SignedIn;
+  };
+
+  const redirect_url = new URLSearchParams(window.location.search).get("redirect_url");
+  if (!_.isEmpty(redirect_url) && hasSignedIn()) {
+    httpClient.fetchJson("/ping").then(() => {
+      window.open(redirect_url, "_self");
+    });
+    return null;
   }
 
-  hasSignedIn() {
-    return _.get(this.props, "authSession.authState") === BaseAuthSession.AuthStates.SignedIn;
+  if (hasSignedIn()) return <App />;
+
+  const idpType = httpClient.idp.idpType;
+
+  if (idpType === IdpDetails.cognito) {
+    return (
+      <div className="centerContainer">
+        <Authenticator.Provider>
+          <CognitoSignIn onSignedIn={user => dispatch(setAuthSession(BaseAuthSession.AuthStates.SignedIn, user, IdpDetails.cognito))} />
+        </Authenticator.Provider>
+      </div>
+    );
   }
 
-  render() {
-    const redirect_url = new URLSearchParams(window.location.search).get("redirect_url");
-    if (!_.isEmpty(redirect_url) && this.hasSignedIn()) {
-      httpClient.fetchJson("/ping").then(() => {
-        window.open(redirect_url, "_self");
-      });
-      return null;
-    }
-
-    if (this.hasSignedIn()) return <App />;
-
-    const idpType = httpClient.idp.idpType;
-
-    if (idpType === IdpDetails.cognito) {
-      return (
-        <div className="centerContainer">
-          <Authenticator.Provider>
-            <CognitoSignIn onSignedIn={user => this.props.setAuthSession(BaseAuthSession.AuthStates.SignedIn, user, IdpDetails.cognito)} />
-          </Authenticator.Provider>
-        </div>
-      );
-    }
-
-    if (idpType === IdpDetails.keycloak) return <KeycloakSignInView />;
-    else return <ChooseIdpView onIdpChosen={() => this.setState({ idpChosen: true })} />;
-  }
+  if (idpType === IdpDetails.keycloak) return <KeycloakSignInView />;
+  else return <ChooseIdpView onIdpChosen={() => {}} />;
 }
 
-const mapStateToProps = state => ({
-  authSession: state.app.authSession
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { setAuthSession, initGenericConfig }
-  )(SecureApp)
-);
+export default SecureApp;

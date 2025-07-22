@@ -1,7 +1,4 @@
 import { combineReducers } from "redux";
-import { reducer as formReducer } from "redux-form";
-import { routerReducer } from "react-router-redux";
-import { adminReducer, defaultI18nProvider, i18nReducer } from "react-admin";
 import dataEntry from "../dataEntryApp/reducers/dataEntryReducer";
 import broadcast from "../news/reducers/metadataReducer";
 import bulkUpload from "../upload/reducers";
@@ -13,20 +10,19 @@ import translationsReducer from "../i18nTranslations/TranslationReducers";
 import programs from "../dataEntryApp/reducers/programReducer";
 import sagaErrorState from "./SagaErrorReducer";
 
-const LOCALE = "en";
-export default combineReducers({
-  admin: adminReducer,
-  form: formReducer,
-  i18n: i18nReducer(LOCALE, defaultI18nProvider(LOCALE)),
-  router: routerReducer,
-  app,
-  dataEntry,
-  broadcast,
-  bulkUpload,
-  translations,
-  reports,
-  translationsReducer,
-  programs,
-  userGroups,
-  sagaErrorState
-});
+const createRootReducer = routerReducer =>
+  combineReducers({
+    app,
+    dataEntry,
+    broadcast,
+    bulkUpload,
+    translations,
+    reports,
+    translationsReducer,
+    programs,
+    userGroups,
+    sagaErrorState,
+    router: routerReducer
+  });
+
+export default createRootReducer;

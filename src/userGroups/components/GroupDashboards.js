@@ -3,8 +3,7 @@ import { MaterialReactTable } from "material-react-table";
 import Select from "react-select";
 import { Button, Grid, Checkbox, Typography, IconButton } from "@mui/material";
 import api from "../api";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getAllDashboards, getGroupDashboards } from "../reducers";
 import { RadioButtonChecked, RadioButtonUnchecked, Delete } from "@mui/icons-material";
 
@@ -36,7 +35,11 @@ function setDashboardType({ id, groupId, dashboardId, primaryDashboard, secondar
     .then(response => handleResponse(response, groupId, refresh));
 }
 
-const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDashboards, groupDashboards, ...props }) => {
+const GroupDashboards = ({ groupId, ...props }) => {
+  const dispatch = useDispatch();
+  const groupDashboards = useSelector(state => state.userGroups.groupDashboards);
+  const allDashboards = useSelector(state => state.userGroups.allDashboards);
+
   const [otherDashboards, setOtherDashboards] = useState([]);
   const [otherDashboardsOptions, setOtherDashboardsOptions] = useState([]);
   const otherDashboardsOptionsRef = useRef(null);
@@ -44,9 +47,9 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
-    getGroupDashboards(groupId);
-    getAllDashboards();
-  }, [getGroupDashboards, getAllDashboards, groupId]);
+    dispatch(getGroupDashboards(groupId));
+    dispatch(getAllDashboards());
+  }, [dispatch, getGroupDashboards, getAllDashboards, groupId]);
 
   useEffect(() => {
     if (allDashboards && groupDashboards) {
@@ -90,7 +93,9 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
             icon={<RadioButtonUnchecked />}
             checkedIcon={<RadioButtonChecked />}
             checked={!!row.original.primaryDashboard}
-            onChange={e => setDashboardType({ ...row.original, primaryDashboard: e.target.checked }, getGroupDashboards)}
+            onChange={e =>
+              setDashboardType({ ...row.original, primaryDashboard: e.target.checked }, () => dispatch(getGroupDashboards(groupId)))
+            }
           />
         )
       },
@@ -103,7 +108,9 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
             icon={<RadioButtonUnchecked />}
             checkedIcon={<RadioButtonChecked />}
             checked={!!row.original.secondaryDashboard}
-            onChange={e => setDashboardType({ ...row.original, secondaryDashboard: e.target.checked }, getGroupDashboards)}
+            onChange={e =>
+              setDashboardType({ ...row.original, secondaryDashboard: e.target.checked }, () => dispatch(getGroupDashboards(groupId)))
+            }
           />
         )
       },
@@ -115,7 +122,7 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
         Cell: ({ row }) => (
           <IconButton
             title="Remove dashboard from group"
-            onClick={() => removeDashboardFromGroupHandler(row.original, groupId, getGroupDashboards)}
+            onClick={() => removeDashboardFromGroupHandler(row.original, groupId, () => dispatch(getGroupDashboards(groupId)))}
           >
             <Delete />
           </IconButton>
@@ -146,7 +153,14 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
             variant="contained"
             color="primary"
             onClick={event =>
-              addDashboardToGroupHandler(event, dashboardsToBeAdded, groupId, getGroupDashboards, setDashboardsToBeAdded, setButtonDisabled)
+              addDashboardToGroupHandler(
+                event,
+                dashboardsToBeAdded,
+                groupId,
+                () => dispatch(getGroupDashboards(groupId)),
+                setDashboardsToBeAdded,
+                setButtonDisabled
+              )
             }
             disabled={buttonDisabled}
             fullWidth
@@ -175,14 +189,4 @@ const GroupDashboards = ({ getGroupDashboards, getAllDashboards, groupId, allDas
   );
 };
 
-const mapStateToProps = state => ({
-  groupDashboards: state.userGroups.groupDashboards,
-  allDashboards: state.userGroups.allDashboards
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getGroupDashboards, getAllDashboards }
-  )(GroupDashboards)
-);
+export default GroupDashboards;

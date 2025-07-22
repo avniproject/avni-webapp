@@ -4,7 +4,6 @@ import {
   BooleanInput,
   Create,
   Datagrid,
-  DisabledInput,
   Edit,
   List,
   ReferenceArrayField,
@@ -17,7 +16,8 @@ import {
   SimpleShowLayout,
   SingleFieldList,
   TextField,
-  TextInput
+  TextInput,
+  useRecordContext
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { TitleChip } from "./components/TitleChip";
@@ -33,13 +33,13 @@ const normalizeInputAfterExcludingSpaces = value => {
 };
 
 export const OrganisationGroupList = props => (
-  <List {...props} bulkActions={false}>
+  <List {...props} bulkActionButtons={false}>
     <Datagrid rowClick="show">
       <TextField label="Name" source="name" />
       <TextField label="DB User" source="dbUser" />
       <TextField source="schemaName" label="Schema name" />
       <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" />
-      <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" allowEmpty>
+      <ReferenceField resource="account" source="accountId" reference="account" label="Account Name">
         <TextField source="name" />
       </ReferenceField>
       <ReferenceArrayField label="Organisations" reference="organisation" source="organisationIds">
@@ -58,7 +58,7 @@ export const OrganisationGroupShow = props => (
       <TextField source="dbUser" label="DB User" />
       <TextField source="schemaName" label="Schema name" />
       <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" />
-      <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" allowEmpty>
+      <ReferenceField resource="account" source="accountId" reference="account" label="Account Name">
         <TextField source="name" />
       </ReferenceField>
       <ReferenceArrayField label="Organisations" reference="organisation" source="organisationIds">
@@ -104,18 +104,20 @@ export const organisationGroupCreate = props => (
         filterToQuery={searchText => ({ name: searchText })}
         validate={required("Please choose organisations")}
       >
-        <AutocompleteArrayInput {...props} options={{ label: "Organisations" }} />
+        <AutocompleteArrayInput />
       </ReferenceArrayInput>
     </SimpleForm>
   </Create>
 );
 
-export const organisationGroupEdit = props => (
-  <Edit undoable={false} title={<Title title={"Edit account"} />} {...props}>
+const EditForm = () => {
+  const record = useRecordContext();
+
+  return (
     <SimpleForm redirect="list">
       <TextInput source="name" label="Name" validate={required("Name cannot be empty")} parse={normalizeInput} />
-      <DisabledInput source="dbUser" label="DB User" />
-      <DisabledInput source="schemaName" label="Schema name" />
+      <TextInput disabled source="dbUser" label="DB User" />
+      <TextInput disabled source="schemaName" label="Schema name" />
       <BooleanField source="analyticsDataSyncActive" />
       <ToggleAnalyticsButton />
       <br />
@@ -136,8 +138,14 @@ export const organisationGroupEdit = props => (
         filterToQuery={searchText => ({ name: searchText })}
         validate={required("Please choose organisations")}
       >
-        <AutocompleteArrayInput {...props} options={{ label: "Organisations" }} />
+        <AutocompleteArrayInput />
       </ReferenceArrayInput>
     </SimpleForm>
+  );
+};
+
+export const organisationGroupEdit = props => (
+  <Edit mutationMode="pessimistic" title={<Title title={"Edit account"} />} {...props}>
+    <EditForm />
   </Edit>
 );

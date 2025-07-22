@@ -1,4 +1,6 @@
 import { useState, useEffect, useReducer } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, useParams, Navigate } from "react-router-dom";
 import { DashboardReducer } from "./DashboardReducer";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import { isEmpty, isNil, reject } from "lodash";
@@ -12,27 +14,34 @@ import { SaveComponent } from "../../../common/components/SaveComponent";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Redirect, withRouter } from "react-router-dom";
 import CreateEditDashboardSections from "./CreateEditDashboardSections";
 import { createServerError, getErrorByKey } from "../../common/ErrorUtil";
 import { getOperationalModules } from "../../../reports/reducers";
-import { connect } from "react-redux";
 import ShowDashboardFilters from "./ShowDashboardFilters";
 import { CreateEditFilterDialog } from "./CreateEditFilterDialog";
 import DashboardService from "../../../common/service/DashboardService";
 import OperationalModules from "../../../common/model/OperationalModules";
 import WebDashboard from "../../../common/model/reports/WebDashboard";
 
-const CreateEditDashboard = ({ edit, history, operationalModules, getOperationalModules, ...props }) => {
-  const [dashboard, dispatch] = useReducer(DashboardReducer, WebDashboard.createNew());
+const CreateEditDashboard = ({ edit }) => {
+  // Replace withRouter and connect with hooks
+  const navigate = useNavigate();
+  const params = useParams();
+  const dispatch = useDispatch();
+
+  // Replace mapStateToProps with useSelector
+  const operationalModules = useSelector(state => state.reports.operationalModules);
+
+  const [dashboard, dashboardDispatch] = useReducer(DashboardReducer, WebDashboard.createNew());
   const [error, setError] = useState([]);
   const [id, setId] = useState();
   const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
   const [showAddFilterModal, setShowAddFilterModal] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
+
   useEffect(() => {
-    getOperationalModules();
-  }, []);
+    dispatch(getOperationalModules());
+  }, [dispatch]);
 
   useEffect(() => {
     selectedFilter && setShowAddFilterModal(true);
@@ -40,15 +49,15 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
 
   useEffect(() => {
     if (edit && OperationalModules.isLoaded(operationalModules)) {
-      DashboardService.getDashboard(props.match.params.id, operationalModules).then(dashboard => {
-        dispatch({ type: "setData", payload: dashboard });
+      DashboardService.getDashboard(params.id, operationalModules).then(dashboard => {
+        dashboardDispatch({ type: "setData", payload: dashboard });
       });
     }
-  }, [operationalModules]);
+  }, [operationalModules, edit, params.id]);
 
   const addSection = event => {
     setError(error.filter(({ key }) => key !== "EMPTY_SECTIONS"));
-    dispatch({ type: "addSection" });
+    dashboardDispatch({ type: "addSection" });
     event.stopPropagation();
   };
 
@@ -60,7 +69,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete dashboard record?")) {
-      http.delete(`/web/dashboard/${props.match.params.id}`).then(response => {
+      http.delete(`/web/dashboard/${params.id}`).then(response => {
         if (response.status === 200) {
           setRedirectAfterDelete(true);
         }
@@ -70,7 +79,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
 
   const onChange = (type, event, errorKey) => {
     setError(error.filter(({ key }) => key !== errorKey));
-    dispatch({ type: type, payload: event.target.value });
+    dashboardDispatch({ type: type, payload: event.target.value });
   };
 
   const handleModalClose = () => {
@@ -85,7 +94,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
       return;
     }
 
-    DashboardService.save(dashboard, edit, props.match.params.id)
+    DashboardService.save(dashboard, edit, params.id)
       .then(data => setId(data.id))
       .catch(error => setError([createServerError(error, "error while saving dashboard")]));
   };
@@ -99,7 +108,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
       setError(errors);
       return;
     }
-    dispatch({
+    dashboardDispatch({
       type: "deleteFilter",
       payload: { selectedFilter }
     });
@@ -117,7 +126,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
       <DocumentationContainer filename={"Dashboard.md"}>
         {edit && (
           <Grid container style={{ justifyContent: "flex-end" }}>
-            <Button color="primary" type="button" onClick={() => setId(props.match.params.id)}>
+            <Button color="primary" type="button" onClick={() => setId(params.id)}>
               <VisibilityIcon /> Show
             </Button>
           </Grid>
@@ -140,7 +149,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
           label="Dashboard Description"
           autoComplete="off"
           value={dashboard.description}
-          onChange={event => dispatch({ type: "description", payload: event.target.value })}
+          onChange={event => dashboardDispatch({ type: "description", payload: event.target.value })}
           toolTipKey={"APP_DESIGNER_DASHBOARD_DESCRIPTION"}
         />
         <br />
@@ -173,7 +182,12 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
           {getErrorByKey(error, "EMPTY_SECTIONS")}
         </Grid>
         <Grid>
-          <CreateEditDashboardSections sections={WebDashboard.getSections(dashboard)} dispatch={dispatch} history={history} error={error} />
+          <CreateEditDashboardSections
+            sections={WebDashboard.getSections(dashboard)}
+            dispatch={dashboardDispatch}
+            history={{ push: navigate }}
+            error={error}
+          />
         </Grid>
         {getErrorByKey(error, "EMPTY_CARDS")}
         <br />
@@ -182,7 +196,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
           handleModalClose={handleModalClose}
           selectedFilter={selectedFilter}
           operationalModules={operationalModules}
-          dashboardDispatch={dispatch}
+          dashboardDispatch={dashboardDispatch}
           dashboard={dashboard}
           setShowAddFilterModal={setShowAddFilterModal}
         />
@@ -239,18 +253,11 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
             )}
           </Grid>
         </Grid>
-        {!isNil(id) && <Redirect to={`/appDesigner/dashboard/${id}/show`} />}
-        {redirectAfterDelete && <Redirect to="/appDesigner/dashboard" />}
+        {!isNil(id) && <Navigate to={`/appDesigner/dashboard/${id}/show`} replace />}
+        {redirectAfterDelete && <Navigate to="/appDesigner/dashboard" replace />}
       </DocumentationContainer>
     </Box>
   );
 };
-const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules
-});
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getOperationalModules }
-  )(CreateEditDashboard)
-);
+
+export default CreateEditDashboard;

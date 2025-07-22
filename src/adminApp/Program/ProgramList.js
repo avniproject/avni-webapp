@@ -1,7 +1,8 @@
 import { memo, useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { get, isEqual } from "lodash";
-import { Redirect, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Box, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
@@ -10,18 +11,19 @@ import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-import { connect } from "react-redux";
 import { Edit, Delete } from "@mui/icons-material";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditProgram);
 }
 
-const ProgramList = ({ history, userInfo }) => {
+const ProgramList = () => {
   const [formMappings, setFormMappings] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
   const [redirect, setRedirect] = useState(false);
   const tableRef = useRef(null);
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
 
   useEffect(() => {
     http.get("/web/operationalModules").then(response => {
@@ -31,6 +33,12 @@ const ProgramList = ({ history, userInfo }) => {
       setSubjectType(response.data.subjectTypes);
     });
   }, []);
+
+  useEffect(() => {
+    if (redirect) {
+      navigate("/appDesigner/program/create");
+    }
+  }, [redirect, navigate]);
 
   const columns = useMemo(
     () => [
@@ -116,7 +124,7 @@ const ProgramList = ({ history, userInfo }) => {
             {
               icon: Edit,
               tooltip: "Edit program",
-              onClick: (event, row) => history.push(`/appDesigner/program/${row.original.id}`),
+              onClick: (event, row) => navigate(`/appDesigner/program/${row.original.id}`),
               disabled: row => row.original.voided ?? false
             },
             {
@@ -142,7 +150,7 @@ const ProgramList = ({ history, userInfo }) => {
             }
           ]
         : [],
-    [history, userInfo]
+    [navigate, userInfo]
   );
 
   return (
@@ -180,7 +188,6 @@ const ProgramList = ({ history, userInfo }) => {
         actions={actions}
         route="/appdesigner/program"
       />
-      {redirect && <Redirect to="/appDesigner/program/create" />}
     </Box>
   );
 };
@@ -189,8 +196,4 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(connect(mapStateToProps)(memo(ProgramList, areEqual)));
+export default memo(ProgramList, areEqual);

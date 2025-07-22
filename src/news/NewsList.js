@@ -9,17 +9,18 @@ import { Paper, Box } from "@mui/material";
 import { CustomToolbar } from "./components/CustomToolbar";
 import { CreateEditNews } from "./CreateEditNews";
 import UserInfo from "../common/model/UserInfo";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { Privilege } from "openchs-models";
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-function NewsList({ userInfo }) {
+function NewsList() {
+  const userInfo = useSelector(state => state.app.userInfo);
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
   const [sorting, setSorting] = useState([{ id: "lastModifiedDateTime", desc: true }]);
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [pagination, setPagination] = useState(() => ({
     pageIndex: Number(new URLSearchParams(location.search).get("page")) || 0,
@@ -29,15 +30,14 @@ function NewsList({ userInfo }) {
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const pageFromUrl = Number(query.get("page")) || 0;
+
     if (query.get("page") && isNaN(pageFromUrl)) {
-      history.replace({
-        pathname: location.pathname,
-        search: `?page=0`
-      });
+      navigate(`${location.pathname}?page=0`, { replace: true });
       return;
     }
+
     setPagination(prev => ({ ...prev, pageIndex: pageFromUrl }));
-  }, [location.search, history]);
+  }, [location.search, navigate, location.pathname]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -57,12 +57,11 @@ function NewsList({ userInfo }) {
     setPagination(prev => {
       const newState = typeof updater === "function" ? updater(prev) : updater;
       const newPageIndex = newState.pageIndex ?? 0;
+
       if (newPageIndex !== prev.pageIndex) {
-        history.push({
-          pathname: location.pathname,
-          search: `?page=${newPageIndex}`
-        });
+        navigate(`${location.pathname}?page=${newPageIndex}`);
       }
+
       return { ...prev, ...newState };
     });
   };
@@ -146,8 +145,4 @@ function NewsList({ userInfo }) {
   );
 }
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(NewsList);
+export default NewsList;

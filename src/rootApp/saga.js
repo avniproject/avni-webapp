@@ -5,8 +5,8 @@ import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import { get, isEmpty } from "lodash";
-import { userLogout } from "react-admin";
 import * as Auth from "aws-amplify/auth";
+import { authProvider } from "adminApp/react-admin-config/authProvider";
 
 const api = {
   fetchUserInfo: () => http.fetchJson("/web/userInfo").then(response => response.json),
@@ -38,17 +38,22 @@ export function* userInfoWatcher() {
 function* setUserDetails() {
   const userDetails = yield call(api.fetchUserInfo);
   const translationData = yield call(api.fetchTranslations);
+
   if (userDetails.isAdmin) {
     const organisations = yield call(api.fetchAdminOrgs);
     yield put(setAdminOrgs(organisations));
   }
+
   yield put(setUserInfo(userDetails));
+
   const organisationName = get(userDetails, "organisationName", "");
   document.cookie = `IMPLEMENTATION-NAME=${encodeURIComponent(organisationName)}; path=/; SameSite=Lax; Secure=true`;
+
   if (!isEmpty(organisationName)) {
     const organisationConfig = yield call(api.fetchOrganisationConfig);
     yield put(setOrganisationConfig(get(organisationConfig, "organisationConfig", {})));
   }
+
   const i18nInstance = i18n.use(initReactI18next).use(LanguageDetector);
   const i18nParams = {
     resources: translationData,
@@ -69,6 +74,7 @@ function* setUserDetails() {
   };
   const init = params => i18nInstance.init(params);
   yield call(init, i18nParams);
+
   yield put(sendInitComplete());
 }
 
@@ -82,10 +88,20 @@ function* setAdminOrgsWorker() {
 }
 
 function* logoutWorker() {
-  yield call(api.logout);
-  localStorage.clear();
-  clearCookies();
-  userLogout() && Auth.signOut().then(() => (document.location.href = "/"));
+  try {
+    yield call(api.logout);
+    localStorage.clear();
+    clearCookies();
+
+    yield call([authProvider, authProvider.logout], {});
+
+    yield call([Auth, Auth.signOut]);
+
+    window.location.href = "/";
+  } catch (e) {
+    console.error("Logout failed:", e);
+    window.location.href = "/";
+  }
 }
 
 function clearCookies() {
@@ -95,7 +111,7 @@ function clearCookies() {
     const cookie = cookies[i];
     const eqPos = cookie.indexOf("=");
     const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
   }
 }
 

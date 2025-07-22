@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Title } from "react-admin";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
 import { connect } from "react-redux";
@@ -52,7 +52,7 @@ const VideoShow = props => {
         <ShowLabelValue label={"Duration"} value={video.duration} />
         <p />
       </div>
-      {editAlert && <Redirect to={"/appDesigner/video/" + props.match.params.id} />}
+      {editAlert && <Navigate to={"/appDesigner/video/" + props.match.params.id} />}
     </Box>
   );
 };

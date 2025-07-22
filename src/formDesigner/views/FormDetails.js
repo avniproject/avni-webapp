@@ -14,7 +14,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import TextField from "@mui/material/TextField";
 import FormHelperText from "@mui/material/FormHelperText";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
@@ -1082,7 +1082,7 @@ class FormDetails extends Component {
         >
           <Title title="Form Details" />
           {this.state.dataLoaded ? form : <div>Loading</div>}
-          {this.state.redirectToWorkflow && redirectTo !== undefined && <Redirect to={`/appdesigner/${redirectTo.stateName}`} />}
+          {this.state.redirectToWorkflow && redirectTo !== undefined && <Navigate to={`/appdesigner/${redirectTo.stateName}`} />}
           {this.state.successAlert && (
             <CustomizedSnackbar
               message="Successfully updated the form"

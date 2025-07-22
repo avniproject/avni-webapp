@@ -1,12 +1,12 @@
-/*  SearchFilterFormWithLogs.js  */
+/*  SearchFilterForm.js  */
 
 import React, { Fragment, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import { Link, withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { LineBreak, withParams } from "../../../common/components/utils";
+import { Link, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { LineBreak } from "../../../common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { Paper, Typography, FormControl, Button, Grid as MuiGrid, Stack } from "@mui/material";
+import { Paper, Typography, FormControl, Button, Grid, Stack } from "@mui/material";
 import { getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
 import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
@@ -21,23 +21,6 @@ import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import SubjectTypeOptions from "./SubjectTypeOptions";
 
-/* ------------------------------------------------------------ */
-/* Debug helpers                                                */
-/* ------------------------------------------------------------ */
-const DEBUG = process.env.NODE_ENV !== "production";
-const log = DEBUG ? console.log.bind(console) : () => {};
-
-const Grid = React.forwardRef(function GridDebugger(props, ref) {
-  if (DEBUG) {
-    const { children, ...rest } = props;
-    log("Grid props keys →", Object.keys(rest));
-  }
-  return <MuiGrid ref={ref} {...props} />;
-});
-
-/* ------------------------------------------------------------ */
-/* Styled components                                            */
-/* ------------------------------------------------------------ */
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(1, 3),
@@ -50,9 +33,6 @@ const StyledButtons = styled("div")(({ theme }) => ({
   "& > *": { margin: theme.spacing(1) }
 }));
 
-/* ------------------------------------------------------------ */
-/* Constants                                                    */
-/* ------------------------------------------------------------ */
 const initialStates = {
   nameAgeSearchAll: { name: "", age: "", searchAll: "" },
   entityDate: {
@@ -63,25 +43,8 @@ const initialStates = {
   }
 };
 
-/* ------------------------------------------------------------ */
-/* Pure SearchForm (original API, plus logs)                    */
-/* ------------------------------------------------------------ */
 export const SearchForm = ({ operationalModules, genders, organisationConfigs, searchRequest, searchTo, cancelTo, onSearch }) => {
   const { t } = useTranslation();
-
-  /* ------------- initial props / log ------------- */
-  useEffect(() => {
-    log("SearchForm props →", {
-      operationalModules,
-      genders,
-      organisationConfigs,
-      searchRequest,
-      searchTo,
-      cancelTo
-    });
-  }, [operationalModules, genders, organisationConfigs, searchRequest, searchTo, cancelTo]);
-
-  /* ------------- props & state ------------- */
   const searchProps = _.isFunction(onSearch) ? {} : { to: searchTo, component: Link };
 
   const {
@@ -98,7 +61,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
     searchAll
   } = searchRequest;
 
-  /* subject‑type */
   const [selectedSubjectTypeUUID, setSelectedSubjectTypeUUID] = useState(subjectType || _.get(operationalModules.subjectTypes[0], "uuid"));
 
   const initialSubjectTypeSearchFilter = organisationConfigs?.organisationConfig?.searchFilters?.filter(
@@ -106,7 +68,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   );
   const [selectedSearchFilter, setSelectedSearchFilter] = useState(initialSubjectTypeSearchFilter || []);
 
-  /* name / age / free‑text */
   const [enterValue, setEnterValue] = useState({
     name: name || "",
     age: (age && age.minValue) || "",
@@ -114,7 +75,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   });
   const searchFilterValue = e => setEnterValue({ ...enterValue, [e.target.name]: e.target.value });
 
-  /* gender checkbox list */
   let g = {};
   _.forEach(gender, x => _.assign(g, { [x]: true }));
   const [selectedGender, setSelectedGender] = useState(g);
@@ -127,10 +87,8 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
     .filter(k => selectedGender[k])
     .map(String);
 
-  /* address */
   const [addressLevelIds, setAddressLevelIds] = useState(addressIds || []);
 
-  /* date filters */
   const setPrev = d => ({
     minValue: d?.minValue || null,
     maxValue: d?.maxValue || null
@@ -150,7 +108,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
       }
     });
 
-  /* concept list */
   const getInitialConceptList = filters =>
     filters
       .filter(f => f.type === "Concept" && f.conceptDataType !== null)
@@ -171,7 +128,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   const allConceptRelated = _.map(initialConceptList, itm => _.merge(itm, _.find(concept, { uuid: itm.conceptUUID })));
   const [selectedConcepts, setSelectedConcept] = useState(allConceptRelated);
 
-  /* include‑voided / display‑count */
   const [checked, setChecked] = useState({
     includeVoided: searchRequest.includeVoided || false,
     includeDisplayCount: searchRequest.includeDisplayCount || false
@@ -179,7 +135,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   const onChecked = (key, val) => setChecked(c => ({ ...c, [key]: val }));
   const { includeVoided, includeDisplayCount } = checked;
 
-  /* ---------- helpers identical to original ---------- */
   const getSelectedConceptApi = list =>
     list.filter(c => {
       switch (c.conceptDataType) {
@@ -246,7 +201,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
 
   const conceptRequests = getConceptRequests(selectedConcepts);
 
-  /* reset helper */
   const resetFilters = () => {
     setEnterValue(initialStates.nameAgeSearchAll);
     setSelectedGender({});
@@ -256,7 +210,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
     setChecked({ includeVoided: false, includeDisplayCount: false });
   };
 
-  /* subject‑type change */
   const onSubjectTypeChange = uuid => {
     setSelectedSubjectTypeUUID(uuid);
     const sf = organisationConfigs?.organisationConfig?.searchFilters?.filter(s => s.subjectTypeUUID === uuid);
@@ -264,7 +217,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
     resetFilters();
   };
 
-  /* final search dispatch */
   const searchResult = () => {
     const req = {
       subjectType: selectedSubjectTypeUUID,
@@ -298,9 +250,6 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
     else store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: req });
   };
 
-  /* -------------------------------------------------- */
-  /* render                                             */
-  /* -------------------------------------------------- */
   return (
     <FormControl component="fieldset">
       <SubjectTypeOptions
@@ -379,13 +328,12 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   );
 };
 
-/* ------------------------------------------------------------ */
-/* SearchFilterForm – wrapper with Breadcrumbs                  */
-/* ------------------------------------------------------------ */
-export const SearchFilterForm = ({ match, operationalModules, genders, organisationConfigs, searchRequest }) => {
+export const SearchFilterForm = ({ operationalModules, genders, organisationConfigs, searchRequest }) => {
+  const location = useLocation();
+
   return (
     <Fragment>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={location.pathname} />
       <StyledPaper>
         <StyledTypography component="span">{useTranslation().t("search")}</StyledTypography>
         <LineBreak num={1} />
@@ -403,22 +351,17 @@ export const SearchFilterForm = ({ match, operationalModules, genders, organisat
   );
 };
 
-/* ------------------------------------------------------------ */
-/* Container (HOC wrapped)                                      */
-/* ------------------------------------------------------------ */
-function SearchFilterFormContainer({
-  match,
-  operationalModules,
-  getGenders,
-  genders,
-  getOrganisationConfig,
-  organisationConfigs,
-  searchRequest
-}) {
+function SearchFilterFormContainer() {
+  const dispatch = useDispatch();
+  const operationalModules = useSelector(state => state.dataEntry.metadata.operationalModules);
+  const genders = useSelector(state => state.dataEntry.metadata.genders);
+  const organisationConfigs = useSelector(state => state.dataEntry.metadata.organisationConfigs);
+  const searchRequest = useSelector(state => state.dataEntry.searchFilterReducer.request);
+
   useEffect(() => {
-    if (!organisationConfigs) getOrganisationConfig();
-    getGenders();
-  }, []);
+    if (!organisationConfigs) dispatch(getOrganisationConfig());
+    dispatch(getGenders());
+  }, [dispatch, organisationConfigs]);
 
   if (!(operationalModules && genders && organisationConfigs)) {
     return <CustomizedBackdrop load={false} />;
@@ -426,7 +369,6 @@ function SearchFilterFormContainer({
 
   return (
     <SearchFilterForm
-      match={match}
       operationalModules={operationalModules}
       genders={genders}
       organisationConfigs={organisationConfigs}
@@ -435,25 +377,4 @@ function SearchFilterFormContainer({
   );
 }
 
-const mapStateToProps = state => ({
-  operationalModules: state.dataEntry.metadata.operationalModules,
-  genders: state.dataEntry.metadata.genders,
-  organisationConfigs: state.dataEntry.metadata.organisationConfigs,
-  searchRequest: state.dataEntry.searchFilterReducer.request
-});
-const mapDispatchToProps = { getGenders, getOrganisationConfig };
-
-const WrappedContainer = withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(SearchFilterFormContainer)
-  )
-);
-
-/* ------------------------------------------------------------ */
-/* Exports                                                      */
-/* ------------------------------------------------------------ */
-export default WrappedContainer; // unchanged default
-export { WrappedContainer as SearchFilterFormContainerLogged }; // if needed
+export default SearchFilterFormContainer;

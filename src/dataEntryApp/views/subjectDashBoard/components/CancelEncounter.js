@@ -2,9 +2,8 @@ import { Fragment, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Grid, Paper } from "@mui/material";
 import { isEqual } from "lodash";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation, useSearchParams } from "react-router-dom";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   createCancelEncounter,
@@ -26,22 +25,30 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   flexGrow: 1
 }));
 
-const CancelEncounter = ({ match, encounter, ...props }) => {
-  const editCancelEncounter = isEqual(match.path, "/app/subject/editCancelEncounter");
-  const encounterUuid = match.queryParams.uuid;
+const CancelEncounter = () => {
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  const cancelEncounterForm = useSelector(state => state.dataEntry.encounterReducer.encounterForm);
+  const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+  const encounter = useSelector(state => state.dataEntry.encounterReducer.encounter);
+
+  const isEditCancelEncounter = isEqual(location.pathname, "/app/subject/editCancelEncounter");
+  const encounterUuid = searchParams.get("uuid");
 
   useEffect(() => {
-    props.resetState();
-    if (editCancelEncounter) {
-      props.editCancelEncounter(encounterUuid);
+    dispatch(resetState());
+    if (isEditCancelEncounter) {
+      dispatch(editCancelEncounter(encounterUuid));
     } else {
-      props.createCancelEncounter(encounterUuid);
+      dispatch(createCancelEncounter(encounterUuid));
     }
-  }, []);
+  }, [dispatch, isEditCancelEncounter, encounterUuid]);
 
   return (
     <Fragment>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={location.pathname} />
       <StyledPaper>
         <Grid
           container
@@ -52,7 +59,7 @@ const CancelEncounter = ({ match, encounter, ...props }) => {
           }}
         >
           <Grid size={12}>
-            {props.cancelEncounterForm && encounter && props.subjectProfile ? (
+            {cancelEncounterForm && encounter && subjectProfile ? (
               <CancelEncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
                 <DateFormElement
                   uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
@@ -71,24 +78,4 @@ const CancelEncounter = ({ match, encounter, ...props }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  cancelEncounterForm: state.dataEntry.encounterReducer.encounterForm,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  encounter: state.dataEntry.encounterReducer.encounter
-});
-
-const mapDispatchToProps = {
-  createCancelEncounter,
-  editCancelEncounter,
-  updateEncounter,
-  resetState
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(CancelEncounter)
-  )
-);
+export default CancelEncounter;

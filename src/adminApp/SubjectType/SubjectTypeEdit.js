@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
-import { Redirect, withRouter } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Box, Button, FormLabel, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { Visibility, Delete } from "@mui/icons-material";
@@ -17,10 +18,12 @@ import EditSubjectTypeFields from "./EditSubjectTypeFields";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { connect } from "react-redux";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
-const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
+const SubjectTypeEdit = () => {
+  const organisationConfig = useSelector(state => state.app.organisationConfig);
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [groupValidationError, setGroupValidationError] = useState(false);
@@ -41,6 +44,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
     templates: []
   });
   const entityType = "Subject";
+
   useEffect(() => {
     getMessageRules(entityType, subjectType.subjectTypeId, rulesDispatch);
     return identity;
@@ -50,6 +54,18 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
     getMessageTemplates(rulesDispatch);
     return identity;
   }, []);
+
+  useEffect(() => {
+    if (redirectShow) {
+      navigate(`/appDesigner/subjectType/${id}/show`);
+    }
+  }, [redirectShow, navigate, id]);
+
+  useEffect(() => {
+    if (deleteAlert) {
+      navigate("/appDesigner/subjectType");
+    }
+  }, [deleteAlert, navigate]);
 
   const onRulesChange = rules => {
     rulesDispatch({ type: "setRules", payload: rules });
@@ -66,13 +82,13 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
 
   useEffect(() => {
     http
-      .get("/web/subjectType/" + props.match.params.id)
+      .get("/web/subjectType/" + id)
       .then(response => response.data)
       .then(result => {
         setSubjectTypeData(result);
         dispatch({ type: "setData", payload: result });
       });
-  }, []);
+  }, [id]);
 
   const onSubmit = async () => {
     const groupValidationError = validateGroup(subjectType.groupRoles);
@@ -92,10 +108,10 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
       }
       let subjectTypeSavePromise = () =>
         http
-          .put("/web/subjectType/" + props.match.params.id, {
+          .put("/web/subjectType/" + id, {
             ...subjectType,
             name: subjectType.name,
-            id: props.match.params.id,
+            id: id,
             organisationId: subjectTypeData.organisationId,
             active: subjectType.active,
             subjectTypeOrganisationId: subjectTypeData.subjectTypeOrganisationId,
@@ -127,7 +143,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete subject type?")) {
-      http.delete("/web/subjectType/" + props.match.params.id).then(response => {
+      http.delete("/web/subjectType/" + id).then(response => {
         if (response.status === 200) {
           setDeleteAlert(true);
         }
@@ -151,85 +167,64 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper",
-        display: "flex",
-        flexDirection: "column"
+        bgcolor: "background.paper"
       }}
     >
       <Title title={"Edit subject type"} />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
-        <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
+        <Button color="primary" type="button" onClick={() => navigate(`/appDesigner/subjectType/${id}/show`)}>
           <Visibility /> Show
         </Button>
       </Grid>
-      <Box sx={{ flexGrow: 1, mb: 2 }}>
-        <div className="container" style={{ float: "left" }}>
-          <EditSubjectTypeFields
-            subjectType={subjectType}
-            onSetFile={setFile}
-            onRemoveFile={setRemoveFile}
-            formList={formList}
-            groupValidationError={groupValidationError}
-            dispatch={dispatch}
-            source={"edit"}
-          />
-          {organisationConfig && organisationConfig.enableMessaging ? (
-            <MessageRules
-              templateFetchError={templateFetchError}
-              rules={rules}
-              templates={templates}
-              onChange={onRulesChange}
-              entityType={entityType}
-              entityTypeId={subjectType.subjectTypeId}
-              msgError={msgError}
-            />
-          ) : (
-            <></>
-          )}
-          <p />
-          <AdvancedSettings
-            subjectType={subjectType}
-            dispatch={dispatch}
-            locationTypes={locationTypes}
-            formMappings={formMappings}
-            isEdit={true}
-          />
-          {nameValidation && (
-            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-              Empty name is not allowed.
-            </FormLabel>
-          )}
-          {error !== "" && (
-            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-              {error}
-            </FormLabel>
-          )}
-        </div>
-      </Box>
-      <Grid container sx={{ justifyContent: "space-between", alignItems: "center" }}>
+      <EditSubjectTypeFields
+        subjectType={subjectType}
+        dispatch={dispatch}
+        nameValidation={nameValidation}
+        error={error}
+        formList={formList}
+        subjectTypes={subjectTypes}
+        locationTypes={locationTypes}
+        file={file}
+        setFile={setFile}
+        removeFile={removeFile}
+        setRemoveFile={setRemoveFile}
+        organisationConfig={organisationConfig}
+      />
+      <AdvancedSettings
+        subjectType={subjectType}
+        dispatch={dispatch}
+        groupValidationError={groupValidationError}
+        organisationConfig={organisationConfig}
+      />
+      <MessageRules
+        rules={rules}
+        templates={templates}
+        onChange={onRulesChange}
+        templateFetchError={templateFetchError}
+        entityType={entityType}
+        entityTypeId={subjectType.subjectTypeId}
+        error={msgError}
+      />
+      <Grid container sx={{ justifyContent: "flex-end", mt: 2 }}>
         <Grid item>
-          <SaveComponent name="save" onSubmit={onSubmit} />
+          <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginRight: "14px" }} />
         </Grid>
         <Grid item>
           <Button
-            disabled={!_.isEmpty(disableDelete)}
-            sx={{
-              color: !_.isEmpty(disableDelete) ? "default" : "red"
+            style={{
+              backgroundColor: disableDelete ? "lightgray" : "#f44336",
+              color: "white"
             }}
-            onClick={() => onDelete()}
+            startIcon={<Delete />}
+            onClick={onDelete}
+            disabled={disableDelete}
           >
-            <Delete /> Delete
+            Delete
           </Button>
         </Grid>
       </Grid>
-      {redirectShow && <Redirect to={`/appDesigner/subjectType/${props.match.params.id}/show`} />}
-      {deleteAlert && <Redirect to="/appDesigner/subjectType" />}
     </Box>
   );
 };
 
-const mapStateToProps = state => ({
-  organisationConfig: state.app.organisationConfig
-});
-
-export default withRouter(connect(mapStateToProps)(SubjectTypeEdit));
+export default SubjectTypeEdit;

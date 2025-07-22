@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import { httpClient as http } from "common/utils/httpClient";
-import { Redirect, withRouter } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
@@ -15,7 +15,7 @@ import _, { isEmpty, isNil, orderBy } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { SystemInfo } from "./SystemInfo";
 import UserInfo from "../../common/model/UserInfo";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { Privilege } from "openchs-models";
 import MediaService from "adminApp/service/MediaService";
 import { ImagePreview } from "../../common/components/AvniImageUpload";
@@ -251,7 +251,10 @@ function UsedAsAnswer({ concepts }) {
   );
 }
 
-function ConceptDetails({ userInfo, ...props }) {
+function ConceptDetails() {
+  const { uuid } = useParams();
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
   const [editAlert, setEditAlert] = useState(false);
   const [data, setData] = useState({});
   const [usage, setUsage] = useState({});
@@ -259,7 +262,7 @@ function ConceptDetails({ userInfo, ...props }) {
   const [subjectTypeOptions, setSubjectTypeOptions] = useState([]);
 
   async function onLoad() {
-    const conceptRes = (await http.get("/web/concept/" + props.match.params.uuid)).data;
+    const conceptRes = (await http.get("/web/concept/" + uuid)).data;
     if (conceptRes.dataType === "Location") {
       const addressRes = await http.get("/addressLevelType?page=0&size=10&sort=level%2CDESC");
       if (addressRes.status === 200) {
@@ -276,7 +279,7 @@ function ConceptDetails({ userInfo, ...props }) {
       const subjectRes = await http.get("/web/operationalModules");
       setSubjectTypeOptions(subjectRes.data.subjectTypes);
     }
-    const usageRes = await http.get("/web/concept/usage/" + props.match.params.uuid);
+    const usageRes = await http.get("/web/concept/usage/" + uuid);
     setUsage(usageRes.data);
 
     if (conceptRes.mediaUrl) {
@@ -306,7 +309,13 @@ function ConceptDetails({ userInfo, ...props }) {
 
   useEffect(() => {
     onLoad();
-  }, [props.match.params.uuid]);
+  }, [uuid]);
+
+  useEffect(() => {
+    if (editAlert) {
+      navigate(`/appdesigner/concept/${uuid}/edit`);
+    }
+  }, [editAlert, navigate, uuid]);
 
   const hasEditPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);
 
@@ -383,15 +392,9 @@ function ConceptDetails({ userInfo, ...props }) {
           <p />
           <SystemInfo {...data} />
         </div>
-
-        {editAlert && <Redirect to={"/appdesigner/concept/" + props.match.params.uuid + "/edit"} />}
       </Box>
     </>
   );
 }
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(connect(mapStateToProps)(ConceptDetails));
+export default ConceptDetails;

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import { Route, withRouter } from "react-router-dom";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import SubjectSearch from "./views/search/SubjectSearch";
 import SubjectRegister from "./views/registration/SubjectRegister";
 import {
@@ -41,18 +41,28 @@ const StyledGrid = styled(Grid)({
   justifyContent: "center"
 });
 
-const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
+const DataEntry = () => {
+  const location = useLocation();
   const dispatch = useDispatch();
+
+  const operationalModules = useSelector(state => state.dataEntry.metadata.operationalModules);
+  const orgConfig = useSelector(state => state.translationsReducer.orgConfig);
   const legacyRulesBundleLoaded = useSelector(selectLegacyRulesBundleLoaded);
   const legacyRulesLoaded = useSelector(selectLegacyRulesLoaded);
+
   const loadApp = operationalModules && orgConfig && legacyRulesBundleLoaded && legacyRulesLoaded;
 
+  const path =
+    location.pathname
+      .split("/")
+      .slice(0, -1)
+      .join("/") || "";
   useEffect(() => {
     dispatch(getOperationalModules());
     dispatch(getOrgConfigInfo());
     dispatch(getLegacyRulesBundle());
     dispatch(getLegacyRules());
-  }, []);
+  }, [dispatch]);
 
   return (
     <StyledRoot>
@@ -63,34 +73,36 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
               <AppBar />
             </Grid>
             <Grid size={12}>
-              <Route exact path={[path, `${path}/searchFilter`]} component={SearchFilterFormContainer} />
-              <Route exact path={`${path}/search`} component={SubjectSearch} />
-              <Route path={`${path}/register`} component={SubjectRegister} />
-              <Route path={`${path}/editSubject`} component={SubjectRegister} />
-              <Route exact path={`${path}/subject`} component={SubjectDashboard} />
-              <Route exact path={`${path}/subject/subjectProfile`} component={props => <SubjectDashboard tab={1} {...props} />} />
-              {/* <Route exact path={`${path}/subject`} component={SubjectDashboard} /> */}
-              <Route exact path={`${path}/subject/enrol`} component={ProgramEnrol} />
-              <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />
-              <Route exact path={`${path}/subject/viewEncounter`} component={ViewVisit} />
-              <Route exact path={`${path}/subject/addRelative`} component={AddRelative} />
-              <Route exact path={`${path}/subject/addGroupMember`} component={GroupMembershipAddEdit} />
-              <Route exact path={`${path}/subject/editGroupMembership`} component={GroupMembershipAddEdit} />
-              <Route exact path={`${path}/subject/newProgramVisit`} component={NewProgramVisit} />
-              <Route exact path={`${path}/subject/programEncounter`} component={ProgramEncounter} />
-              <Route path={`${path}/subject/editProgramEncounter`} component={ProgramEncounter} />
-              <Route path={`${path}/subject/cancelProgramEncounter`} component={CancelProgramEncounter} />
-              <Route path={`${path}/subject/editCancelProgramEncounter`} component={CancelProgramEncounter} />
-              <Route exact path={`${path}/subject/newGeneralVisit`} component={NewGeneralVisit} />
-              <Route exact path={`${path}/subject/encounter`} component={Encounter} />
-              <Route path={`${path}/subject/editEncounter`} component={Encounter} />
-              <Route path={`${path}/subject/cancelEncounter`} component={CancelEncounter} />
-              <Route path={`${path}/subject/editCancelEncounter`} component={CancelEncounter} />
-              <Route exact path={`${path}/news`} component={NewsList} />
-              <Route exact path={`${path}/news/:id/details`} component={NewsDetails} />
+              <Routes>
+                <Route path={path} element={<SearchFilterFormContainer />} />
+                <Route path={`${path}/searchFilter`} element={<SearchFilterFormContainer />} />
+                <Route path={`${path}/search`} element={<SubjectSearch />} />
+                <Route path={`${path}/register`} element={<SubjectRegister />} />
+                <Route path={`${path}/editSubject`} element={<SubjectRegister />} />
+                <Route path={`${path}/subject`} element={<SubjectDashboard />} />
+                <Route path={`${path}/subject/subjectProfile`} element={<SubjectDashboard tab={1} />} />
+                <Route path={`${path}/subject/enrol`} element={<ProgramEnrol />} />
+                <Route path={`${path}/subject/viewProgramEncounter`} element={<ViewVisit />} />
+                <Route path={`${path}/subject/viewEncounter`} element={<ViewVisit />} />
+                <Route path={`${path}/subject/addRelative`} element={<AddRelative />} />
+                <Route path={`${path}/subject/addGroupMember`} element={<GroupMembershipAddEdit />} />
+                <Route path={`${path}/subject/editGroupMembership`} element={<GroupMembershipAddEdit />} />
+                <Route path={`${path}/subject/newProgramVisit`} element={<NewProgramVisit />} />
+                <Route path={`${path}/subject/programEncounter`} element={<ProgramEncounter />} />
+                <Route path={`${path}/subject/editProgramEncounter`} element={<ProgramEncounter />} />
+                <Route path={`${path}/subject/cancelProgramEncounter`} element={<CancelProgramEncounter />} />
+                <Route path={`${path}/subject/editCancelProgramEncounter`} element={<CancelProgramEncounter />} />
+                <Route path={`${path}/subject/newGeneralVisit`} element={<NewGeneralVisit />} />
+                <Route path={`${path}/subject/encounter`} element={<Encounter />} />
+                <Route path={`${path}/subject/editEncounter`} element={<Encounter />} />
+                <Route path={`${path}/subject/cancelEncounter`} element={<CancelEncounter />} />
+                <Route path={`${path}/subject/editCancelEncounter`} element={<CancelEncounter />} />
+                <Route path={`${path}/news`} element={<NewsList />} />
+                <Route path={`${path}/news/:id/details`} element={<NewsDetails />} />
+                <Route path={`${path}/audio`} element={<Player />} />
+              </Routes>
             </Grid>
           </StyledGrid>
-          <Route path={`${path}/audio`} component={Player} />
         </I18nextProvider>
       ) : (
         <Loading />
@@ -99,15 +111,4 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  operationalModules: state.dataEntry.metadata.operationalModules,
-  orgConfig: state.translationsReducer.orgConfig,
-  sagaErrorState: state.sagaErrorState
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(DataEntry)
-);
+export default DataEntry;

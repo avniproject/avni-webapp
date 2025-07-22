@@ -1,61 +1,45 @@
-import { Component, Fragment } from "react";
-import { connect } from "react-redux";
-import { crudUpdate } from "react-admin";
+import { useState, Fragment } from "react";
 import { Button } from "@mui/material";
+import { useRecordContext, useNotify } from "react-admin";
 import PasswordDialog from "./PasswordDialog";
 import { httpClient } from "../../common/utils/httpClient";
 import { get } from "lodash";
 
-class ResetPasswordButton extends Component {
-  state = {
-    isOpen: false,
-    error: null
+const ResetPasswordButton = () => {
+  const [isOpen, setOpen] = useState(false);
+  const [error, setError] = useState(null);
+  const record = useRecordContext();
+  const notify = useNotify();
+
+  const handleClick = () => setOpen(true);
+  const handleDialogClose = () => {
+    setOpen(false);
+    setError(null);
   };
 
-  handleClick = () => {
-    this.setState({ isOpen: true });
-  };
-
-  handleDialogClose = () => {
-    this.setState({ isOpen: false });
-  };
-
-  handleConfirm = async password => {
-    const { record } = this.props;
-
+  const handleConfirm = async password => {
     try {
       await httpClient.putJson("/user/resetPassword", {
         userId: record.id,
         password: password
       });
-      this.setState({ isOpen: false });
+      notify("Password reset successfully", { type: "info" });
+      setOpen(false);
     } catch (e) {
-      this.setState({
-        error: get(e, "response.data.message", "Unknown error. Could not set password")
-      });
+      setError(get(e, "response.data.message", "Unknown error. Could not set password"));
     }
   };
 
-  render() {
-    const buttonLabel = "Reset password";
-    return (
-      <Fragment>
-        <Button onClick={this.handleClick} style={{ color: "#3f51b5" }}>
-          {buttonLabel}
-        </Button>
-        <PasswordDialog
-          open={this.state.isOpen}
-          username={this.props.record.username}
-          onConfirm={this.handleConfirm}
-          onClose={this.handleDialogClose}
-          serverError={this.state.error}
-        />
-      </Fragment>
-    );
-  }
-}
+  if (!record) return null;
 
-export default connect(
-  null,
-  { crudUpdate }
-)(ResetPasswordButton);
+  return (
+    <Fragment>
+      <Button onClick={handleClick} style={{ color: "#3f51b5" }}>
+        Reset password
+      </Button>
+      <PasswordDialog open={isOpen} username={record.username} onConfirm={handleConfirm} onClose={handleDialogClose} serverError={error} />
+    </Fragment>
+  );
+};
+
+export default ResetPasswordButton;

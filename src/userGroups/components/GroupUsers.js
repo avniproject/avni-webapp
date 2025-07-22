@@ -3,13 +3,16 @@ import { MaterialReactTable } from "material-react-table";
 import Select from "react-select";
 import { Button, Grid, Typography, IconButton } from "@mui/material";
 import api from "../api";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getGroupUsers, getAllUsers } from "../reducers";
 import GroupModel from "../../common/model/GroupModel";
 import { PersonAddDisabled } from "@mui/icons-material";
 
-const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers, ...props }) => {
+const GroupUsers = ({ groupId }) => {
+  const dispatch = useDispatch();
+  const groupUsers = useSelector(state => state.userGroups.groupUsers);
+  const allUsers = useSelector(state => state.userGroups.allUsers);
+
   const [otherUsers, setOtherUsers] = useState([]);
   const [otherUsersOptions, setOtherUsersOptions] = useState([]);
   const [usersToBeAdded, setUsersToBeAdded] = useState([]);
@@ -17,9 +20,9 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
   const selectRef = useRef(null);
 
   useEffect(() => {
-    getGroupUsers(groupId);
-    getAllUsers();
-  }, [getGroupUsers, getAllUsers, groupId]);
+    dispatch(getGroupUsers(groupId));
+    dispatch(getAllUsers());
+  }, [dispatch, groupId]);
 
   useEffect(() => {
     if (allUsers && groupUsers) {
@@ -45,7 +48,7 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
         if (!response_data && error) {
           alert(error);
         } else if (response_data) {
-          getGroupUsers(groupId);
+          dispatch(getGroupUsers(groupId));
           setUsersToBeAdded([]);
           setButtonDisabled(true);
         }
@@ -64,7 +67,7 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
         if (!response_data && error) {
           alert(error);
         } else if (response_data) {
-          getGroupUsers(groupId);
+          dispatch(getGroupUsers(groupId));
         }
       })
       .catch(error => {
@@ -94,7 +97,7 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
         )
       }
     ],
-    []
+    [groupId]
   );
 
   const selectStyles = {
@@ -146,14 +149,4 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
   );
 };
 
-const mapStateToProps = state => ({
-  groupUsers: state.userGroups.groupUsers,
-  allUsers: state.userGroups.allUsers
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getGroupUsers, getAllUsers }
-  )(GroupUsers)
-);
+export default GroupUsers;

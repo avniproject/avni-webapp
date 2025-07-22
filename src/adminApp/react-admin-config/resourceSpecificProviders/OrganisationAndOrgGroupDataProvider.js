@@ -9,26 +9,41 @@ class OrganisationAndOrgGroupDataProvider {
     return this.SupportedOperations.includes(operation);
   }
 
-  static execute(type, params, resource, resourcePromise) {
+  static async execute(type, params, resource, resourcePromise) {
+    const raResponse = await resourcePromise;
+
     if (type === GET_LIST) {
-      return resourcePromise.then(raListResponse => {
-        const entityUUIDs = raListResponse.data.map(x => x.uuid);
-        return EtlJobService.getJobStatuses(entityUUIDs).then(jobStatuses => {
-          const map = CollectionUtil.toObject(jobStatuses.data, "entityUUID", "analyticsEnabled");
-          raListResponse.data.forEach(x => (x["analyticsDataSyncActive"] = map[x["uuid"]] || false));
-          return raListResponse;
-        });
-      });
-    } else if (type === GET_ONE) {
-      return resourcePromise.then(raResource => {
-        return EtlJobService.getJob(raResource.data.uuid, resource)
-          .then(jobSummary => {
-            raResource.data["analyticsDataSyncActive"] = jobSummary != null;
-            return raResource;
-          })
-          .catch(() => raResource);
-      });
+      const entityUUIDs = raResponse.data.map(x => x.uuid);
+      const jobStatuses = await EtlJobService.getJobStatuses(entityUUIDs);
+      const statusMap = CollectionUtil.toObject(jobStatuses.data, "entityUUID", "analyticsEnabled");
+
+      const updatedData = raResponse.data.map(x => ({
+        ...x,
+        analyticsDataSyncActive: statusMap[x.uuid] || false
+      }));
+
+      return {
+        ...raResponse,
+        data: updatedData
+      };
     }
+
+    if (type === GET_ONE) {
+      try {
+        const jobSummary = await EtlJobService.getJob(raResponse.data.uuid, resource);
+        return {
+          ...raResponse,
+          data: {
+            ...raResponse.data,
+            analyticsDataSyncActive: !!jobSummary
+          }
+        };
+      } catch {
+        return raResponse;
+      }
+    }
+
+    return raResponse;
   }
 }
 

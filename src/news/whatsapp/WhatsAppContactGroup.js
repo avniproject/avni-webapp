@@ -2,7 +2,7 @@ import { Fragment, useCallback, useState, useEffect } from "react";
 import { Tabs, Box, Tab, Typography, Breadcrumbs, LinearProgress, Snackbar, IconButton } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import { Link, withRouter } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
 import AddContactGroupUsers from "./AddContactGroupUsers";
 import { getLinkTo } from "../../common/utils/routeUtil";
@@ -152,9 +152,9 @@ const ContactGroupTabs = {
   messages: 2
 };
 
-const WhatsAppContactGroup = ({ match }) => {
+const WhatsAppContactGroup = () => {
+  const { contactGroupId } = useParams();
   const [group, setGroup] = useState({ label: "..." });
-  const contactGroupId = match.params["contactGroupId"];
   const [selectedTab, setSelectedTab] = useState(ContactGroupTabs.members);
   const [editingContactGroup, setEditingContactGroup] = useState(false);
   const [updatedContactGroup, setUpdatedContactGroup] = useState(false);
@@ -218,4 +218,4 @@ const WhatsAppContactGroup = ({ match }) => {
   );
 };
 
-export default withRouter(WhatsAppContactGroup);
+export default WhatsAppContactGroup;

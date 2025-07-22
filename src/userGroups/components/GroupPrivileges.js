@@ -1,8 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { Switch, FormGroup, FormControlLabel } from "@mui/material";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { getGroupPrivilegeList, getGroups } from "../reducers";
 import api from "../api";
 import { Privilege } from "openchs-models";
@@ -98,15 +98,15 @@ const modifyGroupPrivilegesToIncludeGroupingTypeColumn = function(groupPrivilege
   });
 };
 
-const GroupPrivileges = ({
-  groupId,
-  hasAllPrivileges,
-  setHasAllPrivileges,
-  groupName,
-  getGroups,
-  getGroupPrivilegeList,
-  groupPrivilegeList
-}) => {
+const GroupPrivileges = ({ groupId, hasAllPrivileges, setHasAllPrivileges, groupName }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+
+  // Use useSelector instead of connect
+  const groupPrivilegeList = useSelector(state => state.userGroups.groupPrivilegeList);
+
   const [privilegeDependencies, setPrivilegeDependencies] = useState(null);
   const [privilegesCheckedState, setPrivilegesCheckedState] = useState(null);
   const [allPrivilegesAllowed, setAllPrivilegesAllowed] = useState(hasAllPrivileges);
@@ -114,9 +114,9 @@ const GroupPrivileges = ({
 
   useEffect(() => {
     if (!allPrivilegesAllowed) {
-      getGroupPrivilegeList(groupId);
+      dispatch(getGroupPrivilegeList(groupId));
     }
-  }, []);
+  }, [dispatch, allPrivilegesAllowed, groupId]);
 
   useEffect(() => {
     if (!groupPrivilegeList) return;
@@ -174,7 +174,7 @@ const GroupPrivileges = ({
       const [response_data, error] = response;
       if (!response_data && error) {
         alert(error);
-        getGroupPrivilegeList(groupId);
+        dispatch(getGroupPrivilegeList(groupId));
       }
     });
   };
@@ -186,11 +186,11 @@ const GroupPrivileges = ({
       if (!response_data && error) {
         alert(error);
       }
-      getGroups();
+      dispatch(getGroups());
     });
 
     if (!allowOptionSelected) {
-      getGroupPrivilegeList(groupId);
+      dispatch(getGroupPrivilegeList(groupId));
     }
     setAllPrivilegesAllowed(allowOptionSelected);
     setHasAllPrivileges(allowOptionSelected);
@@ -261,13 +261,4 @@ const GroupPrivileges = ({
   );
 };
 
-const mapStateToProps = state => ({
-  groupPrivilegeList: state.userGroups.groupPrivilegeList
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getGroups, getGroupPrivilegeList }
-  )(GroupPrivileges)
-);
+export default GroupPrivileges;

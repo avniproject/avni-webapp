@@ -1,11 +1,9 @@
-import { Component } from "react";
-import PropTypes from "prop-types";
+import { useEffect } from "react";
 import { Admin, Resource } from "react-admin";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
-import { authProvider, LogoutButton } from "./react-admin-config";
-import { adminHistory, store } from "../common/store";
+import { authProvider } from "./react-admin-config";
 import { UserCreate, UserDetail, UserEdit, UserList } from "./user";
 import { CatchmentCreate, CatchmentDetail, CatchmentEdit, CatchmentList } from "./catchment";
 import { LocationTypeCreate, LocationTypeDetail, LocationTypeEdit, LocationTypeList } from "./addressLevelType";
@@ -19,7 +17,6 @@ import {
 } from "./IdentifierUserAssignment";
 import OrganisationConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
-
 import { UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
@@ -33,158 +30,124 @@ import UserInfo from "../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import OrgManagerContext from "./OrgManagerContext";
 
-class OrgManager extends Component {
-  static childContextTypes = {
-    store: PropTypes.object
-  };
+const OrgManager = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  getChildContext() {
-    return { store };
-  }
+  const organisation = useSelector(state => state.app.organisation);
+  const user = useSelector(state => state.app.authSession);
+  const userInfo = useSelector(state => state.app.userInfo);
 
-  componentWillMount() {
+  useEffect(() => {
     if (["#/admin", "#/admin/"].includes(window.location.hash)) {
-      this.props.history.replace("/admin/user");
+      navigate("/admin/user", { replace: true });
     }
+    dispatch(getAdminOrgs());
+  }, [navigate, dispatch]);
+
+  if (CurrentUserService.isAdminButNotImpersonating(userInfo)) {
+    return <DeploymentManager />;
   }
 
-  render() {
-    const { organisation, user, userInfo } = this.props;
-    const {
-      EditLocationType,
-      EditLocation,
-      EditCatchment,
-      EditUserConfiguration,
-      EditUserGroup,
-      EditIdentifierSource,
-      EditIdentifierUserAssignment,
-      UploadMetadataAndData,
-      EditOrganisationConfiguration,
-      DeleteOrganisationConfiguration,
-      EditLanguage,
-      PhoneVerification
-    } = Privilege.PrivilegeType;
-    const { hasPrivilege, hasMultiplePrivileges } = UserInfo;
+  const {
+    EditLocationType,
+    EditLocation,
+    EditCatchment,
+    EditUserConfiguration,
+    EditUserGroup,
+    EditIdentifierSource,
+    EditIdentifierUserAssignment,
+    UploadMetadataAndData,
+    EditOrganisationConfiguration,
+    DeleteOrganisationConfiguration,
+    EditLanguage,
+    PhoneVerification
+  } = Privilege.PrivilegeType;
 
-    if (CurrentUserService.isAdminButNotImpersonating(userInfo)) return <DeploymentManager />;
+  const { hasPrivilege, hasMultiplePrivileges } = UserInfo;
+  const canEditCatchment = hasPrivilege(userInfo, EditCatchment);
 
-    const canEditCatchment = hasPrivilege(userInfo, EditCatchment);
-    return (
-      <OrgManagerContext.Provider value={{ organisation }}>
-        <Admin
-          title="Manage Organisation"
-          authProvider={authProvider}
-          history={adminHistory}
-          logoutButton={WithProps({ user }, LogoutButton)}
-          customRoutes={customRoutes}
-          appLayout={AdminLayout}
-        >
+  return (
+    <OrgManagerContext.Provider value={{ organisation }}>
+      <Admin title="Manage Organisation" authProvider={authProvider} layout={AdminLayout} customRoutes={customRoutes}>
+        <Resource
+          name="addressLevelType"
+          options={{ label: "Location Types" }}
+          list={LocationTypeList}
+          show={LocationTypeDetail}
+          create={hasPrivilege(userInfo, EditLocationType) && LocationTypeCreate}
+          edit={hasPrivilege(userInfo, EditLocationType) && LocationTypeEdit}
+        />
+        <Resource
+          name="locations"
+          options={{ label: "Locations" }}
+          list={LocationList}
+          show={LocationDetail}
+          create={hasPrivilege(userInfo, EditLocation) && LocationCreate}
+          edit={hasPrivilege(userInfo, EditLocation) && LocationEdit}
+        />
+        <Resource
+          name="catchment"
+          list={CatchmentList}
+          show={WithProps({ hasEditPrivilege: canEditCatchment }, CatchmentDetail)}
+          create={canEditCatchment && CatchmentCreate}
+          edit={canEditCatchment && CatchmentEdit}
+        />
+        {hasPrivilege(userInfo, EditUserConfiguration) && (
           <Resource
-            name="addressLevelType"
-            options={{ label: "Location Types" }}
-            list={LocationTypeList}
-            show={LocationTypeDetail}
-            create={hasPrivilege(userInfo, EditLocationType) && LocationTypeCreate}
-            edit={hasPrivilege(userInfo, EditLocationType) && LocationTypeEdit}
+            name="user"
+            list={UserList}
+            create={WithProps({ organisation, userInfo }, UserCreate)}
+            show={WithProps({ user, hasEditUserPrivilege: true }, UserDetail)}
+            edit={WithProps({ organisation }, UserEdit)}
           />
-          <Resource
-            name="locations"
-            options={{ label: "Locations" }}
-            list={LocationList}
-            show={LocationDetail}
-            create={hasPrivilege(userInfo, EditLocation) && LocationCreate}
-            edit={hasPrivilege(userInfo, EditLocation) && LocationEdit}
-          />
-          <Resource
-            name="catchment"
-            list={CatchmentList}
-            show={WithProps({ hasEditPrivilege: canEditCatchment }, CatchmentDetail)}
-            create={canEditCatchment && CatchmentCreate}
-            edit={canEditCatchment && CatchmentEdit}
-          />
-          {hasPrivilege(userInfo, EditUserConfiguration) ? (
-            <Resource
-              name="user"
-              list={UserList}
-              create={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ organisation, userInfo }, UserCreate)}
-              show={WithProps({ user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) }, UserDetail)}
-              edit={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ organisation }, UserEdit)}
-            />
-          ) : (
-            <div />
+        )}
+        {hasMultiplePrivileges(userInfo, [EditUserGroup, EditUserConfiguration]) && (
+          <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
+        )}
+        <Resource name="group" />
+        <Resource name="task" options={{ label: "Tasks" }} />
+        {hasPrivilege(userInfo, UploadMetadataAndData) && <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />}
+        <Resource
+          name="identifierSource"
+          options={{ label: "Identifier Source" }}
+          list={IdentifierSourceList}
+          show={IdentifierSourceDetail}
+          create={hasPrivilege(userInfo, EditIdentifierSource) && IdentifierSourceCreate}
+          edit={hasPrivilege(userInfo, EditIdentifierSource) && IdentifierSourceEdit}
+        />
+        <Resource
+          name="identifierUserAssignment"
+          options={{ label: "Identifier User Assignment" }}
+          list={IdentifierUserAssignmentList}
+          show={IdentifierUserAssignmentDetail}
+          create={hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentCreate}
+          edit={hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentEdit}
+        />
+        <Resource
+          name="language"
+          options={{ label: "Languages" }}
+          list={WithProps({ organisation, hasEditPrivilege: hasPrivilege(userInfo, EditLanguage) }, OrganisationConfig)}
+        />
+        <Resource
+          name="organisationDetails"
+          options={{ label: "Organisation Details" }}
+          list={WithProps(
+            {
+              organisation,
+              hasEditPrivilege: hasPrivilege(userInfo, EditOrganisationConfiguration),
+              hasOrgMetadataDeletionPrivilege: hasPrivilege(userInfo, UploadMetadataAndData),
+              hasOrgAdminConfigDeletionPrivilege: hasPrivilege(userInfo, DeleteOrganisationConfiguration)
+            },
+            OrganisationDetail
           )}
-          {hasMultiplePrivileges(userInfo, [EditUserGroup, EditUserConfiguration]) ? (
-            <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
-          ) : (
-            <div />
-          )}
-          <Resource name="group" />
-          <Resource name="task" options={{ label: "Tasks" }} />
-          {hasPrivilege(userInfo, UploadMetadataAndData) ? (
-            <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
-          ) : (
-            <div />
-          )}
-          <Resource
-            name="identifierSource"
-            options={{ label: "Identifier Source" }}
-            list={IdentifierSourceList}
-            show={IdentifierSourceDetail}
-            create={hasPrivilege(userInfo, EditIdentifierSource) && IdentifierSourceCreate}
-            edit={hasPrivilege(userInfo, EditIdentifierSource) && IdentifierSourceEdit}
-          />
-          <Resource
-            name="identifierUserAssignment"
-            options={{ label: "Identifier User Assignment" }}
-            list={IdentifierUserAssignmentList}
-            show={IdentifierUserAssignmentDetail}
-            create={hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentCreate}
-            edit={hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentEdit}
-          />
-          <Resource
-            name="language"
-            options={{ label: "Languages" }}
-            list={WithProps(
-              {
-                organisation,
-                hasEditPrivilege: hasPrivilege(userInfo, EditLanguage)
-              },
-              OrganisationConfig
-            )}
-          />
-          <Resource
-            name="organisationDetails"
-            options={{ label: "Organisation Details" }}
-            list={WithProps(
-              {
-                organisation,
-                hasEditPrivilege: hasPrivilege(userInfo, EditOrganisationConfiguration),
-                hasOrgMetadataDeletionPrivilege: hasPrivilege(userInfo, UploadMetadataAndData),
-                hasOrgAdminConfigDeletionPrivilege: hasPrivilege(userInfo, DeleteOrganisationConfiguration)
-              },
-              OrganisationDetail
-            )}
-          />
-          {hasPrivilege(userInfo, PhoneVerification) ? (
-            <Resource name="phoneNumberVerification" options={{ label: "Phone Verification" }} list={Msg91Config} />
-          ) : (
-            <div />
-          )}
-        </Admin>
-      </OrgManagerContext.Provider>
-    );
-  }
-}
+        />
+        {hasPrivilege(userInfo, PhoneVerification) && (
+          <Resource name="phoneNumberVerification" options={{ label: "Phone Verification" }} list={Msg91Config} />
+        )}
+      </Admin>
+    </OrgManagerContext.Provider>
+  );
+};
 
-const mapStateToProps = state => ({
-  organisation: state.app.organisation,
-  user: state.app.authSession,
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getAdminOrgs }
-  )(OrgManager)
-);
+export default OrgManager;

@@ -1,13 +1,12 @@
-import { Route, Switch, useRouteMatch, withRouter } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import DocumentationList from "./DocumentationList";
 
 function DocumentationRoutes() {
-  const { path } = useRouteMatch();
   return (
-    <Switch>
-      <Route exact path={`${path}`} component={DocumentationList} />
-    </Switch>
+    <Routes>
+      <Route index element={<DocumentationList />} />
+    </Routes>
   );
 }
 
-export default withRouter(DocumentationRoutes);
+export default DocumentationRoutes;

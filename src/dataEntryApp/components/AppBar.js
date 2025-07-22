@@ -3,9 +3,9 @@ import { styled } from "@mui/material/styles";
 import { AppBar, Toolbar, IconButton, Typography, MenuItem, Menu, Button, ClickAwayListener, Grow, Paper, Popper } from "@mui/material";
 import { AccountCircle, MoreHoriz, ExpandMore, Home } from "@mui/icons-material";
 import NewMenu from "../views/dashboardNew/NewMenu";
-import { Link, withRouter } from "react-router-dom";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { InternalLink, withParams } from "common/components/utils";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { InternalLink } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
@@ -82,9 +82,15 @@ const StyledPopper = styled(Popper)({
   zIndex: 100
 });
 
-const PrimarySearchAppBar = ({ user, history }) => {
+const PrimarySearchAppBar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
+
+  // Use useSelector hooks instead of connect
+  const user = useSelector(state => state.app.authSession);
+  const isNewsAvailable = useSelector(selectIsNewsAvailable);
+
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const [open, setOpen] = useState(false);
@@ -105,9 +111,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
 
   useEffect(() => {
     dispatch(getNews());
-  }, []);
-
-  const isNewsAvailable = useSelector(selectIsNewsAvailable);
+  }, [dispatch]);
 
   const handleProfileMenuOpen = () => {
     setUserOption(prev => !prev);
@@ -129,11 +133,15 @@ const PrimarySearchAppBar = ({ user, history }) => {
     setOpen(false);
   };
 
+  const handleHomeClick = () => {
+    navigate("/home");
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <ClickAwayListener onClickAway={handleClickAway}>
       <StyledUserOptionContainer>
-        <UserOption history={history} />
+        <UserOption />
       </StyledUserOptionContainer>
     </ClickAwayListener>
   );
@@ -207,7 +215,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
               <StyledUserName>{user.username}</StyledUserName>
             </Typography>
           </StyledUsers>
-          <IconButton onClick={() => history.push("/home")} aria-label="Home" size="large">
+          <IconButton onClick={handleHomeClick} aria-label="Home" size="large">
             <Home />
           </IconButton>
           <StyledSectionDesktop>
@@ -241,8 +249,4 @@ const PrimarySearchAppBar = ({ user, history }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  user: state.app.authSession
-});
-
-export default withRouter(withParams(connect(mapStateToProps)(PrimarySearchAppBar)));
+export default PrimarySearchAppBar;

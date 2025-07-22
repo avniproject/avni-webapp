@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   BooleanField,
   Datagrid,
-  DisabledInput,
   Edit,
   Filter,
   List,
@@ -12,12 +11,13 @@ import {
   SaveButton,
   Show,
   ShowButton,
-  showNotification as showNotificationAction,
   SimpleForm,
   SimpleShowLayout,
   TextField,
   TextInput,
-  Toolbar
+  Toolbar,
+  useRecordContext,
+  useNotify
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
@@ -29,8 +29,7 @@ import { SaveComponent } from "../common/components/SaveComponent";
 import { AvniSelect } from "../common/components/AvniSelect";
 import useGetData from "../custom-hooks/useGetData";
 import { httpClient } from "../common/utils/httpClient";
-import { useHistory } from "react-router-dom";
-import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
 export const OrganisationFilter = props => (
@@ -39,15 +38,15 @@ export const OrganisationFilter = props => (
   </Filter>
 );
 
-export const OrganisationList = ({ history, ...props }) => {
+export const OrganisationList = ({ ...props }) => {
   return (
-    <List {...props} bulkActions={false} filter={{ searchURI: "find" }} filters={<OrganisationFilter />}>
+    <List {...props} bulkActionButtons={false} filter={{ searchURI: "find" }} filters={<OrganisationFilter />}>
       <Datagrid>
         <TextField source="name" label="Name" />
-        <ReferenceField label="Category" source="categoryId" reference="organisationCategory" linkType={false} sortBy={"category.name"}>
+        <ReferenceField label="Category" source="categoryId" reference="organisationCategory" link={false} sortBy={"category.name"}>
           <TextField source="name" />
         </ReferenceField>
-        <ReferenceField label="Parent organisation" source="parentOrganisationId" reference="organisation" linkType="show" allowEmpty>
+        <ReferenceField label="Parent organisation" source="parentOrganisationId" reference="organisation" link="show">
           <TextField source="name" />
         </ReferenceField>
         <TextField source="dbUser" label="DB User" sortBy={"dbUser"} />
@@ -59,7 +58,7 @@ export const OrganisationList = ({ history, ...props }) => {
           source="statusId"
           reference="organisationStatus"
           label="Status"
-          linkType={false}
+          link={false}
           sortBy={"status.name"}
         >
           <TextField source="name" />
@@ -81,22 +80,16 @@ export const OrganisationDetails = props => {
         <TextField source="schemaName" label="Schema Name" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
-        <ReferenceField
-          resource="organisationCategory"
-          source="categoryId"
-          reference="organisationCategory"
-          label="Category"
-          linkType={false}
-        >
+        <ReferenceField resource="organisationCategory" source="categoryId" reference="organisationCategory" label="Category" link={false}>
           <TextField source="name" />
         </ReferenceField>
-        <ReferenceField resource="organisationStatus" source="statusId" reference="organisationStatus" label="Status" linkType={false}>
+        <ReferenceField resource="organisationStatus" source="statusId" reference="organisationStatus" label="Status" link={false}>
           <TextField source="name" />
         </ReferenceField>
-        <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" linkType="show" allowEmpty>
+        <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" link="show">
           <TextField source="name" />
         </ReferenceField>
-        <ReferenceField label="Parent organisation" source="parentOrganisationId" reference="organisation" linkType="show" allowEmpty>
+        <ReferenceField label="Parent organisation" source="parentOrganisationId" reference="organisation" link="show">
           <TextField source="name" />
         </ReferenceField>
         <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" />
@@ -107,34 +100,42 @@ export const OrganisationDetails = props => {
 
 const isRequired = required("This field is required");
 
+const EditForm = () => {
+  const record = useRecordContext();
+
+  return (
+    <SimpleForm toolbar={<CustomToolbar />} redirect="list">
+      {record && record.id === "1" ? (
+        <TextInput disabled source="name" validate={isRequired} />
+      ) : (
+        <TextInput source="name" validate={isRequired} autoComplete="off" />
+      )}
+      <TextInput disabled source="dbUser" validate={isRequired} />
+      <TextInput disabled source="schemaName" validate={isRequired} />
+      <TextInput disabled source="mediaDirectory" />
+      <TextInput source="usernameSuffix" validate={isRequired} />
+      <OrganisationCategoryInput />
+      <OrganisationStatusInput />
+      <BooleanField source="analyticsDataSyncActive" />
+      <ToggleAnalyticsButton />
+      <br />
+      <ReferenceInput
+        resource="account"
+        source="accountId"
+        reference="account"
+        label="Account Name"
+        validate={required("Please select an account")}
+      >
+        <CustomSelectInput source="name" resettable />
+      </ReferenceInput>
+    </SimpleForm>
+  );
+};
+
 export const OrganisationEdit = props => {
   return (
-    <Edit undoable={false} title={<Title title={"Edit Organisation"} />} {...props}>
-      <SimpleForm toolbar={<CustomToolbar />} redirect="list">
-        {props && props.id === "1" ? (
-          <DisabledInput source="name" validate={isRequired} />
-        ) : (
-          <TextInput source="name" validate={isRequired} autoComplete="off" />
-        )}
-        <DisabledInput source="dbUser" validate={isRequired} />
-        <DisabledInput source="schemaName" validate={isRequired} />
-        <DisabledInput source="mediaDirectory" />
-        <TextInput source="usernameSuffix" validate={isRequired} />
-        <OrganisationCategoryInput />
-        <OrganisationStatusInput />
-        <BooleanField source="analyticsDataSyncActive" />
-        <ToggleAnalyticsButton />
-        <br />
-        <ReferenceInput
-          resource="account"
-          source="accountId"
-          reference="account"
-          label="Account Name"
-          validate={required("Please select an account")}
-        >
-          <CustomSelectInput source="name" resettable />
-        </ReferenceInput>
-      </SimpleForm>
+    <Edit mutationMode="pessimistic" title={<Title title={"Edit Organisation"} />} {...props}>
+      <EditForm />
     </Edit>
   );
 };
@@ -196,7 +197,9 @@ const classes = {
 };
 
 const textFieldSet = new Set(["name", "dbUser", "schemaName", "mediaDirectory", "usernameSuffix"]);
-export const OrganisationCreateComponent = ({ showNotification }) => {
+
+export const OrganisationCreateComponent = () => {
+  const notify = useNotify();
   const [data, setData] = useState({
     name: null,
     dbUser: null,
@@ -214,13 +217,13 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
   const [status, statusError] = useGetData("/organisationStatus");
   const categoryList = category ? category._embedded.organisationCategory.map(ele => ele) : [];
   const statusList = status ? status._embedded.organisationStatus.map(ele => ele) : [];
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (redirect) {
-      history.push("/admin/organisation");
+      navigate("/admin/organisation");
     }
-  }, [redirect]);
+  }, [redirect, navigate]);
 
   const handleChange = (property, value) => {
     setData(currentData => ({
@@ -242,6 +245,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
     }
     sendData();
   };
+
   const validate = () => {
     const errors = {};
     Object.entries(data).forEach(([key, value]) => {
@@ -257,8 +261,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
       .post("/organisation", data)
       .then(response => {
         if (response.status && parseInt(response.status) >= 200 && parseInt(response.status) < 300) {
-          showNotification(`${data.name} is created successfully`);
-          showNotification(`${data.name} is created successfully`);
+          notify(`${data.name} is created successfully`);
           setRedirect(true);
         }
       })
@@ -438,10 +441,9 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
     </>
   );
 };
+
 OrganisationCreateComponent.propTypes = {
   showNotification: PropTypes.func
 };
-export const OrganisationCreate = connect(
-  null,
-  { showNotification: showNotificationAction }
-)(OrganisationCreateComponent);
+
+export const OrganisationCreate = OrganisationCreateComponent;

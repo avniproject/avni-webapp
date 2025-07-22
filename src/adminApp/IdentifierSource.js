@@ -1,21 +1,7 @@
-import {
-  Datagrid,
-  List,
-  TextField,
-  Show,
-  SimpleShowLayout,
-  Create,
-  Edit,
-  SimpleForm,
-  ReferenceField,
-  ReferenceInput,
-  REDUX_FORM_NAME,
-  FormDataConsumer
-} from "react-admin";
-import { Fragment } from "react";
+import { Datagrid, List, TextField, Show, SimpleShowLayout, Create, Edit, SimpleForm, ReferenceField, ReferenceInput } from "react-admin";
+import { useFormContext, useWatch } from "react-hook-form";
 import Chip from "@mui/material/Chip";
 import { FormLabel, Paper } from "@mui/material";
-import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
@@ -38,20 +24,18 @@ const operatingScopes = Object.freeze({
   FACILITY: "ByFacility",
   CATCHMENT: "ByCatchment"
 });
+
 const Title = ({ record }) => {
-  return (
-    record && (
-      <span>
-        Identifier Source: <b>{record.name}</b>
-      </span>
-    )
-  );
+  return record ? (
+    <span>
+      Identifier Source: <b>{record.name}</b>
+    </span>
+  ) : null;
 };
 
 const ShowSourceType = props => {
   return (
     <>
-      {" "}
       {props.showSourceTypeLabel && (
         <>
           <FormLabel style={{ fontSize: "12px" }}>Type</FormLabel> <br />
@@ -63,95 +47,84 @@ const ShowSourceType = props => {
 };
 
 export const IdentifierSourceList = props => (
-  <List {...props} bulkActions={false} title={"Identifier Source"}>
+  <List {...props} title="Identifier Source">
     <Datagrid rowClick="show">
       <TextField source="name" />
       <ShowSourceType source="type" showSourceTypeLabel={false} />
       <TextField source="batchGenerationSize" />
       <TextField source="minLength" />
       <TextField source="maxLength" />
-      <ReferenceField source="catchmentId" reference="catchment" allowEmpty>
+      <ReferenceField source="catchmentId" reference="catchment">
         <TextField source="name" />
       </ReferenceField>
     </Datagrid>
   </List>
 );
 
-export const IdentifierSourceDetail = props => {
-  return (
-    <Show title={<Title />} {...props}>
-      <SimpleShowLayout>
+export const IdentifierSourceDetail = props => (
+  <Show title={<Title />} {...props}>
+    <SimpleShowLayout>
+      <TextField source="name" />
+      <ShowSourceType source="type" showSourceTypeLabel={true} />
+      <TextField source="batchGenerationSize" />
+      <TextField source="minLength" />
+      <TextField source="maxLength" />
+      <TextField source="minimumBalance" />
+      <ReferenceField source="catchmentId" reference="catchment">
         <TextField source="name" />
-        <ShowSourceType source="type" showSourceTypeLabel={true} />
-        <TextField source="batchGenerationSize" />
-        <TextField source="minLength" />
-        <TextField source="maxLength" />
-        <TextField source="minimumBalance" />
-        <ReferenceField source="catchmentId" reference="catchment" allowEmpty>
-          <TextField source="name" />
-        </ReferenceField>
-        <TextField source="options.prefix" label="Prefix" />
-      </SimpleShowLayout>
-    </Show>
-  );
-};
+      </ReferenceField>
+      <TextField source="options.prefix" label="Prefix" />
+    </SimpleShowLayout>
+  </Show>
+);
 
-const IdentifierSourceForm = props => (
-  <SimpleForm {...props} redirect="show">
-    <AvniTextInput source="name" required toolTipKey={"ADMIN_ID_SOURCE_NAME"} />
-    <AvniSelectInput source="type" choices={Object.values(sourceType)} required toolTipKey={"ADMIN_ID_SOURCE_TYPE"} />
-    <AvniFormDataConsumer toolTipKey={"ADMIN_ID_SOURCE_CATCHMENT"} {...props}>
-      {({ formData, dispatch, ...rest }) => (
-        <Fragment>
+const IdentifierSourceForm = () => {
+  const { setValue } = useFormContext();
+  const formData = useWatch();
+
+  return (
+    <SimpleForm redirect="show">
+      <AvniTextInput source="name" required toolTipKey="ADMIN_ID_SOURCE_NAME" />
+      <AvniSelectInput source="type" choices={Object.values(sourceType)} required toolTipKey="ADMIN_ID_SOURCE_TYPE" />
+      <AvniFormDataConsumer toolTipKey="ADMIN_ID_SOURCE_CATCHMENT">
+        {({ formData, ...rest }) => (
           <ReferenceInput
             source="catchmentId"
             reference="catchment"
             label="Which catchment?"
             filterToQuery={searchText => ({ name: searchText })}
             onChange={(e, newVal) => {
-              dispatch(
-                change(REDUX_FORM_NAME, "operatingIndividualScope", isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE)
-              );
+              setValue("operatingIndividualScope", isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE);
             }}
             {...rest}
           >
-            <CatchmentSelectInput source="name" resettable />
+            <CatchmentSelectInput />
           </ReferenceInput>
-        </Fragment>
+        )}
+      </AvniFormDataConsumer>
+      <AvniTextInput source="batchGenerationSize" required toolTipKey="ADMIN_ID_SOURCE_BATCH_SIZE" />
+      <AvniTextInput source="minimumBalance" required toolTipKey="ADMIN_ID_SOURCE_MIN_BALANCE" />
+      <AvniTextInput source="minLength" required toolTipKey="ADMIN_ID_SOURCE_MIN_LENGTH" />
+      <AvniTextInput source="maxLength" required toolTipKey="ADMIN_ID_SOURCE_MAX_LENGTH" />
+      {formData?.type === "userPoolBasedIdentifierGenerator" && (
+        <AvniTextInput source="options.prefix" label="Prefix" toolTipKey="ADMIN_ID_SOURCE_PREFIX" />
       )}
-    </AvniFormDataConsumer>
-    <AvniTextInput source="batchGenerationSize" required toolTipKey={"ADMIN_ID_SOURCE_BATCH_SIZE"} />
-    <AvniTextInput source="minimumBalance" required toolTipKey={"ADMIN_ID_SOURCE_MIN_BALANCE"} />
-    <AvniTextInput source="minLength" required toolTipKey={"ADMIN_ID_SOURCE_MIN_LENGTH"} />
-    <AvniTextInput source="maxLength" required toolTipKey={"ADMIN_ID_SOURCE_MAX_LENGTH"} />
-    <FormDataConsumer {...props}>
-      {({ formData, ...rest }) => {
-        return (
-          formData.type === "userPoolBasedIdentifierGenerator" && (
-            <AvniTextInput source="options.prefix" label="Prefix" toolTipKey={"ADMIN_ID_SOURCE_PREFIX"} {...rest} />
-          )
-        );
-      }}
-    </FormDataConsumer>
-  </SimpleForm>
+    </SimpleForm>
+  );
+};
+
+export const IdentifierSourceEdit = props => (
+  <Edit undoable={false} title="Edit Identifier Source" {...props}>
+    <IdentifierSourceForm />
+  </Edit>
 );
 
-export const IdentifierSourceEdit = props => {
-  return (
-    <Edit undoable={false} title="Edit Identifier Source" {...props}>
-      <IdentifierSourceForm />
-    </Edit>
-  );
-};
-
-export const IdentifierSourceCreate = props => {
-  return (
-    <Paper>
-      <DocumentationContainer filename={"IdentifierSource.md"}>
-        <Create title="Add New Identifier Source" {...props}>
-          <IdentifierSourceForm />
-        </Create>
-      </DocumentationContainer>
-    </Paper>
-  );
-};
+export const IdentifierSourceCreate = props => (
+  <Paper>
+    <DocumentationContainer filename="IdentifierSource.md">
+      <Create title="Add New Identifier Source" {...props}>
+        <IdentifierSourceForm />
+      </Create>
+    </DocumentationContainer>
+  </Paper>
+);

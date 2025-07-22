@@ -6,7 +6,7 @@ import { Title } from "react-admin";
 import { isEmpty, isNil } from "lodash";
 import { AvniTextField } from "../../../common/components/AvniTextField";
 import { VideoReducer } from "./VideoReducer";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -144,8 +144,8 @@ export const CreateEditVideo = ({ edit, ...props }) => {
             )}
           </Grid>
         </Grid>
-        {!isNil(id) && <Redirect to={`/appDesigner/video/${id}/show`} />}
-        {redirectAfterDelete && <Redirect to="/appDesigner/video" />}
+        {!isNil(id) && <Navigate to={`/appDesigner/video/${id}/show`} />}
+        {redirectAfterDelete && <Navigate to="/appDesigner/video" />}
       </DocumentationContainer>
     </Box>
   );

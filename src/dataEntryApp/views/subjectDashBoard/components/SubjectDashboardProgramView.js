@@ -3,10 +3,8 @@ import { styled } from "@mui/material/styles";
 import { Grid, Paper, Accordion, AccordionDetails, AccordionSummary, Typography, Stack } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
-import { withRouter } from "react-router-dom";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { withParams } from "../../../../common/components/utils";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
 import { filter, get, isEmpty, isNil } from "lodash";
 import { clearVoidServerError, voidProgramEncounter, voidProgramEnrolment } from "../../../reducers/subjectDashboardReducer";
@@ -71,26 +69,15 @@ const StyledExpandMore = styled(ExpandMore)({
   color: "#0e6eff"
 });
 
-const ProgramView = ({
-  programData,
-  subjectUuid,
-  undoExitEnrolment,
-  handleUpdateComponent,
-  subjectTypeUuid,
-  subjectVoided,
-  programEnrolmentForm,
-  getProgramEnrolmentForm,
-  subjectProfile,
-  voidError,
-  clearVoidServerError,
-  voidProgramEnrolment,
-  voidProgramEncounter,
-  organisationConfigs
-}) => {
-  useEffect(() => {
-    const formType = programData.programExitDateTime ? "ProgramExit" : "ProgramEnrolment";
-    getProgramEnrolmentForm(subjectProfile.subjectType.name, programData.program.operationalProgramName, formType);
-  }, [programData.program.operationalProgramName]);
+const ProgramView = ({ programData, subjectUuid, handleUpdateComponent, subjectTypeUuid, subjectVoided }) => {
+  // Use Redux hooks instead of connect
+  const dispatch = useDispatch();
+  const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+  const programEnrolmentForm = useSelector(state => state.dataEntry.subjectProgram.programEnrolmentForm);
+  const voidError = useSelector(state => state.dataEntry.subjectProfile.voidError);
+  const organisationConfigs = useSelector(state => state.dataEntry.metadata.organisationConfigs);
+  const programSummary = useSelector(selectProgramSummary);
+  const isFetchingSummary = useSelector(selectFetchingRulesResponse);
 
   const { t } = useTranslation();
   const isNotExited = isNil(programData.programExitDateTime);
@@ -98,14 +85,31 @@ const ProgramView = ({
   const [voidConfirmation, setVoidConfirmation] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = useState();
-  const dispatch = useDispatch();
 
-  const programSummary = useSelector(selectProgramSummary);
-  const isFetchingSummary = useSelector(selectFetchingRulesResponse);
+  useEffect(() => {
+    const formType = programData.programExitDateTime ? "ProgramExit" : "ProgramEnrolment";
+    dispatch(getProgramEnrolmentForm(subjectProfile.subjectType.name, programData.program.operationalProgramName, formType));
+  }, [dispatch, programData.program.operationalProgramName, programData.programExitDateTime, subjectProfile.subjectType.name]);
 
   useEffect(() => {
     dispatch(fetchProgramSummary(programData.uuid));
   }, [dispatch, programData.uuid]);
+
+  const handleUndoExitEnrolment = (...args) => {
+    dispatch(undoExitEnrolment(...args));
+  };
+
+  const handleVoidProgramEnrolment = uuid => {
+    dispatch(voidProgramEnrolment(uuid));
+  };
+
+  const handleClearVoidServerError = () => {
+    dispatch(clearVoidServerError());
+  };
+
+  const handleVoidProgramEncounter = uuid => {
+    dispatch(voidProgramEncounter(uuid));
+  };
 
   const plannedVisits = filter(
     get(programData, "encounters", []),
@@ -140,7 +144,7 @@ const ProgramView = ({
             programEnrolmentForm={programEnrolmentForm}
             subjectUuid={subjectUuid}
             subjectProfile={subjectProfile}
-            undoExitEnrolment={undoExitEnrolment}
+            undoExitEnrolment={handleUndoExitEnrolment}
             handleUpdateComponent={handleUpdateComponent}
             setVoidConfirmation={setVoidConfirmation}
           />
@@ -153,7 +157,7 @@ const ProgramView = ({
           programEnrolmentForm={programEnrolmentForm}
           subjectUuid={subjectUuid}
           subjectProfile={subjectProfile}
-          undoExitEnrolment={undoExitEnrolment}
+          undoExitEnrolment={handleUndoExitEnrolment}
           handleUpdateComponent={handleUpdateComponent}
           setVoidConfirmation={setVoidConfirmation}
         />
@@ -180,7 +184,7 @@ const ProgramView = ({
               setOpen={() => setPlannedEncounterUUIDToBeVoided()}
               message={t("ProgramEncounterVoidAlertMessage")}
               onConfirm={() => {
-                voidProgramEncounter(plannedEncounterUUIDToBeVoided);
+                handleVoidProgramEncounter(plannedEncounterUUIDToBeVoided);
               }}
             />
           </StyledAccordionDetails>
@@ -203,34 +207,16 @@ const ProgramView = ({
         open={voidConfirmation}
         setOpen={setVoidConfirmation}
         message={t("ProgramEnrolmentVoidAlertMessage")}
-        onConfirm={() => voidProgramEnrolment(programData.uuid)}
+        onConfirm={() => handleVoidProgramEnrolment(programData.uuid)}
       />
-      <MessageDialog title={t("ProgramEnrolmentErrorTitle")} open={!isEmpty(voidError)} message={voidError} onOk={clearVoidServerError} />
+      <MessageDialog
+        title={t("ProgramEnrolmentErrorTitle")}
+        open={!isEmpty(voidError)}
+        message={voidError}
+        onOk={handleClearVoidServerError}
+      />
     </StyledStackContainer>
   );
 };
 
-const mapStateToProps = state => ({
-  subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  programEnrolmentForm: state.dataEntry.subjectProgram.programEnrolmentForm,
-  voidError: state.dataEntry.subjectProfile.voidError,
-  organisationConfigs: state.dataEntry.metadata.organisationConfigs
-});
-
-const mapDispatchToProps = {
-  undoExitEnrolment,
-  getProgramEnrolmentForm,
-  voidProgramEnrolment,
-  clearVoidServerError,
-  voidProgramEncounter
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(ProgramView)
-  )
-);
+export default ProgramView;

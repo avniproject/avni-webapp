@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import Body from "./Body";
 import AppBar from "./AppBar";
 import { Drawer, List, IconButton, ListItemIcon, ListItemText } from "@mui/material";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import _ from "lodash";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -76,7 +76,7 @@ const applyListIcon = (open, icon, listTextName) => {
 };
 
 const applyLeftMenu = (open, handleDrawer, selectedIndex, handleListItemClick, children, sidebarOptions) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -93,7 +93,7 @@ const applyLeftMenu = (open, handleDrawer, selectedIndex, handleListItemClick, c
                 selected={selectedIndex === index}
                 onClick={() => {
                   handleListItemClick(null, index);
-                  history.push(`${path}?page=0`);
+                  navigate(`${path}?page=0`);
                 }}
               >
                 {applyListIcon(open, <option.Icon />, option.name)}

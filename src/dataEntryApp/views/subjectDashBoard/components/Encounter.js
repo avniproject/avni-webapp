@@ -2,9 +2,8 @@ import { Fragment, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Grid, Paper } from "@mui/material";
 import { isEqual } from "lodash";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
+import { useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   updateEncounter,
@@ -34,38 +33,59 @@ const StyledGrid = styled(Grid)({
   alignItems: "center"
 });
 
-const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...props }) => {
-  const editEncounter = isEqual(match.path, "/app/subject/editEncounter");
-  const encounterUuid = match.queryParams.encounterUuid;
-  const subjectUuid = match.queryParams.subjectUuid;
-  const uuid = match.queryParams.uuid;
+const Encounter = () => {
+  // Use Redux hooks instead of connect()
+  const dispatch = useDispatch();
+  const encounterForm = useSelector(state => state.dataEntry.encounterReducer.encounterForm);
+  const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
+  const encounter = useSelector(state => state.dataEntry.encounterReducer.encounter);
+  const validationResults = useSelector(state => state.dataEntry.encounterReducer.validationResults);
+
+  // Use React Router hooks instead of withRouter
+  const location = useLocation();
+
+  // Extract parameters from URL search params
+  const searchParams = new URLSearchParams(location.search);
+  const encounterUuid = searchParams.get("encounterUuid");
+  const subjectUuid = searchParams.get("subjectUuid");
+  const uuid = searchParams.get("uuid");
+
+  // Determine if it's edit mode based on pathname
+  const editEncounterMode = isEqual(location.pathname, "/app/subject/editEncounter");
+
   const { t } = useTranslation();
 
   useEffect(() => {
-    props.resetState();
-    if (editEncounter) {
-      props.editEncounter(uuid);
+    dispatch(resetState());
+
+    if (editEncounterMode) {
+      dispatch(editEncounter(uuid));
     } else if (encounterUuid) {
-      props.createEncounterForScheduled(encounterUuid);
+      dispatch(createEncounterForScheduled(encounterUuid));
     } else {
-      props.createEncounter(uuid, subjectUuid);
+      dispatch(createEncounter(uuid, subjectUuid));
     }
-  }, []);
+  }, [dispatch, editEncounterMode, encounterUuid, subjectUuid, uuid]);
+
+  // Create a wrapper function for setEncounterDate to maintain compatibility
+  const handleSetEncounterDate = date => {
+    dispatch(setEncounterDate(date));
+  };
 
   return (
     <Fragment>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={location.pathname} />
       <StyledPaper>
         <StyledGrid container spacing={3}>
           <Grid size={12}>
-            {props.encounterForm && encounter && props.subjectProfile ? (
+            {encounterForm && encounter && subjectProfile ? (
               <EncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
                 <DateFormElement
                   uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
                   formElement={new StaticFormElement(t("visitDate"), true, true)}
                   value={encounter.encounterDateTime}
                   validationResults={validationResults}
-                  update={setEncounterDate}
+                  update={handleSetEncounterDate}
                 />
                 <LineBreak num={3} />
               </EncounterForm>
@@ -79,27 +99,4 @@ const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...p
   );
 };
 
-const mapStateToProps = state => ({
-  encounterForm: state.dataEntry.encounterReducer.encounterForm,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  encounter: state.dataEntry.encounterReducer.encounter,
-  validationResults: state.dataEntry.encounterReducer.validationResults
-});
-
-const mapDispatchToProps = {
-  updateEncounter,
-  resetState,
-  createEncounter,
-  createEncounterForScheduled,
-  editEncounter,
-  setEncounterDate
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(Encounter)
-  )
-);
+export default Encounter;

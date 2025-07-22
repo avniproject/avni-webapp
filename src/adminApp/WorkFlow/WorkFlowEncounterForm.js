@@ -1,6 +1,6 @@
 import { memo, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Button, Select, MenuItem, InputLabel, FormControl, Chip } from "@mui/material";
 import { default as UUID } from "uuid";
 import { isEqual, cloneDeep } from "lodash";
@@ -196,7 +196,7 @@ function WorkFlowEncounterForm(props) {
         </>
       )}
       {redirect && (
-        <Redirect
+        <Navigate
           to={{
             pathname: "/appdesigner/forms/" + uuid,
             state: { stateName: "encounterType" }
@@ -204,7 +204,7 @@ function WorkFlowEncounterForm(props) {
         />
       )}
       {redirectToForm && (
-        <Redirect
+        <Navigate
           to={{
             pathname: `/appdesigner/forms/${form[0].formUUID}`
           }}

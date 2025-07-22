@@ -3,9 +3,8 @@ import { styled } from "@mui/material/styles";
 import { Paper, Typography, Grid, Button } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getEncounter, getProgramEncounter } from "../../../reducers/viewVisitReducer";
-import { withRouter, useHistory } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Observations from "dataEntryApp/components/Observations";
 import { InternalLink } from "../../../../common/components/utils";
 import { format, isValid } from "date-fns";
@@ -60,10 +59,27 @@ const StyledVisitButton = styled(Button)({
   fontSize: "14px"
 });
 
-const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }) => {
+const ViewVisit = () => {
+  // Use Redux hooks instead of connect()
+  const dispatch = useDispatch();
+  const encounter = useSelector(state => state.dataEntry.viewVisitReducer.encounter);
+  const form = useSelector(state => state.dataEntry.viewVisitReducer.form);
+
+  // Use React Router hooks instead of withRouter
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const { t } = useTranslation();
-  const history = useHistory();
-  const isViewEncounter = match.path === "/app/subject/viewEncounter";
+
+  // Replace useHistory with navigate function
+  const goBack = () => navigate(-1);
+
+  // Extract UUID from URL search params
+  const searchParams = new URLSearchParams(location.search);
+  const uuid = searchParams.get("uuid");
+
+  // Determine if it's a view encounter based on pathname
+  const isViewEncounter = location.pathname.includes("/viewEncounter");
   let viewAllCompletedUrl;
 
   if (encounter) {
@@ -71,13 +87,20 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
       ? `/app/subject/completedEncounters?uuid=${encounter.subjectUuid}`
       : `/app/subject/completedProgramEncounters?uuid=${encounter.enrolmentUuid}`;
   }
+
   useEffect(() => {
-    isViewEncounter ? getEncounter(match.queryParams.uuid) : getProgramEncounter(match.queryParams.uuid);
-  }, []);
+    if (uuid) {
+      if (isViewEncounter) {
+        dispatch(getEncounter(uuid));
+      } else {
+        dispatch(getProgramEncounter(uuid));
+      }
+    }
+  }, [dispatch, isViewEncounter, uuid]);
 
   return encounter ? (
     <Fragment>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={location.pathname} />
       <StyledPaper>
         <StyledGrid container direction="row">
           <StyledMainHeading component="span">{t(defaultTo(encounter.name, encounter.encounterType.name))}</StyledMainHeading>
@@ -108,7 +131,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
             {t("back")}
           </Button>
         </InternalLink> */}
-        <StyledVisitButton color="primary" onClick={history.goBack}>
+        <StyledVisitButton color="primary" onClick={goBack}>
           {t("back")}
         </StyledVisitButton>
       </StyledPaper>
@@ -118,21 +141,4 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }
   );
 };
 
-const mapStateToProps = state => ({
-  encounter: state.dataEntry.viewVisitReducer.encounter,
-  form: state.dataEntry.viewVisitReducer.form
-});
-
-const mapDispatchToProps = {
-  getEncounter,
-  getProgramEncounter
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(ViewVisit)
-  )
-);
+export default ViewVisit;

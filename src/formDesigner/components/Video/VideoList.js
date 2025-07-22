@@ -1,6 +1,6 @@
 import { memo, useState, useRef, useMemo, useCallback } from "react";
 import { isEqual } from "lodash";
-import { Redirect, withRouter } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Box, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../../common/components/CreateComponent";
@@ -8,16 +8,18 @@ import { httpClient as http } from "common/utils/httpClient";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { Edit, Delete } from "@mui/icons-material";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditVideo);
 }
 
-const VideoList = ({ history, userInfo }) => {
+const VideoList = () => {
   const [redirect, setRedirect] = useState(false);
   const tableRef = useRef(null);
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
 
   const columns = useMemo(
     () => [
@@ -79,7 +81,7 @@ const VideoList = ({ history, userInfo }) => {
             {
               icon: Edit,
               tooltip: "Edit video details",
-              onClick: (event, row) => history.push(`/video/${row.original.id}`)
+              onClick: (event, row) => navigate(`/video/${row.original.id}`)
             },
             {
               icon: Delete,
@@ -103,7 +105,7 @@ const VideoList = ({ history, userInfo }) => {
             }
           ]
         : [],
-    [history, userInfo, tableRef]
+    [navigate, userInfo, tableRef]
   );
 
   return (
@@ -116,7 +118,7 @@ const VideoList = ({ history, userInfo }) => {
         flexDirection: "column"
       }}
     >
-      <Title title="Video Playlist" color="primary" />
+      <Title title="Video Playlist" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
           <Grid item>
@@ -141,7 +143,7 @@ const VideoList = ({ history, userInfo }) => {
         actions={actions}
         route="/appdesigner/video"
       />
-      {redirect && <Redirect to="/appDesigner/video/create" />}
+      {redirect && <Navigate to="/appDesigner/video/create" />}
     </Box>
   );
 };
@@ -150,8 +152,4 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default withRouter(connect(mapStateToProps)(memo(VideoList, areEqual)));
+export default memo(VideoList, areEqual);

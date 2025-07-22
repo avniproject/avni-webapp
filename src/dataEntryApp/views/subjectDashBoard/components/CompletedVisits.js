@@ -1,9 +1,7 @@
 import { useState, Fragment, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Paper, Grid } from "@mui/material";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "../../../../common/components/utils";
+import { useSelector, useDispatch } from "react-redux";
 import { loadEncounters, loadProgramEncounters } from "../../../reducers/completedVisitsReducer";
 import { useTranslation } from "react-i18next";
 import FilterResult from "../components/FilterResult";
@@ -25,17 +23,13 @@ const StyledGrid = styled(Grid)({
   justifyContent: "flex-end"
 });
 
-const CompleteVisit = ({
-  entityUuid,
-  isForProgramEncounters,
-  encounterTypes,
-  load,
-  loadProgramEncounters,
-  loadEncounters,
-  voidGeneralEncounter,
-  voidProgramEncounter
-}) => {
+const CompleteVisit = ({ entityUuid, isForProgramEncounters }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  const encounterTypes = useSelector(state => state.dataEntry.completedVisitsReducer.encounterTypes);
+  const load = useSelector(state => state.dataEntry.loadReducer.load);
+
   const [filterParams, setFilterParams] = useState({});
   const [encounterUUID, setEncounterUUID] = useState();
 
@@ -48,10 +42,20 @@ const CompleteVisit = ({
     isForProgramEncounters ? `/app/subject/edit${action}ProgramEncounter` : `/app/subject/edit${action}Encounter`;
 
   useEffect(() => {
-    isForProgramEncounters ? loadProgramEncounters(entityUuid, filterQueryString) : loadEncounters(entityUuid, filterQueryString);
-  }, [entityUuid, filterQueryString]);
+    if (isForProgramEncounters) {
+      dispatch(loadProgramEncounters(entityUuid, filterQueryString));
+    } else {
+      dispatch(loadEncounters(entityUuid, filterQueryString));
+    }
+  }, [dispatch, entityUuid, filterQueryString, isForProgramEncounters]);
 
-  const voidEncounter = isForProgramEncounters ? voidProgramEncounter : voidGeneralEncounter;
+  const handleVoidEncounter = encounterUuid => {
+    if (isForProgramEncounters) {
+      dispatch(voidProgramEncounter(encounterUuid));
+    } else {
+      dispatch(voidGeneralEncounter(encounterUuid));
+    }
+  };
 
   return encounterTypes && load ? (
     <Fragment>
@@ -73,7 +77,7 @@ const CompleteVisit = ({
             open={encounterUUID !== undefined}
             setOpen={() => setEncounterUUID()}
             message={isForProgramEncounters ? t("ProgramEncounterVoidAlertMessage") : t("GeneralEncounterVoidAlertMessage")}
-            onConfirm={() => voidEncounter(encounterUUID)}
+            onConfirm={() => handleVoidEncounter(encounterUUID)}
           />
         </StyledTableBox>
       </StyledSearchBox>
@@ -83,23 +87,4 @@ const CompleteVisit = ({
   );
 };
 
-const mapStateToProps = state => ({
-  encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
-  load: state.dataEntry.loadReducer.load
-});
-
-const mapDispatchToProps = {
-  loadEncounters,
-  loadProgramEncounters,
-  voidGeneralEncounter,
-  voidProgramEncounter
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(CompleteVisit)
-  )
-);
+export default CompleteVisit;

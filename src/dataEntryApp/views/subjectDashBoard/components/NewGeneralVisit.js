@@ -2,10 +2,9 @@ import { Fragment, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Typography, Paper } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { isEmpty } from "lodash";
-import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { LineBreak } from "../../../../common/components/utils";
 import { getEligibleEncounters, resetState } from "../../../reducers/encounterReducer";
@@ -23,19 +22,24 @@ const StyledTypography = styled(Typography)({
   fontSize: "20px"
 });
 
-const NewGeneralVisit = ({ match, ...props }) => {
+const NewGeneralVisit = () => {
   const { t } = useTranslation();
-  const subjectUuid = match.queryParams.subjectUuid;
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  const operationalModules = useSelector(state => state.dataEntry.metadata.operationalModules);
+  const eligibleEncounters = useSelector(state => state.dataEntry.encounterReducer.eligibleEncounters);
+  const load = useSelector(state => state.dataEntry.loadReducer.load);
+
+  const subjectUuid = searchParams.get("subjectUuid");
 
   useEffect(() => {
-    props.resetState();
-    props.getEligibleEncounters(subjectUuid);
-  }, []);
+    dispatch(resetState());
+    dispatch(getEligibleEncounters(subjectUuid));
+  }, [dispatch, subjectUuid]);
 
-  const { scheduledEncounters, unplannedEncounters } = getNewEligibleEncounters(
-    props.operationalModules.encounterTypes,
-    props.eligibleEncounters
-  );
+  const { scheduledEncounters, unplannedEncounters } = getNewEligibleEncounters(operationalModules.encounterTypes, eligibleEncounters);
 
   const sections = [];
   if (!isEmpty(scheduledEncounters)) {
@@ -45,9 +49,9 @@ const NewGeneralVisit = ({ match, ...props }) => {
     sections.push({ title: t("unplannedVisits"), data: unplannedEncounters });
   }
 
-  return props.load ? (
+  return load ? (
     <Fragment>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={location.pathname} />
       <StyledPaper>
         {!isEmpty(sections) ? (
           <>
@@ -64,26 +68,8 @@ const NewGeneralVisit = ({ match, ...props }) => {
       </StyledPaper>
     </Fragment>
   ) : (
-    <CustomizedBackdrop load={props.load} />
+    <CustomizedBackdrop load={load} />
   );
 };
 
-const mapStateToProps = state => ({
-  operationalModules: state.dataEntry.metadata.operationalModules,
-  eligibleEncounters: state.dataEntry.encounterReducer.eligibleEncounters,
-  load: state.dataEntry.loadReducer.load
-});
-
-const mapDispatchToProps = {
-  getEligibleEncounters,
-  resetState
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(NewGeneralVisit)
-  )
-);
+export default NewGeneralVisit;

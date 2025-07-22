@@ -5,7 +5,8 @@ import { Settings, Logout, ArrowUpward, ExpandLess, ExpandMore } from "@mui/icon
 import { LOCALES } from "../../common/constants";
 import { useTranslation } from "react-i18next";
 import { logout, saveUserInfo } from "rootApp/ducks";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { get } from "lodash";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
@@ -57,9 +58,20 @@ const StyledFormControl = styled(FormControl)({
   marginLeft: "85px"
 });
 
-const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout, history }) => {
+const UserOption = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
+  const orgConfig = useSelector(state =>
+    state.translationsReducer.orgConfig ? state.translationsReducer.orgConfig._embedded.organisationConfig[0].settings.languages : ""
+  );
+  const userInfo = useSelector(state => state.app.userInfo);
+
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
+  const prevOpen = useRef(open);
+
   const toggleSettingsMenu = () => {
     setOpen(!open);
   };
@@ -75,14 +87,20 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
     prevOpen.current = open;
   }, [open]);
 
-  const { t, i18n } = useTranslation();
-
   const handleChange = event => {
     if (event.target.value) {
       userInfo.settings = { ...userInfo.settings, locale: event.target.value };
-      saveUserInfo(userInfo);
+      dispatch(saveUserInfo(userInfo));
       i18n.changeLanguage(userInfo.settings.locale);
     }
+  };
+
+  const handleUploadClick = () => {
+    navigate("/admin/upload");
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   const hasUploadPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.UploadMetadataAndData);
@@ -121,7 +139,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
         </Collapse>
         <StyledHr />
         {hasUploadPrivilege && (
-          <StyledListItemButton onClick={() => history.push(`/admin/upload`)}>
+          <StyledListItemButton onClick={handleUploadClick}>
             <ListItemIcon>
               <ArrowUpward />
             </ListItemIcon>
@@ -129,7 +147,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
           </StyledListItemButton>
         )}
         <StyledHr />
-        <StyledListItemButton onClick={logout}>
+        <StyledListItemButton onClick={handleLogout}>
           <ListItemIcon>
             <Logout />
           </ListItemIcon>
@@ -140,20 +158,4 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
   );
 };
 
-const mapStateToProps = state => ({
-  orgConfig: state.translationsReducer.orgConfig
-    ? state.translationsReducer.orgConfig._embedded.organisationConfig[0].settings.languages
-    : "",
-  userInfo: state.app.userInfo,
-  defaultLanguage: state.app.userInfo.settings && state.app.userInfo.settings.locale ? state.app.userInfo.settings.locale : "en"
-});
-
-const mapDispatchToProps = dispatch => ({
-  saveUserInfo: saveUserInfo,
-  logout: () => dispatch(logout())
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(UserOption);
+export default UserOption;
