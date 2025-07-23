@@ -6,11 +6,14 @@ import { ActionButton } from "./ActionButton";
 import { isNil } from "lodash";
 import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 import DOMPurify from "dompurify";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublishAlert, displayActions, userInfo }) => {
+const NewsDetailsCard = ({ news, setDeleteAlert, setOpenEdit, setPublishAlert, displayActions }) => {
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
   const canEditNews = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditNews);
 
   return (
@@ -24,7 +27,7 @@ const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublis
       >
         <Grid container direction={"column"} size={6}>
           <Grid>
-            <Button color="primary" onClick={history.goBack} style={{ textTransform: "none", backgroundColor: "transparent" }}>
+            <Button color="primary" onClick={() => navigate(-1)} style={{ textTransform: "none", backgroundColor: "transparent" }}>
               <Typography variant="h6" sx={{ mb: 1 }}>
                 {"< Back"}
               </Typography>
@@ -102,7 +105,5 @@ const NewsDetailsCard = ({ history, news, setDeleteAlert, setOpenEdit, setPublis
     </Fragment>
   );
 };
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-export default connect(mapStateToProps)(NewsDetailsCard);
+
+export default NewsDetailsCard;

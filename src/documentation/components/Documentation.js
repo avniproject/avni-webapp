@@ -9,7 +9,7 @@ import { cloneForSave } from "../reducers";
 import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 function renderDocumentItem(value, index, selectedDocumentation, locale) {
   return (
@@ -24,7 +24,8 @@ function renderDocumentItem(value, index, selectedDocumentation, locale) {
   );
 }
 
-const Documentation = ({ userInfo }) => {
+const Documentation = () => {
+  const userInfo = useSelector(state => state.app.userInfo);
   const { selectedDocumentation, languages } = getDocumentationState();
   const dispatch = useDocumentationDispatch();
   const [value, setValue] = useState(0);
@@ -42,11 +43,14 @@ const Documentation = ({ userInfo }) => {
       }
     });
   };
+
   const onSave = async () => {
     dispatch({ type: "saving", payload: true });
     const payload = cloneForSave(selectedDocumentation);
     if (isEmpty(payload.name)) {
       alert("No name provided for the documentation");
+      dispatch({ type: "saving", payload: false });
+      return;
     }
     const [response, error] = await api.saveDocumentation(payload);
     if (error) {
@@ -65,14 +69,7 @@ const Documentation = ({ userInfo }) => {
         p: 2
       }}
     >
-      <TextField
-        id="doc-name"
-        variant="outlined"
-        label={"Documentation name"}
-        onChange={onDocumentationNameChange}
-        value={name}
-        fullWidth
-      />
+      <TextField id="doc-name" variant="outlined" label="Documentation name" onChange={onDocumentationNameChange} value={name} fullWidth />
       <Tabs value={value} onChange={(e, v) => setValue(v)}>
         {map(languages, locale => (
           <Tab key={locale} label={locale} />
@@ -92,7 +89,7 @@ const Documentation = ({ userInfo }) => {
       />
       {createdBy && (
         <SystemInfo
-          direction={"row"}
+          direction="row"
           createdDateTime={createdDateTime}
           lastModifiedDateTime={lastModifiedDateTime}
           createdBy={createdBy}
@@ -103,8 +100,4 @@ const Documentation = ({ userInfo }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(Documentation);
+export default Documentation;

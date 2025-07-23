@@ -1,15 +1,27 @@
 import ColorValue from "../../common/ColorValue";
 import ResourceListView from "../../common/ResourceListView";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { Privilege } from "openchs-models";
 import { get } from "lodash";
 
-const ReportCardList = ({ history, userInfo }) => {
+const ReportCardList = () => {
+  const userInfo = useSelector(state => state.app.userInfo);
   const columns = [
     {
       accessorKey: "name",
       header: "Name",
-      Cell: ({ row }) => !row.original.voided && <a href={`#/appDesigner/reportCard/${row.original.id}/show`}>{row.original.name}</a>
+      Cell: ({ row }) =>
+        !row.original.voided && (
+          <a
+            href={`#/appDesigner/reportCard/${row.original.id}/show`}
+            onClick={e => {
+              e.preventDefault();
+              navigate(`/appDesigner/reportCard/${row.original.id}/show`);
+            }}
+          >
+            {row.original.name}
+          </a>
+        )
     },
     {
       accessorKey: "standardReportCardType",
@@ -30,7 +42,6 @@ const ReportCardList = ({ history, userInfo }) => {
 
   return (
     <ResourceListView
-      history={history}
       title="Offline Report Card"
       resourceName="reportCard"
       resourceURLName="reportCard"
@@ -41,8 +52,4 @@ const ReportCardList = ({ history, userInfo }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(ReportCardList);
+export default ReportCardList;

@@ -1,39 +1,33 @@
-import { Component } from "react";
-import { connect } from "react-redux";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Routes from "./Routes";
 import { getUserInfo } from "./ducks";
 import IdpDetails from "./security/IdpDetails";
 import { httpClient } from "../common/utils/httpClient";
 
-class App extends Component {
-  componentDidMount() {
+const App = () => {
+  const dispatch = useDispatch();
+
+  const appInitialised = useSelector(state => state.app.appInitialised);
+  const sagaErrorState = useSelector(state => state.sagaErrorState);
+
+  const { errorRaised, error } = sagaErrorState;
+
+  useEffect(() => {
     if (httpClient.idp.idpType === IdpDetails.none) {
-      this.props.getUserInfo();
+      dispatch(getUserInfo());
     }
-  }
+  }, [dispatch]);
 
-  render() {
-    const { appInitialised, sagaErrorState } = this.props;
-    const { errorRaised, error } = sagaErrorState;
+  if (errorRaised) throw error;
 
-    if (errorRaised) throw error;
+  return (
+    appInitialised && (
+      <div>
+        <Routes />
+      </div>
+    )
+  );
+};
 
-    return (
-      appInitialised && (
-        <div>
-          <Routes />
-        </div>
-      )
-    );
-  }
-}
-
-const mapStateToProps = state => ({
-  appInitialised: state.app.appInitialised,
-  sagaErrorState: state.sagaErrorState
-});
-
-export default connect(
-  mapStateToProps,
-  { getUserInfo }
-)(App);
+export default App;

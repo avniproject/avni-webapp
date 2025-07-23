@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import { Grid } from "@mui/material";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { JsonEditor } from "../components/JsonEditor";
 import _ from "lodash";
 import FormLabel from "@mui/material/FormLabel";
@@ -12,12 +13,13 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
-import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import Save from "@mui/icons-material/Save";
 
-const ChecklistDetails = ({ userInfo }) => {
+const ChecklistDetails = () => {
+  const userInfo = useSelector(state => state.app.userInfo);
+
   const [checklistDetails, setChecklistDetails] = useState();
   const [validationErrors, setValidationErrors] = useState();
   const [foldCard, setFoldCard] = useState(true);
@@ -116,8 +118,4 @@ const ChecklistDetails = ({ userInfo }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(ChecklistDetails);
+export default ChecklistDetails;

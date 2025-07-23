@@ -1,26 +1,33 @@
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
-import { Navigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import { Grid } from "@mui/material";
-import _ from "lodash";
+import * as _ from "lodash";
+import { useSelector } from "react-redux";
 import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import RuleDisplay from "../components/RuleDisplay";
 import ApplicationMenuService from "../service/ApplicationMenuService";
 import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
-import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-const ApplicationMenuShow = props => {
+const ApplicationMenuShow = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const userInfo = useSelector(state => state.app.userInfo);
+
   const [menuItem, setApplicationMenu] = useState(null);
-  const [editAlert, setEditAlert] = useState(false);
 
   useEffect(() => {
-    ApplicationMenuService.getMenuItem(props.match.params.id).then(menuItem => setApplicationMenu(menuItem));
-  }, []);
+    ApplicationMenuService.getMenuItem(id).then(menuItem => setApplicationMenu(menuItem));
+  }, [id]);
+
+  const handleEdit = () => {
+    navigate(`/appDesigner/applicationMenu/${id}`);
+  };
 
   return (
     !_.isNil(menuItem) && (
@@ -33,9 +40,9 @@ const ApplicationMenuShow = props => {
           }}
         >
           <Title title={"Application menu: " + menuItem.displayKey} />
-          {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditApplicationMenu) && (
+          {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditApplicationMenu) && (
             <Grid container={12} style={{ justifyContent: "flex-end" }}>
-              <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
+              <Button color="primary" type="button" onClick={handleEdit}>
                 <EditIcon />
                 Edit
               </Button>
@@ -58,15 +65,10 @@ const ApplicationMenuShow = props => {
             )}
             <SystemInfo {...menuItem} />
           </div>
-          {editAlert && <Navigate to={"/appDesigner/applicationMenu/" + props.match.params.id} />}
         </Box>
       </>
     )
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(ApplicationMenuShow);
+export default ApplicationMenuShow;

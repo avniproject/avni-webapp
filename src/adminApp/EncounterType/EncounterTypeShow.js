@@ -1,4 +1,6 @@
 import { useEffect, useReducer, useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import _, { get, identity } from "lodash";
 import EditIcon from "@mui/icons-material/Edit";
 import { httpClient as http } from "common/utils/httpClient";
@@ -16,11 +18,14 @@ import RuleDisplay from "../components/RuleDisplay";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-const EncounterTypeShow = props => {
+const EncounterTypeShow = () => {
+  const userInfo = useSelector(state => state.app.userInfo);
+
+  const { id } = useParams();
+
   const [encounterType, setEncounterType] = useState({});
   const [editAlert, setEditAlert] = useState(false);
   const [formMappings, setFormMappings] = useState([]);
@@ -44,7 +49,7 @@ const EncounterTypeShow = props => {
 
   useEffect(() => {
     http
-      .get("/web/encounterType/" + props.match.params.id)
+      .get("/web/encounterType/" + id)
       .then(response => response.data)
       .then(result => {
         setEncounterType(result);
@@ -61,7 +66,7 @@ const EncounterTypeShow = props => {
           setProgram(response.data.programs);
         });
       });
-  }, []);
+  }, [id]);
 
   return (
     <>
@@ -73,7 +78,7 @@ const EncounterTypeShow = props => {
         }}
       >
         <Title title={"Encounter Type : " + encounterType.name} />
-        {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditEncounterType) && (
+        {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditEncounterType) && (
           <Grid
             container
             style={{ justifyContent: "flex-end" }}
@@ -156,14 +161,10 @@ const EncounterTypeShow = props => {
           <SystemInfo {...encounterType} />
         </div>
 
-        {editAlert && <Navigate to={"/appDesigner/encounterType/" + props.match.params.id} />}
+        {editAlert && <Navigate to={"/appDesigner/encounterType/" + id} />}
       </Box>
     </>
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(EncounterTypeShow);
+export default EncounterTypeShow;

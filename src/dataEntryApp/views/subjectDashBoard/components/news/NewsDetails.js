@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
+import { useParams, useNavigate } from "react-router-dom";
 import API from "../../../../../news/api";
 import NewsDetailsCard from "../../../../../news/components/NewsDetailsCard";
 import { Paper } from "@mui/material";
@@ -13,18 +14,21 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   paddingTop: theme.spacing(3)
 }));
 
-export default function NewsDetails({ history, ...props }) {
+const NewsDetails = () => {
   const [news, setNews] = useState({});
+  const { id } = useParams();
 
   useEffect(() => {
-    API.getNewsById(props.match.params.id)
+    API.getNewsById(id)
       .then(res => res.data)
       .then(res => setNews(res));
-  }, []);
+  }, [id]);
 
   return (
     <StyledPaper>
-      <NewsDetailsCard news={news} history={history} displayActions={false} />
+      <NewsDetailsCard news={news} displayActions={false} />
     </StyledPaper>
   );
-}
+};
+
+export default NewsDetails;

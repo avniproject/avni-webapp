@@ -1,8 +1,10 @@
 import ResourceListView from "../../common/ResourceListView";
 import { Privilege } from "openchs-models";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
-const DashboardList = ({ history, userInfo }) => {
+const DashboardList = () => {
+  const userInfo = useSelector(state => state.app.userInfo);
+
   const columns = [
     {
       accessorKey: "name",
@@ -26,7 +28,6 @@ const DashboardList = ({ history, userInfo }) => {
 
   return (
     <ResourceListView
-      history={history}
       title="Offline Dashboard"
       resourceName="dashboard"
       resourceURLName="dashboard"
@@ -37,8 +38,4 @@ const DashboardList = ({ history, userInfo }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(DashboardList);
+export default DashboardList;

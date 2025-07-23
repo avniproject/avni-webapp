@@ -1,5 +1,6 @@
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Grid } from "@mui/material";
+import { useSelector } from "react-redux";
 import { httpClient } from "../../common/utils/httpClient";
 import { HomePageCard } from "./HomePageCard";
 import {
@@ -16,10 +17,12 @@ import {
 } from "@mui/icons-material";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
-import { connect } from "react-redux";
 import ApplicationContext from "../../ApplicationContext";
 
-const Homepage = ({ userInfo, organisation }) => {
+const Homepage = () => {
+  const userInfo = useSelector(state => state.app.userInfo);
+  const organisation = useSelector(state => state.app.organisation);
+
   httpClient.saveAuthTokenForAnalyticsApp();
 
   const showAnalytics = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
@@ -87,8 +90,5 @@ const Homepage = ({ userInfo, organisation }) => {
     </ScreenWithAppBar>
   );
 };
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo,
-  organisation: state.app.organisation
-});
-export default connect(mapStateToProps)(Homepage);
+
+export default Homepage;

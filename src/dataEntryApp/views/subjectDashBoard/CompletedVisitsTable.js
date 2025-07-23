@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { styled } from "@mui/material/styles";
 import { Box, Grid, IconButton } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
@@ -9,7 +10,6 @@ import { mapObservations } from "common/subjectModelMapper";
 import { Link } from "react-router-dom";
 import { selectFormMappingForEncounter } from "../../sagas/encounterSelector";
 import { selectFormMappingForProgramEncounter } from "../../sagas/programEncounterSelector";
-import { connect } from "react-redux";
 import { getEncounterForm } from "../../reducers/programSubjectDashboardReducer";
 import Observations from "dataEntryApp/components/Observations";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
@@ -36,47 +36,56 @@ const transformApiResponse = response => {
   response.cancelObservations = mapObservations(response.cancelObservations);
 };
 
-const EditVisitLink = ({ editEncounterUrl, encounter, isForProgramEncounters, encounterFormMapping, programEncounterFormMapping }) => {
+const EditVisitLink = ({ editEncounterUrl, encounter, isForProgramEncounters }) => {
   const { t } = useTranslation();
+
+  const encounterFormMapping = useSelector(state =>
+    selectFormMappingForEncounter(encounter.encounterType.uuid, state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid)(state)
+  );
+
+  const programEncounterFormMapping = useSelector(
+    state =>
+      isForProgramEncounters &&
+      selectFormMappingForProgramEncounter(
+        encounter.encounterType.uuid,
+        state.dataEntry.programEncounterReducer.programEnrolment.program.uuid,
+        state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
+      )(state)
+  );
+
   const isFormAvailable = isForProgramEncounters ? programEncounterFormMapping : encounterFormMapping;
 
   return isFormAvailable ? <StyledLink to={`${editEncounterUrl}?uuid=${encounter.uuid}`}>{t("edit visit")}</StyledLink> : "-";
 };
 
-const mapStateToProps = (state, props) => ({
-  encounterFormMapping: selectFormMappingForEncounter(
-    props.encounter.encounterType.uuid,
-    state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
-  )(state),
-  programEncounterFormMapping:
-    props.isForProgramEncounters &&
-    selectFormMappingForProgramEncounter(
-      props.encounter.encounterType.uuid,
-      state.dataEntry.programEncounterReducer.programEnrolment.program.uuid,
-      state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
-    )(state),
-  encounterForms: state.dataEntry.subjectProgram.encounterForms
-});
+const EncounterObs = ({ encounter, isForProgramEncounters }) => {
+  const dispatch = useDispatch();
 
-const EditVisit = connect(mapStateToProps)(EditVisitLink);
+  const encounterFormMapping = useSelector(state =>
+    selectFormMappingForEncounter(encounter.encounterType.uuid, state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid)(state)
+  );
 
-const EncounterObs = ({
-  encounter,
-  isForProgramEncounters,
-  encounterFormMapping,
-  programEncounterFormMapping,
-  encounterForms,
-  getEncounterForm
-}) => {
+  const programEncounterFormMapping = useSelector(
+    state =>
+      isForProgramEncounters &&
+      selectFormMappingForProgramEncounter(
+        encounter.encounterType.uuid,
+        state.dataEntry.programEncounterReducer.programEnrolment.program.uuid,
+        state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
+      )(state)
+  );
+
+  const encounterForms = useSelector(state => state.dataEntry.subjectProgram.encounterForms);
+
   const formMapping = isForProgramEncounters ? programEncounterFormMapping : encounterFormMapping;
   const formUUID = formMapping.formUUID;
   const requiredFormDetails = find(encounterForms, ef => ef.formUUID === formUUID);
 
   useEffect(() => {
     if (!requiredFormDetails) {
-      getEncounterForm(formUUID);
+      dispatch(getEncounterForm(formUUID));
     }
-  }, [requiredFormDetails, formUUID, getEncounterForm]);
+  }, [requiredFormDetails, formUUID, dispatch]);
 
   return requiredFormDetails ? (
     <Observations
@@ -89,15 +98,6 @@ const EncounterObs = ({
     <CustomizedBackdrop load={!isEmpty(requiredFormDetails)} />
   );
 };
-
-const mapDispatchToProps = {
-  getEncounterForm
-};
-
-const EncounterObservations = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(EncounterObs);
 
 const CompletedVisitsTable = ({ apiUrl, filterParams, editEncounterUrl, isForProgramEncounters, onDelete }) => {
   const { t } = useTranslation();
@@ -136,7 +136,7 @@ const CompletedVisitsTable = ({ apiUrl, filterParams, editEncounterUrl, isForPro
         Cell: ({ row }) => (
           <StyledGrid container spacing={10}>
             <Grid>
-              <EditVisit
+              <EditVisitLink
                 editEncounterUrl={editEncounterUrl(row.original.cancelDateTime ? "cancel" : "")}
                 encounter={row.original}
                 isForProgramEncounters={isForProgramEncounters}
@@ -197,7 +197,7 @@ const CompletedVisitsTable = ({ apiUrl, filterParams, editEncounterUrl, isForPro
       enableExpanding
       renderDetailPanel={({ row }) => (
         <StyledBox key={row.original.uuid}>
-          <EncounterObservations encounter={row.original} isForProgramEncounters={isForProgramEncounters} />
+          <EncounterObs encounter={row.original} isForProgramEncounters={isForProgramEncounters} />
         </StyledBox>
       )}
       renderExpandIcon={({ row }) => <IconButton>{row.getIsExpanded() ? <KeyboardArrowUp /> : <KeyboardArrowDown />}</IconButton>}

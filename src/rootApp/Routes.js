@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { AccessDenied, WithProps } from "../common/components/utils";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
@@ -27,13 +27,19 @@ const RestrictedRoute = ({ element, requiredPrivileges = [], userInfo }) => {
   return CurrentUserService.isAllowedToAccess(userInfo, requiredPrivileges) ? element : <AccessDenied />;
 };
 
-const AppRoutes = ({ logout, user, userInfo, organisation, genericConfig }) => {
+const AppRoutes = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const organisation = useSelector(state => state.app.organisation);
+  const user = useSelector(state => state.app.authSession);
+  const userInfo = useSelector(state => state.app.userInfo);
+  const genericConfig = useSelector(state => state.app.genericConfig);
 
   const handleOnIdle = () => {
     console.log("User is idle, was last active at ", getLastActiveTime());
     console.log("A user has logged in?", hasSignedIn());
-    hasSignedIn() && logout();
+    hasSignedIn() && dispatch(logout());
   };
 
   const hasSignedIn = () => {
@@ -108,14 +114,4 @@ const AppRoutes = ({ logout, user, userInfo, organisation, genericConfig }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  organisation: state.app.organisation,
-  user: state.app.authSession,
-  userInfo: state.app.userInfo,
-  genericConfig: state.app.genericConfig
-});
-
-export default connect(
-  mapStateToProps,
-  { logout }
-)(AppRoutes);
+export default AppRoutes;

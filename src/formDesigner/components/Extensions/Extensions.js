@@ -1,18 +1,25 @@
 import { useReducer, useState, useEffect } from "react";
+import { styled } from "@mui/material/styles";
+import { useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Title } from "react-admin";
 import { LabelFileName } from "./LabelFileName";
 import { checkForErrors, ExtensionReducer, extensionScopeTypes } from "./ExtensionReducer";
 import { get, isEmpty, map } from "lodash";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import { httpClient as http } from "common/utils/httpClient";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
 import { getErrorByKey } from "../../common/ErrorUtil";
-import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  boxShadow: theme.shadows[2],
+  padding: theme.spacing(5),
+  backgroundColor: theme.palette.background.paper
+}));
 
 const initialState = {
   labelFileNames: [],
@@ -20,7 +27,8 @@ const initialState = {
   errors: []
 };
 
-const Extensions = ({ userInfo }) => {
+const Extensions = () => {
+  const userInfo = useSelector(state => state.app.userInfo);
   const [print, dispatch] = useReducer(ExtensionReducer, initialState);
   const [value, setValue] = useState("");
   const [load, setLoad] = useState(false);
@@ -44,12 +52,16 @@ const Extensions = ({ userInfo }) => {
 
   const onFileSelect = event => {
     const fileReader = new FileReader();
-    event.target.files[0] && fileReader.readAsText(event.target.files[0]);
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      fileReader.readAsText(selectedFile);
+    }
     setValue(event.target.value);
-    const file = event.target.files[0];
-    fileReader.onloadend = event => {
-      const error = dispatch({ type: "setFile", payload: file });
-      error && alert(error);
+    fileReader.onloadend = () => {
+      const error = dispatch({ type: "setFile", payload: selectedFile });
+      if (error) {
+        alert(error);
+      }
     };
   };
 
@@ -57,7 +69,7 @@ const Extensions = ({ userInfo }) => {
     const errors = checkForErrors(print);
     if (isEmpty(errors)) {
       setLoad(true);
-      let formData = new FormData();
+      const formData = new FormData();
       const extensionSettings = new Blob([JSON.stringify(labelFileNames)], {
         type: "application/json"
       });
@@ -104,47 +116,39 @@ const Extensions = ({ userInfo }) => {
   };
 
   return (
-    <Box
-      sx={{
-        boxShadow: 2,
-        p: 5,
-        bgcolor: "background.paper"
-      }}
-    >
+    <StyledBox>
       <Title title="Extensions" />
-      <DocumentationContainer filename={"Prints.md"}>
+      <DocumentationContainer filename="Prints.md">
         <div className="container">
-          <Grid container direction={"column"} spacing={5}>
-            <Grid>
+          <Grid container direction="column" spacing={5}>
+            <Grid item>
               {renderSettings()}
               {getErrorByKey(errors, "EMPTY_SETTING")}
             </Grid>
-            <Grid>
-              <Button color={"primary"} onClick={() => dispatch({ type: "newSetting" })}>
+            <Grid item>
+              <Button color="primary" onClick={() => dispatch({ type: "newSetting" })}>
                 Add more extensions
               </Button>
             </Grid>
-            <Grid container direction={"column"}>
-              <Grid>
+            <Grid container direction="column" item>
+              <Grid item>
                 <input type="file" value={value} onChange={onFileSelect} />
               </Grid>
-              <Grid>{getErrorByKey(errors, "EMPTY_FILE")}</Grid>
+              <Grid item>{getErrorByKey(errors, "EMPTY_FILE")}</Grid>
             </Grid>
             {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditExtension) && (
-              <Grid>
-                <Button variant={"contained"} color={"primary"} onClick={onSave}>
+              <Grid item>
+                <Button variant="contained" color="primary" onClick={onSave}>
                   Save
                 </Button>
               </Grid>
             )}
           </Grid>
         </div>
-        <CustomizedBackdrop load={!load} />
+        <CustomizedBackdrop load={load} />
       </DocumentationContainer>
-    </Box>
+    </StyledBox>
   );
 };
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-export default connect(mapStateToProps)(Extensions);
+
+export default Extensions;

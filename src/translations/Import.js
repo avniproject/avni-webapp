@@ -1,11 +1,11 @@
 import DropDown from "../common/components/DropDown";
 import FileUpload from "../common/components/FileUpload";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { httpClient as http } from "common/utils/httpClient";
 import { filter, find, isEmpty, isString, size } from "lodash";
 import { Box, Grid } from "@mui/material";
 import UserInfo from "../common/model/UserInfo";
-import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 
 const noOfKeysWithValues = file => {
@@ -20,7 +20,9 @@ const isInvalidFile = file => {
   return !file ? false : isEmpty(filter(file && file.json, isString));
 };
 
-const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
+const ImportTranslations = ({ locales = [], onSuccessfulImport }) => {
+  const userInfo = useSelector(state => state.app.userInfo);
+
   const [file, setFile] = useState();
   const [language, setLanguage] = useState("");
   const [error, setError] = useState("");
@@ -103,7 +105,5 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
     </Grid>
   );
 };
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-export default connect(mapStateToProps)(ImportTranslations);
+
+export default ImportTranslations;

@@ -9,7 +9,7 @@ import CustomizedBackdrop from "../dataEntryApp/components/CustomizedBackdrop";
 import { Box } from "@mui/material";
 import { Item } from "./components/Item";
 import { useLocation } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import UserInfo from "../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
@@ -51,12 +51,14 @@ function createDocumentationNode(
   });
 }
 
-const DocumentationList = ({ userInfo }) => {
+const DocumentationList = () => {
   const location = useLocation();
+  const userInfo = useSelector(state => state.app.userInfo);
   const documentationUUID = get(location, "state.documentationUUID");
   const [state, dispatch] = useReducer(DocumentationReducer, initialState);
   const { documentations, saving, selectedDocumentation } = state;
   const rootNodes = filter(documentations, d => isNil(d.parent));
+  const hasEditPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditDocumentation);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,7 +92,6 @@ const DocumentationList = ({ userInfo }) => {
     }
   };
 
-  const hasEditPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditDocumentation);
   return (
     <ScreenWithAppBar appbarTitle={"Documentation"}>
       <DocumentationContext.Provider value={{ state: state, dispatch: dispatch }}>
@@ -127,8 +128,4 @@ const DocumentationList = ({ userInfo }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(DocumentationList);
+export default DocumentationList;

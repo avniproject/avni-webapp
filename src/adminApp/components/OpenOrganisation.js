@@ -1,26 +1,23 @@
-import { Component, Fragment } from "react";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link } from "@mui/material";
 import { getUserInfo } from "../../rootApp/ducks";
+import { useNavigate } from "react-router-dom";
 
-class OpenOrganisation extends Component {
-  handleClick = organisationUUID => {
+const OpenOrganisation = ({ record }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleClick = organisationUUID => {
     localStorage.setItem("ORGANISATION_UUID", organisationUUID);
-    this.props.getUserInfo();
+    dispatch(getUserInfo());
+    navigate("/home");
   };
 
-  render() {
-    return (
-      <Fragment>
-        <Link href={"#/home"} onClick={() => this.handleClick(this.props.record.uuid)}>
-          Go To Organisation
-        </Link>
-      </Fragment>
-    );
-  }
-}
+  return (
+    <Link component="button" onClick={() => handleClick(record.uuid)}>
+      Go To Organisation
+    </Link>
+  );
+};
 
-export default connect(
-  null,
-  { getUserInfo }
-)(OpenOrganisation);
+export default OpenOrganisation;

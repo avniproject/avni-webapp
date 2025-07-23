@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import { useSelector } from "react-redux";
 import { Title } from "react-admin";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import { get } from "lodash";
@@ -12,7 +13,6 @@ import { DocumentationContainer } from "../../../common/components/Documentation
 import Chip from "@mui/material/Chip";
 import { JSEditor } from "../../../common/components/JSEditor";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
-import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MuiComponentHelper from "../../../common/utils/MuiComponentHelper";
@@ -51,8 +51,9 @@ function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Report);
 }
 
-const ReportingViews = ({ userInfo }) => {
+const ReportingViews = () => {
   const tableRef = useRef(null);
+  const userInfo = useSelector(state => state.app.userInfo);
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -222,8 +223,4 @@ const ReportingViews = ({ userInfo }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(ReportingViews);
+export default ReportingViews;

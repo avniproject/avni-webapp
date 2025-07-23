@@ -4,7 +4,7 @@ import { newsInitialState, NewsReducer } from "./reducers";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { Paper } from "@mui/material";
 import { CreateEditNews } from "./CreateEditNews";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { PublishBroadcast } from "./components/PublishBroadcast";
 import { DeleteBroadcast } from "./components/DeleteBroadcast";
 import API from "./api";
@@ -20,20 +20,24 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   maxWidth: "70%"
 }));
 
-export default function NewsDetails({ history, ...props }) {
+const NewsDetails = () => {
   const [news, dispatch] = useReducer(NewsReducer, newsInitialState);
   const [openEdit, setOpenEdit] = useState(false);
   const [redirectToListing, setRedirectToListing] = useState(false);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [publishAlert, setPublishAlert] = useState(false);
+  const { id } = useParams();
 
   useEffect(() => {
-    API.getNewsById(props.match.params.id)
+    API.getNewsById(id)
       .then(res => res.data)
       .then(res => {
         dispatch({ type: "setData", payload: res });
+      })
+      .catch(error => {
+        console.error("Failed to fetch news:", error);
       });
-  }, [openEdit]);
+  }, [id, openEdit]);
 
   return (
     <ScreenWithAppBar appbarTitle="News broadcast">
@@ -41,7 +45,6 @@ export default function NewsDetails({ history, ...props }) {
         <StyledPaper>
           <NewsDetailsCard
             news={news}
-            history={history}
             displayActions={true}
             setDeleteAlert={setDeleteAlert}
             setOpenEdit={setOpenEdit}
@@ -61,4 +64,6 @@ export default function NewsDetails({ history, ...props }) {
       {redirectToListing && <Navigate to="/broadcast/news" />}
     </ScreenWithAppBar>
   );
-}
+};
+
+export default NewsDetails;

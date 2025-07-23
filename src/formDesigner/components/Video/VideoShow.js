@@ -4,20 +4,27 @@ import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { Title } from "react-admin";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-const VideoShow = props => {
+const VideoShow = () => {
   const [video, setVideo] = useState({});
   const [editAlert, setEditAlert] = useState(false);
+  const { id } = useParams();
+  const userInfo = useSelector(state => state.app.userInfo);
 
   useEffect(() => {
-    http.get(`/web/video/${props.match.params.id}`).then(res => setVideo(res.data));
-  }, []);
+    http
+      .get(`/web/video/${id}`)
+      .then(res => setVideo(res.data))
+      .catch(error => {
+        console.error("Failed to fetch video:", error);
+      });
+  }, [id]);
 
   return (
     <Box
@@ -28,7 +35,7 @@ const VideoShow = props => {
       }}
     >
       <Title title={"Show Video : " + video.title} />
-      {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditVideo) && (
+      {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditVideo) && (
         <Grid
           container
           style={{ justifyContent: "flex-end" }}
@@ -52,13 +59,9 @@ const VideoShow = props => {
         <ShowLabelValue label={"Duration"} value={video.duration} />
         <p />
       </div>
-      {editAlert && <Navigate to={"/appDesigner/video/" + props.match.params.id} />}
+      {editAlert && <Navigate to={`/appDesigner/video/${id}`} />}
     </Box>
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(VideoShow);
+export default VideoShow;

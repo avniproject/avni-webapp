@@ -4,7 +4,7 @@ import { Box, Paper, Accordion, AccordionDetails, AccordionSummary, Typography }
 import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import _, { filter, isEmpty, isNil } from "lodash";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SubjectVoided from "../../../components/SubjectVoided";
 import PlannedVisitsTable from "../PlannedVisitsTable";
 import { clearVoidServerError, voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
@@ -47,19 +47,24 @@ const StyledExpandMore = styled(ExpandMore)({
   color: "#0e6eff"
 });
 
-const SubjectDashboardGeneralTab = ({
-  general,
-  subjectUuid,
-  subjectTypeUuid,
-  subjectVoided,
-  voidGeneralEncounter,
-  displayGeneralInfoInProfileTab,
-  voidError,
-  clearVoidServerError
-}) => {
+const SubjectDashboardGeneralTab = ({ general, subjectUuid, subjectTypeUuid, subjectVoided, displayGeneralInfoInProfileTab }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  // Use useSelector to get state from Redux store
+  const voidError = useSelector(state => state.subjectDashboard?.voidError);
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = useState("");
+
+  // Action dispatchers using useDispatch hook
+  const handleVoidGeneralEncounter = encounterUuid => {
+    dispatch(voidGeneralEncounter(encounterUuid));
+  };
+
+  const handleClearVoidServerError = () => {
+    dispatch(clearVoidServerError());
+  };
 
   const plannedVisits = filter(
     general,
@@ -91,10 +96,10 @@ const SubjectDashboardGeneralTab = ({
           <ConfirmDialog
             title={t("GeneralEncounterVoidAlertTitle")}
             open={!isEmpty(plannedEncounterUUIDToBeVoided)}
-            setOpen={() => setPlannedEncounterUUIDToBeVoided()}
+            setOpen={() => setPlannedEncounterUUIDToBeVoided("")}
             message={t("GeneralEncounterVoidAlertMessage")}
             onConfirm={() => {
-              voidGeneralEncounter(plannedEncounterUUIDToBeVoided);
+              handleVoidGeneralEncounter(plannedEncounterUUIDToBeVoided);
             }}
           />
         </StyledAccordionDetails>
@@ -111,17 +116,9 @@ const SubjectDashboardGeneralTab = ({
           {isExpanded && <CompletedVisits entityUuid={subjectUuid} isForProgramEncounters={false} />}
         </StyledAccordionDetails>
       </StyledAccordion>
-      <MessageDialog title={t("SubjectErrorTitle")} open={!isEmpty(voidError)} message={t(voidError)} onOk={clearVoidServerError} />
+      <MessageDialog title={t("SubjectErrorTitle")} open={!isEmpty(voidError)} message={t(voidError)} onOk={handleClearVoidServerError} />
     </ContainerComponent>
   );
 };
 
-const mapDispatchToProps = {
-  voidGeneralEncounter,
-  clearVoidServerError
-};
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(SubjectDashboardGeneralTab);
+export default SubjectDashboardGeneralTab;

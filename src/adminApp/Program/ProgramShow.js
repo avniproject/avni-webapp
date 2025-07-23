@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import { httpClient as http } from "common/utils/httpClient";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
@@ -15,12 +15,12 @@ import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import RuleDisplay from "../components/RuleDisplay";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates } from "../service/MessageService";
+import { useSelector } from "react-redux";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-const ProgramShow = props => {
+const ProgramShow = () => {
   const [program, setProgram] = useState({});
   const [editAlert, setEditAlert] = useState(false);
   const [formMappings, setFormMappings] = useState([]);
@@ -30,6 +30,8 @@ const ProgramShow = props => {
     templates: []
   });
   const entityType = "ProgramEnrolment";
+  const { id } = useParams();
+  const userInfo = useSelector(state => state.app.userInfo);
 
   useEffect(() => {
     getMessageRules(entityType, program.programId, rulesDispatch);
@@ -43,19 +45,27 @@ const ProgramShow = props => {
 
   useEffect(() => {
     http
-      .get("/web/program/" + props.match.params.id)
+      .get(`/web/program/${id}`)
       .then(response => response.data)
       .then(result => {
         setProgram(result);
+      })
+      .catch(error => {
+        console.error("Failed to fetch program:", error);
       });
 
-    http.get("/web/operationalModules").then(response => {
-      const formMap = response.data.formMappings;
-      formMap.map(l => (l["isVoided"] = false));
-      setFormMappings(formMap);
-      setSubjectType(response.data.subjectTypes);
-    });
-  }, []);
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        const formMap = response.data.formMappings;
+        formMap.forEach(l => (l["isVoided"] = false));
+        setFormMappings(formMap);
+        setSubjectType(response.data.subjectTypes);
+      })
+      .catch(error => {
+        console.error("Failed to fetch operational modules:", error);
+      });
+  }, [id]);
 
   return (
     <>
@@ -67,7 +77,7 @@ const ProgramShow = props => {
         }}
       >
         <Title title={"Program: " + program.name} />
-        {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditProgram) && (
+        {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditProgram) && (
           <Grid
             container
             style={{ justifyContent: "flex-end" }}
@@ -104,14 +114,11 @@ const ProgramShow = props => {
                 border: "1px solid",
                 background: program.colour
               }}
-            >
-              &nbsp;
-            </div>
+            />
           </div>
           <p />
           <BooleanStatusInShow status={program.active} label={"Active"} />
           <BooleanStatusInShow status={program.allowMultipleEnrolments} label={"Allow multiple active enrolments"} />
-
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Program Subject Label</FormLabel>
             <br />
@@ -162,14 +169,10 @@ const ProgramShow = props => {
           <SystemInfo {...program} />
         </div>
 
-        {editAlert && <Navigate to={"/appDesigner/program/" + props.match.params.id} />}
+        {editAlert && <Navigate to={`/appDesigner/program/${id}`} />}
       </Box>
     </>
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(ProgramShow);
+export default ProgramShow;

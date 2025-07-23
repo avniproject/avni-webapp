@@ -7,23 +7,27 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { Grid, Button, Box, Checkbox, FormControlLabel } from "@mui/material";
 import { getDashboardData, getOrgConfig } from "./reducers/onLoadReducer";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getLocales } from "../common/utils";
 import Import from "./Import";
 import { TranslationDashboard } from "./TranslationDashboard";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { useNavigate } from "react-router-dom";
 
 const EMPTY_TRANSLATION_KEY = "KEY_NOT_DEFINED";
-const Translations = ({ user, organisationConfig, getOrgConfig, dashboardData, getDashboardData, history }) => {
-  useEffect(() => {
-    getOrgConfig();
-    getDashboardData("Android", EMPTY_TRANSLATION_KEY);
-  }, []);
-
-  const platforms = [{ id: "Android", name: "Android" }, { id: "Web", name: "Web" }];
+const Translations = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const organisationConfig = useSelector(state => state.translations.onLoad.organisationConfig);
+  const dashboardData = useSelector(state => state.translations.onLoad.dashboardData);
   const localeChoices = organisationConfig && getLocales(organisationConfig);
   const [platform, setPlatform] = useState("");
   const [excludeLocations, setExcludeLocations] = useState(false);
+
+  useEffect(() => {
+    dispatch(getOrgConfig());
+    dispatch(getDashboardData("Android", EMPTY_TRANSLATION_KEY));
+  }, [dispatch]);
 
   const onDownloadPressedHandler = () => {
     const platformId = find(platforms, p => p.name === platform).id;
@@ -44,11 +48,13 @@ const Translations = ({ user, organisationConfig, getOrgConfig, dashboardData, g
       });
   };
 
+  const platforms = [{ id: "Android", name: "Android" }, { id: "Web", name: "Web" }];
+
   if (isEmpty(localeChoices)) {
     const link = (
       <span
         style={{ cursor: "pointer", color: "blue", textDecorationLine: "underline" }}
-        onClick={() => history.push("/admin/organisationConfig")}
+        onClick={() => navigate("/admin/organisationConfig")}
       >
         click here
       </span>
@@ -147,11 +153,5 @@ const Translations = ({ user, organisationConfig, getOrgConfig, dashboardData, g
     </ScreenWithAppBar>
   );
 };
-const mapStateToProps = state => ({
-  organisationConfig: state.translations.onLoad.organisationConfig,
-  dashboardData: state.translations.onLoad.dashboardData
-});
-export default connect(
-  mapStateToProps,
-  { getOrgConfig, getDashboardData }
-)(Translations);
+
+export default Translations;

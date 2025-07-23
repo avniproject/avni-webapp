@@ -1,19 +1,21 @@
 import SignInView from "./SignInView";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { httpClient } from "../../common/utils/httpClient";
 import { Typography } from "@mui/material";
 import _ from "lodash";
-import { connect } from "react-redux";
 import { setAuthSession } from "../ducks";
 import IdpDetails from "../security/IdpDetails";
 import BaseAuthSession from "../security/BaseAuthSession";
 import { DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG, isDisallowedPassword } from "../utils";
 import ApplicationContext from "../../ApplicationContext";
 
-function KeycloakSignInView({ setAuthSession }) {
+const KeycloakSignInView = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const authSession = useSelector(state => state.app.authSession);
 
   function onSignIn() {
     if (ApplicationContext.isNonProdAndNonDevEnv() && isDisallowedPassword(password)) {
@@ -25,7 +27,7 @@ function KeycloakSignInView({ setAuthSession }) {
         .then(x => x.data)
         .then(data => {
           httpClient.idp.setAccessToken(data["access_token"]);
-          setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak);
+          dispatch(setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak));
         })
         .catch(error => {
           setError(`${error.response.statusText}: ${error.response.data["error_description"]}`);
@@ -55,13 +57,6 @@ function KeycloakSignInView({ setAuthSession }) {
       />
     </div>
   );
-}
+};
 
-const mapStateToProps = state => ({
-  authSession: state.app.authSession
-});
-
-export default connect(
-  mapStateToProps,
-  { setAuthSession }
-)(KeycloakSignInView);
+export default KeycloakSignInView;
