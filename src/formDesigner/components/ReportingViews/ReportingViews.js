@@ -186,7 +186,7 @@ const ReportingViews = () => {
       <DocumentationContainer filename="View.md">
         <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
           {hasEditPrivilege(userInfo) && (
-            <Grid item>
+            <Grid>
               <CreateComponent onSubmit={confirmViewCreation} name="Create/Refresh view" />
             </Grid>
           )}

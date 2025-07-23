@@ -121,23 +121,23 @@ const Extensions = () => {
       <DocumentationContainer filename="Prints.md">
         <div className="container">
           <Grid container direction="column" spacing={5}>
-            <Grid item>
+            <Grid>
               {renderSettings()}
               {getErrorByKey(errors, "EMPTY_SETTING")}
             </Grid>
-            <Grid item>
+            <Grid>
               <Button color="primary" onClick={() => dispatch({ type: "newSetting" })}>
                 Add more extensions
               </Button>
             </Grid>
             <Grid container direction="column" item>
-              <Grid item>
+              <Grid>
                 <input type="file" value={value} onChange={onFileSelect} />
               </Grid>
-              <Grid item>{getErrorByKey(errors, "EMPTY_FILE")}</Grid>
+              <Grid>{getErrorByKey(errors, "EMPTY_FILE")}</Grid>
             </Grid>
             {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditExtension) && (
-              <Grid item>
+              <Grid>
                 <Button variant="contained" color="primary" onClick={onSave}>
                   Save
                 </Button>

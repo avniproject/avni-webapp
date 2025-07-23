@@ -118,9 +118,9 @@ const getSelectedListItem = sidebarOptions => {
       })).filter(option => option.selected)[0]?.index || 0;
 };
 
-const ScreenWithAppBar = props => {
+const ScreenWithAppBar = ({ appbarTitle, enableLeftMenuButton = false, children, sidebarOptions }) => {
   const [open, setOpen] = useState(true);
-  const [selectedIndex, setSelectedIndex] = useState(getSelectedListItem(props.sidebarOptions));
+  const [selectedIndex, setSelectedIndex] = useState(getSelectedListItem(sidebarOptions));
 
   function handleListItemClick(event, index) {
     setSelectedIndex(index);
@@ -133,14 +133,13 @@ const ScreenWithAppBar = props => {
   return (
     <StyledContainer>
       <AppBar
-        title={props.appbarTitle}
+        title={appbarTitle}
         handleDrawer={handleDrawer}
-        enableLeftMenuButton={props.enableLeftMenuButton}
+        enableLeftMenuButton={enableLeftMenuButton}
         sx={{ zIndex: theme => theme.zIndex.appBar }}
       />
-      {props.enableLeftMenuButton &&
-        applyLeftMenu(open, handleDrawer, selectedIndex, handleListItemClick, props.children, props.sidebarOptions)}
-      {!props.enableLeftMenuButton && <Body>{props.children}</Body>}
+      {enableLeftMenuButton && applyLeftMenu(open, handleDrawer, selectedIndex, handleListItemClick, children, sidebarOptions)}
+      {!enableLeftMenuButton && <Body>{children}</Body>}
     </StyledContainer>
   );
 };
@@ -149,6 +148,5 @@ ScreenWithAppBar.propTypes = {
   appbarTitle: PropTypes.string.isRequired,
   enableLeftMenuButton: PropTypes.bool
 };
-ScreenWithAppBar.defaultProps = { enableLeftMenuButton: false };
 
 export default ScreenWithAppBar;

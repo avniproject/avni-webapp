@@ -31,10 +31,7 @@ const sagaMiddleware = createSagaMiddleware({
   }
 });
 
-const enhancedReducer = combineReducers({
-  ...rootReducer,
-  router: routerReducer
-});
+const enhancedReducer = rootReducer(routerReducer);
 
 const composeEnhancers = (isDevEnv && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
@@ -42,7 +39,17 @@ export const configureStore = (initialState = {}) => {
   const store = reduxConfigureStore({
     reducer: enhancedReducer,
     middleware: getDefaultMiddleware =>
-      getDefaultMiddleware({ thunk: false }).concat(thunkMiddleware, sagaMiddleware, reduxHistoryMiddleware),
+      getDefaultMiddleware({
+        thunk: false,
+        serializableCheck: {
+          ignoredPaths: ["app.authSession"],
+          ignoredActions: ["app/SET_AUTH_SESSION", "app/SET_USER_INFO"]
+        },
+        immutableCheck: {
+          ignoredPaths: ["app.authSession"],
+          ignoredActions: ["app/SET_USER_INFO"]
+        }
+      }).concat(thunkMiddleware, sagaMiddleware, reduxHistoryMiddleware),
     preloadedState: initialState,
     enhancers: getDefaultEnhancers => getDefaultEnhancers().concat(composeEnhancers)
   });

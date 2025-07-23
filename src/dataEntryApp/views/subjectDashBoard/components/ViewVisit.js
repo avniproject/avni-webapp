@@ -65,20 +65,16 @@ const ViewVisit = () => {
   const encounter = useSelector(state => state.dataEntry.viewVisitReducer.encounter);
   const form = useSelector(state => state.dataEntry.viewVisitReducer.form);
 
-  // Use React Router hooks instead of withRouter
   const navigate = useNavigate();
   const location = useLocation();
 
   const { t } = useTranslation();
 
-  // Replace useHistory with navigate function
   const goBack = () => navigate(-1);
 
-  // Extract UUID from URL search params
   const searchParams = new URLSearchParams(location.search);
   const uuid = searchParams.get("uuid");
 
-  // Determine if it's a view encounter based on pathname
   const isViewEncounter = location.pathname.includes("/viewEncounter");
   let viewAllCompletedUrl;
 

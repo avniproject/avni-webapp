@@ -40,7 +40,7 @@ const StyledTable = styled(MaterialReactTable)({
   }
 });
 
-const TaskAssignment = ({ history, ...props }) => {
+const TaskAssignment = () => {
   const [state, dispatch] = useReducer(TaskAssignmentReducer, initialState);
   const { filterCriteria, taskMetadata, displayAction, assignmentCriteria, applyableTaskStatuses } = state;
   const { taskTypeOptions, taskStatusOptions, userOptions } = getMetadataOptions(taskMetadata, filterCriteria);

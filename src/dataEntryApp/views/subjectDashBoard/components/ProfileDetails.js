@@ -146,7 +146,6 @@ const StyledProfilePicture = styled(SubjectProfilePicture)({
 });
 
 const ProfileDetails = ({ profileDetails, subjectUuid }) => {
-  // Use Redux hooks instead of connect()
   const dispatch = useDispatch();
   const programs = useSelector(state => state.dataEntry.programs?.programs || "");
   const load = useSelector(state => state.dataEntry.loadReducer.load);

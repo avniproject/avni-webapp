@@ -16,7 +16,7 @@ import KeycloakWebClient from "./security/KeycloakWebClient";
 
 function SecureApp({ genericConfig }) {
   const dispatch = useDispatch();
-  const authSession = useSelector(state => state.app.authSession);
+  const authSession = useSelector(state => state.app?.authSession);
 
   useEffect(() => {
     if (KeycloakWebClient.isAuthenticatedWithKeycloak()) {

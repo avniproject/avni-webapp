@@ -177,7 +177,7 @@ const FormListing = ({ onNewFormClick }) => {
       <Title title="Forms" color="primary" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {UserInfo.hasFormEditPrivilege(userInfo) && (
-          <Grid item>
+          <Grid>
             <CreateComponent onSubmit={onNewFormClick} name="New Form" />
           </Grid>
         )}

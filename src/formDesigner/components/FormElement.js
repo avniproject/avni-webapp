@@ -181,7 +181,7 @@ const FormElement = props => {
     >
       <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`} {...props.dragHandleProps}>
         <StyledGridContainer container wrap="nowrap">
-          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
+          <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
             <StyledIconContainer>
               {[
                 "Date",
@@ -211,7 +211,7 @@ const FormElement = props => {
             <StyledExpandIcon expanded={props.formElementData?.expanded || false} />
           </Grid>
 
-          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "50%", flexShrink: 1, minWidth: 0 }}>
+          <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "50%", flexShrink: 1, minWidth: 0 }}>
             <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
               <StyledInputLabel name={`name${panel}`} required={isMandatory} disabled={disableFormElement}>
                 {elementName}
@@ -219,11 +219,11 @@ const FormElement = props => {
             </StyledTypography>
           </Grid>
 
-          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%" }}>
+          <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%" }}>
             <DragHandler dragHandleProps={props.dragHandleProps} />
           </Grid>
 
-          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%", justifyContent: "flex-end" }}>
+          <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%", justifyContent: "flex-end" }}>
             <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement} size="small">
               <Delete fontSize="small" />
             </IconButton>

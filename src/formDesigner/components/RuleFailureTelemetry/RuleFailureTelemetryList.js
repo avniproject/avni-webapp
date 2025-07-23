@@ -6,7 +6,7 @@ import { format, isValid } from "date-fns";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { Close, MenuOpen } from "@mui/icons-material";
@@ -19,7 +19,8 @@ const STATUS = {
   ALL: 3
 };
 
-const RuleFailureTelemetryList = ({ userInfo }) => {
+const RuleFailureTelemetryList = () => {
+  const userInfo = useSelector(state => state.auth.userInfo);
   const [selectedStatus, setSelectedStatus] = useState(STATUS.OPEN);
   const [selectedRows, setSelectedRows] = useState([]);
   const tableRef = useRef(null);
@@ -290,7 +291,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
     >
       <Title title="Rule Failures" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
-        <Grid item>
+        <Grid>
           <ButtonGroup color="primary">
             <Button variant={selectedStatus === STATUS.OPEN ? "contained" : "outlined"} onClick={() => onSelect(STATUS.OPEN)}>
               Open
@@ -344,8 +345,4 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(RuleFailureTelemetryList);
+export default RuleFailureTelemetryList;

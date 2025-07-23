@@ -62,7 +62,7 @@ const StyledIcon = styled("span")(({ variant }) => ({
   })
 }));
 
-const ShowDashboardSections = ({ sections, history }) => {
+const ShowDashboardSections = ({ sections }) => {
   const [expanded, setExpanded] = useState(null);
 
   const handleChange = panel => (event, isExpanded) => {
@@ -121,7 +121,7 @@ const ShowDashboardSections = ({ sections, history }) => {
                       <ShowLabelValue label="View Type" value={section.viewType} />
                     </Grid>
                     <Grid size={12}>
-                      <ShowDashboardSectionCards section={section} cards={WebDashboardSection.getReportCards(section)} history={history} />
+                      <ShowDashboardSectionCards section={section} cards={WebDashboardSection.getReportCards(section)} />
                     </Grid>
                   </Grid>
                 </StyledAccordionDetails>

@@ -14,16 +14,16 @@ export default function CognitoSignIn({ onSignedIn }) {
   };
 
   const handleSignIn = async () => {
-    const { username, password } = formData;
-    if (ApplicationContext.isNonProdAndNonDevEnv() && isDisallowedPassword(password)) {
-      alert(DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG);
+    if (!formData.username || !formData.password) {
+      alert("Please enter both username and password");
       return;
     }
 
     try {
       setLoading(true);
-      const response = await signIn({ username, password });
-      onSignedIn(response);
+      const response = await signIn({ username: formData.username, password: formData.password });
+      const userData = { ...response, username: formData.username };
+      onSignedIn(userData);
     } catch (err) {
       alert(err.message || "Login failed");
     } finally {

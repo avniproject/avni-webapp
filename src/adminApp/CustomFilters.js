@@ -235,7 +235,7 @@ const CustomFilters = ({ organisation, filename }) => {
       <Title title={`${_.startCase(typeOfFilter)}`} />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
-          <Grid item>
+          <Grid>
             <Button
               color="primary"
               variant="outlined"

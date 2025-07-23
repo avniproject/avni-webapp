@@ -1,6 +1,6 @@
 import { Route } from "react-router-dom";
-import { CreateEditLanguages } from "./components/CreateEditLanguages";
-import { CreateEditFiltersHOC } from "./components/CreateEditFiltersHOC";
+import CreateEditLanguages from "./components/CreateEditLanguages";
+import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
 import FormDetails from "../formDesigner/views/FormDetails";
 import CreateEditConcept from "../formDesigner/views/CreateEditConcept";
 import ConceptDetails from "../formDesigner/components/ConceptDetails";

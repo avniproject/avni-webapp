@@ -15,7 +15,6 @@ const KeycloakSignInView = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
-  const authSession = useSelector(state => state.app.authSession);
 
   function onSignIn() {
     if (ApplicationContext.isNonProdAndNonDevEnv() && isDisallowedPassword(password)) {

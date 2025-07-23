@@ -40,7 +40,7 @@ const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, su
     <StyledCard key={uuid}>
       <CardContent>
         <StyledGridContainer container direction="row" spacing={1}>
-          <Grid item>
+          <Grid>
             <StyledSubjectProfilePicture
               allowEnlargementOnClick={true}
               firstName={name}
@@ -50,7 +50,7 @@ const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, su
               size={25}
             />
           </Grid>
-          <Grid item>
+          <Grid>
             <InternalLink to={`/app/subject?uuid=${uuid}`}>{name}</InternalLink>
           </Grid>
         </StyledGridContainer>

@@ -31,13 +31,11 @@ const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => {
   const renderNotFound = () => <Typography component="span">{t("summaryNotFound")}</Typography>;
 
   const renderObs = () => (
-    <Grid item xs={12}>
-      {isEmpty(summaryObservations) ? renderNotFound() : <Observations observations={summaryObservations} />}
-    </Grid>
+    <Grid xs={12}>{isEmpty(summaryObservations) ? renderNotFound() : <Observations observations={summaryObservations} />}</Grid>
   );
 
   const renderProgress = () => (
-    <Grid item container xs={12} justifyContent="center">
+    <Grid container xs={12} justifyContent="center">
       <CircularProgress />
     </Grid>
   );

@@ -166,7 +166,7 @@ const EncounterTypeList = () => {
       <Title title="Encounter Types" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
-          <Grid item>
+          <Grid>
             <CreateComponent onSubmit={handleCreateSubmit} name="New Encounter Type" />
           </Grid>
         )}

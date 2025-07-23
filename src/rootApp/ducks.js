@@ -95,11 +95,23 @@ export default function(state = initialState, action) {
   switch (action.type) {
     case types.SET_AUTH_SESSION: {
       const { authState, authData, idpType } = action.payload;
+
       let authSession;
-      if (idpType === IdpDetails.cognito) authSession = new CognitoAuthSession(authState, authData);
-      else if (idpType === IdpDetails.keycloak) authSession = new KeycloakAuthSession(authState);
-      if (_.isNil(authSession)) httpClient.initAuthSession(state.authSession);
-      else httpClient.initAuthSession(authSession);
+      try {
+        if (idpType === IdpDetails.cognito) {
+          authSession = new CognitoAuthSession(authState, authData);
+        } else if (idpType === IdpDetails.keycloak) {
+          authSession = new KeycloakAuthSession(authState);
+        }
+      } catch (error) {
+        authSession = null;
+      }
+
+      if (_.isNil(authSession)) {
+        httpClient.initAuthSession(state.authSession);
+      } else {
+        httpClient.initAuthSession(authSession);
+      }
 
       return {
         ...state,

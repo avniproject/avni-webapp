@@ -1,5 +1,7 @@
 import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { IconButton, Input, MenuItem, Tooltip, Typography, Grid } from "@mui/material";
 import { Delete, ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty } from "lodash";
@@ -11,6 +13,8 @@ import { AvniSelect } from "../../../common/components/AvniSelect";
 import DragNDropComponent from "../../common/DragNDropComponent";
 import { dashboardReducerActions } from "./DashboardReducer";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 const StyledGrid = styled(Grid)({
   alignItems: "center"
@@ -38,12 +42,14 @@ const StyledSelect = styled(AvniSelect)({
   width: "200px"
 });
 
-function EditSection({ section, index, dispatch, history }) {
+function EditSection({ section, index, dispatch }) {
+  const navigate = useNavigate();
   const viewTypes = section.viewType === "Default" ? ["Default", "Tile", "List"] : ["Tile", "List"];
   console.log("EditSection: Rendering", {
     section: { uuid: section.uuid, name: section.name, cards: WebDashboardSection.getReportCards(section).length },
     index
   });
+
   return (
     <Grid container>
       <Grid size={12}>
@@ -82,7 +88,7 @@ function EditSection({ section, index, dispatch, history }) {
           section={section}
           dispatch={dispatch}
           deleteCard={card => dispatch({ type: dashboardReducerActions.deleteCard, payload: { card, section } })}
-          history={history}
+          navigate={navigate}
         />
       </Grid>
     </Grid>
@@ -95,14 +101,12 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
   return {
     text: (
       <div style={{ display: "flex", alignItems: "center", width: "100%", gap: "16px" }}>
-        {/* Icons (leftmost) */}
         <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-          <Tooltip title={"Grouped Questions"}>
+          <Tooltip title="Grouped Questions">
             <StyledIcon as={List} variant="list" />
           </Tooltip>
           <StyledIcon as={expanded === "panel" + index ? ExpandLess : ExpandMore} />
         </div>
-        {/* Name (centered between icons and midpoint) */}
         <div style={{ flex: "1 1 0", display: "flex", justifyContent: "center", alignItems: "center" }}>
           <StyledTypography variant="heading">
             <Input
@@ -119,7 +123,6 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
             />
           </StyledTypography>
         </div>
-        {/* Count (centered between midpoint and right) */}
         <div style={{ flex: "1 1 0", display: "flex", justifyContent: "center", alignItems: "center" }}>
           <StyledTypography variant="questionCount">{WebDashboardSection.getReportCards(section).length} cards</StyledTypography>
         </div>
@@ -137,38 +140,40 @@ function DashboardSectionSummary({ section, index, expanded, dispatch }) {
   };
 }
 
-const CreateEditDashboardSections = props => {
+const CreateEditDashboardSections = ({ sections, dispatch }) => {
+  const userInfo = useSelector(state => state.app.userInfo);
+  const navigate = useNavigate();
+
+  if (!UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditDashboard)) {
+    navigate("/");
+    return null;
+  }
+
   const onDragEnd = result => {
     if (!result.destination) {
       return;
     }
-    props.dispatch({
+    dispatch({
       type: dashboardReducerActions.changeSectionDisplayOrder,
       payload: { sourceIndex: result.source.index, destIndex: result.destination.index }
     });
   };
 
-  const sections = props.sections;
-
   return (
     <Fragment>
       {!isEmpty(sections) && (
         <DragNDropComponent
-          dataList={props.sections}
+          dataList={sections}
           onDragEnd={onDragEnd}
-          renderSummaryText={(section, index, expanded) =>
-            DashboardSectionSummary({ section, index, expanded, dispatch: props.dispatch }).text
-          }
-          renderSummaryActions={(section, index, expanded) =>
-            DashboardSectionSummary({ section, index, expanded, dispatch: props.dispatch }).actions
-          }
+          renderSummaryText={(section, index, expanded) => DashboardSectionSummary({ section, index, expanded, dispatch }).text}
+          renderSummaryActions={(section, index, expanded) => DashboardSectionSummary({ section, index, expanded, dispatch }).actions}
           renderDetails={(section, index, expanded) => {
             console.log("CreateEditDashboardSections: renderDetails", {
               section: { uuid: section.uuid, name: section.name, cards: WebDashboardSection.getReportCards(section).length },
               index,
               expanded
             });
-            return <EditSection dispatch={props.dispatch} section={section} history={props.history} index={index} />;
+            return <EditSection dispatch={dispatch} section={section} index={index} />;
           }}
           summaryDirection={"row"}
         />

@@ -3,7 +3,7 @@ import { Admin, Resource } from "react-admin";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import { authProvider } from "./react-admin-config";
+import { authProvider, dataProvider } from "./react-admin-config";
 import { UserCreate, UserDetail, UserEdit, UserList } from "./user";
 import { CatchmentCreate, CatchmentDetail, CatchmentEdit, CatchmentList } from "./catchment";
 import { LocationTypeCreate, LocationTypeDetail, LocationTypeEdit, LocationTypeList } from "./addressLevelType";
@@ -42,8 +42,11 @@ const OrgManager = () => {
     if (["#/admin", "#/admin/"].includes(window.location.hash)) {
       navigate("/admin/user", { replace: true });
     }
-    dispatch(getAdminOrgs());
-  }, [navigate, dispatch]);
+    // Only fetch admin orgs if user has admin privileges
+    if (userInfo && CurrentUserService.isAdminButNotImpersonating(userInfo)) {
+      dispatch(getAdminOrgs());
+    }
+  }, [navigate, dispatch, userInfo]);
 
   if (CurrentUserService.isAdminButNotImpersonating(userInfo)) {
     return <DeploymentManager />;
@@ -69,7 +72,15 @@ const OrgManager = () => {
 
   return (
     <OrgManagerContext.Provider value={{ organisation }}>
-      <Admin title="Manage Organisation" authProvider={authProvider} layout={AdminLayout} customRoutes={customRoutes}>
+      <Admin
+        title="Manage Organisation"
+        basename="/admin"
+        authProvider={authProvider}
+        dataProvider={dataProvider}
+        layout={AdminLayout}
+        customRoutes={customRoutes}
+        darkTheme={null}
+      >
         <Resource
           name="addressLevelType"
           options={{ label: "Location Types" }}

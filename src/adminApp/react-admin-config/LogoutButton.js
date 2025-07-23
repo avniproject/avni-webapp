@@ -1,10 +1,11 @@
 import { MenuItem } from "@mui/material";
 import { Logout, Person, Lock } from "@mui/icons-material";
-import { useLogout } from "react-admin";
+import { useDispatch } from "react-redux";
 import _ from "lodash";
 import { format, isValid } from "date-fns";
 import ApplicationContext from "../../ApplicationContext";
 import { httpClient } from "../../common/utils/httpClient";
+import { logout } from "../../rootApp/ducks";
 
 const styles = {
   userIcon: {
@@ -22,7 +23,11 @@ const styles = {
 };
 
 const LogoutButton = ({ username, onChangePassword = _.noop, lastSessionTimeMillis }) => {
-  const logout = useLogout();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   return (
     <div>
@@ -32,7 +37,7 @@ const LogoutButton = ({ username, onChangePassword = _.noop, lastSessionTimeMill
       <MenuItem onClick={onChangePassword}>
         <Lock /> Change Password
       </MenuItem>
-      <MenuItem onClick={() => logout()}>
+      <MenuItem onClick={handleLogout}>
         <Logout /> Logout
       </MenuItem>
       {lastSessionTimeMillis > 0 && (

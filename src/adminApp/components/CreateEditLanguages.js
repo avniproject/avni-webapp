@@ -1,40 +1,55 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { localeChoices } from "../../common/constants";
 import { Box } from "@mui/material";
 import { httpClient as http } from "common/utils/httpClient";
 import _ from "lodash";
-import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
+import { localeChoices } from "../../common/constants";
 
 const options = localeChoices.map(l => ({ label: l.name, value: l.id }));
 
-export const CreateEditLanguages = props => {
-  if (_.isNil(props.history.location.state)) {
-    return <div />;
-  }
-
-  const setting = props.history.location.state.settings;
-  const worklistUpdationRule = props.history.location.state.worklistUpdationRule;
-  const [lang, setLang] = useState(options.filter(l => setting.settings.languages.includes(l.value)));
+const CreateEditLanguages = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const userInfo = useSelector(state => state.app.userInfo);
   const [messageStatus, setMessageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 
-  const saveLanguage = () => {
+  const { settings, worklistUpdationRule } = location.state || {};
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      languages: options.filter(l => settings?.settings?.languages.includes(l.value)) || []
+    }
+  });
+
+  if (_.isNil(settings)) {
+    navigate("/");
+    return null;
+  }
+
+  const onSubmit = data => {
+    const payload = {
+      uuid: settings.uuid,
+      settings: {
+        languages: _.isNil(data.languages) ? [] : data.languages.map(l => l.value),
+        myDashboardFilters: settings.settings.myDashboardFilters,
+        searchFilters: settings.settings.searchFilters
+      },
+      worklistUpdationRule
+    };
+
     return http
-      .put("/organisationConfig", {
-        uuid: setting.uuid,
-        settings: {
-          languages: _.isNil(lang) ? [] : lang.map(l => l.value),
-          myDashboardFilters: setting.settings.myDashboardFilters,
-          searchFilters: setting.settings.searchFilters
-        },
-        worklistUpdationRule: worklistUpdationRule
-      })
+      .put("/organisationConfig", payload)
       .then(response => {
         if (response.status === 200 || response.status === 201) {
           setMessageStatus({ message: "Language updated", display: true });
@@ -48,41 +63,37 @@ export const CreateEditLanguages = props => {
   };
 
   return (
-    <div>
+    <Box
+      sx={{
+        boxShadow: 2,
+        p: 3,
+        bgcolor: "background.paper"
+      }}
+    >
       <Title title="Edit Language" />
-      <Box
-        sx={{
-          boxShadow: 2,
-          p: 3,
-          bgcolor: "background.paper"
-        }}
-      >
-        <DocumentationContainer filename={"Language.md"}>
-          <Box
-            sx={{
-              m: 2
-            }}
-          >
-            <Select isMulti value={lang} options={options} onChange={name => setLang(name)} />
-          </Box>
-          <Box
-            sx={{
-              m: 2,
-              display: "flex",
-              justifyContent: "left"
-            }}
-          >
-            <SaveComponent name="Save" onSubmit={saveLanguage} />
-          </Box>
-          {messageStatus.display && (
-            <CustomizedSnackbar
-              message={messageStatus.message}
-              getDefaultSnackbarStatus={status => setSnackBarStatus(status)}
-              defaultSnackbarStatus={snackBarStatus}
-            />
+      <DocumentationContainer filename={"Language.md"}>
+        <Box sx={{ m: 2 }}>
+          <Controller
+            name="languages"
+            control={control}
+            render={({ field }) => <Select isMulti value={field.value} options={options} onChange={field.onChange} onBlur={field.onBlur} />}
+          />
+        </Box>
+        <Box sx={{ m: 2, display: "flex", justifyContent: "left" }}>
+          {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOrganisationConfig) && (
+            <SaveComponent name="Save" onSubmit={handleSubmit(onSubmit)} />
           )}
-        </DocumentationContainer>
-      </Box>
-    </div>
+        </Box>
+        {messageStatus.display && (
+          <CustomizedSnackbar
+            message={messageStatus.message}
+            getDefaultSnackbarStatus={status => setSnackBarStatus(status)}
+            defaultSnackbarStatus={snackBarStatus}
+          />
+        )}
+      </DocumentationContainer>
+    </Box>
   );
 };
+
+export default CreateEditLanguages;

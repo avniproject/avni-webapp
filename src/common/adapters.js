@@ -1,7 +1,6 @@
 import {
   Concept,
   ConceptAnswer,
-  EncounterType,
   Format,
   Gender,
   KeyValue,
@@ -34,11 +33,7 @@ export const mapConcept = json => {
   return concept;
 };
 
-export const mapFormElement = (
-  formElementResource,
-  formElementGroup,
-  questionGroupFormElements = new Map()
-) => {
+export const mapFormElement = (formElementResource, formElementGroup, questionGroupFormElements = new Map()) => {
   const formElement = General.assignFields(
     formElementResource,
     new WebFormElement(),
@@ -52,10 +47,7 @@ export const mapFormElement = (
   if (formElementResource.group) {
     formElement.groupUuid = formElementResource.group.uuid;
     if (!questionGroupFormElements.has(formElement.groupUuid))
-      questionGroupFormElements.set(
-        formElement.groupUuid,
-        mapFormElement(formElementResource.group, formElementGroup)
-      );
+      questionGroupFormElements.set(formElement.groupUuid, mapFormElement(formElementResource.group, formElementGroup));
 
     formElement.group = questionGroupFormElements.get(formElement.groupUuid);
   }
@@ -81,23 +73,25 @@ export const mapFormElementGroup = (json, form) => {
 
 export const mapForm = json => {
   let form = General.assignFields(json, new WebForm(), ["uuid", "name", "formType"]);
-  form.formElementGroups = map(json.formElementGroups, fegJson =>
-    mapFormElementGroup(fegJson, form)
-  );
+  form.formElementGroups = map(json.formElementGroups, fegJson => mapFormElementGroup(fegJson, form));
   return form;
 };
 
 export const mapGender = json => General.assignFields(json, new Gender(), ["uuid", "name"]);
 
 export const mapEncounterType = json => {
-  const encounterType = new EncounterType();
-  encounterType.name = json.name;
-  encounterType.uuid = json.uuid;
-  encounterType.voided = false;
-  encounterType.operationalEncounterTypeName = json.operationalEncounterTypeName;
+  // Return plain object instead of class instance for Redux serialization
+  const encounterType = {
+    name: json.name,
+    uuid: json.uuid,
+    voided: false,
+    operationalEncounterTypeName: json.operationalEncounterTypeName
+  };
+
   encounterType.displayName = isEmpty(encounterType.operationalEncounterTypeName)
     ? encounterType.name
     : encounterType.operationalEncounterTypeName;
+
   return encounterType;
 };
 
@@ -107,11 +101,8 @@ export const mapProgram = json => {
   program.name = json.name;
   program.operationalProgramName = json.operationalProgramName;
   program.colour = isNil(json.colour) ? Program.randomColour() : json.colour;
-  program.displayName = isEmpty(program.operationalProgramName)
-    ? program.name
-    : program.operationalProgramName;
-  program.programSubjectLabel =
-    json.programSubjectLabel || json.operationalProgramName || program.name;
+  program.displayName = isEmpty(program.operationalProgramName) ? program.name : program.operationalProgramName;
+  program.programSubjectLabel = json.programSubjectLabel || json.operationalProgramName || program.name;
   return program;
 };
 

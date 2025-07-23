@@ -34,23 +34,19 @@ const StyledGrid = styled(Grid)({
 });
 
 const Encounter = () => {
-  // Use Redux hooks instead of connect()
   const dispatch = useDispatch();
   const encounterForm = useSelector(state => state.dataEntry.encounterReducer.encounterForm);
   const subjectProfile = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
   const encounter = useSelector(state => state.dataEntry.encounterReducer.encounter);
   const validationResults = useSelector(state => state.dataEntry.encounterReducer.validationResults);
 
-  // Use React Router hooks instead of withRouter
   const location = useLocation();
 
-  // Extract parameters from URL search params
   const searchParams = new URLSearchParams(location.search);
   const encounterUuid = searchParams.get("encounterUuid");
   const subjectUuid = searchParams.get("subjectUuid");
   const uuid = searchParams.get("uuid");
 
-  // Determine if it's edit mode based on pathname
   const editEncounterMode = isEqual(location.pathname, "/app/subject/editEncounter");
 
   const { t } = useTranslation();

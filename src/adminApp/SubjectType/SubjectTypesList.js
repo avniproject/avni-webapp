@@ -144,7 +144,7 @@ const SubjectTypesList = () => {
       <Title title="Subject Types" color="primary" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
-          <Grid item>
+          <Grid>
             <CreateComponent onSubmit={() => setRedirect(true)} name="New Subject Type" />
           </Grid>
         )}

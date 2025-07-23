@@ -1,5 +1,5 @@
-// Auth provider for react-admin v5
-// This should integrate with the existing Avni authentication system
+import { store } from "../../common/store";
+import { logout } from "../../rootApp/ducks";
 
 export const authProvider = {
   login: () => {
@@ -9,7 +9,8 @@ export const authProvider = {
   },
 
   logout: () => {
-    // Logout is handled by LogoutButton component and main app's logout flow
+    // Use the app's proper logout flow instead of just resolving
+    store.dispatch(logout());
     return Promise.resolve();
   },
 

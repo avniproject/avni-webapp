@@ -6,7 +6,16 @@ import LocalStorageLocator from "../../common/utils/LocalStorageLocator";
 
 async function getToken() {
   const session = await fetchAuthSession();
-  return session.tokens?.idToken?.toString() || null;
+  const token = session.tokens?.idToken?.toString() || null;
+
+  // Store token in localStorage for consistency with other IDP implementations
+  if (token) {
+    localStorage.setItem(IdpDetails.AuthTokenName, token);
+  } else {
+    localStorage.removeItem(IdpDetails.AuthTokenName);
+  }
+
+  return token;
 }
 
 class CognitoWebClient extends BaseIdp {

@@ -8,10 +8,10 @@ import { httpClient } from "../common/utils/httpClient";
 const App = () => {
   const dispatch = useDispatch();
 
-  const appInitialised = useSelector(state => state.app.appInitialised);
-  const sagaErrorState = useSelector(state => state.sagaErrorState);
+  const appInitialised = useSelector(state => state.app?.appInitialised || false);
+  const sagaErrorState = useSelector(state => state.sagaErrorState || {});
 
-  const { errorRaised, error } = sagaErrorState;
+  const { errorRaised = false, error = null } = sagaErrorState;
 
   useEffect(() => {
     if (httpClient.idp.idpType === IdpDetails.none) {
@@ -21,12 +21,26 @@ const App = () => {
 
   if (errorRaised) throw error;
 
-  return (
-    appInitialised && (
-      <div>
-        <Routes />
+  if (!appInitialised) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          fontSize: "18px"
+        }}
+      >
+        Loading...
       </div>
-    )
+    );
+  }
+
+  return (
+    <div>
+      <Routes />
+    </div>
   );
 };
 

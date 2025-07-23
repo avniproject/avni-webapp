@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { AccessDenied, WithProps } from "../common/components/utils";
+import { AccessDenied } from "../common/components/utils";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
@@ -31,10 +31,10 @@ const AppRoutes = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const organisation = useSelector(state => state.app.organisation);
-  const user = useSelector(state => state.app.authSession);
-  const userInfo = useSelector(state => state.app.userInfo);
-  const genericConfig = useSelector(state => state.app.genericConfig);
+  const organisation = useSelector(state => state.app?.organisation);
+  const user = useSelector(state => state.app?.authSession);
+  const userInfo = useSelector(state => state.app?.userInfo);
+  const genericConfig = useSelector(state => state.app?.genericConfig || { webAppTimeoutInMinutes: 30 });
 
   const handleOnIdle = () => {
     console.log("User is idle, was last active at ", getLastActiveTime());
@@ -43,7 +43,7 @@ const AppRoutes = () => {
   };
 
   const hasSignedIn = () => {
-    return user.authState === BaseAuthSession.AuthStates.SignedIn;
+    return user?.authState === BaseAuthSession.AuthStates.SignedIn;
   };
 
   const { getLastActiveTime } = useIdleTimer({
@@ -57,7 +57,7 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/admin" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ navigate }, OrgManager)} />} />
+      <Route path="/admin/*" element={<RestrictedRoute userInfo={userInfo} element={<OrgManager navigate={navigate} />} />} />
       <Route
         path="/app"
         element={
@@ -68,47 +68,60 @@ const AppRoutes = () => {
           />
         }
       />
-      <Route path="/" element={<Navigate to={AvniRouter.getRedirectRouteFromRoot(userInfo)} replace />} />
-      <Route
-        path="/home"
-        element={<RestrictedRoute requiredPrivileges={[]} userInfo={userInfo} element={WithProps({ user }, Homepage)} />}
-      />
+      <Route path="/" element={<Navigate to={userInfo ? AvniRouter.getRedirectRouteFromRoot(userInfo) : "/home"} replace />} />
+      <Route path="/home" element={<RestrictedRoute requiredPrivileges={[]} userInfo={userInfo} element={<Homepage user={user} />} />} />
       <Route
         path="/appdesigner/*"
-        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation, navigate }, OrgManagerAppDesigner)} />}
+        element={
+          <RestrictedRoute
+            userInfo={userInfo}
+            element={<OrgManagerAppDesigner user={user} organisation={organisation} userInfo={userInfo} navigate={navigate} />}
+          />
+        }
       />
       <Route
-        path="/documentation"
-        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, DocumentationRoutes)} />}
-      />
-      <Route path="/assignment" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Assignment)} />} />
-      <Route
-        path="/assignment/task"
-        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, TaskAssignment)} />}
+        path="/documentation/*"
+        element={<RestrictedRoute userInfo={userInfo} element={<DocumentationRoutes user={user} organisation={organisation} />} />}
       />
       <Route
-        path="/assignment/subject"
-        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, SubjectAssignment)} />}
+        path="/assignment"
+        element={<RestrictedRoute userInfo={userInfo} element={<Assignment user={user} organisation={organisation} />} />}
+      />
+      <Route
+        path="/taskAssignment"
+        element={<RestrictedRoute userInfo={userInfo} element={<TaskAssignment user={user} organisation={organisation} />} />}
+      />
+      <Route
+        path="/subjectAssignment"
+        element={<RestrictedRoute userInfo={userInfo} element={<SubjectAssignment user={user} organisation={organisation} />} />}
       />
       <Route
         path="/translations"
-        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Translations)} />}
+        element={<RestrictedRoute userInfo={userInfo} element={<Translations user={user} organisation={organisation} />} />}
       />
-      <Route path="/export" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Export)} />} />
-      <Route path="/newExport" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, NewExport)} />} />
       <Route
-        path="/selfservicereports"
-        element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, SelfServiceReports)} />}
+        path="/export"
+        element={<RestrictedRoute userInfo={userInfo} element={<Export user={user} organisation={organisation} />} />}
       />
-      <Route path="/help" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Tutorials)} />} />
-      <Route path="/broadcast/*" element={<RestrictedRoute userInfo={userInfo} element={WithProps({ user, organisation }, Broadcast)} />} />
+      <Route
+        path="/newExport"
+        element={<RestrictedRoute userInfo={userInfo} element={<NewExport user={user} organisation={organisation} />} />}
+      />
+      <Route
+        path="/reports"
+        element={<RestrictedRoute userInfo={userInfo} element={<SelfServiceReports user={user} organisation={organisation} />} />}
+      />
+      <Route
+        path="/help"
+        element={<RestrictedRoute userInfo={userInfo} element={<Tutorials user={user} organisation={organisation} />} />}
+      />
+      <Route
+        path="/broadcast/*"
+        element={<RestrictedRoute userInfo={userInfo} element={<Broadcast user={user} organisation={organisation} />} />}
+      />
       <Route
         path="*"
-        element={
-          <div>
-            <span>Page Not found</span>
-          </div>
-        }
+        element={<RestrictedRoute requiredPrivileges={[]} userInfo={userInfo} element={<div>The requested page is not available.</div>} />}
       />
     </Routes>
   );

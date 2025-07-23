@@ -21,7 +21,7 @@ import FormControl from "@mui/material/FormControl";
 import DragNDropComponent from "../../common/DragNDropComponent";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -30,7 +30,8 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
-const SearchResultFields = ({ userInfo }) => {
+const SearchResultFields = () => {
+  const userInfo = useSelector(state => state.userInfo);
   const [state, dispatch] = useReducer(SearchFieldReducer, new SearchResultFieldState());
   const orgConfigKey = "searchResultFields";
   const { selectedSubjectTypeUUID, loadApp, subjectTypeMetadata, searchResultFields, feedbackMessage } = state;
@@ -180,8 +181,4 @@ const SearchResultFields = ({ userInfo }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(SearchResultFields);
+export default SearchResultFields;

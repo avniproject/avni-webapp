@@ -279,14 +279,14 @@ function FormElementGroup(props) {
             >
               <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`} {...provided.dragHandleProps}>
                 <Grid container alignItems="center" wrap="nowrap" sx={{ width: "100%" }}>
-                  <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
+                  <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
                     <Tooltip title={"Grouped Questions"}>
                       <StyledGroupIcon />
                     </Tooltip>
                     <StyledExpandIcon expanded={props.groupData.expanded} />
                   </Grid>
 
-                  <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "35%" }}>
+                  <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "35%" }}>
                     <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
                       {props.groupData.errorMessage && props.groupData.errorMessage.name && (
                         <StyledErrorText>Please enter Page name.</StyledErrorText>
@@ -310,11 +310,11 @@ function FormElementGroup(props) {
                     </StyledTypography>
                   </Grid>
 
-                  <Grid item sx={{ display: "flex", alignItems: "center", justifyContent: "center", flexBasis: "15%" }}>
+                  <Grid sx={{ display: "flex", alignItems: "center", justifyContent: "center", flexBasis: "15%" }}>
                     <DragHandler dragHandleProps={provided.dragHandleProps} />
                   </Grid>
 
-                  <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%" }}>
+                  <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%" }}>
                     <StyledQuestionCount component="div" sx={{ whiteSpace: "nowrap" }}>
                       {questionCount} questions
                     </StyledQuestionCount>

@@ -206,10 +206,10 @@ const SubjectTypeEdit = () => {
         error={msgError}
       />
       <Grid container sx={{ justifyContent: "flex-end", mt: 2 }}>
-        <Grid item>
+        <Grid>
           <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginRight: "14px" }} />
         </Grid>
-        <Grid item>
+        <Grid>
           <Button
             style={{
               backgroundColor: disableDelete ? "lightgray" : "#f44336",

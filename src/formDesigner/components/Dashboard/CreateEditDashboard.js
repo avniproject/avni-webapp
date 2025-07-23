@@ -24,12 +24,9 @@ import OperationalModules from "../../../common/model/OperationalModules";
 import WebDashboard from "../../../common/model/reports/WebDashboard";
 
 const CreateEditDashboard = ({ edit }) => {
-  // Replace withRouter and connect with hooks
-  const navigate = useNavigate();
   const params = useParams();
   const dispatch = useDispatch();
 
-  // Replace mapStateToProps with useSelector
   const operationalModules = useSelector(state => state.reports.operationalModules);
 
   const [dashboard, dashboardDispatch] = useReducer(DashboardReducer, WebDashboard.createNew());
@@ -182,12 +179,7 @@ const CreateEditDashboard = ({ edit }) => {
           {getErrorByKey(error, "EMPTY_SECTIONS")}
         </Grid>
         <Grid>
-          <CreateEditDashboardSections
-            sections={WebDashboard.getSections(dashboard)}
-            dispatch={dashboardDispatch}
-            history={{ push: navigate }}
-            error={error}
-          />
+          <CreateEditDashboardSections sections={WebDashboard.getSections(dashboard)} dispatch={dashboardDispatch} error={error} />
         </Grid>
         {getErrorByKey(error, "EMPTY_CARDS")}
         <br />

@@ -8,7 +8,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { OrganisationOptions } from "./OrganisationOptions";
+import OrganisationOptions from "./OrganisationOptions";
 import { getUserInfo } from "../../rootApp/ducks";
 import PasswordDialog from "../../adminApp/components/PasswordDialog";
 import { httpClient } from "../utils/httpClient";

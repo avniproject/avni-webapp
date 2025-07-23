@@ -339,10 +339,10 @@ const EncounterTypeEdit = () => {
         )}
       </Box>
       <Grid container sx={{ justifyContent: "space-between", alignItems: "center" }}>
-        <Grid item>
+        <Grid>
           <SaveComponent name="save" onSubmit={onSubmit} />
         </Grid>
-        <Grid item>
+        <Grid>
           <Button color="error" onClick={() => onDelete()}>
             <DeleteIcon /> Delete
           </Button>

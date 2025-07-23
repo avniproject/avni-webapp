@@ -121,7 +121,7 @@ const VideoList = () => {
       <Title title="Video Playlist" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
-          <Grid item>
+          <Grid>
             <CreateComponent onSubmit={() => setRedirect(true)} name="New Video" />
           </Grid>
         )}

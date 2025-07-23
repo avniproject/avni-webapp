@@ -118,14 +118,14 @@ const StaticFormElementGroup = ({ name, formElements }) => {
         >
           <StyledAccordionSummary aria-controls={`${panel}-bh-content`} id={`${panel}-bh-header`}>
             <Grid container alignItems="center" wrap="nowrap" sx={{ width: "100%" }}>
-              <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
+              <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
                 <Tooltip title="Grouped Questions">
                   <StyledGroupIcon />
                 </Tooltip>
                 <StyledExpandIcon expanded={expanded} />
               </Grid>
 
-              <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "50%" }}>
+              <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "50%" }}>
                 <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
                   <FormControl fullWidth>
                     <Input
@@ -141,7 +141,7 @@ const StaticFormElementGroup = ({ name, formElements }) => {
                 </StyledTypography>
               </Grid>
 
-              <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%" }}>
+              <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%" }}>
                 <StyledQuestionCount component="div" sx={{ whiteSpace: "nowrap" }}>
                   {formElements.length} questions
                 </StyledQuestionCount>

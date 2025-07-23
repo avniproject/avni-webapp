@@ -2,7 +2,7 @@ import { useState, Fragment } from "react";
 import Button from "@mui/material/Button";
 import { httpClient as http } from "common/utils/httpClient";
 import fileDownload from "js-file-download";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -13,9 +13,13 @@ import ActivityIndicatorModal from "../../common/components/ActivityIndicatorMod
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-function ImplementationBundle({ organisation, userInfo }) {
+function ImplementationBundle() {
   const [loading, setLoading] = useState(false);
   const [includeLocations, setIncludeLocations] = useState(false);
+
+  const organisation = useSelector(state => state.app.organisation);
+  const userInfo = useSelector(state => state.app.userInfo);
+
   const hasDownloadPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.DownloadBundle);
 
   function onDownloadHandler() {
@@ -69,9 +73,4 @@ function ImplementationBundle({ organisation, userInfo }) {
   );
 }
 
-const mapStateToProps = state => ({
-  organisation: state.app.organisation,
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(ImplementationBundle);
+export default ImplementationBundle;

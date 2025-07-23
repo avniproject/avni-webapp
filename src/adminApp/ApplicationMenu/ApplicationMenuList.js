@@ -117,7 +117,7 @@ const ApplicationMenuList = () => {
         <Title title="Menu Items" />
         <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
           {hasEditPrivilege(userInfo) && (
-            <Grid item>
+            <Grid>
               <CreateComponent onSubmit={() => triggerCreate(true)} name="New Menu Item" />
             </Grid>
           )}
@@ -132,7 +132,7 @@ const ApplicationMenuList = () => {
             sorting: false,
             debounceInterval: 500,
             search: false,
-            rowStyle: ({ original }) => ({
+            rowStyle: () => ({
               backgroundColor: "#fff"
             })
           }}

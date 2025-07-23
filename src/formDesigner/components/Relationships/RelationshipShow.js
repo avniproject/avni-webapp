@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import { httpClient as http } from "common/utils/httpClient";
-import { Navigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
@@ -10,18 +10,22 @@ import { Grid } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-const RelationshipShow = props => {
-  const [editAlert, setEditAlert] = useState(false);
+const RelationshipShow = () => {
   const [relationshipGenders, setRelationshipGenders] = useState([]);
   const [relationship, setRelationship] = useState({});
   const [genders, setGenders] = useState([]);
 
+  const userInfo = useSelector(state => state.app.userInfo);
+
+  const navigate = useNavigate();
+  const params = useParams();
+
   useEffect(() => {
-    http.get("/web/relation/" + props.match.params.id).then(response => {
+    http.get("/web/relation/" + params.id).then(response => {
       setRelationship(response.data);
       const gender = response.data.genders.map(l => l.name);
       setRelationshipGenders(gender);
@@ -30,7 +34,11 @@ const RelationshipShow = props => {
     http.get("/web/gender").then(response => {
       setGenders(response.data.content);
     });
-  }, []);
+  }, [params.id]);
+
+  const handleEdit = () => {
+    navigate("/appDesigner/relationship/" + params.id);
+  };
 
   return (
     <>
@@ -43,7 +51,7 @@ const RelationshipShow = props => {
       >
         <Title title={"Show Relationship : " + relationship.name} />
         <DocumentationContainer filename={"Relationship.md"}>
-          {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditSubjectType) && (
+          {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType) && (
             <Grid
               container
               style={{ justifyContent: "flex-end" }}
@@ -51,7 +59,7 @@ const RelationshipShow = props => {
                 sm: 12
               }}
             >
-              <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
+              <Button color="primary" type="button" onClick={handleEdit}>
                 <EditIcon />
                 Edit
               </Button>
@@ -80,13 +88,10 @@ const RelationshipShow = props => {
             </div>
             <p />
           </div>
-          {editAlert && <Navigate to={"/appDesigner/relationship/" + props.match.params.id} />}
         </DocumentationContainer>
       </Box>
     </>
   );
 };
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-export default connect(mapStateToProps)(RelationshipShow);
+
+export default RelationshipShow;

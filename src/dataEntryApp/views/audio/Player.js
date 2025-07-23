@@ -14,7 +14,7 @@ const styles = {
   }
 };
 
-export default function Player({ history, ...props }) {
+export default function Player({ ...props }) {
   const url = replace(props.location.search, "?url=", "");
   return (
     url && (

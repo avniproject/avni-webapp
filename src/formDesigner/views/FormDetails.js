@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import _, { cloneDeep, isEmpty, replace, split } from "lodash";
 import { httpClient as http } from "common/utils/httpClient";
@@ -11,11 +11,11 @@ import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { produce } from "immer";
 import Box from "@mui/material/Box";
-import { Title } from "react-admin";
+import { Title, useRecordContext, usePermissions } from "react-admin";
 import TextField from "@mui/material/TextField";
 import FormHelperText from "@mui/material/FormHelperText";
-import { Navigate } from "react-router-dom";
-
+import { Navigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
 import { SystemInfo } from "../components/SystemInfo";
@@ -47,7 +47,6 @@ import {
   formDesignerUpdateDragDropOrderForFirstGroup
 } from "../common/FormDesignerHandlers";
 import { FormTypeEntities } from "../common/constants";
-import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Concept } from "openchs-models";
 import { SubjectTypeType } from "../../adminApp/SubjectType/Types";
@@ -63,11 +62,11 @@ export const areValidFormatValuesValid = formElement => {
   return isEmpty(formElement.validFormat.regex) === isEmpty(formElement.validFormat.descriptionKey);
 };
 
-export function TabContainer({ ...props }) {
+export function TabContainer({ children, ...rest }) {
   const typographyCSS = { padding: 4 };
   return (
-    <Typography {...props} component="div" sx={typographyCSS}>
-      {props.children}
+    <Typography {...rest} component="div" sx={typographyCSS}>
+      {children}
     </Typography>
   );
 }
@@ -98,7 +97,7 @@ const householdStaticFormElements = [
 
 const userStaticFormElements = [{ name: "First name", dataType: Concept.dataType.Text }];
 
-function getStaticFormElements(subjectType) {
+const getStaticFormElements = subjectType => {
   if (_.isEmpty(subjectType)) {
     return [];
   }
@@ -112,176 +111,130 @@ function getStaticFormElements(subjectType) {
     default:
       return nonPersonStaticFormElements;
   }
-}
+};
 
-class FormDetails extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      form: [],
-      identifierSources: [],
-      groupSubjectTypes: [],
-      name: "",
-      timed: false,
-      errorMsg: "",
-      createFlag: true,
-      activeTabIndex: 0,
-      successAlert: false,
-      defaultSnackbarStatus: true,
-      detectBrowserCloseEvent: false,
-      nameError: false,
-      redirectToWorkflow: false,
-      availableDataTypes: []
-    };
-    this.btnGroupClick = this.btnGroupClick.bind(this);
-    this.deleteGroup = this.deleteGroup.bind(this);
-    this.btnGroupAdd = this.btnGroupAdd.bind(this);
-    this.handleGroupElementChange = this.handleGroupElementChange.bind(this);
-    this.handleGroupElementKeyValueChange = this.handleGroupElementKeyValueChange.bind(this);
-    this.handleExcludedAnswers = this.handleExcludedAnswers.bind(this);
-    this.updateConceptElementData = this.updateConceptElementData.bind(this);
-    this.handleModeForDate = this.handleModeForDate.bind(this);
-    this.handleRegex = this.handleRegex.bind(this);
-    this.validateForm = this.validateForm.bind(this);
-    this.handleConceptFormLibrary = this.handleConceptFormLibrary.bind(this);
-    this.handleInlineNumericAttributes = this.handleInlineNumericAttributes.bind(this);
-    this.handleInlineLocationAttributes = this.handleInlineLocationAttributes.bind(this);
-    this.handleInlineSubjectAttributes = this.handleInlineSubjectAttributes.bind(this);
-    this.handleInlineEncounterAttributes = this.handleInlineEncounterAttributes.bind(this);
-    this.handleInlinePhoneNumberAttributes = this.handleInlinePhoneNumberAttributes.bind(this);
-    this.multiSelectFormElementsToTypeMap = new Map();
-    this.questionGroupFormElementsToRepeatableMap = new Map();
-  }
+const FormDetails = () => {
+  const { formUUID } = useParams();
+  const userInfo = useSelector(state => state.app.userInfo);
+  const record = useRecordContext();
+  const [state, setState] = useState({
+    form: [],
+    identifierSources: [],
+    groupSubjectTypes: [],
+    name: "",
+    timed: false,
+    errorMsg: "",
+    createFlag: true,
+    activeTabIndex: 0,
+    successAlert: false,
+    defaultSnackbarStatus: true,
+    detectBrowserCloseEvent: false,
+    nameError: false,
+    redirectToWorkflow: false,
+    availableDataTypes: []
+  });
+  const multiSelectFormElementsToTypeMap = new Map();
+  const questionGroupFormElementsToRepeatableMap = new Map();
 
-  onUpdateFormName = name => {
-    // this function is because of we are using name in this component.
-    this.setState({ name: name, detectBrowserCloseEvent: true });
-  };
+  const onUpdateFormName = useCallback(name => {
+    setState(prev => ({ ...prev, name, detectBrowserCloseEvent: true }));
+  }, []);
 
-  onTabHandleChange = (event, value) => {
-    this.setState({ activeTabIndex: value });
-  };
+  const onTabHandleChange = useCallback((event, value) => {
+    setState(prev => ({ ...prev, activeTabIndex: value }));
+  }, []);
 
-  getDefaultSnackbarStatus = defaultSnackbarStatus => {
-    this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
-  };
+  const getDefaultSnackbarStatus = useCallback(defaultSnackbarStatus => {
+    setState(prev => ({ ...prev, defaultSnackbarStatus }));
+  }, []);
 
-  setupBeforeUnloadListener = () => {
-    window.addEventListener("beforeunload", ev => {
+  const setupBeforeUnloadListener = useCallback(() => {
+    const handler = ev => {
       ev.preventDefault();
-      this.state.detectBrowserCloseEvent && (ev.returnValue = "Are you sure you want to close?");
-    });
-  };
-
-  componentDidMount() {
-    this.setupBeforeUnloadListener();
-    const transformIdentifierSources = identifierSourcesFromServer =>
-      _.map(identifierSourcesFromServer, source => ({ value: source.uuid, label: source.name }));
-
-    http.get(`/web/identifierSource`).then(response => {
-      let responseData = _.get(response, "data._embedded.identifierSource", []);
-      this.setState({
-        identifierSources: transformIdentifierSources(responseData)
-      });
-    });
-
-    http
-      .fetchJson("/web/operationalModules/")
-      .then(response => response.json)
-      .then(({ subjectTypes, encounterTypes }) => {
-        const groupSubjectTypes = _.filter(subjectTypes, st => !!st.group);
-        this.setState({ groupSubjectTypes });
-        this.setState({ encounterTypes });
-      });
-
-    return this.getForm();
-  }
-
-  getForm() {
-    return http
-      .get(`/forms/export?formUUID=${this.props.match.params.formUUID}`)
-      .then(response => response.data)
-      .then(form => {
-        /*
-
-        Below visitScheduleRule, decisionRule, validationRule are for handling form level rules and
-        decisionExpand, visitScheduleExpand, validationExpand are for handling expand button.
-
-        */
-        form["visitScheduleRule"] = form.visitScheduleRule ? form.visitScheduleRule : "";
-        form["decisionRule"] = form.decisionRule ? form.decisionRule : "";
-        form["validationRule"] = form.validationRule ? form.validationRule : "";
-        form["checklistsRule"] = form.checklistsRule ? form.checklistsRule : "";
-        form["decisionExpand"] = false;
-        form["visitScheduleExpand"] = false;
-        form["validationExpand"] = false;
-        form["checklistExpand"] = false;
-
-        _.forEach(form.formElementGroups, group => {
-          group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
-          group.expanded = false;
-          group.error = false;
-          group.formElements.forEach(fe => {
-            fe.expanded = false;
-            fe.error = false;
-            fe.showConceptLibrary = "chooseFromLibrary";
-            let keyValueObject = {};
-
-            fe.keyValues.map(keyValue => {
-              return (keyValueObject[keyValue.key] = keyValue.value);
-            });
-
-            // "Date", "Duration"
-            if (["Date", "Duration"].includes(fe.concept.dataType)) {
-              if (!Object.keys(keyValueObject).includes("durationOptions")) {
-                keyValueObject["durationOptions"] = [];
-              }
-            }
-            if (fe.concept.dataType === "Coded" && keyValueObject["ExcludedAnswers"] !== undefined) {
-              _.forEach(fe.concept.answers, answer => {
-                if (keyValueObject["ExcludedAnswers"].includes(answer.name) && !answer.voided) {
-                  answer["excluded"] = true;
-                }
-              });
-            }
-
-            if (_.includes(multiSelectFormElementConceptDataTypes, fe.concept.dataType)) {
-              this.multiSelectFormElementsToTypeMap.set(fe.uuid, fe.type);
-            }
-            if (fe.concept.dataType === "QuestionGroup") {
-              this.questionGroupFormElementsToRepeatableMap.set(fe.uuid, keyValueObject["repeatable"]);
-            }
-            fe.keyValues = keyValueObject;
-          });
-        });
-        let dataGroupFlag = this.countGroupElements(form);
-        this.setState({
-          form: form,
-          name: form.name,
-          timed: form.timed,
-          createFlag: dataGroupFlag,
-          formType: form.formType,
-          subjectType: form.subjectType,
-          disableForm: form.organisationId === 1,
-          dataLoaded: true
-        });
-        if (dataGroupFlag) {
-          this.btnGroupClick();
-        }
-      });
-  }
-
-  countGroupElements(form) {
-    let groupFlag = true;
-    _.forEach(form.formElementGroups, groupElement => {
-      if (!groupElement.voided) {
-        groupFlag = false;
+      if (state.detectBrowserCloseEvent) {
+        ev.returnValue = "Are you sure you want to close?";
       }
-    });
-    return groupFlag;
-  }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [state.detectBrowserCloseEvent]);
 
-  reOrderSequence(form, index = -1) {
+  const getForm = useCallback(async () => {
+    try {
+      const response = await http.get(`/forms/export?formUUID=${formUUID}`);
+      const form = response.data;
+
+      form.visitScheduleRule = form.visitScheduleRule || "";
+      form.decisionRule = form.decisionRule || "";
+      form.validationRule = form.validationRule || "";
+      form.checklistsRule = form.checklistsRule || "";
+      form.decisionExpand = false;
+      form.visitScheduleExpand = false;
+      form.validationExpand = false;
+      form.checklistExpand = false;
+
+      _.forEach(form.formElementGroups, group => {
+        group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
+        group.expanded = false;
+        group.error = false;
+        group.formElements.forEach(fe => {
+          fe.expanded = false;
+          fe.error = false;
+          fe.showConceptLibrary = "chooseFromLibrary";
+          let keyValueObject = {};
+
+          fe.keyValues.map(keyValue => {
+            keyValueObject[keyValue.key] = keyValue.value;
+            return keyValue;
+          });
+
+          if (["Date", "Duration"].includes(fe.concept.dataType) && !Object.keys(keyValueObject).includes("durationOptions")) {
+            keyValueObject.durationOptions = [];
+          }
+          if (fe.concept.dataType === "Coded" && keyValueObject.ExcludedAnswers !== undefined) {
+            _.forEach(fe.concept.answers, answer => {
+              if (keyValueObject.ExcludedAnswers.includes(answer.name) && !answer.voided) {
+                answer.excluded = true;
+              }
+            });
+          }
+
+          if (_.includes(multiSelectFormElementConceptDataTypes, fe.concept.dataType)) {
+            multiSelectFormElementsToTypeMap.set(fe.uuid, fe.type);
+          }
+          if (fe.concept.dataType === "QuestionGroup") {
+            questionGroupFormElementsToRepeatableMap.set(fe.uuid, keyValueObject.repeatable);
+          }
+          fe.keyValues = keyValueObject;
+        });
+      });
+
+      const dataGroupFlag = countGroupElements(form);
+      setState(prev => ({
+        ...prev,
+        form,
+        name: form.name,
+        timed: form.timed,
+        createFlag: dataGroupFlag,
+        formType: form.formType,
+        subjectType: form.subjectType,
+        disableForm: form.organisationId === 1,
+        dataLoaded: true
+      }));
+
+      if (dataGroupFlag) {
+        btnGroupClick();
+      }
+    } catch (error) {
+      setState(prev => ({ ...prev, errorMsg: "Failed to load form data" }));
+    }
+  }, [formUUID]);
+
+  const countGroupElements = useCallback(form => {
+    return _.every(form.formElementGroups, groupElement => groupElement.voided);
+  }, []);
+
+  const reOrderSequence = useCallback((form, index = -1) => {
     if (index <= -1) {
       _.forEach(form.formElementGroups, (group, ind) => {
         group.displayOrder = ind + 1;
@@ -291,183 +244,184 @@ class FormDetails extends Component {
         element.displayOrder = ind + 1;
       });
     }
-  }
+  }, []);
 
-  // Group level events
-  deleteGroup(index, elementIndex = -1) {
-    if (elementIndex === -1) {
-      this.setState(produce(draft => formDesignerDeleteGroup(draft, draft.form.formElementGroups, index)));
-    } else {
-      this.setState(produce(draft => formDesignerDeleteFormElement(draft, draft.form.formElementGroups[index].formElements, elementIndex)));
-    }
-  }
+  const deleteGroup = useCallback((index, elementIndex = -1) => {
+    setState(
+      produce(draft => {
+        if (elementIndex === -1) {
+          formDesignerDeleteGroup(draft, draft.form.formElementGroups, index);
+        } else {
+          formDesignerDeleteFormElement(draft, draft.form.formElementGroups[index].formElements, elementIndex);
+        }
+      })
+    );
+  }, []);
 
-  handleRegex(index, propertyName, value, elementIndex) {
-    this.setState(
+  const handleRegex = useCallback((index, propertyName, value, elementIndex) => {
+    setState(
       produce(draft => {
         formDesignerHandleRegex(draft.form.formElementGroups[index].formElements[elementIndex], propertyName, value);
       })
     );
-  }
+  }, []);
 
-  handleModeForDate(index, propertyName, value, elementIndex) {
-    this.setState(
+  const handleModeForDate = useCallback((index, propertyName, value, elementIndex) => {
+    setState(
       produce(draft => {
         formDesignerHandleModeForDate(draft.form.formElementGroups[index].formElements[elementIndex], propertyName, value);
       })
     );
-  }
+  }, []);
 
-  updateConceptElementData(index, propertyName, value, elementIndex = -1) {
-    this.setState(
+  const updateConceptElementData = useCallback((index, propertyName, value, elementIndex = -1) => {
+    setState(
       produce(draft => {
         formDesignerUpdateConceptElementData(draft.form.formElementGroups[index].formElements[elementIndex], propertyName, value);
       })
     );
-  }
+  }, []);
 
-  updateSkipLogicRule = (index, elementIndex, value) => {
-    this.setState(
+  const updateSkipLogicRule = useCallback((index, elementIndex, value) => {
+    setState(
       produce(draft => {
         formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], "rule", value, elementIndex);
       })
     );
-  };
+  }, []);
 
-  updateSkipLogicJSON = (index, elementIndex, value) => {
-    this.setState(
+  const updateSkipLogicJSON = useCallback((index, elementIndex, value) => {
+    setState(
       produce(draft => {
         formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], "declarativeRule", value, elementIndex);
       })
     );
-  };
+  }, []);
 
-  updateFormElementGroupRule = (index, value) => {
-    this.setState(
+  const updateFormElementGroupRule = useCallback((index, value) => {
+    setState(
       produce(draft => {
         formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], "rule", value, -1);
       })
     );
-  };
+  }, []);
 
-  updateFormElementGroupRuleJSON = (index, value) => {
-    this.setState(
+  const updateFormElementGroupRuleJSON = useCallback((index, value) => {
+    setState(
       produce(draft => {
         formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], "declarativeRule", value, -1);
       })
     );
-  };
+  }, []);
 
-  onUpdateDragDropOrder = (groupSourceIndex, sourceElementIndex, destinationElementIndex, groupOrElement = 1, groupDestinationIndex) => {
-    if (groupOrElement === 1) {
-      this.setState(
+  const onUpdateDragDropOrder = useCallback(
+    (groupSourceIndex, sourceElementIndex, destinationElementIndex, groupOrElement = 1, groupDestinationIndex) => {
+      setState(
         produce(draft => {
-          const sourceElement = draft.form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex];
-          const destinationElement = draft.form.formElementGroups[groupDestinationIndex].formElements[destinationElementIndex];
-          sourceElement.parentFormElementUuid = destinationElement.parentFormElementUuid;
-          return formDesignerUpdateDragDropOrderForFirstGroup(
-            draft,
-            draft.form.formElementGroups[groupSourceIndex],
-            draft.form.formElementGroups[groupDestinationIndex],
-            groupSourceIndex,
-            groupDestinationIndex,
-            sourceElementIndex,
-            destinationElementIndex
-          );
-        })
-      );
-    } else {
-      let counter = 0;
-      this.setState(
-        produce(draft => {
-          let form = draft.form;
-          form.formElementGroups.forEach((element, index) => {
-            if (!element.voided) {
-              if (counter === destinationElementIndex) {
-                const sourceElement = form.formElementGroups.splice(sourceElementIndex, 1)[0];
-                form.formElementGroups.splice(index, 0, sourceElement);
+          if (groupOrElement === 1) {
+            const sourceElement = draft.form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex];
+            const destinationElement = draft.form.formElementGroups[groupDestinationIndex].formElements[destinationElementIndex];
+            sourceElement.parentFormElementUuid = destinationElement.parentFormElementUuid;
+            formDesignerUpdateDragDropOrderForFirstGroup(
+              draft,
+              draft.form.formElementGroups[groupSourceIndex],
+              draft.form.formElementGroups[groupDestinationIndex],
+              groupSourceIndex,
+              groupDestinationIndex,
+              sourceElementIndex,
+              destinationElementIndex
+            );
+          } else {
+            let counter = 0;
+            let form = draft.form;
+            form.formElementGroups.forEach((element, index) => {
+              if (!element.voided) {
+                if (counter === destinationElementIndex) {
+                  const sourceElement = form.formElementGroups.splice(sourceElementIndex, 1)[0];
+                  form.formElementGroups.splice(index, 0, sourceElement);
+                }
+                counter += 1;
               }
-              counter += 1;
-            }
-          });
-          draft.detectBrowserCloseEvent = true;
+            });
+            draft.detectBrowserCloseEvent = true;
+          }
         })
       );
-    }
-  };
+    },
+    []
+  );
 
-  getEntityNameForRules() {
-    const entityFormInfo = FormTypeEntities[this.state.form.formType];
-    if (_.isNil(entityFormInfo)) return "";
-    return entityFormInfo.ruleVariableName;
-  }
+  const getEntityNameForRules = useCallback(() => {
+    const entityFormInfo = FormTypeEntities[state.form.formType];
+    return entityFormInfo ? entityFormInfo.ruleVariableName : "";
+  }, [state.form.formType]);
 
-  renderGroups() {
+  const renderGroups = useCallback(() => {
     const formElements = [];
-    _.forEach(this.state.form.formElementGroups, (group, index) => {
+    _.forEach(state.form.formElementGroups, (group, index) => {
       if (!group.voided) {
-        let propsGroup = {
-          updateConceptElementData: this.updateConceptElementData,
-          key: "Group" + index,
+        const propsGroup = {
+          updateConceptElementData,
+          key: `Group${index}`,
           groupData: group,
-          index: index,
-          deleteGroup: this.deleteGroup,
-          btnGroupAdd: this.btnGroupAdd,
-          identifierSources: this.state.identifierSources,
-          groupSubjectTypes: this.state.groupSubjectTypes,
-          onUpdateDragDropOrder: this.onUpdateDragDropOrder,
-          handleGroupElementChange: this.handleGroupElementChange,
-          handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
-          handleExcludedAnswers: this.handleExcludedAnswers,
-          updateSkipLogicRule: this.updateSkipLogicRule,
-          updateSkipLogicJSON: this.updateSkipLogicJSON,
-          updateFormElementGroupRuleJSON: this.updateFormElementGroupRuleJSON,
-          handleModeForDate: this.handleModeForDate,
-          handleRegex: this.handleRegex,
-          handleConceptFormLibrary: this.handleConceptFormLibrary,
-          onSaveInlineConcept: this.onSaveInlineConcept,
-          handleInlineNumericAttributes: this.handleInlineNumericAttributes,
-          handleInlineCodedConceptAnswers: this.handleInlineCodedConceptAnswers,
-          onToggleInlineConceptCodedAnswerAttribute: this.onToggleInlineConceptCodedAnswerAttribute,
-          onDeleteInlineConceptCodedAnswerDelete: this.onDeleteInlineConceptCodedAnswerDelete,
-          onMoveUp: this.onMoveUp,
-          onMoveDown: this.onMoveDown,
-          onAlphabeticalSort: this.onAlphabeticalSort,
-          handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
-          handleInlineLocationAttributes: this.handleInlineLocationAttributes,
-          handleInlineSubjectAttributes: this.handleInlineSubjectAttributes,
-          handleInlineEncounterAttributes: this.handleInlineEncounterAttributes,
-          handleInlinePhoneNumberAttributes: this.handleInlinePhoneNumberAttributes,
-          updateFormElementGroupRule: this.updateFormElementGroupRule,
-          entityName: this.getEntityNameForRules(),
-          disableGroup: this.state.disableForm,
-          subjectType: this.state.subjectType,
-          form: this.state.form
+          index,
+          deleteGroup,
+          btnGroupAdd,
+          identifierSources: state.identifierSources,
+          groupSubjectTypes: state.groupSubjectTypes,
+          onUpdateDragDropOrder,
+          handleGroupElementChange,
+          handleGroupElementKeyValueChange,
+          handleExcludedAnswers,
+          updateSkipLogicRule,
+          updateSkipLogicJSON,
+          updateFormElementGroupRuleJSON,
+          handleModeForDate,
+          handleRegex,
+          handleConceptFormLibrary,
+          onSaveInlineConcept,
+          handleInlineNumericAttributes,
+          handleInlineCodedConceptAnswers,
+          onToggleInlineConceptCodedAnswerAttribute,
+          onDeleteInlineConceptCodedAnswerDelete,
+          onMoveUp,
+          onMoveDown,
+          onAlphabeticalSort,
+          handleInlineCodedAnswerAddition,
+          handleInlineLocationAttributes,
+          handleInlineSubjectAttributes,
+          handleInlineEncounterAttributes,
+          handleInlinePhoneNumberAttributes,
+          updateFormElementGroupRule,
+          entityName: getEntityNameForRules(),
+          disableGroup: state.disableForm,
+          subjectType: state.subjectType,
+          form: state.form
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
     });
     return formElements;
-  }
+  }, [state.form.formElementGroups, state.identifierSources, state.groupSubjectTypes, state.disableForm, state.subjectType, state.form]);
 
-  handleExcludedAnswers = (name, status, index, elementIndex) => {
-    this.setState(
+  const handleExcludedAnswers = useCallback((name, status, index, elementIndex) => {
+    setState(
       produce(draft =>
         formDesignerHandleExcludedAnswers(draft, draft.form.formElementGroups[index].formElements[elementIndex], name, status)
       )
     );
-  };
+  }, []);
 
-  handleConceptFormLibrary = (index, value, elementIndex, inlineConcept = false) => {
-    this.setState(
+  const handleConceptFormLibrary = useCallback((index, value, elementIndex, inlineConcept = false) => {
+    setState(
       produce(draft => {
         formDesignerHandleConceptFormLibrary(draft.form.formElementGroups[index].formElements[elementIndex], value, inlineConcept);
       })
     );
-  };
+  }, []);
 
-  handleGroupElementKeyValueChange = (index, propertyName, value, elementIndex) => {
-    this.setState(
+  const handleGroupElementKeyValueChange = useCallback((index, propertyName, value, elementIndex) => {
+    setState(
       produce(draft =>
         formDesignerHandleGroupElementKeyValueChange(
           draft,
@@ -477,24 +431,24 @@ class FormDetails extends Component {
         )
       )
     );
-  };
+  }, []);
 
-  handleGroupElementChange(index, propertyName, value, elementIndex = -1) {
-    this.setState(
+  const handleGroupElementChange = useCallback((index, propertyName, value, elementIndex = -1) => {
+    setState(
       produce(draft => formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], propertyName, value, elementIndex))
     );
-  }
+  }, []);
 
-  handleInlineNumericAttributes(index, propertyName, value, elementIndex) {
-    this.setState(
+  const handleInlineNumericAttributes = useCallback((index, propertyName, value, elementIndex) => {
+    setState(
       produce(draft => {
         formDesignerHandleInlineNumericAttributes(draft.form.formElementGroups[index].formElements[elementIndex], propertyName, value);
       })
     );
-  }
+  }, []);
 
-  handleInlineCodedConceptAnswers = (answerName, groupIndex, elementIndex, answerIndex) => {
-    this.setState(
+  const handleInlineCodedConceptAnswers = useCallback((answerName, groupIndex, elementIndex, answerIndex) => {
+    setState(
       produce(draft => {
         formDesignerHandleInlineCodedConceptAnswers(
           draft.form.formElementGroups[groupIndex].formElements[elementIndex],
@@ -503,16 +457,16 @@ class FormDetails extends Component {
         );
       })
     );
-  };
+  }, []);
 
-  handleInlineCodedAnswerAddition = (groupIndex, elementIndex) => {
-    this.setState(
+  const handleInlineCodedAnswerAddition = useCallback((groupIndex, elementIndex) => {
+    setState(
       produce(draft => formDesignerHandleInlineCodedAnswerAddition(draft.form.formElementGroups[groupIndex].formElements[elementIndex]))
     );
-  };
+  }, []);
 
-  onToggleInlineConceptCodedAnswerAttribute = (propertyName, groupIndex, elementIndex, answerIndex) => {
-    this.setState(
+  const onToggleInlineConceptCodedAnswerAttribute = useCallback((propertyName, groupIndex, elementIndex, answerIndex) => {
+    setState(
       produce(draft => {
         formDesignerOnToggleInlineConceptCodedAnswerAttribute(
           draft.form.formElementGroups[groupIndex].formElements[elementIndex],
@@ -521,10 +475,10 @@ class FormDetails extends Component {
         );
       })
     );
-  };
+  }, []);
 
-  onDeleteInlineConceptCodedAnswerDelete = (groupIndex, elementIndex, answerIndex) => {
-    this.setState(
+  const onDeleteInlineConceptCodedAnswerDelete = useCallback((groupIndex, elementIndex, answerIndex) => {
+    setState(
       produce(draft => {
         formDesignerOnDeleteInlineConceptCodedAnswerDelete(
           draft.form.formElementGroups[groupIndex].formElements[elementIndex],
@@ -532,32 +486,32 @@ class FormDetails extends Component {
         );
       })
     );
-  };
+  }, []);
 
-  onMoveUp = (groupIndex, elementIndex, answerIndex) => {
-    this.setState(
+  const onMoveUp = useCallback((groupIndex, elementIndex, answerIndex) => {
+    setState(
       produce(draft => {
         formDesignerOnConceptAnswerMoveUp(draft.form.formElementGroups[groupIndex].formElements[elementIndex], answerIndex);
       })
     );
-  };
+  }, []);
 
-  onMoveDown = (groupIndex, elementIndex, answerIndex) => {
-    this.setState(
+  const onMoveDown = useCallback((groupIndex, elementIndex, answerIndex) => {
+    setState(
       produce(draft => {
         formDesignerOnConceptAnswerMoveDown(draft.form.formElementGroups[groupIndex].formElements[elementIndex], answerIndex);
       })
     );
-  };
+  }, []);
 
-  onAlphabeticalSort = (groupIndex, elementIndex) => {
-    this.setState(
+  const onAlphabeticalSort = useCallback((groupIndex, elementIndex) => {
+    setState(
       produce(draft => formDesignerOnConceptAnswerAlphabeticalSort(draft.form.formElementGroups[groupIndex].formElements[elementIndex]))
     );
-  };
+  }, []);
 
-  handleInlineLocationAttributes(index, propertyName, value, elementIndex) {
-    this.setState(
+  const handleInlineLocationAttributes = useCallback((index, propertyName, value, elementIndex) => {
+    setState(
       produce(draft => {
         formDesignerHandleInlineConceptAttributes(
           draft.form.formElementGroups[index].formElements[elementIndex],
@@ -567,10 +521,10 @@ class FormDetails extends Component {
         );
       })
     );
-  }
+  }, []);
 
-  handleInlineSubjectAttributes(index, propertyName, value, elementIndex) {
-    this.setState(
+  const handleInlineSubjectAttributes = useCallback((index, propertyName, value, elementIndex) => {
+    setState(
       produce(draft => {
         formDesignerHandleInlineConceptAttributes(
           draft.form.formElementGroups[index].formElements[elementIndex],
@@ -580,10 +534,10 @@ class FormDetails extends Component {
         );
       })
     );
-  }
+  }, []);
 
-  handleInlineEncounterAttributes(index, propertyName, value, elementIndex) {
-    this.setState(
+  const handleInlineEncounterAttributes = useCallback((index, propertyName, value, elementIndex) => {
+    setState(
       produce(draft => {
         formDesignerHandleInlineConceptAttributes(
           draft.form.formElementGroups[index].formElements[elementIndex],
@@ -593,10 +547,10 @@ class FormDetails extends Component {
         );
       })
     );
-  }
+  }, []);
 
-  handleInlinePhoneNumberAttributes(index, propertyName, value, elementIndex) {
-    this.setState(
+  const handleInlinePhoneNumberAttributes = useCallback((index, propertyName, value, elementIndex) => {
+    setState(
       produce(draft => {
         formDesignerHandleInlineConceptAttributes(
           draft.form.formElementGroups[index].formElements[elementIndex],
@@ -606,10 +560,10 @@ class FormDetails extends Component {
         );
       })
     );
-  }
+  }, []);
 
-  btnGroupAdd(index, elementIndex = -1) {
-    this.setState(
+  const btnGroupAdd = useCallback((index, elementIndex = -1) => {
+    setState(
       produce(draft => {
         if (elementIndex === -1) {
           formDesignerAddFormElementGroup(draft, draft.form.formElementGroups, index);
@@ -618,57 +572,61 @@ class FormDetails extends Component {
         }
       })
     );
-  }
+  }, []);
 
-  btnGroupClick() {
-    this.btnGroupAdd(0);
-    this.setState({ createFlag: false });
-  }
+  const btnGroupClick = useCallback(() => {
+    btnGroupAdd(0);
+    setState(prev => ({ ...prev, createFlag: false }));
+  }, [btnGroupAdd]);
 
-  getDeclarativeRuleValidationError(declarativeRule) {
+  const getDeclarativeRuleValidationError = useCallback(declarativeRule => {
     const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(declarativeRule);
     const validationError = declarativeRuleHolder.validateAndGetError();
     return { declarativeRuleHolder, validationError };
-  }
+  }, []);
 
-  getDisallowedChangesError(formElement) {
-    const currentType = this.multiSelectFormElementsToTypeMap.get(formElement.uuid);
-    const currentRepeatability = this.questionGroupFormElementsToRepeatableMap.get(formElement.uuid);
+  const getDisallowedChangesError = useCallback(formElement => {
+    const currentType = multiSelectFormElementsToTypeMap.get(formElement.uuid);
+    const currentRepeatability = questionGroupFormElementsToRepeatableMap.get(formElement.uuid);
     return (
-      (this.multiSelectFormElementsToTypeMap.has(formElement.uuid) && !!currentType !== !!formElement.type) ||
-      (this.questionGroupFormElementsToRepeatableMap.has(formElement.uuid) && !!currentRepeatability !== !!formElement.keyValues.repeatable)
+      (multiSelectFormElementsToTypeMap.has(formElement.uuid) && !!currentType !== !!formElement.type) ||
+      (questionGroupFormElementsToRepeatableMap.has(formElement.uuid) && !!currentRepeatability !== !!formElement.keyValues.repeatable)
     );
-  }
+  }, []);
 
-  validateFormLevelRules(form, declarativeRule, ruleKey, generateRuleFuncName) {
-    const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(declarativeRule);
-    if (!_.isEmpty(validationError)) {
-      form.ruleError[ruleKey] = validationError;
-      return true;
-    } else if (!declarativeRuleHolder.isEmpty()) {
-      form[ruleKey] = declarativeRuleHolder[generateRuleFuncName](this.getEntityNameForRules());
-    }
-  }
+  const validateFormLevelRules = useCallback(
+    (form, declarativeRule, ruleKey, generateRuleFuncName) => {
+      const { declarativeRuleHolder, validationError } = getDeclarativeRuleValidationError(declarativeRule);
+      if (!_.isEmpty(validationError)) {
+        form.ruleError[ruleKey] = validationError;
+        return true;
+      } else if (!declarativeRuleHolder.isEmpty()) {
+        form[ruleKey] = declarativeRuleHolder[generateRuleFuncName](getEntityNameForRules());
+      }
+      return false;
+    },
+    [getDeclarativeRuleValidationError, getEntityNameForRules]
+  );
 
-  // END Group level Events
-  validateForm() {
+  const validateForm = useCallback(() => {
     let flag = false;
     let errormsg = "";
     let numberGroupError = 0;
     let numberElementError = 0;
-    this.setState(
+
+    setState(
       produce(draft => {
         draft.nameError = draft.name === "";
         draft.form.ruleError = {};
         const { validationDeclarativeRule, decisionDeclarativeRule, visitScheduleDeclarativeRule } = draft.form;
-        const isValidationError = this.validateFormLevelRules(
+        const isValidationError = validateFormLevelRules(
           draft.form,
           validationDeclarativeRule,
           "validationRule",
           "generateFormValidationRule"
         );
-        const isDecisionError = this.validateFormLevelRules(draft.form, decisionDeclarativeRule, "decisionRule", "generateDecisionRule");
-        const isVisitScheduleError = this.validateFormLevelRules(
+        const isDecisionError = validateFormLevelRules(draft.form, decisionDeclarativeRule, "decisionRule", "generateDecisionRule");
+        const isVisitScheduleError = validateFormLevelRules(
           draft.form,
           visitScheduleDeclarativeRule,
           "visitScheduleRule",
@@ -679,7 +637,7 @@ class FormDetails extends Component {
           group.errorMessage = {};
           group.error = false;
           group.expanded = false;
-          const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(group.declarativeRule);
+          const { declarativeRuleHolder, validationError } = getDeclarativeRuleValidationError(group.declarativeRule);
           const isGroupNameEmpty = group.name.trim() === "";
           if (!group.voided && (isGroupNameEmpty || !_.isEmpty(validationError))) {
             group.error = true;
@@ -688,7 +646,7 @@ class FormDetails extends Component {
             if (isGroupNameEmpty) group.errorMessage.name = true;
             if (!_.isEmpty(validationError)) group.errorMessage.ruleError = validationError;
           } else if (!declarativeRuleHolder.isEmpty()) {
-            group.rule = declarativeRuleHolder.generateFormElementGroupRule(this.getEntityNameForRules());
+            group.rule = declarativeRuleHolder.generateFormElementGroupRule(getEntityNameForRules());
           }
           let groupError = false;
           group.formElements.forEach(fe => {
@@ -700,8 +658,8 @@ class FormDetails extends Component {
                 fe.errorMessage[key] = false;
               });
             }
-            const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(fe.declarativeRule);
-            const disallowedChangeError = this.getDisallowedChangesError(fe);
+            const { declarativeRuleHolder, validationError } = getDeclarativeRuleValidationError(fe.declarativeRule);
+            const disallowedChangeError = getDisallowedChangesError(fe);
             if (
               !fe.voided &&
               (fe.name === "" ||
@@ -715,9 +673,8 @@ class FormDetails extends Component {
                 !_.isEmpty(validationError) ||
                 disallowedChangeError)
             ) {
-              numberElementError = numberElementError + 1;
+              numberElementError += 1;
               fe.error = true;
-
               fe.expanded = true;
               flag = groupError = true;
               if (fe.name === "") fe.errorMessage.name = true;
@@ -745,7 +702,7 @@ class FormDetails extends Component {
               flag = groupError = true;
               numberElementError += 1;
             } else if (!declarativeRuleHolder.isEmpty()) {
-              fe.rule = declarativeRuleHolder.generateViewFilterRule(this.getEntityNameForRules());
+              fe.rule = declarativeRuleHolder.generateViewFilterRule(getEntityNameForRules());
             }
           });
           if (groupError || group.error) {
@@ -754,350 +711,326 @@ class FormDetails extends Component {
         });
         if (flag) {
           if (numberGroupError !== 0) {
-            errormsg += "There is a error in " + numberGroupError + " form group";
-            if (numberElementError !== 0) errormsg += " and " + numberElementError + " form element.";
-          } else if (numberElementError !== 0) errormsg += "There is a error in " + numberElementError + " form element.";
+            errormsg += `There is an error in ${numberGroupError} form group`;
+            if (numberElementError !== 0) errormsg += ` and ${numberElementError} form element.`;
+          } else if (numberElementError !== 0) errormsg += `There is an error in ${numberElementError} form element.`;
+          draft.errorMsg = errormsg;
         }
-        draft.errorMsg = errormsg;
       }),
-      () => flag === false && this.updateForm()
+      () => {
+        if (!flag) updateForm();
+      }
     );
-  }
+  }, [getDeclarativeRuleValidationError, getDisallowedChangesError, getEntityNameForRules]);
 
-  updateForm = event => {
-    /*Have to deep clone state.form here as we want to modify this data before we send it to server.
-     * Modifying this data directly will give an error as Immer freezes the state object for direct modifications.
-     */
-
-    // this.setState({
-    //   form: keyValueForm
-    // });
-    let dataSend = cloneDeep(this.state.form);
-    dataSend.name = this.state.name;
-    dataSend.timed = this.state.timed;
+  const updateForm = useCallback(async () => {
+    let dataSend = cloneDeep(state.form);
+    dataSend.name = state.name;
+    dataSend.timed = state.timed;
     _.forEach(dataSend.formElementGroups, group => {
       _.forEach(group.formElements, element => {
         if (element.concept.dataType === "Coded") {
-          const excluded = element.concept.answers.map(answer => {
-            return answer.excluded && !answer.voided && answer.name;
-          });
-          const excludedAnswers = excluded.filter(obj => obj);
-          if (!isEmpty(excludedAnswers)) {
-            element.keyValues["ExcludedAnswers"] = excludedAnswers;
-          } else if (element.keyValues["ExcludedAnswers"]) delete element.keyValues.ExcludedAnswers;
+          const excluded = element.concept.answers.map(answer => answer.excluded && !answer.voided && answer.name).filter(obj => obj);
+          if (!isEmpty(excluded)) {
+            element.keyValues.ExcludedAnswers = excluded;
+          } else if (element.keyValues.ExcludedAnswers) {
+            delete element.keyValues.ExcludedAnswers;
+          }
         }
-
         if (element.concept.dataType === "Video" && element.keyValues.durationLimitInSecs === "") {
           delete element.keyValues.durationLimitInSecs;
         }
-
-        (element.concept.dataType === "Date" || element.concept.dataType === "Duration") &&
-          element.keyValues["durationOptions"] &&
-          element.keyValues["durationOptions"].length === 0 &&
-          delete element.keyValues["durationOptions"];
-
-        if (element.concept.dataType === "Image") {
-          element.keyValues.maxHeight === "" && delete element.keyValues.maxHeight;
-          element.keyValues.maxWidth === "" && delete element.keyValues.maxWidth;
+        if (
+          (element.concept.dataType === "Date" || element.concept.dataType === "Duration") &&
+          element.keyValues.durationOptions?.length === 0
+        ) {
+          delete element.keyValues.durationOptions;
         }
-
+        if (element.concept.dataType === "Image") {
+          if (element.keyValues.maxHeight === "") delete element.keyValues.maxHeight;
+          if (element.keyValues.maxWidth === "") delete element.keyValues.maxWidth;
+        }
         if (element.validFormat && isEmpty(element.validFormat.regex) && isEmpty(element.validFormat.descriptionKey)) {
           delete element.validFormat;
         }
-
         if (Object.keys(element.keyValues).length !== 0) {
-          const tempKeyValue = Object.keys(element.keyValues).map(keyValue => {
-            return { key: keyValue, value: element.keyValues[keyValue] };
-          });
-
-          element.keyValues = tempKeyValue;
+          element.keyValues = Object.keys(element.keyValues).map(key => ({ key, value: element.keyValues[key] }));
         } else {
           element.keyValues = [];
         }
       });
     });
-    this.reOrderSequence(dataSend);
+    reOrderSequence(dataSend);
     _.forEach(dataSend.formElementGroups, (group, index) => {
-      this.reOrderSequence(dataSend, index);
+      reOrderSequence(dataSend, index);
     });
-    http
-      .post("/forms", dataSend)
-      .then(response => {
-        if (response.status === 200) {
-          this.setState({
-            redirectToWorkflow: true,
-            successAlert: true,
-            defaultSnackbarStatus: true,
-            detectBrowserCloseEvent: false
-          });
-        }
-      })
-      .then(() => this.getForm())
-      .catch(error => {
-        const errorMessage = split(replace(error.response.data, /^org\..*: /, ""), /\n|\r/, 1);
-        this.setState({
-          errorMsg: "Server error received: " + errorMessage
-        });
-      });
-  };
-
-  onDragEnd = result => {
-    const { destination, source } = result;
-
-    if (!destination) {
-      return;
+    try {
+      const response = await http.post("/forms", dataSend);
+      if (response.status === 200) {
+        setState(prev => ({
+          ...prev,
+          redirectToWorkflow: true,
+          successAlert: true,
+          defaultSnackbarStatus: true,
+          detectBrowserCloseEvent: false
+        }));
+        await getForm();
+      }
+    } catch (error) {
+      const errorMessage = split(replace(error.response.data, /^org\..*: /, ""), /\n|\r/, 1);
+      setState(prev => ({ ...prev, errorMsg: `Server error received: ${errorMessage}` }));
     }
+  }, [state.form, state.name, state.timed, reOrderSequence, getForm]);
 
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return;
-    }
+  const onDragEnd = useCallback(
+    result => {
+      const { destination, source } = result;
+      if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
+        return;
+      }
+      if (result.type === "task") {
+        const sourceGroupUuid = result.source.droppableId.replace("Group", "");
+        const destGroupUuid = result.destination.droppableId.replace("Group", "");
+        const groupSourceIndex = state.form.formElementGroups.findIndex(g => g.uuid === sourceGroupUuid);
+        const groupDestinationIndex = state.form.formElementGroups.findIndex(g => g.uuid === destGroupUuid);
+        if (groupSourceIndex === -1 || groupDestinationIndex === -1) return;
+        const elementUuid = result.draggableId.split("Element")[1];
+        const sourceElementIndex = state.form.formElementGroups[groupSourceIndex].formElements.findIndex(fe => fe.uuid === elementUuid);
+        const destinationElementIndex = result.destination.index;
+        if (sourceElementIndex === -1) return;
+        onUpdateDragDropOrder(groupSourceIndex, sourceElementIndex, destinationElementIndex, 1, groupDestinationIndex);
+      } else {
+        const groupUuid = result.draggableId.replace("Group", "");
+        const sourceElementIndex = state.form.formElementGroups.findIndex(g => g.uuid === groupUuid);
+        const destinationElementIndex = result.destination.index;
+        if (sourceElementIndex === -1) return;
+        onUpdateDragDropOrder(null, sourceElementIndex, destinationElementIndex, 0, null);
+      }
+    },
+    [state.form.formElementGroups, onUpdateDragDropOrder]
+  );
 
-    if (result.type === "task") {
-      const sourceGroupUuid = result.source.droppableId.replace("Group", "");
-      const destGroupUuid = result.destination.droppableId.replace("Group", "");
-
-      const groupSourceIndex = this.state.form.formElementGroups.findIndex(g => g.uuid === sourceGroupUuid);
-      const groupDestinationIndex = this.state.form.formElementGroups.findIndex(g => g.uuid === destGroupUuid);
-      if (groupSourceIndex === -1 || groupDestinationIndex === -1) return;
-
-      const elementUuid = result.draggableId.split("Element")[1];
-      const sourceElementIndex = this.state.form.formElementGroups[groupSourceIndex].formElements.findIndex(fe => fe.uuid === elementUuid);
-      const destinationElementIndex = result.destination.index;
-
-      if (sourceElementIndex === -1) return;
-
-      this.onUpdateDragDropOrder(groupSourceIndex, sourceElementIndex, destinationElementIndex, 1, groupDestinationIndex);
-    } else {
-      const groupUuid = result.draggableId.replace("Group", "");
-      const sourceElementIndex = this.state.form.formElementGroups.findIndex(g => g.uuid === groupUuid);
-      const destinationElementIndex = result.destination.index;
-      if (sourceElementIndex === -1) return;
-
-      this.onUpdateDragDropOrder(null, sourceElementIndex, destinationElementIndex, 0, null);
-    }
-  };
-
-  onRuleUpdate = (name, value) => {
-    this.setState(
+  const onRuleUpdate = useCallback((name, value) => {
+    setState(
       produce(draft => {
         draft.form[name] = value;
         draft.detectBrowserCloseEvent = true;
       })
     );
-  };
+  }, []);
 
-  onDeclarativeRuleUpdate = (ruleName, json) => {
-    this.setState(
+  const onDeclarativeRuleUpdate = useCallback((ruleName, json) => {
+    setState(
       produce(draft => {
         draft.form[ruleName] = json;
         draft.detectBrowserCloseEvent = true;
       })
     );
-  };
+  }, []);
 
-  onDecisionConceptsUpdate = decisionConcepts => {
-    this.setState(
+  const onDecisionConceptsUpdate = useCallback(decisionConcepts => {
+    setState(
       produce(draft => {
         draft.form.decisionConcepts = decisionConcepts;
         draft.detectBrowserCloseEvent = true;
       })
     );
-  };
+  }, []);
 
-  onSaveInlineConcept = (groupIndex, elementIndex) => {
-    let clonedForm = cloneDeep(this.state.form);
-    let clonedFormElement = clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex];
-    const updateState = () => this.setState({ form: clonedForm });
-    formDesignerOnSaveInlineConcept(clonedFormElement, updateState);
-  };
+  const onSaveInlineConcept = useCallback(
+    (groupIndex, elementIndex) => {
+      let clonedForm = cloneDeep(state.form);
+      let clonedFormElement = clonedForm.formElementGroups[groupIndex].formElements[elementIndex];
+      formDesignerOnSaveInlineConcept(clonedFormElement, () => setState(prev => ({ ...prev, form: clonedForm })));
+    },
+    [state.form]
+  );
 
-  onToggleExpandPanel = name => {
-    this.setState(
+  const onToggleExpandPanel = useCallback(name => {
+    setState(
       produce(draft => {
         draft.form[name] = !draft.form[name];
       })
     );
-  };
+  }, []);
 
-  render() {
-    const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(this.props.userInfo, this.state.formType);
-    const form = (
-      <Grid container>
-        <Grid container sx={{ alignContent: "flex-end", justifyContent: "space-between", width: "100%" }}>
-          <Grid size={{ sm: 10 }}>
-            {this.state.nameError && <FormHelperText error>Form name is empty</FormHelperText>}
-            <TextField
-              type="string"
-              id="name"
-              label="Form name"
-              placeholder="Enter form name"
-              margin="normal"
-              onChange={event => this.onUpdateFormName(event.target.value)}
-              value={this.state.name}
-              autoComplete="off"
-              disabled={this.state.disableForm}
+  useEffect(() => {
+    setupBeforeUnloadListener();
+    const transformIdentifierSources = identifierSourcesFromServer =>
+      _.map(identifierSourcesFromServer, source => ({ value: source.uuid, label: source.name }));
+
+    const fetchData = async () => {
+      try {
+        const identifierResponse = await http.get(`/web/identifierSource`);
+        const identifierData = _.get(identifierResponse, "data._embedded.identifierSource", []);
+        setState(prev => ({ ...prev, identifierSources: transformIdentifierSources(identifierData) }));
+
+        const operationalModules = await http.fetchJson("/web/operationalModules/").then(res => res.json);
+        const groupSubjectTypes = _.filter(operationalModules.subjectTypes, st => !!st.group);
+        setState(prev => ({ ...prev, groupSubjectTypes, encounterTypes: operationalModules.encounterTypes }));
+      } catch (error) {
+        setState(prev => ({ ...prev, errorMsg: "Failed to load initial data" }));
+      }
+      await getForm();
+    };
+
+    fetchData();
+  }, [setupBeforeUnloadListener, getForm]);
+
+  const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(userInfo, state.formType);
+  const form = (
+    <Grid container>
+      <Grid container sx={{ alignContent: "flex-end", justifyContent: "space-between", width: "100%" }}>
+        <Grid size={{ sm: 10 }}>
+          {state.nameError && <FormHelperText error>Form name is empty</FormHelperText>}
+          <TextField
+            type="string"
+            id="name"
+            label="Form name"
+            placeholder="Enter form name"
+            margin="normal"
+            onChange={event => onUpdateFormName(event.target.value)}
+            value={state.name}
+            autoComplete="off"
+            disabled={state.disableForm}
+          />
+        </Grid>
+        {state.createFlag && (
+          <Grid size={{ sm: 2 }}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={btnGroupClick}
+              style={{ marginTop: "30px", marginBottom: "2px" }}
+              disabled={state.disableForm}
+            >
+              Add Group
+            </Button>
+          </Grid>
+        )}
+        {hasFormEditPrivilege && !state.createFlag && (
+          <Grid size={{ sm: 2 }}>
+            <SaveComponent
+              name="Save"
+              onSubmit={validateForm}
+              styleClass={{
+                marginTop: "30px",
+                marginBottom: "2px"
+              }}
+              disabledFlag={!state.detectBrowserCloseEvent || state.disableForm}
             />
           </Grid>
-          {this.state.createFlag && (
-            <Grid size={{ sm: 2 }}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="secondary"
-                onClick={this.btnGroupClick}
-                style={{ marginTop: "30px", marginBottom: "2px" }}
-                disabled={this.state.disableForm}
-              >
-                Add Group
-              </Button>
-            </Grid>
-          )}
-          {hasFormEditPrivilege && !this.state.createFlag && (
-            <Grid size={{ sm: 2 }}>
-              <SaveComponent
-                name="Save"
-                onSubmit={this.validateForm}
-                styleClass={{
-                  marginTop: "30px",
-                  marginBottom: "2px"
-                }}
-                disabledFlag={!this.state.detectBrowserCloseEvent || this.state.disableForm}
-              />
-            </Grid>
-          )}
-          {!hasFormEditPrivilege && (
-            <div
-              style={{
-                backgroundColor: "salmon",
-                borderColor: "red",
-                margin: "20px",
-                padding: "15px",
-                fontSize: 24,
-                borderRadius: "5px"
-              }}
-            >
-              You do not have access to edit this form. Changes will not be saved
-            </div>
-          )}
-        </Grid>
-        <Grid size={{ sm: 12 }}>
-          <Tabs
-            style={{ background: "#2196f3", color: "white" }}
-            value={this.state.activeTabIndex}
-            onChange={this.onTabHandleChange}
-            sx={{
-              "& .MuiTabs-indicator": {
-                backgroundColor: "#fff"
-              }
+        )}
+        {!hasFormEditPrivilege && (
+          <div
+            style={{
+              backgroundColor: "salmon",
+              borderColor: "red",
+              margin: "20px",
+              padding: "15px",
+              fontSize: 24,
+              borderRadius: "5px"
             }}
           >
-            <Tab
-              label="Details"
-              sx={{
-                color: "#fff",
-                "&.Mui-selected": {
-                  color: "#fff"
-                }
-              }}
-            />
-            <Tab
-              label="Rules"
-              sx={{
-                color: "#fff",
-                "&.Mui-selected": {
-                  color: "#fff"
-                }
-              }}
-            />
-          </Tabs>
-          <TabContainer hidden={this.state.activeTabIndex !== 0}>
-            <Grid
-              container
-              size={{
-                sm: 12
-              }}
-            >
-              <Grid
-                size={{
-                  sm: 12
-                }}
-              >
-                {this.state.errorMsg !== "" && (
-                  <FormControl fullWidth margin="dense">
-                    <li style={{ color: "red" }}>{this.state.errorMsg}</li>
-                  </FormControl>
-                )}
-              </Grid>
-            </Grid>
-            {this.state.formType === "IndividualProfile" && !_.isEmpty(getStaticFormElements(this.state.subjectType)) && (
-              <div style={{ marginBottom: 30 }}>
-                <StaticFormElementGroup
-                  name={"First page questions (non editable)"}
-                  formElements={getStaticFormElements(this.state.subjectType)}
-                />
-              </div>
-            )}
-            <DragDropContext onDragEnd={this.onDragEnd}>
-              <Droppable droppableId="all-columns" direction="vertical" type="row">
-                {provided => (
-                  <div ref={provided.innerRef} {...provided.droppableProps}>
-                    {this.renderGroups()}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-            <SystemInfo {...this.state.form} direction={"row"} />
-            {/* </div> */}
-          </TabContainer>
-          <div hidden={this.state.activeTabIndex !== 1}>
-            <FormLevelRules
-              form={this.state.form}
-              onRuleUpdate={this.onRuleUpdate}
-              onDeclarativeRuleUpdate={this.onDeclarativeRuleUpdate}
-              onDecisionConceptsUpdate={this.onDecisionConceptsUpdate}
-              onToggleExpandPanel={this.onToggleExpandPanel}
-              entityName={this.getEntityNameForRules()}
-              disabled={this.state.disableForm}
-              encounterTypes={this.state.encounterTypes}
-            />
+            You do not have access to edit this form. Changes will not be saved
           </div>
-        </Grid>
+        )}
       </Grid>
-    );
-    let redirectTo = this.props.history.location.state;
-    return (
-      <FormDesignerContext.Provider
-        value={{
-          setState: newState => this.setState(newState),
-          state: this.state
-        }}
-      >
-        <Box
+      <Grid size={{ sm: 12 }}>
+        <Tabs
+          style={{ background: "#2196f3", color: "white" }}
+          value={state.activeTabIndex}
+          onChange={onTabHandleChange}
           sx={{
-            boxShadow: 2,
-            p: 3,
-            bgcolor: "background.paper"
+            "& .MuiTabs-indicator": {
+              backgroundColor: "#fff"
+            }
           }}
         >
-          <Title title="Form Details" />
-          {this.state.dataLoaded ? form : <div>Loading</div>}
-          {this.state.redirectToWorkflow && redirectTo !== undefined && <Navigate to={`/appdesigner/${redirectTo.stateName}`} />}
-          {this.state.successAlert && (
-            <CustomizedSnackbar
-              message="Successfully updated the form"
-              getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
-              defaultSnackbarStatus={this.state.defaultSnackbarStatus}
-            />
+          <Tab
+            label="Details"
+            sx={{
+              color: "#fff",
+              "&.Mui-selected": {
+                color: "#fff"
+              }
+            }}
+          />
+          <Tab
+            label="Rules"
+            sx={{
+              color: "#fff",
+              "&.Mui-selected": {
+                color: "#fff"
+              }
+            }}
+          />
+        </Tabs>
+        <TabContainer hidden={state.activeTabIndex !== 0}>
+          <Grid container size={{ sm: 12 }}>
+            <Grid size={{ sm: 12 }}>
+              {state.errorMsg !== "" && (
+                <FormControl fullWidth margin="dense">
+                  <li style={{ color: "red" }}>{state.errorMsg}</li>
+                </FormControl>
+              )}
+            </Grid>
+          </Grid>
+          {state.formType === "IndividualProfile" && !_.isEmpty(getStaticFormElements(state.subjectType)) && (
+            <div style={{ marginBottom: 30 }}>
+              <StaticFormElementGroup
+                name={"First page questions (non editable)"}
+                formElements={getStaticFormElements(state.subjectType)}
+              />
+            </div>
           )}
-        </Box>
-      </FormDesignerContext.Provider>
-    );
-  }
-}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="all-columns" direction="vertical" type="row">
+              {provided => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
+                  {renderGroups()}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+          <SystemInfo {...state.form} direction={"row"} />
+        </TabContainer>
+        <div hidden={state.activeTabIndex !== 1}>
+          <FormLevelRules
+            form={state.form}
+            onRuleUpdate={onRuleUpdate}
+            onDeclarativeRuleUpdate={onDeclarativeRuleUpdate}
+            onDecisionConceptsUpdate={onDecisionConceptsUpdate}
+            onToggleExpandPanel={onToggleExpandPanel}
+            entityName={getEntityNameForRules()}
+            disabled={state.disableForm}
+            encounterTypes={state.encounterTypes}
+          />
+        </div>
+      </Grid>
+    </Grid>
+  );
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
+  const redirectTo = record?.stateName;
 
-export default connect(mapStateToProps)(FormDetails);
+  return (
+    <FormDesignerContext.Provider value={{ setState, state }}>
+      <Box sx={{ boxShadow: 2, p: 3, bgcolor: "background.paper" }}>
+        <Title title="Form Details" />
+        {state.dataLoaded ? form : <div>Loading</div>}
+        {state.redirectToWorkflow && redirectTo && <Navigate to={`/appdesigner/${redirectTo}`} />}
+        {state.successAlert && (
+          <CustomizedSnackbar
+            message="Successfully updated the form"
+            getDefaultSnackbarStatus={getDefaultSnackbarStatus}
+            defaultSnackbarStatus={state.defaultSnackbarStatus}
+          />
+        )}
+      </Box>
+    </FormDesignerContext.Provider>
+  );
+};
+
+export default FormDetails;

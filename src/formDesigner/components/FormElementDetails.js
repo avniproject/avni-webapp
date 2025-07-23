@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
-import _, { capitalize, get, includes, isNil, replace, toNumber, areEqual } from "lodash";
+import _, { capitalize, get, includes, isNil, replace, toNumber } from "lodash";
 import { useTranslation } from "react-i18next";
 import { AvniFormControl } from "../../common/components/AvniFormControl";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
@@ -32,10 +32,10 @@ import QuestionGroup from "./QuestionGroup";
 import DocumentationSearch from "../../documentation/components/DocumentationSearch";
 import { ColourStyle } from "./ColourStyle";
 import { Privilege } from "openchs-models";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 
-export const StyledFormControl = styled(MuiFormControl)({
+const StyledFormControl = styled(MuiFormControl)({
   paddingBottom: 10,
   width: "100%"
 });
@@ -108,14 +108,9 @@ const showPicker = (pickerType, props, disableFormElement) => {
   );
 };
 
-export const BackButton = ({ style, ...props }) => {
+export const BackButton = ({ style, handleConceptFormLibrary, groupIndex, elementIndex }) => {
   return (
-    <Button
-      size="small"
-      variant="outlined"
-      sx={style}
-      onClick={() => props.handleConceptFormLibrary(props.groupIndex, "", props.elementIndex, true)}
-    >
+    <Button size="small" variant="outlined" sx={style} onClick={() => handleConceptFormLibrary(groupIndex, "", elementIndex, true)}>
       Cancel
     </Button>
   );
@@ -123,40 +118,47 @@ export const BackButton = ({ style, ...props }) => {
 
 export const multiSelectFormElementConceptDataTypes = ["Coded", "Subject", "Image", "ImageV2", "Video", "File", "Encounter"];
 
-const FormElementDetails = ({ userInfo, ...props }) => {
+const FormElementDetails = ({
+  disableFormElement,
+  identifierSources,
+  groupSubjectTypes,
+  formElementData,
+  groupIndex,
+  index,
+  ignoreDataTypes,
+  ...rest
+}) => {
   const { t } = useTranslation();
-  const disableFormElement = props.disableFormElement;
-  const dataTypesToIgnore = props.ignoreDataTypes || [];
+  const userInfo = useSelector(state => state.app.userInfo);
+  const dataTypesToIgnore = ignoreDataTypes || [];
 
-  const onChangeAnswerName = (answerName, index, flag = true) => {
+  const onChangeAnswerName = (answerName, idx, flag = true) => {
     if (flag) {
-      props.handleGroupElementChange(props.groupIndex, "concept", answerName, props.index);
-      if (props.formElementData.name === "") {
-        props.handleGroupElementChange(props.groupIndex, "name", answerName.name, props.index);
+      rest.handleGroupElementChange(groupIndex, "concept", answerName, index);
+      if (formElementData.name === "") {
+        rest.handleGroupElementChange(groupIndex, "name", answerName.name, index);
       }
     } else {
-      props.updateConceptElementData(props.groupIndex, "name", answerName, props.index);
+      rest.updateConceptElementData(groupIndex, "name", answerName, index);
     }
   };
 
   const identifierSourceList = () =>
-    props.identifierSources.map(idSource => (
+    identifierSources.map(idSource => (
       <MenuItem key={idSource.value} value={idSource.value}>
         {idSource.label}
       </MenuItem>
     ));
 
   const groupSubjectTypeList = () =>
-    props.groupSubjectTypes.map(({ name, uuid }) => (
+    groupSubjectTypes.map(({ name, uuid }) => (
       <MenuItem key={uuid} value={uuid}>
         {name}
       </MenuItem>
     ));
 
   const groupRoleList = () => {
-    const selectedGroupSubjectType = props.groupSubjectTypes.find(
-      ({ uuid }) => uuid === props.formElementData.keyValues.groupSubjectTypeUUID
-    );
+    const selectedGroupSubjectType = groupSubjectTypes.find(({ uuid }) => uuid === formElementData.keyValues.groupSubjectTypeUUID);
     return (selectedGroupSubjectType?.groupRoles || []).map(({ role, uuid }) => (
       <MenuItem key={uuid} value={uuid}>
         {role}
@@ -171,9 +173,9 @@ const FormElementDetails = ({ userInfo, ...props }) => {
         key={duration}
         control={
           <Checkbox
-            checked={props.formElementData.keyValues.durationOptions?.includes(duration) || false}
+            checked={formElementData.keyValues.durationOptions?.includes(duration) || false}
             value={duration}
-            onChange={event => props.handleGroupElementKeyValueChange(props.groupIndex, duration, event.target.value, props.index)}
+            onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, duration, event.target.value, index)}
           />
         }
         label={capitalize(duration)}
@@ -184,14 +186,14 @@ const FormElementDetails = ({ userInfo, ...props }) => {
   return (
     <Fragment>
       <Grid container sm={12}>
-        {props.formElementData.errorMessage?.name && <StyledErrorText>Please enter name</StyledErrorText>}
-        {props.formElementData.errorMessage?.ruleError && <StyledErrorText>Please check the rule validation errors</StyledErrorText>}
+        {formElementData.errorMessage?.name && <StyledErrorText>Please enter name</StyledErrorText>}
+        {formElementData.errorMessage?.ruleError && <StyledErrorText>Please check the rule validation errors</StyledErrorText>}
         <StyledFormControl>
           <AvniFormLabel label={t("Question")} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"} />
           <Input
             id="elementNameDetails"
-            value={props.formElementData.name}
-            onChange={event => props.handleGroupElementChange(props.groupIndex, "name", replace(event.target.value, "|", ""), props.index)}
+            value={formElementData.name}
+            onChange={event => rest.handleGroupElementChange(groupIndex, "name", replace(event.target.value, "|", ""), index)}
             disabled={disableFormElement}
           />
         </StyledFormControl>
@@ -199,12 +201,12 @@ const FormElementDetails = ({ userInfo, ...props }) => {
           <StyledHeader>
             <StyledHeaderText>CONCEPT</StyledHeaderText>
           </StyledHeader>
-          {props.formElementData.showConceptLibrary === "" && (
+          {formElementData.showConceptLibrary === "" && (
             <StyledContainer>
               <Button
                 color="primary"
                 type="button"
-                onClick={() => props.handleConceptFormLibrary(props.groupIndex, "chooseFromLibrary", props.index)}
+                onClick={() => rest.handleConceptFormLibrary(groupIndex, "chooseFromLibrary", index)}
                 disabled={disableFormElement}
               >
                 Select from library
@@ -216,7 +218,7 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                 <Button
                   color="primary"
                   type="button"
-                  onClick={() => props.handleConceptFormLibrary(props.groupIndex, "addNewConcept", props.index)}
+                  onClick={() => rest.handleConceptFormLibrary(groupIndex, "addNewConcept", index)}
                   disabled={disableFormElement}
                 >
                   Create new
@@ -224,41 +226,41 @@ const FormElementDetails = ({ userInfo, ...props }) => {
               )}
             </StyledContainer>
           )}
-          {props.formElementData.showConceptLibrary === "addNewConcept" && (
+          {formElementData.showConceptLibrary === "addNewConcept" && (
             <StyledContainer>
               <InlineConcept
-                onSaveInlineConcept={props.onSaveInlineConcept}
-                formElementData={props.formElementData}
-                index={props.index}
-                groupIndex={props.groupIndex}
-                handleGroupElementChange={props.handleGroupElementChange}
-                handleInlineNumericAttributes={props.handleInlineNumericAttributes}
-                handleInlineCodedConceptAnswers={props.handleInlineCodedConceptAnswers}
-                onToggleInlineConceptCodedAnswerAttribute={props.onToggleInlineConceptCodedAnswerAttribute}
-                onDeleteInlineConceptCodedAnswerDelete={props.onDeleteInlineConceptCodedAnswerDelete}
-                onMoveUp={props.onMoveUp}
-                onMoveDown={props.onMoveDown}
-                onAlphabeticalSort={props.onAlphabeticalSort}
-                handleInlineCodedAnswerAddition={props.handleInlineCodedAnswerAddition}
-                handleInlineLocationAttributes={props.handleInlineLocationAttributes}
-                handleInlineSubjectAttributes={props.handleInlineSubjectAttributes}
-                handleInlineEncounterAttributes={props.handleInlineEncounterAttributes}
-                handleInlinePhoneNumberAttributes={props.handleInlinePhoneNumberAttributes}
-                handleConceptFormLibrary={props.handleConceptFormLibrary}
+                onSaveInlineConcept={rest.onSaveInlineConcept}
+                formElementData={formElementData}
+                index={index}
+                groupIndex={groupIndex}
+                handleGroupElementChange={rest.handleGroupElementChange}
+                handleInlineNumericAttributes={rest.handleInlineNumericAttributes}
+                handleInlineCodedConceptAnswers={rest.handleInlineCodedConceptAnswers}
+                onToggleInlineConceptCodedAnswerAttribute={rest.onToggleInlineConceptCodedAnswerAttribute}
+                onDeleteInlineConceptCodedAnswerDelete={rest.onDeleteInlineConceptCodedAnswerDelete}
+                onMoveUp={rest.onMoveUp}
+                onMoveDown={rest.onMoveDown}
+                onAlphabeticalSort={rest.onAlphabeticalSort}
+                handleInlineCodedAnswerAddition={rest.handleInlineCodedAnswerAddition}
+                handleInlineLocationAttributes={rest.handleInlineLocationAttributes}
+                handleInlineSubjectAttributes={rest.handleInlineSubjectAttributes}
+                handleInlineEncounterAttributes={rest.handleInlineEncounterAttributes}
+                handleInlinePhoneNumberAttributes={rest.handleInlinePhoneNumberAttributes}
+                handleConceptFormLibrary={rest.handleConceptFormLibrary}
                 dataTypesToIgnore={dataTypesToIgnore}
-                onSelectAnswerMedia={props.onSelectAnswerMedia}
+                onSelectAnswerMedia={rest.onSelectAnswerMedia}
               />
             </StyledContainer>
           )}
-          {props.formElementData.showConceptLibrary === "chooseFromLibrary" && (
+          {formElementData.showConceptLibrary === "chooseFromLibrary" && (
             <StyledContainer>
               <Grid sm={12}>
-                {props.formElementData.errorMessage?.concept && <StyledErrorText>Please enter concept</StyledErrorText>}
+                {formElementData.errorMessage?.concept && <StyledErrorText>Please enter concept</StyledErrorText>}
                 <StyledFormControl>
-                  {props.formElementData.newFlag ? (
+                  {formElementData.newFlag ? (
                     <AutoSuggestSingleSelection
-                      visibility={!props.formElementData.newFlag}
-                      showAnswer={props.formElementData.concept}
+                      visibility={!formElementData.newFlag}
+                      showAnswer={formElementData.concept}
                       onChangeAnswerName={onChangeAnswerName}
                       finalReturn={true}
                       index={0}
@@ -269,25 +271,25 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                     <>
                       <StyledFormLabel>Concept*</StyledFormLabel>
                       {disableFormElement ? (
-                        props.formElementData.concept.name
+                        formElementData.concept.name
                       ) : (
-                        <StyledLink href={`#/appDesigner/concept/${props.formElementData.concept.uuid}/show`}>
-                          {props.formElementData.concept.name}
+                        <StyledLink href={`#/appDesigner/concept/${formElementData.concept.uuid}/show`}>
+                          {formElementData.concept.name}
                         </StyledLink>
                       )}
                     </>
                   )}
                 </StyledFormControl>
               </Grid>
-              {props.formElementData.concept.dataType !== "Coded" && <Grid sm={6} />}
-              {props.formElementData.concept.dataType === "Numeric" && (
+              {formElementData.concept.dataType !== "Coded" && <Grid sm={6} />}
+              {formElementData.concept.dataType === "Numeric" && (
                 <Grid container sm={12}>
                   <Grid sm={2}>
                     <StyledFormControl>
                       <AvniFormLabel label={"Low Absolute"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_ABSOLUTE"} />
                       <Input
                         disableUnderline
-                        value={isNil(props.formElementData.concept.lowAbsolute) ? "N.A" : props.formElementData.concept.lowAbsolute}
+                        value={isNil(formElementData.concept.lowAbsolute) ? "N.A" : formElementData.concept.lowAbsolute}
                         disabled
                       />
                     </StyledFormControl>
@@ -297,7 +299,7 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                       <AvniFormLabel label={"High Absolute"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_ABSOLUTE"} />
                       <Input
                         disableUnderline
-                        value={isNil(props.formElementData.concept.highAbsolute) ? "N.A" : props.formElementData.concept.highAbsolute}
+                        value={isNil(formElementData.concept.highAbsolute) ? "N.A" : formElementData.concept.highAbsolute}
                         disabled
                       />
                     </StyledFormControl>
@@ -307,7 +309,7 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                       <AvniFormLabel label={"Low normal"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_NORMAL"} />
                       <Input
                         disableUnderline
-                        value={isNil(props.formElementData.concept.lowNormal) ? "N.A" : props.formElementData.concept.lowNormal}
+                        value={isNil(formElementData.concept.lowNormal) ? "N.A" : formElementData.concept.lowNormal}
                         disabled
                       />
                     </StyledFormControl>
@@ -317,7 +319,7 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                       <AvniFormLabel label={"High normal"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_NORMAL"} />
                       <Input
                         disableUnderline
-                        value={isNil(props.formElementData.concept.highNormal) ? "N.A" : props.formElementData.concept.highNormal}
+                        value={isNil(formElementData.concept.highNormal) ? "N.A" : formElementData.concept.highNormal}
                         disabled
                       />
                     </StyledFormControl>
@@ -325,20 +327,16 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                   <Grid sm={2}>
                     <StyledFormControl>
                       <AvniFormLabel label={"Unit"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIT"} />
-                      <Input
-                        disableUnderline
-                        value={isNil(props.formElementData.concept.unit) ? "N.A" : props.formElementData.concept.unit}
-                        disabled
-                      />
+                      <Input disableUnderline value={isNil(formElementData.concept.unit) ? "N.A" : formElementData.concept.unit} disabled />
                     </StyledFormControl>
                   </Grid>
                 </Grid>
               )}
-              {props.formElementData.concept.dataType === "Coded" && (
+              {formElementData.concept.dataType === "Coded" && (
                 <Grid container sm={12}>
                   <StyledChipContainer>
                     <InputLabel>Answers:</InputLabel>
-                    {_.orderBy(props.formElementData.concept.answers, "order").map(d =>
+                    {_.orderBy(formElementData.concept.answers, "order").map(d =>
                       !d.excluded && !d.voided ? (
                         <Chip
                           key={d.name}
@@ -351,41 +349,35 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                               </StyledLink>
                             )
                           }
-                          onDelete={() =>
-                            disableFormElement ? _.noop() : props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
-                          }
+                          onDelete={() => (disableFormElement ? _.noop() : rest.handleExcludedAnswers(d.name, true, groupIndex, index))}
                         />
                       ) : null
                     )}
                   </StyledChipContainer>
                 </Grid>
               )}
-              {props.formElementData.newFlag && (
-                <BackButton
-                  handleConceptFormLibrary={props.handleConceptFormLibrary}
-                  groupIndex={props.groupIndex}
-                  elementIndex={props.index}
-                />
+              {formElementData.newFlag && (
+                <BackButton handleConceptFormLibrary={rest.handleConceptFormLibrary} groupIndex={groupIndex} elementIndex={index} />
               )}
             </StyledContainer>
           )}
         </StyledPaper>
-        {includes(multiSelectFormElementConceptDataTypes, props.formElementData.concept.dataType) && (
+        {includes(multiSelectFormElementConceptDataTypes, formElementData.concept.dataType) && (
           <Grid sm={6}>
-            {props.formElementData.errorMessage?.type && <StyledErrorText>Please select type</StyledErrorText>}
+            {formElementData.errorMessage?.type && <StyledErrorText>Please select type</StyledErrorText>}
             <StyledFormControl disabled={disableFormElement}>
               <AvniFormLabel label={"Type"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_CODED_TYPE"} />
               <Select
                 name="type"
-                value={props.formElementData.type}
-                onChange={event => props.handleGroupElementChange(props.groupIndex, "type", event.target.value, props.index)}
+                value={formElementData.type}
+                onChange={event => rest.handleGroupElementChange(groupIndex, "type", event.target.value, index)}
                 required
               >
                 <MenuItem value="SingleSelect">SingleSelect</MenuItem>
                 <MenuItem value="MultiSelect">MultiSelect</MenuItem>
               </Select>
             </StyledFormControl>
-            {props.formElementData.errorMessage?.disallowedChangeError && (
+            {formElementData.errorMessage?.disallowedChangeError && (
               <StyledErrorText sx={{ fontSize: "smaller" }}>
                 Changing type is not allowed. Please replace this question with a new one, associate it with a different concept and set the
                 required type.
@@ -398,15 +390,15 @@ const FormElementDetails = ({ userInfo, ...props }) => {
         <StyledFormControl>
           <AvniFormLabel label={t("Documentation")} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DOCUMENTATION"} />
           <DocumentationSearch
-            value={props.formElementData.documentation}
-            onChange={documentation => props.handleGroupElementChange(props.groupIndex, "documentation", documentation, props.index)}
+            value={formElementData.documentation}
+            onChange={documentation => rest.handleGroupElementChange(groupIndex, "documentation", documentation, index)}
           />
         </StyledFormControl>
-        {props.formElementData.concept.dataType === "Coded" && (
+        {formElementData.concept.dataType === "Coded" && (
           <Grid container sm={12}>
             <StyledChipContainer>
               <InputLabel>Excluded Answers:</InputLabel>
-              {props.formElementData.concept.answers.map(d =>
+              {formElementData.concept.answers.map(d =>
                 d.excluded && !d.voided ? (
                   <Chip
                     key={d.name}
@@ -419,16 +411,14 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                         </StyledLink>
                       )
                     }
-                    onDelete={() =>
-                      disableFormElement ? _.noop() : props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
-                    }
+                    onDelete={() => (disableFormElement ? _.noop() : rest.handleExcludedAnswers(d.name, false, groupIndex, index))}
                   />
                 ) : null
               )}
             </StyledChipContainer>
           </Grid>
         )}
-        {props.formElementData.concept.dataType === "Video" && (
+        {formElementData.concept.dataType === "Video" && (
           <Grid container sm={12}>
             <Grid sm={4}>
               <TextField
@@ -436,15 +426,13 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                 name="durationLimitInSecs"
                 label="Duration limit(seconds)"
                 placeholder="60"
-                value={props.formElementData.keyValues.durationLimitInSecs}
-                onChange={event =>
-                  props.handleGroupElementKeyValueChange(props.groupIndex, "durationLimitInSecs", event.target.value, props.index)
-                }
+                value={formElementData.keyValues.durationLimitInSecs}
+                onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "durationLimitInSecs", event.target.value, index)}
                 margin="normal"
                 inputProps={{ min: 0 }}
                 disabled={disableFormElement}
               />
-              {props.formElementData.errorMessage?.durationLimitInSecs && <StyledErrorText>Please enter positive number</StyledErrorText>}
+              {formElementData.errorMessage?.durationLimitInSecs && <StyledErrorText>Please enter positive number</StyledErrorText>}
             </Grid>
             <Grid sm={1} />
             <Grid sm={3}>
@@ -452,10 +440,8 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                 <AvniFormLabel label={"Video Quality"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VIDEO_QUALITY"} />
                 <Select
                   name="videoQuality"
-                  value={props.formElementData.keyValues.videoQuality ?? "high"}
-                  onChange={event =>
-                    props.handleGroupElementKeyValueChange(props.groupIndex, "videoQuality", event.target.value, props.index)
-                  }
+                  value={formElementData.keyValues.videoQuality ?? "high"}
+                  onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "videoQuality", event.target.value, index)}
                 >
                   <MenuItem value="low">Low</MenuItem>
                   <MenuItem value="high">High</MenuItem>
@@ -464,15 +450,15 @@ const FormElementDetails = ({ userInfo, ...props }) => {
             </Grid>
           </Grid>
         )}
-        {props.formElementData.concept.dataType === "File" && (
+        {formElementData.concept.dataType === "File" && (
           <FileOptions
-            keyValues={props.formElementData.keyValues}
-            handleChange={props.handleGroupElementKeyValueChange}
-            groupIndex={props.groupIndex}
-            index={props.index}
+            keyValues={formElementData.keyValues}
+            handleChange={rest.handleGroupElementKeyValueChange}
+            groupIndex={groupIndex}
+            index={index}
           />
         )}
-        {(props.formElementData.concept.dataType === "Image" || props.formElementData.concept.dataType === "ImageV2") && (
+        {(formElementData.concept.dataType === "Image" || formElementData.concept.dataType === "ImageV2") && (
           <Grid container sm={12}>
             <Grid sm={3}>
               <TextField
@@ -480,15 +466,13 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                 type="number"
                 label="Max Height"
                 placeholder="960"
-                value={props.formElementData.keyValues.maxHeight}
-                onChange={event =>
-                  props.handleGroupElementKeyValueChange(props.groupIndex, "maxHeight", toNumber(event.target.value), props.index)
-                }
+                value={formElementData.keyValues.maxHeight}
+                onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "maxHeight", toNumber(event.target.value), index)}
                 margin="normal"
                 inputProps={{ min: 0 }}
                 disabled={disableFormElement}
               />
-              {props.formElementData.errorMessage?.maxHeight && <StyledErrorText>Please enter positive number</StyledErrorText>}
+              {formElementData.errorMessage?.maxHeight && <StyledErrorText>Please enter positive number</StyledErrorText>}
             </Grid>
             <Grid sm={1} />
             <Grid sm={3}>
@@ -497,15 +481,13 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                 name="maxWidth"
                 label="Max Width"
                 placeholder="1280"
-                value={props.formElementData.keyValues.maxWidth}
-                onChange={event =>
-                  props.handleGroupElementKeyValueChange(props.groupIndex, "maxWidth", toNumber(event.target.value), props.index)
-                }
+                value={formElementData.keyValues.maxWidth}
+                onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "maxWidth", toNumber(event.target.value), index)}
                 margin="normal"
                 inputProps={{ min: 0 }}
                 disabled={disableFormElement}
               />
-              {props.formElementData.errorMessage?.maxWidth && <StyledErrorText>Please enter positive number</StyledErrorText>}
+              {formElementData.errorMessage?.maxWidth && <StyledErrorText>Please enter positive number</StyledErrorText>}
             </Grid>
             <Grid sm={1} />
             <Grid sm={3}>
@@ -513,10 +495,8 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                 <AvniFormLabel label={"Image Quality"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IMAGE_QUALITY"} />
                 <Select
                   name="imageQuality"
-                  value={props.formElementData.keyValues.imageQuality ?? 1}
-                  onChange={event =>
-                    props.handleGroupElementKeyValueChange(props.groupIndex, "imageQuality", toNumber(event.target.value), props.index)
-                  }
+                  value={formElementData.keyValues.imageQuality ?? 1}
+                  onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "imageQuality", toNumber(event.target.value), index)}
                 >
                   <MenuItem value="0.5">Low</MenuItem>
                   <MenuItem value="1">High</MenuItem>
@@ -525,11 +505,16 @@ const FormElementDetails = ({ userInfo, ...props }) => {
             </Grid>
           </Grid>
         )}
-        {props.formElementData.concept.dataType === "Date" && showPicker("date", props, disableFormElement)}
-        {props.formElementData.errorMessage?.durationOptions && (
+        {formElementData.concept.dataType === "Date" &&
+          showPicker(
+            "date",
+            { formElementData, handleGroupElementKeyValueChange: rest.handleGroupElementKeyValueChange, groupIndex, index },
+            disableFormElement
+          )}
+        {formElementData.errorMessage?.durationOptions && (
           <StyledErrorText sx={{ fontSize: "13px" }}>Duration options must be selected.</StyledErrorText>
         )}
-        {["Date", "Duration"].includes(props.formElementData.concept.dataType) && (
+        {["Date", "Duration"].includes(formElementData.concept.dataType) && (
           <Grid container sm={12}>
             <AvniFormLabel
               label={"Duration Options"}
@@ -541,51 +526,54 @@ const FormElementDetails = ({ userInfo, ...props }) => {
             </StyledFormControl>
           </Grid>
         )}
-        {props.formElementData.concept.dataType === "DateTime" && showPicker("date", props, disableFormElement)}
-        {props.formElementData.concept.dataType === "Time" && showPicker("time", props, disableFormElement)}
+        {formElementData.concept.dataType === "DateTime" &&
+          showPicker(
+            "date",
+            { formElementData, handleGroupElementKeyValueChange: rest.handleGroupElementKeyValueChange, groupIndex, index },
+            disableFormElement
+          )}
+        {formElementData.concept.dataType === "Time" &&
+          showPicker(
+            "time",
+            { formElementData, handleGroupElementKeyValueChange: rest.handleGroupElementKeyValueChange, groupIndex, index },
+            disableFormElement
+          )}
         <Stack spacing={4} alignItems="center" flexWrap="wrap">
-          {["Text"].includes(props.formElementData.concept.dataType) && (
+          {["Text"].includes(formElementData.concept.dataType) && (
             <Grid sm={12}>
-              {props.formElementData.errorMessage?.validFormat && (
+              {formElementData.errorMessage?.validFormat && (
                 <StyledErrorText>Validation Regex and description key both must be empty or both must be filled</StyledErrorText>
               )}
               <StyledFormControl disabled={disableFormElement}>
                 <AvniFormLabel label={"Validation Regex"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_REGEX"} />
                 <Input
                   id="validFormatRegex"
-                  value={get(props.formElementData, "validFormat.regex", "")}
-                  onChange={event => props.handleGroupElementKeyValueChange(props.groupIndex, "regex", event.target.value, props.index)}
+                  value={get(formElementData, "validFormat.regex", "")}
+                  onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "regex", event.target.value, index)}
                 />
               </StyledFormControl>
               <StyledFormControl disabled={disableFormElement}>
                 <AvniFormLabel label={"Validation Description Key"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_DESCRIPTION_KEY"} />
                 <Input
                   id="validFormatDescriptionKey"
-                  value={get(props.formElementData, "validFormat.descriptionKey", "")}
-                  onChange={event =>
-                    props.handleGroupElementKeyValueChange(props.groupIndex, "descriptionKey", event.target.value, props.index)
-                  }
+                  value={get(formElementData, "validFormat.descriptionKey", "")}
+                  onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "descriptionKey", event.target.value, index)}
                 />
               </StyledFormControl>
             </Grid>
           )}
           <Grid container sm={12}>
-            {props.formElementData.concept.dataType !== "QuestionGroup" && (
+            {formElementData.concept.dataType !== "QuestionGroup" && (
               <Grid sm={4}>
                 <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"} disabled={disableFormElement}>
                   <FormControlLabel
                     control={
                       <Checkbox
                         id="mandatoryDetails"
-                        checked={!!props.formElementData.mandatory}
-                        value={props.formElementData.mandatory ? "yes" : "no"}
+                        checked={!!formElementData.mandatory}
+                        value={formElementData.mandatory ? "yes" : "no"}
                         onChange={event =>
-                          props.handleGroupElementChange(
-                            props.groupIndex,
-                            "mandatory",
-                            event.target.value === "yes" ? false : true,
-                            props.index
-                          )
+                          rest.handleGroupElementChange(groupIndex, "mandatory", event.target.value === "yes" ? false : true, index)
                         }
                       />
                     }
@@ -594,22 +582,21 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                 </AvniFormControl>
               </Grid>
             )}
-            {props.formElementData.concept.dataType === "Subject" && <SubjectFormElementKeyValues {...props} />}
+            {formElementData.concept.dataType === "Subject" && (
+              <SubjectFormElementKeyValues
+                {...{ disableFormElement, identifierSources, groupSubjectTypes, formElementData, groupIndex, index, ...rest }}
+              />
+            )}
             <Grid sm={4}>
-              {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(props.formElementData.concept.dataType) && (
+              {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(formElementData.concept.dataType) && (
                 <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"} disabled={disableFormElement}>
                   <FormControlLabel
                     control={
                       <Checkbox
                         id="editable"
-                        checked={props.formElementData.keyValues.editable ?? false}
+                        checked={formElementData.keyValues.editable ?? false}
                         onChange={event =>
-                          props.handleGroupElementKeyValueChange(
-                            props.groupIndex,
-                            "editable",
-                            !props.formElementData.keyValues.editable,
-                            props.index
-                          )
+                          rest.handleGroupElementKeyValueChange(groupIndex, "editable", !formElementData.keyValues.editable, index)
                         }
                       />
                     }
@@ -618,17 +605,15 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                 </AvniFormControl>
               )}
             </Grid>
-            {["Numeric", "Text", "PhoneNumber"].includes(props.formElementData.concept.dataType) && (
+            {["Numeric", "Text", "PhoneNumber"].includes(formElementData.concept.dataType) && (
               <Grid sm={4}>
                 <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"} disabled={disableFormElement}>
                   <FormControlLabel
                     control={
                       <Checkbox
                         id="unique"
-                        checked={!!props.formElementData.keyValues.unique}
-                        onChange={event =>
-                          props.handleGroupElementKeyValueChange(props.groupIndex, "unique", event.target.checked, props.index)
-                        }
+                        checked={!!formElementData.keyValues.unique}
+                        onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "unique", event.target.checked, index)}
                       />
                     }
                     label="Unique"
@@ -638,16 +623,14 @@ const FormElementDetails = ({ userInfo, ...props }) => {
             )}
           </Grid>
         </Stack>
-        {props.formElementData.concept.dataType === "Id" && (
+        {formElementData.concept.dataType === "Id" && (
           <Grid sm={6}>
             <StyledFormControl disabled={disableFormElement}>
               <AvniFormLabel label={"Identifier Source"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IDENTIFIER_SOURCE"} />
               <Select
                 name="identifierSource"
-                value={props.formElementData.keyValues.IdSourceUUID}
-                onChange={event =>
-                  props.handleGroupElementKeyValueChange(props.groupIndex, "IdSourceUUID", event.target.value, props.index)
-                }
+                value={formElementData.keyValues.IdSourceUUID}
+                onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "IdSourceUUID", event.target.value, index)}
                 required
               >
                 {identifierSourceList()}
@@ -655,17 +638,15 @@ const FormElementDetails = ({ userInfo, ...props }) => {
             </StyledFormControl>
           </Grid>
         )}
-        {props.formElementData.concept.dataType === "GroupAffiliation" && (
+        {formElementData.concept.dataType === "GroupAffiliation" && (
           <Grid container spacing={5}>
             <Grid sm={6}>
               <StyledFormControl disabled={disableFormElement}>
                 <AvniFormLabel label={"Group Subject Type"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE"} />
                 <Select
                   name="groupSubjectType"
-                  value={props.formElementData.keyValues.groupSubjectTypeUUID}
-                  onChange={event =>
-                    props.handleGroupElementKeyValueChange(props.groupIndex, "groupSubjectTypeUUID", event.target.value, props.index)
-                  }
+                  value={formElementData.keyValues.groupSubjectTypeUUID}
+                  onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "groupSubjectTypeUUID", event.target.value, index)}
                   required
                 >
                   {groupSubjectTypeList()}
@@ -673,15 +654,13 @@ const FormElementDetails = ({ userInfo, ...props }) => {
               </StyledFormControl>
             </Grid>
             <Grid sm={6}>
-              {props.formElementData.keyValues.groupSubjectTypeUUID && (
+              {formElementData.keyValues.groupSubjectTypeUUID && (
                 <StyledFormControl disabled={disableFormElement}>
                   <AvniFormLabel label={"Group Role"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_ROLE"} />
                   <Select
                     name="groupSubjectRole"
-                    value={props.formElementData.keyValues.groupSubjectRoleUUID}
-                    onChange={event =>
-                      props.handleGroupElementKeyValueChange(props.groupIndex, "groupSubjectRoleUUID", event.target.value, props.index)
-                    }
+                    value={formElementData.keyValues.groupSubjectRoleUUID}
+                    onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "groupSubjectRoleUUID", event.target.value, index)}
                     required
                   >
                     {groupRoleList()}
@@ -692,9 +671,12 @@ const FormElementDetails = ({ userInfo, ...props }) => {
           </Grid>
         )}
       </Grid>
-      {props.formElementData.concept.dataType === "QuestionGroup" && (
+      {formElementData.concept.dataType === "QuestionGroup" && (
         <Fragment>
-          <QuestionGroup parentFormElementUUID={props.formElementData.uuid} {...props} />
+          <QuestionGroup
+            parentFormElementUUID={formElementData.uuid}
+            {...{ disableFormElement, identifierSources, groupSubjectTypes, formElementData, groupIndex, index, ...rest }}
+          />
           <Grid container direction="row" spacing={2}>
             <Grid>
               <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_REPEATABLE"}>
@@ -702,10 +684,8 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                   control={
                     <Checkbox
                       id="repeatable"
-                      checked={!!props.formElementData.keyValues.repeatable}
-                      onChange={event =>
-                        props.handleGroupElementKeyValueChange(props.groupIndex, "repeatable", event.target.checked, props.index)
-                      }
+                      checked={!!formElementData.keyValues.repeatable}
+                      onChange={event => rest.handleGroupElementKeyValueChange(groupIndex, "repeatable", event.target.checked, index)}
                     />
                   }
                   label="Repeatable"
@@ -718,9 +698,9 @@ const FormElementDetails = ({ userInfo, ...props }) => {
                   control={
                     <Checkbox
                       id="disableManualActions"
-                      checked={!!props.formElementData.keyValues.disableManualActions}
+                      checked={!!formElementData.keyValues.disableManualActions}
                       onChange={event =>
-                        props.handleGroupElementKeyValueChange(props.groupIndex, "disableManualActions", event.target.checked, props.index)
+                        rest.handleGroupElementKeyValueChange(groupIndex, "disableManualActions", event.target.checked, index)
                       }
                     />
                   }
@@ -731,21 +711,21 @@ const FormElementDetails = ({ userInfo, ...props }) => {
             <Grid>
               <ColourStyle
                 label={"Text colour"}
-                colour={props.formElementData.keyValues.textColour}
-                onChange={colour => props.handleGroupElementKeyValueChange(props.groupIndex, "textColour", colour, props.index)}
+                colour={formElementData.keyValues.textColour}
+                onChange={colour => rest.handleGroupElementKeyValueChange(groupIndex, "textColour", colour, index)}
                 toolTipKey={"APP_DESIGNER_GROUP_TEXT_COLOUR"}
               />
             </Grid>
             <Grid>
               <ColourStyle
                 label={"Background colour"}
-                colour={props.formElementData.keyValues.backgroundColour}
-                onChange={colour => props.handleGroupElementKeyValueChange(props.groupIndex, "backgroundColour", colour, props.index)}
+                colour={formElementData.keyValues.backgroundColour}
+                onChange={colour => rest.handleGroupElementKeyValueChange(groupIndex, "backgroundColour", colour, index)}
                 toolTipKey={"APP_DESIGNER_GROUP_BACKGROUND_COLOUR"}
               />
             </Grid>
             <Grid>
-              {props.formElementData.errorMessage?.disallowedChangeError && (
+              {formElementData.errorMessage?.disallowedChangeError && (
                 <StyledErrorText sx={{ fontSize: "smaller" }}>
                   Changing repeatability is not allowed. Please replace this question with a new one, associate it with a different concept
                   and set the required repeatability.
@@ -761,8 +741,4 @@ const FormElementDetails = ({ userInfo, ...props }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default memo(connect(mapStateToProps)(FormElementDetails), areEqual);
+export default memo(FormElementDetails);

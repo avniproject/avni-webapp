@@ -15,7 +15,7 @@ export const ValidFormat = ({
 }) => {
   return (
     <Grid container spacing={5}>
-      <Grid item xs={12} md={6}>
+      <Grid xs={12} md={6}>
         <AvniFormLabel label={regexLabel} toolTipKey={regexToolTipKey} />
         <Input
           fullWidth
@@ -24,7 +24,7 @@ export const ValidFormat = ({
           onChange={event => dispatch({ type: regexID, payload: event.target.value })}
         />
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid xs={12} md={6}>
         <AvniFormLabel label={descKeyLabel} toolTipKey={descToolTipKey} />
         <Input
           fullWidth

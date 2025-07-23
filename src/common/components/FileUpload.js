@@ -31,13 +31,13 @@ const FileUpload = ({ onSelect, onUpload, canSelect, canUpload }) => {
 
   return (
     <Grid container spacing={2} alignItems="center">
-      <Grid item>
+      <Grid>
         <StyledButton variant="contained" component="label" disabled={!canSelect}>
           Choose File
           <StyledInput type="file" onChange={onSelectWrapper} onClick={handleClick} />
         </StyledButton>
       </Grid>
-      <Grid item>
+      <Grid>
         <StyledButton variant="contained" color="primary" aria-haspopup="false" onClick={onUploadWrapper} disabled={!canUpload}>
           Upload
         </StyledButton>

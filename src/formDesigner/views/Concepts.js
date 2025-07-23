@@ -127,7 +127,7 @@ const Concepts = () => {
       <Title title="Concepts" color="primary" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
-          <Grid item>
+          <Grid>
             <CreateComponent onSubmit={() => setRedirect(true)} name="New Concept" />
           </Grid>
         )}

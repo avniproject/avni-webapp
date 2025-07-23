@@ -59,7 +59,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
     <StyledAccordion TransitionProps={{ mountOnEnter: false, unmountOnExit: false }} expanded={false}>
       <StyledAccordionSummary aria-controls={`${panel}bh-content`} id={`${panel}bh-header`}>
         <Grid container alignItems="center" wrap="nowrap" sx={{ width: "100%" }}>
-          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
+          <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "20%" }}>
             <StyledIconContainer>
               {["Date", "Numeric", "Text"].includes(dataType) && <Tooltip title={dataType}>{dataTypeIcons[dataType]}</Tooltip>}
               {dataType === "Coded" && (
@@ -68,7 +68,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
             </StyledIconContainer>
           </Grid>
 
-          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "65%" }}>
+          <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "65%" }}>
             <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
               <StyledInputLabel name={`name${panel}`} required>
                 {name || ""}
@@ -76,7 +76,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
             </StyledTypography>
           </Grid>
 
-          <Grid item sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%", justifyContent: "flex-end" }}>
+          <Grid sx={{ display: "flex", alignItems: "center", gap: theme.spacing(0.5), flexBasis: "15%", justifyContent: "flex-end" }}>
             <ToolTip title="APP_DESIGNER_FORM_ELEMENT_NAME" displayPosition="top" />
           </Grid>
         </Grid>

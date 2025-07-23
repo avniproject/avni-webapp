@@ -261,7 +261,7 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
 
       {selectedSearchFilter && (
         <Stack>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <BasicForm
               searchFilterForms={selectedSearchFilter}
               onChange={searchFilterValue}
@@ -274,7 +274,7 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <NonCodedConceptForm
               searchFilterForms={selectedSearchFilter}
               onChange={(e, f, k) => searchFilterConcept(e, f, k, setSelectedConcept)}
@@ -282,11 +282,11 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <NonConceptForm searchFilterForms={selectedSearchFilter} selectedDate={selectedDate} onDateChange={searchFilterDates} />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <CodedConceptForm
               searchFilterForms={selectedSearchFilter}
               conceptList={organisationConfigs.conceptList}
@@ -296,14 +296,14 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
           </Grid>
 
           <Grid container spacing={3} direction="row">
-            <Grid item>
+            <Grid>
               <CheckBoxSearchComponent
                 label="Include Voided"
                 checked={includeVoided}
                 onChange={e => onChecked("includeVoided", e.target.checked)}
               />
             </Grid>
-            <Grid item>
+            <Grid>
               <CheckBoxSearchComponent
                 label="Display Count"
                 checked={includeDisplayCount}

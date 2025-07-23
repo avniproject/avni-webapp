@@ -5,7 +5,7 @@ import { format, isValid } from "date-fns";
 import { defaultTo, isEmpty, isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
 import { selectFormMappingForCancelEncounter, selectFormMappingForEncounter } from "../../../sagas/encounterSelector";
 import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
@@ -72,15 +72,15 @@ const truncate = input => {
   else return input;
 };
 
-const CompletedEncounter = ({
-  index,
-  encounter,
-  subjectTypeUuid,
-  encounterFormMapping,
-  cancelEncounterFormMapping,
-  voidGeneralEncounter
-}) => {
+const CompletedEncounter = ({ index, encounter, subjectTypeUuid }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  const encounterFormMapping = useSelector(state => selectFormMappingForEncounter(encounter.encounterType.uuid, subjectTypeUuid)(state));
+  const cancelEncounterFormMapping = useSelector(state =>
+    selectFormMappingForCancelEncounter(encounter.encounterType.uuid, subjectTypeUuid)(state)
+  );
+
   const encounterId = isEmpty(encounter.earliestVisitDateTime)
     ? encounter.encounterType.name.replaceAll(" ", "-")
     : encounter.name.replaceAll(" ", "-");
@@ -95,6 +95,10 @@ const CompletedEncounter = ({
     visitUrl = `/app/subject/viewEncounter?uuid=${encounter.uuid}`;
   }
   const [voidConfirmation, setVoidConfirmation] = useState(false);
+
+  const handleVoidEncounter = () => {
+    dispatch(voidGeneralEncounter(encounter.uuid));
+  };
 
   return (
     <StyledGrid
@@ -155,23 +159,11 @@ const CompletedEncounter = ({
           open={voidConfirmation}
           setOpen={setVoidConfirmation}
           message={t("GeneralEncounterVoidAlertMessage")}
-          onConfirm={() => voidGeneralEncounter(encounter.uuid)}
+          onConfirm={handleVoidEncounter}
         />
       </StyledPaper>
     </StyledGrid>
   );
 };
 
-const mapStateToProps = (state, props) => ({
-  encounterFormMapping: selectFormMappingForEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state),
-  cancelEncounterFormMapping: selectFormMappingForCancelEncounter(props.encounter.encounterType.uuid, props.subjectTypeUuid)(state)
-});
-
-const mapDispatchToProps = {
-  voidGeneralEncounter
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(CompletedEncounter);
+export default CompletedEncounter;

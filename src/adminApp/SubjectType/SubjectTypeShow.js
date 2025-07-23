@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
 import { Edit } from "@mui/icons-material";
 import { httpClient as http } from "common/utils/httpClient";
-import { Navigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, FormLabel, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import _, { get, identity } from "lodash";
@@ -15,14 +15,13 @@ import RuleDisplay from "../components/RuleDisplay";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MediaService from "../service/MediaService";
 
-const SubjectTypeShow = props => {
+const SubjectTypeShow = () => {
   const [subjectType, setSubjectType] = useState({});
-  const [editAlert, setEditAlert] = useState(false);
   const [formMappings, setFormMappings] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
   const [iconPreviewUrl, setIconPreviewUrl] = useState("");
@@ -30,7 +29,14 @@ const SubjectTypeShow = props => {
     rules: [],
     templates: []
   });
+
+  const userInfo = useSelector(state => state.app.userInfo);
+
+  const navigate = useNavigate();
+  const params = useParams();
+
   const entityType = "Subject";
+
   useEffect(() => {
     getMessageRules(entityType, subjectType.subjectTypeId, rulesDispatch);
     return identity;
@@ -43,14 +49,15 @@ const SubjectTypeShow = props => {
 
   useFormMappings(setFormMappings);
   useLocationType(types => setLocationsTypes(types));
+
   useEffect(() => {
     http
-      .get("/web/subjectType/" + props.match.params.id)
+      .get("/web/subjectType/" + params.id)
       .then(response => response.data)
       .then(result => {
         setSubjectType(result);
       });
-  }, []);
+  }, [params.id]);
 
   useEffect(() => {
     if (subjectType.iconFileS3Key != null) {
@@ -60,7 +67,12 @@ const SubjectTypeShow = props => {
     }
   }, [subjectType.iconFileS3Key]);
 
-  const hasPrivilegeEdit = UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditSubjectType);
+  const handleEdit = () => {
+    navigate("/appDesigner/subjectType/" + params.id);
+  };
+
+  const hasPrivilegeEdit = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType);
+
   return (
     !_.isEmpty(subjectType) && (
       <>
@@ -74,7 +86,7 @@ const SubjectTypeShow = props => {
           <Title title={"Subject Type: " + subjectType.name} />
           {hasPrivilegeEdit && (
             <Grid container style={{ justifyContent: "flex-end" }}>
-              <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
+              <Button color="primary" type="button" onClick={handleEdit}>
                 <Edit />
                 Edit
               </Button>
@@ -137,15 +149,10 @@ const SubjectTypeShow = props => {
             <AdvancedSettingShow locationTypes={locationTypes} subjectType={subjectType} />
             <SystemInfo {...subjectType} />
           </div>
-          {editAlert && <Navigate to={"/appDesigner/subjectType/" + props.match.params.id} />}
         </Box>
       </>
     )
   );
 };
 
-const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
-});
-
-export default connect(mapStateToProps)(SubjectTypeShow);
+export default SubjectTypeShow;

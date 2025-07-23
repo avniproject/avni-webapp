@@ -10,23 +10,23 @@ export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, m
 
   return (
     <Grid container direction={containerDirection} spacing={2}>
-      <Grid item xs={containerDirection === "row" ? 4 : 12}>
+      <Grid xs={containerDirection === "row" ? 4 : 12}>
         <Grid container direction="column" spacing={1} alignItems={itemAlign} textAlign={textAlignValue}>
-          <Grid item>
+          <Grid>
             <FormLabel sx={{ fontSize: "13px" }}>Created</FormLabel>
           </Grid>
-          <Grid item>
+          <Grid>
             <span style={{ fontSize: "15px" }}>{createdAudit({ createdBy, createdDateTime })}</span>
           </Grid>
         </Grid>
       </Grid>
 
-      <Grid item xs={containerDirection === "row" ? 4 : 12} sx={rowAlignProps}>
+      <Grid xs={containerDirection === "row" ? 4 : 12} sx={rowAlignProps}>
         <Grid container direction="column" spacing={1} alignItems={itemAlign} textAlign={textAlignValue}>
-          <Grid item>
+          <Grid>
             <FormLabel sx={{ fontSize: "13px" }}>Modified</FormLabel>
           </Grid>
-          <Grid item>
+          <Grid>
             <span style={{ fontSize: "15px" }}>
               {modifiedAudit({
                 lastModifiedBy,
@@ -37,12 +37,12 @@ export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, m
         </Grid>
       </Grid>
       {!_.isEmpty(uuid) && (
-        <Grid item xs={containerDirection === "row" ? 4 : 12} sx={rowAlignProps}>
+        <Grid xs={containerDirection === "row" ? 4 : 12} sx={rowAlignProps}>
           <Grid container direction="column" spacing={1} alignItems={itemAlign} textAlign={textAlignValue}>
-            <Grid item>
+            <Grid>
               <FormLabel sx={{ fontSize: "13px" }}>UUID</FormLabel>
             </Grid>
-            <Grid item>
+            <Grid>
               <span style={{ fontSize: "15px" }}>{uuid}</span>
             </Grid>
           </Grid>

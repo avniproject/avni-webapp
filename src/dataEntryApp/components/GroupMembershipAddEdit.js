@@ -56,16 +56,13 @@ const constructSubjectLabel = (subject, isSearchFlow = false) => {
 const GroupMembershipAddEdit = () => {
   const { t } = useTranslation();
 
-  // Use React Router hooks instead of withRouter and withParams
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Parse query parameters from location.search
   const searchParams = new URLSearchParams(location.search);
   const uuid = searchParams.get("uuid");
   const path = location.pathname;
 
-  // Use Redux hooks instead of connect
   const groupRoles = useSelector(state => state.dataEntry.subjectProfile.subjectProfile.roles);
   const groupSubject = useSelector(state => state.dataEntry.subjectProfile.subjectProfile);
   const memberGroupSubjects = useSelector(state => state.dataEntry.subjectProfile.groupMembers);

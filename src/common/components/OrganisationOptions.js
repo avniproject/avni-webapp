@@ -1,50 +1,25 @@
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { isEmpty, map, sortBy, trim } from "lodash";
-import { styled } from "@mui/material/styles";
 import { FormControl, InputLabel, Select, MenuItem, Button } from "@mui/material";
-
 import CurrentUserService from "../service/CurrentUserService";
 
-const StyledContainer = styled("div")({
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center"
-});
+const OrganisationOptions = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
+  const organisations = useSelector(state => state.app.organisations || []);
 
-const StyledFormControl = styled(FormControl)(({ theme }) => ({
-  margin: theme.spacing(1),
-  minWidth: 200,
-  color: "white"
-}));
-
-const StyledInputLabel = styled(InputLabel)({
-  color: "white"
-});
-
-const StyledSelect = styled(Select)({
-  color: "white",
-  "& .MuiSelect-icon": {
-    color: "white"
-  }
-});
-
-const StyledButton = styled(Button)({
-  color: "white"
-});
-
-export const OrganisationOptions = ({ getUserInfo, history, organisations, userInfo }) => {
   const options = [
     { name: "", value: "" },
-    ...map(sortBy(organisations, organisation => trim(organisation.name).toLowerCase()), ({ name, uuid }) => ({
-      name,
-      value: uuid
-    }))
+    ...map(sortBy(organisations, organisation => trim(organisation.name).toLowerCase()), ({ name, uuid }) => ({ name, value: uuid }))
   ];
 
   const handleChange = event => {
     if (event.target.value !== "") {
       localStorage.setItem("ORGANISATION_UUID", event.target.value);
-      history.push("/home");
-      getUserInfo();
+      navigate("/home");
+      dispatch({ type: "GET_USER_INFO" });
     } else {
       localStorage.setItem("ORGANISATION_UUID", "");
     }
@@ -52,29 +27,39 @@ export const OrganisationOptions = ({ getUserInfo, history, organisations, userI
 
   const exitToAdmin = () => {
     CurrentUserService.exitOrganisation();
-    getUserInfo();
-    history.push("/#/admin");
-    window.location.reload(true);
+    dispatch({ type: "GET_USER_INFO" });
+    navigate("/admin");
+    window.location.reload();
   };
 
   return !isEmpty(organisations) && CurrentUserService.isAdminUsingAnOrg(userInfo) ? (
-    <StyledContainer>
-      <StyledFormControl>
-        <StyledInputLabel id="organisation-select-label">Select Organisation</StyledInputLabel>
-        <StyledSelect
+    <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+      <FormControl sx={{ m: 1, minWidth: 200 }}>
+        <InputLabel id="organisation-select-label" sx={{ color: "white" }}>
+          Select Organisation
+        </InputLabel>
+        <Select
           labelId="organisation-select"
           id="organisation-select"
           value={localStorage.getItem("ORGANISATION_UUID") || ""}
           onChange={handleChange}
+          sx={{
+            color: "white",
+            "& .MuiSelect-icon": { color: "white" }
+          }}
         >
           {options.map((option, index) => (
             <MenuItem key={index} value={option.value}>
               {option.name}
             </MenuItem>
           ))}
-        </StyledSelect>
-      </StyledFormControl>
-      <StyledButton onClick={exitToAdmin}>Exit Organisation</StyledButton>
-    </StyledContainer>
+        </Select>
+      </FormControl>
+      <Button sx={{ color: "white" }} onClick={exitToAdmin}>
+        Exit Organisation
+      </Button>
+    </div>
   ) : null;
 };
+
+export default OrganisationOptions;

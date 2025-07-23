@@ -45,10 +45,12 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
   return (
     <Admin
       title="Manage Organisation"
+      basename="/appdesigner"
       authProvider={authProvider}
       dataProvider={dataProvider}
       customRoutes={customRoutes}
       layout={AdminLayout}
+      darkTheme={null}
     >
       <Resource name="subjectType" options={{ label: "Subject Types" }} list={SubjectTypesList} />
       <Resource name="program" options={{ label: "Programs" }} list={ProgramList} />

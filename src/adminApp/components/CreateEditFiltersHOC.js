@@ -1,20 +1,17 @@
-import { CreateEditFilters } from "./CreateEditFilters";
+import { useLocation, useNavigate } from "react-router-dom";
 import { isNil } from "lodash";
+import { CreateEditFilters } from "./CreateEditFilters";
 
-export const CreateEditFiltersHOC = props => {
-  if (isNil(props.history.location.state)) {
+const CreateEditFiltersHOC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { omitTableData, selectedFilter, title, filterType, worklistUpdationRule, operationalModules, filename, settings } =
+    location.state || {};
+
+  if (isNil(location.state)) {
+    navigate("/");
     return <div />;
   }
-  const {
-    omitTableData,
-    selectedFilter,
-    title,
-    filterType,
-    worklistUpdationRule,
-    operationalModules,
-    filename,
-    settings
-  } = props.history.location.state;
 
   return (
     <CreateEditFilters
@@ -29,3 +26,5 @@ export const CreateEditFiltersHOC = props => {
     />
   );
 };
+
+export default CreateEditFiltersHOC;

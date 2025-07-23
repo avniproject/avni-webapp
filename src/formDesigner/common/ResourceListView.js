@@ -147,7 +147,7 @@ const ResourceListView = ({ title, resourceName, resourceURLName, columns, userI
       <Title title={title} color="primary" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {!isLoading && UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
-          <Grid item>
+          <Grid>
             <CreateComponent onSubmit={() => setRedirect(true)} name={`New ${title}`} />
           </Grid>
         )}

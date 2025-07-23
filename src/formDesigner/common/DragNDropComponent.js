@@ -184,7 +184,7 @@ const DragNDropComponent = ({
                             {safeRenderSummaryText(data, index, expanded)}
                           </Grid>
                           {/* Drag icon (midpoint) */}
-                          <Grid item sx={{ flex: "0 0 auto", display: "flex", justifyContent: "center", width: 24 }}>
+                          <Grid sx={{ flex: "0 0 auto", display: "flex", justifyContent: "center", width: 24 }}>
                             {renderDragIcon(data.uuid)}
                           </Grid>
                           {/* Actions (rightmost edge) */}

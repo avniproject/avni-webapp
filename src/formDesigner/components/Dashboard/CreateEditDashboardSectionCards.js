@@ -1,12 +1,18 @@
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { IconButton, ListItemText } from "@mui/material";
 import { Delete, Visibility } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import DragNDropComponent from "../../common/DragNDropComponent";
-import PropTypes from "prop-types";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 import { dashboardReducerActions } from "./DashboardReducer";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
-const CreateEditDashboardSectionCards = ({ section, dispatch, history, deleteCard }) => {
+const CreateEditDashboardSectionCards = ({ section, dispatch, deleteCard }) => {
+  const navigate = useNavigate();
+  const userInfo = useSelector(state => state.app.userInfo);
+
   const onDragEnd = result => {
     if (!result.destination) {
       return;
@@ -22,18 +28,22 @@ const CreateEditDashboardSectionCards = ({ section, dispatch, history, deleteCar
       text: <ListItemText primary={card.name} secondary={card.description} />,
       actions: (
         <>
-          <IconButton onClick={() => history.push(`/appDesigner/reportCard/${card.id}/show`)} size="large">
-            <Visibility />
-          </IconButton>
-          <IconButton onClick={() => deleteCard(card)} size="large">
-            <Delete />
-          </IconButton>
+          {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditDashboard) && (
+            <>
+              <IconButton onClick={() => navigate(`/appDesigner/reportCard/${card.id}/show`)} size="large">
+                <Visibility />
+              </IconButton>
+              <IconButton onClick={() => deleteCard(card)} size="large">
+                <Delete />
+              </IconButton>
+            </>
+          )}
         </>
       )
     };
   };
 
-  const cards = WebDashboardSection.getReportCards(section);
+  const cards = WebDashboardSection.getReportCards(section) || [];
   console.log("CreateEditDashboardSectionCards: Rendering", {
     section: { uuid: section.uuid, name: section.name },
     cardCount: cards.length,
@@ -47,17 +57,10 @@ const CreateEditDashboardSectionCards = ({ section, dispatch, history, deleteCar
         onDragEnd={onDragEnd}
         renderSummaryText={card => renderCard(card).text}
         renderSummaryActions={card => renderCard(card).actions}
-        summaryDirection={"column"}
+        summaryDirection="column"
       />
     )
   );
-};
-
-CreateEditDashboardSectionCards.propTypes = {
-  section: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  deleteCard: PropTypes.func.isRequired
 };
 
 export default CreateEditDashboardSectionCards;

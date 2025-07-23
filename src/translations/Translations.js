@@ -122,10 +122,10 @@ const Translations = () => {
                 m: 3
               }}
             >
-              <Grid item>
+              <Grid>
                 <DropDown name="Platform" value={platform} onChange={setPlatform} options={platforms} />
               </Grid>
-              <Grid item>
+              <Grid>
                 <Box>
                   <FormControlLabel
                     control={<Checkbox checked={excludeLocations} onChange={() => setExcludeLocations(prev => !prev)} color="primary" />}
@@ -133,7 +133,7 @@ const Translations = () => {
                   />
                 </Box>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Box>
                   <Button
                     variant="contained"

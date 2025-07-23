@@ -307,7 +307,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
         return (
           <Fragment>
             <Grid container alignItems="center" spacing={2}>
-              <Grid item xs={3}>
+              <Grid xs={3}>
                 <SelectInput
                   resettable
                   source={`syncSettings.${subjectType.name}.${syncAttributeName}`}
@@ -321,7 +321,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
                   }}
                 />
               </Grid>
-              <Grid item xs={9}>
+              <Grid xs={9}>
                 {!isEmpty(syncAttributeConceptUUID) &&
                   (get(syncAttributeConcept, "dataType") === "Coded" ? (
                     <Select
