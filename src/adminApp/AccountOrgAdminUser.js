@@ -49,7 +49,7 @@ export const AccountOrgAdminUserEdit = ({ user, region, ...props }) => (
 );
 
 export const AccountOrgAdminUserList = props => (
-  <List {...props} bulkActionButtons={false} filters={<UserFilter />} filter={{ searchURI: "find" }} title="Admin Users">
+  <List {...props} bulkActionButtons={false} filters={UserFilter} filter={{ searchURI: "find" }} title="Admin Users">
     <Datagrid rowClick="show">
       <TextField label="Login ID" source="username" />
       <TextField source="name" label="Name of the Person" />

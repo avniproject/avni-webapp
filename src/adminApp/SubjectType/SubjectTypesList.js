@@ -28,7 +28,7 @@ const SubjectTypesList = () => {
 
   useEffect(() => {
     if (redirect) {
-      navigate("/appDesigner/subjectType/create");
+      navigate("/appdesigner/subjectType/create");
     }
   }, [redirect, navigate]);
 
@@ -37,7 +37,7 @@ const SubjectTypesList = () => {
       {
         accessorKey: "name",
         header: "Name",
-        Cell: ({ row }) => <a href={`#/appDesigner/subjectType/${row.original.id}/show`}>{row.original.name}</a>
+        Cell: ({ row }) => <a href={`#/appdesigner/subjectType/${row.original.id}/show`}>{row.original.name}</a>
       },
       {
         accessorKey: "formName",
@@ -101,7 +101,7 @@ const SubjectTypesList = () => {
               icon: Edit,
               tooltip: "Edit Subject Type",
               onClick: (event, row) => {
-                navigate(`/appDesigner/subjectType/${row.original.id}`);
+                navigate(`/appdesigner/subjectType/${row.original.id}`);
               },
               disabled: row => row.original.voided ?? false
             },

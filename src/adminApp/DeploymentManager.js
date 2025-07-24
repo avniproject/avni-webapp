@@ -3,7 +3,7 @@ import { Admin, Resource } from "react-admin";
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from "react-redux";
 
-import { authProvider, LogoutButton } from "./react-admin-config";
+import { authProvider, dataProvider, LogoutButton } from "./react-admin-config";
 import { WithProps } from "../common/components/utils";
 import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
@@ -32,9 +32,12 @@ const DeploymentManager = () => {
     <Admin
       title="Manage Account"
       authProvider={authProvider}
+      dataProvider={dataProvider}
       logoutButton={WithProps({ user }, LogoutButton)}
       customRoutes={customRoutes}
       layout={AdminLayout}
+      basename="/admin"
+      darkTheme={null}
     >
       <Resource
         name="account"
