@@ -34,6 +34,7 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
   const [locationTypes, setLocationsTypes] = useState([]);
   const [file, setFile] = React.useState();
   const [removeFile, setRemoveFile] = React.useState(false);
+  const [subjectTypes, setSubjectTypes] = useState([]); // <-- Add state for all subject types
   const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []
@@ -49,11 +50,14 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
     rulesDispatch({ type: "setRules", payload: rules });
   };
 
-  const consumeFormMappingResult = (formMap, forms) => {
+  // Modified to also get subjectTypes
+  const consumeFormMappingResult = (formMap, forms, subjectTypesList) => {
     setFormList(forms);
     setFormMappings(formMap);
+    if (subjectTypesList) setSubjectTypes(subjectTypesList);
   };
 
+  // Pass 3rd arg to get subjectTypes
   useFormMappings(consumeFormMappingResult);
   useLocationType(types => setLocationsTypes(types));
 
@@ -68,7 +72,16 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
       return;
     }
 
+    // Duplicate name check (case-insensitive)
+    const duplicate = subjectTypes.some(st => st.name && st.name.trim().toLowerCase() === subjectType.name.trim().toLowerCase());
+    if (duplicate) {
+      setError("Subject type with this name already exists.");
+      setNameValidation(false);
+      return;
+    }
+
     setNameValidation(false);
+    setError("");
 
     if (!groupValidationError) {
       const [s3FileKey, error] = await uploadImage(subjectType.iconFileS3Key, file, MediaFolder.ICONS);
