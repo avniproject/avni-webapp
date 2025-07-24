@@ -284,7 +284,10 @@ class CreateEditConcept extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    this.formValidation();
+
+    this.setState({ name: this.state.name.trim() }, () => {
+      this.formValidation();
+    });
   };
 
   afterSuccessfulValidation = async () => {
