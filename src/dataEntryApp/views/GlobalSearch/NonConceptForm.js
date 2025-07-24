@@ -17,7 +17,7 @@ const StyledTypography = styled(Typography)({
   color: "rgba(0, 0, 0, 0.54)"
 });
 
-function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
+function NonConceptForm({ searchFilterForms = [], selectedDate, onDateChange }) {
   const { t } = useTranslation();
 
   return searchFilterForms ? (
@@ -101,9 +101,5 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
     </Fragment>
   ) : null;
 }
-
-NonConceptForm.defaultProps = {
-  searchFilterForms: {}
-};
 
 export default NonConceptForm;

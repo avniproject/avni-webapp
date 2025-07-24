@@ -52,11 +52,6 @@ const DataEntry = () => {
 
   const loadApp = operationalModules && orgConfig && legacyRulesBundleLoaded && legacyRulesLoaded;
 
-  const path =
-    location.pathname
-      .split("/")
-      .slice(0, -1)
-      .join("/") || "";
   useEffect(() => {
     dispatch(getOperationalModules());
     dispatch(getOrgConfigInfo());
@@ -74,32 +69,32 @@ const DataEntry = () => {
             </Grid>
             <Grid size={12}>
               <Routes>
-                <Route path={path} element={<SearchFilterFormContainer />} />
-                <Route path={`${path}/searchFilter`} element={<SearchFilterFormContainer />} />
-                <Route path={`${path}/search`} element={<SubjectSearch />} />
-                <Route path={`${path}/register`} element={<SubjectRegister />} />
-                <Route path={`${path}/editSubject`} element={<SubjectRegister />} />
-                <Route path={`${path}/subject`} element={<SubjectDashboard />} />
-                <Route path={`${path}/subject/subjectProfile`} element={<SubjectDashboard tab={1} />} />
-                <Route path={`${path}/subject/enrol`} element={<ProgramEnrol />} />
-                <Route path={`${path}/subject/viewProgramEncounter`} element={<ViewVisit />} />
-                <Route path={`${path}/subject/viewEncounter`} element={<ViewVisit />} />
-                <Route path={`${path}/subject/addRelative`} element={<AddRelative />} />
-                <Route path={`${path}/subject/addGroupMember`} element={<GroupMembershipAddEdit />} />
-                <Route path={`${path}/subject/editGroupMembership`} element={<GroupMembershipAddEdit />} />
-                <Route path={`${path}/subject/newProgramVisit`} element={<NewProgramVisit />} />
-                <Route path={`${path}/subject/programEncounter`} element={<ProgramEncounter />} />
-                <Route path={`${path}/subject/editProgramEncounter`} element={<ProgramEncounter />} />
-                <Route path={`${path}/subject/cancelProgramEncounter`} element={<CancelProgramEncounter />} />
-                <Route path={`${path}/subject/editCancelProgramEncounter`} element={<CancelProgramEncounter />} />
-                <Route path={`${path}/subject/newGeneralVisit`} element={<NewGeneralVisit />} />
-                <Route path={`${path}/subject/encounter`} element={<Encounter />} />
-                <Route path={`${path}/subject/editEncounter`} element={<Encounter />} />
-                <Route path={`${path}/subject/cancelEncounter`} element={<CancelEncounter />} />
-                <Route path={`${path}/subject/editCancelEncounter`} element={<CancelEncounter />} />
-                <Route path={`${path}/news`} element={<NewsList />} />
-                <Route path={`${path}/news/:id/details`} element={<NewsDetails />} />
-                <Route path={`${path}/audio`} element={<Player />} />
+                <Route path="/" element={<SearchFilterFormContainer />} />
+                <Route path="/searchFilter" element={<SearchFilterFormContainer />} />
+                <Route path="/search" element={<SubjectSearch />} />
+                <Route path="/register" element={<SubjectRegister />} />
+                <Route path="/editSubject" element={<SubjectRegister />} />
+                <Route path="/subject" element={<SubjectDashboard />} />
+                <Route path="/subject/subjectProfile" element={<SubjectDashboard tab={1} />} />
+                <Route path="/subject/enrol" element={<ProgramEnrol />} />
+                <Route path="/subject/viewProgramEncounter" element={<ViewVisit />} />
+                <Route path="/subject/viewEncounter" element={<ViewVisit />} />
+                <Route path="/subject/addRelative" element={<AddRelative />} />
+                <Route path="/subject/addGroupMember" element={<GroupMembershipAddEdit />} />
+                <Route path="/subject/editGroupMembership" element={<GroupMembershipAddEdit />} />
+                <Route path="/subject/newProgramVisit" element={<NewProgramVisit />} />
+                <Route path="/subject/programEncounter" element={<ProgramEncounter />} />
+                <Route path="/subject/editProgramEncounter" element={<ProgramEncounter />} />
+                <Route path="/subject/cancelProgramEncounter" element={<CancelProgramEncounter />} />
+                <Route path="/subject/editCancelProgramEncounter" element={<CancelProgramEncounter />} />
+                <Route path="/subject/newGeneralVisit" element={<NewGeneralVisit />} />
+                <Route path="/subject/encounter" element={<Encounter />} />
+                <Route path="/subject/editEncounter" element={<Encounter />} />
+                <Route path="/subject/cancelEncounter" element={<CancelEncounter />} />
+                <Route path="/subject/editCancelEncounter" element={<CancelEncounter />} />
+                <Route path="/news" element={<NewsList />} />
+                <Route path="/news/:id/details" element={<NewsDetails />} />
+                <Route path="/audio" element={<Player />} />
               </Routes>
             </Grid>
           </StyledGrid>

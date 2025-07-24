@@ -59,7 +59,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/admin/*" element={<RestrictedRoute userInfo={userInfo} element={<OrgManager navigate={navigate} />} />} />
       <Route
-        path="/app"
+        path="/app/*"
         element={
           <RestrictedRoute
             requiredPrivileges={[Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp]}
@@ -108,7 +108,7 @@ const AppRoutes = () => {
         element={<RestrictedRoute userInfo={userInfo} element={<NewExport user={user} organisation={organisation} />} />}
       />
       <Route
-        path="/reports"
+        path="/selfservicereports"
         element={<RestrictedRoute userInfo={userInfo} element={<SelfServiceReports user={user} organisation={organisation} />} />}
       />
       <Route

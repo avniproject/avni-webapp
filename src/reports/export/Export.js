@@ -104,131 +104,95 @@ const Export = () => {
     );
   };
 
-  useEffect(() => {
-    const isValidReportType = !_.isNil(reportType);
-    const isValidSubjectType = !_.isNil(subjectType);
-    const isValidProgram = reportType === reportTypes.Registration || reportType === reportTypes.Encounter || !_.isNil(program);
-    const isValidEncounterType = reportType !== reportTypes.Encounter || !_.isNil(encounterType);
-    const isValidDate = !_.isNil(startDate) && !_.isNil(endDate);
-    const isValidAddressLevel = _.isEmpty(addressLevelError);
+  const renderIncludeVoided = () => (
+    <FormControlLabel
+      control={
+        <Checkbox
+          color="primary"
+          checked={includeVoided}
+          name="Include voided entries"
+          onChange={event => dispatchExport("includeVoided", event.target.checked)}
+        />
+      }
+      label="Include voided entries"
+    />
+  );
 
-    setEnableExport(
-      isValidReportType && isValidSubjectType && isValidProgram && isValidEncounterType && isValidDate && isValidAddressLevel
-    );
-  }, [reportType, subjectType, program, encounterType, startDate, endDate, addressLevelError]);
+  const onReportTypeChange = type => {
+    dispatchExport("reportType", type);
+    setEnableExport(false);
+  };
 
-  const hasExportPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
-
-  if (!hasExportPrivilege) {
+  const RenderReportTypes = () => {
     return (
-      <ScreenWithAppBar appbarTitle={t("export")} enableLeftMenuButton={true}>
-        <DocumentationContainer filename={"Export.md"}>
-          <StyledWarningText>You don't have access to this functionality. Please contact your administrator.</StyledWarningText>
-        </DocumentationContainer>
-      </ScreenWithAppBar>
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Report Type</FormLabel>
+        <FormGroup row>
+          {ReportTypes.names.map(type => (
+            <FormControlLabel
+              key={type.name}
+              control={<Radio checked={type.name === reportType.name} onChange={() => onReportTypeChange(type)} value={type.name} />}
+              label={type.name}
+            />
+          ))}
+        </FormGroup>
+      </FormControl>
     );
-  }
+  };
+
+  const commonProps = { dispatch: dispatchExport, startDate, endDate, subjectType, subjectTypes, setEnableExport };
+  const reportTypeMap = {
+    [reportTypes.Registration]: <RegistrationType {...commonProps} />,
+    [reportTypes.Enrolment]: <EnrolmentType {...commonProps} programOptions={programOptions} program={program} />,
+    [reportTypes.Encounter]: (
+      <EncounterType
+        {...commonProps}
+        programOptions={programOptions}
+        program={program}
+        encounterTypeOptions={encounterTypeOptions}
+        encounterType={encounterType}
+      />
+    ),
+    [reportTypes.GroupSubject]: <GroupSubjectType {...commonProps} />
+  };
+
+  const renderReportTypeOptions = () => {
+    return reportType.name ? reportTypeMap[reportType.name] : <Fragment />;
+  };
+
+  const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 
   return (
-    <ScreenWithAppBar appbarTitle={t("export")} enableLeftMenuButton={true}>
-      <DocumentationContainer filename={"Export.md"}>
-        <StyledPaper>
-          <Box p={3}>
-            <Typography variant="h5" gutterBottom>
-              {t("export")}
-            </Typography>
-            <StyledBox>
-              <FormControl component="fieldset">
-                <FormLabel component="legend">{t("reportType")}</FormLabel>
-                <ReportTypes reportType={reportType} onChange={reportType => dispatchExport("reportType", reportType)} />
-              </FormControl>
-            </StyledBox>
-
-            <StyledBox>
-              <FormControl component="fieldset">
-                <FormLabel component="legend">{t("subjectType")}</FormLabel>
-                <Radio
-                  value={subjectType}
-                  options={subjectTypes}
-                  labelKey="name"
-                  valueKey="uuid"
-                  onChange={subjectType => dispatchExport("subjectType", subjectType)}
-                />
-              </FormControl>
-            </StyledBox>
-
-            {reportType === reportTypes.Registration && (
-              <RegistrationType
-                subjectType={subjectType}
-                program={program}
-                onChange={program => dispatchExport("program", program)}
-                programOptions={programOptions}
-              />
-            )}
-
-            {reportType === reportTypes.Enrolment && (
-              <EnrolmentType program={program} onChange={program => dispatchExport("program", program)} programOptions={programOptions} />
-            )}
-
-            {reportType === reportTypes.Encounter && (
-              <EncounterType
-                encounterType={encounterType}
-                onChange={encounterType => dispatchExport("encounterType", encounterType)}
-                encounterTypeOptions={encounterTypeOptions}
-              />
-            )}
-
-            {reportType === reportTypes.GroupSubject && (
-              <GroupSubjectType
-                program={program}
-                onChange={program => dispatchExport("program", program)}
-                programOptions={programOptions}
-              />
-            )}
-
-            <StyledBox>
-              <FormControl component="fieldset">
-                <FormLabel component="legend">{t("dateRange")}</FormLabel>
-                <StyledGrid container spacing={2}>
-                  <Grid size={6}>
-                    <input
-                      type="date"
-                      value={startDate || ""}
-                      onChange={e => dispatchExport("startDate", e.target.value)}
-                      style={{ width: "100%", padding: "8px" }}
-                    />
-                  </Grid>
-                  <Grid size={6}>
-                    <input
-                      type="date"
-                      value={endDate || ""}
-                      onChange={e => dispatchExport("endDate", e.target.value)}
-                      style={{ width: "100%", padding: "8px" }}
-                    />
-                  </Grid>
+    <ScreenWithAppBar appbarTitle="Longitudinal Export" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
+      {operationalModules && (
+        <div>
+          <StyledBox>
+            <DocumentationContainer filename="Report.md">
+              {allowReportGeneration && (
+                <Grid>
+                  {RenderReportTypes()}
+                  {renderReportTypeOptions()}
+                  {!_.isEmpty(reportType.name) && renderAddressLevel()}
+                  {!_.isEmpty(reportType.name) && renderIncludeVoided()}
+                </Grid>
+              )}
+              {allowReportGeneration && (
+                <StyledGrid container direction="row">
+                  <Button variant="contained" color="primary" aria-haspopup="false" onClick={onStartExportHandler} disabled={!enableExport}>
+                    Generate Export
+                  </Button>
+                  <StyledWarningText component="span">{t("legacyLongitudinalExportWarningMessage")}</StyledWarningText>
                 </StyledGrid>
-              </FormControl>
-            </StyledBox>
-
-            <StyledBox>{renderAddressLevel()}</StyledBox>
-
-            <StyledBox>
-              <FormGroup>
-                <FormControlLabel
-                  control={<Checkbox checked={includeVoided} onChange={e => dispatchExport("includeVoided", e.target.checked)} />}
-                  label={t("includeVoided")}
-                />
-              </FormGroup>
-            </StyledBox>
-
-            <Button variant="contained" color="primary" disabled={!enableExport} onClick={onStartExportHandler}>
-              {t("startExport")}
-            </Button>
-          </Box>
-        </StyledPaper>
-
-        <JobStatus operationalModules={operationalModules} />
-      </DocumentationContainer>
+              )}
+            </DocumentationContainer>
+          </StyledBox>
+          <Grid>
+            <StyledPaper>
+              <JobStatus exportJobStatuses={exportJobStatuses} operationalModules={operationalModules} />
+            </StyledPaper>
+          </Grid>
+        </div>
+      )}
     </ScreenWithAppBar>
   );
 };

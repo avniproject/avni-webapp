@@ -1,5 +1,5 @@
 import { filter, intersectionWith, isEmpty } from "lodash";
-import ReportTypes, { reportTypes } from "../ReportTypes";
+import ReportTypes from "../ReportTypes";
 import { startOfDay, endOfDay, isValid } from "date-fns";
 
 export const initialState = {
@@ -95,7 +95,7 @@ export const getNewRequestBody = ({
   };
   if (!isEmpty(subjectType)) {
     output.uuid = subjectType.uuid;
-    if (reportType.name === reportTypes.GroupSubject) {
+    if (reportType.name === "GroupSubject") {
       output.membershipExport = true;
     }
   }

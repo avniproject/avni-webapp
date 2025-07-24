@@ -75,9 +75,7 @@ const applyListIcon = (open, icon, listTextName) => {
   }
 };
 
-const applyLeftMenu = (open, handleDrawer, selectedIndex, handleListItemClick, children, sidebarOptions) => {
-  const navigate = useNavigate();
-
+const applyLeftMenu = (open, handleDrawer, selectedIndex, handleListItemClick, children, sidebarOptions, navigate) => {
   return (
     <>
       <StyledDrawer variant="permanent" open={open}>
@@ -119,6 +117,7 @@ const getSelectedListItem = sidebarOptions => {
 };
 
 const ScreenWithAppBar = ({ appbarTitle, enableLeftMenuButton = false, children, sidebarOptions }) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(getSelectedListItem(sidebarOptions));
 
@@ -138,7 +137,7 @@ const ScreenWithAppBar = ({ appbarTitle, enableLeftMenuButton = false, children,
         enableLeftMenuButton={enableLeftMenuButton}
         sx={{ zIndex: theme => theme.zIndex.appBar }}
       />
-      {enableLeftMenuButton && applyLeftMenu(open, handleDrawer, selectedIndex, handleListItemClick, children, sidebarOptions)}
+      {enableLeftMenuButton && applyLeftMenu(open, handleDrawer, selectedIndex, handleListItemClick, children, sidebarOptions, navigate)}
       {!enableLeftMenuButton && <Body>{children}</Body>}
     </StyledContainer>
   );

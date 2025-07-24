@@ -1,5 +1,16 @@
-import { Datagrid, List, TextField, Show, SimpleShowLayout, Create, Edit, SimpleForm, ReferenceField, ReferenceInput } from "react-admin";
-import { useFormContext, useWatch } from "react-hook-form";
+import {
+  Datagrid,
+  List,
+  TextField,
+  Show,
+  SimpleShowLayout,
+  Create,
+  Edit,
+  SimpleForm,
+  ReferenceField,
+  ReferenceInput,
+  useRecordContext
+} from "react-admin";
 import Chip from "@mui/material/Chip";
 import { FormLabel, Paper } from "@mui/material";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
@@ -34,6 +45,7 @@ const Title = ({ record }) => {
 };
 
 const ShowSourceType = props => {
+  const record = useRecordContext(props);
   return (
     <>
       {props.showSourceTypeLabel && (
@@ -41,7 +53,7 @@ const ShowSourceType = props => {
           <FormLabel style={{ fontSize: "12px" }}>Type</FormLabel> <br />
         </>
       )}
-      <Chip label={sourceType[props.record.type].name} />
+      {record && record.type && <Chip label={sourceType[record.type].name} />}
     </>
   );
 };
@@ -79,15 +91,12 @@ export const IdentifierSourceDetail = props => (
 );
 
 const IdentifierSourceForm = () => {
-  const { setValue } = useFormContext();
-  const formData = useWatch();
-
   return (
     <SimpleForm redirect="show">
       <AvniTextInput source="name" required toolTipKey="ADMIN_ID_SOURCE_NAME" />
       <AvniSelectInput source="type" choices={Object.values(sourceType)} required toolTipKey="ADMIN_ID_SOURCE_TYPE" />
       <AvniFormDataConsumer toolTipKey="ADMIN_ID_SOURCE_CATCHMENT">
-        {({ formData, ...rest }) => (
+        {({ formData, setValue, ...rest }) => (
           <ReferenceInput
             source="catchmentId"
             reference="catchment"
@@ -106,9 +115,13 @@ const IdentifierSourceForm = () => {
       <AvniTextInput source="minimumBalance" required toolTipKey="ADMIN_ID_SOURCE_MIN_BALANCE" />
       <AvniTextInput source="minLength" required toolTipKey="ADMIN_ID_SOURCE_MIN_LENGTH" />
       <AvniTextInput source="maxLength" required toolTipKey="ADMIN_ID_SOURCE_MAX_LENGTH" />
-      {formData?.type === "userPoolBasedIdentifierGenerator" && (
-        <AvniTextInput source="options.prefix" label="Prefix" toolTipKey="ADMIN_ID_SOURCE_PREFIX" />
-      )}
+      <AvniFormDataConsumer>
+        {({ formData }) =>
+          formData?.type === "userPoolBasedIdentifierGenerator" && (
+            <AvniTextInput source="options.prefix" label="Prefix" toolTipKey="ADMIN_ID_SOURCE_PREFIX" />
+          )
+        }
+      </AvniFormDataConsumer>
     </SimpleForm>
   );
 };

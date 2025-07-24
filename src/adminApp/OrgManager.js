@@ -29,6 +29,7 @@ import DeploymentManager from "./DeploymentManager";
 import UserInfo from "../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import OrgManagerContext from "./OrgManagerContext";
+import UserGroupDetails from "../userGroups/UserGroupDetails";
 
 const OrgManager = () => {
   const navigate = useNavigate();
@@ -114,7 +115,10 @@ const OrgManager = () => {
           />
         )}
         {hasMultiplePrivileges(userInfo, [EditUserGroup, EditUserConfiguration]) && (
-          <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
+          <>
+            <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
+            <Resource name="userGroupDetails" options={{ label: "User Group Details" }} edit={UserGroupDetails} />
+          </>
         )}
         <Resource name="group" />
         <Resource name="task" options={{ label: "Tasks" }} />

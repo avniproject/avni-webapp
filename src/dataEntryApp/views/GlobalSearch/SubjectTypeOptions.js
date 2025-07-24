@@ -12,7 +12,9 @@ const StyledGridItem = styled(Grid)({
   alignItems: "center"
 });
 
-const StyledButton = styled(Button)(({ theme, isSelected }) => ({
+const StyledButton = styled(Button, {
+  shouldForwardProp: prop => prop !== "isSelected"
+})(({ theme, isSelected }) => ({
   margin: theme.spacing(1),
   color: theme.palette.getContrastText(isSelected ? "rgba(0,108,235,0.85)" : "rgb(252,252,252)"),
   background: isSelected ? "rgba(0,108,235,0.85)" : "rgb(252,252,252)",

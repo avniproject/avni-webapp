@@ -10,7 +10,7 @@ export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, m
 
   return (
     <Grid container direction={containerDirection} spacing={2}>
-      <Grid xs={containerDirection === "row" ? 4 : 12}>
+      <Grid size={{ xs: containerDirection === "row" ? 4 : 12 }}>
         <Grid container direction="column" spacing={1} alignItems={itemAlign} textAlign={textAlignValue}>
           <Grid>
             <FormLabel sx={{ fontSize: "13px" }}>Created</FormLabel>
@@ -21,7 +21,7 @@ export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, m
         </Grid>
       </Grid>
 
-      <Grid xs={containerDirection === "row" ? 4 : 12} sx={rowAlignProps}>
+      <Grid size={{ xs: containerDirection === "row" ? 4 : 12 }} sx={rowAlignProps}>
         <Grid container direction="column" spacing={1} alignItems={itemAlign} textAlign={textAlignValue}>
           <Grid>
             <FormLabel sx={{ fontSize: "13px" }}>Modified</FormLabel>
@@ -37,7 +37,7 @@ export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, m
         </Grid>
       </Grid>
       {!_.isEmpty(uuid) && (
-        <Grid xs={containerDirection === "row" ? 4 : 12} sx={rowAlignProps}>
+        <Grid size={{ xs: containerDirection === "row" ? 4 : 12 }} sx={rowAlignProps}>
           <Grid container direction="column" spacing={1} alignItems={itemAlign} textAlign={textAlignValue}>
             <Grid>
               <FormLabel sx={{ fontSize: "13px" }}>UUID</FormLabel>

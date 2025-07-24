@@ -4,6 +4,14 @@ import { mapObservations } from "common/subjectModelMapper";
 
 const prefix = "app/dataEntry/reducer/serverSideRules/";
 
+// Helper function to serialize error objects for Redux state
+const serializeError = err => ({
+  message: err.message || "Unknown error",
+  status: err.response?.status,
+  statusText: err.response?.statusText,
+  data: err.response?.data?.error || err.response?.data || err.message || "Unknown error"
+});
+
 export const types = {
   SET_RULES_RESPONSE: `${prefix}SET_RULES_RESPONSE`,
   SET_ERROR: `${prefix}SET_ERROR`,
@@ -53,9 +61,8 @@ export const fetchRulesResponse = requestBody => {
         dispatch(setRulesResponse(rulesResponse));
       })
       .catch(err => {
-        const errorData = err.response.data.error ? err.response.data.error : err.response.data;
-        console.log("Error in executing rule", JSON.stringify(errorData));
-        dispatch(setError(err));
+        console.log("Error in executing rule", JSON.stringify(err));
+        dispatch(setError(serializeError(err)));
       });
   };
 };
@@ -70,7 +77,7 @@ export const fetchSubjectSummary = subjectUUID => {
         dispatch(setSubjectSummary(summary));
       })
       .catch(err => {
-        const errorData = err.response.data.error ? err.response.data.error : err.response.data;
+        const errorData = err.response?.data?.error || err.response?.data || err.message || "Unknown error";
         console.log("Error in executing subject summary rule", JSON.stringify(errorData));
         dispatch(setSubjectSummary([]));
       });
@@ -87,7 +94,7 @@ export const fetchProgramSummary = enrolmentUUID => {
         dispatch(setProgramSummary(summary));
       })
       .catch(err => {
-        const errorData = err.response.data.error ? err.response.data.error : err.response.data;
+        const errorData = err.response?.data?.error || err.response?.data || err.message || "Unknown error";
         console.log("Error in executing program summary rule", JSON.stringify(errorData));
         dispatch(setProgramSummary([]));
       });
@@ -95,14 +102,10 @@ export const fetchProgramSummary = enrolmentUUID => {
 };
 
 export const selectRulesResponse = state => state.dataEntry.serverSideRulesReducer.rulesResponse;
-export const selectVisitSchedules = state =>
-  state.dataEntry.serverSideRulesReducer.rulesResponse.visitSchedules;
-export const selectDecisions = state =>
-  state.dataEntry.serverSideRulesReducer.rulesResponse.decisions;
-export const selectChecklists = state =>
-  state.dataEntry.serverSideRulesReducer.rulesResponse.checklists;
-export const selectFetchingRulesResponse = state =>
-  state.dataEntry.serverSideRulesReducer.isFetching;
+export const selectVisitSchedules = state => state.dataEntry.serverSideRulesReducer.rulesResponse.visitSchedules;
+export const selectDecisions = state => state.dataEntry.serverSideRulesReducer.rulesResponse.decisions;
+export const selectChecklists = state => state.dataEntry.serverSideRulesReducer.rulesResponse.checklists;
+export const selectFetchingRulesResponse = state => state.dataEntry.serverSideRulesReducer.isFetching;
 export const selectError = state => state.dataEntry.serverSideRulesReducer.error;
 export const selectSubjectSummary = state => state.dataEntry.serverSideRulesReducer.subjectSummary;
 export const selectProgramSummary = state => state.dataEntry.serverSideRulesReducer.programSummary;

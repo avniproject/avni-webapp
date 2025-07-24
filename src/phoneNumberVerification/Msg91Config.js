@@ -102,7 +102,7 @@ const Msg91Config = () => {
           <Title title={"Phone Number Verification"} />
           <Grid container spacing={2} style={{ width: "100%" }}>
             <Grid container spacing={1}>
-              <Grid size={5}>
+              <Grid>
                 <AvniTextField
                   toolTipKey={"ADMIN_PHONE_VERIFICATION_MSG91AUTHKEY"}
                   id="authKey"
@@ -115,7 +115,7 @@ const Msg91Config = () => {
                   disabled={!authKeyChanged}
                 />
               </Grid>
-              <Grid size={2}>
+              <Grid>
                 <div className="container" style={{ alignItems: "left", float: "left", width: "100%" }}>
                   {!authKeyChanged ? (
                     <IconButton onClick={() => setEditMode()} size="large">

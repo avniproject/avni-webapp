@@ -57,7 +57,7 @@ MySnackbarContentWrapper.propTypes = {
   variant: PropTypes.oneOf(["success", "error"]).isRequired
 };
 
-export default function CustomizedSnackbar({ defaultSnackbarStatus, message, onClose = _.noop }) {
+export default function CustomizedSnackbar({ defaultSnackbarStatus = true, message, onClose = _.noop }) {
   const isError = message === "Profile image URL is not correct or couldn't be loaded.";
   const variant = isError ? "error" : "success";
   return (
@@ -74,7 +74,3 @@ export default function CustomizedSnackbar({ defaultSnackbarStatus, message, onC
     </Snackbar>
   );
 }
-
-CustomizedSnackbar.defaultProps = {
-  defaultSnackbarStatus: true
-};

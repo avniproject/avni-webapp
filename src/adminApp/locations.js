@@ -31,7 +31,10 @@ import { AvniTextInput } from "./components/AvniTextInput";
 import { Paper } from "@mui/material";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
-const LocationFilter = props => <FilterLiveSearch {...props} source="title" label="Search location" />;
+const LocationFilter = props => {
+  const { showFilter, displayedFilters, ...filteredProps } = props;
+  return <FilterLiveSearch {...filteredProps} source="title" label="Search location" />;
+};
 
 export const LocationList = props => (
   <List {...props} sort={{ field: "title", order: "ASC" }} filters={<LocationFilter />} exporter={false}>

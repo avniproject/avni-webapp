@@ -57,41 +57,40 @@ export const IdentifierUserAssignmentDetail = props => {
   );
 };
 
-export const UserSelectInput = props => {
-  const choices = props.choices.filter(choice => choice.name != null && choice.organisationId != null);
-  return <AutocompleteInput {...props} choices={choices} optionText="name" />;
-};
-
 const IdentifierUserAssignmentForm = props => (
   <SimpleForm {...props} redirect="show">
     <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_USER_NAME"}>
-      {({ formData, ...rest }) => (
-        <Fragment>
-          <ReferenceInput
-            perPage={10}
-            source="userId"
-            reference="user"
-            label="Which user?"
-            validate={[required()]}
-            filterToQuery={searchText => ({ name: searchText })}
-            {...rest}
-          >
-            <UserSelectInput source="name" />
-          </ReferenceInput>
-        </Fragment>
-      )}
+      {({ formData, ...rest }) => {
+        console.log("User ReferenceInput formData:", formData, "rest:", rest);
+        return (
+          <Fragment>
+            <ReferenceInput
+              perPage={10}
+              source="userId"
+              reference="user"
+              label="Which user?"
+              filterToQuery={searchText => {
+                console.log("User filterToQuery searchText:", searchText);
+                return { name: searchText };
+              }}
+              {...rest}
+            >
+              <AutocompleteInput
+                optionText="name"
+                optionValue="id"
+                validate={[required()]}
+                filterToQuery={searchText => ({ name: searchText })}
+              />
+            </ReferenceInput>
+          </Fragment>
+        );
+      }}
     </AvniFormDataConsumer>
     <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_SOURCE"}>
       {({ formData, ...rest }) => (
         <Fragment>
-          <ReferenceInput
-            source="identifierSourceId"
-            reference="identifierSource"
-            label="Which IdentifierSource?"
-            validate={[required()]}
-            {...rest}
-          >
-            <SelectInput source="name" />
+          <ReferenceInput source="identifierSourceId" reference="identifierSource" label="Which IdentifierSource?" {...rest}>
+            <SelectInput source="name" validate={[required()]} />
           </ReferenceInput>
         </Fragment>
       )}

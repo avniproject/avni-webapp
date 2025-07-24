@@ -134,17 +134,23 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     setIsLoading(true);
     try {
       const firstSubjectTypeUUID = get(head(subjectTypes), "uuid");
+
+      // Create a copy of searchRequest to avoid mutation
+      const requestCopy = { ...searchRequest };
+
       if (isNil(searchRequest.subjectType) && !isNil(firstSubjectTypeUUID)) {
-        searchRequest.subjectType = firstSubjectTypeUUID;
+        requestCopy.subjectType = firstSubjectTypeUUID;
       }
+
       const pageElement = {
         pageNumber: pagination.pageIndex,
         numberOfRecordPerPage: pagination.pageSize,
         sortColumn: sorting[0]?.id || null,
         sortOrder: sorting[0]?.desc ? "desc" : sorting[0]?.id ? "asc" : null
       };
-      searchRequest.pageElement = pageElement;
-      const result = await http.post("/web/searchAPI/v2", searchRequest).then(res => res.data);
+
+      requestCopy.pageElement = pageElement;
+      const result = await http.post("/web/searchAPI/v2", requestCopy).then(res => res.data);
       setData(result.listOfRecords || []);
       setTotalRecords(result.totalElements || 0);
     } catch (error) {

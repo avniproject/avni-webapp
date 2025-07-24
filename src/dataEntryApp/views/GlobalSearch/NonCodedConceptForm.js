@@ -32,7 +32,7 @@ const StyledTextFieldRangeTo = styled(TextField)({
   marginLeft: "1%"
 });
 
-function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) {
+function NonCodedConceptForm({ searchFilterForms = [], selectedConcepts, onChange }) {
   const { t } = useTranslation();
 
   return searchFilterForms ? (
@@ -53,7 +53,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                   autoComplete="off"
                   type="text"
                   onChange={event => onChange(event, searchFilterForm)}
-                  value={selectedValue?.value || null}
+                  value={selectedValue?.value || ""}
                 />
               </Grid>
             ) : searchFilterForm.widget === "Range" ? (
@@ -158,7 +158,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     type="number"
                     placeholder="From"
                     onChange={event => onChange(event, searchFilterForm, "minValue")}
-                    value={selectedValue?.minValue || null}
+                    value={selectedValue?.minValue || ""}
                   />
                   <StyledTextFieldRangeTo
                     id={`${searchFilterForm.titleKey}-max`}
@@ -166,7 +166,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     type="number"
                     placeholder="To"
                     onChange={event => onChange(event, searchFilterForm, "maxValue")}
-                    value={selectedValue?.maxValue || null}
+                    value={selectedValue?.maxValue || ""}
                   />
                 </Grid>
               ) : null
@@ -181,7 +181,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     autoComplete="off"
                     type="number"
                     onChange={event => onChange(event, searchFilterForm, "minValue")}
-                    value={selectedValue?.minValue || null}
+                    value={selectedValue?.minValue || ""}
                   />
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Date" ? (
@@ -249,9 +249,5 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
     </Fragment>
   ) : null;
 }
-
-NonCodedConceptForm.defaultProps = {
-  searchFilterForms: {}
-};
 
 export default NonCodedConceptForm;

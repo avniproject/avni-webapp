@@ -10,7 +10,7 @@ const SelectForm = ({ label = "Please select", formList, value, onChange }) => {
       value: form
     }));
 
-  const showValue = _.isEmpty(value) ? blankOption.value : value;
+  const showValue = _.isEmpty(value) ? blankOption.name : typeof value === "string" ? value : value.formName || "";
 
   const options = _.concat([], blankOption, convertFormListForDisplay(formList));
 

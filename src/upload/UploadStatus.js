@@ -34,12 +34,11 @@ const UploadStatus = () => {
   const dispatch = useDispatch();
   const statuses = useSelector(state => state.bulkUpload.statuses);
   const page = useSelector(state => state.bulkUpload.page);
-  const viewVersion = useSelector(state => state.admin.ui.viewVersion);
   const uploadTypes = useSelector(state => state.bulkUpload.uploadTypes) || new UploadTypes();
 
   useEffect(() => {
     dispatch(getStatuses(0));
-  }, [dispatch, viewVersion]);
+  }, [dispatch]);
 
   const changePage = (event, newPage) => {
     dispatch(getStatuses(newPage));

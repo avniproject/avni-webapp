@@ -261,7 +261,7 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
 
       {selectedSearchFilter && (
         <Stack>
-          <Grid xs={12}>
+          <Grid size={{ xs: 12 }}>
             <BasicForm
               searchFilterForms={selectedSearchFilter}
               onChange={searchFilterValue}
@@ -274,7 +274,7 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
             />
           </Grid>
 
-          <Grid xs={12}>
+          <Grid size={{ xs: 12 }}>
             <NonCodedConceptForm
               searchFilterForms={selectedSearchFilter}
               onChange={(e, f, k) => searchFilterConcept(e, f, k, setSelectedConcept)}
@@ -282,11 +282,11 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
             />
           </Grid>
 
-          <Grid xs={12}>
+          <Grid size={{ xs: 12 }}>
             <NonConceptForm searchFilterForms={selectedSearchFilter} selectedDate={selectedDate} onDateChange={searchFilterDates} />
           </Grid>
 
-          <Grid xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CodedConceptForm
               searchFilterForms={selectedSearchFilter}
               conceptList={organisationConfigs.conceptList}

@@ -384,27 +384,27 @@ const FormSettings = () => {
                   <div key={index}>
                     <Grid container spacing={2} sx={{ width: "100%" }}>
                       {!isTaskFormType && (
-                        <Grid item xs={12} sm={2}>
+                        <Grid item size={{ xs: 12, sm: 2 }}>
                           {subjectTypeElement(index)}
                         </Grid>
                       )}
                       {isTaskFormType && (
-                        <Grid item xs={12} sm={2}>
+                        <Grid item size={{ xs: 12, sm: 2 }}>
                           {taskTypeElement(index)}
                         </Grid>
                       )}
                       {programBased && (
-                        <Grid item xs={12} sm={3}>
+                        <Grid item size={{ xs: 12, sm: 3 }}>
                           {programNameElement(index)}
                         </Grid>
                       )}
                       {encounterTypes && (
-                        <Grid item xs={12} sm={3}>
+                        <Grid item size={{ xs: 12, sm: 3 }}>
                           {encounterTypesElement(index)}
                         </Grid>
                       )}
                       {!isTaskFormType && (
-                        <Grid item xs={12} sm={3} sx={{ mt: 5 }}>
+                        <Grid item size={{ xs: 12, sm: 3 }} sx={{ mt: 5 }}>
                           <AvniSwitch
                             checked={state.formMappings[index].enableApproval}
                             onChange={event => handleMappingChange(index, "enableApproval", event.target.checked)}
@@ -413,7 +413,7 @@ const FormSettings = () => {
                           />
                         </Grid>
                       )}
-                      <Grid item xs={12} sm={1}>
+                      <Grid item size={{ xs: 12, sm: 1 }}>
                         <IconButton aria-label="delete" onClick={() => removeMapping(index)} sx={{ mt: 1 }} size="large">
                           <DeleteIcon fontSize="inherit" />
                         </IconButton>

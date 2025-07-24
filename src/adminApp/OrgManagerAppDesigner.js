@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import PropTypes from "prop-types";
-import { Admin, Resource } from "react-admin";
-import { useNavigate } from "react-router-dom";
+import { Admin, Resource, CustomRoutes } from "react-admin";
+import { useNavigate, Route } from "react-router-dom";
 
 import { authProvider, dataProvider } from "./react-admin-config";
 import SubjectTypesList from "./SubjectType/SubjectTypesList";
@@ -17,13 +17,13 @@ import EncounterTypeEdit from "./EncounterType/EncounterTypeEdit";
 import EncounterTypeShow from "./EncounterType/EncounterTypeShow";
 import EncounterTypeCreate from "./EncounterType/EncounterTypeCreate";
 import { WithProps } from "../common/components/utils";
-import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
 import Forms from "../formDesigner/views/Forms";
 import Concepts from "../formDesigner/views/Concepts";
 import CreateEditConcept from "../formDesigner/views/CreateEditConcept";
 import ConceptDetails from "../formDesigner/components/ConceptDetails";
 import FormSettings from "../formDesigner/components/FormSettings";
+import FormDetails from "../formDesigner/views/FormDetails";
 import customFilters from "./CustomFilters";
 import { WorklistUpdationRule } from "./WorklistUpdationRule";
 import Relationships from "../formDesigner/components/Relationships/Relationships";
@@ -54,6 +54,8 @@ import UserInfo from "../common/model/UserInfo";
 import { UserMessagingConfig } from "../formDesigner/components/UserMessagingConfig";
 import { ArchivalConfig } from "../formDesigner/components/Archival/ArchivalConfig";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
+import CreateEditLanguages from "./components/CreateEditLanguages";
+import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
 
 const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
   const navigate = useNavigate();
@@ -65,13 +67,14 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
     }
   }, [navigate]);
 
+  const CreateConcept = () => <CreateEditConcept isCreatePage={true} />;
+
   return (
     <Admin
       title="Manage Organisation"
       basename="/appdesigner"
       authProvider={authProvider}
       dataProvider={dataProvider}
-      customRoutes={customRoutes}
       layout={AdminLayout}
       darkTheme={null}
     >
@@ -99,11 +102,11 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         show={EncounterTypeShow}
         list={EncounterTypeList}
       />
-      <Resource name="forms" options={{ label: "Forms" }} list={Forms} edit={FormSettings} />
+      <Resource name="forms" options={{ label: "Forms" }} list={Forms} edit={FormDetails} />
       <Resource
         name="concepts"
         options={{ label: "Concepts" }}
-        create={CreateEditConcept}
+        create={CreateConcept}
         edit={CreateEditConcept}
         show={ConceptDetails}
         list={Concepts}
@@ -183,6 +186,11 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         <Resource name="archivalConfig" options={{ label: "App Storage Config" }} list={ArchivalConfig} />
       )}
       <Resource name="ruleFailures" options={{ label: "Rule Failures" }} list={RuleFailureTelemetryList} />
+      <CustomRoutes>
+        <Route path="/editLanguages" element={<CreateEditLanguages />} />
+        <Route path="/filters" element={<CreateEditFiltersHOC />} />
+        <Route path="/forms/:id/settings" element={<FormSettings />} />
+      </CustomRoutes>
     </Admin>
   );
 };

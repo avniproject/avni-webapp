@@ -142,7 +142,7 @@ const UserGroups = () => {
               key={index}
               groupName={group.name}
               hasAllPrivileges={group.hasAllPrivileges}
-              href={`userGroupDetails/${group.id}`}
+              href={`/admin/userGroupDetails/${group.id}`}
               onDelete={() => deleteGroup(group.id)}
             />
           ))}

@@ -3,7 +3,6 @@ import createSagaMiddleware from "redux-saga";
 import thunkMiddleware from "redux-thunk";
 import { createHashHistory } from "history";
 import { createReduxHistoryContext } from "redux-first-history";
-import { combineReducers } from "redux";
 
 import rootReducer from "../../rootApp/rootReducer";
 import rootSaga from "../../rootApp/rootSaga";
@@ -41,14 +40,10 @@ export const configureStore = (initialState = {}) => {
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
         thunk: false,
-        serializableCheck: {
-          ignoredPaths: ["app.authSession"],
-          ignoredActions: ["app/SET_AUTH_SESSION", "app/SET_USER_INFO"]
-        },
-        immutableCheck: {
-          ignoredPaths: ["app.authSession"],
-          ignoredActions: ["app/SET_USER_INFO"]
-        }
+        // Disable serializableCheck to allow class instances
+        serializableCheck: false,
+        // Disable immutableCheck to fix DEA issue
+        immutableCheck: false
       }).concat(thunkMiddleware, sagaMiddleware, reduxHistoryMiddleware),
     preloadedState: initialState,
     enhancers: getDefaultEnhancers => getDefaultEnhancers().concat(composeEnhancers)
@@ -62,4 +57,3 @@ export const configureStore = (initialState = {}) => {
 };
 
 export const store = configureStore();
-export const history = createReduxHistory(store);

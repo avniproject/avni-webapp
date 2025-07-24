@@ -16,7 +16,7 @@ const StyledLabel = styled(Typography)({
 });
 
 function BasicForm({
-  searchFilterForms,
+  searchFilterForms = [],
   onChange,
   genders,
   onGenderChange,
@@ -144,9 +144,5 @@ function BasicForm({
     </StyledContainer>
   );
 }
-
-BasicForm.defaultProps = {
-  searchFilterForms: []
-};
 
 export default BasicForm;

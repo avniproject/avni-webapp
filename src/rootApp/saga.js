@@ -69,7 +69,7 @@ function* setUserDetails() {
       formatSeparator: ","
     },
     react: {
-      wait: true
+      useSuspense: false
     }
   };
   const init = params => i18nInstance.init(params);

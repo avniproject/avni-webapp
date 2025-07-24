@@ -11,11 +11,11 @@ import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { produce } from "immer";
 import Box from "@mui/material/Box";
-import { Title, useRecordContext, usePermissions } from "react-admin";
+import { Title, useRecordContext } from "react-admin";
 import TextField from "@mui/material/TextField";
 import FormHelperText from "@mui/material/FormHelperText";
 import { Navigate, useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
 import { SystemInfo } from "../components/SystemInfo";
@@ -114,9 +114,11 @@ const getStaticFormElements = subjectType => {
 };
 
 const FormDetails = () => {
-  const { formUUID } = useParams();
-  const userInfo = useSelector(state => state.app.userInfo);
+  const { id } = useParams();
   const record = useRecordContext();
+  const userInfo = useSelector(state => state.app.userInfo);
+  const formUUId = id;
+
   const [state, setState] = useState({
     form: [],
     identifierSources: [],
@@ -161,7 +163,7 @@ const FormDetails = () => {
 
   const getForm = useCallback(async () => {
     try {
-      const response = await http.get(`/forms/export?formUUID=${formUUID}`);
+      const response = await http.get(`/forms/export?formUUID=${formUUId}`);
       const form = response.data;
 
       form.visitScheduleRule = form.visitScheduleRule || "";
@@ -228,7 +230,7 @@ const FormDetails = () => {
     } catch (error) {
       setState(prev => ({ ...prev, errorMsg: "Failed to load form data" }));
     }
-  }, [formUUID]);
+  }, [formUUId]);
 
   const countGroupElements = useCallback(form => {
     return _.every(form.formElementGroups, groupElement => groupElement.voided);

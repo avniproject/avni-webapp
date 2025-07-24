@@ -15,14 +15,18 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { useNavigate } from "react-router-dom";
 
 const EMPTY_TRANSLATION_KEY = "KEY_NOT_DEFINED";
+
 const Translations = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const organisationConfig = useSelector(state => state.translations.onLoad.organisationConfig);
-  const dashboardData = useSelector(state => state.translations.onLoad.dashboardData);
-  const localeChoices = organisationConfig && getLocales(organisationConfig);
+
   const [platform, setPlatform] = useState("");
   const [excludeLocations, setExcludeLocations] = useState(false);
+
+  const organisationConfig = useSelector(state => state.translations.onLoad.organisationConfig);
+  const dashboardData = useSelector(state => state.translations.onLoad.dashboardData);
+
+  const localeChoices = organisationConfig ? getLocales(organisationConfig) : [];
 
   useEffect(() => {
     dispatch(getOrgConfig());
@@ -50,6 +54,7 @@ const Translations = () => {
 
   const platforms = [{ id: "Android", name: "Android" }, { id: "Web", name: "Web" }];
 
+  // Handle the case where locales are not available
   if (isEmpty(localeChoices)) {
     const link = (
       <span

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { isEmpty } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import ScheduledVisitsTable from "dataEntryApp/components/ScheduledVisitsTable";
-import { selectFetchingRulesResponse, selectRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
+import { selectFetchingRulesResponse, selectRulesResponse, fetchRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
 import CustomizedBackdrop from "dataEntryApp/components/CustomizedBackdrop";
 
 const StyledForm = styled("div")(({ theme }) => ({
@@ -27,7 +27,7 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1)
 }));
 
-const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => {
+const Summary = ({ observations, additionalRows, form }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const rulesResponse = useSelector(selectRulesResponse);
@@ -35,7 +35,7 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
 
   useEffect(() => {
     dispatch(fetchRulesResponse());
-  }, []);
+  }, [dispatch]);
 
   if (fetchingRulesResponse) {
     return <CustomizedBackdrop load={false} />;

@@ -14,7 +14,7 @@ const StyledLabel = styled(Typography)({
   color: "rgba(0, 0, 0, 0.54)"
 });
 
-function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedConcepts }) {
+function CodedConceptForm({ searchFilterForms = [], onChange, conceptList, selectedConcepts }) {
   const { t } = useTranslation();
   return searchFilterForms ? (
     <Fragment key={searchFilterForms.uuid}>
@@ -57,9 +57,5 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedCo
     <div />
   );
 }
-
-CodedConceptForm.defaultProps = {
-  searchFilterForms: []
-};
 
 export default CodedConceptForm;

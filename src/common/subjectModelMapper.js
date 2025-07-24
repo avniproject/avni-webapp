@@ -26,12 +26,7 @@ import { mapSubjectType } from "./adapters";
 import { RepeatableQuestionGroup } from "openchs-models";
 
 export const mapIndividual = individualDetails => {
-  const individual = General.assignFields(
-    individualDetails,
-    new Individual(),
-    Individual.directCopyFields,
-    Individual.dateFields
-  );
+  const individual = General.assignFields(individualDetails, new Individual(), Individual.directCopyFields, Individual.dateFields);
   individual.name = Individual.getFullName(individual);
   const gender = new Gender();
   gender.name = individualDetails.gender;
@@ -70,12 +65,7 @@ function getAnswers(answersJson) {
 }
 
 export const mapConcept = conceptJson => {
-  const concept = General.assignFields(conceptJson, new Concept(), [
-    "uuid",
-    "name",
-    "lowAbsolute",
-    "lowNormal"
-  ]);
+  const concept = General.assignFields(conceptJson, new Concept(), ["uuid", "name", "lowAbsolute", "lowNormal"]);
   concept.datatype = conceptJson["dataType"];
   concept.hiNormal = conceptJson["highNormal"];
   concept.hiAbsolute = conceptJson["highAbsolute"];
@@ -102,10 +92,7 @@ export function mapObservation(observationJson) {
     if (concept.isQuestionGroup()) {
       if (looksLikeRepeatableQuestionGroupValue(observationJson.value)) {
         //RepeatableQuestionGroup
-        const repeatableQuestionGroupObservations = _.map(
-          observationJson.value,
-          qgObs => new QuestionGroup(mapObservations(qgObs))
-        );
+        const repeatableQuestionGroupObservations = _.map(observationJson.value, qgObs => new QuestionGroup(mapObservations(qgObs)));
         value = new RepeatableQuestionGroup(repeatableQuestionGroupObservations);
       } else {
         //QuestionGroup
@@ -121,7 +108,6 @@ export function mapObservation(observationJson) {
   }
 }
 
-//subject Dashboard profile Tab
 export const mapProfile = subjectProfile => {
   if (subjectProfile) {
     let individual = mapIndividual(subjectProfile);
@@ -137,8 +123,7 @@ export function mapProgramEnrolment(json, subject) {
   const programEnrolment = new ProgramEnrolment();
   programEnrolment.uuid = json.uuid;
   if (json.enrolmentDateTime) programEnrolment.enrolmentDateTime = new Date(json.enrolmentDateTime);
-  if (json.programExitDateTime)
-    programEnrolment.programExitDateTime = new Date(json.programExitDateTime);
+  if (json.programExitDateTime) programEnrolment.programExitDateTime = new Date(json.programExitDateTime);
   programEnrolment.programExitObservations = mapObservations(json.exitObservations);
   programEnrolment.observations = mapObservations(json.observations) || [];
   const program = new Program();
@@ -148,9 +133,7 @@ export function mapProgramEnrolment(json, subject) {
   programEnrolment.voided = false;
   if (subject) programEnrolment.individual = subject;
   if (!isNil(json.programEncounters)) {
-    programEnrolment.encounters = map(json.programEncounters, programEncounter =>
-      mapProgramEncounter(programEncounter)
-    );
+    programEnrolment.encounters = map(json.programEncounters, programEncounter => mapProgramEncounter(programEncounter));
   }
   return programEnrolment;
 }
@@ -164,31 +147,22 @@ export const mapRelationships = relationshipList => {
 };
 
 export const mapRelations = relationShipJson => {
-  const individualRelationship = General.assignFields(
-    relationShipJson,
-    new IndividualRelationship(),
-    ["uuid", "id", "exitDateTime", "enterDateTime"]
-  );
-  individualRelationship.relationship = mapIndividualRelationshipType(
-    relationShipJson["relationshipType"]
-  );
+  const individualRelationship = General.assignFields(relationShipJson, new IndividualRelationship(), [
+    "uuid",
+    "id",
+    "exitDateTime",
+    "enterDateTime"
+  ]);
+  individualRelationship.relationship = mapIndividualRelationshipType(relationShipJson["relationshipType"]);
   individualRelationship.individualB = mapIndividual(relationShipJson["individualB"]);
   return individualRelationship;
 };
 
 export const mapIndividualRelationshipType = relationShipType => {
   if (relationShipType) {
-    const individualRelationShipType = General.assignFields(
-      relationShipType,
-      new IndividualRelationshipType(),
-      ["uuid"]
-    );
-    individualRelationShipType.individualAIsToBRelation = mapIndividualRelation(
-      relationShipType["individualAIsToBRelation"]
-    );
-    individualRelationShipType.individualBIsToARelation = mapIndividualRelation(
-      relationShipType["individualBIsToARelation"]
-    );
+    const individualRelationShipType = General.assignFields(relationShipType, new IndividualRelationshipType(), ["uuid"]);
+    individualRelationShipType.individualAIsToBRelation = mapIndividualRelation(relationShipType["individualAIsToBRelation"]);
+    individualRelationShipType.individualBIsToARelation = mapIndividualRelation(relationShipType["individualBIsToARelation"]);
     return individualRelationShipType;
   }
 };
@@ -293,9 +267,7 @@ export const mapProgramEncounters = programEncountersList => {
 };
 
 export const mapOperationalProgram = enrolment => {
-  const operationalProgram = General.assignFields(enrolment, new Program(), [
-    "operationalProgramName"
-  ]);
+  const operationalProgram = General.assignFields(enrolment, new Program(), ["operationalProgramName"]);
   operationalProgram.name = enrolment.programName;
   operationalProgram.uuid = enrolment.programUuid;
   return operationalProgram;
@@ -322,10 +294,7 @@ export const mapGeneral = subjectGeneral => {
 };
 
 //To get Program Encounter with observations
-export const mapProgramEncounter = (
-  programEncounter,
-  observations = programEncounter["observations"]
-) => {
+export const mapProgramEncounter = (programEncounter, observations = programEncounter["observations"]) => {
   if (programEncounter) {
     const programEncounterObj = General.assignFields(
       programEncounter,
@@ -335,9 +304,7 @@ export const mapProgramEncounter = (
     );
     programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
     programEncounterObj.observations = mapObservations(observations);
-    programEncounterObj.cancelObservations = mapObservations(
-      programEncounter["cancelObservations"]
-    );
+    programEncounterObj.cancelObservations = mapObservations(programEncounter["cancelObservations"]);
     programEncounterObj.subjectUuid = programEncounter["subjectUUID"];
     programEncounterObj.enrolmentUuid = programEncounter["enrolmentUUID"];
     return programEncounterObj;

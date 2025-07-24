@@ -7,7 +7,7 @@ export const reportTypes = Object.freeze({
   GroupSubject: "Group Subject"
 });
 
-export default class {
+export default class ReportTypes {
   static get names() {
     return map(reportTypes, name => ({ name }));
   }

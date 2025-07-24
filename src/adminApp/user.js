@@ -61,6 +61,15 @@ import ReactSelectHelper from "../common/utils/ReactSelectHelper";
 import IdpDetails from "../rootApp/security/IdpDetails";
 import OrgManagerContext from "./OrgManagerContext";
 
+const StringToLabelObject = ({ children, ...props }) => {
+  const record = useRecordContext();
+  if (!record) return null;
+
+  const labelRecord = typeof record === "string" ? { label: record } : record;
+
+  return cloneElement(children, { ...props, record: labelRecord });
+};
+
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
   <Paper>
     <DocumentationContainer filename={"User.md"}>
@@ -72,45 +81,40 @@ export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
 );
 
 export const UserEdit = ({ organisation, ...props }) => (
-  <Edit {...props} title={<UserTitle titlePrefix="Edit" />} undoable={false}>
+  <Edit {...props} title={<UserTitle titlePrefix="Edit" />} mutationMode="pessimistic">
     <UserForm edit organisation={organisation} />
   </Edit>
 );
-
-const UserGroupsDisplay = ({ record, style }) => (
-  <div style={style}>
-    {_.isArrayLike(record.userGroups) &&
-      record.userGroups
-        .filter(ug => ug && !ug.voided)
-        .map(userGroup => <Chip style={{ margin: "0.2em" }} label={userGroup.groupName} key={userGroup.groupName} />)}
-  </div>
-);
-
-export const StringToLabelObject = ({ record, children, ...rest }) =>
-  cloneElement(children, {
-    record: { label: record },
-    ...rest
-  });
 
 export const UserList = ({ ...props }) => {
   const { organisation } = useContext(OrgManagerContext);
   return (
     <List
       {...props}
-      bulkActionButtons={false}
+      hasCreate={false}
       filter={{ organisationId: organisation.id }}
-      filters={<UserFilter />}
+      filters={UserFilter}
       title={`${organisation.name} Users`}
     >
       <Datagrid rowClick="show">
         <TextField label="Login ID" source="username" />
         <TextField source="name" label="Name of the Person" />
-        <ReferenceField label="Catchment" source="catchmentId" reference="catchment" linkType="show" allowEmpty>
+        <ReferenceField label="Catchment" source="catchmentId" reference="catchment" link="show" emptyText="">
           <TextField source="name" />
         </ReferenceField>
         <TextField source="email" label="Email Address" />
         <TextField source="phoneNumber" label="Phone Number" />
-        <UserGroupsDisplay style={{ maxWidth: "40em" }} label="User Groups" />
+        <FunctionField
+          label="User Groups"
+          render={record => (
+            <div style={{ maxWidth: "40em" }}>
+              {_.isArrayLike(record.userGroups) &&
+                record.userGroups
+                  .filter(ug => ug && !ug.voided)
+                  .map(userGroup => <Chip style={{ margin: "0.2em" }} label={userGroup.groupName} key={userGroup.groupName} />)}
+            </div>
+          )}
+        />
         <FunctionField
           label="Status"
           render={user => (user.voided === true ? "Deleted" : user.disabledInCognito === true ? "Disabled" : "Active")}
@@ -168,10 +172,12 @@ const SubjectTypeSyncAttributeShow = ({ subjectType, syncConceptValueMap, ...pro
   </div>
 );
 
-const ConceptSyncAttributeShow = ({ subjectType, syncConceptValueMap, syncAttributeName, ...props }) => {
-  const syncSettings = get(props.record, ["syncSettings", subjectType.name], {});
+const ConceptSyncAttributeShow = ({ subjectType, syncConceptValueMap, syncAttributeName }) => {
+  const record = useRecordContext();
+  const syncSettings = get(record, ["syncSettings", subjectType.name], {});
   const conceptUUID = get(syncSettings, [syncAttributeName]);
   const syncConceptName = subjectType[syncAttributeName].name;
+
   if (isEmpty(conceptUUID)) return null;
 
   return (
@@ -184,10 +190,34 @@ const ConceptSyncAttributeShow = ({ subjectType, syncConceptValueMap, syncAttrib
   );
 };
 
-export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
-  const [syncAttributesData, setSyncAttributesData] = useState(initialSyncAttributes);
-  fetchSyncAttributeData(setSyncAttributesData);
+const SyncAttributesProvider = ({ children }) => {
+  const [syncAttributesData, setSyncAttributesData] = useState({ subjectTypes: [] });
 
+  useEffect(() => {
+    let isMounted = true;
+    http.get("/subjectType/syncAttributesData").then(res => {
+      const { subjectTypes, anySubjectTypeDirectlyAssignable, anySubjectTypeSyncByLocation } = res.data;
+      const sortedSubjectTypes = sortBy(subjectTypes, "id");
+      getSyncConceptValueMap(sortedSubjectTypes).then(syncConceptValueMap => {
+        if (isMounted) {
+          setSyncAttributesData({
+            subjectTypes: sortedSubjectTypes,
+            anySubjectTypeDirectlyAssignable,
+            anySubjectTypeSyncByLocation,
+            syncConceptValueMap
+          });
+        }
+      });
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  return children(syncAttributesData);
+};
+
+export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
   return (
     <Show {...props} actions={<CustomShowActions hasEditUserPrivilege={hasEditUserPrivilege} />}>
       <SimpleShowLayout>
@@ -216,13 +246,19 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
           render={user => (user.ignoreSyncSettingsInDEA ? "Yes" : "No")}
         />
 
-        {map(syncAttributesData.subjectTypes, st => (
-          <SubjectTypeSyncAttributeShow
-            subjectType={st}
-            key={get(st, "name")}
-            syncConceptValueMap={syncAttributesData.syncConceptValueMap}
-          />
-        ))}
+        <SyncAttributesProvider>
+          {syncAttributesData => (
+            <>
+              {map(syncAttributesData.subjectTypes, st => (
+                <SubjectTypeSyncAttributeShow
+                  subjectType={st}
+                  key={get(st, "name")}
+                  syncConceptValueMap={syncAttributesData.syncConceptValueMap}
+                />
+              ))}
+            </>
+          )}
+        </SyncAttributesProvider>
 
         <FunctionField label="Preferred Language" render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")} />
         <FunctionField label="Date Picker Mode" render={user => (!isNil(user.settings) ? user.settings.datePickerMode : "Calendar")} />
@@ -307,9 +343,8 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
         return (
           <Fragment>
             <Grid container alignItems="center" spacing={2}>
-              <Grid xs={3}>
+              <Grid size={{ xs: 3 }}>
                 <SelectInput
-                  resettable
                   source={`syncSettings.${subjectType.name}.${syncAttributeName}`}
                   label={startCase(syncAttributeName)}
                   choices={[syncAttributeConcept]}
@@ -321,7 +356,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
                   }}
                 />
               </Grid>
-              <Grid xs={9}>
+              <Grid size={{ xs: 9 }}>
                 {!isEmpty(syncAttributeConceptUUID) &&
                   (get(syncAttributeConcept, "dataType") === "Coded" ? (
                     <Select
@@ -338,7 +373,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
                   ) : (
                     <>
                       <div style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: 12, marginTop: 5 }}>Values to sync</div>
-                      <ArrayInput source={syncAttributeValuesFieldName} label="" resettable>
+                      <ArrayInput source={syncAttributeValuesFieldName} label="">
                         <SimpleFormIterator>
                           <TextInput label={`${startCase(syncAttributeName)} Value`} validate={isRequired} />
                         </SimpleFormIterator>
@@ -353,7 +388,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
     </FormDataConsumer>
   );
 };
-const initialSyncAttributes = { subjectTypes: [] };
+
 const getSyncConceptValueMap = async sortedSubjectTypes => {
   const syncConceptValueMap = new Map();
   const codedConceptUUIDSet = new Set();
@@ -371,7 +406,34 @@ const getSyncConceptValueMap = async sortedSubjectTypes => {
   }
   return syncConceptValueMap;
 };
-function fetchSyncAttributeData(setSyncAttributesData) {
+
+const UsernameHandler = ({ nameSuffix }) => {
+  const { setValue } = useFormContext();
+  const usernameIgnored = useWatch({ name: "ignored" });
+
+  useEffect(() => {
+    if (usernameIgnored) {
+      setValue("username", usernameIgnored + "@" + nameSuffix);
+    }
+  }, [usernameIgnored, setValue, nameSuffix]);
+
+  return <AvniTextInput source="ignored" style={{ display: "none" }} />;
+};
+
+const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
+  const [languages, setLanguages] = useState([]);
+  const [syncAttributesData, setSyncAttributesData] = useState({ subjectTypes: [] });
+  const isSyncSettingsRequired = syncAttributesData.subjectTypes.length > 0 || syncAttributesData.isAnySubjectTypeDirectlyAssignable;
+
+  useEffect(() => {
+    http.get("/organisationConfig").then(res => {
+      const organisationLocales = isEmpty(res.data._embedded.organisationConfig)
+        ? [localeChoices[0]]
+        : filter(localeChoices, l => res.data._embedded.organisationConfig[0].settings.languages.includes(l.id));
+      setLanguages(organisationLocales);
+    });
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
     http.get("/subjectType/syncAttributesData").then(res => {
@@ -392,42 +454,16 @@ function fetchSyncAttributeData(setSyncAttributesData) {
       isMounted = false;
     };
   }, []);
-}
-
-const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
-  const [languages, setLanguages] = useState([]);
-  const [syncAttributesData, setSyncAttributesData] = useState(initialSyncAttributes);
-  const isSyncSettingsRequired = syncAttributesData.subjectTypes.length > 0 || syncAttributesData.isAnySubjectTypeDirectlyAssignable;
-
-  const { setValue } = useFormContext();
-  const usernameIgnored = useWatch({ name: "ignored" });
-
-  useEffect(() => {
-    if (usernameIgnored) {
-      setValue("username", usernameIgnored + "@" + nameSuffix);
-    }
-  }, [usernameIgnored]);
-
-  useEffect(() => {
-    http.get("/organisationConfig").then(res => {
-      const organisationLocales = isEmpty(res.data._embedded.organisationConfig)
-        ? [localeChoices[0]]
-        : filter(localeChoices, l => res.data._embedded.organisationConfig[0].settings.languages.includes(l.id));
-      setLanguages(organisationLocales);
-    });
-  }, []);
-
-  useEffect(() => {
-    fetchSyncAttributeData(setSyncAttributesData);
-  }, []);
 
   const sanitizeProps = ({ record, resource, save }) => ({
     record,
     resource,
     save
   });
+
   return (
     <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="show" validate={validatePasswords}>
+      {!edit && <UsernameHandler nameSuffix={nameSuffix} />}
       {edit ? (
         <TextInput disabled source="username" label="Login ID (username)" />
       ) : (
@@ -440,10 +476,19 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
 
             return (
               <Fragment>
-                <AvniTextInput source="username" validate={validateUserName} label="Login ID (username)" toolTipKey="ADMIN_USER_USER_NAME">
-                  <span>@{nameSuffix}</span>
-                </AvniTextInput>
-
+                <Grid container alignItems="center" spacing={1}>
+                  <Grid>
+                    <AvniTextInput
+                      source="username"
+                      validate={validateUserName}
+                      label="Login ID (username)"
+                      toolTipKey="ADMIN_USER_USER_NAME"
+                    />
+                  </Grid>
+                  <Grid>
+                    <span>@{nameSuffix}</span>
+                  </Grid>
+                </Grid>
                 {isCognito && currentUsername && (
                   <AvniBooleanInput
                     source="customPassword"
@@ -451,6 +496,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                     label="Set a custom password. If custom password is not set, temporary password will be first 4 characters of username and last 4 characters of phone number."
                     onChange={(e, newVal) => {
                       if (!isNil(newVal)) {
+                        const { setValue } = useFormContext();
                         setValue("customPassword", newVal);
                         setValue("password", null);
                         setValue("confirmPassword", null);
@@ -463,14 +509,12 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                 {(isKeycloak || customPassword) && (
                   <Fragment>
                     <AvniPasswordInput
-                      resettable
                       source="password"
                       label="Custom password"
                       validate={validatePassword}
                       toolTipKey="ADMIN_USER_CUSTOM_PASSWORD"
                     />
                     <AvniPasswordInput
-                      resettable
                       source="confirmPassword"
                       label="Verify password"
                       validate={validatePassword}
@@ -488,31 +532,37 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
       <AvniTextInput source="phoneNumber" validate={getPhoneValidator(organisation.region)} toolTipKey={"ADMIN_USER_PHONE_NUMBER"} />
       <LineBreak />
       <FormDataConsumer>
-        {({ formData }) => (
-          <Fragment>
-            <ToolTipContainer toolTipKey="ADMIN_USER_CATCHMENT" alignItems="center">
-              <Typography variant="title" component="h3">
-                Catchment
-              </Typography>
-            </ToolTipContainer>
+        {({ formData }) => {
+          const { setValue } = useFormContext();
 
-            <ReferenceInput
-              source="catchmentId"
-              reference="catchment"
-              label="Which catchment?"
-              filterToQuery={searchText => ({ name: searchText })}
-              validate={syncAttributesData?.isAnySubjectTypeSyncByLocation && required("Please select a catchment")}
-              onChange={(e, newVal) => {
-                if (edit) alert(catchmentChangeMessage);
-                setValue("operatingIndividualScope", isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE);
-              }}
-            >
-              <CatchmentSelectInput />
-            </ReferenceInput>
+          return (
+            <Fragment>
+              <ToolTipContainer toolTipKey="ADMIN_USER_CATCHMENT" alignItems="center">
+                <Typography variant="title" component="h3">
+                  Catchment
+                </Typography>
+              </ToolTipContainer>
 
-            <LineBreak num={1} />
-          </Fragment>
-        )}
+              <ReferenceInput
+                source="catchmentId"
+                reference="catchment"
+                label="Which catchment?"
+                filterToQuery={searchText => ({ name: searchText })}
+                onChange={(e, newVal) => {
+                  if (edit) alert(catchmentChangeMessage);
+                  setValue("operatingIndividualScope", isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE);
+                }}
+              >
+                <CatchmentSelectInput
+                  validate={syncAttributesData?.anySubjectTypeSyncByLocation && required("Please select a catchment")}
+                  style={{ width: "fit-content", minWidth: "15em" }}
+                />
+              </ReferenceInput>
+
+              <LineBreak num={1} />
+            </Fragment>
+          );
+        }}
       </FormDataConsumer>
       <Fragment>
         <ToolTipContainer toolTipKey={"ADMIN_USER_GROUP"} alignItems={"center"}>
@@ -521,7 +571,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
           </Typography>
         </ToolTipContainer>
         <ReferenceArrayInput resource="group" reference="group" source="groupIds" filter={{ isNotEveryoneGroup: true }}>
-          <SelectArrayInput style={{ minWidth: "16em" }} label="Associated User Groups" options={{ fullWidth: true }} optionText="name" />
+          <SelectArrayInput label="Associated User Groups" optionText="name" style={{ width: "fit-content", minWidth: "15em" }} />
         </ReferenceArrayInput>
         <LineBreak num={1} />
       </Fragment>
@@ -533,7 +583,12 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
             Settings
           </Typography>
         </ToolTipContainer>
-        <SelectInput source="settings.locale" label="Preferred Language" choices={languages} />
+        <SelectInput
+          source="settings.locale"
+          label="Preferred Language"
+          choices={languages}
+          style={{ width: "fit-content", minWidth: "15em" }}
+        />
         <AvniBooleanInput source="settings.trackLocation" label="Track location" toolTipKey={"ADMIN_USER_SETTINGS_TRACK_LOCATION"} />
         <AvniBooleanInput
           source="settings.isAllowedToInvokeTokenGenerationAPI"
