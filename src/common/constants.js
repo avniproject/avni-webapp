@@ -2,10 +2,10 @@ import ApplicationContext from "../ApplicationContext";
 
 export const isDevEnv = ApplicationContext.isDevEnv();
 export const isProdEnv = ApplicationContext.isProdEnv();
-export const devEnvUserName = process.env.REACT_APP_DEV_ENV_USER;
+export const devEnvUserName = import.meta.env.VITE_REACT_APP_DEV_ENV_USER;
 
-//Set by testing tools like Jest
-export const isTestEnv = process.env.NODE_ENV === "test";
+// Set by testing tools like Jest
+export const isTestEnv = import.meta.env.MODE === "test";
 
 export const AWS_REGION = "ap-south-1";
 export const SESSION_IDLE_MINUTES = 20;
@@ -47,7 +47,7 @@ export const pickers = [
   }
 ];
 
-export const phoneCountryPrefix = process.env.REACT_APP_PHONE_COUNTRY_PREFIX || "+91";
+export const phoneCountryPrefix = import.meta.env.VITE_REACT_APP_PHONE_COUNTRY_PREFIX || "+91";
 
 export const localeChoices = [
   { id: LOCALES.ENGLISH, name: "English" },

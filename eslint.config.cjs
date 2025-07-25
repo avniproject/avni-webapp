@@ -13,10 +13,7 @@ module.exports = [
       parser: babelParser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        requireConfigFile: false,
-        babelOptions: {
-          presets: ["@babel/preset-env", "@babel/preset-react"],
-        },
+        requireConfigFile: true,
       },
       globals: {
         AbortController: "readonly",
@@ -44,32 +41,31 @@ module.exports = [
     },
     plugins: {
       import: importPlugin,
-      react: react,
+      react,
     },
     rules: {
-      "no-undef": "error",
-      "import/no-duplicates": ["error"],
-      "no-duplicate-imports": "off",
-      "import/no-unresolved": [
-        "error",
-        {
-          ignore: ["\\.css$"]
-        }
-      ],
-      "import/named": "error",
-      "import/default": "error",
-      "import/no-named-as-default": "warn",
-      "import/no-named-as-default-member": "warn",
-      "react/jsx-uses-react": "off",
-      "react/jsx-uses-vars": "error",
-      "react/prop-types": "off",
+      'no-undef': 'error',
+      'import/no-duplicates': 'error',
+      'no-duplicate-imports': 'off',
+      'import/no-unresolved': ['error', { ignore: ['\\.css$'] }],
+      'import/named': 'error',
+      'import/default': 'error',
+      'import/no-absolute-path': ['error', { esmodule: true, commonjs: false }],
+      'import/extensions': ['error', 'always', { js: 'never', jsx: 'never' }],
+      'import/no-named-as-default': 'warn',
+      'import/no-named-as-default-member': 'warn',
+      'react/jsx-uses-react': 'off',
+      'react/jsx-uses-vars': 'error',
+      'react/prop-types': 'off',
+      'react/jsx-filename-extension': ['warn', { extensions: ['.jsx'] }],
     },
     settings: {
-      react: { version: "18.0" },
-      "import/resolver": {
+      react: { version: '18.0' },
+      'import/resolver': {
         node: {
-          extensions: [".js", ".jsx", ".ts", ".tsx"],
-          paths: ["src"],
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          paths: ['src'],
+          moduleDirectory: ['node_modules', 'src'],
         },
       },
     },
