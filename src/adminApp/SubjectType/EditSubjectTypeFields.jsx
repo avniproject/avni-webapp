@@ -10,6 +10,7 @@ import { findRegistrationForms } from "../domain/formMapping";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import GroupRoles from "./GroupRoles";
 import {
+  sampleMemberAdditionEligibilityCheckRule,
   sampleSubjectProgramEligibilityCheckRule,
   sampleSubjectSummaryRule
 } from "../../formDesigner/common/SampleRule";
@@ -141,6 +142,27 @@ const EditSubjectTypeFields = props => {
           dispatch({ type: "programEligibilityCheckRule", payload: event })
         }
       />
+      {Types.isGroup(subjectType.type) && (
+        <>
+          <p />
+          <AvniFormLabel
+            label={"Member Addition Eligibility Check Rule"}
+            toolTipKey={"MEMBER_ADDITION_ELIGIBILITY_CHECK_RULE"}
+          />
+          <JSEditor
+            value={
+              subjectType.memberAdditionEligibilityCheckRule ||
+              sampleMemberAdditionEligibilityCheckRule()
+            }
+            onValueChange={event =>
+              dispatch({
+                type: "memberAdditionEligibilityCheckRule",
+                payload: event
+              })
+            }
+          />
+        </>
+      )}
     </>
   );
 };

@@ -20,7 +20,7 @@ const StyledAutosuggestContainer = styled("div")(({ theme }) => ({
 
 const StyledSuggestionsContainer = styled("div")({
   position: "absolute",
-  zIndex: 1,
+  zIndex: 2,
   left: 0,
   right: 0,
   overflow: "auto",

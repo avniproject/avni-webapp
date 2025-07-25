@@ -52,7 +52,7 @@ import ApplicationMenuShow from "./ApplicationMenu/ApplicationMenuShow";
 import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
 import { UserMessagingConfig } from "../formDesigner/components/UserMessagingConfig";
-import { ArchivalConfig } from "../formDesigner/components/Archival/ArchivalConfig";
+import { StorageManagementConfig } from "../formDesigner/components/StorageManagement/StorageManagementConfig";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import CreateEditLanguages from "./components/CreateEditLanguages";
 import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
@@ -228,9 +228,9 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         Privilege.PrivilegeType.EditOrganisationConfiguration
       ) && (
         <Resource
-          name="archivalConfig"
+          name="appStorageConfig"
           options={{ label: "App Storage Config" }}
-          list={ArchivalConfig}
+          list={StorageManagementConfig}
         />
       )}
       <Resource

@@ -88,13 +88,15 @@ const Homepage = () => {
             <Translate color="primary" style={{ fontSize: 100 }} />
           }
         />
-        <HomePageCard
-          href={"/#/export"}
-          name={"Reports"}
-          customIconComponent={
-            <Assessment color="primary" style={{ fontSize: 100 }} />
-          }
-        />
+        {showAnalytics && (
+          <HomePageCard
+            href={"/#/export"}
+            name={"Reports"}
+            customIconComponent={
+              <Assessment color="primary" style={{ fontSize: 100 }} />
+            }
+          />
+        )}
         {showDataEntryApp && (
           <HomePageCard
             href={"/#/app"}

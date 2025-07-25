@@ -1,7 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import { useParams, Navigate } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Title } from "react-admin";
 import { httpClient as http } from "common/utils/httpClient";
 import NumericConcept from "../components/NumericConcept";
 import CodedConcept from "../components/CodedConcept";
@@ -9,19 +16,17 @@ import { LocationConcept } from "../components/LocationConcept";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
-import Box from "@mui/material/Box";
-import { Title, usePermissions, useRecordContext } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, replace, sortBy, toLower, trim } from "lodash";
+import { filter, replace, sortBy, toLower, trim } from "lodash";
+import {
+  findKeyValue,
+  getKeyValue,
+  safeKeyValues
+} from "../util/KeyValuesUtil";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
-import { Grid } from "@mui/material";
-import Button from "@mui/material/Button";
-import { useNavigate, useParams } from "react-router-dom";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
 import { SubjectConcept } from "../components/SubjectConcept";
 import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
@@ -34,9 +39,7 @@ import {
   WebConcept,
   WebConceptAnswerView,
   WebConceptView
-} from "../../common/model/WebConcept";
-import { useSelector, useDispatch } from "react-redux";
-import { useForm, useFormContext } from "react-hook-form";
+} from "../../common/model/WebConcept.ts";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -95,25 +98,19 @@ const checkForDuplicateAnswers = answers => {
 };
 
 const CreateEditConcept = ({ isCreatePage = false }) => {
-  const { register, handleSubmit, setValue, getValues } = useForm({
-    defaultValues: {
-      concept: WebConceptView.emptyConcept(),
-      active: false
-    }
-  });
-  const {
-    setError,
-    clearErrors,
-    formState: { errors }
-  } = useFormContext();
-  const [dataTypes, setDataTypes] = useState([]);
+  const params = useParams();
+
+  const emptyConcept = WebConceptView.emptyConcept();
+  emptyConcept.keyValues = emptyConcept.keyValues || [];
+
+  const [concept, setConcept] = useState(emptyConcept);
   const [conceptCreationAlert, setConceptCreationAlert] = useState(false);
+  const [error, setError] = useState({});
+  const [dataTypes, setDataTypes] = useState([]);
   const [defaultSnackbarStatus, setDefaultSnackbarStatus] = useState(true);
   const [redirectShow, setRedirectShow] = useState(false);
-  const [redirectOnDeleteOrCreate, setRedirectOnDeleteOrCreate] = useState(
-    false
-  );
-  const [operationalModules, setOperationalModules] = useState(null);
+  const [redirectOnDelete, setRedirectOnDelete] = useState(false);
+  const [operationalModules, setOperationalModules] = useState([]);
 
   const readOnlyKeys = [
     "isWithinCatchment",
@@ -127,273 +124,415 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     "encounterIdentifier"
   ];
 
+  const onLoad = useCallback(async () => {
+    if (isCreatePage) {
+      const response = await http.get("/concept/dataTypes");
+      setDataTypes(sortBy(response.data));
+    } else {
+      const conceptData = await ConceptService.getConcept(params.uuid);
+      setConcept(conceptData);
+    }
+
+    const opModules = await http.get("/web/operationalModules");
+    setOperationalModules(opModules.data);
+  }, [isCreatePage, params.uuid]);
+
   useEffect(() => {
-    const loadData = async () => {
-      if (isCreatePage) {
-        const response = await http.get("/concept/dataTypes");
-        setDataTypes(sortBy(response.data));
-      } else {
-        const concept = await ConceptService.getConcept(uuid);
-        setValue("concept", concept);
-        setValue("active", concept.active);
-      }
-      const opModules = await http.get("/web/operationalModules");
-      setOperationalModules(opModules.data);
-    };
-    loadData();
-  }, [isCreatePage, uuid, setValue]);
+    onLoad();
+  }, [onLoad]);
 
-  const handleChange = key => e => {
-    const resetKeyValues =
-      isCreatePage && key === "dataType" && e.target.value !== "Location";
-    const concept = getValues("concept");
-    const updatedConcept = {
-      ...concept,
-      [key]: replace(e.target.value, "|", "")
-    };
-    if (resetKeyValues) updatedConcept.keyValues = [];
-    setValue("concept", updatedConcept);
-    clearErrors();
-  };
+  const getDefaultSnackbarStatus = useCallback(status => {
+    setDefaultSnackbarStatus(status);
+  }, []);
 
-  const validateKeyValues = (error, key, errorKey) => {
-    const concept = getValues("concept");
-    const keyValue = concept.keyValues.find(kv => kv.key === key);
-    if (!keyValue || keyValue.value === "") {
-      setError(errorKey, { type: "manual", message: "*Required" });
-    }
-  };
+  const handleRedirectShow = useCallback(() => {
+    setRedirectShow(true);
+  }, []);
 
-  const onSubmit = async data => {
-    const concept = data.concept;
-    let formErrors = {};
+  const onDeleteAnswer = useCallback(index => {
+    setConcept(prev => {
+      const answers = [...prev.answers];
+      answers.splice(index, 1);
+      return { ...prev, answers };
+    });
+  }, []);
 
-    if (!concept.dataType) {
-      setError("dataTypeSelectionAlert", {
-        type: "manual",
-        message: "*Required"
+  const onAddAnswer = useCallback(() => {
+    setConcept(prev => ({
+      ...prev,
+      answers: [...prev.answers, WebConceptAnswerView.emptyAnswer()]
+    }));
+  }, []);
+
+  const onChangeAnswerName = useCallback((answer, index) => {
+    setConcept(prev => {
+      const answers = [...prev.answers];
+      answers[index].name = answer;
+      return { ...prev, answers };
+    });
+  }, []);
+
+  const handleMediaDelete = useCallback(() => {
+    setConcept(prev => ({ ...prev, mediaUrl: null, unSavedMediaFile: null }));
+  }, []);
+
+  const onMoveUp = useCallback(index => {
+    setConcept(prev => ({
+      ...prev,
+      answers: moveUp(prev.answers, index)
+    }));
+  }, []);
+
+  const onMoveDown = useCallback(index => {
+    setConcept(prev => ({
+      ...prev,
+      answers: moveDown(prev.answers, index)
+    }));
+  }, []);
+
+  const onAlphabeticalSort = useCallback(() => {
+    setConcept(prev => ({
+      ...prev,
+      answers: alphabeticalSort(prev.answers)
+    }));
+  }, []);
+
+  const onSelectAnswerMedia = useCallback((mediaFile, index) => {
+    setConcept(prev => {
+      const answers = [...prev.answers];
+      answers[index].unSavedMediaFile = mediaFile;
+      return { ...prev, answers };
+    });
+  }, []);
+
+  const onRemoveAnswerMedia = useCallback(index => {
+    setConcept(prev => {
+      const answers = [...prev.answers];
+      answers[index].unSavedMediaFile = null;
+      answers[index].mediaUrl = null;
+      return { ...prev, answers };
+    });
+  }, []);
+
+  const onToggleAnswerField = useCallback((event, index) => {
+    setConcept(prev => {
+      const answers = [...prev.answers];
+      answers[index][event.target.id] = !answers[index][event.target.id];
+      return { ...prev, answers };
+    });
+  }, []);
+
+  const handleChange = useCallback(
+    stateHandler => e => {
+      const resetKeyValues =
+        isCreatePage &&
+        stateHandler === "dataType" &&
+        e.target.value !== "Location";
+      setConcept(prev => {
+        const c = { ...prev };
+        c[stateHandler] = replace(e.target.value, "|", "");
+        if (resetKeyValues) c.keyValues = [];
+        return c;
       });
-      formErrors.dataTypeSelectionAlert = true;
+    },
+    [isCreatePage]
+  );
+
+  const validateKeyValues = useCallback(
+    (error, key, errorKey) => {
+      const keyValue = findKeyValue(concept.keyValues, key);
+      if (keyValue === undefined || keyValue.value === "") {
+        error[errorKey] = true;
+      }
+    },
+    [concept.keyValues]
+  );
+
+  const formValidation = useCallback(async () => {
+    let error = {};
+    const answers = concept.answers;
+
+    if (concept.dataType === "") {
+      error["dataTypeSelectionAlert"] = true;
     }
-    if (!concept.name.trim()) {
-      setError("isEmptyName", { type: "manual", message: "*Required" });
-      formErrors.isEmptyName = true;
+    if (concept.name.trim() === "") {
+      error["isEmptyName"] = true;
     }
 
     const numericRangeErrors = WebConcept.validateNumericRanges(concept);
-    Object.entries(numericRangeErrors).forEach(([key, value]) => {
-      if (value) setError(key, { type: "manual", message: "*Invalid" });
-    });
-    formErrors = { ...formErrors, ...numericRangeErrors };
+    error = { ...error, ...numericRangeErrors };
 
     if (concept.dataType === "Coded") {
-      validateCodedConceptAnswers(concept.answers);
-      if (
-        concept.answers.some(answer => answer.isAnswerHavingError.isErrored)
-      ) {
-        setError("isAnswerHavingError", {
-          type: "manual",
-          message: "*Invalid answers"
-        });
-        formErrors.isAnswerHavingError = true;
+      validateCodedConceptAnswers(answers);
+      if (answers.some(answer => answer["isAnswerHavingError"].isErrored)) {
+        error["isAnswerHavingError"] = true;
       }
     }
 
     if (concept.dataType === "Location") {
-      validateKeyValues(
-        formErrors,
-        "lowestAddressLevelTypeUUIDs",
-        "lowestAddressLevelRequired"
+      const lowestLevel = getKeyValue(
+        concept.keyValues,
+        "lowestAddressLevelTypeUUIDs"
       );
-      const highestLevelKeyValue = concept.keyValues.find(
-        kv => kv.key === "highestAddressLevelTypeUUID"
+      if (lowestLevel === undefined || lowestLevel.length === 0) {
+        error.lowestAddressLevelRequired = true;
+      }
+
+      const highestLevelKeyValue = findKeyValue(
+        concept.keyValues,
+        "highestAddressLevelTypeUUID"
       );
-      if (highestLevelKeyValue?.value === "") {
-        setError("highestAddressLevelRequired", {
-          type: "manual",
-          message: "*Required"
-        });
-        formErrors.highestAddressLevelRequired = true;
+      if (
+        highestLevelKeyValue !== undefined &&
+        highestLevelKeyValue.value === ""
+      ) {
+        error["highestAddressLevelRequired"] = true;
       }
     }
 
     if (concept.dataType === "Subject") {
-      validateKeyValues(formErrors, "subjectTypeUUID", "subjectTypeRequired");
+      validateKeyValues(error, "subjectTypeUUID", "subjectTypeRequired");
     }
 
     if (concept.dataType === "Encounter") {
+      validateKeyValues(error, "encounterTypeUUID", "encounterTypeRequired");
+      validateKeyValues(error, "encounterScope", "encounterScopeRequired");
       validateKeyValues(
-        formErrors,
-        "encounterTypeUUID",
-        "encounterTypeRequired"
-      );
-      validateKeyValues(formErrors, "encounterScope", "encounterScopeRequired");
-      validateKeyValues(
-        formErrors,
+        error,
         "encounterIdentifier",
         "encounterIdentifierRequired"
       );
     }
 
     const emptyKeyValues = filter(
-      concept.keyValues,
-      ({ key, value }) => key === "" || value === ""
+      safeKeyValues(concept.keyValues),
+      item => item && (item.key === "" || item.value === "")
     );
     if (emptyKeyValues.length > 0) {
-      setError("keyValueError", {
-        type: "manual",
-        message: "*Invalid key-value"
-      });
-      formErrors.keyValueError = true;
+      error["keyValueError"] = true;
     }
 
-    if (Object.keys(formErrors).length === 0) {
-      const { concept: savedConcept, error } = await ConceptService.saveConcept(
-        concept
-      );
-      if (error) {
-        setError("mediaUploadFailed", { type: "manual", message: error });
-        return;
-      }
-      setConceptCreationAlert(true);
-      setDefaultSnackbarStatus(true);
-      if (isCreatePage) {
-        setValue("concept", WebConceptView.emptyConcept());
-        setRedirectOnDeleteOrCreate(true);
-      } else {
-        setValue("concept", savedConcept);
-        setRedirectShow(true);
-      }
+    setError(error);
+
+    if (Object.keys(error).length === 0) await afterSuccessfulValidation();
+  }, [concept, validateKeyValues]);
+
+  const handleSubmit = useCallback(
+    e => {
+      e.preventDefault();
+      formValidation();
+    },
+    [formValidation]
+  );
+
+  const afterSuccessfulValidation = useCallback(async () => {
+    const {
+      concept: savedConcept,
+      error: saveError
+    } = await ConceptService.saveConcept(concept);
+    if (saveError) {
+      const newError = {
+        nameConflict: saveError.includes("already exists"),
+        mediaUploadFailed: !saveError.includes("already exists"),
+        message: saveError
+      };
+      setError(newError);
+      return;
     }
-  };
 
-  const onDeleteAnswer = index => {
-    const concept = getValues("concept");
-    const answers = [...concept.answers];
-    answers.splice(index, 1);
-    setValue("concept.answers", answers);
-  };
+    setConceptCreationAlert(true);
+    setDefaultSnackbarStatus(true);
+    setRedirectShow(true);
+    setRedirectOnDelete(false);
+    setConcept(savedConcept);
+  }, [concept]);
 
-  const onAddAnswer = () => {
-    const concept = getValues("concept");
-    setValue("concept.answers", [
-      ...concept.answers,
-      WebConceptAnswerView.emptyAnswer()
-    ]);
-  };
+  const onNumericConceptAttributeAssignment = useCallback(event => {
+    setConcept(prev => ({
+      ...prev,
+      [event.target.id]: event.target.value
+    }));
+  }, []);
 
-  const onChangeAnswerName = (answer, index) => {
-    const concept = getValues("concept");
-    const answers = [...concept.answers];
-    answers[index].name = answer;
-    setValue("concept.answers", answers);
-  };
-
-  const handleMediaDelete = () => {
-    const concept = getValues("concept");
-    setValue("concept.mediaUrl", null);
-    setValue("concept.unSavedMediaFile", null);
-  };
-
-  const onMoveUp = index => {
-    const concept = getValues("concept");
-    setValue("concept.answers", moveUp(concept.answers, index));
-  };
-
-  const onMoveDown = index => {
-    const concept = getValues("concept");
-    setValue("concept.answers", moveDown(concept.answers, index));
-  };
-
-  const onAlphabeticalSort = () => {
-    const concept = getValues("concept");
-    setValue("concept.answers", alphabeticalSort(concept.answers));
-  };
-
-  const onSelectAnswerMedia = (mediaFile, index) => {
-    const concept = getValues("concept");
-    const answers = [...concept.answers];
-    answers[index].unSavedMediaFile = mediaFile;
-    setValue("concept.answers", answers);
-  };
-
-  const onRemoveAnswerMedia = index => {
-    const concept = getValues("concept");
-    const answers = [...concept.answers];
-    answers[index].unSavedMediaFile = null;
-    answers[index].mediaUrl = null;
-    setValue("concept.answers", answers);
-  };
-
-  const onToggleAnswerField = (event, index) => {
-    const concept = getValues("concept");
-    const answers = [...concept.answers];
-    answers[index][event.target.id] = !answers[index][event.target.id];
-    setValue("concept.answers", answers);
-  };
-
-  const onNumericConceptAttributeAssignment = event => {
-    setValue(event.target.id, event.target.value);
-  };
-
-  const castValueToBooleanOrInt = ({ key, value }) => {
-    let castedValue = JSON.parse(trim(value));
+  const castValueToBooleanOrInt = useCallback(({ key, value }) => {
+    let castedValue;
+    try {
+      castedValue = JSON.parse(trim(value));
+    } catch (e) {
+      castedValue = trim(value);
+    }
     return { key: trim(key), value: castedValue };
-  };
+  }, []);
 
-  const handleObjectValue = ({ key, value }) => {
-    return { key: trim(key), value };
-  };
+  const handleObjectValue = useCallback(({ key, value }) => {
+    return { key: trim(key), value: value };
+  }, []);
 
-  const onKeyValueChange = (keyValue, index) => {
-    const concept = getValues("concept");
-    const keyValues = [...concept.keyValues];
-    keyValues[index] =
-      typeof keyValue.value === "object"
-        ? handleObjectValue(keyValue)
-        : castValueToBooleanOrInt(keyValue);
-    setValue("concept.keyValues", keyValues);
-  };
+  const onKeyValueChange = useCallback(
+    (keyValue, index) => {
+      setConcept(prev => {
+        const keyValues = [...safeKeyValues(prev.keyValues)];
+        keyValues[index] =
+          typeof keyValue.value === "object"
+            ? handleObjectValue(keyValue)
+            : castValueToBooleanOrInt(keyValue);
+        return { ...prev, keyValues };
+      });
+    },
+    [handleObjectValue, castValueToBooleanOrInt]
+  );
 
-  const onAddNewKeyValue = () => {
-    const concept = getValues("concept");
-    const keyValues = concept.keyValues || [];
-    setValue("concept.keyValues", [...keyValues, { key: "", value: "" }]);
-  };
+  const onAddNewKeyValue = useCallback(() => {
+    setConcept(prev => {
+      const keyValues = [
+        ...safeKeyValues(prev.keyValues),
+        { key: "", value: "" }
+      ];
+      return { ...prev, keyValues };
+    });
+  }, []);
 
-  const onDeleteKeyValue = index => {
-    const concept = getValues("concept");
-    const keyValues = [...concept.keyValues];
-    keyValues.splice(index, 1);
-    setValue("concept.keyValues", keyValues);
-  };
+  const onDeleteKeyValue = useCallback(index => {
+    setConcept(prev => {
+      const keyValues = [...safeKeyValues(prev.keyValues)];
+      keyValues.splice(index, 1);
+      return { ...prev, keyValues };
+    });
+  }, []);
 
-  const handleActive = event => {
-    setValue("active", event.target.checked);
-  };
+  const handleActive = useCallback(event => {
+    setConcept(prev => ({
+      ...prev,
+      active: event.target.checked
+    }));
+  }, []);
 
-  const handleMediaSelect = mediaFile => {
-    setValue("concept.unSavedMediaFile", mediaFile);
-  };
+  const handleMediaSelect = useCallback(mediaFile => {
+    setConcept(prev => ({ ...prev, unSavedMediaFile: mediaFile }));
+  }, []);
 
-  const onDeleteConcept = async () => {
+  const onDeleteConcept = useCallback(() => {
     if (window.confirm("Do you really want to delete the concept?")) {
-      const response = await http.delete(
-        `/concept/${getValues("concept.uuid")}`
+      http.delete(`/concept/${concept.uuid}`).then(response => {
+        if (response.status === 200) {
+          setRedirectShow(false);
+          setRedirectOnDelete(true);
+        }
+      });
+    }
+  }, [concept.uuid]);
+
+  useEffect(() => {
+    if (concept.dataType === "PhoneNumber") {
+      const verificationKey = findKeyValue(
+        concept.keyValues,
+        "verifyPhoneNumber"
       );
-      if (response.status === 200) {
-        setRedirectShow(false);
-        setRedirectOnDeleteOrCreate(true);
+      if (!verificationKey) {
+        const keyValues = [{ key: "verifyPhoneNumber", value: false }];
+        setConcept(prev => ({ ...prev, keyValues }));
       }
     }
-  };
+  }, [concept.dataType, concept.keyValues]);
 
-  const concept = getValues("concept");
-  const classes = {
-    textField: { width: 400, marginRight: 10 },
-    select: { width: 400, height: 40, marginTop: 24 },
-    button: { marginTop: 40 },
-    inputLabel: { marginTop: 15, fontSize: 16 }
+  useEffect(() => {
+    if (concept.dataType === "ImageV2") {
+      const locationInformationKey = findKeyValue(
+        concept.keyValues,
+        "captureLocationInformation"
+      );
+      if (!locationInformationKey) {
+        const keyValues = [{ key: "captureLocationInformation", value: false }];
+        setConcept(prev => ({ ...prev, keyValues }));
+      }
+    }
+  }, [concept.dataType, concept.keyValues]);
+
+  const renderDataTypeComponent = () => {
+    switch (concept.dataType) {
+      case "Numeric":
+        return (
+          <NumericConcept
+            onNumericConceptAttributeAssignment={
+              onNumericConceptAttributeAssignment
+            }
+            numericDataTypeAttributes={{ ...concept, error }}
+          />
+        );
+      case "Coded":
+        return (
+          <CodedConcept
+            answers={concept.answers}
+            onDeleteAnswer={onDeleteAnswer}
+            onAddAnswer={onAddAnswer}
+            onChangeAnswerName={onChangeAnswerName}
+            onToggleAnswerField={onToggleAnswerField}
+            onMoveUp={onMoveUp}
+            onMoveDown={onMoveDown}
+            onAlphabeticalSort={onAlphabeticalSort}
+            onSelectAnswerMedia={onSelectAnswerMedia}
+            onRemoveAnswerMedia={onRemoveAnswerMedia}
+          />
+        );
+      case "Location":
+        return (
+          <LocationConcept
+            updateConceptKeyValues={onKeyValueChange}
+            keyValues={concept.keyValues || []}
+            error={error}
+            isCreatePage={isCreatePage}
+            inlineConcept={false}
+          />
+        );
+      case "Subject":
+        return (
+          <SubjectConcept
+            updateKeyValues={onKeyValueChange}
+            keyValues={concept.keyValues || []}
+            error={error}
+            isCreatePage={isCreatePage}
+            inlineConcept={false}
+            operationalModules={operationalModules}
+          />
+        );
+      case "Encounter":
+        return (
+          <EncounterConcept
+            updateKeyValues={onKeyValueChange}
+            keyValues={concept.keyValues || []}
+            error={error}
+            isCreatePage={isCreatePage}
+            inlineConcept={false}
+            operationalModules={operationalModules}
+          />
+        );
+      case "PhoneNumber": {
+        const verificationKey = findKeyValue(
+          concept.keyValues,
+          "verifyPhoneNumber"
+        );
+        return verificationKey ? (
+          <PhoneNumberConcept
+            onKeyValueChange={onKeyValueChange}
+            checked={verificationKey.value}
+          />
+        ) : null;
+      }
+      case "ImageV2": {
+        const locationInformationKey = findKeyValue(
+          concept.keyValues,
+          "captureLocationInformation"
+        );
+        return locationInformationKey ? (
+          <ImageV2Concept
+            onKeyValueChange={onKeyValueChange}
+            checked={locationInformationKey.value}
+          />
+        ) : null;
+      }
+      default:
+        return null;
+    }
   };
 
   const conceptCreationMessage = isCreatePage
@@ -401,153 +540,50 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     : "Concept updated successfully.";
   const appBarTitle = isCreatePage ? "Create Concept" : "Edit Concept";
 
-  let dataTypeComponent;
-  if (concept.dataType === "Numeric") {
-    dataTypeComponent = (
-      <NumericConcept
-        onNumericConceptAttributeAssignment={
-          onNumericConceptAttributeAssignment
-        }
-        numericDataTypeAttributes={concept}
-      />
-    );
-  }
-  if (concept.dataType === "Coded") {
-    dataTypeComponent = (
-      <CodedConcept
-        answers={concept.answers}
-        onDeleteAnswer={onDeleteAnswer}
-        onAddAnswer={onAddAnswer}
-        onChangeAnswerName={onChangeAnswerName}
-        onToggleAnswerField={onToggleAnswerField}
-        onMoveUp={onMoveUp}
-        onMoveDown={onMoveDown}
-        onAlphabeticalSort={onAlphabeticalSort}
-        onSelectAnswerMedia={onSelectAnswerMedia}
-        onRemoveAnswerMedia={onRemoveAnswerMedia}
-      />
-    );
-  }
-  if (concept.dataType === "Location") {
-    dataTypeComponent = (
-      <LocationConcept
-        updateConceptKeyValues={onKeyValueChange}
-        keyValues={concept.keyValues}
-        error={errors}
-        isCreatePage={isCreatePage}
-        inlineConcept={false}
-      />
-    );
-  }
-  if (concept.dataType === "Subject") {
-    dataTypeComponent = (
-      <SubjectConcept
-        updateKeyValues={onKeyValueChange}
-        keyValues={concept.keyValues}
-        error={errors}
-        isCreatePage={isCreatePage}
-        inlineConcept={false}
-        operationalModules={operationalModules}
-      />
-    );
-  }
-  if (concept.dataType === "Encounter") {
-    dataTypeComponent = (
-      <EncounterConcept
-        updateKeyValues={onKeyValueChange}
-        keyValues={concept.keyValues}
-        error={errors}
-        isCreatePage={isCreatePage}
-        inlineConcept={false}
-        operationalModules={operationalModules}
-      />
-    );
-  }
-  if (concept.dataType === "PhoneNumber") {
-    const verificationKey = find(
-      concept.keyValues,
-      ({ key }) => key === "verifyPhoneNumber"
-    );
-    if (verificationKey) {
-      dataTypeComponent = (
-        <PhoneNumberConcept
-          onKeyValueChange={onKeyValueChange}
-          checked={verificationKey.value}
-        />
-      );
-    } else {
-      setValue("concept.keyValues", [
-        { key: "verifyPhoneNumber", value: false }
-      ]);
-    }
-  }
-  if (concept.dataType === "ImageV2") {
-    const locationInformationKey = find(
-      concept.keyValues,
-      ({ key }) => key === "captureLocationInformation"
-    );
-    if (locationInformationKey) {
-      dataTypeComponent = (
-        <ImageV2Concept
-          onKeyValueChange={onKeyValueChange}
-          checked={locationInformationKey.value}
-        />
-      );
-    } else {
-      setValue("concept.keyValues", [
-        { key: "captureLocationInformation", value: false }
-      ]);
-    }
-  }
-
   return (
     <Box sx={{ boxShadow: 2, p: 3, bgcolor: "background.paper" }}>
       <DocumentationContainer filename={"Concept.md"}>
         <Title title={appBarTitle} />
         {!isCreatePage && (
-          <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
-            <Button
-              color="primary"
-              type="button"
-              onClick={() => setRedirectShow(true)}
-            >
+          <Grid container justifyContent="flex-end" sx={{ mb: 2 }}>
+            <Button color="primary" type="button" onClick={handleRedirectShow}>
               <VisibilityIcon /> Show
             </Button>
           </Grid>
         )}
         <Grid container direction="column" spacing={2}>
-          <Grid size={12}>
+          <Grid item xs={12}>
             <AvniTextField
               id="name"
               label="Concept name"
-              {...register("concept.name")}
+              value={concept.name}
               onChange={handleChange("name")}
-              style={classes.textField}
+              sx={{ width: 400, mr: 1.25 }}
               margin="normal"
               autoComplete="off"
               toolTipKey={"APP_DESIGNER_CONCEPT_NAME"}
               fullWidth
             />
-            {errors.isEmptyName && (
+            {error.isEmptyName && (
               <FormHelperText error>*Required.</FormHelperText>
             )}
-            {errors.nameError && (
-              <FormHelperText error>
-                Same name concept already exist.
-              </FormHelperText>
+            {!error.isEmptyName && error.nameConflict && (
+              <FormHelperText error>{error.message}</FormHelperText>
             )}
           </Grid>
-          <Grid size={12}>
+          <Grid item xs={12}>
             {isCreatePage ? (
               <ToolTipContainer toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}>
                 <FormControl fullWidth>
-                  <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
+                  <InputLabel sx={{ mt: 1.875, fontSize: 16 }}>
+                    Datatype *
+                  </InputLabel>
                   <Select
                     id="dataType"
                     label="DataType"
-                    {...register("concept.dataType")}
+                    value={concept.dataType}
                     onChange={handleChange("dataType")}
-                    style={classes.select}
+                    sx={{ width: 400, height: 40, mt: 3 }}
                   >
                     {dataTypes.map(datatype => (
                       <MenuItem value={datatype} key={datatype}>
@@ -555,7 +591,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
                       </MenuItem>
                     ))}
                   </Select>
-                  {errors.dataTypeSelectionAlert && (
+                  {error.dataTypeSelectionAlert && (
                     <FormHelperText error>*Required</FormHelperText>
                   )}
                 </FormControl>
@@ -565,7 +601,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
                 id="dataType"
                 label="DataType"
                 value={concept.dataType}
-                style={classes.select}
+                sx={{ width: 400, height: 40, mt: 3 }}
                 disabled={true}
                 toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
                 fullWidth
@@ -573,16 +609,16 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             )}
           </Grid>
           {!isCreatePage && (
-            <Grid size={12}>
+            <Grid item xs={12}>
               <ConceptActiveSwitch
-                active={getValues("active")}
+                active={concept.active}
                 handleActive={handleActive}
                 conceptUUID={concept.uuid}
               />
             </Grid>
           )}
           {["Coded", "NA"].includes(concept.dataType) && (
-            <Grid size={12}>
+            <Grid item xs={12}>
               <AvniImageUpload
                 height={20}
                 width={20}
@@ -594,43 +630,45 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
                 oldImgUrl={concept.mediaUrl}
                 onDelete={handleMediaDelete}
               />
-              {errors.mediaUploadFailed && (
-                <FormControl error style={{ marginTop: 4 }}>
-                  <FormHelperText error>
-                    {errors.mediaUploadFailed.message}
-                  </FormHelperText>
+              {error && error.mediaUploadFailed && (
+                <FormControl error sx={{ mt: 0.5 }}>
+                  <FormHelperText error>{error.message}</FormHelperText>
                 </FormControl>
               )}
             </Grid>
           )}
-          <Grid size={12}>{dataTypeComponent}</Grid>
-          <Grid size={12}>
+          <Grid item xs={12}>
+            {renderDataTypeComponent()}
+          </Grid>
+          <Grid item xs={12}>
             <KeyValues
-              keyValues={concept.keyValues}
+              keyValues={concept.keyValues || []}
               onKeyValueChange={onKeyValueChange}
               onAddNewKeyValue={onAddNewKeyValue}
               onDeleteKeyValue={onDeleteKeyValue}
-              error={errors.keyValueError}
+              error={error.keyValueError}
               readOnlyKeys={readOnlyKeys}
             />
           </Grid>
           <Grid
+            item
+            xs={12}
             container
+            justifyContent="flex-end"
+            alignItems="center"
             spacing={2}
-            sx={{ justifyContent: "flex-end", alignItems: "center" }}
-            size={12}
           >
-            <Grid>
+            <Grid item>
               <SaveComponent
                 name="save"
-                onSubmit={handleSubmit(onSubmit)}
+                onSubmit={handleSubmit}
                 styleClass={{ marginLeft: "12px", marginTop: "10px" }}
               />
             </Grid>
-            <Grid>
+            <Grid item>
               {!isCreatePage && (
                 <Button
-                  style={{ color: "red", marginTop: "10px" }}
+                  sx={{ color: "red", mt: 1.25 }}
                   onClick={onDeleteConcept}
                 >
                   <DeleteIcon /> Delete
@@ -638,11 +676,11 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               )}
             </Grid>
           </Grid>
-          <Grid size={12}>
+          <Grid item xs={12}>
             {conceptCreationAlert && (
               <CustomizedSnackbar
                 message={conceptCreationMessage}
-                getDefaultSnackbarStatus={setDefaultSnackbarStatus}
+                getDefaultSnackbarStatus={getDefaultSnackbarStatus}
                 defaultSnackbarStatus={defaultSnackbarStatus}
               />
             )}
@@ -650,9 +688,9 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
         </Grid>
       </DocumentationContainer>
       {redirectShow && (
-        <Navigate to={`/appDesigner/concept/${concept.uuid}/show`} />
+        <Navigate to={`/appDesigner/concept/${concept.uuid}/show`} replace />
       )}
-      {redirectOnDeleteOrCreate && <Navigate to={`/appDesigner/concepts`} />}
+      {redirectOnDelete && <Navigate to={`/appDesigner/concepts`} replace />}
     </Box>
   );
 };

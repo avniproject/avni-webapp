@@ -19,6 +19,7 @@ export const subjectTypeInitialState = {
   groupRoles: [],
   subjectSummaryRule: "",
   programEligibilityCheckRule: "",
+  memberAdditionEligibilityCheckRule: "",
   shouldSyncByLocation: true,
   lastNameOptional: false,
   settings: {

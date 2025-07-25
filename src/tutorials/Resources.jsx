@@ -133,7 +133,7 @@ const Resources = () => {
           content={
             "Ask question, post tips and even answer each other's question through community forums"
           }
-          href={"https://gitter.im/avniproject/avni"}
+          href={"https://discord.gg/4pcgcQW8pk"}
           iconComponent={
             <Forum color="primary" style={{ fontSize: 60, color: "#ad1457" }} />
           }

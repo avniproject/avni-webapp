@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MediaService from "../service/MediaService";
+import Types from "./Types";
 
 const SubjectTypeShow = () => {
   const [subjectType, setSubjectType] = useState({});
@@ -170,6 +171,15 @@ const SubjectTypeShow = () => {
               ruleText={subjectType.programEligibilityCheckRule}
             />
             <p />
+            {Types.isGroup(subjectType.type) && (
+              <>
+                <RuleDisplay
+                  fieldLabel={"Member Addition Eligibility Check Rule"}
+                  ruleText={subjectType.memberAdditionEligibilityCheckRule}
+                />
+                <p />
+              </>
+            )}
             <MessageRules
               templateFetchError={templateFetchError}
               rules={rules}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { styled } from "@mui/material/styles";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { reportSideBarOptions } from "./Common";
@@ -142,9 +142,6 @@ async function getStatusResponse() {
   return MetabaseSetupStatus.fromStatusResponse(statusResponse);
 }
 
-// not sure why useState didn't work for maintaining this state
-let intervalId = null;
-
 const SelfServiceReports = () => {
   const [statusResponse, setStatusResponse] = useState(
     MetabaseSetupStatus.createUnknownStatus()
@@ -155,6 +152,7 @@ const SelfServiceReports = () => {
   ] = useState(false);
   const [isBusyCallingSetup, setIsBusyCallingSetup] = useState(false);
   const [isBusyCallingTearDown, setIsBusyCallingTearDown] = useState(false);
+  const intervalRef = useRef();
 
   useEffect(() => {
     updateStatus().then(status => {
@@ -162,6 +160,8 @@ const SelfServiceReports = () => {
         pollSetupStatus();
       }
     });
+    return () =>
+      intervalRef && intervalRef.current && clearInterval(intervalRef.current);
   }, []);
 
   async function performAction(url) {
@@ -176,17 +176,17 @@ const SelfServiceReports = () => {
   }
 
   const pollSetupStatus = debounce(async () => {
-    intervalId = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       updateStatus().then(status => {
-        if (!status.isAnyJobInProgress() && intervalId) {
-          clearInterval(intervalId);
+        if (!status.isAnyJobInProgress() && intervalRef.current) {
+          clearInterval(intervalRef.current);
           setIsBusyCallingCreateQuestionOnly(false);
           setIsBusyCallingSetup(false);
           setIsBusyCallingTearDown(false);
-          intervalId = null;
+          intervalRef.current = null;
         }
       });
-    }, 5000);
+    }, 10000);
   }, 500);
 
   const tearDownMetabase = debounce(async () => {
@@ -218,9 +218,9 @@ const SelfServiceReports = () => {
   const showSetupButton =
     statusResponse.canStartSetup() && !isBusyCallingAnyAction;
   const showDisabledSetupButton = isBusyCallingSetup;
-  const showDeleteButton =
-    (statusResponse.isSetupComplete() || isTestEnvironment) &&
-    !isBusyCallingAnyAction;
+  // change for removing delete button from production
+  // const showDeleteButton = (statusResponse.isSetupComplete() || isTestEnvironment) && !isBusyCallingAnyAction;
+  const showDeleteButton = isTestEnvironment && !isBusyCallingAnyAction;
   const showDisabledDeleteButton = isBusyCallingTearDown;
   const showRefreshButton =
     statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
@@ -276,9 +276,24 @@ const SelfServiceReports = () => {
               )}
             </Box>
             <StyledDescriptionTypography component="p">
-              Metabase provides a graphical interface to create business
-              intelligence and analytics graphs in minutes. Avni integrates with
-              Metabase to support ad hoc and self-serviced reports.
+              Metabase provides analytics charts. You can use this interface to
+              create charts automatically based on your data.
+            </StyledDescriptionTypography>
+            <StyledDescriptionTypography component="p">
+              1. Setup Reports: This will create the charts based on your data
+              in a collection. The metabase collection name is
+              your-organisation-name. First time you need to do only this, no
+              need to do refresh reports.
+            </StyledDescriptionTypography>
+            <StyledDescriptionTypography component="p">
+              2. Refresh Reports: This will refresh the charts based on changes
+              in your forms, since setup or last time you ran refresh reports.
+              Use only if you have made any changes to your forms. Any data
+              update is automatically reflected in your charts.
+            </StyledDescriptionTypography>
+            <StyledDescriptionTypography component="p">
+              3. Delete: This will delete all the charts and metabase
+              collection. This will bring up the option of Setup Reports again.
             </StyledDescriptionTypography>
             <StyledDurationTypography component="p">
               {`Setup and Refresh reports may take up to ${statusResponse.getExpectedDurationInMinutes()} minutes`}
@@ -339,6 +354,7 @@ const SelfServiceReports = () => {
             </Box>
             {showErrorMessage && (
               <>
+                <br />
                 <StyledErrorTypography>
                   Last attempt failed with error
                 </StyledErrorTypography>

@@ -32,11 +32,19 @@ const StyledTextField = styled(TextField)({
   width: "30%"
 });
 
-export default ({ formElement: fe, value, update, validationResults, uuid, isGrid }) => {
+export default ({
+  formElement: fe,
+  value,
+  update,
+  validationResults,
+  uuid,
+  isGrid
+}) => {
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
-    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
+    ({ formIdentifier, questionGroupIndex }) =>
+      formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
   );
 
   const error = () => {
@@ -49,7 +57,11 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
     return false;
   };
 
-  const textColor = error() ? Colors.ValidationError : fe.editable ? Colors.DefaultPrimary : Colors.DefaultDisabled;
+  const textColor = error()
+    ? Colors.ValidationError
+    : fe.editable
+    ? Colors.DefaultPrimary
+    : Colors.DefaultDisabled;
 
   const rangeText = (lowNormal, hiNormal) => {
     let rangeText = null;
@@ -70,7 +82,9 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
       <StyledGridLabel variant="body1" sx={{ mb: 0 }}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
-        {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim()) ? ` (${fe.concept.unit})` : ""}
+        {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim())
+          ? ` (${fe.concept.unit})`
+          : ""}
         {rangeText(fe.concept.lowNormal, fe.concept.hiNormal)}
       </StyledGridLabel>
       <StyledTextField
@@ -79,9 +93,17 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
         required={fe.mandatory}
         name={fe.name}
         value={value == null ? "" : value}
-        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+        helperText={
+          validationResult &&
+          t(validationResult.messageKey, validationResult.extra)
+        }
         error={error()}
-        sx={{ input: { color: textColor }, "& .MuiInput-underline": { textDecoration: fe.editable ? "underline" : "none" } }}
+        sx={{
+          input: { color: textColor },
+          "& .MuiInput-underline": {
+            textDecoration: fe.editable ? "underline" : "none"
+          }
+        }}
         onChange={e => {
           const v = e.target.value;
           isEmpty(v) ? update(null) : update(v.replace(/[^0-9.]/g, ""));
@@ -95,7 +117,9 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
       <StyledLabel variant="body1" sx={{ mb: 1 }}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
-        {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim()) ? ` (${fe.concept.unit})` : ""}
+        {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim())
+          ? ` (${fe.concept.unit})`
+          : ""}
         {rangeText(fe.concept.lowNormal, fe.concept.hiNormal)}
       </StyledLabel>
       <StyledTextField
@@ -104,9 +128,17 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
         required={fe.mandatory}
         name={fe.name}
         value={value == null ? "" : value}
-        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+        helperText={
+          validationResult &&
+          t(validationResult.messageKey, validationResult.extra)
+        }
         error={error()}
-        sx={{ input: { color: textColor }, "& .MuiInput-underline": { textDecoration: fe.editable ? "underline" : "none" } }}
+        sx={{
+          input: { color: textColor },
+          "& .MuiInput-underline": {
+            textDecoration: fe.editable ? "underline" : "none"
+          }
+        }}
         onChange={e => {
           const v = e.target.value;
           isEmpty(v) ? update(null) : update(v.replace(/[^0-9.]/g, ""));

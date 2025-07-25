@@ -49,7 +49,7 @@ export default function KeyValues({
 }) {
   return (
     <StyledBox>
-      {map(keyValues, ({ key, value }, index) => (
+      {map(keyValues, (item, index) => (
         <Grid
           key={index}
           container
@@ -61,14 +61,11 @@ export default function KeyValues({
               id="outlined-basic"
               label="Key"
               variant="outlined"
-              value={key}
-              disabled={readOnlyKeys.includes(key)}
+              disabled={readOnlyKeys.includes(item && item.key)}
+              value={(item && item.key) || ""}
               onChange={event =>
                 onKeyValueChange(
-                  {
-                    key: event.target.value,
-                    value
-                  },
+                  { key: event.target.value, value: item && item.value },
                   index
                 )
               }
@@ -77,14 +74,11 @@ export default function KeyValues({
               id="outlined-basic"
               label="Value"
               variant="outlined"
-              value={value}
-              disabled={readOnlyKeys.includes(key)}
+              disabled={readOnlyKeys.includes(item && item.key)}
+              value={(item && item.value) || ""}
               onChange={event =>
                 onKeyValueChange(
-                  {
-                    key,
-                    value: event.target.value
-                  },
+                  { key: item && item.key, value: event.target.value },
                   index
                 )
               }
@@ -93,7 +87,7 @@ export default function KeyValues({
           <StyledIconButton
             aria-label="delete"
             onClick={() => onDeleteKeyValue(index)}
-            disabled={readOnlyKeys.includes(key)}
+            disabled={readOnlyKeys.includes(item && item.key)}
           >
             <Delete fontSize="inherit" />
           </StyledIconButton>

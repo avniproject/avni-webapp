@@ -99,10 +99,7 @@ function CodedConceptDetails({ conceptAnswers }) {
                   <Grid>
                     <FormControlLabel
                       control={
-                        <Checkbox
-                          checked={!!answerConcept.abnormal}
-                          name="abnormal"
-                        />
+                        <Checkbox checked={!!answer.abnormal} name="abnormal" />
                       }
                       label="abnormal"
                       style={{ marginLeft: "5px" }}
@@ -112,10 +109,7 @@ function CodedConceptDetails({ conceptAnswers }) {
                   <Grid>
                     <FormControlLabel
                       control={
-                        <Checkbox
-                          checked={!!answerConcept.unique}
-                          name="unique"
-                        />
+                        <Checkbox checked={!!answer.unique} name="unique" />
                       }
                       label="unique"
                       disabled={true}
@@ -358,9 +352,13 @@ function ConceptDetails() {
       conceptRes.mediaUrl = mediaSignedUrl;
     }
 
-    if (conceptRes.dataType === "Coded") {
+    if (conceptRes.dataType === "Coded" && conceptRes.conceptAnswers) {
       const conceptAnswersWithMedia = conceptRes.conceptAnswers.filter(
-        ca => !_.isNil(ca.answerConcept.mediaUrl)
+        ca =>
+          ca &&
+          ca.answerConcept &&
+          ca.answerConcept.mediaUrl &&
+          !_.isNil(ca.answerConcept.mediaUrl)
       );
       const mediaSignedUrls = await MediaService.getMultipleMedia(
         conceptAnswersWithMedia.map(ca => ca.answerConcept.mediaUrl)

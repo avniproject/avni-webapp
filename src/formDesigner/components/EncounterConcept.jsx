@@ -106,6 +106,10 @@ export const EncounterConcept = props => {
         margin="normal"
         autoComplete="off"
         toolTipKey={"APP_DESIGNER_CONCEPT_ENCOUNTER_IDENTIFIER"}
+        error={props.error["encounterIdentifierRequired"]}
+        helperText={
+          props.error["encounterIdentifierRequired"] ? "*Required" : ""
+        }
       />
     </Grid>
   );

@@ -69,6 +69,33 @@ export const sampleSubjectProgramEligibilityCheckRule = () => {
 };`;
 };
 
+export const sampleMemberAdditionEligibilityCheckRule = () => {
+  return `//SAMPLE RULE EXAMPLE
+"use strict";
+({params, imports}) => {
+  const member = params.member;
+  const group = params.group;
+  
+  // Example: Only allow adding members who are above 18 years of age
+  const age = member.getAge();//As on current date
+  
+  if (age < 18) {
+    return {
+      eligible: {
+        value: false,
+        message: "Only individuals above 18 years can be added to this group"
+      }
+    };
+  }
+  
+  return {
+    eligible: {
+      value: true
+    }
+  };
+};`;
+};
+
 export const sampleEnrolmentEligibilityCheckRule = () => {
   return `//SAMPLE RULE EXAMPLE
 'use strict';
@@ -118,9 +145,7 @@ export const sampleDecisionRule = entityName => {
 ({params, imports}) => {
     const ${entityName} = params.entity;
     const decisions = params.decisions;
-    //create complicationBuilder using ${entityName} and then push to ${decisionType(
-    entityName
-  )} array.
+    //create complicationBuilder using ${entityName} and then push to ${decisionType(entityName)} array.
     return decisions;
 };`;
 };
