@@ -16,5 +16,4 @@ if (import.meta.hot) {
     });
   });
 }
-
 serviceWorker.unregister();

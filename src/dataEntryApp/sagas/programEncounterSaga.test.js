@@ -1,10 +1,7 @@
 import { expectSaga } from "redux-saga-test-plan";
 import mockData from "dataEntryApp/sagas/subjectSaga.mock";
 import programEncounterReducer from "dataEntryApp/reducers/programEncounterReducer";
-import {
-  updateEncounterObsWorker,
-  updateEncounterCancelObsWorker
-} from "dataEntryApp/sagas/programEncounterSaga";
+import { updateEncounterObsWorker, updateEncounterCancelObsWorker } from "dataEntryApp/sagas/programEncounterSaga";
 import { map } from "lodash";
 
 describe("programEncounterSaga", () => {
@@ -23,16 +20,10 @@ describe("programEncounterSaga", () => {
       .withReducer(programEncounterReducer, initialState)
       .run();
 
-    const matchingObservation = storeState.programEncounter.observations.find(
-      obs => obs.concept.name === "a1"
-    ).valueJSON.value;
+    const matchingObservation = storeState.programEncounter.observations.find(obs => obs.concept.name === "a1").valueJSON.value;
 
-    expect(storeState.filteredFormElements.length).toEqual(
-      formElementGroup1.getFormElements().length
-    );
-    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
-      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
-    );
+    expect(storeState.filteredFormElements.length).toEqual(formElementGroup1.getFormElements().length);
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(map(formElementGroup1.getFormElements(), ({ uuid }) => uuid));
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });
@@ -48,23 +39,14 @@ describe("programEncounterSaga", () => {
     };
     const args = { formElement: formElement1, value: 5 };
 
-    const { storeState } = await expectSaga(
-      updateEncounterCancelObsWorker,
-      args
-    )
+    const { storeState } = await expectSaga(updateEncounterCancelObsWorker, args)
       .withReducer(programEncounterReducer, initialState)
       .run();
 
-    const matchingObservation = storeState.programEncounter.cancelObservations.find(
-      obs => obs.concept.name === "a1"
-    ).valueJSON.value;
+    const matchingObservation = storeState.programEncounter.cancelObservations.find(obs => obs.concept.name === "a1").valueJSON.value;
 
-    expect(storeState.filteredFormElements.length).toEqual(
-      formElementGroup1.getFormElements().length
-    );
-    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
-      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
-    );
+    expect(storeState.filteredFormElements.length).toEqual(formElementGroup1.getFormElements().length);
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(map(formElementGroup1.getFormElements(), ({ uuid }) => uuid));
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });

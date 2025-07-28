@@ -1,9 +1,11 @@
 import _ from "lodash";
+import { getEnvVar } from "./common/utils/General";
 
 const None = "none";
 
 function compareEnvVarValue(envVar, value) {
-  return _.lowerCase(import.meta.env[envVar]) === _.lowerCase(value);
+  const envValue = getEnvVar(envVar);
+  return _.lowerCase(envValue) === _.lowerCase(value);
 }
 
 const environments = {
@@ -21,7 +23,8 @@ class ApplicationContext {
   }
 
   static isProdEnv() {
-    return _.lowerCase(import.meta.env.VITE_REACT_APP_ENVIRONMENT) === "production";
+    const environment = getEnvVar("VITE_REACT_APP_ENVIRONMENT");
+    return _.lowerCase(environment) === "production";
   }
 
   static isNonProdAndNonDevEnv() {
@@ -33,7 +36,8 @@ class ApplicationContext {
   }
 
   static usingIAMServer() {
-    return import.meta.env.VITE_REACT_APP_IAM_SERVER !== None || import.meta.env.VITE_REACT_APP_IAM_SERVER;
+    const iamServer = getEnvVar("VITE_REACT_APP_IAM_SERVER");
+    return iamServer !== None && !!iamServer;
   }
 
   static isTestEnvironment(env) {

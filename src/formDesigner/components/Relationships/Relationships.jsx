@@ -2,7 +2,7 @@ import { memo, useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { get, isEqual } from "lodash";
 import { useNavigate } from "react-router-dom";
-import Box from "@mui/material/Box";
+import { Box, Grid } from "@mui/material"; // Added Grid import
 import { Title } from "react-admin";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
@@ -48,11 +48,11 @@ const Relationships = () => {
     http
       .get("/web/relation")
       .then(response => {
-        console.log("Relationships fetchData response:", response.data); // Debug log
+        console.log("Relationships fetchData response:", response.data);
         setResult(
           (response.data || []).map(item => ({
             ...item,
-            voided: item.voided ?? item.isVoided ?? false // Normalize voided
+            voided: item.voided ?? item.isVoided ?? false
           }))
         );
       })
@@ -161,7 +161,9 @@ const Relationships = () => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column"
       }}
     >
       <Title title="Relationships" />
@@ -173,15 +175,17 @@ const Relationships = () => {
           </div>
         )}
         {isIndividualSubjectTypeAvailable === "true" && (
-          <div>
-            {hasEditPrivilege(userInfo) && (
-              <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-                <CreateComponent
-                  onSubmit={handleCreateSubmit}
-                  name="New Relationship"
-                />
-              </div>
-            )}
+          <>
+            <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+              {hasEditPrivilege(userInfo) && (
+                <Grid>
+                  <CreateComponent
+                    onSubmit={handleCreateSubmit}
+                    name="New Relationship"
+                  />
+                </Grid>
+              )}
+            </Grid>
             <AvniMaterialTable
               title=""
               ref={tableRef}
@@ -199,9 +203,9 @@ const Relationships = () => {
                 })
               }}
               actions={actions}
-              route={"/appdesigner/relationship"}
+              route="/appdesigner/relationship"
             />
-          </div>
+          </>
         )}
       </div>
     </Box>

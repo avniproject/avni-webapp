@@ -1,9 +1,5 @@
 import commonFormUtil from "./commonFormUtil";
-import {
-  Concept,
-  ObservationsHolder,
-  StaticFormElementGroup
-} from "openchs-models";
+import { Concept, ObservationsHolder, StaticFormElementGroup } from "openchs-models";
 // Import the helper functions from EntityFactory
 import EntityFactory from "../test/EntityFactory";
 import { assert } from "chai";
@@ -72,53 +68,14 @@ describe("question group and repeatable question groups", () => {
   it("should create and update question group obs", function() {
     const subject = EntityFactory.createSubject({});
     const observationsHolder = new ObservationsHolder(subject.observations);
-    commonFormUtil.updateObservations(
-      qgFormElement,
-      "a",
-      subject,
-      observationsHolder,
-      [],
-      textFormElement,
-      null
-    );
-    assert.equal(
-      "a",
-      observationsHolder
-        .findQuestionGroupObservation(textFormElement.concept, qgFormElement)
-        .getValue()
-    );
-    commonFormUtil.updateObservations(
-      qgFormElement,
-      "b",
-      subject,
-      observationsHolder,
-      [],
-      textFormElement,
-      null
-    );
-    assert.equal(
-      "b",
-      observationsHolder
-        .findQuestionGroupObservation(textFormElement.concept, qgFormElement)
-        .getValue()
-    );
-    commonFormUtil.updateObservations(
-      qgFormElement,
-      answerConcept1.uuid,
-      subject,
-      observationsHolder,
-      [],
-      singleCodedFormElement,
-      null
-    );
+    commonFormUtil.updateObservations(qgFormElement, "a", subject, observationsHolder, [], textFormElement, null);
+    assert.equal("a", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement).getValue());
+    commonFormUtil.updateObservations(qgFormElement, "b", subject, observationsHolder, [], textFormElement, null);
+    assert.equal("b", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement).getValue());
+    commonFormUtil.updateObservations(qgFormElement, answerConcept1.uuid, subject, observationsHolder, [], singleCodedFormElement, null);
     assert.equal(
       answerConcept1.uuid,
-      observationsHolder
-        .findQuestionGroupObservation(
-          singleCodedFormElement.concept,
-          qgFormElement
-        )
-        .getValue()
+      observationsHolder.findQuestionGroupObservation(singleCodedFormElement.concept, qgFormElement).getValue()
     );
   });
 
@@ -130,178 +87,41 @@ describe("question group and repeatable question groups", () => {
     qgFormElement.keyValues = [keyValue];
     const subject = EntityFactory.createSubject({});
     const observationsHolder = new ObservationsHolder(subject.observations);
-    commonFormUtil.updateObservations(
-      qgFormElement,
-      "a",
-      subject,
-      observationsHolder,
-      [],
-      textFormElement,
-      0
-    );
-    assert.equal(
-      "a",
-      observationsHolder
-        .findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0)
-        .getValue()
-    );
-    commonFormUtil.updateObservations(
-      qgFormElement,
-      "b",
-      subject,
-      observationsHolder,
-      [],
-      textFormElement,
-      0
-    );
-    assert.equal(
-      "b",
-      observationsHolder
-        .findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0)
-        .getValue()
-    );
-    commonFormUtil.updateObservations(
-      qgFormElement,
-      answerConcept1.uuid,
-      subject,
-      observationsHolder,
-      [],
-      singleCodedFormElement,
-      0
-    );
+    commonFormUtil.updateObservations(qgFormElement, "a", subject, observationsHolder, [], textFormElement, 0);
+    assert.equal("a", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0).getValue());
+    commonFormUtil.updateObservations(qgFormElement, "b", subject, observationsHolder, [], textFormElement, 0);
+    assert.equal("b", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0).getValue());
+    commonFormUtil.updateObservations(qgFormElement, answerConcept1.uuid, subject, observationsHolder, [], singleCodedFormElement, 0);
     assert.equal(
       answerConcept1.uuid,
-      observationsHolder
-        .findQuestionGroupObservation(
-          singleCodedFormElement.concept,
-          qgFormElement,
-          0
-        )
-        .getValue()
+      observationsHolder.findQuestionGroupObservation(singleCodedFormElement.concept, qgFormElement, 0).getValue()
     );
 
-    let { filteredFormElements } = commonFormUtil.addNewQuestionGroup(
-      subject,
-      qgFormElement,
-      observationsHolder.observations
-    );
-    assert.equal(
-      true,
-      _.some(
-        filteredFormElements,
-        x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0
-      )
-    );
-    assert.equal(
-      true,
-      _.some(
-        filteredFormElements,
-        x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1
-      )
-    );
-    assert.equal(
-      true,
-      _.some(
-        filteredFormElements,
-        x =>
-          x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 0
-      )
-    );
-    assert.equal(
-      true,
-      _.some(
-        filteredFormElements,
-        x =>
-          x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 1
-      )
-    );
+    let { filteredFormElements } = commonFormUtil.addNewQuestionGroup(subject, qgFormElement, observationsHolder.observations);
+    assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0));
+    assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1));
+    assert.equal(true, _.some(filteredFormElements, x => x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 0));
+    assert.equal(true, _.some(filteredFormElements, x => x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 1));
 
-    filteredFormElements = commonFormUtil.removeQuestionGroup(
-      subject,
-      qgFormElement,
-      observationsHolder.observations,
-      [],
-      1
-    ).filteredFormElements;
-    assert.equal(
-      true,
-      _.some(
-        filteredFormElements,
-        x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0
-      )
-    );
-    assert.equal(
-      false,
-      _.some(
-        filteredFormElements,
-        x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1
-      )
-    );
+    filteredFormElements = commonFormUtil.removeQuestionGroup(subject, qgFormElement, observationsHolder.observations, [], 1)
+      .filteredFormElements;
+    assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0));
+    assert.equal(false, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1));
 
-    commonFormUtil.addNewQuestionGroup(
-      subject,
-      qgFormElement,
-      observationsHolder.observations
-    );
-    commonFormUtil.updateObservations(
-      qgFormElement,
-      "c",
-      subject,
-      observationsHolder,
-      [],
-      textFormElement,
-      1
-    );
-    assert.equal(
-      "b",
-      observationsHolder
-        .findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0)
-        .getValue()
-    );
-    assert.equal(
-      "c",
-      observationsHolder
-        .findQuestionGroupObservation(textFormElement.concept, qgFormElement, 1)
-        .getValue()
-    );
+    commonFormUtil.addNewQuestionGroup(subject, qgFormElement, observationsHolder.observations);
+    commonFormUtil.updateObservations(qgFormElement, "c", subject, observationsHolder, [], textFormElement, 1);
+    assert.equal("b", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0).getValue());
+    assert.equal("c", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 1).getValue());
 
-    filteredFormElements = commonFormUtil.removeQuestionGroup(
-      subject,
-      qgFormElement,
-      observationsHolder.observations,
-      [],
-      1
-    ).filteredFormElements;
-    assert.equal(
-      true,
-      _.some(
-        filteredFormElements,
-        x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0
-      )
-    );
-    assert.equal(
-      false,
-      _.some(
-        filteredFormElements,
-        x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1
-      )
-    );
+    filteredFormElements = commonFormUtil.removeQuestionGroup(subject, qgFormElement, observationsHolder.observations, [], 1)
+      .filteredFormElements;
+    assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0));
+    assert.equal(false, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1));
 
     // After removing the question group at index 1, we should only have the observation at index 0
-    assert.equal(
-      "b",
-      observationsHolder
-        .findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0)
-        .getValue()
-    );
+    assert.equal("b", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0).getValue());
     // We should not try to access the removed question group's observations
-    assert.isFalse(
-      observationsHolder.findQuestionGroupObservation(
-        textFormElement.concept,
-        qgFormElement,
-        1
-      )
-    );
+    assert.isFalse(observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 1));
   });
 });
 
@@ -411,27 +231,9 @@ describe("Form Navigation Tests", () => {
     observationsHolder = new ObservationsHolder(subject.observations);
 
     // Initialize observations with values to prevent validation errors
-    commonFormUtil.updateObservations(
-      textFormElement1,
-      "test value 1",
-      subject,
-      observationsHolder,
-      []
-    );
-    commonFormUtil.updateObservations(
-      textFormElement2,
-      "test value 2",
-      subject,
-      observationsHolder,
-      []
-    );
-    commonFormUtil.updateObservations(
-      textFormElement3,
-      "test value 3",
-      subject,
-      observationsHolder,
-      []
-    );
+    commonFormUtil.updateObservations(textFormElement1, "test value 1", subject, observationsHolder, []);
+    commonFormUtil.updateObservations(textFormElement2, "test value 2", subject, observationsHolder, []);
+    commonFormUtil.updateObservations(textFormElement3, "test value 3", subject, observationsHolder, []);
 
     // Update the subject's observations
     subject.observations = observationsHolder.observations;
@@ -538,9 +340,7 @@ describe("Form Navigation Tests", () => {
   it("should handle validation errors and not proceed to next group", function() {
     // Create a clean subject without observations for this test
     const emptySubject = EntityFactory.createSubject({});
-    const emptyObservationsHolder = new ObservationsHolder(
-      emptySubject.observations
-    );
+    const emptyObservationsHolder = new ObservationsHolder(emptySubject.observations);
 
     // Create a validation result with error
     const validationResult = {
@@ -763,27 +563,9 @@ describe("Form Element Filtering Tests", () => {
     observationsHolder = new ObservationsHolder(subject.observations);
 
     // Initialize observations with values
-    commonFormUtil.updateObservations(
-      textFormElement,
-      "test text",
-      subject,
-      observationsHolder,
-      []
-    );
-    commonFormUtil.updateObservations(
-      numericFormElement,
-      42,
-      subject,
-      observationsHolder,
-      []
-    );
-    commonFormUtil.updateObservations(
-      codedFormElement,
-      answerConcept1.uuid,
-      subject,
-      observationsHolder,
-      []
-    );
+    commonFormUtil.updateObservations(textFormElement, "test text", subject, observationsHolder, []);
+    commonFormUtil.updateObservations(numericFormElement, 42, subject, observationsHolder, []);
+    commonFormUtil.updateObservations(codedFormElement, answerConcept1.uuid, subject, observationsHolder, []);
 
     // Update the subject's observations
     subject.observations = observationsHolder.observations;
@@ -838,10 +620,7 @@ describe("Form Element Filtering Tests", () => {
     ];
 
     // Handle the validation results
-    const updatedValidationResults = commonFormUtil.handleValidationResult(
-      newValidationResults,
-      existingValidationResults
-    );
+    const updatedValidationResults = commonFormUtil.handleValidationResult(newValidationResults, existingValidationResults);
 
     // Verify that the validation results were properly merged
     // The result should contain:
@@ -850,33 +629,21 @@ describe("Form Element Filtering Tests", () => {
     // 3. An entry for numericFormElement (existing successful validation is preserved)
 
     // Check if codedFormElement's validation is included
-    const codedValidation = updatedValidationResults.find(
-      vr => vr.formIdentifier === codedFormElement.uuid
-    );
-    assert.isDefined(
-      codedValidation,
-      "Should include validation for codedFormElement"
-    );
+    const codedValidation = updatedValidationResults.find(vr => vr.formIdentifier === codedFormElement.uuid);
+    assert.isDefined(codedValidation, "Should include validation for codedFormElement");
     assert.equal(codedValidation.messageKey, "INVALID_CODED_VALUE");
     assert.isFalse(codedValidation.success);
 
     // Verify that the now-successful validation was removed
     assert.isFalse(
-      updatedValidationResults.some(
-        vr => vr.formIdentifier === textFormElement.uuid
-      ),
+      updatedValidationResults.some(vr => vr.formIdentifier === textFormElement.uuid),
       "Text form element should be removed as it's now successful"
     );
 
     // Verify that the existing successful validation is preserved
     // The function only removes validations for elements that are in newValidationResults
-    const numericValidation = updatedValidationResults.find(
-      vr => vr.formIdentifier === numericFormElement.uuid
-    );
-    assert.isDefined(
-      numericValidation,
-      "Should preserve existing validation for numericFormElement"
-    );
+    const numericValidation = updatedValidationResults.find(vr => vr.formIdentifier === numericFormElement.uuid);
+    assert.isDefined(numericValidation, "Should preserve existing validation for numericFormElement");
     assert.isTrue(numericValidation.success);
   });
 
@@ -909,10 +676,7 @@ describe("Form Element Filtering Tests", () => {
     ];
 
     // Handle the validation results
-    const updatedValidationResults = commonFormUtil.handleValidationResult(
-      newValidationResults,
-      existingValidationResults
-    );
+    const updatedValidationResults = commonFormUtil.handleValidationResult(newValidationResults, existingValidationResults);
 
     // Verify that the validation results were properly merged
     // The result should:
@@ -922,31 +686,19 @@ describe("Form Element Filtering Tests", () => {
 
     // Verify that the fixed validation was removed
     assert.isFalse(
-      updatedValidationResults.some(
-        vr => vr.formIdentifier === textFormElement.uuid
-      ),
+      updatedValidationResults.some(vr => vr.formIdentifier === textFormElement.uuid),
       "Text form element should be removed as it's now successful"
     );
 
     // Verify that the existing failed validation is preserved
-    const numericValidation = updatedValidationResults.find(
-      vr => vr.formIdentifier === numericFormElement.uuid
-    );
-    assert.isDefined(
-      numericValidation,
-      "Should preserve existing validation for numericFormElement"
-    );
+    const numericValidation = updatedValidationResults.find(vr => vr.formIdentifier === numericFormElement.uuid);
+    assert.isDefined(numericValidation, "Should preserve existing validation for numericFormElement");
     assert.equal(numericValidation.messageKey, "INVALID_NUMERIC");
     assert.isFalse(numericValidation.success);
 
     // Verify that the existing successful validation is preserved
-    const hiddenValidation = updatedValidationResults.find(
-      vr => vr.formIdentifier === hiddenFormElement.uuid
-    );
-    assert.isDefined(
-      hiddenValidation,
-      "Should preserve existing validation for hiddenFormElement"
-    );
+    const hiddenValidation = updatedValidationResults.find(vr => vr.formIdentifier === hiddenFormElement.uuid);
+    assert.isDefined(hiddenValidation, "Should preserve existing validation for hiddenFormElement");
     assert.isTrue(hiddenValidation.success);
   });
 
@@ -965,10 +717,7 @@ describe("Form Element Filtering Tests", () => {
     ];
 
     // Get validation result for text form element
-    const textValidationResult = commonFormUtil.getValidationResult(
-      validationResults,
-      textFormElement.uuid
-    );
+    const textValidationResult = commonFormUtil.getValidationResult(validationResults, textFormElement.uuid);
 
     // Verify the validation result
     assert.equal(textValidationResult.formIdentifier, textFormElement.uuid);
@@ -976,10 +725,7 @@ describe("Form Element Filtering Tests", () => {
     assert.isFalse(textValidationResult.success);
 
     // Get validation result for coded form element (should be undefined)
-    const codedValidationResult = commonFormUtil.getValidationResult(
-      validationResults,
-      codedFormElement.uuid
-    );
+    const codedValidationResult = commonFormUtil.getValidationResult(validationResults, codedFormElement.uuid);
 
     // Verify the validation result
     assert.isUndefined(codedValidationResult);
@@ -999,16 +745,11 @@ describe("Form Element Filtering Tests", () => {
     const emptyObsHolder = new ObservationsHolder([]);
 
     // Get validation errors
-    const validationErrors = commonFormUtil.getFEDataValidationErrors(
-      [mandatoryFormElement],
-      emptyObsHolder
-    );
+    const validationErrors = commonFormUtil.getFEDataValidationErrors([mandatoryFormElement], emptyObsHolder);
 
     // Verify that validation errors include the mandatory field error
     assert.isArray(validationErrors);
-    const mandatoryError = validationErrors.find(
-      ve => ve.formIdentifier === mandatoryFormElement.uuid
-    );
+    const mandatoryError = validationErrors.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
     assert.isDefined(mandatoryError);
     assert.isFalse(mandatoryError.success);
   });
@@ -1016,9 +757,7 @@ describe("Form Element Filtering Tests", () => {
   it("should filter form elements based on status", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.filterFormElementsWithStatus) {
-      console.log(
-        "Skipping test - filterFormElementsWithStatus is not exported"
-      );
+      console.log("Skipping test - filterFormElementsWithStatus is not exported");
       return;
     }
 
@@ -1035,10 +774,7 @@ describe("Form Element Filtering Tests", () => {
 
     try {
       // Call the function being tested
-      const result = commonFormUtil.filterFormElementsWithStatus(
-        formElementGroup,
-        subject
-      );
+      const result = commonFormUtil.filterFormElementsWithStatus(formElementGroup, subject);
 
       // Verify the result
       assert.isDefined(result);
@@ -1050,13 +786,8 @@ describe("Form Element Filtering Tests", () => {
       assert.isArray(filteredFormElements);
 
       // Verify that the numeric form element is not included (visibility: false)
-      const hasNumericFormElement = filteredFormElements.some(
-        fe => fe.uuid === numericFormElement.uuid
-      );
-      assert.isFalse(
-        hasNumericFormElement,
-        "Numeric form element should not be included in filtered elements"
-      );
+      const hasNumericFormElement = filteredFormElements.some(fe => fe.uuid === numericFormElement.uuid);
+      assert.isFalse(hasNumericFormElement, "Numeric form element should not be included in filtered elements");
     } finally {
       // Restore the original function
       getFormElementsStatusesSpy.mockRestore();
@@ -1066,17 +797,12 @@ describe("Form Element Filtering Tests", () => {
   it("should update entity observations when filtering form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.fetchFilteredFormElementsAndUpdateEntityObservations) {
-      console.log(
-        "Skipping test - fetchFilteredFormElementsAndUpdateEntityObservations is not exported"
-      );
+      console.log("Skipping test - fetchFilteredFormElementsAndUpdateEntityObservations is not exported");
       return;
     }
 
     // Call the function being tested
-    const filteredFormElements = commonFormUtil.fetchFilteredFormElementsAndUpdateEntityObservations(
-      formElementGroup,
-      subject
-    );
+    const filteredFormElements = commonFormUtil.fetchFilteredFormElementsAndUpdateEntityObservations(formElementGroup, subject);
 
     // Verify the result
     assert.isArray(filteredFormElements);
@@ -1085,9 +811,7 @@ describe("Form Element Filtering Tests", () => {
   it("should handle question groups with values when filtering form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.hasQuestionGroupWithValueInElementStatus) {
-      console.log(
-        "Skipping test - hasQuestionGroupWithValueInElementStatus is not exported"
-      );
+      console.log("Skipping test - hasQuestionGroupWithValueInElementStatus is not exported");
       return;
     }
 
@@ -1099,10 +823,7 @@ describe("Form Element Filtering Tests", () => {
     ];
 
     // Call the function being tested
-    const result = commonFormUtil.hasQuestionGroupWithValueInElementStatus(
-      formElementStatuses,
-      formElementGroup.getFormElements()
-    );
+    const result = commonFormUtil.hasQuestionGroupWithValueInElementStatus(formElementStatuses, formElementGroup.getFormElements());
 
     // Verify the result
     assert.isTrue(result, "Should detect question group with value");
@@ -1111,9 +832,7 @@ describe("Form Element Filtering Tests", () => {
   it("should handle question groups without values when filtering form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.hasQuestionGroupWithValueInElementStatus) {
-      console.log(
-        "Skipping test - hasQuestionGroupWithValueInElementStatus is not exported"
-      );
+      console.log("Skipping test - hasQuestionGroupWithValueInElementStatus is not exported");
       return;
     }
 
@@ -1125,10 +844,7 @@ describe("Form Element Filtering Tests", () => {
     ];
 
     // Call the function being tested
-    const result = commonFormUtil.hasQuestionGroupWithValueInElementStatus(
-      formElementStatuses,
-      formElementGroup.getFormElements()
-    );
+    const result = commonFormUtil.hasQuestionGroupWithValueInElementStatus(formElementStatuses, formElementGroup.getFormElements());
 
     // Verify the result
     assert.isFalse(result, "Should not detect question group without value");
@@ -1137,9 +853,7 @@ describe("Form Element Filtering Tests", () => {
   it("should get updated next filtered form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.getUpdatedNextFilteredFormElements) {
-      console.log(
-        "Skipping test - getUpdatedNextFilteredFormElements is not exported"
-      );
+      console.log("Skipping test - getUpdatedNextFilteredFormElements is not exported");
       return;
     }
 
@@ -1168,9 +882,7 @@ describe("Form Element Filtering Tests", () => {
     nextFormElementGroup.addFormElement(nextTextFormElement);
 
     // Create form element statuses with a question group that has a value
-    const formElementStatuses = [
-      { uuid: questionGroupFormElement.uuid, visibility: true, value: {} }
-    ];
+    const formElementStatuses = [{ uuid: questionGroupFormElement.uuid, visibility: true, value: {} }];
 
     // Create next filtered form elements
     const nextFilteredFormElements = [nextTextFormElement];
@@ -1190,17 +902,12 @@ describe("Form Element Filtering Tests", () => {
   it("should handle empty form element statuses", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.hasQuestionGroupWithValueInElementStatus) {
-      console.log(
-        "Skipping test - hasQuestionGroupWithValueInElementStatus is not exported"
-      );
+      console.log("Skipping test - hasQuestionGroupWithValueInElementStatus is not exported");
       return;
     }
 
     // Call the function with empty statuses
-    const result = commonFormUtil.hasQuestionGroupWithValueInElementStatus(
-      [],
-      formElementGroup.getFormElements()
-    );
+    const result = commonFormUtil.hasQuestionGroupWithValueInElementStatus([], formElementGroup.getFormElements());
 
     // Verify the result
     assert.isFalse(result, "Should handle empty form element statuses");
@@ -1209,17 +916,12 @@ describe("Form Element Filtering Tests", () => {
   it("should handle null form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.hasQuestionGroupWithValueInElementStatus) {
-      console.log(
-        "Skipping test - hasQuestionGroupWithValueInElementStatus is not exported"
-      );
+      console.log("Skipping test - hasQuestionGroupWithValueInElementStatus is not exported");
       return;
     }
 
     // Call the function with null form elements
-    const result = commonFormUtil.hasQuestionGroupWithValueInElementStatus(
-      [{ uuid: "some-uuid", visibility: true, value: {} }],
-      null
-    );
+    const result = commonFormUtil.hasQuestionGroupWithValueInElementStatus([{ uuid: "some-uuid", visibility: true, value: {} }], null);
 
     // Verify the result
     assert.isFalse(result, "Should handle null form elements");
@@ -1385,18 +1087,11 @@ describe("Validation Tests", () => {
       const emptyObsHolder = new ObservationsHolder([]);
 
       // Get validation errors for ID fields
-      const validationErrors = commonFormUtil.getIdValidationErrors(
-        [idFormElement],
-        emptyObsHolder
-      );
+      const validationErrors = commonFormUtil.getIdValidationErrors([idFormElement], emptyObsHolder);
 
       // Verify that validation errors include the ID field error
       assert.isArray(validationErrors);
-      assert.equal(
-        validationErrors.length,
-        1,
-        "Should have one validation error for the ID field"
-      );
+      assert.equal(validationErrors.length, 1, "Should have one validation error for the ID field");
 
       const idError = validationErrors[0];
       assert.equal(idError.formIdentifier, idFormElement.uuid);
@@ -1407,27 +1102,14 @@ describe("Validation Tests", () => {
     it("should not return validation errors for ID fields with observations", () => {
       // Create an observations holder with an observation for the ID field
       const obsHolder = new ObservationsHolder([]);
-      commonFormUtil.updateObservations(
-        idFormElement,
-        "ID123",
-        subject,
-        obsHolder,
-        []
-      );
+      commonFormUtil.updateObservations(idFormElement, "ID123", subject, obsHolder, []);
 
       // Get validation errors for ID fields
-      const validationErrors = commonFormUtil.getIdValidationErrors(
-        [idFormElement],
-        obsHolder
-      );
+      const validationErrors = commonFormUtil.getIdValidationErrors([idFormElement], obsHolder);
 
       // Verify that there are no validation errors
       assert.isArray(validationErrors);
-      assert.equal(
-        validationErrors.length,
-        0,
-        "Should have no validation errors for the ID field with an observation"
-      );
+      assert.equal(validationErrors.length, 0, "Should have no validation errors for the ID field with an observation");
     });
 
     it("should not return validation errors for non-ID fields", () => {
@@ -1435,18 +1117,11 @@ describe("Validation Tests", () => {
       const emptyObsHolder = new ObservationsHolder([]);
 
       // Get validation errors for non-ID fields
-      const validationErrors = commonFormUtil.getIdValidationErrors(
-        [textFormElement, numericFormElement],
-        emptyObsHolder
-      );
+      const validationErrors = commonFormUtil.getIdValidationErrors([textFormElement, numericFormElement], emptyObsHolder);
 
       // Verify that there are no validation errors
       assert.isArray(validationErrors);
-      assert.equal(
-        validationErrors.length,
-        0,
-        "Should have no validation errors for non-ID fields"
-      );
+      assert.equal(validationErrors.length, 0, "Should have no validation errors for non-ID fields");
     });
   });
 
@@ -1456,55 +1131,29 @@ describe("Validation Tests", () => {
       const emptyObsHolder = new ObservationsHolder([]);
 
       // Get validation errors for mandatory fields
-      const validationErrors = commonFormUtil.getFEDataValidationErrors(
-        [mandatoryFormElement],
-        emptyObsHolder
-      );
+      const validationErrors = commonFormUtil.getFEDataValidationErrors([mandatoryFormElement], emptyObsHolder);
 
       // Verify that validation errors include the mandatory field error
       assert.isArray(validationErrors);
-      assert.isAtLeast(
-        validationErrors.length,
-        1,
-        "Should have at least one validation error for the mandatory field"
-      );
+      assert.isAtLeast(validationErrors.length, 1, "Should have at least one validation error for the mandatory field");
 
-      const mandatoryError = validationErrors.find(
-        ve => ve.formIdentifier === mandatoryFormElement.uuid
-      );
-      assert.isDefined(
-        mandatoryError,
-        "Should have a validation error for the mandatory field"
-      );
+      const mandatoryError = validationErrors.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+      assert.isDefined(mandatoryError, "Should have a validation error for the mandatory field");
       assert.isFalse(mandatoryError.success);
     });
 
     it("should not return validation errors for mandatory fields with observations", () => {
       // Create an observations holder with an observation for the mandatory field
       const obsHolder = new ObservationsHolder([]);
-      commonFormUtil.updateObservations(
-        mandatoryFormElement,
-        "Some value",
-        subject,
-        obsHolder,
-        []
-      );
+      commonFormUtil.updateObservations(mandatoryFormElement, "Some value", subject, obsHolder, []);
 
       // Get validation errors for mandatory fields
-      const validationErrors = commonFormUtil.getFEDataValidationErrors(
-        [mandatoryFormElement],
-        obsHolder
-      );
+      const validationErrors = commonFormUtil.getFEDataValidationErrors([mandatoryFormElement], obsHolder);
 
       // Verify that there are no validation errors for the mandatory field
       assert.isArray(validationErrors);
-      const mandatoryError = validationErrors.find(
-        ve => ve.formIdentifier === mandatoryFormElement.uuid
-      );
-      assert.isUndefined(
-        mandatoryError,
-        "Should not have a validation error for the mandatory field with an observation"
-      );
+      const mandatoryError = validationErrors.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+      assert.isUndefined(mandatoryError, "Should not have a validation error for the mandatory field with an observation");
     });
 
     it("should not return validation errors for non-mandatory fields without observations", () => {
@@ -1512,18 +1161,11 @@ describe("Validation Tests", () => {
       const emptyObsHolder = new ObservationsHolder([]);
 
       // Get validation errors for non-mandatory fields
-      const validationErrors = commonFormUtil.getFEDataValidationErrors(
-        [textFormElement, numericFormElement],
-        emptyObsHolder
-      );
+      const validationErrors = commonFormUtil.getFEDataValidationErrors([textFormElement, numericFormElement], emptyObsHolder);
 
       // Verify that there are no validation errors for non-mandatory fields
       assert.isArray(validationErrors);
-      assert.equal(
-        validationErrors.length,
-        0,
-        "Should have no validation errors for non-mandatory fields"
-      );
+      assert.equal(validationErrors.length, 0, "Should have no validation errors for non-mandatory fields");
     });
 
     it("should return validation errors for mandatory fields in standalone form elements", () => {
@@ -1531,26 +1173,14 @@ describe("Validation Tests", () => {
       const emptyObsHolder = new ObservationsHolder([]);
 
       // Get validation errors for a standalone mandatory field
-      const validationErrors = commonFormUtil.getFEDataValidationErrors(
-        [mandatoryFormElement],
-        emptyObsHolder
-      );
+      const validationErrors = commonFormUtil.getFEDataValidationErrors([mandatoryFormElement], emptyObsHolder);
 
       // Verify that validation errors include the mandatory field error
       assert.isArray(validationErrors);
-      assert.isAtLeast(
-        validationErrors.length,
-        1,
-        "Should have at least one validation error for the mandatory field"
-      );
+      assert.isAtLeast(validationErrors.length, 1, "Should have at least one validation error for the mandatory field");
 
-      const mandatoryError = validationErrors.find(
-        ve => ve.formIdentifier === mandatoryFormElement.uuid
-      );
-      assert.isDefined(
-        mandatoryError,
-        "Should have a validation error for the mandatory field"
-      );
+      const mandatoryError = validationErrors.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+      assert.isDefined(mandatoryError, "Should have a validation error for the mandatory field");
       assert.isFalse(mandatoryError.success);
     });
 
@@ -1559,32 +1189,18 @@ describe("Validation Tests", () => {
       const obsHolder = new ObservationsHolder([]);
 
       // Get validation errors with null filteredFormElements
-      const validationErrorsNull = commonFormUtil.getFEDataValidationErrors(
-        null,
-        obsHolder
-      );
+      const validationErrorsNull = commonFormUtil.getFEDataValidationErrors(null, obsHolder);
 
       // Verify that an empty array is returned
       assert.isArray(validationErrorsNull);
-      assert.equal(
-        validationErrorsNull.length,
-        0,
-        "Should return an empty array for null filteredFormElements"
-      );
+      assert.equal(validationErrorsNull.length, 0, "Should return an empty array for null filteredFormElements");
 
       // Get validation errors with empty filteredFormElements
-      const validationErrorsEmpty = commonFormUtil.getFEDataValidationErrors(
-        [],
-        obsHolder
-      );
+      const validationErrorsEmpty = commonFormUtil.getFEDataValidationErrors([], obsHolder);
 
       // Verify that an empty array is returned
       assert.isArray(validationErrorsEmpty);
-      assert.equal(
-        validationErrorsEmpty.length,
-        0,
-        "Should return an empty array for empty filteredFormElements"
-      );
+      assert.equal(validationErrorsEmpty.length, 0, "Should return an empty array for empty filteredFormElements");
     });
   });
 
@@ -1603,18 +1219,11 @@ describe("Validation Tests", () => {
       ];
 
       // Handle the validation results
-      const updatedValidationResults = commonFormUtil.handleValidationResult(
-        newValidationResults,
-        existingValidationResults
-      );
+      const updatedValidationResults = commonFormUtil.handleValidationResult(newValidationResults, existingValidationResults);
 
       // Verify that the new validation failure was added
       assert.isArray(updatedValidationResults);
-      assert.equal(
-        updatedValidationResults.length,
-        1,
-        "Should have one validation result"
-      );
+      assert.equal(updatedValidationResults.length, 1, "Should have one validation result");
 
       const textError = updatedValidationResults[0];
       assert.equal(textError.formIdentifier, textFormElement.uuid);
@@ -1641,18 +1250,11 @@ describe("Validation Tests", () => {
       ];
 
       // Handle the validation results
-      const updatedValidationResults = commonFormUtil.handleValidationResult(
-        newValidationResults,
-        existingValidationResults
-      );
+      const updatedValidationResults = commonFormUtil.handleValidationResult(newValidationResults, existingValidationResults);
 
       // Verify that the validation result was removed
       assert.isArray(updatedValidationResults);
-      assert.equal(
-        updatedValidationResults.length,
-        0,
-        "Should have no validation results"
-      );
+      assert.equal(updatedValidationResults.length, 0, "Should have no validation results");
     });
 
     it("should update existing validation results", () => {
@@ -1675,18 +1277,11 @@ describe("Validation Tests", () => {
       ];
 
       // Handle the validation results
-      const updatedValidationResults = commonFormUtil.handleValidationResult(
-        newValidationResults,
-        existingValidationResults
-      );
+      const updatedValidationResults = commonFormUtil.handleValidationResult(newValidationResults, existingValidationResults);
 
       // Verify that the validation result was updated
       assert.isArray(updatedValidationResults);
-      assert.equal(
-        updatedValidationResults.length,
-        1,
-        "Should have one validation result"
-      );
+      assert.equal(updatedValidationResults.length, 1, "Should have one validation result");
 
       const textError = updatedValidationResults[0];
       assert.equal(textError.formIdentifier, textFormElement.uuid);
@@ -1718,18 +1313,11 @@ describe("Validation Tests", () => {
       ];
 
       // Handle the validation results
-      const updatedValidationResults = commonFormUtil.handleValidationResult(
-        newValidationResults,
-        existingValidationResults
-      );
+      const updatedValidationResults = commonFormUtil.handleValidationResult(newValidationResults, existingValidationResults);
 
       // Verify that the untouched validation result was preserved
       assert.isArray(updatedValidationResults);
-      assert.equal(
-        updatedValidationResults.length,
-        1,
-        "Should have one validation result"
-      );
+      assert.equal(updatedValidationResults.length, 1, "Should have one validation result");
 
       const numericError = updatedValidationResults[0];
       assert.equal(numericError.formIdentifier, numericFormElement.uuid);
@@ -1745,18 +1333,11 @@ describe("Validation Tests", () => {
       const newValidationResults = [];
 
       // Handle the validation results
-      const updatedValidationResults = commonFormUtil.handleValidationResult(
-        newValidationResults,
-        existingValidationResults
-      );
+      const updatedValidationResults = commonFormUtil.handleValidationResult(newValidationResults, existingValidationResults);
 
       // Verify that an empty array is returned
       assert.isArray(updatedValidationResults);
-      assert.equal(
-        updatedValidationResults.length,
-        0,
-        "Should return an empty array"
-      );
+      assert.equal(updatedValidationResults.length, 0, "Should return an empty array");
     });
   });
 
@@ -1777,10 +1358,7 @@ describe("Validation Tests", () => {
       ];
 
       // Get validation result for text form element
-      const textValidationResult = commonFormUtil.getValidationResult(
-        validationResults,
-        textFormElement.uuid
-      );
+      const textValidationResult = commonFormUtil.getValidationResult(validationResults, textFormElement.uuid);
 
       // Verify the validation result
       assert.isDefined(textValidationResult);
@@ -1800,10 +1378,7 @@ describe("Validation Tests", () => {
       ];
 
       // Get validation result for numeric form element
-      const numericValidationResult = commonFormUtil.getValidationResult(
-        validationResults,
-        numericFormElement.uuid
-      );
+      const numericValidationResult = commonFormUtil.getValidationResult(validationResults, numericFormElement.uuid);
 
       // Verify that undefined is returned
       assert.isUndefined(numericValidationResult);
@@ -1814,10 +1389,7 @@ describe("Validation Tests", () => {
       const validationResults = [];
 
       // Get validation result for text form element
-      const textValidationResult = commonFormUtil.getValidationResult(
-        validationResults,
-        textFormElement.uuid
-      );
+      const textValidationResult = commonFormUtil.getValidationResult(validationResults, textFormElement.uuid);
 
       // Verify that undefined is returned
       assert.isUndefined(textValidationResult);
@@ -1888,12 +1460,10 @@ describe("Validation Tests", () => {
 
       // 7. Create a mock FormElementService
       const mockFormElementService = {
-        validateForMandatoryFieldIsEmptyOrNullOnly: jest.fn(
-          (formElement, value, observations, validationResults) => {
-            validationResults.push(validationResult);
-            return validationResults;
-          }
-        )
+        validateForMandatoryFieldIsEmptyOrNullOnly: jest.fn((formElement, value, observations, validationResults) => {
+          validationResults.push(validationResult);
+          return validationResults;
+        })
       };
 
       // Store the original service
@@ -1903,35 +1473,20 @@ describe("Validation Tests", () => {
 
       try {
         // 8. Get validation errors using the actual method
-        const validationErrors = commonFormUtil.getFEDataValidationErrors(
-          [subjectFormElement],
-          emptyObsHolder
-        );
+        const validationErrors = commonFormUtil.getFEDataValidationErrors([subjectFormElement], emptyObsHolder);
 
         // 10. Verify that validation errors include the subject field error
         assert.isArray(validationErrors);
 
         // 11. Find the validation error for the subject form element
-        const subjectError = validationErrors.find(
-          ve => ve.formIdentifier === subjectFormElement.uuid
-        );
+        const subjectError = validationErrors.find(ve => ve.formIdentifier === subjectFormElement.uuid);
 
         // 12. Verify the validation error exists
-        assert.isDefined(
-          subjectError,
-          "Should have a validation error for the subject field"
-        );
+        assert.isDefined(subjectError, "Should have a validation error for the subject field");
         // 13. Check that validation failed (success should be false)
-        assert.isFalse(
-          subjectError.success,
-          "Validation should fail for empty subject field"
-        );
+        assert.isFalse(subjectError.success, "Validation should fail for empty subject field");
         // 14. Check the message key
-        assert.equal(
-          subjectError.messageKey,
-          "emptyValidationMessage",
-          "Should have the correct message key"
-        );
+        assert.equal(subjectError.messageKey, "emptyValidationMessage", "Should have the correct message key");
       } finally {
         // 9. Restore the original service
         commonFormUtil.formElementService = originalService;
@@ -1966,11 +1521,7 @@ describe("Validation Tests", () => {
     // Create a FormElementService for testing
     const testFormElementService = {
       validateIfIsMandatoryAndValueEmptyOrNull: function(formElement, value) {
-        if (
-          formElement &&
-          formElement.mandatory &&
-          (value === undefined || value === null)
-        ) {
+        if (formElement && formElement.mandatory && (value === undefined || value === null)) {
           return ValidationResult.failureForEmpty(formElement.uuid);
         } else {
           return ValidationResult.successful(formElement.uuid);
@@ -1984,19 +1535,13 @@ describe("Validation Tests", () => {
         formElementStatuses,
         childFormElement
       ) {
-        const isChildFormElement =
-          childFormElement && childFormElement.groupUuid === formElement.uuid;
+        const isChildFormElement = childFormElement && childFormElement.groupUuid === formElement.uuid;
         const validationResult = isChildFormElement
-          ? this.validateIfIsMandatoryAndValueEmptyOrNull(
-              childFormElement,
-              value
-            )
+          ? this.validateIfIsMandatoryAndValueEmptyOrNull(childFormElement, value)
           : this.validateIfIsMandatoryAndValueEmptyOrNull(formElement, value);
 
         if (isChildFormElement) {
-          validationResult.addQuestionGroupIndex(
-            childFormElement.questionGroupIndex
-          );
+          validationResult.addQuestionGroupIndex(childFormElement.questionGroupIndex);
         }
 
         validationResults.push(validationResult);
@@ -2041,32 +1586,13 @@ describe("Validation Tests", () => {
 
     // Verify the validation results
     assert.isArray(validationResults);
-    assert.equal(
-      validationResults.length,
-      1,
-      "Should have one validation result"
-    );
+    assert.equal(validationResults.length, 1, "Should have one validation result");
 
     const validationResult = validationResults[0];
-    assert.equal(
-      validationResult.formIdentifier,
-      "child-uuid",
-      "Should have the correct form identifier"
-    );
-    assert.equal(
-      validationResult.questionGroupIndex,
-      0,
-      "Should have the correct question group index"
-    );
-    assert.isFalse(
-      validationResult.success,
-      "Validation should fail for empty subject field"
-    );
-    assert.equal(
-      validationResult.messageKey,
-      "emptyValidationMessage",
-      "Should have the correct message key"
-    );
+    assert.equal(validationResult.formIdentifier, "child-uuid", "Should have the correct form identifier");
+    assert.equal(validationResult.questionGroupIndex, 0, "Should have the correct question group index");
+    assert.isFalse(validationResult.success, "Validation should fail for empty subject field");
+    assert.equal(validationResult.messageKey, "emptyValidationMessage", "Should have the correct message key");
   });
 });
 
@@ -2128,67 +1654,29 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
 
     // First, initialize the child form element with a value
     // This will create the necessary question group structure
-    commonFormUtil.updateObservations(
-      childFormElement,
-      "initial value",
-      subject,
-      obsHolder,
-      [],
-      null,
-      0
-    );
+    commonFormUtil.updateObservations(childFormElement, "initial value", subject, obsHolder, [], null, 0);
 
     // Now we can validate the form elements
-    const validationErrors = commonFormUtil.getFEDataValidationErrors(
-      [qgFormElement, childFormElement],
-      obsHolder
-    );
+    const validationErrors = commonFormUtil.getFEDataValidationErrors([qgFormElement, childFormElement], obsHolder);
 
     // Verify validation errors - we should have no errors since we provided a value
     assert.isArray(validationErrors);
-    assert.equal(
-      validationErrors.length,
-      0,
-      "Should have no validation errors when child field has a value"
-    );
+    assert.equal(validationErrors.length, 0, "Should have no validation errors when child field has a value");
 
     // Now let's clear the value to test validation of empty mandatory field
-    commonFormUtil.updateObservations(
-      childFormElement,
-      null,
-      subject,
-      obsHolder,
-      [],
-      null,
-      0
-    );
+    commonFormUtil.updateObservations(childFormElement, null, subject, obsHolder, [], null, 0);
 
     // Get validation errors again
-    const emptyValidationErrors = commonFormUtil.getFEDataValidationErrors(
-      [qgFormElement, childFormElement],
-      obsHolder
-    );
+    const emptyValidationErrors = commonFormUtil.getFEDataValidationErrors([qgFormElement, childFormElement], obsHolder);
 
     // Verify validation errors for empty value
     assert.isArray(emptyValidationErrors);
-    assert.isAtLeast(
-      emptyValidationErrors.length,
-      1,
-      "Should have at least one validation error for the mandatory child field"
-    );
+    assert.isAtLeast(emptyValidationErrors.length, 1, "Should have at least one validation error for the mandatory child field");
 
     // Find the validation error for the child form element
-    const childError = emptyValidationErrors.find(
-      ve => ve.formIdentifier === childFormElement.uuid
-    );
-    assert.isDefined(
-      childError,
-      "Should have a validation error for the mandatory child field"
-    );
-    assert.isFalse(
-      childError.success,
-      "Validation should fail for empty mandatory child field"
-    );
+    const childError = emptyValidationErrors.find(ve => ve.formIdentifier === childFormElement.uuid);
+    assert.isDefined(childError, "Should have a validation error for the mandatory child field");
+    assert.isFalse(childError.success, "Validation should fail for empty mandatory child field");
     // The questionGroupIndex might not be set in the validation error, so we'll skip this assertion
     // assert.equal(childError.questionGroupIndex, 0, "Should have the correct question group index");
   });
@@ -2235,67 +1723,29 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
 
     // First, initialize the child form element with a value
     // This will create the necessary question group structure
-    commonFormUtil.updateObservations(
-      childFormElement,
-      "initial value",
-      subject,
-      obsHolder,
-      [],
-      null,
-      null
-    );
+    commonFormUtil.updateObservations(childFormElement, "initial value", subject, obsHolder, [], null, null);
 
     // Now we can validate the form elements
-    const validationErrors = commonFormUtil.getFEDataValidationErrors(
-      [qgFormElement, childFormElement],
-      obsHolder
-    );
+    const validationErrors = commonFormUtil.getFEDataValidationErrors([qgFormElement, childFormElement], obsHolder);
 
     // Verify validation errors - we should have no errors since we provided a value
     assert.isArray(validationErrors);
-    assert.equal(
-      validationErrors.length,
-      0,
-      "Should have no validation errors when child field has a value"
-    );
+    assert.equal(validationErrors.length, 0, "Should have no validation errors when child field has a value");
 
     // Now let's clear the value to test validation of empty mandatory field
-    commonFormUtil.updateObservations(
-      childFormElement,
-      null,
-      subject,
-      obsHolder,
-      [],
-      null,
-      null
-    );
+    commonFormUtil.updateObservations(childFormElement, null, subject, obsHolder, [], null, null);
 
     // Get validation errors again
-    const emptyValidationErrors = commonFormUtil.getFEDataValidationErrors(
-      [qgFormElement, childFormElement],
-      obsHolder
-    );
+    const emptyValidationErrors = commonFormUtil.getFEDataValidationErrors([qgFormElement, childFormElement], obsHolder);
 
     // Verify validation errors for empty value
     assert.isArray(emptyValidationErrors);
-    assert.isAtLeast(
-      emptyValidationErrors.length,
-      1,
-      "Should have at least one validation error for the mandatory child field"
-    );
+    assert.isAtLeast(emptyValidationErrors.length, 1, "Should have at least one validation error for the mandatory child field");
 
     // Find the validation error for the child form element
-    const childError = emptyValidationErrors.find(
-      ve => ve.formIdentifier === childFormElement.uuid
-    );
-    assert.isDefined(
-      childError,
-      "Should have a validation error for the mandatory child field"
-    );
-    assert.isFalse(
-      childError.success,
-      "Validation should fail for empty mandatory child field"
-    );
+    const childError = emptyValidationErrors.find(ve => ve.formIdentifier === childFormElement.uuid);
+    assert.isDefined(childError, "Should have a validation error for the mandatory child field");
+    assert.isFalse(childError.success, "Validation should fail for empty mandatory child field");
   });
 
   it("should handle null concepts and observations gracefully", () => {
@@ -2310,18 +1760,11 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
     const obsHolder = new ObservationsHolder([]);
 
     // Get validation errors
-    const validationErrors = commonFormUtil.getFEDataValidationErrors(
-      [formElementWithNullConcept],
-      obsHolder
-    );
+    const validationErrors = commonFormUtil.getFEDataValidationErrors([formElementWithNullConcept], obsHolder);
 
     // Verify that no errors are thrown and an empty array is returned
     assert.isArray(validationErrors);
-    assert.equal(
-      validationErrors.length,
-      0,
-      "Should handle null concepts gracefully"
-    );
+    assert.equal(validationErrors.length, 0, "Should handle null concepts gracefully");
 
     // Create a form element with valid concept but null in the filtered elements array
     const mandatoryFormElement = EntityFactory.createFormElement2({
@@ -2333,19 +1776,11 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
       })
     });
 
-    const validationErrorsWithNull = commonFormUtil.getFEDataValidationErrors(
-      [null, mandatoryFormElement],
-      obsHolder
-    );
+    const validationErrorsWithNull = commonFormUtil.getFEDataValidationErrors([null, mandatoryFormElement], obsHolder);
 
     // Verify that null elements are skipped and only valid elements are processed
     assert.isArray(validationErrorsWithNull);
-    const mandatoryError = validationErrorsWithNull.find(
-      ve => ve.formIdentifier === mandatoryFormElement.uuid
-    );
-    assert.isDefined(
-      mandatoryError,
-      "Should process valid elements and skip null ones"
-    );
+    const mandatoryError = validationErrorsWithNull.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+    assert.isDefined(mandatoryError, "Should process valid elements and skip null ones");
   });
 });

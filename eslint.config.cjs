@@ -71,7 +71,7 @@ module.exports = [
     },
   },
   {
-    files: ["**/*.test.js", "**/*.spec.js"],
+    files: ["**/*.test.js", "**/*.spec.js", "**/setupTests.js", "**/jestGlobalsSetup.js"],
     languageOptions: {
       globals: {
         describe: "readonly",
@@ -82,6 +82,9 @@ module.exports = [
         beforeAll: "readonly",
         afterAll: "readonly",
         jest: "readonly",
+        global: "readonly",
+        TextEncoder: "readonly",
+        TextDecoder: "readonly",
       },
     },
     rules: {

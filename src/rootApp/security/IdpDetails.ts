@@ -33,3 +33,4 @@ class IdpDetails {
 }
 
 export default IdpDetails;
+export { CognitoDetails, KeycloakDetails };

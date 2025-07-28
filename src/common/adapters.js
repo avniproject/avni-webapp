@@ -1,6 +1,7 @@
 import {
   Concept,
   ConceptAnswer,
+  EncounterType,
   Format,
   Gender,
   KeyValue,
@@ -80,18 +81,11 @@ export const mapForm = json => {
 export const mapGender = json => General.assignFields(json, new Gender(), ["uuid", "name"]);
 
 export const mapEncounterType = json => {
-  // Return plain object instead of class instance for Redux serialization
-  const encounterType = {
-    name: json.name,
-    uuid: json.uuid,
-    voided: false,
-    operationalEncounterTypeName: json.operationalEncounterTypeName
-  };
-
+  const encounterType = General.assignFields(json, new EncounterType(), ["uuid", "name", "operationalEncounterTypeName"], []);
+  encounterType.voided = false;
   encounterType.displayName = isEmpty(encounterType.operationalEncounterTypeName)
     ? encounterType.name
     : encounterType.operationalEncounterTypeName;
-
   return encounterType;
 };
 

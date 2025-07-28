@@ -39,7 +39,7 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 const SearchResultFields = () => {
-  const userInfo = useSelector(state => state.userInfo);
+  const userInfo = useSelector(state => state.app.userInfo);
   const [state, dispatch] = useReducer(
     SearchFieldReducer,
     new SearchResultFieldState()

@@ -1,8 +1,5 @@
 import { updateObsWorker } from "dataEntryApp/sagas/subjectSaga";
-import {
-  updateEnrolmentObsWorker,
-  updateExitEnrolmentObsWorker
-} from "dataEntryApp/sagas/enrolmentSaga";
+import { updateEnrolmentObsWorker, updateExitEnrolmentObsWorker } from "dataEntryApp/sagas/enrolmentSaga";
 import enrolmentReducer from "dataEntryApp/reducers/programEnrolReducer";
 import { expectSaga } from "redux-saga-test-plan";
 import mockData from "dataEntryApp/sagas/subjectSaga.mock";
@@ -11,10 +8,7 @@ import { map } from "lodash";
 
 describe("subjectSaga", () => {
   test("updates the enrolment exit observations", async () => {
-    const { programEnrolment, formElement1, formElementGroup1 } = mockData(
-      10,
-      true
-    );
+    const { programEnrolment, formElement1, formElementGroup1 } = mockData(10, true);
     const initialState = {
       dataEntry: {
         enrolmentReducer: { programEnrolment, validationResults: [] }
@@ -26,25 +20,16 @@ describe("subjectSaga", () => {
       .withReducer(enrolmentReducer, initialState)
       .run();
 
-    const matchingObservation = storeState.programEnrolment.programExitObservations.find(
-      obs => obs.concept.name === "a1"
-    ).valueJSON.value;
+    const matchingObservation = storeState.programEnrolment.programExitObservations.find(obs => obs.concept.name === "a1").valueJSON.value;
 
-    expect(storeState.filteredFormElements.length).toEqual(
-      formElementGroup1.getFormElements().length
-    );
-    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
-      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
-    );
+    expect(storeState.filteredFormElements.length).toEqual(formElementGroup1.getFormElements().length);
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(map(formElementGroup1.getFormElements(), ({ uuid }) => uuid));
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });
 
   test("updates the enrolment observations", async () => {
-    const { programEnrolment, formElement1, formElementGroup1 } = mockData(
-      10,
-      false
-    );
+    const { programEnrolment, formElement1, formElementGroup1 } = mockData(10, false);
     const initialState = {
       dataEntry: {
         enrolmentReducer: { programEnrolment, validationResults: [] }
@@ -56,16 +41,10 @@ describe("subjectSaga", () => {
       .withReducer(enrolmentReducer, initialState)
       .run();
 
-    const matchingObservation = storeState.programEnrolment.observations.find(
-      obs => obs.concept.name === "a1"
-    ).valueJSON.value;
+    const matchingObservation = storeState.programEnrolment.observations.find(obs => obs.concept.name === "a1").valueJSON.value;
 
-    expect(storeState.filteredFormElements.length).toEqual(
-      formElementGroup1.getFormElements().length
-    );
-    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
-      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
-    );
+    expect(storeState.filteredFormElements.length).toEqual(formElementGroup1.getFormElements().length);
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(map(formElementGroup1.getFormElements(), ({ uuid }) => uuid));
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });
@@ -81,16 +60,10 @@ describe("subjectSaga", () => {
       .withReducer(registrationReducer, initialState)
       .run();
 
-    const matchingObservation = storeState.subject.observations.find(
-      obs => obs.concept.name === "a1"
-    ).valueJSON.value;
+    const matchingObservation = storeState.subject.observations.find(obs => obs.concept.name === "a1").valueJSON.value;
 
-    expect(storeState.filteredFormElements.length).toEqual(
-      formElementGroup1.getFormElements().length
-    );
-    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
-      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
-    );
+    expect(storeState.filteredFormElements.length).toEqual(formElementGroup1.getFormElements().length);
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(map(formElementGroup1.getFormElements(), ({ uuid }) => uuid));
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });

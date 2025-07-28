@@ -1,20 +1,6 @@
-import {
-  mapConcept,
-  mapConceptAnswer,
-  mapForm,
-  mapFormElement,
-  mapFormElementGroup,
-  mapOperationalModules
-} from "./adapters";
+import { mapConcept, mapConceptAnswer, mapForm, mapFormElement, mapFormElementGroup, mapOperationalModules } from "./adapters";
 import { assert } from "chai";
-import {
-  Concept,
-  ConceptAnswer,
-  EncounterType,
-  FormElementGroup,
-  Program,
-  SubjectType
-} from "avni-models";
+import { Concept, ConceptAnswer, EncounterType, Program, SubjectType } from "avni-models";
 import WebFormElementGroup from "./model/WebFormElementGroup";
 
 describe("adapters", () => {
@@ -37,10 +23,7 @@ describe("adapters", () => {
     const conceptAnswer = mapConceptAnswer(sampleConcept.conceptAnswers[0]);
 
     assert.equal(conceptAnswer.uuid, "fe41d8ec-ae5e-4054-963b-f7a1768fb629");
-    assert.equal(
-      conceptAnswer.concept.uuid,
-      "cae99772-b389-4baf-849b-9c7c2b06c951"
-    );
+    assert.equal(conceptAnswer.concept.uuid, "cae99772-b389-4baf-849b-9c7c2b06c951");
     assert.equal(conceptAnswer.answerOrder, 4);
     assert.equal(conceptAnswer.abnormal, false);
     assert.equal(conceptAnswer.unique, false);
@@ -106,10 +89,7 @@ describe("adapters", () => {
     assert.equal(form.formElementGroups.length, 2);
     assert.equal(form.formElementGroups[0].constructor, WebFormElementGroup);
     assert.equal(form.formElementGroups[0].name, "Individual details");
-    assert.equal(
-      form.formElementGroups[1].uuid,
-      "0ef62f9b-e52e-4fd9-be85-4c3f08c9a973"
-    );
+    assert.equal(form.formElementGroups[1].uuid, "0ef62f9b-e52e-4fd9-be85-4c3f08c9a973");
   });
 
   it("can map operational modules", () => {
@@ -127,10 +107,7 @@ describe("adapters", () => {
     assert.equal(operationalModules.subjectTypes.length, 1);
 
     assert.equal(operationalModules.formMappings[0].constructor, Object);
-    assert.equal(
-      operationalModules.encounterTypes[0].constructor,
-      EncounterType
-    );
+    assert.equal(operationalModules.encounterTypes[0].constructor.name, "EncounterType");
     assert.equal(operationalModules.programs[0].constructor, Program);
     assert.equal(operationalModules.subjectTypes[0].constructor, SubjectType);
 

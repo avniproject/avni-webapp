@@ -6,10 +6,7 @@ import { FormElementStatus } from "avni-models";
 import * as rulesConfig from "rules-config";
 import { common, motherCalculations, RuleRegistry } from "avni-health-modules";
 import { store } from "common/store/createStore";
-import {
-  selectLegacyRules,
-  selectLegacyRulesAllRules
-} from "dataEntryApp/reducers/metadataReducer";
+import { selectLegacyRules, selectLegacyRulesAllRules } from "dataEntryApp/reducers/metadataReducer";
 import { individualService } from "./IndividualService";
 
 const services = {
@@ -32,68 +29,33 @@ const updateMapUsingKeyPattern = () => {
 };
 
 export const getFormElementsStatuses = (entity, formElementGroup) => {
-  if ([entity, formElementGroup, formElementGroup.form].some(_.isEmpty))
-    return [];
+  if ([entity, formElementGroup, formElementGroup.form].some(_.isEmpty)) return [];
   const entityName = _.get(entity, "constructor.schema.name");
-  const rulesFromTheBundle = getAllRuleItemsFor(
-    formElementGroup.form,
-    "ViewFilter",
-    "Form"
-  );
+  const rulesFromTheBundle = getAllRuleItemsFor(formElementGroup.form, "ViewFilter", "Form");
 
   const mapOfBundleFormElementStatuses = !_.isEmpty(rulesFromTheBundle)
     ? rulesFromTheBundle
-        .map(r =>
-          runRuleAndSaveFailure(
-            r,
-            entityName,
-            entity,
-            formElementGroup,
-            new Date()
-          )
-        )
+        .map(r => runRuleAndSaveFailure(r, entityName, entity, formElementGroup, new Date()))
         .reduce((all, curr) => all.concat(curr), [])
         .reduce(updateMapUsingKeyPattern(), new Map())
     : new Map();
   const allFEGFormElements = formElementGroup.getFormElements();
-  const formElementStatusAfterGroupRule = runFormElementGroupRule(
-    formElementGroup,
-    entity,
-    entityName,
-    mapOfBundleFormElementStatuses
-  );
+  const formElementStatusAfterGroupRule = runFormElementGroupRule(formElementGroup, entity, entityName, mapOfBundleFormElementStatuses);
   let mapOfFormElementStatuses = new Map();
-  const visibleFormElementsUUIDs = _.filter(
-    formElementStatusAfterGroupRule,
-    ({ visibility }) => visibility === true
-  ).map(({ uuid }) => uuid);
-  const applicableFormElements = allFEGFormElements.filter(fe =>
-    _.includes(visibleFormElementsUUIDs, fe.uuid)
+  const visibleFormElementsUUIDs = _.filter(formElementStatusAfterGroupRule, ({ visibility }) => visibility === true).map(
+    ({ uuid }) => uuid
   );
+  const applicableFormElements = allFEGFormElements.filter(fe => _.includes(visibleFormElementsUUIDs, fe.uuid));
   if (!_.isEmpty(formElementStatusAfterGroupRule)) {
-    mapOfFormElementStatuses = formElementStatusAfterGroupRule.reduce(
-      updateMapUsingKeyPattern(),
-      mapOfFormElementStatuses
-    );
+    mapOfFormElementStatuses = formElementStatusAfterGroupRule.reduce(updateMapUsingKeyPattern(), mapOfFormElementStatuses);
   }
   if (!_.isEmpty(allFEGFormElements) && !_.isEmpty(visibleFormElementsUUIDs)) {
     mapOfFormElementStatuses = applicableFormElements
       .map(formElement => {
         if (formElement.groupUuid) {
-          return getTheChildFormElementStatuses(
-            formElement,
-            entity,
-            entityName,
-            mapOfBundleFormElementStatuses
-          );
+          return getTheChildFormElementStatuses(formElement, entity, entityName, mapOfBundleFormElementStatuses);
         }
-        return runFormElementStatusRule(
-          formElement,
-          entity,
-          entityName,
-          null,
-          mapOfBundleFormElementStatuses
-        );
+        return runFormElementStatusRule(formElement, entity, entityName, null, mapOfBundleFormElementStatuses);
       })
       .filter(fs => !_.isNil(fs))
       .reduce((all, curr) => all.concat(curr), [])
@@ -102,12 +64,7 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
   return [...mapOfFormElementStatuses.values()];
 };
 
-const getTheChildFormElementStatuses = (
-  childFormElement,
-  entity,
-  entityName,
-  mapOfBundleFormElementStatuses
-) => {
+const getTheChildFormElementStatuses = (childFormElement, entity, entityName, mapOfBundleFormElementStatuses) => {
   const size = getRepeatableObservationSize(childFormElement, entity);
   return _.range(size)
     .map(questionGroupIndex => {
@@ -118,8 +75,7 @@ const getTheChildFormElementStatuses = (
         questionGroupIndex,
         mapOfBundleFormElementStatuses
       );
-      if (formElementStatus)
-        formElementStatus.addQuestionGroupInformation(questionGroupIndex);
+      if (formElementStatus) formElementStatus.addQuestionGroupInformation(questionGroupIndex);
       return formElementStatus;
     })
     .filter(fs => !_.isNil(fs))
@@ -128,29 +84,17 @@ const getTheChildFormElementStatuses = (
 
 const getRepeatableObservationSize = (formElement, entity) => {
   const parentFormElement = formElement.getParentFormElement();
-  const questionGroupObservations = entity.findObservation(
-    parentFormElement.concept.uuid
-  );
-  const questionGroupObs =
-    questionGroupObservations && questionGroupObservations.getValueWrapper();
+  const questionGroupObservations = entity.findObservation(parentFormElement.concept.uuid);
+  const questionGroupObs = questionGroupObservations && questionGroupObservations.getValueWrapper();
   return questionGroupObs ? questionGroupObs.size() : 1;
 };
 
-const runFormElementStatusRule = (
-  formElement,
-  entity,
-  entityName,
-  questionGroupIndex,
-  mapOfBundleFormElementStatuses
-) => {
+const runFormElementStatusRule = (formElement, entity, entityName, questionGroupIndex, mapOfBundleFormElementStatuses) => {
   if (_.isNil(formElement.rule) || _.isEmpty(_.trim(formElement.rule))) {
-    return getDefaultFormElementStatusIfNotFoundInBundleFESs(
-      mapOfBundleFormElementStatuses,
-      {
-        uuid: formElement.uuid,
-        questionGroupIndex
-      }
-    );
+    return getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
+      uuid: formElement.uuid,
+      questionGroupIndex
+    });
   }
   try {
     /* eslint-disable-next-line no-unused-vars */
@@ -162,11 +106,7 @@ const runFormElementStatusRule = (
       imports: getImports()
     });
   } catch (e) {
-    console.error(
-      `Rule-Failure for formElement name: ${formElement.name} Error message: ${
-        e.message
-      } stack: ${e.stack}`
-    );
+    console.error(`Rule-Failure for formElement name: ${formElement.name} Error message: ${e.message} stack: ${e.stack}`);
     return null;
   }
 };
@@ -180,51 +120,31 @@ const runFormElementStatusRule = (
  * @param fs has two properties: uuid and questionGroupIndex
  * @returns {*}
  */
-const getDefaultFormElementStatusIfNotFoundInBundleFESs = (
-  mapOfBundleFormElementStatuses,
-  fs
-) => {
+const getDefaultFormElementStatusIfNotFoundInBundleFESs = (mapOfBundleFormElementStatuses, fs) => {
   return (
-    (mapOfBundleFormElementStatuses &&
-      mapOfBundleFormElementStatuses.get(
-        `${fs.uuid}-${fs.questionGroupIndex || 0}`
-      )) ||
+    (mapOfBundleFormElementStatuses && mapOfBundleFormElementStatuses.get(`${fs.uuid}-${fs.questionGroupIndex || 0}`)) ||
     new FormElementStatus(fs.uuid, true, null)
   );
 };
 
-const runFormElementGroupRule = (
-  formElementGroup,
-  entity,
-  entityName,
-  mapOfBundleFormElementStatuses
-) => {
-  if (
-    _.isNil(formElementGroup.rule) ||
-    _.isEmpty(_.trim(formElementGroup.rule))
-  ) {
+const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBundleFormElementStatuses) => {
+  if (_.isNil(formElementGroup.rule) || _.isEmpty(_.trim(formElementGroup.rule))) {
     return formElementGroup.getFormElements().flatMap(formElement => {
       if (formElement.groupUuid) {
         const size = getRepeatableObservationSize(formElement, entity);
         return _.range(size).map(questionGroupIndex => {
-          const formElementStatus = getDefaultFormElementStatusIfNotFoundInBundleFESs(
-            mapOfBundleFormElementStatuses,
-            {
-              uuid: formElement.uuid,
-              questionGroupIndex
-            }
-          );
+          const formElementStatus = getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
+            uuid: formElement.uuid,
+            questionGroupIndex
+          });
           formElementStatus.addQuestionGroupInformation(questionGroupIndex);
           return formElementStatus;
         });
       } else {
-        return getDefaultFormElementStatusIfNotFoundInBundleFESs(
-          mapOfBundleFormElementStatuses,
-          {
-            uuid: formElement.uuid,
-            questionGroupIndex: null
-          }
-        );
+        return getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
+          uuid: formElement.uuid,
+          questionGroupIndex: null
+        });
       }
     });
   }
@@ -238,11 +158,7 @@ const runFormElementGroupRule = (
       imports: getImports()
     });
   } catch (e) {
-    console.error(
-      `Rule-Failure for formElement group name: ${
-        formElementGroup.name
-      } Error message : ${e}`
-    );
+    console.error(`Rule-Failure for formElement group name: ${formElementGroup.name} Error message : ${e}`);
   }
 };
 
@@ -256,21 +172,10 @@ const getRuleServiceLibraryInterfaceForSharingModules = () => {
 };
 
 const getAllRuleItemsFor = (entity, type, entityTypeHardCoded) => {
-  const entityType = _.get(
-    entity,
-    "constructor.schema.name",
-    entityTypeHardCoded
-  );
-  const applicableRules = RuleRegistry.getRulesFor(
-    entity.uuid,
-    type,
-    entityType
-  ); //Core module rules
+  const entityType = _.get(entity, "constructor.schema.name", entityTypeHardCoded);
+  const applicableRules = RuleRegistry.getRulesFor(entity.uuid, type, entityType); //Core module rules
   const additionalRules = getApplicableRules(entity, type, entityType);
-  const ruleItems = _.sortBy(
-    applicableRules.concat(additionalRules),
-    r => r.executionOrder
-  );
+  const ruleItems = _.sortBy(applicableRules.concat(additionalRules), r => r.executionOrder);
   return ruleItems;
 };
 
@@ -281,10 +186,7 @@ const getApplicableRules = (ruledEntity, ruleType, ruledEntityType) => {
     .map(_.identity)
     .filter(
       rule =>
-        rule.voided === false &&
-        rule.type === ruleType &&
-        rule.entity.uuid === ruledEntity.uuid &&
-        rule.entity.type === ruledEntityType
+        rule.voided === false && rule.type === ruleType && rule.entity.uuid === ruledEntity.uuid && rule.entity.type === ruledEntityType
     );
   return getRuleFunctions(rules);
 };
@@ -292,36 +194,20 @@ const getApplicableRules = (ruledEntity, ruleType, ruledEntityType) => {
 const getRuleFunctions = (rules = []) => {
   const allRules = selectLegacyRulesAllRules(store.getState());
   return _.defaults(rules, [])
-    .filter(
-      ar =>
-        _.isFunction(allRules[ar.fnName]) &&
-        _.isFunction(allRules[ar.fnName].exec)
-    )
+    .filter(ar => _.isFunction(allRules[ar.fnName]) && _.isFunction(allRules[ar.fnName].exec))
     .map(ar => ({ ...ar, fn: allRules[ar.fnName] }));
 };
 
-const runRuleAndSaveFailure = (
-  rule,
-  entityName,
-  entity,
-  ruleTypeValue,
-  config,
-  context
-) => {
+const runRuleAndSaveFailure = (rule, entityName, entity, ruleTypeValue, config, context) => {
   try {
     if (entityName === "WorkList") {
       ruleTypeValue = entity;
       return rule.fn.exec(entity, context);
     } else {
-      return _.isNil(context)
-        ? rule.fn.exec(entity, ruleTypeValue, config)
-        : rule.fn.exec(entity, ruleTypeValue, context, config);
+      return _.isNil(context) ? rule.fn.exec(entity, ruleTypeValue, config) : rule.fn.exec(entity, ruleTypeValue, context, config);
     }
   } catch (error) {
-    console.log(
-      "Rule-Failure",
-      `Rule failed: ${rule.name}, uuid: ${rule.uuid}`
-    );
+    console.log("Rule-Failure", `Rule failed: ${rule.name}, uuid: ${rule.uuid}`);
     //TODO: Implement saving rule failures by calling API
     // this.saveFailedRules(error, rule.uuid, this.getIndividualUUID(entity, entityName));
     return ruleTypeValue;

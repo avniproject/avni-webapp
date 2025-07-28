@@ -163,7 +163,7 @@ const Extensions = () => {
             )}
           </Grid>
         </div>
-        <CustomizedBackdrop load={load} />
+        <CustomizedBackdrop load={!load} />
       </DocumentationContainer>
     </StyledBox>
   );
