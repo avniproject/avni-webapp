@@ -67,7 +67,7 @@ const SubLocationsGrid = props =>
     </Datagrid>
   );
 
-const ParentLocationReferenceField = props => {
+const ParentLocationReferenceField = (addLabel = true, props) => {
   const record = useRecordContext();
   return isNil(record?.parentId) ? (
     <None />
@@ -84,10 +84,6 @@ const ParentLocationReferenceField = props => {
       />
     </ReferenceField>
   );
-};
-
-ParentLocationReferenceField.defaultProps = {
-  addLabel: true
 };
 
 export const LocationDetail = props => (

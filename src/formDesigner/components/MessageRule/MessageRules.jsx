@@ -5,7 +5,7 @@ import {
   sampleMessageRule,
   sampleMessageScheduleRule
 } from "../../common/SampleRule";
-import { FormLabel, Typography } from "@mui/material";
+import { Box, FormLabel, Typography } from "@mui/material";
 import { find } from "lodash";
 
 const MessageRules = ({
@@ -41,7 +41,7 @@ const MessageRules = ({
     return null;
   }
   return (
-    <>
+    <Box sx={{ marginTop: theme => theme.spacing(2) }}>
       {templateFetchError && (
         <Typography sx={{ color: theme => theme.palette.text.primary }}>
           NO MESSAGE TEMPLATE. OR UNABLE FETCH MESSAGE TEMPLATES.
@@ -109,7 +109,7 @@ const MessageRules = ({
           )}
         </>
       )}
-    </>
+    </Box>
   );
 };
 

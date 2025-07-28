@@ -21,9 +21,7 @@ export const fetchSubjectData = (query, filterCriteria) => {
   });
 };
 
-export const updateUserAssignmentToSubject = async event => {
-  const voided = event.action !== "select-option";
-  const payload = { userId: event.option.id, subjectIds: [event.option.subjectId], voided };
-
+export const updateUserAssignmentToSubject = async ({ userId, subjectId, voided }) => {
+  const payload = { userId, subjectIds: [subjectId], voided };
   return api.postUpdateUserAssignmentToSubject(payload);
 };

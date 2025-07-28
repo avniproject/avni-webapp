@@ -40,9 +40,9 @@ const StyledGrid = styled(Grid)({
 export const CodedConceptAnswer = ({
   answer,
   index,
-  inlineConcept,
-  elementIndex,
-  groupIndex,
+  inlineConcept = false,
+  elementIndex = -1,
+  groupIndex = -1,
   onChangeAnswerName,
   onToggleAnswerField,
   onSelectAnswerMedia,
@@ -187,12 +187,6 @@ export const CodedConceptAnswer = ({
       </Grid>
     </StyledGrid>
   );
-};
-
-CodedConceptAnswer.defaultProps = {
-  inlineConcept: false,
-  elementIndex: -1,
-  groupIndex: -1
 };
 
 export default function CodedConcept(props) {

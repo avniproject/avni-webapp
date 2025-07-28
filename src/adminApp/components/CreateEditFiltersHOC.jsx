@@ -6,7 +6,6 @@ const CreateEditFiltersHOC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const {
-    omitTableData,
     selectedFilter,
     title,
     filterType,
@@ -23,7 +22,6 @@ const CreateEditFiltersHOC = () => {
 
   return (
     <CreateEditFilters
-      omitTableData={omitTableData}
       selectedFilter={selectedFilter}
       title={title}
       filterType={filterType}

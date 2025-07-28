@@ -58,15 +58,13 @@ const ApplicationMenuList = () => {
   );
 
   const fetchData = useMemo(
-    () => ({ page, pageSize }) =>
+    () => () =>
       new Promise(resolve =>
         ApplicationMenuService.getMenuList().then(response => {
-          const data = response.content || [];
-          const start = page * pageSize;
-          const paginatedData = data.slice(start, start + pageSize);
           resolve({
-            data: paginatedData,
-            totalCount: data.length
+            data: response.data,
+            page: response.page,
+            totalCount: response.totalCount
           });
         })
       ),

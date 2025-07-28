@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
@@ -14,7 +14,8 @@ import ApplicationMenuService from "../service/ApplicationMenuService";
 import _ from "lodash";
 import FormLabel from "@mui/material/FormLabel";
 
-const ApplicationMenuEdit = props => {
+const ApplicationMenuEdit = () => {
+  const { id } = useParams();
   const [state, dispatch] = useReducer(
     ApplicationMenuReducer.execute,
     ApplicationMenuReducer.createApplicationMenuInitialState()
@@ -23,12 +24,12 @@ const ApplicationMenuEdit = props => {
   const [deleteAlert, setDeleteAlert] = useState(false);
 
   function isCreate() {
-    return _.isEmpty(props.match.params.id);
+    return _.isEmpty(id);
   }
 
   useEffect(() => {
     if (!isCreate())
-      ApplicationMenuService.getMenuItem(props.match.params.id).then(menuItem =>
+      ApplicationMenuService.getMenuItem(id).then(menuItem =>
         dispatch({
           type: ApplicationMenuReducer.INITIAL_MENU_ITEM,
           payload: menuItem
@@ -121,7 +122,7 @@ const ApplicationMenuEdit = props => {
             <SaveComponent
               name="save"
               onSubmit={onSubmit}
-              styleClass={{ marginLeft: "14px" }}
+              styles={{ marginLeft: "14px" }}
             />
           </Grid>
           {!isCreate() && (
@@ -138,7 +139,7 @@ const ApplicationMenuEdit = props => {
                 onClick={() =>
                   EntityEditUtil.onDelete(
                     "menuItem",
-                    props.match.params.id,
+                    id,
                     "application menu",
                     () => setDeleteAlert(true)
                   )
@@ -155,7 +156,7 @@ const ApplicationMenuEdit = props => {
           to={
             isCreate()
               ? "/appDesigner/applicationMenu"
-              : `/appDesigner/applicationMenu/${props.match.params.id}/show`
+              : `/appDesigner/applicationMenu/${id}/show`
           }
         />
       )}

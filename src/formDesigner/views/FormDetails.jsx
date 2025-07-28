@@ -120,13 +120,12 @@ const getStaticFormElements = subjectType => {
 };
 
 const FormDetails = () => {
-  const { id } = useParams();
+  const { uuid: formUUID } = useParams();
   const record = useRecordContext();
   const userInfo = useSelector(state => state.app.userInfo);
-  const formUUId = id;
 
   const [state, setState] = useState({
-    form: [],
+    form: {},
     identifierSources: [],
     groupSubjectTypes: [],
     name: "",
@@ -169,7 +168,7 @@ const FormDetails = () => {
 
   const getForm = useCallback(async () => {
     try {
-      const response = await http.get(`/forms/export?formUUID=${formUUId}`);
+      const response = await http.get(`/forms/export?formUUID=${formUUID}`);
       const form = response.data;
 
       form.visitScheduleRule = form.visitScheduleRule || "";
@@ -256,7 +255,7 @@ const FormDetails = () => {
     } catch (error) {
       setState(prev => ({ ...prev, errorMsg: "Failed to load form data" }));
     }
-  }, [formUUId]);
+  }, [formUUID]);
 
   const countGroupElements = useCallback(form => {
     return _.every(form.formElementGroups, groupElement => groupElement.voided);
@@ -1243,7 +1242,7 @@ const FormDetails = () => {
             <SaveComponent
               name="Save"
               onSubmit={validateForm}
-              styleClass={{
+              styles={{
                 marginTop: "30px",
                 marginBottom: "2px"
               }}

@@ -5,7 +5,7 @@ export const CreateComponent = ({
   onSubmit,
   disabledFlag = false,
   name = "CREATE",
-  styleClass = {},
+  styles = {},
   fullWidth = false
 }) => {
   return (
@@ -13,7 +13,7 @@ export const CreateComponent = ({
       color="primary"
       variant="outlined"
       onClick={event => onSubmit(event)}
-      style={isEmpty(styleClass) ? {} : styleClass}
+      style={isEmpty(styles) ? {} : styles}
       disabled={disabledFlag}
       fullWidth={fullWidth}
     >

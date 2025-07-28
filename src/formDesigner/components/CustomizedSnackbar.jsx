@@ -90,7 +90,7 @@ MySnackbarContentWrapper.propTypes = {
 
 export default function CustomizedSnackbar({
   getDefaultSnackbarStatus,
-  defaultSnackbarStatus,
+  defaultSnackbarStatus = true,
   onExited,
   variant,
   message,
@@ -123,7 +123,3 @@ export default function CustomizedSnackbar({
     </Snackbar>
   );
 }
-
-CustomizedSnackbar.defaultProps = {
-  defaultSnackbarStatus: true
-};

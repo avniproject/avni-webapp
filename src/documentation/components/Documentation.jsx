@@ -103,7 +103,7 @@ const Documentation = () => {
       <SaveComponent
         name="save"
         onSubmit={onSave}
-        styleClass={{ marginTop: "14px" }}
+        styles={{ marginTop: "14px" }}
         disabledFlag={
           !UserInfo.hasPrivilege(
             userInfo,

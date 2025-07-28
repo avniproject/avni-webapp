@@ -10,7 +10,8 @@ import {
   InputAdornment,
   Button,
   Link,
-  Typography
+  Typography,
+  Stack
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import AvniLogo from "../../avni-logo-black.png";
@@ -21,23 +22,46 @@ import ApplicationContext from "../../ApplicationContext";
 import { httpClient as http } from "common/utils/httpClient";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 
-const StyledRootGrid = styled(Grid)({
-  height: "100vh"
+const StyledRootContainer = styled(Box)({
+  display: "flex",
+  height: "100vh",
+  width: "100vw",
+  margin: 0,
+  padding: 0
 });
 
-const StyledImageGrid = styled(Grid)(({ theme }) => ({
-  backgroundImage: `url(${SideImage})`,
-  backgroundRepeat: "no-repeat",
+const StyledImageContainer = styled(Box)(({ theme }) => ({
+  width: "60%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   backgroundColor:
     theme.palette.mode === "light"
       ? theme.palette.grey[50]
-      : theme.palette.grey[900],
-  backgroundSize: "cover",
-  backgroundPosition: "center"
+      : theme.palette.grey[900]
 }));
 
+const StyledFormContainer = styled(Box)({
+  width: "40%",
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "center"
+});
+
+const StyledSideImage = styled("img")({
+  width: "100%",
+  height: "100vh",
+  objectFit: "cover"
+});
+
 const StyledPaper = styled(Paper)({
-  backgroundColor: "#f0f2f0"
+  backgroundColor: "#f0f2f0",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "flex-start",
+  height: "100vh",
+  width: "100%"
 });
 
 const StyledLogoBox = styled(Box)(({ theme }) => ({
@@ -72,17 +96,13 @@ const StyledEyeIcon = styled(RemoveRedEye)({
   cursor: "pointer"
 });
 
-const StyledReportGrid = styled(Grid)({
-  backgroundColor: "#f0f2f0"
-});
-
 const StyledCardActions = styled(CardActions)({
   justifyContent: "space-evenly"
 });
 
 const StyledReportTypography = styled(Typography)(({ theme }) => ({
   variant: "body2",
-  color: theme.palette.secondary.main
+  color: "black"
 }));
 
 function SignInView({
@@ -109,83 +129,102 @@ function SignInView({
   }, []);
 
   return (
-    <StyledRootGrid container component="main">
-      <StyledImageGrid size={{ xs: false, sm: 4, md: 7 }} />
-      <StyledPaper elevation={6} size={{ xs: 12, sm: 8, md: 5 }}>
-        <StyledLogoBox>
-          <img src={AvniLogo} alt="logo" height="45px" />
-        </StyledLogoBox>
-        <Card>
-          <CardHeader title="Sign in" />
-          <CardContent>
-            <StyledForm noValidate>
-              <TextField
-                variant="outlined"
-                inputProps={{
-                  autoComplete: autoComplete,
-                  form: { autoComplete: autoComplete }
-                }}
-                margin="normal"
-                required
-                fullWidth
-                id="username"
-                label="Username"
-                name="username"
-                type="text"
-                onChange={notifyInputChange}
-                autoFocus
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type={passwordIsMasked ? "password" : "text"}
-                onChange={notifyInputChange}
-                id="password"
-                autoComplete={autoComplete}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <StyledEyeIcon
-                        onClick={() => setPasswordIsMasked(!passwordIsMasked)}
-                      />
-                    </InputAdornment>
-                  )
-                }}
-              />
-              <StyledSubmitButton
-                type="submit"
-                fullWidth
-                variant="contained"
-                onClick={event => {
-                  event.preventDefault();
-                  onSignIn();
-                }}
-                disabled={loading}
-              >
-                Sign In
-              </StyledSubmitButton>
-              <Grid container hidden={disallowForgottenPasswordReset}>
-                <Grid size="grow">
-                  <Link href="#" variant="body2" onClick={toForgotPassword}>
-                    Forgot password?
-                  </Link>
-                </Grid>
-              </Grid>
-            </StyledForm>
-          </CardContent>
-        </Card>
-        {reportingSystems && <ShowReport reportingSystems={reportingSystems} />}
-      </StyledPaper>
-    </StyledRootGrid>
+    <StyledRootContainer component="main">
+      <StyledImageContainer>
+        <StyledSideImage src={SideImage} alt="Avni Background" />
+      </StyledImageContainer>
+      <StyledFormContainer>
+        <StyledPaper elevation={6}>
+          <Stack spacing={3} sx={{ width: "100%" }}>
+            <StyledLogoBox>
+              <img src={AvniLogo} alt="logo" height="45px" />
+            </StyledLogoBox>
+
+            <Card>
+              <CardHeader title="Sign in" />
+              <CardContent>
+                <StyledForm noValidate>
+                  <TextField
+                    variant="outlined"
+                    inputProps={{
+                      autoComplete: autoComplete,
+                      form: { autoComplete: autoComplete }
+                    }}
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="username"
+                    label="Username"
+                    name="username"
+                    type="text"
+                    onChange={notifyInputChange}
+                    autoFocus
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type={passwordIsMasked ? "password" : "text"}
+                    onChange={notifyInputChange}
+                    id="password"
+                    autoComplete={autoComplete}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <StyledEyeIcon
+                            onClick={() =>
+                              setPasswordIsMasked(!passwordIsMasked)
+                            }
+                          />
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                  <StyledSubmitButton
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    onClick={event => {
+                      event.preventDefault();
+                      onSignIn();
+                    }}
+                    disabled={loading}
+                  >
+                    Sign In
+                  </StyledSubmitButton>
+                  <Grid
+                    container
+                    sx={{
+                      display: disallowForgottenPasswordReset ? "none" : "flex"
+                    }}
+                  >
+                    <Grid>
+                      <Link href="#" variant="body2" onClick={toForgotPassword}>
+                        Forgot password?
+                      </Link>
+                    </Grid>
+                  </Grid>
+                </StyledForm>
+              </CardContent>
+            </Card>
+
+            {reportingSystems && (
+              <Box>
+                <ShowReport reportingSystems={reportingSystems} />
+              </Box>
+            )}
+          </Stack>
+        </StyledPaper>
+      </StyledFormContainer>
+    </StyledRootContainer>
   );
 }
 
 const ShowReport = ({ reportingSystems }) => (
-  <StyledReportGrid>
+  <Card>
     <CardHeader title="View Reports" />
     <CardContent>
       <StyledReportTypography>
@@ -203,7 +242,7 @@ const ShowReport = ({ reportingSystems }) => (
         <ReportDetails key={name} name={name} url={url} />
       ))}
     </StyledCardActions>
-  </StyledReportGrid>
+  </Card>
 );
 
 const ReportDetails = ({ name, url }) => (

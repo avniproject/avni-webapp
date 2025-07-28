@@ -49,7 +49,7 @@ export const LocationTypeList = props => (
   </List>
 );
 
-const ParentReferenceField = ({ showToolTip, ...props }) => {
+const ParentReferenceField = ({ addLabel = true, showToolTip, ...props }) => {
   const Container = showToolTip ? ToolTipContainer : Box;
   return isNil(props.record.parentId) ? (
     <None />
@@ -78,10 +78,6 @@ const CreatedAuditField = () => {
 const ModifiedAuditField = () => {
   const record = useRecordContext();
   return modifiedAudit(record);
-};
-
-ParentReferenceField.defaultProps = {
-  addLabel: true
 };
 
 export const LocationTypeDetail = props => (

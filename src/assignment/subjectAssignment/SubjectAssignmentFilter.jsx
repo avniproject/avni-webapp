@@ -10,35 +10,60 @@ import { labelValue } from "../util/util";
 import { get, isNil } from "lodash";
 import { getConceptSearchContract } from "../reducers/SubjectAssignmentReducer";
 
-const StyledRootPaper = styled(Paper)(({ theme }) => ({
-  paddingRight: theme.spacing(5),
-  paddingLeft: theme.spacing(5),
-  paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(40),
-  backgroundColor: "#F5F7F9",
-  overflow: "auto",
-  position: "fixed",
-  height: "100vh"
-}));
+const StyledRootContainer = styled("div")({
+  height: "100%",
+  display: "flex",
+  flexDirection: "column",
+  width: "100%"
+});
 
-const StyledApplyPaper = styled(Paper)(({ theme }) => ({
-  position: "absolute",
-  bottom: 0,
-  width: "26%",
-  paddingRight: theme.spacing(5),
-  paddingLeft: theme.spacing(5),
+const StyledScrollableContent = styled(Paper)(({ theme }) => ({
+  flex: 1,
+  paddingRight: theme.spacing(3),
+  paddingLeft: theme.spacing(3),
   paddingTop: theme.spacing(3),
   paddingBottom: theme.spacing(3),
-  backgroundColor: "#F5F7F9"
+  backgroundColor: "#F5F7F9",
+  overflowY: "auto",
+  overflowX: "hidden",
+  "&::-webkit-scrollbar": {
+    width: "6px"
+  },
+  "&::-webkit-scrollbar-track": {
+    backgroundColor: "#f1f1f1",
+    borderRadius: "3px"
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "#c1c1c1",
+    borderRadius: "3px",
+    "&:hover": {
+      backgroundColor: "#a8a8a8"
+    }
+  }
+}));
+
+const StyledApplyContainer = styled(Paper)(({ theme }) => ({
+  flexShrink: 0,
+  paddingRight: theme.spacing(3),
+  paddingLeft: theme.spacing(3),
+  paddingTop: theme.spacing(2),
+  paddingBottom: theme.spacing(2),
+  backgroundColor: "#F5F7F9",
+  borderTop: `1px solid ${theme.palette.divider}`
 }));
 
 const StyledHeaderTypography = styled(Typography)(({ theme }) => ({
-  variant: "h6",
-  marginBottom: theme.spacing(3)
+  marginBottom: theme.spacing(3),
+  fontWeight: "bold",
+  position: "sticky",
+  top: 0,
+  backgroundColor: "#F5F7F9",
+  zIndex: 1,
+  paddingBottom: theme.spacing(1)
 }));
 
 const StyledSpacer = styled("div")(({ theme }) => ({
-  marginBottom: theme.spacing(5)
+  marginBottom: theme.spacing(3)
 }));
 
 const renderSyncAttributeFilter = (
@@ -87,11 +112,12 @@ const SubjectAssignmentFilter = ({
     dispatch("setFilter", { filter, value });
 
   return (
-    <Fragment>
-      <StyledRootPaper elevation={2}>
-        <Header>
+    <StyledRootContainer>
+      <StyledScrollableContent elevation={2}>
+        <Header sx={{ width: "100%" }}>
           <StyledHeaderTypography>Filters</StyledHeaderTypography>
         </Header>
+
         <Filter>
           <SelectFilter
             isClearable={false}
@@ -102,18 +128,21 @@ const SubjectAssignmentFilter = ({
             onFilterChange={onFilterChange}
           />
         </Filter>
+
         {renderSyncAttributeFilter(
           syncAttribute1,
           filterCriteria,
           "syncAttribute1",
           onFilterChange
         )}
+
         {renderSyncAttributeFilter(
           syncAttribute2,
           filterCriteria,
           "syncAttribute2",
           onFilterChange
         )}
+
         <Filter>
           <TextFilter
             label="Subject Name"
@@ -122,6 +151,7 @@ const SubjectAssignmentFilter = ({
             onFilterChange={value => onFilterChange("name", value)}
           />
         </Filter>
+
         <Filter>
           <AddressLevelsByType
             label="Address"
@@ -130,7 +160,9 @@ const SubjectAssignmentFilter = ({
             skipGrid={true}
           />
         </Filter>
+
         <StyledSpacer />
+
         <Filter>
           <SelectFilter
             isMulti={true}
@@ -141,6 +173,7 @@ const SubjectAssignmentFilter = ({
             onFilterChange={onFilterChange}
           />
         </Filter>
+
         <Filter>
           <SelectFilter
             label="Assigned to"
@@ -150,6 +183,7 @@ const SubjectAssignmentFilter = ({
             onFilterChange={onFilterChange}
           />
         </Filter>
+
         <Filter>
           <SelectFilter
             label="User group"
@@ -159,6 +193,7 @@ const SubjectAssignmentFilter = ({
             onFilterChange={onFilterChange}
           />
         </Filter>
+
         <Filter>
           <SelectFilter
             label="Created"
@@ -168,8 +203,9 @@ const SubjectAssignmentFilter = ({
             onFilterChange={onFilterChange}
           />
         </Filter>
-      </StyledRootPaper>
-      <StyledApplyPaper elevation={2}>
+      </StyledScrollableContent>
+
+      <StyledApplyContainer elevation={2}>
         <Button
           fullWidth
           variant="contained"
@@ -178,8 +214,8 @@ const SubjectAssignmentFilter = ({
         >
           Apply
         </Button>
-      </StyledApplyPaper>
-    </Fragment>
+      </StyledApplyContainer>
+    </StyledRootContainer>
   );
 };
 

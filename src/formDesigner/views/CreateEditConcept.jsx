@@ -552,7 +552,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
           </Grid>
         )}
         <Grid container direction="column" spacing={2}>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <AvniTextField
               id="name"
               label="Concept name"
@@ -571,7 +571,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               <FormHelperText error>{error.message}</FormHelperText>
             )}
           </Grid>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             {isCreatePage ? (
               <ToolTipContainer toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}>
                 <FormControl fullWidth>
@@ -609,7 +609,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             )}
           </Grid>
           {!isCreatePage && (
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <ConceptActiveSwitch
                 active={concept.active}
                 handleActive={handleActive}
@@ -618,7 +618,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             </Grid>
           )}
           {["Coded", "NA"].includes(concept.dataType) && (
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <AvniImageUpload
                 height={20}
                 width={20}
@@ -637,10 +637,8 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               )}
             </Grid>
           )}
-          <Grid item xs={12}>
-            {renderDataTypeComponent()}
-          </Grid>
-          <Grid item xs={12}>
+          <Grid xs={12}>{renderDataTypeComponent()}</Grid>
+          <Grid xs={12}>
             <KeyValues
               keyValues={concept.keyValues || []}
               onKeyValueChange={onKeyValueChange}
@@ -658,14 +656,14 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             alignItems="center"
             spacing={2}
           >
-            <Grid item>
+            <Grid>
               <SaveComponent
                 name="save"
                 onSubmit={handleSubmit}
-                styleClass={{ marginLeft: "12px", marginTop: "10px" }}
+                styles={{ marginLeft: "12px", marginTop: "10px" }}
               />
             </Grid>
-            <Grid item>
+            <Grid>
               {!isCreatePage && (
                 <Button
                   sx={{ color: "red", mt: 1.25 }}
@@ -676,7 +674,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               )}
             </Grid>
           </Grid>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             {conceptCreationAlert && (
               <CustomizedSnackbar
                 message={conceptCreationMessage}

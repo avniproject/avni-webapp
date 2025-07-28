@@ -140,7 +140,7 @@ export const UserMessagingConfig = () => {
             <SaveComponent
               name="Save"
               onSubmit={onSaveUserMessagingConfig}
-              styleClass={{ marginLeft: "25px", marginBottom: "10px" }}
+              styles={{ marginLeft: "25px", marginBottom: "10px" }}
               disabledFlag={!enableMessagingConfigSave}
             />
           </Accordion>

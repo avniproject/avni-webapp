@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { authProvider, dataProvider, LogoutButton } from "./react-admin-config";
 import { WithProps } from "../common/components/utils";
-import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
 import { getAdminOrgs } from "../rootApp/ducks";
 
@@ -38,7 +37,6 @@ const DeploymentManager = () => {
   const dispatch = useDispatch();
   const user = useSelector(state => state.app.authSession);
   const userInfo = useSelector(state => state.app.userInfo);
-  const organisations = useSelector(state => state.app.organisations);
 
   useEffect(() => {
     dispatch(getAdminOrgs());
@@ -49,7 +47,6 @@ const DeploymentManager = () => {
       authProvider={authProvider}
       dataProvider={dataProvider}
       logoutButton={WithProps({ user }, LogoutButton)}
-      customRoutes={customRoutes}
       layout={AdminLayout}
       basename="/admin"
       darkTheme={null}

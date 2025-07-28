@@ -12,7 +12,8 @@ export const Root = styled("div")(({ theme }) => ({
 }));
 
 export const Filter = styled("div")(({ theme }) => ({
-  marginBottom: theme.spacing(5)
+  marginBottom: theme.spacing(1),
+  width: "100%"
 }));
 
 export const Header = styled("div")(({ theme }) => ({

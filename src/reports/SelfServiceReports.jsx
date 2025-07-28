@@ -275,7 +275,10 @@ const SelfServiceReports = () => {
                 </StyledSetupButtonContainer>
               )}
             </Box>
-            <StyledDescriptionTypography component="p">
+            <StyledDescriptionTypography
+              component="p"
+              sx={{ fontWeight: "bold" }}
+            >
               Metabase provides analytics charts. You can use this interface to
               create charts automatically based on your data.
             </StyledDescriptionTypography>

@@ -20,7 +20,7 @@ import {
 } from "../reducers/SubjectAssignmentReducer";
 import { getColumns } from "./SubjectAssignmentColumns";
 import { fetchSubjectData } from "./SubjectAssignmentData";
-import { Grid, FormControlLabel, Radio } from "@mui/material";
+import { Grid, FormControlLabel, Radio, Stack } from "@mui/material";
 import SubjectAssignmentFilter from "./SubjectAssignmentFilter";
 import { refreshTable } from "../util/util";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
@@ -30,26 +30,42 @@ import { SubjectAssignmentAction } from "../components/SubjectAssignmentAction";
 const StyledRootDiv = styled("div")({
   height: "85vh",
   backgroundColor: "#FFF",
-  overflow: "visible"
+  display: "flex",
+  overflow: "hidden"
 });
 
 const StyledTableContainer = styled("div")({
-  overflowX: "auto",
-  overflowY: "hidden"
+  flex: "1 1 72%",
+  display: "flex",
+  flexDirection: "column",
+  overflow: "hidden",
+  marginRight: "16px"
+});
+
+const StyledFilterContainer = styled("div")({
+  flex: "0 0 28%",
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+  position: "relative"
 });
 
 const StyledMaterialReactTable = styled(MaterialReactTable)({
+  flex: 1,
   "& .MuiTableHeadCell-root": {
     zIndex: 2
   },
   "& .MuiTableContainer-root": {
-    maxHeight: "75vh",
-    minHeight: "75vh",
+    maxHeight: "100%",
+    minHeight: "100%",
     overflowY: "auto",
     position: "relative"
   },
   "& .MuiPaper-root": {
-    elevation: 0
+    elevation: 0,
+    height: "100%",
+    display: "flex",
+    flexDirection: "column"
   }
 });
 
@@ -204,57 +220,53 @@ const SubjectAssignment = () => {
     console.log("renderData columns:", columns);
     return (
       <StyledRootDiv>
-        <Grid container>
-          <Grid size={8}>
-            <StyledTableContainer>
-              <StyledMaterialReactTable
-                columns={columns}
+        <StyledTableContainer>
+          <StyledMaterialReactTable
+            columns={columns}
+            data={data}
+            manualPagination
+            manualSorting
+            enableRowSelection
+            enableGlobalFilter={false}
+            enableColumnFilters={false}
+            enableSorting
+            rowCount={rowCount}
+            state={{ pagination, sorting, isLoading }}
+            onPaginationChange={setPagination}
+            onSortingChange={setSorting}
+            initialState={{
+              pagination: { pageSize: 10 }
+            }}
+            muiTablePaginationProps={{
+              rowsPerPageOptions: [10, 15, 25]
+            }}
+            renderTopToolbar={({ table }) => (
+              <AssignmentToolBar
+                dispatch={updateState}
+                assignmentCriteria={state.assignmentCriteria}
+                showSelect1000={false}
                 data={data}
-                manualPagination
-                manualSorting
-                enableRowSelection
-                enableGlobalFilter={false}
-                enableColumnFilters={false}
-                enableSorting
-                rowCount={rowCount}
-                state={{ pagination, sorting, isLoading }}
-                onPaginationChange={setPagination}
-                onSortingChange={setSorting}
-                initialState={{
-                  pagination: { pageSize: 10 }
-                }}
-                muiTablePaginationProps={{
-                  rowsPerPageOptions: [10, 15, 25]
-                }}
-                renderTopToolbar={({ table }) => (
-                  <AssignmentToolBar
-                    dispatch={updateState}
-                    assignmentCriteria={state.assignmentCriteria}
-                    showSelect1000={false}
-                    data={data}
-                    selectedRows={table.getSelectedRowModel().rows.map(row => ({
-                      id: row.original.id,
-                      type: row.original.type
-                    }))}
-                  />
-                )}
+                selectedRows={table.getSelectedRowModel().rows.map(row => ({
+                  id: row.original.id,
+                  type: row.original.type
+                }))}
               />
-            </StyledTableContainer>
-          </Grid>
-          <Grid size={1} />
-          <Grid size={3}>
-            <SubjectAssignmentFilter
-              subjectOptions={subjectOptions}
-              programOptions={programOptions}
-              userOptions={userOptions}
-              userGroupOptions={userGroupOptions}
-              syncAttribute1={syncAttribute1}
-              syncAttribute2={syncAttribute2}
-              dispatch={dispatch}
-              onFilterApply={onFilterApply}
-              filterCriteria={state.filterCriteria}
-            />
-          </Grid>
+            )}
+          />
+        </StyledTableContainer>
+
+        <StyledFilterContainer>
+          <SubjectAssignmentFilter
+            subjectOptions={subjectOptions}
+            programOptions={programOptions}
+            userOptions={userOptions}
+            userGroupOptions={userGroupOptions}
+            syncAttribute1={syncAttribute1}
+            syncAttribute2={syncAttribute2}
+            dispatch={dispatch}
+            onFilterApply={onFilterApply}
+            filterCriteria={state.filterCriteria}
+          />
           <SubjectAssignmentAction
             openAction={state.displayAction}
             dispatch={updateState}
@@ -266,7 +278,7 @@ const SubjectAssignment = () => {
             userAssignmentKeyName="userId"
             actionAssignmentKeyName="actionId"
           />
-        </Grid>
+        </StyledFilterContainer>
       </StyledRootDiv>
     );
   };

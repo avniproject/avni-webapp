@@ -18,7 +18,7 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
   marginTop: theme.spacing(2)
 }));
 
-const EncounterModes = ({ mode, setMode }) => {
+const EncounterModes = ({ mode = ENCOUNTER_MODES.SCHEDULE, setMode }) => {
   const handleChange = event => {
     setMode(event.target.value);
   };
@@ -55,10 +55,6 @@ const EncounterModes = ({ mode, setMode }) => {
 EncounterModes.propTypes = {
   mode: PropTypes.string,
   setMode: PropTypes.func.isRequired
-};
-
-EncounterModes.defaultProps = {
-  mode: ENCOUNTER_MODES.SCHEDULE
 };
 
 export default EncounterModes;

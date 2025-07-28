@@ -17,7 +17,8 @@ import {
   TextField,
   TextInput,
   required,
-  useRecordContext
+  useRecordContext,
+  useResourceContext
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
 import CardActions from "@mui/material/CardActions";
@@ -49,7 +50,9 @@ export const AccountOrgAdminUserEdit = ({ user, region, ...props }) => (
     mutationMode="pessimistic"
     filter={{ searchURI: "orgAdmin" }}
   >
-    <UserForm edit user={user} region={region} />
+    <SimpleForm toolbar={<CustomToolbar />} redirect="list">
+      <UserFormFields edit user={user} region={region} />
+    </SimpleForm>
   </Edit>
 );
 
@@ -82,12 +85,14 @@ export const AccountOrgAdminUserList = props => (
 
 const CustomShowActions = () => {
   const record = useRecordContext();
+  const resource = useResourceContext();
   return record ? (
     <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
       <EditButton label="Edit User" />
       <EnableDisableButton
         disabled={record.disabledInCognito}
         record={record}
+        resource={resource}
       />
     </CardActions>
   ) : null;
@@ -115,7 +120,7 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
         source="accountIds"
       >
         <SingleFieldList>
-          <TitleChip source="name" />
+          <TitleChip />
         </SingleFieldList>
       </ReferenceArrayField>
     </SimpleShowLayout>
@@ -123,10 +128,21 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
 );
 
 const UserForm = ({ edit = false, region }) => {
+  return (
+    <SimpleForm toolbar={<CustomToolbar />} redirect="list">
+      <UserFormFields edit={edit} region={region} />
+    </SimpleForm>
+  );
+};
+
+const UserFormFields = ({ edit = false, region }) => {
   const [nameSuffix, setNameSuffix] = useState("");
-  const { control, setValue } = useFormContext();
+
+  const formContext = useFormContext();
+
+  const { control, setValue } = formContext;
   const organisationId = useWatch({ control, name: "organisationId" });
-  const ignored = useWatch({ control, name: "ignored" });
+  const username = useWatch({ control, name: "username" });
 
   const autoComplete = ApplicationContext.isDevEnv() ? "on" : "off";
 
@@ -139,13 +155,13 @@ const UserForm = ({ edit = false, region }) => {
   }, [organisationId]);
 
   useEffect(() => {
-    if (ignored && nameSuffix) {
-      setValue("username", `${ignored}@${nameSuffix}`);
+    if (username && nameSuffix && setValue) {
+      setValue("username", `${username}@${nameSuffix}`);
     }
-  }, [ignored, nameSuffix, setValue]);
+  }, [username, nameSuffix, setValue]);
 
   return (
-    <SimpleForm toolbar={<CustomToolbar />} redirect="list">
+    <>
       <ReferenceArrayInput
         reference="account"
         source="accountIds"
@@ -158,19 +174,24 @@ const UserForm = ({ edit = false, region }) => {
       </ReferenceArrayInput>
 
       {edit ? (
-        <TextInput
-          disabled
-          source="username"
-          label="Login ID (admin username)"
-        />
+        <>
+          <TextInput
+            disabled
+            source="username"
+            label="Login ID (admin username)"
+          />
+          {/* Hidden field to ensure username is included in payload */}
+          <TextInput source="username" style={{ display: "none" }} />
+        </>
       ) : (
         <>
           <TextInput
-            source="ignored"
+            source="username"
             validate={isRequired}
             label="Login ID (username)"
           />
           {nameSuffix && <span>@{nameSuffix}</span>}
+          <TextInput source="username" style={{ display: "none" }} />
         </>
       )}
 
@@ -192,6 +213,6 @@ const UserForm = ({ edit = false, region }) => {
         validate={getPhoneValidator(region)}
         autoComplete={autoComplete}
       />
-    </SimpleForm>
+    </>
   );
 };

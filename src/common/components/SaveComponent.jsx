@@ -3,7 +3,13 @@ import { Button } from "@mui/material";
 import { isEmpty } from "lodash";
 import { Save } from "@mui/icons-material";
 
-export const SaveComponent = ({ disabledFlag, name, onSubmit, ...props }) => {
+export const SaveComponent = ({
+  disabledFlag = false,
+  name = "SAVE",
+  fullWidth = false,
+  onSubmit,
+  ...props
+}) => {
   const [saveInProgress, setSaveInProgress] = useState(false);
 
   const enableSaveButton = () => {
@@ -27,19 +33,12 @@ export const SaveComponent = ({ disabledFlag, name, onSubmit, ...props }) => {
       color="primary"
       variant="contained"
       onClick={onSave}
-      style={isEmpty(props.styleClass) ? {} : props.styleClass}
+      style={isEmpty(props.styles) ? {} : props.styles}
       disabled={disabledFlag || saveInProgress}
-      fullWidth={props.fullWidth}
+      fullWidth={fullWidth}
       startIcon={<Save />}
     >
       {name.toUpperCase()}
     </Button>
   );
-};
-
-SaveComponent.defaultProps = {
-  disabledFlag: false,
-  name: "SAVE",
-  styleClass: {},
-  fullWidth: false
 };

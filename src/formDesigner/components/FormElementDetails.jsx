@@ -37,7 +37,21 @@ import UserInfo from "../../common/model/UserInfo";
 
 const StyledFormControl = styled(MuiFormControl)({
   paddingBottom: 10,
-  width: "100%"
+  width: "100%",
+  backgroundColor: "white",
+  "& .MuiInputBase-root": {
+    backgroundColor: "white",
+    "&:hover": {
+      backgroundColor: "white"
+    }
+  },
+  "& .MuiInputLabel-root": {
+    backgroundColor: "white",
+    padding: "0 4px",
+    "&:hover": {
+      backgroundColor: "white"
+    }
+  }
 });
 
 const StyledFormControlNarrow = styled(MuiFormControl)(({ theme }) => ({

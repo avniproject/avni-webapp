@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { Box } from "@mui/material";
@@ -11,8 +10,6 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
-import UserInfo from "../../common/model/UserInfo";
-import { Privilege } from "openchs-models";
 import { localeChoices } from "../../common/constants";
 
 const options = localeChoices.map(l => ({ label: l.name, value: l.id }));
@@ -20,7 +17,6 @@ const options = localeChoices.map(l => ({ label: l.name, value: l.id }));
 const CreateEditLanguages = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const userInfo = useSelector(state => state.app.userInfo);
   const [messageStatus, setMessageStatus] = useState({
     message: "",
     display: false
@@ -95,10 +91,7 @@ const CreateEditLanguages = () => {
           />
         </Box>
         <Box sx={{ m: 2, display: "flex", justifyContent: "left" }}>
-          {UserInfo.hasPrivilege(
-            userInfo,
-            Privilege.PrivilegeType.EditOrganisationConfig
-          ) && <SaveComponent name="Save" onSubmit={handleSubmit(onSubmit)} />}
+          <SaveComponent name="Save" onSubmit={handleSubmit(onSubmit)} />
         </Box>
         {messageStatus.display && (
           <CustomizedSnackbar

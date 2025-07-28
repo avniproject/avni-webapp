@@ -4,7 +4,8 @@ import {
   Checkbox,
   TextField,
   MenuItem,
-  Box
+  Box,
+  Popper
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { updateUserAssignmentToSubject } from "./SubjectAssignmentData";
@@ -23,8 +24,18 @@ const SubjectAssignmentMultiSelect = props => {
     return _.sortBy(unsortedList, [o => _.upperCase(o.label)]);
   }
 
-  const _onChange = (event, value) => {
-    updateUserAssignmentToSubject(event).then(([error]) => {
+  const _onChange = (event, value, reason, details) => {
+    if (!details || !details.option) return;
+
+    const user = details.option;
+
+    const voided = reason === "removeOption" || reason === "deselect-option";
+
+    updateUserAssignmentToSubject({
+      userId: user.id,
+      subjectId: user.subjectId,
+      voided
+    }).then(([error]) => {
       if (error) {
         alert(error);
       } else {
@@ -33,10 +44,14 @@ const SubjectAssignmentMultiSelect = props => {
     });
   };
 
-  const debouncedOnChange = debounce(_onChange, 500, {
-    leading: true,
-    trailing: false
-  });
+  const debouncedOnChange = debounce(
+    (event, value, reason, details) => _onChange(event, value, reason, details),
+    500,
+    {
+      leading: true,
+      trailing: false
+    }
+  );
 
   function getDropdownButtonLabel({ placeholderButtonLabel, value }) {
     if (value.length === 0) {
@@ -49,12 +64,37 @@ const SubjectAssignmentMultiSelect = props => {
     return truncatedLabel;
   }
 
+  const CustomPopper = popperProps => {
+    return (
+      <Popper
+        {...popperProps}
+        style={{ ...popperProps.style, zIndex: 2000 }}
+        modifiers={[
+          {
+            name: "flip",
+            enabled: true
+          },
+          {
+            name: "preventOverflow",
+            enabled: true,
+            options: {
+              boundary: "clippingParents"
+            }
+          }
+        ]}
+        container={document.body}
+      />
+    );
+  };
+
   return (
     <Autocomplete
       multiple
       options={getSortedDropdownList(props.options)}
       value={selectedOptions}
-      onChange={debouncedOnChange}
+      onChange={(event, value, reason, details) =>
+        debouncedOnChange(event, value, reason, details)
+      }
       getOptionLabel={option => option.label}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       disableCloseOnSelect
@@ -93,25 +133,7 @@ const SubjectAssignmentMultiSelect = props => {
           zIndex: 2000
         }
       }}
-      PopperProps={{
-        style: { zIndex: 2000 },
-        popperOptions: {
-          modifiers: [
-            {
-              name: "flip",
-              enabled: true
-            },
-            {
-              name: "preventOverflow",
-              enabled: true,
-              options: {
-                boundary: "clippingParents"
-              }
-            }
-          ]
-        },
-        container: document.body
-      }}
+      slots={{ popper: CustomPopper }}
       sx={{ minWidth: "200px", minHeight: "40px" }}
     />
   );

@@ -123,7 +123,7 @@ export const WorklistUpdationRule = () => {
             <SaveComponent
               name="Save"
               onSubmit={onSaveWorklistUpdationRule}
-              styleClass={{ marginLeft: "25px", marginBottom: "10px" }}
+              styles={{ marginLeft: "25px", marginBottom: "10px" }}
               disabledFlag={!enableRuleSave}
             />
           </Accordion>

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { Admin, Resource } from "react-admin";
-import { useNavigate } from "react-router-dom";
+import { Admin, CustomRoutes, Resource } from "react-admin";
+import { Route, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import { authProvider, dataProvider } from "./react-admin-config";
@@ -38,7 +38,6 @@ import {
 import OrganisationConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 import { UploadDashboard } from "../upload";
-import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
@@ -50,6 +49,7 @@ import UserInfo from "../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import OrgManagerContext from "./OrgManagerContext";
 import UserGroupDetails from "../userGroups/UserGroupDetails";
+import CreateEditLanguages from "./components/CreateEditLanguages";
 
 const OrgManager = () => {
   const navigate = useNavigate();
@@ -99,7 +99,6 @@ const OrgManager = () => {
         authProvider={authProvider}
         dataProvider={dataProvider}
         layout={AdminLayout}
-        customRoutes={customRoutes}
         darkTheme={null}
       >
         <Resource
@@ -232,6 +231,9 @@ const OrgManager = () => {
             list={Msg91Config}
           />
         )}
+        <CustomRoutes>
+          <Route path="/editLanguages" element={<CreateEditLanguages />} />
+        </CustomRoutes>
       </Admin>
     </OrgManagerContext.Provider>
   );

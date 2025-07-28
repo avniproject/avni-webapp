@@ -16,8 +16,7 @@ import {
   SimpleShowLayout,
   SingleFieldList,
   TextField,
-  TextInput,
-  useRecordContext
+  TextInput
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { TitleChip } from "./components/TitleChip";
@@ -54,9 +53,30 @@ export const OrganisationGroupList = props => (
         label="Organisations"
         reference="organisation"
         source="organisationIds"
+        sort={{ field: "name", order: "ASC" }}
+        sx={{
+          "& .RaReferenceArrayField-chip": {
+            backgroundColor: "#e3f2fd",
+            color: "#1976d2",
+            "&:hover": {
+              backgroundColor: "#bbdefb"
+            }
+          },
+          "& .RaReferenceArrayField-list": {
+            gap: "4px"
+          }
+        }}
       >
-        <SingleFieldList>
-          <TitleChip source="name" />
+        <SingleFieldList sx={{ py: 0.5 }}>
+          <TitleChip
+            sx={{
+              backgroundColor: "#e3f2fd",
+              color: "#1976d2",
+              "&:hover": {
+                backgroundColor: "#bbdefb"
+              }
+            }}
+          />
         </SingleFieldList>
       </ReferenceArrayField>
     </Datagrid>
@@ -85,9 +105,30 @@ export const OrganisationGroupShow = props => (
         label="Organisations"
         reference="organisation"
         source="organisationIds"
+        sort={{ field: "name", order: "ASC" }}
+        sx={{
+          "& .RaReferenceArrayField-chip": {
+            backgroundColor: "#e3f2fd",
+            color: "#1976d2",
+            "&:hover": {
+              backgroundColor: "#bbdefb"
+            }
+          },
+          "& .RaReferenceArrayField-list": {
+            gap: "4px"
+          }
+        }}
       >
-        <SingleFieldList>
-          <TitleChip source="name" />
+        <SingleFieldList sx={{ py: 0.5 }}>
+          <TitleChip
+            sx={{
+              backgroundColor: "#e3f2fd",
+              color: "#1976d2",
+              "&:hover": {
+                backgroundColor: "#bbdefb"
+              }
+            }}
+          />
         </SingleFieldList>
       </ReferenceArrayField>
     </SimpleShowLayout>
@@ -95,7 +136,7 @@ export const OrganisationGroupShow = props => (
 );
 
 export const organisationGroupCreate = props => (
-  <Create title="Add a new Account" {...props}>
+  <Create title="Add a new Organisation Group" {...props}>
     <SimpleForm redirect="list">
       <TextInput
         source="name"
@@ -121,9 +162,12 @@ export const organisationGroupCreate = props => (
         source="accountId"
         reference="account"
         label="Account Name"
-        validate={required("Please select an account")}
       >
-        <CustomSelectInput source="name" resettable />
+        <CustomSelectInput
+          source="name"
+          resettable
+          validate={required("Please select an account")}
+        />
       </ReferenceInput>
       <ReferenceArrayInput
         reference="organisation"
@@ -131,18 +175,21 @@ export const organisationGroupCreate = props => (
         perPage={1000}
         label="Organisations"
         filterToQuery={searchText => ({ name: searchText })}
-        validate={required("Please choose organisations")}
       >
-        <AutocompleteArrayInput />
+        <AutocompleteArrayInput
+          validate={required("Please choose organisations")}
+        />
       </ReferenceArrayInput>
     </SimpleForm>
   </Create>
 );
 
-const EditForm = () => {
-  const record = useRecordContext();
-
-  return (
+export const organisationGroupEdit = props => (
+  <Edit
+    mutationMode="pessimistic"
+    title={<Title title={"Edit organisation group"} />}
+    {...props}
+  >
     <SimpleForm redirect="list">
       <TextInput
         source="name"
@@ -160,9 +207,12 @@ const EditForm = () => {
         source="accountId"
         reference="account"
         label="Account Name"
-        validate={required("Please select an account")}
       >
-        <CustomSelectInput source="name" resettable />
+        <CustomSelectInput
+          source="name"
+          resettable
+          validate={required("Please select an account")}
+        />
       </ReferenceInput>
       <ReferenceArrayInput
         reference="organisation"
@@ -170,20 +220,11 @@ const EditForm = () => {
         perPage={1000}
         label="Organisations"
         filterToQuery={searchText => ({ name: searchText })}
-        validate={required("Please choose organisations")}
       >
-        <AutocompleteArrayInput />
+        <AutocompleteArrayInput
+          validate={required("Please choose organisations")}
+        />
       </ReferenceArrayInput>
     </SimpleForm>
-  );
-};
-
-export const organisationGroupEdit = props => (
-  <Edit
-    mutationMode="pessimistic"
-    title={<Title title={"Edit account"} />}
-    {...props}
-  >
-    <EditForm />
   </Edit>
 );

@@ -55,7 +55,10 @@ function WhatsAppUsersTab({ receiverId }) {
           />
           <Box sx={{ display: "flex", flexDirection: "row-reverse", mt: 2 }}>
             <Button
-              onClick={() => navigate(`${BroadcastPath.UserFullPath}`)}
+              onClick={() => {
+                setWorkflowState({ name: WorkflowStateNames.ChooseUser });
+                navigate(`${BroadcastPath.UserFullPath}`);
+              }}
               variant="outlined"
             >
               Back to search

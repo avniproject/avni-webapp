@@ -23,7 +23,25 @@ const SelectForm = ({ label = "Please select", formList, value, onChange }) => {
   );
 
   return (
-    <FormControl style={{ minWidth: 200 }}>
+    <FormControl
+      style={{ minWidth: 200 }}
+      sx={{
+        backgroundColor: "white",
+        "& .MuiInputBase-root": {
+          backgroundColor: "white",
+          "&:hover": {
+            backgroundColor: "white"
+          }
+        },
+        "& .MuiInputLabel-root": {
+          backgroundColor: "white",
+          padding: "0 4px",
+          "&:hover": {
+            backgroundColor: "white"
+          }
+        }
+      }}
+    >
       <InputLabel id={label}>{label}</InputLabel>
       <Select
         labelId={label}

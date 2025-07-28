@@ -100,7 +100,7 @@ commands:
 jobs:
   app_test:
     docker:
-      - image: cimg/node:20.2.0
+      - image: cimg/node:24.4.1
 
     working_directory: ~/openchs-webapp
 
@@ -113,7 +113,7 @@ jobs:
 
   app_build:
     docker:
-      - image: cimg/node:20.2.0
+      - image: cimg/node:24.4.1
     resource_class: large
 
     working_directory: ~/openchs-webapp
@@ -123,7 +123,9 @@ jobs:
 
       - run: yarn install
 
-      - run: yarn run build
+      - run:
+          name: Build
+          command: NODE_OPTIONS=--max_old_space_size=4096 yarn run build
 
       - run: cd build; zip -r ../openchs-webapp.zip *
 
@@ -234,7 +236,7 @@ jobs:
 
   PERF_deploy:
     docker:
-      - image: cimg/node:20.2.0
+      - image: cimg/node:24.4.1
     working_directory: ~/
     steps:
       - aws-cli/setup:

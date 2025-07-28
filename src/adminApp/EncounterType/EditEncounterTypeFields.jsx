@@ -1,7 +1,7 @@
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
-import { MenuItem } from "@mui/material";
+import { Box, MenuItem } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
@@ -136,43 +136,45 @@ const EditEncounterTypeFields = ({
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ELIGIBILITY_RULE"}
       />
       {encounterType.loaded && (
-        <RuleDesigner
-          rulesJson={encounterType.encounterEligibilityCheckDeclarativeRule}
-          onValueChange={jsonData =>
-            dispatch({
-              type: "encounterEligibilityCheckDeclarativeRule",
-              payload: jsonData
-            })
-          }
-          updateJsCode={declarativeRuleHolder =>
-            dispatch({
-              type: "encounterEligibilityCheckRule",
-              payload: declarativeRuleHolder.generateEligibilityRule()
-            })
-          }
-          jsCode={encounterType.encounterEligibilityCheckRule}
-          error={ruleValidationError}
-          subjectType={subjectT}
-          getApplicableActions={state =>
-            state.getApplicableEncounterEligibilityActions()
-          }
-          sampleRule={sampleEncounterEligibilityCheckRule()}
-          onJsCodeChange={event => {
-            confirmBeforeRuleEdit(
-              encounterType.encounterEligibilityCheckDeclarativeRule,
-              () =>
-                dispatch({
-                  type: "encounterEligibilityCheckRule",
-                  payload: event
-                }),
-              () =>
-                dispatch({
-                  type: "encounterEligibilityCheckDeclarativeRule",
-                  payload: null
-                })
-            );
-          }}
-        />
+        <Box sx={{ maxWidth: "75%" }}>
+          <RuleDesigner
+            rulesJson={encounterType.encounterEligibilityCheckDeclarativeRule}
+            onValueChange={jsonData =>
+              dispatch({
+                type: "encounterEligibilityCheckDeclarativeRule",
+                payload: jsonData
+              })
+            }
+            updateJsCode={declarativeRuleHolder =>
+              dispatch({
+                type: "encounterEligibilityCheckRule",
+                payload: declarativeRuleHolder.generateEligibilityRule()
+              })
+            }
+            jsCode={encounterType.encounterEligibilityCheckRule}
+            error={ruleValidationError}
+            subjectType={subjectT}
+            getApplicableActions={state =>
+              state.getApplicableEncounterEligibilityActions()
+            }
+            sampleRule={sampleEncounterEligibilityCheckRule()}
+            onJsCodeChange={event => {
+              confirmBeforeRuleEdit(
+                encounterType.encounterEligibilityCheckDeclarativeRule,
+                () =>
+                  dispatch({
+                    type: "encounterEligibilityCheckRule",
+                    payload: event
+                  }),
+                () =>
+                  dispatch({
+                    type: "encounterEligibilityCheckDeclarativeRule",
+                    payload: null
+                  })
+              );
+            }}
+          />
+        </Box>
       )}
       <p />
       <AvniSwitch

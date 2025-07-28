@@ -7,28 +7,17 @@ import WebConcept from "../model/WebConcept";
 class ConceptService {
   static searchDashboardFilterConcepts(namePart) {
     const inputValue = deburr(namePart.trim()).toLowerCase();
-    return http
-      .get(
-        "/web/concept/dashboardFilter/search?namePart=" +
-          encodeURIComponent(inputValue)
-      )
-      .then(response => response.data);
+    return http.get("/web/concept/dashboardFilter/search?namePart=" + encodeURIComponent(inputValue)).then(response => response.data);
   }
 
   static getAnswerConcepts(conceptUUID) {
-    return http
-      .get(`/concept/answerConcepts/search/find?conceptUUID=${conceptUUID}`)
-      .then(response => response.data.content);
+    return http.get(`/concept/answerConcepts/search/find?conceptUUID=${conceptUUID}`).then(response => response.data.content);
   }
 
   static async saveConcept(concept) {
     let s3FileKey, error;
     if (concept.unSavedMediaFile) {
-      [s3FileKey, error] = await uploadImage(
-        null,
-        concept.unSavedMediaFile,
-        MediaFolder.METADATA
-      );
+      [s3FileKey, error] = await uploadImage(null, concept.unSavedMediaFile, MediaFolder.METADATA);
       if (error) {
         return { error };
       }
@@ -41,11 +30,7 @@ class ConceptService {
       WebConcept.adjustOrderOfAnswers(concept);
       for (const answer of concept.answers) {
         if (answer.unSavedMediaFile) {
-          [s3FileKey, error] = await uploadImage(
-            null,
-            answer.unSavedMediaFile,
-            MediaFolder.METADATA
-          );
+          [s3FileKey, error] = await uploadImage(null, answer.unSavedMediaFile, MediaFolder.METADATA);
           if (error) {
             return { error };
           }
@@ -61,13 +46,9 @@ class ConceptService {
       return { concept: ConceptMapper.mapFromResponse(response.data) };
     } catch (err) {
       // Handle conflict (409) errors more gracefully
-      if (
-        err.response &&
-        (err.response.status === 409 || err.response.status === 400)
-      ) {
+      if (err.response && (err.response.status === 409 || err.response.status === 400)) {
         return {
-          error:
-            "A concept with this name already exists. Please use a different name."
+          error: "A concept with this name already exists. Please use a different name."
         };
       }
       // Handle other errors

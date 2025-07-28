@@ -54,7 +54,6 @@ import UserInfo from "../common/model/UserInfo";
 import { UserMessagingConfig } from "../formDesigner/components/UserMessagingConfig";
 import { StorageManagementConfig } from "../formDesigner/components/StorageManagement/StorageManagementConfig";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
-import CreateEditLanguages from "./components/CreateEditLanguages";
 import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
 
 const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
@@ -109,11 +108,9 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         edit={FormDetails}
       />
       <Resource
-        name="concepts"
+        name="concept"
         options={{ label: "Concepts" }}
         create={CreateConcept}
-        edit={CreateEditConcept}
-        show={ConceptDetails}
         list={Concepts}
       />
       <Resource
@@ -239,9 +236,11 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         list={RuleFailureTelemetryList}
       />
       <CustomRoutes>
-        <Route path="/editLanguages" element={<CreateEditLanguages />} />
+        <Route path="/concept/:uuid/show" element={<ConceptDetails />} />
+        <Route path="/concept/:uuid/edit" element={<CreateEditConcept />} />
         <Route path="/filters" element={<CreateEditFiltersHOC />} />
         <Route path="/forms/:id/settings" element={<FormSettings />} />
+        <Route path="/forms/:uuid" element={<FormDetails />} />
       </CustomRoutes>
     </Admin>
   );

@@ -2,6 +2,7 @@ import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl, Box } from "@mui/material";
 import Select from "react-select";
+import { omitTableData } from "../CustomFilters";
 import {
   deburr,
   filter,
@@ -43,7 +44,6 @@ const nonSupportedTypes = [
   "File"
 ];
 export const CreateEditFilters = ({
-  omitTableData,
   selectedFilter,
   title,
   filterType,

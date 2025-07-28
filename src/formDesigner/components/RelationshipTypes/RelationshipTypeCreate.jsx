@@ -172,7 +172,7 @@ function RelationshipTypeCreate() {
             name="save"
             onSubmit={() => onSubmitRelationshipType()}
             disabledFlag={!isIndividualSubjectTypeAvailable}
-            styleClass={{ marginTop: "10px" }}
+            styles={{ marginTop: "10px" }}
           />
           {redirect && <Navigate to={"/appDesigner/relationshipType/"} />}
         </DocumentationContainer>

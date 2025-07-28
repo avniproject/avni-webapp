@@ -26,7 +26,7 @@ const TextFilter = ({
         <FormLabel component="legend">{label}</FormLabel>
         <StyledTextField
           variant="outlined"
-          value={value}
+          value={value || ""}
           onChange={event => onFilterChange(event.target.value)}
           type={isNumeric ? "number" : "text"}
         />

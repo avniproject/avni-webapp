@@ -12,6 +12,7 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
+import exportRequest from "./ExportV2ReferenceRequest.json";
 
 const StyledButton = styled(Button)({
   color: "#3f51b5"
@@ -44,7 +45,6 @@ const NewExport = () => {
   }, [dispatch]);
 
   const [customRequest, setCustomRequest] = useState(undefined);
-  const exportRequest = require("./ExportV2ReferenceRequest.json");
 
   function safeParseCustomRequestJson() {
     try {

@@ -1,15 +1,5 @@
 import _ from "lodash";
-import {
-  CREATE,
-  DELETE,
-  DELETE_MANY,
-  GET_LIST,
-  GET_MANY,
-  GET_MANY_REFERENCE,
-  GET_ONE,
-  UPDATE,
-  UPDATE_MANY
-} from "react-admin";
+import { CREATE, DELETE, DELETE_MANY, GET_LIST, GET_MANY, GET_MANY_REFERENCE, GET_ONE, UPDATE, UPDATE_MANY } from "react-admin";
 import { UrlPartsGenerator } from "./requestUtils";
 import SpringResponse from "./SpringResponse";
 import { httpClient } from "../../common/utils/httpClient";
@@ -102,11 +92,7 @@ export default apiUrl => {
         throw new Error(`Unsupported fetch action type ${type}`);
     }
     url = url.replace("/?", "?");
-    console.log(
-      `Data Provider Action ${type} | Url ${url} | Resource ${resource} | Params ${JSON.stringify(
-        params
-      )}`
-    );
+    console.log(`Data Provider Action ${type} | Url ${url} | Resource ${resource} | Params ${JSON.stringify(params)}`);
     return { url, options };
   };
 
@@ -167,14 +153,9 @@ export default apiUrl => {
     }
 
     const { url, options } = convertDataRequestToHTTP(type, resource, params);
-    const promise = httpClient
-      .fetchJson(url, options)
-      .then(response => convertHTTPResponse(response, type, resource, params));
+    const promise = httpClient.fetchJson(url, options).then(response => convertHTTPResponse(response, type, resource, params));
     const resourceSpecificProvider = resourceSpecificProviders[resource];
-    if (
-      resourceSpecificProvider &&
-      resourceSpecificProvider.supportsOperation(type)
-    )
+    if (resourceSpecificProvider && resourceSpecificProvider.supportsOperation(type))
       return resourceSpecificProvider.execute(type, params, resource, promise);
     return promise;
   };

@@ -474,27 +474,27 @@ const FormSettings = () => {
                   <div key={index}>
                     <Grid container spacing={2} sx={{ width: "100%" }}>
                       {!isTaskFormType && (
-                        <Grid item size={{ xs: 12, sm: 2 }}>
+                        <Grid size={{ xs: 12, sm: 2 }}>
                           {subjectTypeElement(index)}
                         </Grid>
                       )}
                       {isTaskFormType && (
-                        <Grid item size={{ xs: 12, sm: 2 }}>
+                        <Grid size={{ xs: 12, sm: 2 }}>
                           {taskTypeElement(index)}
                         </Grid>
                       )}
                       {programBased && (
-                        <Grid item size={{ xs: 12, sm: 3 }}>
+                        <Grid size={{ xs: 12, sm: 3 }}>
                           {programNameElement(index)}
                         </Grid>
                       )}
                       {encounterTypes && (
-                        <Grid item size={{ xs: 12, sm: 3 }}>
+                        <Grid size={{ xs: 12, sm: 3 }}>
                           {encounterTypesElement(index)}
                         </Grid>
                       )}
                       {!isTaskFormType && (
-                        <Grid item size={{ xs: 12, sm: 3 }} sx={{ mt: 5 }}>
+                        <Grid size={{ xs: 12, sm: 3 }} sx={{ mt: 5 }}>
                           <AvniSwitch
                             checked={state.formMappings[index].enableApproval}
                             onChange={event =>
@@ -509,7 +509,7 @@ const FormSettings = () => {
                           />
                         </Grid>
                       )}
-                      <Grid item size={{ xs: 12, sm: 1 }}>
+                      <Grid size={{ xs: 12, sm: 1 }}>
                         <IconButton
                           aria-label="delete"
                           onClick={() => removeMapping(index)}
@@ -544,7 +544,7 @@ const FormSettings = () => {
           <SaveComponent
             name="Save"
             onSubmit={onFormSubmit}
-            styleClass={{ marginTop: 10 }}
+            styles={{ marginTop: 10 }}
             disabledFlag={!state.dirtyFlag}
           />
         </div>

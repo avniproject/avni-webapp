@@ -64,7 +64,10 @@ function WhatsAppSubjectsTab({ receiverId }) {
             }}
           >
             <Button
-              onClick={() => navigate(`${BroadcastPath.SubjectFullPath}`)}
+              onClick={() => {
+                setWorkflowState({ name: WorkflowStateNames.ChooseSubject });
+                navigate(`${BroadcastPath.SubjectFullPath}`);
+              }}
               variant="outlined"
             >
               Back to search

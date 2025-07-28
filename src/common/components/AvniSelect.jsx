@@ -2,10 +2,27 @@ import { Select, InputLabel, FormControl } from "@mui/material";
 
 import { ToolTipContainer } from "./ToolTipContainer";
 
-export const AvniSelect = ({ options, toolTipKey, ...props }) => {
+export const AvniSelect = ({ options, toolTipKey, isClearable, ...props }) => {
   return (
     <ToolTipContainer toolTipKey={toolTipKey}>
-      <FormControl>
+      <FormControl
+        sx={{
+          backgroundColor: "white",
+          "& .MuiInputBase-root": {
+            backgroundColor: "white",
+            "&:hover": {
+              backgroundColor: "white"
+            }
+          },
+          "& .MuiInputLabel-root": {
+            backgroundColor: "white",
+            padding: "0 4px",
+            "&:hover": {
+              backgroundColor: "white"
+            }
+          }
+        }}
+      >
         <InputLabel id={props.label}>{props.label}</InputLabel>
         <Select {...props}>{options}</Select>
         {props.children}

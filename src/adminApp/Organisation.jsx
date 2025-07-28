@@ -97,7 +97,7 @@ export const OrganisationList = ({ ...props }) => {
           sortable={false}
         />
         <ShowButton />
-        <OpenOrganisation porps={props} />
+        <OpenOrganisation />
       </Datagrid>
     </List>
   );
@@ -182,9 +182,12 @@ const EditForm = () => {
         source="accountId"
         reference="account"
         label="Account Name"
-        validate={required("Please select an account")}
       >
-        <CustomSelectInput source="name" resettable />
+        <CustomSelectInput
+          source="name"
+          validate={required("Please select an account")}
+          resettable
+        />
       </ReferenceInput>
     </SimpleForm>
   );
@@ -216,10 +219,12 @@ function OrganisationCategoryInput() {
       source="categoryId"
       reference="organisationCategory"
       label="Organisation Category"
-      validate={required("Please select a category")}
       sort={{ field: "name", order: "ASC" }}
     >
-      <CustomSelectInput source="name" />
+      <CustomSelectInput
+        source="name"
+        validate={required("Please select a category")}
+      />
     </ReferenceInput>
   );
 }
@@ -231,10 +236,12 @@ function OrganisationStatusInput() {
       source="statusId"
       reference="organisationStatus"
       label="Organisation Status"
-      validate={required("Please select a status")}
       sort={{ field: "name", order: "ASC" }}
     >
-      <CustomSelectInput source="name" />
+      <CustomSelectInput
+        source="name"
+        validate={required("Please select a status")}
+      />
     </ReferenceInput>
   );
 }
@@ -551,7 +558,7 @@ export const OrganisationCreateComponent = () => {
               <SaveComponent
                 name="save"
                 onSubmit={handleSubmit}
-                styleClass={{ marginTop: "10px" }}
+                styles={{ marginTop: "10px" }}
               />
             </Grid>
           </Grid>

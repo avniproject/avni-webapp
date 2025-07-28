@@ -20,7 +20,7 @@ const STATUS = {
 };
 
 const RuleFailureTelemetryList = () => {
-  const userInfo = useSelector(state => state.auth.userInfo);
+  const userInfo = useSelector(state => state.app.userInfo);
   const [selectedStatus, setSelectedStatus] = useState(STATUS.OPEN);
   const [selectedRows, setSelectedRows] = useState([]);
   const tableRef = useRef(null);

@@ -80,7 +80,11 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   );
 }
 
-export default function AutoSuggestSingleSelection(props) {
+export default function AutoSuggestSingleSelection(
+  finalReturn = false,
+  showSuggestionStartsWith = false,
+  props
+) {
   const ignoredDatatypesFromProps = props.dataTypesToIgnore || [];
   const dataTypesToIgnore = [...ignoredDatatypesFromProps, "NA"];
   const [state, setState] = useState({
@@ -195,8 +199,3 @@ export default function AutoSuggestSingleSelection(props) {
     </StyledContainer>
   );
 }
-
-AutoSuggestSingleSelection.defaultProps = {
-  finalReturn: false,
-  showSuggestionStartsWith: false
-};

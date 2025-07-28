@@ -213,22 +213,11 @@ const SubjectTypeEdit = () => {
       <EditSubjectTypeFields
         subjectType={subjectType}
         dispatch={dispatch}
-        nameValidation={nameValidation}
-        error={error}
         formList={formList}
-        subjectTypes={subjectTypes}
-        locationTypes={locationTypes}
-        file={file}
-        setFile={setFile}
-        removeFile={removeFile}
-        setRemoveFile={setRemoveFile}
-        organisationConfig={organisationConfig}
-      />
-      <AdvancedSettings
-        subjectType={subjectType}
-        dispatch={dispatch}
+        onSetFile={setFile}
+        onRemoveFile={setRemoveFile}
         groupValidationError={groupValidationError}
-        organisationConfig={organisationConfig}
+        source={"edit"}
       />
       <MessageRules
         rules={rules}
@@ -239,12 +228,30 @@ const SubjectTypeEdit = () => {
         entityTypeId={subjectType.subjectTypeId}
         error={msgError}
       />
+      <AdvancedSettings
+        subjectType={subjectType}
+        dispatch={dispatch}
+        groupValidationError={groupValidationError}
+        organisationConfig={organisationConfig}
+        locationTypes={locationTypes}
+        formMappings={formMappings}
+      />
+      {nameValidation && (
+        <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+          Empty name is not allowed.
+        </FormLabel>
+      )}
+      {error !== "" && (
+        <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+          {error}
+        </FormLabel>
+      )}
       <Grid container sx={{ justifyContent: "flex-end", mt: 2 }}>
         <Grid>
           <SaveComponent
             name="save"
             onSubmit={onSubmit}
-            styleClass={{ marginRight: "14px" }}
+            styles={{ marginRight: "14px" }}
           />
         </Grid>
         <Grid>

@@ -1,7 +1,7 @@
 import { TextField, Grid, FormControl, FormHelperText } from "@mui/material";
 import PropTypes from "prop-types";
 
-export default function NumericConcept(props) {
+export default function NumericConcept(inlineConcept = false, props) {
   const classes = { width: 195, marginRight: 10 };
   return (
     <>
@@ -152,7 +152,4 @@ export default function NumericConcept(props) {
 NumericConcept.propTypes = {
   onNumericConceptAttributeAssignment: PropTypes.func.isRequired,
   numericDataTypeAttributes: PropTypes.object.isRequired
-};
-NumericConcept.defaultProps = {
-  inlineConcept: false
 };
