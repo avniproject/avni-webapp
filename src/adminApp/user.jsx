@@ -38,7 +38,15 @@ import {
   useResourceContext
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
-import { Paper, Grid, Chip, Typography, CardActions } from "@mui/material";
+import {
+  Paper,
+  Grid,
+  Chip,
+  Typography,
+  CardActions,
+  styled,
+  Box
+} from "@mui/material";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
 import {
@@ -88,6 +96,14 @@ const StringToLabelObject = ({ children, ...props }) => {
   return cloneElement(children, { ...props, record: labelRecord });
 };
 
+const StyledBox = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(3.5),
+  marginRight: theme.spacing(1.5),
+  boxShadow: theme.shadows[2],
+  padding: theme.spacing(3),
+  backgroundColor: theme.palette.background.paper
+}));
+
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
   <Paper>
     <DocumentationContainer filename={"User.md"}>
@@ -115,56 +131,58 @@ export const UserEdit = ({ organisation, ...props }) => (
 export const UserList = ({ ...props }) => {
   const { organisation } = useContext(OrgManagerContext);
   return (
-    <List
-      {...props}
-      hasCreate={false}
-      filter={{ organisationId: organisation.id }}
-      filters={UserFilter}
-      title={`${organisation.name} Users`}
-    >
-      <Datagrid rowClick="show">
-        <TextField label="Login ID" source="username" />
-        <TextField source="name" label="Name of the Person" />
-        <ReferenceField
-          label="Catchment"
-          source="catchmentId"
-          reference="catchment"
-          link="show"
-          emptyText=""
-        >
-          <TextField source="name" />
-        </ReferenceField>
-        <TextField source="email" label="Email Address" />
-        <TextField source="phoneNumber" label="Phone Number" />
-        <FunctionField
-          label="User Groups"
-          render={record => (
-            <div style={{ maxWidth: "40em" }}>
-              {_.isArrayLike(record.userGroups) &&
-                record.userGroups
-                  .filter(ug => ug && !ug.voided)
-                  .map(userGroup => (
-                    <Chip
-                      style={{ margin: "0.2em" }}
-                      label={userGroup.groupName}
-                      key={userGroup.groupName}
-                    />
-                  ))}
-            </div>
-          )}
-        />
-        <FunctionField
-          label="Status"
-          render={user =>
-            user.voided === true
-              ? "Deleted"
-              : user.disabledInCognito === true
-              ? "Disabled"
-              : "Active"
-          }
-        />
-      </Datagrid>
-    </List>
+    <StyledBox>
+      <List
+        {...props}
+        hasCreate={false}
+        filter={{ organisationId: organisation.id }}
+        filters={UserFilter}
+        title={`${organisation.name} Users`}
+      >
+        <Datagrid rowClick="show">
+          <TextField label="Login ID" source="username" />
+          <TextField source="name" label="Name of the Person" />
+          <ReferenceField
+            label="Catchment"
+            source="catchmentId"
+            reference="catchment"
+            link="show"
+            emptyText=""
+          >
+            <TextField source="name" />
+          </ReferenceField>
+          <TextField source="email" label="Email Address" />
+          <TextField source="phoneNumber" label="Phone Number" />
+          <FunctionField
+            label="User Groups"
+            render={record => (
+              <div style={{ maxWidth: "40em" }}>
+                {_.isArrayLike(record.userGroups) &&
+                  record.userGroups
+                    .filter(ug => ug && !ug.voided)
+                    .map(userGroup => (
+                      <Chip
+                        style={{ margin: "0.2em" }}
+                        label={userGroup.groupName}
+                        key={userGroup.groupName}
+                      />
+                    ))}
+              </div>
+            )}
+          />
+          <FunctionField
+            label="Status"
+            render={user =>
+              user.voided === true
+                ? "Deleted"
+                : user.disabledInCognito === true
+                ? "Disabled"
+                : "Active"
+            }
+          />
+        </Datagrid>
+      </List>
+    </StyledBox>
   );
 };
 

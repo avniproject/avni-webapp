@@ -9,6 +9,16 @@ import {
   Toolbar
 } from "react-admin";
 import { isValidPhoneNumber } from "libphonenumber-js";
+import { styled } from "@mui/material/styles";
+
+const StyledTextInput = styled(TextInput)({
+  "& .MuiInputBase-input": {
+    backgroundColor: "white"
+  },
+  "& .RaResettableTextField-clearButton": {
+    backgroundColor: "white"
+  }
+});
 
 export const UserTitle = ({ record, titlePrefix }) => {
   return (
@@ -32,16 +42,31 @@ export const formatRoles = roles =>
     .join(", ");
 
 export const UserFilter = [
-  <TextInput label="Login ID" source="username" alwaysOn resettable />,
-  <TextInput
+  <StyledTextInput
+    label="Login ID"
+    source="username"
+    alwaysOn
+    resettable={false}
+  />,
+  <StyledTextInput
     label="Name"
     source="name"
     alwaysOn
     autoComplete="off"
-    resettable
+    resettable={false}
   />,
-  <TextInput label="Email Address" source="email" alwaysOn resettable />,
-  <TextInput label="Phone Number" source="phoneNumber" alwaysOn resettable />
+  <StyledTextInput
+    label="Email Address"
+    source="email"
+    alwaysOn
+    resettable={false}
+  />,
+  <StyledTextInput
+    label="Phone Number"
+    source="phoneNumber"
+    alwaysOn
+    resettable={false}
+  />
 ];
 
 export const CustomToolbar = props => (

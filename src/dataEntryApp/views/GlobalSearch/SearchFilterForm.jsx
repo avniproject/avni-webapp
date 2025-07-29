@@ -1,6 +1,4 @@
-/*  SearchFilterForm.js  */
-
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
