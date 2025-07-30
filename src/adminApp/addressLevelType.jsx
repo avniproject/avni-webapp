@@ -18,7 +18,7 @@ import {
   useRecordContext
 } from "react-admin";
 import { None } from "../common/components/utils";
-import { isNil } from "lodash";
+import { isNil, get } from "lodash";
 import { Title } from "./components/Title";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
@@ -55,7 +55,7 @@ export const LocationTypeList = props => (
 
 const ParentReferenceField = ({ addLabel = true, showToolTip, ...props }) => {
   const Container = showToolTip ? ToolTipContainer : Box;
-  return isNil(props.record.parentId) ? (
+  return isNil(get(props, "record.parentId")) ? (
     <None />
   ) : (
     <Container
