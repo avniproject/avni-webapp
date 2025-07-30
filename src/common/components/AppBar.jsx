@@ -20,49 +20,31 @@ const StyledRoot = styled("div")(({ theme }) => ({
   marginBottom: theme.spacing(10)
 }));
 
-const StyledAppBar = styled(MuiAppBar)(() => ({
+const StyledAppBar = styled(MuiAppBar)(({ theme }) => ({
   position: "fixed",
+  backgroundColor: "#1976d2",
   ...CommonAppBarStyles.appBarContainer
 }));
 
-const StyledToolbarContainer = styled("div")(({ theme }) => ({
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
-  minHeight: theme.spacing(6)
-}));
-
-const StyledOptions = styled("div")({
-  flex: 1,
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center"
+const StyledToolbar = styled(Toolbar)({
+  ...CommonAppBarStyles.toolbar
 });
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  flex: 1,
-  fontSize: theme.spacing(3),
-  color: "white"
+const StyledTitle = styled(Typography)(({ theme }) => ({
+  ...CommonAppBarStyles.title,
+  fontSize: theme.spacing(3)
 }));
 
-const StyledProfile = styled("div")({
-  flex: 1,
-  display: "flex",
-  justifyContent: "flex-end",
-  alignItems: "center"
+const StyledUserSection = styled("div")({
+  ...CommonAppBarStyles.userSection
 });
 
 const StyledUserInfo = styled("div")({
-  marginTop: "2%",
+  marginRight: theme => theme.spacing(2),
   color: "white"
 });
 
-const StyledMenuIconButton = styled(IconButton)({
-  outline: "none",
-  color: "white"
-});
-
-const StyledUserIconButton = styled(IconButton)({
+const StyledIconButton = styled(IconButton)({
   color: "white"
 });
 
@@ -123,66 +105,62 @@ const AppBar = ({
         serverError={error}
       />
       <StyledAppBar position={position || "fixed"}>
-        <Toolbar>
-          <StyledToolbarContainer>
-            <StyledOptions>
-              {enableLeftMenuButton && (
-                <StyledMenuIconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={handleDrawer}
-                  edge="start"
-                  size="large"
-                >
-                  <MenuIcon />
-                </StyledMenuIconButton>
-              )}
-              <StyledTypography variant="h5">{title}</StyledTypography>
-              <StyledProfile>
-                <OrganisationOptions
-                  getUserInfo={() => dispatch(getUserInfo())}
-                  userInfo={userInfo}
-                  user={user}
-                  organisation={organisation}
-                  organisations={organisations}
-                />
-                <StyledUserInfo>
-                  <b>{organisation?.name}</b> ({user?.username})
-                </StyledUserInfo>
-                <IconButton
-                  onClick={() => navigate("/home")}
-                  aria-label="Home"
-                  color="inherit"
-                  size="large"
-                >
-                  <HomeIcon />
-                </IconButton>
-                <StyledUserIconButton
-                  aria-label="Profile"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  onClick={handleClick}
-                  size="large"
-                >
-                  <UserIcon />
-                </StyledUserIconButton>
-                <Menu
-                  id="long-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={!!anchorEl}
-                  onClose={handleClose}
-                >
-                  <LogoutButton
-                    onChangePassword={() => setShowChangePassword(true)}
-                    lastSessionTimeMillis={userInfo?.lastSessionTime}
-                  />
-                </Menu>
-              </StyledProfile>
-            </StyledOptions>
-            <CustomComponent />
-          </StyledToolbarContainer>
-        </Toolbar>
+        <StyledToolbar>
+          {enableLeftMenuButton && (
+            <StyledIconButton
+              aria-label="open drawer"
+              onClick={handleDrawer}
+              edge="start"
+              size="large"
+            >
+              <MenuIcon />
+            </StyledIconButton>
+          )}
+
+          <StyledTitle variant="h5">{title}</StyledTitle>
+
+          <StyledUserSection>
+            <OrganisationOptions
+              getUserInfo={() => dispatch(getUserInfo())}
+              userInfo={userInfo}
+              user={user}
+              organisation={organisation}
+              organisations={organisations}
+            />
+            <StyledUserInfo>
+              <b>{organisation?.name}</b> ({user?.username})
+            </StyledUserInfo>
+            <StyledIconButton
+              onClick={() => navigate("/home")}
+              aria-label="Home"
+              size="large"
+            >
+              <HomeIcon />
+            </StyledIconButton>
+            <StyledIconButton
+              aria-label="Profile"
+              aria-controls="long-menu"
+              aria-haspopup="true"
+              onClick={handleClick}
+              size="large"
+            >
+              <UserIcon />
+            </StyledIconButton>
+            <Menu
+              id="long-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={!!anchorEl}
+              onClose={handleClose}
+            >
+              <LogoutButton
+                onChangePassword={() => setShowChangePassword(true)}
+                lastSessionTimeMillis={userInfo?.lastSessionTime}
+              />
+            </Menu>
+          </StyledUserSection>
+        </StyledToolbar>
+        <CustomComponent />
       </StyledAppBar>
     </StyledRoot>
   );

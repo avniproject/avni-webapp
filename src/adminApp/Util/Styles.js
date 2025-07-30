@@ -2,7 +2,7 @@ import { Box, styled } from "@mui/material";
 import { AutocompleteArrayInput, ReferenceArrayInput, SelectArrayInput, TextInput } from "react-admin";
 
 export const StyledBox = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(3.5),
+  marginTop: theme.spacing(1), // Reduced from 3.5 to 1 for better positioning
   marginRight: theme.spacing(1.5),
   boxShadow: theme.shadows[2],
   padding: theme.spacing(3),

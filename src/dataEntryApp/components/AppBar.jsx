@@ -27,17 +27,23 @@ import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
+import { CommonAppBarStyles } from "../../common/components/CommonAppBarStyles";
 
 const StyledRoot = styled("div")({
   flexGrow: 1
 });
 
 const StyledAppBar = styled(AppBar)({
-  background: "white"
+  backgroundColor: "#1976d2",
+  ...CommonAppBarStyles.appBarContainer
 });
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  flexGrow: 1,
+const StyledToolbar = styled(Toolbar)({
+  ...CommonAppBarStyles.toolbar
+});
+
+const StyledTitle = styled(Typography)(({ theme }) => ({
+  ...CommonAppBarStyles.title,
   display: "none",
   [theme.breakpoints.up("sm")]: {
     display: "block"
@@ -46,7 +52,12 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 
 const StyledRegisterButton = styled(Button)(({ theme }) => ({
   marginLeft: theme.spacing(3),
-  color: "#0e6eff"
+  color: "white",
+  borderColor: "white",
+  "&:hover": {
+    borderColor: "rgba(255, 255, 255, 0.7)",
+    backgroundColor: "rgba(255, 255, 255, 0.1)"
+  }
 }));
 
 const StyledLinkButton = styled(Button)(({ theme }) => ({
@@ -54,22 +65,23 @@ const StyledLinkButton = styled(Button)(({ theme }) => ({
   marginRight: "10px",
   marginLeft: "2px",
   color: "white",
-  background: "blue",
-  padding: "2px",
-  paddingLeft: "10px",
-  paddingRight: "10px",
-  borderRadius: "3px"
+  backgroundColor: "rgba(255, 255, 255, 0.2)",
+  padding: "2px 10px",
+  borderRadius: "3px",
+  "&:hover": {
+    backgroundColor: "rgba(255, 255, 255, 0.3)"
+  }
 }));
 
-const StyledUsers = styled("div")({
-  marginRight: "3px"
+const StyledUserSection = styled("div")({
+  ...CommonAppBarStyles.userSection
 });
 
 const StyledUserName = styled("p")({
   fontSize: "15px",
   marginBottom: "0px",
   fontWeight: "600",
-  color: "blue"
+  color: "white"
 });
 
 const StyledSectionDesktop = styled("div")(({ theme }) => ({
@@ -88,7 +100,7 @@ const StyledSectionMobile = styled("div")(({ theme }) => ({
 
 const StyledUserOptionContainer = styled("div")(({ theme }) => ({
   width: "100%",
-  color: "blue",
+  color: "#1976d2",
   maxWidth: 360,
   position: "absolute",
   zIndex: "2",
@@ -99,12 +111,15 @@ const StyledPopper = styled(Popper)({
   zIndex: 100
 });
 
+const StyledIconButton = styled(IconButton)({
+  color: "white"
+});
+
 const PrimarySearchAppBar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Use useSelector hooks instead of connect
   const user = useSelector(state => state.app.authSession);
   const isNewsAvailable = useSelector(selectIsNewsAvailable);
 
@@ -189,7 +204,7 @@ const PrimarySearchAppBar = () => {
   );
 
   const LinkButton = ({ link, label }) => (
-    <StyledLinkButton variant="contained" component={Link} to={link}>
+    <StyledLinkButton variant="outlined" component={Link} to={link}>
       {t(label)}
     </StyledLinkButton>
   );
@@ -197,16 +212,18 @@ const PrimarySearchAppBar = () => {
   return (
     <StyledRoot>
       <StyledAppBar position="static">
-        <Toolbar>
-          <StyledTypography variant="h6" noWrap>
+        <StyledToolbar>
+          <StyledTitle variant="h6" noWrap>
             <InternalLink to={"/app"}>
               <img src={logo} alt="logo" />
             </InternalLink>
-          </StyledTypography>
+          </StyledTitle>
+
           <ClickAwayListener onClickAway={newHandleclose}>
             <div>
               <StyledRegisterButton
                 ref={anchorRef}
+                variant="outlined"
                 aria-controls={open ? "menu-list-grow" : undefined}
                 aria-haspopup="true"
                 onClick={handleToggle}
@@ -237,40 +254,46 @@ const PrimarySearchAppBar = () => {
               </StyledPopper>
             </div>
           </ClickAwayListener>
+
           <LinkButton label={"search"} link={"/app/searchFilter"} />
           {isNewsAvailable && <LinkButton label={"news"} link={"/app/news"} />}
-          <StyledUsers>
+
+          <StyledUserSection>
             <Typography component="div" sx={{ color: "inherit" }}>
               <StyledUserName>{user.username}</StyledUserName>
             </Typography>
-          </StyledUsers>
-          <IconButton onClick={handleHomeClick} aria-label="Home" size="large">
-            <Home />
-          </IconButton>
-          <StyledSectionDesktop>
-            <IconButton
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
+            <StyledIconButton
+              onClick={handleHomeClick}
+              aria-label="Home"
               size="large"
             >
-              <AccountCircle />
-            </IconButton>
-          </StyledSectionDesktop>
-          <StyledSectionMobile>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              size="large"
-            >
-              <MoreHoriz />
-            </IconButton>
-          </StyledSectionMobile>
-        </Toolbar>
+              <Home />
+            </StyledIconButton>
+            <StyledSectionDesktop>
+              <StyledIconButton
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                size="large"
+              >
+                <AccountCircle />
+              </StyledIconButton>
+            </StyledSectionDesktop>
+            <StyledSectionMobile>
+              <StyledIconButton
+                aria-label="show more"
+                aria-controls={mobileMenuId}
+                aria-haspopup="true"
+                onClick={handleMobileMenuOpen}
+                size="large"
+              >
+                <MoreHoriz />
+              </StyledIconButton>
+            </StyledSectionMobile>
+          </StyledUserSection>
+        </StyledToolbar>
       </StyledAppBar>
       {renderMobileMenu}
       {userOption ? renderMenu : ""}
