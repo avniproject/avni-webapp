@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import OrganisationOptions from "./OrganisationOptions";
 import { getUserInfo } from "../../rootApp/ducks";
 import CurrentUserService from "../service/CurrentUserService";
+import CustomUserMenu from "./CustomUserMenu";
 
 const StyledAppBar = styled(AppBar)({
   display: "flex",
@@ -41,13 +42,20 @@ const AdminAppBar = props => {
   const userInfo = useSelector(state => state.app.userInfo);
 
   return (
-    <StyledAppBar {...props}>
+    <StyledAppBar
+      {...props}
+      userMenu={
+        <CustomUserMenu
+          username={authSession?.username}
+          lastSessionTimeMillis={userInfo?.lastSessionTime}
+        />
+      }
+    >
       <StyledTypography
         variant="h6"
         sx={{ color: "inherit" }}
         id="react-admin-title"
       />
-
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <OrganisationOptions
           getUserInfo={() => dispatch(getUserInfo())}

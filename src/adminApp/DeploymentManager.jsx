@@ -32,6 +32,7 @@ import {
   OrganisationGroupList,
   OrganisationGroupShow
 } from "./OrganisationGroup";
+import AdminAppBar from "../common/components/AdminAppBar";
 
 const DeploymentManager = () => {
   const dispatch = useDispatch();
@@ -46,7 +47,13 @@ const DeploymentManager = () => {
       title="Manage Account"
       authProvider={authProvider}
       dataProvider={dataProvider}
-      logoutButton={WithProps({ user }, LogoutButton)}
+      appBar={WithProps(
+        {
+          username: user?.username,
+          lastSessionTimeMillis: userInfo?.lastSessionTime
+        },
+        AdminAppBar
+      )}
       layout={AdminLayout}
       basename="/admin"
       darkTheme={null}

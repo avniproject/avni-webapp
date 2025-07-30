@@ -110,6 +110,7 @@ const OrgManager = () => {
             hasPrivilege(userInfo, EditLocationType) && LocationTypeCreate
           }
           edit={hasPrivilege(userInfo, EditLocationType) && LocationTypeEdit}
+          sx={{ marginTop: "10000" }}
         />
         <Resource
           name="locations"

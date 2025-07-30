@@ -169,6 +169,7 @@ const AppBar = ({
                   onClose={handleClose}
                 >
                   <LogoutButton
+                    username={user?.username}
                     onChangePassword={() => setShowChangePassword(true)}
                     lastSessionTimeMillis={userInfo?.lastSessionTime}
                   />

@@ -40,7 +40,7 @@ const ToggleAnalyticsButton = () => {
   };
 
   if (actionCompleted) {
-    redirect(`/${resource}/${record.id}/show`);
+    redirect(`/${resource}/${record.id}`);
     return null;
   }
 
