@@ -90,19 +90,28 @@ const StringToLabelObject = ({ children, ...props }) => {
   return cloneElement(children, { ...props, record: labelRecord });
 };
 
-export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
-  <Paper>
-    <DocumentationContainer filename={"User.md"}>
-      <Create {...props}>
-        <UserForm
-          user={user}
-          nameSuffix={userInfo.usernameSuffix}
-          organisation={organisation}
-        />
-      </Create>
-    </DocumentationContainer>
-  </Paper>
-);
+export const UserCreate = ({ user, organisation, userInfo, ...props }) => {
+  const addSuffixToUsername = values => ({
+    ...values,
+    username: values.username
+      ? `${values.username}@${userInfo.usernameSuffix}`
+      : values.username
+  });
+
+  return (
+    <Paper>
+      <DocumentationContainer filename={"User.md"}>
+        <Create transform={addSuffixToUsername} {...props}>
+          <UserForm
+            user={user}
+            nameSuffix={userInfo.usernameSuffix}
+            organisation={organisation}
+          />
+        </Create>
+      </DocumentationContainer>
+    </Paper>
+  );
+};
 
 export const UserEdit = ({ organisation, ...props }) => (
   <Edit
