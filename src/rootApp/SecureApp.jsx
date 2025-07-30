@@ -7,7 +7,7 @@ import App from "./App";
 import { Authenticator } from "@aws-amplify/ui-react";
 import CognitoSignIn from "./CognitoSignIn";
 import { httpClient } from "../common/utils/httpClient";
-import IdpDetails from "./security/IdpDetails";
+import IdpDetails from "./security/IdpDetails.ts";
 import KeycloakSignInView from "./views/KeycloakSignInView";
 import { initGenericConfig, setAuthSession } from "./ducks";
 import BaseAuthSession from "./security/BaseAuthSession";

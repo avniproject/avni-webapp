@@ -11,7 +11,8 @@ import {
   Button,
   Link,
   Typography,
-  Stack
+  Stack,
+  Alert
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import AvniLogo from "../../avni-logo-black.png";
@@ -109,7 +110,8 @@ function SignInView({
   notifyInputChange,
   loading,
   onForgotPassword,
-  disallowForgottenPasswordReset = false
+  disallowForgottenPasswordReset = false,
+  error
 }) {
   const [passwordIsMasked, setPasswordIsMasked] = useState(true);
   const autoComplete = ApplicationContext.isDevEnv() ? "on" : "off";
@@ -138,6 +140,12 @@ function SignInView({
             <StyledLogoBox>
               <img src={AvniLogo} alt="logo" height="45px" />
             </StyledLogoBox>
+
+            {error && (
+              <Alert severity="error" sx={{ width: "100%" }}>
+                {error}
+              </Alert>
+            )}
 
             <Card>
               <CardHeader title="Sign in" />

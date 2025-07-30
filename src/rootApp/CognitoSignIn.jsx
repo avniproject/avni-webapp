@@ -1,7 +1,13 @@
 import { useState } from "react";
-import { signIn, resetPassword, confirmResetPassword } from "aws-amplify/auth";
+import {
+  signIn,
+  resetPassword,
+  confirmResetPassword,
+  confirmSignIn
+} from "aws-amplify/auth";
 import SignInView from "./views/SignInView";
 import ForgotPasswordView from "./views/ForgotPasswordView";
+import NewPasswordRequiredView from "./views/NewPasswordRequiredView";
 import {
   isDisallowedPassword,
   DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG
@@ -11,8 +17,10 @@ import ApplicationContext from "../ApplicationContext";
 export default function CognitoSignIn({ onSignedIn }) {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [currentView, setCurrentView] = useState("SIGN_IN"); // "SIGN_IN", "FORGOT_PASSWORD", "CONFIRM_RESET"
+  const [currentView, setCurrentView] = useState("SIGN_IN"); // "SIGN_IN", "FORGOT_PASSWORD", "CONFIRM_RESET", "NEW_PASSWORD_REQUIRED"
   const [resetUsername, setResetUsername] = useState("");
+  const [signInResponse, setSignInResponse] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -35,17 +43,64 @@ export default function CognitoSignIn({ onSignedIn }) {
 
     try {
       setLoading(true);
+      setError(null);
       const response = await signIn({
         username: formData.username,
         password: formData.password
       });
-      const userData = { ...response, username: formData.username };
-      onSignedIn(userData);
+
+      // Check if user needs to set a new password
+      if (
+        response.nextStep?.signInStep ===
+        "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED"
+      ) {
+        setSignInResponse(response);
+        setCurrentView("NEW_PASSWORD_REQUIRED");
+        return;
+      }
+
+      // If sign-in is complete, proceed with authentication
+      if (response.isSignedIn) {
+        const userData = { ...response, username: formData.username };
+        onSignedIn(userData);
+      }
     } catch (err) {
-      alert(err.message || "Login failed");
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleNewPasswordSet = async newPassword => {
+    if (!signInResponse) {
+      setError("Session expired. Please sign in again.");
+      setCurrentView("SIGN_IN");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const confirmResponse = await confirmSignIn({
+        challengeResponse: newPassword
+      });
+
+      if (confirmResponse.isSignedIn) {
+        const userData = { ...confirmResponse, username: formData.username };
+        onSignedIn(userData);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to set new password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelNewPassword = () => {
+    setCurrentView("SIGN_IN");
+    setSignInResponse(null);
+    setError(null);
   };
 
   const handleForgotPassword = () => {
@@ -150,6 +205,18 @@ export default function CognitoSignIn({ onSignedIn }) {
         loading={loading}
         step="CONFIRM_RESET"
         initialUsername={resetUsername}
+      />
+    );
+  }
+
+  if (currentView === "NEW_PASSWORD_REQUIRED") {
+    return (
+      <NewPasswordRequiredView
+        username={formData.username}
+        onPasswordChanged={handleNewPasswordSet}
+        onCancel={handleCancelNewPassword}
+        loading={loading}
+        error={error}
       />
     );
   }
