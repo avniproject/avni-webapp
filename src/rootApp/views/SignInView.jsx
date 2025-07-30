@@ -20,7 +20,6 @@ import { useEffect, useState } from "react";
 import SideImage from "../../avni-background.jpeg";
 import ApplicationContext from "../../ApplicationContext";
 import { httpClient as http } from "common/utils/httpClient";
-import { useAuthenticator } from "@aws-amplify/ui-react";
 
 const StyledRootContainer = styled(Box)({
   display: "flex",
@@ -109,9 +108,9 @@ function SignInView({
   onSignIn,
   notifyInputChange,
   loading,
+  onForgotPassword,
   disallowForgottenPasswordReset = false
 }) {
-  const { toForgotPassword } = useAuthenticator();
   const [passwordIsMasked, setPasswordIsMasked] = useState(true);
   const autoComplete = ApplicationContext.isDevEnv() ? "on" : "off";
   const [reportingSystems, setReportingSystems] = useState(null);
@@ -202,7 +201,7 @@ function SignInView({
                     }}
                   >
                     <Grid>
-                      <Link href="#" variant="body2" onClick={toForgotPassword}>
+                      <Link href="#" variant="body2" onClick={onForgotPassword}>
                         Forgot password?
                       </Link>
                     </Grid>
