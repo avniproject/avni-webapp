@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  AutocompleteArrayInput,
   Create,
   Datagrid,
   Edit,
@@ -15,7 +14,6 @@ import {
   SimpleShowLayout,
   SingleFieldList,
   TextField,
-  TextInput,
   required,
   useRecordContext,
   useResourceContext
@@ -36,6 +34,13 @@ import {
 import { TitleChip } from "./components/TitleChip";
 import OrganisationService from "../common/service/OrganisationService";
 import ApplicationContext from "../ApplicationContext";
+import {
+  StyledBox,
+  StyledTextInput,
+  datagridStyles,
+  StyledAutocompleteArrayInput
+} from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 export const AccountOrgAdminUserCreate = ({ user, region, ...props }) => (
   <Create {...props}>
@@ -57,30 +62,34 @@ export const AccountOrgAdminUserEdit = ({ user, region, ...props }) => (
 );
 
 export const AccountOrgAdminUserList = props => (
-  <List
-    {...props}
-    bulkActionButtons={false}
-    filters={UserFilter}
-    filter={{ searchURI: "find" }}
-    title="Admin Users"
-  >
-    <Datagrid rowClick="show">
-      <TextField label="Login ID" source="username" />
-      <TextField source="name" label="Name of the Person" />
-      <TextField source="email" label="Email Address" />
-      <TextField source="phoneNumber" label="Phone Number" />
-      <FunctionField
-        label="Status"
-        render={user =>
-          user.voided === true
-            ? "Deleted"
-            : user.disabledInCognito === true
-            ? "Disabled"
-            : "Active"
-        }
-      />
-    </Datagrid>
-  </List>
+  <StyledBox>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      filters={UserFilter}
+      filter={{ searchURI: "find" }}
+      sort={{ field: "id", order: "DESC" }}
+      title="Admin Users"
+      pagination={<PrettyPagination />}
+    >
+      <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
+        <TextField label="Login ID" source="username" />
+        <TextField source="name" label="Name of the Person" />
+        <TextField source="email" label="Email Address" />
+        <TextField source="phoneNumber" label="Phone Number" />
+        <FunctionField
+          label="Status"
+          render={user =>
+            user.voided === true
+              ? "Deleted"
+              : user.disabledInCognito === true
+              ? "Disabled"
+              : "Active"
+          }
+        />
+      </Datagrid>
+    </List>
+  </StyledBox>
 );
 
 const CustomShowActions = () => {
@@ -170,45 +179,45 @@ const UserFormFields = ({ edit = false, region }) => {
         validate={required("Please select one or more accounts")}
         filterToQuery={searchText => ({ name: searchText })}
       >
-        <AutocompleteArrayInput />
+        <StyledAutocompleteArrayInput />
       </ReferenceArrayInput>
 
       {edit ? (
         <>
-          <TextInput
+          <StyledTextInput
             disabled
             source="username"
             label="Login ID (admin username)"
           />
           {/* Hidden field to ensure username is included in payload */}
-          <TextInput source="username" style={{ display: "none" }} />
+          <StyledTextInput source="username" style={{ display: "none" }} />
         </>
       ) : (
         <>
-          <TextInput
+          <StyledTextInput
             source="username"
             validate={isRequired}
             label="Login ID (username)"
           />
           {nameSuffix && <span>@{nameSuffix}</span>}
-          <TextInput source="username" style={{ display: "none" }} />
+          <StyledTextInput source="username" style={{ display: "none" }} />
         </>
       )}
 
       {!edit && <PasswordTextField />}
-      <TextInput
+      <StyledTextInput
         source="name"
         label="Name of the Person"
         validate={isRequired}
         autoComplete={autoComplete}
       />
-      <TextInput
+      <StyledTextInput
         source="email"
         label="Email Address"
         validate={validateEmail}
         autoComplete={autoComplete}
       />
-      <TextInput
+      <StyledTextInput
         source="phoneNumber"
         validate={getPhoneValidator(region)}
         autoComplete={autoComplete}

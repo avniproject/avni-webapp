@@ -7,11 +7,12 @@ import {
   SimpleForm,
   SimpleShowLayout,
   TextField,
-  TextInput,
   Toolbar,
   SaveButton
 } from "react-admin";
 import { Title } from "./components/Title";
+import { StyledBox, StyledTextInput, datagridStyles } from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 //To remove delete button from the toolbar
 const CustomToolbar = props => (
@@ -21,12 +22,20 @@ const CustomToolbar = props => (
 );
 
 export const AccountList = props => (
-  <List {...props} bulkActions={false} filter={{ searchURI: "findAll" }}>
-    <Datagrid rowClick="show">
-      <TextField label="Name" source="name" />
-      <TextField label="Region" source="region" />
-    </Datagrid>
-  </List>
+  <StyledBox>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      filter={{ searchURI: "findAll" }}
+      sort={{ field: "id", order: "DESC" }}
+      pagination={<PrettyPagination />}
+    >
+      <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
+        <TextField label="Name" source="name" />
+        <TextField label="Region" source="region" />
+      </Datagrid>
+    </List>
+  </StyledBox>
 );
 
 export const AccountDetails = props => (
@@ -41,8 +50,8 @@ export const AccountDetails = props => (
 export const AccountCreate = props => (
   <Create title="Add a new Account" {...props}>
     <SimpleForm redirect="list">
-      <TextInput source="name" />
-      <TextInput source="region" />
+      <StyledTextInput source="name" />
+      <StyledTextInput source="region" />
     </SimpleForm>
   </Create>
 );
@@ -50,8 +59,8 @@ export const AccountCreate = props => (
 export const AccountEdit = props => (
   <Edit undoable={false} title={<Title title={"Edit account"} />} {...props}>
     <SimpleForm toolbar={<CustomToolbar />} redirect="list">
-      <TextInput source="name" />
-      <TextInput source="region" />
+      <StyledTextInput source="name" />
+      <StyledTextInput source="region" />
     </SimpleForm>
   </Edit>
 );

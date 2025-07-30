@@ -38,15 +38,7 @@ import {
   useResourceContext
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
-import {
-  Paper,
-  Grid,
-  Chip,
-  Typography,
-  CardActions,
-  styled,
-  Box
-} from "@mui/material";
+import { Paper, Grid, Chip, Typography, CardActions } from "@mui/material";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
 import {
@@ -84,8 +76,10 @@ import { AvniPasswordInput } from "./components/AvniPasswordInput";
 import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";
-import IdpDetails from "../rootApp/security/IdpDetails";
+import IdpDetails from "../rootApp/security/IdpDetails.ts";
 import OrgManagerContext from "./OrgManagerContext";
+import { datagridStyles, StyledBox } from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 const StringToLabelObject = ({ children, ...props }) => {
   const record = useRecordContext();
@@ -95,14 +89,6 @@ const StringToLabelObject = ({ children, ...props }) => {
 
   return cloneElement(children, { ...props, record: labelRecord });
 };
-
-const StyledBox = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(3.5),
-  marginRight: theme.spacing(1.5),
-  boxShadow: theme.shadows[2],
-  padding: theme.spacing(3),
-  backgroundColor: theme.palette.background.paper
-}));
 
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
   <Paper>
@@ -138,8 +124,9 @@ export const UserList = ({ ...props }) => {
         filter={{ organisationId: organisation.id }}
         filters={UserFilter}
         title={`${organisation.name} Users`}
+        pagination={<PrettyPagination />}
       >
-        <Datagrid rowClick="show">
+        <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
           <TextField label="Login ID" source="username" />
           <TextField source="name" label="Name of the Person" />
           <ReferenceField

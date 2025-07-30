@@ -1,5 +1,4 @@
 import {
-  AutocompleteArrayInput,
   BooleanField,
   BooleanInput,
   Create,
@@ -15,13 +14,19 @@ import {
   SimpleForm,
   SimpleShowLayout,
   SingleFieldList,
-  TextField,
-  TextInput
+  TextField
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { TitleChip } from "./components/TitleChip";
 import { Title } from "./components/Title";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
+import {
+  StyledBox,
+  StyledTextInput,
+  datagridStyles,
+  StyledAutocompleteArrayInput
+} from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 const normalizeInput = value => {
   return value ? value.trim().replace(/\s+/g, " ") : value;
@@ -32,55 +37,61 @@ const normalizeInputAfterExcludingSpaces = value => {
 };
 
 export const OrganisationGroupList = props => (
-  <List {...props} bulkActionButtons={false}>
-    <Datagrid rowClick="show">
-      <TextField label="Name" source="name" />
-      <TextField label="DB User" source="dbUser" />
-      <TextField source="schemaName" label="Schema name" />
-      <BooleanField
-        source="analyticsDataSyncActive"
-        label="Active analytics data sync"
-      />
-      <ReferenceField
-        resource="account"
-        source="accountId"
-        reference="account"
-        label="Account Name"
-      >
-        <TextField source="name" />
-      </ReferenceField>
-      <ReferenceArrayField
-        label="Organisations"
-        reference="organisation"
-        source="organisationIds"
-        sort={{ field: "name", order: "ASC" }}
-        sx={{
-          "& .RaReferenceArrayField-chip": {
-            backgroundColor: "#e3f2fd",
-            color: "#1976d2",
-            "&:hover": {
-              backgroundColor: "#bbdefb"
-            }
-          },
-          "& .RaReferenceArrayField-list": {
-            gap: "4px"
-          }
-        }}
-      >
-        <SingleFieldList sx={{ py: 0.5 }}>
-          <TitleChip
-            sx={{
+  <StyledBox>
+    <List
+      {...props}
+      sort={{ field: "id", order: "DESC" }}
+      pagination={<PrettyPagination />}
+    >
+      <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
+        <TextField label="Name" source="name" />
+        <TextField label="DB User" source="dbUser" />
+        <TextField source="schemaName" label="Schema name" />
+        <BooleanField
+          source="analyticsDataSyncActive"
+          label="Active analytics data sync"
+        />
+        <ReferenceField
+          resource="account"
+          source="accountId"
+          reference="account"
+          label="Account Name"
+        >
+          <TextField source="name" />
+        </ReferenceField>
+        <ReferenceArrayField
+          label="Organisations"
+          reference="organisation"
+          source="organisationIds"
+          sort={{ field: "name", order: "ASC" }}
+          sx={{
+            "& .RaReferenceArrayField-chip": {
               backgroundColor: "#e3f2fd",
               color: "#1976d2",
               "&:hover": {
                 backgroundColor: "#bbdefb"
               }
-            }}
-          />
-        </SingleFieldList>
-      </ReferenceArrayField>
-    </Datagrid>
-  </List>
+            },
+            "& .RaReferenceArrayField-list": {
+              gap: "4px"
+            }
+          }}
+        >
+          <SingleFieldList sx={{ py: 0.5 }}>
+            <TitleChip
+              sx={{
+                backgroundColor: "#e3f2fd",
+                color: "#1976d2",
+                "&:hover": {
+                  backgroundColor: "#bbdefb"
+                }
+              }}
+            />
+          </SingleFieldList>
+        </ReferenceArrayField>
+      </Datagrid>
+    </List>
+  </StyledBox>
 );
 
 export const OrganisationGroupShow = props => (
@@ -138,19 +149,19 @@ export const OrganisationGroupShow = props => (
 export const organisationGroupCreate = props => (
   <Create title="Add a new Organisation Group" {...props}>
     <SimpleForm redirect="list">
-      <TextInput
+      <StyledTextInput
         source="name"
         label="Name"
         validate={required("Name cannot be empty")}
         parse={normalizeInput}
       />
-      <TextInput
+      <StyledTextInput
         source="dbUser"
         label="DB User"
         validate={required("DB user cannot be empty")}
         parse={normalizeInputAfterExcludingSpaces}
       />
-      <TextInput
+      <StyledTextInput
         source="schemaName"
         label="Schema name"
         validate={required("Schema name cannot be empty")}
@@ -176,7 +187,7 @@ export const organisationGroupCreate = props => (
         label="Organisations"
         filterToQuery={searchText => ({ name: searchText })}
       >
-        <AutocompleteArrayInput
+        <StyledAutocompleteArrayInput
           validate={required("Please choose organisations")}
         />
       </ReferenceArrayInput>
@@ -191,14 +202,14 @@ export const organisationGroupEdit = props => (
     {...props}
   >
     <SimpleForm redirect="list">
-      <TextInput
+      <StyledTextInput
         source="name"
         label="Name"
         validate={required("Name cannot be empty")}
         parse={normalizeInput}
       />
-      <TextInput disabled source="dbUser" label="DB User" />
-      <TextInput disabled source="schemaName" label="Schema name" />
+      <StyledTextInput disabled source="dbUser" label="DB User" />
+      <StyledTextInput disabled source="schemaName" label="Schema name" />
       <BooleanField source="analyticsDataSyncActive" />
       <ToggleAnalyticsButton />
       <br />
@@ -221,7 +232,7 @@ export const organisationGroupEdit = props => (
         label="Organisations"
         filterToQuery={searchText => ({ name: searchText })}
       >
-        <AutocompleteArrayInput
+        <StyledAutocompleteArrayInput
           validate={required("Please choose organisations")}
         />
       </ReferenceArrayInput>

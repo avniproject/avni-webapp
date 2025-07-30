@@ -31,75 +31,85 @@ import useGetData from "../custom-hooks/useGetData";
 import { httpClient } from "../common/utils/httpClient";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-
+import { StyledBox, StyledTextInput, datagridStyles } from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
-    <TextInput label="Organisation Name" source="name" resettable alwaysOn />
+    <StyledTextInput
+      label="Organisation Name"
+      source="name"
+      resettable={false}
+      alwaysOn
+    />
   </Filter>
 );
 
 export const OrganisationList = ({ ...props }) => {
   return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      filter={{ searchURI: "find" }}
-      filters={<OrganisationFilter />}
-    >
-      <Datagrid>
-        <TextField source="name" label="Name" />
-        <ReferenceField
-          label="Category"
-          source="categoryId"
-          reference="organisationCategory"
-          link={false}
-          sortBy={"category.name"}
-        >
-          <TextField source="name" />
-        </ReferenceField>
-        <ReferenceField
-          label="Parent organisation"
-          source="parentOrganisationId"
-          reference="organisation"
-          link="show"
-        >
-          <TextField source="name" />
-        </ReferenceField>
-        <TextField source="dbUser" label="DB User" sortBy={"dbUser"} />
-        <TextField
-          source="schemaName"
-          label="Schema Name"
-          sortBy={"schemaName"}
-        />
-        <TextField
-          source="mediaDirectory"
-          label="Media Directory"
-          sortBy={"mediaDirectory"}
-        />
-        <TextField
-          source="usernameSuffix"
-          label="Username Suffix"
-          sortBy={"usernameSuffix"}
-        />
-        <ReferenceField
-          resource="organisationStatus"
-          source="statusId"
-          reference="organisationStatus"
-          label="Status"
-          link={false}
-          sortBy={"status.name"}
-        >
-          <TextField source="name" />
-        </ReferenceField>
-        <BooleanField
-          source="analyticsDataSyncActive"
-          label="Active analytics data sync"
-          sortable={false}
-        />
-        <ShowButton />
-        <OpenOrganisation />
-      </Datagrid>
-    </List>
+    <StyledBox>
+      <List
+        {...props}
+        bulkActionButtons={false}
+        filter={{ searchURI: "find" }}
+        sort={{ field: "id", order: "DESC" }}
+        filters={<OrganisationFilter />}
+        pagination={<PrettyPagination />}
+      >
+        <Datagrid bulkActionButtons={false} sx={datagridStyles}>
+          <TextField source="name" label="Name" />
+          <ReferenceField
+            label="Category"
+            source="categoryId"
+            reference="organisationCategory"
+            link={false}
+            sortBy={"category.name"}
+          >
+            <TextField source="name" />
+          </ReferenceField>
+          <ReferenceField
+            label="Parent organisation"
+            source="parentOrganisationId"
+            reference="organisation"
+            link="show"
+          >
+            <TextField source="name" />
+          </ReferenceField>
+          <TextField source="dbUser" label="DB User" sortBy={"dbUser"} />
+          <TextField
+            source="schemaName"
+            label="Schema Name"
+            sortBy={"schemaName"}
+          />
+          <TextField
+            source="mediaDirectory"
+            label="Media Directory"
+            sortBy={"mediaDirectory"}
+          />
+          <TextField
+            source="usernameSuffix"
+            label="Username Suffix"
+            sortBy={"usernameSuffix"}
+          />
+          <ReferenceField
+            resource="organisationStatus"
+            source="statusId"
+            reference="organisationStatus"
+            label="Status"
+            link={false}
+            sortBy={"status.name"}
+          >
+            <TextField source="name" />
+          </ReferenceField>
+          <BooleanField
+            source="analyticsDataSyncActive"
+            label="Active analytics data sync"
+            sortable={false}
+          />
+          <ShowButton />
+          <OpenOrganisation />
+        </Datagrid>
+      </List>
+    </StyledBox>
   );
 };
 

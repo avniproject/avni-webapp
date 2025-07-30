@@ -12,7 +12,6 @@ import {
   EditButton,
   ReferenceArrayInput,
   SingleFieldList,
-  AutocompleteArrayInput,
   ReferenceArrayField,
   Filter,
   FunctionField,
@@ -27,13 +26,25 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
+import {
+  StyledBox,
+  StyledTextInput,
+  datagridStyles,
+  StyledAutocompleteArrayInput
+} from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 const catchmentChangeMessage = `Please note that changing locations in the catchment will 
 delete the fast sync setup for this catchment`;
 
 const CatchmentFilter = props => (
   <Filter {...props}>
-    <TextInput label="Search catchment" source="name" resettable alwaysOn />
+    <StyledTextInput
+      label="Search catchment"
+      source="name"
+      resettable={false}
+      alwaysOn
+    />
   </Filter>
 );
 
@@ -100,11 +111,18 @@ export const CatchmentDetail = props => (
 );
 
 export const CatchmentList = props => (
-  <List {...props} bulkActionButtons={false} filters={<CatchmentFilter />}>
-    <Datagrid rowClick="show">
-      <TextField label="Catchment" source="name" />
-    </Datagrid>
-  </List>
+  <StyledBox>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      filters={<CatchmentFilter />}
+      pagination={<PrettyPagination />}
+    >
+      <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
+        <TextField label="Catchment" source="name" />
+      </Datagrid>
+    </List>
+  </StyledBox>
 );
 
 const useCatchmentLocationChange = ({
@@ -178,7 +196,7 @@ const CatchmentForm = ({
             label="Locations"
             filterToQuery={searchText => ({ title: searchText })}
           >
-            <AutocompleteArrayInput optionText={optionRenderer} />
+            <StyledAutocompleteArrayInput optionText={optionRenderer} />
           </ReferenceArrayInput>
         </div>
       </ToolTipContainer>

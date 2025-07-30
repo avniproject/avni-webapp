@@ -18,6 +18,7 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
 import { Paper } from "@mui/material";
+import { StyledBox, datagridStyles } from "./Util/Styles";
 
 const Title = ({ record }) => {
   return (
@@ -30,14 +31,16 @@ const Title = ({ record }) => {
 };
 
 export const IdentifierUserAssignmentList = props => (
-  <List {...props} title={"Identifier User Assignment"}>
-    <Datagrid rowClick="show">
-      <TextField source="name" label="Source name" />
-      <TextField source="userName" label="User name" />
-      <TextField source="identifierStart" />
-      <TextField source="identifierEnd" />
-    </Datagrid>
-  </List>
+  <StyledBox>
+    <List {...props} title={"Identifier User Assignment"}>
+      <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
+        <TextField source="name" label="Source name" />
+        <TextField source="userName" label="User name" />
+        <TextField source="identifierStart" />
+        <TextField source="identifierEnd" />
+      </Datagrid>
+    </List>
+  </StyledBox>
 );
 
 export const IdentifierUserAssignmentDetail = props => {

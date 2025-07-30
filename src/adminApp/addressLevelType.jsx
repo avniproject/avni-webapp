@@ -26,27 +26,31 @@ import { Box, Paper } from "@mui/material";
 import { AvniReferenceInput } from "./components/AvniReferenceInput";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
+import { datagridStyles, StyledBox } from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 export const LocationTypeList = props => (
-  <List
-    {...props}
-    bulkActions={false}
-    title="Location Types"
-    sort={{ field: "level", order: "DESC" }}
-  >
-    <Datagrid rowClick="show">
-      <TextField label="Location Type" source="name" />
-      <TextField label="Level" source="level" />
-      <ReferenceField
-        label="Parent"
-        source="parentId"
-        reference="addressLevelType"
-        link="show"
-      >
-        <TextField source="name" />
-      </ReferenceField>
-    </Datagrid>
-  </List>
+  <StyledBox>
+    <List
+      {...props}
+      title="Location Types"
+      sort={{ field: "level", order: "DESC" }}
+      pagination={<PrettyPagination />}
+    >
+      <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
+        <TextField label="Location Type" source="name" />
+        <TextField label="Level" source="level" />
+        <ReferenceField
+          label="Parent"
+          source="parentId"
+          reference="addressLevelType"
+          link="show"
+        >
+          <TextField source="name" />
+        </ReferenceField>
+      </Datagrid>
+    </List>
+  </StyledBox>
 );
 
 const ParentReferenceField = ({ addLabel = true, showToolTip, ...props }) => {

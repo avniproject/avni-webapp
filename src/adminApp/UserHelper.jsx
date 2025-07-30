@@ -5,20 +5,11 @@ import {
   regex,
   required,
   SaveButton,
-  TextInput,
   Toolbar
 } from "react-admin";
 import { isValidPhoneNumber } from "libphonenumber-js";
-import { styled } from "@mui/material/styles";
-
-const StyledTextInput = styled(TextInput)({
-  "& .MuiInputBase-input": {
-    backgroundColor: "white"
-  },
-  "& .RaResettableTextField-clearButton": {
-    backgroundColor: "white"
-  }
-});
+import { StyledTextInput } from "./Util/Styles";
+import { Typography } from "@mui/material";
 
 export const UserTitle = ({ record, titlePrefix }) => {
   return (
@@ -76,12 +67,14 @@ export const CustomToolbar = props => (
 );
 
 export const PasswordTextField = () => (
-  <sub>
-    <br />
-    Default temporary password is "password". User will
-    <br />
-    be prompted to set their own password on first login
-  </sub>
+  <>
+    <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+      Default temporary password is "password". User will
+    </Typography>
+    <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+      be prompted to set their own password on first login.
+    </Typography>
+  </>
 );
 
 export const isRequired = required("This field is required");

@@ -19,7 +19,11 @@ import {
   SelectInput,
   ReferenceInput,
   required,
-  DeleteButton
+  DeleteButton,
+  TopToolbar,
+  CreateButton,
+  ExportButton,
+  useListContext
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
 import { isEmpty, find, isNil } from "lodash";
@@ -30,31 +34,63 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { Paper } from "@mui/material";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
+import { StyledBox, datagridStyles } from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination.tsx";
+
+const CustomListActions = () => {
+  const { total, resource } = useListContext();
+
+  return (
+    <TopToolbar>
+      <CreateButton />
+      <ExportButton disabled={total === 0} resource={resource} />
+      {/* No FilterLiveSearch here */}
+    </TopToolbar>
+  );
+};
 
 const LocationFilter = props => {
-  const { showFilter, displayedFilters, ...filteredProps } = props;
+  const { ...filteredProps } = props;
   return (
     <FilterLiveSearch
       {...filteredProps}
       source="title"
       label="Search location"
+      resettable={false}
+      sx={{
+        "& .MuiInputBase-input": {
+          backgroundColor: "white"
+        },
+        "& .RaResettableTextField-clearButton": {
+          backgroundColor: "white"
+        },
+        "& .MuiInputAdornment-root": {
+          display: "none" // remove the adornment (search icon wrapper)
+        },
+        "& .MuiInputBase-root": {
+          paddingRight: 0 // remove right padding where the adornment was
+        }
+      }}
     />
   );
 };
 
 export const LocationList = props => (
-  <List
-    {...props}
-    sort={{ field: "title", order: "ASC" }}
-    filters={<LocationFilter />}
-    exporter={false}
-  >
-    <Datagrid rowClick="show">
-      <TextField label="Name" source="title" />
-      <TextField label="Type" source="typeString" />
-      <TextField label="Full Address" source="titleLineage" />
-    </Datagrid>
-  </List>
+  <StyledBox>
+    <List
+      {...props}
+      sort={{ field: "title", order: "ASC" }}
+      filters={<LocationFilter />}
+      actions={<CustomListActions />}
+      pagination={<PrettyPagination />}
+    >
+      <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
+        <TextField label="Name" source="title" />
+        <TextField label="Type" source="typeString" />
+        <TextField label="Full Address" source="titleLineage" />
+      </Datagrid>
+    </List>
+  </StyledBox>
 );
 
 const SubLocationsGrid = props =>

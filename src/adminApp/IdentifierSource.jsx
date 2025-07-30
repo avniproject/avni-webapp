@@ -18,6 +18,8 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniSelectInput } from "./components/AvniSelectInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
+import { StyledBox, datagridStyles } from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination";
 
 const sourceType = {
   userBasedIdentifierGenerator: {
@@ -59,18 +61,24 @@ const ShowSourceType = props => {
 };
 
 export const IdentifierSourceList = props => (
-  <List {...props} title="Identifier Source">
-    <Datagrid rowClick="show">
-      <TextField source="name" />
-      <ShowSourceType source="type" showSourceTypeLabel={false} />
-      <TextField source="batchGenerationSize" />
-      <TextField source="minLength" />
-      <TextField source="maxLength" />
-      <ReferenceField source="catchmentId" reference="catchment">
+  <StyledBox>
+    <List
+      {...props}
+      title="Identifier Source"
+      pagination={<PrettyPagination />}
+    >
+      <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
         <TextField source="name" />
-      </ReferenceField>
-    </Datagrid>
-  </List>
+        <ShowSourceType source="type" showSourceTypeLabel={false} />
+        <TextField source="batchGenerationSize" />
+        <TextField source="minLength" />
+        <TextField source="maxLength" />
+        <ReferenceField source="catchmentId" reference="catchment">
+          <TextField source="name" />
+        </ReferenceField>
+      </Datagrid>
+    </List>
+  </StyledBox>
 );
 
 export const IdentifierSourceDetail = props => (
