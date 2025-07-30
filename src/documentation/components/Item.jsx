@@ -75,6 +75,8 @@ export const Item = ({
       showIcons={showIcons}
       isSelected={isSelected}
       paddingLeft={paddingLeft}
+      onMouseEnter={() => setShowIcons(true)}
+      onMouseLeave={() => setShowIcons(false)}
     >
       {disabled ? renderWithoutLink({ color: "grey" }) : renderWithLink()}
       {(showIcons || disabled) && (
