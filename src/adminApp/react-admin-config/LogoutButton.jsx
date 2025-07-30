@@ -34,32 +34,38 @@ const LogoutButton = ({
   };
 
   return (
-    <div>
-      <span style={styles.userIcon}>
-        <Person color="primary" /> {username}
-      </span>
+    <>
+      <MenuItem>
+        <Person color="primary" style={styles.userIcon} />
+        {username}
+      </MenuItem>
       <MenuItem onClick={onChangePassword}>
-        <Lock /> Change Password
+        <Lock style={styles.userIcon} />
+        Change Password
       </MenuItem>
       <MenuItem onClick={handleLogout}>
-        <Logout /> Logout
+        <Logout style={styles.userIcon} />
+        Logout
       </MenuItem>
       {lastSessionTimeMillis > 0 && (
-        <span style={styles.lastLoginDate}>
-          Last login:{" "}
-          {isValid(new Date(lastSessionTimeMillis))
-            ? format(new Date(lastSessionTimeMillis), "MMM d yyyy h:mm:ss a")
-            : "-"}
-        </span>
+        <MenuItem disabled>
+          <span style={styles.lastLoginDate}>
+            Last login:{" "}
+            {isValid(new Date(lastSessionTimeMillis))
+              ? format(new Date(lastSessionTimeMillis), "MMM d yyyy h:mm:ss a")
+              : "-"}
+          </span>
+        </MenuItem>
       )}
       {ApplicationContext.isDevEnv() && (
         <MenuItem
           onClick={() => navigator.clipboard.writeText(httpClient.getIdToken())}
         >
-          <Lock /> Copy Token
+          <Lock style={styles.userIcon} />
+          Copy Token
         </MenuItem>
       )}
-    </div>
+    </>
   );
 };
 
