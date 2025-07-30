@@ -20,6 +20,14 @@ export default function CognitoSignIn({ onSignedIn }) {
   };
 
   const handleSignIn = async () => {
+    if (
+      ApplicationContext.isNonProdAndNonDevEnv() &&
+      isDisallowedPassword(formData.password)
+    ) {
+      alert(DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG);
+      return;
+    }
+
     if (!formData.username || !formData.password) {
       alert("Please enter both username and password");
       return;
