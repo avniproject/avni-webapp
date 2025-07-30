@@ -7,29 +7,19 @@ import { useNavigate } from "react-router-dom";
 import OrganisationOptions from "./OrganisationOptions";
 import { getUserInfo } from "../../rootApp/ducks";
 import CurrentUserService from "../service/CurrentUserService";
+import {
+  CommonAppBarStyles,
+  StyledAppBarTitle,
+  StyledUserSection,
+  StyledOrganisationInfo
+} from "./CommonAppBarStyles";
 
-const StyledAppBar = styled(AppBar)({
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  padding: "0 1em",
+const StyledAppBar = styled(AppBar)(() => ({
+  ...CommonAppBarStyles.appBarContainer,
   "& .MuiToolbar-root": {
-    width: "100%",
-    minHeight: "auto",
-    justifyContent: "space-between",
-    display: "flex",
-    alignItems: "center",
-    padding: 0
+    ...CommonAppBarStyles.toolbar
   }
-});
-
-const StyledTypography = styled(Typography)({
-  flex: 1,
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  fontWeight: "bold"
-});
+}));
 
 const AdminAppBar = props => {
   const navigate = useNavigate();
@@ -42,13 +32,9 @@ const AdminAppBar = props => {
 
   return (
     <StyledAppBar {...props}>
-      <StyledTypography
-        variant="h6"
-        sx={{ color: "inherit" }}
-        id="react-admin-title"
-      />
+      <StyledAppBarTitle variant="h6" id="react-admin-title" />
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <StyledUserSection>
         <OrganisationOptions
           getUserInfo={() => dispatch(getUserInfo())}
           user={authSession}
@@ -56,22 +42,20 @@ const AdminAppBar = props => {
           organisation={organisation}
           organisations={organisations}
         />
-        <Box sx={{ mx: 2 }}>
+        <StyledOrganisationInfo>
           <b>{organisation?.name}</b> ({authSession?.username})
-        </Box>
+        </StyledOrganisationInfo>
         {CurrentUserService.hasOrganisationContext(userInfo) && (
-          <Box>
-            <IconButton
-              onClick={() => navigate("/home")}
-              aria-label="Home"
-              color="inherit"
-              size="large"
-            >
-              <Home />
-            </IconButton>
-          </Box>
+          <IconButton
+            onClick={() => navigate("/home")}
+            aria-label="Home"
+            color="inherit"
+            size="large"
+          >
+            <Home />
+          </IconButton>
         )}
-      </Box>
+      </StyledUserSection>
     </StyledAppBar>
   );
 };
