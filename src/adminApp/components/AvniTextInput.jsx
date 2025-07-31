@@ -1,10 +1,10 @@
-import { TextInput } from "react-admin";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
+import { StyledTextInput } from "../Util/Styles";
 
 export const AvniTextInput = ({ toolTipKey, ...props }) => {
   return (
     <ToolTipContainer toolTipKey={toolTipKey}>
-      <TextInput {...props} />
+      <StyledTextInput {...props} />
       {props.children}
     </ToolTipContainer>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Datagrid,
   FilterLiveSearch,
@@ -16,16 +16,18 @@ import {
   useRecordContext,
   Toolbar,
   SaveButton,
-  SelectInput,
   ReferenceInput,
   required,
   DeleteButton,
   TopToolbar,
   CreateButton,
   ExportButton,
-  useListContext
+  useListContext,
+  FormDataConsumer,
+  useDataProvider,
+  useNotify,
+  useRedirect
 } from "react-admin";
-import { useFormContext, useWatch } from "react-hook-form";
 import { isEmpty, find, isNil } from "lodash";
 import { None } from "../common/components/utils";
 import LocationSaveButton from "./components/LocationSaveButton";
@@ -34,7 +36,7 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { Paper } from "@mui/material";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
-import { StyledBox, datagridStyles } from "./Util/Styles";
+import { StyledBox, datagridStyles, StyledSelectInput } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 const CustomListActions = () => {
@@ -44,7 +46,6 @@ const CustomListActions = () => {
     <TopToolbar>
       <CreateButton />
       <ExportButton disabled={total === 0} resource={resource} />
-      {/* No FilterLiveSearch here */}
     </TopToolbar>
   );
 };
@@ -65,10 +66,10 @@ const LocationFilter = props => {
           backgroundColor: "white"
         },
         "& .MuiInputAdornment-root": {
-          display: "none" // remove the adornment (search icon wrapper)
+          display: "none"
         },
         "& .MuiInputBase-root": {
-          paddingRight: 0 // remove right padding where the adornment was
+          paddingRight: 0
         }
       }}
     />
@@ -103,14 +104,14 @@ const SubLocationsGrid = props =>
     </Datagrid>
   );
 
-const ParentLocationReferenceField = (addLabel = true, props) => {
+const ParentLocationReferenceField = ({ addLabel = true, label, ...props }) => {
   const record = useRecordContext();
   return isNil(record?.parentId) ? (
     <None />
   ) : (
     <ReferenceField
       {...props}
-      label="Parent location"
+      label={addLabel ? label || "Parent location" : false}
       source="parentId"
       link="show"
       reference="locations"
@@ -145,11 +146,7 @@ export const LocationDetail = props => (
 
 const LocationCreateEditToolbar = ({ edit, ...props }) => (
   <Toolbar {...props}>
-    {edit ? (
-      <SaveButton {...props} />
-    ) : (
-      <LocationSaveButton submitOnEnter={false} redirect="show" />
-    )}
+    {edit ? <SaveButton {...props} /> : <LocationSaveButton />}
     {edit && (
       <DeleteButton undoable={false} redirect="list" sx={{ ml: "auto" }} />
     )}
@@ -158,38 +155,76 @@ const LocationCreateEditToolbar = ({ edit, ...props }) => (
 
 const isRequired = required("This field is required");
 
-let cachedAddressLevelTypes = [];
+let addressLevelTypes = [];
 
 const LocationTypeSelectInput = props => {
-  cachedAddressLevelTypes = props.choices ?? cachedAddressLevelTypes;
-  return <SelectInput {...props} />;
+  const [choices, setChoices] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const dataProvider = useDataProvider();
+
+  useEffect(() => {
+    if (choices.length === 0 && !isLoading) {
+      setIsLoading(true);
+
+      dataProvider
+        .getList("addressLevelType", {
+          pagination: { page: 1, perPage: 25 },
+          sort: { field: "id", order: "DESC" },
+          filter: {}
+        })
+        .then(({ data }) => {
+          console.log(
+            "LocationTypeSelectInput: fetched addressLevelTypes",
+            data
+          );
+          const mappedChoices = Array.isArray(data)
+            ? data
+            : data._embedded
+            ? data._embedded.addressLevelType.map(item => ({
+                id: item.id,
+                name: item.name,
+                parentId: item.parentId
+              }))
+            : [];
+
+          setChoices(mappedChoices);
+          addressLevelTypes = mappedChoices;
+        })
+        .catch(error => {
+          console.error(
+            "LocationTypeSelectInput: error fetching addressLevelTypes",
+            error
+          );
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  }, [dataProvider, choices.length, isLoading]);
+
+  return (
+    <StyledSelectInput
+      source="typeId"
+      {...props}
+      choices={choices}
+      loading={isLoading}
+    />
+  );
 };
 
 const getParentIdOfLocationType = typeId => {
   if (isNil(typeId)) return null;
-  let type = find(cachedAddressLevelTypes, { id: typeId });
+  let type = find(addressLevelTypes, { id: typeId });
   return isNil(type) ? null : type.parentId;
 };
 
 const getNameOfLocationType = typeId => {
   if (isNil(typeId)) return null;
-  let type = find(cachedAddressLevelTypes, { id: typeId });
+  let type = find(addressLevelTypes, { id: typeId });
   return isNil(type) ? null : type.name;
 };
 
 const LocationFormInner = ({ edit }) => {
-  const { setValue } = useFormContext();
-  const typeId = useWatch({ name: "typeId" });
-  const changedRef = useRef(false);
-  const parentTypeId = getParentIdOfLocationType(typeId);
-
-  useEffect(() => {
-    if (changedRef.current) {
-      setValue("parentId", "");
-      changedRef.current = false;
-    }
-  }, [typeId]);
-
   return (
     <>
       <AvniTextInput
@@ -199,44 +234,64 @@ const LocationFormInner = ({ edit }) => {
         fullWidth
         toolTipKey={"ADMIN_LOCATION_NAME"}
       />
-      <ReferenceInput
-        label="Type"
-        source="typeId"
-        reference="addressLevelType"
-        validate={isRequired}
-        disabled={edit}
-        onChange={() => {
-          changedRef.current = true;
-        }}
-      >
-        <LocationTypeSelectInput optionText="name" resettable />
-      </ReferenceInput>
-      <TextInput
-        source="type"
-        defaultValue={getNameOfLocationType(typeId)}
-        style={{ display: "none" }}
-      />
-      {!isNil(parentTypeId) && (
-        <ReferenceInput
-          label="Part of (location)"
-          helperText="Which larger location is this location a part of?"
-          source="parentId"
-          reference="locations"
-          filter={{
-            searchURI: "findAsList",
-            typeId: parentTypeId,
-            title: ""
-          }}
-          filterToQuery={searchText => ({ title: searchText })}
-          validate={isRequired}
-        >
-          <SelectInput
-            optionText={record =>
-              record ? `${record.titleLineage} (${record.typeString})` : ""
+      <FormDataConsumer toolTipKey={"ADMIN_LOCATION_TYPE"}>
+        {({ dispatch, ...rest }) => (
+          <ReferenceInput
+            label="Type"
+            source="typeId"
+            reference="addressLevelType"
+            onChange={() =>
+              dispatch({ type: "RA/RESET", payload: { name: "parentId" } })
             }
+            disabled={edit}
+            {...rest}
+          >
+            <LocationTypeSelectInput
+              optionText="name"
+              resettable
+              validate={isRequired}
+              source="typeId"
+            />
+          </ReferenceInput>
+        )}
+      </FormDataConsumer>
+      <FormDataConsumer>
+        {({ formData, ...rest }) => (
+          <TextInput
+            source="type"
+            defaultValue={getNameOfLocationType(formData.typeId)}
+            style={{ display: "none" }}
+            {...rest}
           />
-        </ReferenceInput>
-      )}
+        )}
+      </FormDataConsumer>
+      <FormDataConsumer>
+        {({ formData, ...rest }) =>
+          !isNil(getParentIdOfLocationType(formData.typeId)) && (
+            <ReferenceInput
+              label="Part of (location)"
+              helperText="Which larger location is this location a part of?"
+              source="parentId"
+              reference="locations"
+              filter={{
+                searchURI: "findAsList",
+                typeId: getParentIdOfLocationType(formData.typeId),
+                title: ""
+              }}
+              filterToQuery={searchText => ({ title: searchText })}
+              {...rest}
+            >
+              <StyledSelectInput
+                validate={isRequired}
+                optionText={record =>
+                  record ? `${record.titleLineage} (${record.typeString})` : ""
+                }
+                source="parentId"
+              />
+            </ReferenceInput>
+          )
+        }
+      </FormDataConsumer>
       <TextInput
         disabled
         source="level"
@@ -248,10 +303,22 @@ const LocationFormInner = ({ edit }) => {
 };
 
 export const LocationForm = props => {
+  const notify = useNotify();
+  const redirect = useRedirect();
+
   return (
     <SimpleForm
       toolbar={<LocationCreateEditToolbar edit={props.edit} />}
       redirect="show"
+      mutationOptions={{
+        onSuccess: () => {
+          notify("Location created", { type: "info" });
+          redirect("list", "locations");
+        },
+        onError: error => {
+          notify(`Error: ${error.message}`, { type: "error" });
+        }
+      }}
       {...props}
     >
       <LocationFormInner {...props} />

@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/material";
-import { AutocompleteArrayInput, ReferenceArrayInput, SelectArrayInput, TextInput } from "react-admin";
+import { AutocompleteArrayInput, ReferenceArrayInput, SelectInput, TextInput } from "react-admin";
 
 export const StyledBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(1), // Reduced from 3.5 to 1 for better positioning
@@ -69,14 +69,6 @@ export const StyledReferenceArrayInput = styled(ReferenceArrayInput)({
   }
 });
 
-export const StyledSelectArrayInput = styled(SelectArrayInput)({
-  "& .MuiInputBase-root": {
-    backgroundColor: "white",
-    display: "inline-flex",
-    width: "auto"
-  }
-});
-
 export const StyledAutocompleteArrayInput = styled(AutocompleteArrayInput)({
   display: "inline-block",
   width: "auto",
@@ -86,3 +78,13 @@ export const StyledAutocompleteArrayInput = styled(AutocompleteArrayInput)({
     minWidth: "120px"
   }
 });
+
+export const StyledSelectInput = styled(SelectInput)(({ theme }) => ({
+  display: "inline-block",
+  width: "auto",
+  "& .MuiInputBase-root": {
+    backgroundColor: "white",
+    width: "auto",
+    paddingRight: theme.spacing(10)
+  }
+}));

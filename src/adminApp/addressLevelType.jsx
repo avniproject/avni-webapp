@@ -9,7 +9,6 @@ import {
   ReferenceField,
   required,
   SaveButton,
-  SelectInput,
   Show,
   SimpleForm,
   SimpleShowLayout,
@@ -26,7 +25,7 @@ import { Box, Paper } from "@mui/material";
 import { AvniReferenceInput } from "./components/AvniReferenceInput";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
-import { datagridStyles, StyledBox } from "./Util/Styles";
+import { datagridStyles, StyledBox, StyledSelectInput } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 export const LocationTypeList = props => (
@@ -132,7 +131,7 @@ const LocationTypeForm = ({ edit, ...props }) => {
           label="Parent"
           toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
         >
-          <SelectInput optionText="name" resettable />
+          <StyledSelectInput optionText="name" resettable />
         </AvniReferenceInput>
       )}
     </SimpleForm>
