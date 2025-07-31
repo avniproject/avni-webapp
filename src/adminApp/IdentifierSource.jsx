@@ -2,8 +2,6 @@ import {
   Datagrid,
   List,
   TextField,
-  Show,
-  SimpleShowLayout,
   Create,
   Edit,
   SimpleForm,
@@ -18,8 +16,13 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniSelectInput } from "./components/AvniSelectInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
-import { StyledBox, datagridStyles } from "./Util/Styles";
-import { PrettyPagination } from "./Util/PrettyPagination";
+import {
+  StyledBox,
+  datagridStyles,
+  StyledSimpleShowLayout,
+  StyledShow
+} from "./Util/Styles";
+import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 const sourceType = {
   userBasedIdentifierGenerator: {
@@ -82,8 +85,8 @@ export const IdentifierSourceList = props => (
 );
 
 export const IdentifierSourceDetail = props => (
-  <Show title={<Title />} {...props}>
-    <SimpleShowLayout>
+  <StyledShow title={<Title />} {...props}>
+    <StyledSimpleShowLayout>
       <TextField source="name" />
       <ShowSourceType source="type" showSourceTypeLabel={true} />
       <TextField source="batchGenerationSize" />
@@ -94,8 +97,8 @@ export const IdentifierSourceDetail = props => (
         <TextField source="name" />
       </ReferenceField>
       <TextField source="options.prefix" label="Prefix" />
-    </SimpleShowLayout>
-  </Show>
+    </StyledSimpleShowLayout>
+  </StyledShow>
 );
 
 const IdentifierSourceForm = () => {
@@ -165,7 +168,12 @@ const IdentifierSourceForm = () => {
 };
 
 export const IdentifierSourceEdit = props => (
-  <Edit undoable={false} title="Edit Identifier Source" {...props}>
+  <Edit
+    undoable={false}
+    title="Edit Identifier Source"
+    redirect="show"
+    {...props}
+  >
     <IdentifierSourceForm />
   </Edit>
 );

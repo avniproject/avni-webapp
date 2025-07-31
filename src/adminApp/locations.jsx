@@ -36,7 +36,13 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { Paper } from "@mui/material";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
-import { StyledBox, datagridStyles, StyledSelectInput } from "./Util/Styles";
+import {
+  StyledBox,
+  datagridStyles,
+  StyledSelectInput,
+  StyledSimpleShowLayout,
+  StyledShow
+} from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 const CustomListActions = () => {
@@ -124,8 +130,8 @@ const ParentLocationReferenceField = ({ addLabel = true, label, ...props }) => {
 };
 
 export const LocationDetail = props => (
-  <Show {...props} title={<Title title={"Location"} />}>
-    <SimpleShowLayout>
+  <StyledShow {...props} title={<Title title={"Location"} />}>
+    <StyledSimpleShowLayout>
       <TextField source="title" label="Name" />
       <TextField source="typeString" label="Type" />
       <ParentLocationReferenceField label="Part of (location)" />
@@ -140,8 +146,8 @@ export const LocationDetail = props => (
       <FunctionField label="Created" render={audit => createdAudit(audit)} />
       <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
       <TextField source="uuid" label="UUID" />
-    </SimpleShowLayout>
-  </Show>
+    </StyledSimpleShowLayout>
+  </StyledShow>
 );
 
 const LocationCreateEditToolbar = ({ edit, ...props }) => (
@@ -337,7 +343,7 @@ export const LocationCreate = props => (
 );
 
 export const LocationEdit = props => (
-  <Edit title="Edit Location" {...props} undoable={false}>
+  <Edit title="Edit Location" redirect="show" {...props} undoable={false}>
     <LocationForm edit />
   </Edit>
 );

@@ -30,7 +30,9 @@ import {
   StyledBox,
   StyledTextInput,
   datagridStyles,
-  StyledAutocompleteArrayInput
+  StyledAutocompleteArrayInput,
+  StyledSimpleShowLayout,
+  StyledShow
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
@@ -48,7 +50,8 @@ const CatchmentFilter = props => (
   </Filter>
 );
 
-const TitleChip = ({ record }) => {
+const TitleChip = () => {
+  const record = useRecordContext();
   if (!record) return null;
   return <Chip label={`${record.title} (${record.typeString})`} />;
 };
@@ -66,7 +69,7 @@ export const CatchmentCreate = props => (
 export const CatchmentEdit = props => {
   const [displayWarning, setDisplayWarning] = useState(true);
   return (
-    <Edit {...props} title="Edit Catchment" undoable={false}>
+    <Edit {...props} title="Edit Catchment" redirect="show" undoable={false}>
       <CatchmentForm
         edit
         displayWarning={displayWarning}
@@ -76,23 +79,9 @@ export const CatchmentEdit = props => {
   );
 };
 
-const CustomCatchmentShowActions = () => {
-  const record = useRecordContext();
-  if (!record) return null;
-  return (
-    <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
-      <EditButton label="Edit Catchment" />
-    </CardActions>
-  );
-};
-
 export const CatchmentDetail = props => (
-  <Show
-    title={<Title title="Catchment" />}
-    actions={<CustomCatchmentShowActions />}
-    {...props}
-  >
-    <SimpleShowLayout>
+  <StyledShow title={<Title title="Catchment" />} {...props}>
+    <StyledSimpleShowLayout>
       <TextField label="Catchment" source="name" />
       <ReferenceArrayField
         label="Locations"
@@ -106,8 +95,8 @@ export const CatchmentDetail = props => (
       <FunctionField label="Created" render={audit => createdAudit(audit)} />
       <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
       <TextField source="uuid" label="UUID" />
-    </SimpleShowLayout>
-  </Show>
+    </StyledSimpleShowLayout>
+  </StyledShow>
 );
 
 export const CatchmentList = props => (
@@ -125,22 +114,16 @@ export const CatchmentList = props => (
   </StyledBox>
 );
 
-const useCatchmentLocationChange = ({
-  edit,
-  record,
-  displayWarning,
-  setDisplayWarning
-}) => {
-  const { setValue } = useFormContext();
-  const locationIds = useWatch({ name: "locationIds" });
-
-  useEffect(() => {
-    if (edit && record?.fastSyncExists && displayWarning) {
-      setDisplayWarning(false);
-      setValue("deleteFastSync", true);
-      alert(catchmentChangeMessage);
-    }
-  }, [locationIds]);
+const validateCatchment = values => {
+  const errors = {};
+  if (_.isEmpty(values.locationIds))
+    errors.locationIds = ["It cannot be empty"];
+  if (!values.name || !values.name.trim()) {
+    errors.name = [
+      "Catchment name should contain at least one non-whitespace character"
+    ];
+  }
+  return errors;
 };
 
 const CatchmentForm = ({
@@ -150,12 +133,43 @@ const CatchmentForm = ({
   ...props
 }) => {
   const record = useRecordContext();
-  useCatchmentLocationChange({
+
+  return (
+    <SimpleForm validate={validateCatchment} {...props} redirect="show">
+      <CatchmentFormContent
+        edit={edit}
+        record={record}
+        displayWarning={displayWarning}
+        setDisplayWarning={setDisplayWarning}
+      />
+    </SimpleForm>
+  );
+};
+
+// Separate component that uses the form context
+const CatchmentFormContent = ({
+  edit,
+  record,
+  displayWarning,
+  setDisplayWarning
+}) => {
+  const { setValue } = useFormContext(); // This will now be inside form context
+  const locationIds = useWatch({ name: "locationIds" });
+
+  useEffect(() => {
+    if (edit && record?.fastSyncExists && displayWarning) {
+      setDisplayWarning(false);
+      setValue("deleteFastSync", true);
+      alert(catchmentChangeMessage);
+    }
+  }, [
+    locationIds,
     edit,
-    record,
+    record?.fastSyncExists,
     displayWarning,
-    setDisplayWarning
-  });
+    setDisplayWarning,
+    setValue
+  ]);
 
   const optionRenderer = choice => {
     let retVal = `${choice.title} (${choice.typeString})`;
@@ -165,20 +179,8 @@ const CatchmentForm = ({
     return retVal;
   };
 
-  const validateCatchment = values => {
-    const errors = {};
-    if (_.isEmpty(values.locationIds))
-      errors.locationIds = ["It cannot be empty"];
-    if (!values.name || !values.name.trim()) {
-      errors.name = [
-        "Catchment name should contain at least one non-whitespace character"
-      ];
-    }
-    return errors;
-  };
-
   return (
-    <SimpleForm validate={validateCatchment} {...props} redirect="show">
+    <>
       <Typography variant="h6">Catchment</Typography>
 
       <AvniTextInput
@@ -209,6 +211,6 @@ const CatchmentForm = ({
       />
 
       <LineBreak num={1} />
-    </SimpleForm>
+    </>
   );
 };
