@@ -78,7 +78,12 @@ import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";
 import IdpDetails from "../rootApp/security/IdpDetails.ts";
 import OrgManagerContext from "./OrgManagerContext";
-import { datagridStyles, StyledBox } from "./Util/Styles";
+import {
+  datagridStyles,
+  StyledBox,
+  StyledShow,
+  StyledSimpleShowLayout
+} from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 const StringToLabelObject = ({ children, ...props }) => {
@@ -118,6 +123,7 @@ export const UserEdit = ({ organisation, ...props }) => (
     {...props}
     title={<UserTitle titlePrefix="Edit" />}
     mutationMode="pessimistic"
+    redirect="show"
   >
     <UserForm edit organisation={organisation} />
   </Edit>
@@ -193,7 +199,7 @@ const CustomShowActions = ({ hasEditUserPrivilege }) => {
         style={{
           zIndex: 2,
           display: "flex",
-          float: "right",
+
           flexDirection: "row"
         }}
       >
@@ -323,13 +329,13 @@ const SyncAttributesProvider = ({ children }) => {
 
 export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
   return (
-    <Show
+    <StyledShow
       {...props}
       actions={
         <CustomShowActions hasEditUserPrivilege={hasEditUserPrivilege} />
       }
     >
-      <SimpleShowLayout>
+      <StyledSimpleShowLayout>
         <TextField source="username" label="Login ID (username)" />
         <TextField source="name" label="Name of the Person" />
         <TextField source="email" label="Email Address" />
@@ -475,8 +481,8 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
           label="Modified"
           render={audit => modifiedAudit(audit)}
         />
-      </SimpleShowLayout>
-    </Show>
+      </StyledSimpleShowLayout>
+    </StyledShow>
   );
 };
 

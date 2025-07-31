@@ -1,44 +1,23 @@
-import { useCreate, SaveButton, useNotify, useRedirect } from "react-admin";
-import { useFormContext } from "react-hook-form";
+import { SaveButton } from "react-admin";
+import { isNil } from "lodash";
 
-const LocationSaveButton = ({ resource = "locations", ...props }) => {
-  const [create, { isLoading }] = useCreate();
-  const notify = useNotify();
-  const redirect = useRedirect();
-  const { handleSubmit } = useFormContext();
-
-  const onSave = data => {
-    const payload = [
+const LocationSaveButton = ({ ...props }) => {
+  const transform = data => {
+    const typeName = data.type;
+    return [
       {
         name: data.title,
-        level: data.level,
-        type: data.type || data.typeString,
-        parents: [{ id: data.parentId }]
+        level: data.level || 1,
+        type: typeName,
+        parents:
+          data.parentId && !isNil(data.parentId)
+            ? [{ id: data.parentId }]
+            : [{}]
       }
     ];
-
-    create(
-      resource,
-      { data: payload },
-      {
-        onSuccess: () => {
-          notify("Location created", { type: "info" });
-          redirect("list", resource);
-        },
-        onError: error => {
-          notify(`Error: ${error.message}`, { type: "error" });
-        }
-      }
-    );
   };
 
-  return (
-    <SaveButton
-      {...props}
-      saving={isLoading}
-      handleSubmitWithRedirect={handleSubmit(onSave)}
-    />
-  );
+  return <SaveButton type="button" transform={transform} {...props} />;
 };
 
 export default LocationSaveButton;

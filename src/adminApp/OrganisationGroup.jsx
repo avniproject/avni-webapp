@@ -16,7 +16,6 @@ import {
   SingleFieldList,
   TextField
 } from "react-admin";
-import { CustomSelectInput } from "./components/CustomSelectInput";
 import { TitleChip } from "./components/TitleChip";
 import { Title } from "./components/Title";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
@@ -24,7 +23,8 @@ import {
   StyledBox,
   StyledTextInput,
   datagridStyles,
-  StyledAutocompleteArrayInput
+  StyledAutocompleteArrayInput,
+  StyledSelectInput
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
@@ -174,7 +174,7 @@ export const organisationGroupCreate = props => (
         reference="account"
         label="Account Name"
       >
-        <CustomSelectInput
+        <StyledSelectInput
           source="name"
           resettable
           validate={required("Please select an account")}
@@ -219,7 +219,7 @@ export const organisationGroupEdit = props => (
         reference="account"
         label="Account Name"
       >
-        <CustomSelectInput
+        <StyledSelectInput
           source="name"
           resettable
           validate={required("Please select an account")}

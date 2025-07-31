@@ -19,7 +19,6 @@ import {
   useRecordContext,
   useNotify
 } from "react-admin";
-import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
@@ -31,7 +30,12 @@ import useGetData from "../custom-hooks/useGetData";
 import { httpClient } from "../common/utils/httpClient";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import { StyledBox, StyledTextInput, datagridStyles } from "./Util/Styles";
+import {
+  StyledBox,
+  StyledTextInput,
+  datagridStyles,
+  StyledSelectInput
+} from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -193,7 +197,7 @@ const EditForm = () => {
         reference="account"
         label="Account Name"
       >
-        <CustomSelectInput
+        <StyledSelectInput
           source="name"
           validate={required("Please select an account")}
           resettable
@@ -231,7 +235,7 @@ function OrganisationCategoryInput() {
       label="Organisation Category"
       sort={{ field: "name", order: "ASC" }}
     >
-      <CustomSelectInput
+      <StyledSelectInput
         source="name"
         validate={required("Please select a category")}
       />
@@ -248,7 +252,7 @@ function OrganisationStatusInput() {
       label="Organisation Status"
       sort={{ field: "name", order: "ASC" }}
     >
-      <CustomSelectInput
+      <StyledSelectInput
         source="name"
         validate={required("Please select a status")}
       />

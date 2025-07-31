@@ -3,8 +3,6 @@ import {
   Datagrid,
   List,
   TextField,
-  Show,
-  SimpleShowLayout,
   Create,
   Edit,
   SimpleForm,
@@ -18,7 +16,12 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
 import { Paper } from "@mui/material";
-import { StyledBox, datagridStyles } from "./Util/Styles";
+import {
+  StyledBox,
+  datagridStyles,
+  StyledShow,
+  StyledSimpleShowLayout
+} from "./Util/Styles";
 
 const Title = ({ record }) => {
   return (
@@ -45,8 +48,8 @@ export const IdentifierUserAssignmentList = props => (
 
 export const IdentifierUserAssignmentDetail = props => {
   return (
-    <Show title={<Title />} {...props}>
-      <SimpleShowLayout>
+    <StyledShow title={<Title />} {...props}>
+      <StyledSimpleShowLayout>
         <ReferenceField
           source="identifierSourceId"
           reference="identifierSource"
@@ -58,8 +61,8 @@ export const IdentifierUserAssignmentDetail = props => {
         </ReferenceField>
         <TextField source="identifierStart" />
         <TextField source="identifierEnd" />
-      </SimpleShowLayout>
-    </Show>
+      </StyledSimpleShowLayout>
+    </StyledShow>
   );
 };
 
@@ -93,7 +96,7 @@ const IdentifierUserAssignmentForm = props => (
       }}
     </AvniFormDataConsumer>
     <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_SOURCE"}>
-      {({ formData, ...rest }) => (
+      {({ ...rest }) => (
         <Fragment>
           <ReferenceInput
             source="identifierSourceId"
@@ -125,6 +128,7 @@ export const IdentifierUserAssignmentEdit = props => {
       title="Edit Identifier User Assignment"
       mutationMode="pessimistic"
       {...props}
+      redirect="show"
     >
       <IdentifierUserAssignmentForm />
     </Edit>

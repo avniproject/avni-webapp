@@ -9,24 +9,27 @@ import {
   ReferenceField,
   required,
   SaveButton,
-  SelectInput,
-  Show,
   SimpleForm,
-  SimpleShowLayout,
   TextField,
   Toolbar,
   useRecordContext
 } from "react-admin";
 import { None } from "../common/components/utils";
-import { isNil, get } from "lodash";
+import { isNil } from "lodash";
 import { Title } from "./components/Title";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import { AvniReferenceInput } from "./components/AvniReferenceInput";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
-import { datagridStyles, StyledBox } from "./Util/Styles";
+import {
+  datagridStyles,
+  StyledBox,
+  StyledSelectInput,
+  StyledShow,
+  StyledSimpleShowLayout
+} from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 export const LocationTypeList = props => (
@@ -53,18 +56,21 @@ export const LocationTypeList = props => (
   </StyledBox>
 );
 
-const ParentReferenceField = ({ addLabel = true, showToolTip, ...props }) => {
+const ParentReferenceField = ({ showToolTip, ...props }) => {
   const Container = showToolTip ? ToolTipContainer : Box;
-  return isNil(get(props, "record.parentId")) ? (
-    <None />
-  ) : (
-    <Container
-      toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
-      sx={{ pt: 10, mr: "10px" }}
-    >
+  const record = useRecordContext();
+
+  const parentId = record?.parentId;
+
+  if (isNil(parentId)) {
+    return <None />;
+  }
+
+  return (
+    <Container toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}>
       <ReferenceField
         {...props}
-        source="parentId"
+        source={"parentId"}
         link="show"
         reference="addressLevelType"
       >
@@ -85,16 +91,16 @@ const ModifiedAuditField = () => {
 };
 
 export const LocationTypeDetail = props => (
-  <Show {...props} title={<Title title={"Location Type"} />}>
-    <SimpleShowLayout>
+  <StyledShow {...props} title={<Title title={"Location Type"} />}>
+    <StyledSimpleShowLayout>
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />
-      <ParentReferenceField label="Parent Type" showToolTip={false} />
+      <ParentReferenceField label="Parent Type" />
       <CreatedAuditField label="Created" />
       <ModifiedAuditField label="Modified" />
       <TextField source="uuid" label="UUID" />
-    </SimpleShowLayout>
-  </Show>
+    </StyledSimpleShowLayout>
+  </StyledShow>
 );
 
 const CreateEditToolbar = ({ edit, ...props }) => (
@@ -124,7 +130,13 @@ const LocationTypeForm = ({ edit, ...props }) => {
         toolTipKey={"ADMIN_LOCATION_TYPE_LEVEL"}
       />
       {edit ? (
-        <ParentReferenceField label="Parent Type" showToolTip={true} />
+        <>
+          <Typography sx={{ color: "text.secondary" }}>
+            {" "}
+            Parent Type{" "}
+          </Typography>
+          <ParentReferenceField label="Parent Type" showToolTip={true} />
+        </>
       ) : (
         <AvniReferenceInput
           source="parentId"
@@ -132,7 +144,7 @@ const LocationTypeForm = ({ edit, ...props }) => {
           label="Parent"
           toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
         >
-          <SelectInput optionText="name" resettable />
+          <StyledSelectInput optionText="name" resettable />
         </AvniReferenceInput>
       )}
     </SimpleForm>
@@ -150,7 +162,7 @@ export const LocationTypeCreate = props => (
 );
 
 export const LocationTypeEdit = props => (
-  <Edit {...props} title="Edit Location Type" undoable={false}>
+  <Edit {...props} title="Edit Location Type" redirect="show" undoable={false}>
     <LocationTypeForm edit />
   </Edit>
 );
