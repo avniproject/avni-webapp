@@ -10,7 +10,6 @@ import { store } from "./common/store";
 import { App, SecureApp } from "./rootApp";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { StyledEngineProvider } from "@mui/system";
-import * as Colors from "@mui/material/colors";
 import { httpClient as http } from "./common/utils/httpClient";
 import IdpDetails from "./rootApp/security/IdpDetails";
 import { configureAuth } from "./rootApp/utils";
@@ -19,12 +18,7 @@ import { ErrorFallback } from "./dataEntryApp/ErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorMessageUtil from "./common/utils/ErrorMessageUtil";
 
-const theme = createTheme({
-  palette: {
-    primary: Colors.blue,
-    secondary: Colors.grey
-  }
-});
+const theme = createTheme({});
 
 http.initHeadersForDevEnv();
 

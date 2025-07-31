@@ -9,11 +9,7 @@ import {
   Typography
 } from "@mui/material";
 import MuiAppBar from "@mui/material/AppBar";
-import {
-  Home as HomeIcon,
-  Menu as MenuIcon,
-  Refresh as RefreshIcon
-} from "@mui/icons-material";
+import { Home as HomeIcon, Refresh as RefreshIcon } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import OrganisationOptions from "./OrganisationOptions";

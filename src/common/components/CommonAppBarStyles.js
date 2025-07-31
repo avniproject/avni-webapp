@@ -32,7 +32,7 @@ export const CommonAppBarStyles = theme => ({
     whiteSpace: "nowrap",
     overflow: "hidden",
     fontWeight: "bold",
-    color: "white",
+    color: theme.palette.primary.contrastText,
     marginLeft: 2
   },
 
