@@ -1244,7 +1244,8 @@ const FormDetails = () => {
               onSubmit={validateForm}
               styles={{
                 marginTop: "30px",
-                marginBottom: "2px"
+                marginBottom: "2px",
+                marginLeft: "80px"
               }}
               disabledFlag={!state.detectBrowserCloseEvent || state.disableForm}
             />

@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Grid } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import ApplicationMenuReducer from "../Reducers/ApplicationMenuReducer";
@@ -71,7 +71,7 @@ const ApplicationMenuEdit = () => {
           bgcolor: "background.paper"
         }}
       >
-        <Title title={`${isCreate() ? "Create" : "Edit"} application menu}`} />
+        <Title title={`${isCreate() ? "Create" : "Edit"} application menu`} />
         {!isCreate() && (
           <Grid container={12} style={{ justifyContent: "flex-end" }}>
             <Button
@@ -83,73 +83,71 @@ const ApplicationMenuEdit = () => {
             </Button>
           </Grid>
         )}
-        <div className="container" style={{ float: "left" }}>
-          <ApplicationMenuEditFields
-            menuItem={state.menuItem}
-            dispatch={dispatch}
-            errors={state.errors}
-          />
+        <Stack>
+          <Box>
+            <ApplicationMenuEditFields
+              menuItem={state.menuItem}
+              dispatch={dispatch}
+              errors={state.errors}
+            />
+            <p />
+          </Box>
+          {state.errors.size > 0 &&
+            Array.from(state.errors.values()).map(error => (
+              <div>
+                <FormLabel
+                  error
+                  style={{
+                    marginTop: "10px",
+                    fontSize: "14px",
+                    marginLeft: "14px"
+                  }}
+                >
+                  {error}
+                </FormLabel>
+                <br />
+              </div>
+            ))}
           <p />
-        </div>
-        {state.errors.size > 0 &&
-          Array.from(state.errors.values()).map(error => (
-            <div>
-              <FormLabel
-                error
-                style={{
-                  marginTop: "10px",
-                  fontSize: "14px",
-                  marginLeft: "14px"
-                }}
-              >
-                {error}
-              </FormLabel>
-              <br />
-            </div>
-          ))}
-        <p />
-        <Grid
-          container
-          size={{
-            sm: 12
-          }}
-        >
           <Grid
+            container
             size={{
-              sm: 1
+              sm: 12
             }}
           >
-            <SaveComponent
-              name="save"
-              onSubmit={onSubmit}
-              styles={{ marginLeft: "14px" }}
-            />
-          </Grid>
-          {!isCreate() && (
             <Grid
               size={{
-                sm: 11
+                sm: 1
               }}
             >
-              <Button
-                style={{
-                  float: "right",
-                  color: "red"
-                }}
-                onClick={() =>
-                  EntityEditUtil.onDelete(
-                    "menuItem",
-                    id,
-                    "application menu",
-                    () => setDeleteAlert(true)
-                  )
-                }
-              >
-                <DeleteIcon /> Delete
-              </Button>
+              <SaveComponent name="save" onSubmit={onSubmit} />
             </Grid>
-          )}
-        </Grid>
+            {!isCreate() && (
+              <Grid
+                size={{
+                  sm: 11
+                }}
+              >
+                <Button
+                  style={{
+                    float: "right",
+                    color: "red"
+                  }}
+                  onClick={() =>
+                    EntityEditUtil.onDelete(
+                      "menuItem",
+                      id,
+                      "application menu",
+                      () => setDeleteAlert(true)
+                    )
+                  }
+                >
+                  <DeleteIcon /> Delete
+                </Button>
+              </Grid>
+            )}
+          </Grid>
+        </Stack>
       </Box>
       {(redirectShow || state.saved) && (
         <Navigate
