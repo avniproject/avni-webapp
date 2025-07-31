@@ -57,7 +57,7 @@ const StyledReviewButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#2196F3",
   color: "#fff",
   "&:hover": {
-    backgroundColor: "#1976D2"
+    backgroundColor: theme.palette.primary.main
   }
 }));
 

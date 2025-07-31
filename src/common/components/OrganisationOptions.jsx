@@ -2,13 +2,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, map, sortBy, trim } from "lodash";
 import {
+  Box,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Button
 } from "@mui/material";
-import CurrentUserService from "../service/CurrentUserService";
+import CurrentUserService from "../service/CurrentUserService.ts";
 
 const OrganisationOptions = () => {
   const dispatch = useDispatch();
@@ -45,10 +46,8 @@ const OrganisationOptions = () => {
 
   return !isEmpty(organisations) &&
     CurrentUserService.isAdminUsingAnOrg(userInfo) ? (
-    <div
-      style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
-    >
-      <FormControl sx={{ m: 1, minWidth: 200 }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <FormControl size="small" sx={{ minWidth: 200 }}>
         <InputLabel id="organisation-select-label" sx={{ color: "white" }}>
           Select Organisation
         </InputLabel>
@@ -57,9 +56,16 @@ const OrganisationOptions = () => {
           id="organisation-select"
           value={localStorage.getItem("ORGANISATION_UUID") || ""}
           onChange={handleChange}
+          size="small"
           sx={{
             color: "white",
-            "& .MuiSelect-icon": { color: "white" }
+            "& .MuiSelect-icon": { color: "white" },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "rgba(255, 255, 255, 0.5)"
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "white"
+            }
           }}
         >
           {options.map((option, index) => (
@@ -69,10 +75,23 @@ const OrganisationOptions = () => {
           ))}
         </Select>
       </FormControl>
-      <Button sx={{ color: "white" }} onClick={exitToAdmin}>
-        Exit Organisation
+      <Button
+        variant="text"
+        sx={{
+          color: "white",
+          fontSize: "0.875rem",
+          textTransform: "none",
+          padding: "4px 8px",
+          minWidth: "auto",
+          "&:hover": {
+            backgroundColor: "rgba(255, 255, 255, 0.08)"
+          }
+        }}
+        onClick={exitToAdmin}
+      >
+        EXIT ORGANISATION
       </Button>
-    </div>
+    </Box>
   ) : null;
 };
 

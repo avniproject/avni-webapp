@@ -1,4 +1,5 @@
-import _, { isEmpty } from "lodash";
+import isEmpty from "lodash/isEmpty";
+import intersection from "lodash/intersection";
 import UserInfo from "../model/UserInfo";
 
 class CurrentUserService {
@@ -6,9 +7,9 @@ class CurrentUserService {
     let uInfo = userInfo || { privileges: [] };
     return (
       uInfo.hasAllPrivileges ||
-      _.isEmpty(resourcePrivileges) ||
-      !_.isEmpty(
-        _.intersection(
+      isEmpty(resourcePrivileges) ||
+      !isEmpty(
+        intersection(
           resourcePrivileges,
           uInfo.privileges.map(x => x.privilegeType)
         )

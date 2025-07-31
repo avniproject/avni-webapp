@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import {
   AppBar,
   Toolbar,
@@ -29,22 +29,24 @@ import { useTranslation } from "react-i18next";
 import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
 import { CommonAppBarStyles } from "../../common/components/CommonAppBarStyles";
 
-const StyledRoot = styled("div")({
+const StyledRoot = styled("div")(({ theme }) => ({
   flexGrow: 1
-});
+}));
 
-const StyledAppBar = styled(AppBar)({
-  backgroundColor: "#1976d2",
-  ...CommonAppBarStyles.appBarContainer
-});
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  ...CommonAppBarStyles(theme).appBarContainer
+}));
 
-const StyledToolbar = styled(Toolbar)({
-  ...CommonAppBarStyles.toolbar
-});
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+  ...CommonAppBarStyles(theme).toolbar,
+  padding: theme.spacing(0, 2)
+}));
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
-  ...CommonAppBarStyles.title,
-  display: "none",
+  ...CommonAppBarStyles(theme).title,
+  flexGrow: 1,
+  minWidth: 0, // Prevents flex item from overflowing
   [theme.breakpoints.up("sm")]: {
     display: "block"
   }
@@ -73,9 +75,12 @@ const StyledLinkButton = styled(Button)(({ theme }) => ({
   }
 }));
 
-const StyledUserSection = styled("div")({
-  ...CommonAppBarStyles.userSection
-});
+const StyledUserSection = styled("div")(({ theme }) => ({
+  ...CommonAppBarStyles(theme).userSection,
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(2)
+}));
 
 const StyledUserName = styled("p")({
   fontSize: "15px",
@@ -100,7 +105,7 @@ const StyledSectionMobile = styled("div")(({ theme }) => ({
 
 const StyledUserOptionContainer = styled("div")(({ theme }) => ({
   width: "100%",
-  color: "#1976d2",
+  color: theme.palette.primary.main,
   maxWidth: 360,
   position: "absolute",
   zIndex: "2",
@@ -111,16 +116,18 @@ const StyledPopper = styled(Popper)({
   zIndex: 100
 });
 
-const StyledIconButton = styled(IconButton)({
-  color: "white"
-});
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.common.white,
+  padding: theme.spacing(1)
+}));
 
 const PrimarySearchAppBar = () => {
+  const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const user = useSelector(state => state.app.authSession);
+  const userInfo = useSelector(state => state.app.userInfo);
   const isNewsAvailable = useSelector(selectIsNewsAvailable);
 
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
@@ -260,7 +267,7 @@ const PrimarySearchAppBar = () => {
 
           <StyledUserSection>
             <Typography component="div" sx={{ color: "inherit" }}>
-              <StyledUserName>{user.username}</StyledUserName>
+              <StyledUserName>{userInfo.username}</StyledUserName>
             </Typography>
             <StyledIconButton
               onClick={handleHomeClick}

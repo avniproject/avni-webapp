@@ -3,25 +3,26 @@ import { styled } from "@mui/material/styles";
 import { Box, Typography } from "@mui/material";
 
 // Common styled components that both AppBars can use
-export const CommonAppBarStyles = {
+export const CommonAppBarStyles = theme => ({
   // Common AppBar container styles
   appBarContainer: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    padding: "0 1em",
+    padding: "0 16px",
     minHeight: "64px",
-    backgroundColor: "#1976d2" // Consistent blue color
+    backgroundColor: theme.palette.primary.main // Using theme primary color
   },
 
   // Common toolbar styles
   toolbar: {
     width: "100%",
-    minHeight: "auto",
+    minHeight: "64px",
     justifyContent: "space-between",
     display: "flex",
     alignItems: "center",
-    padding: 0
+    padding: 0,
+    gap: 2
   },
 
   // Common typography styles
@@ -31,38 +32,44 @@ export const CommonAppBarStyles = {
     whiteSpace: "nowrap",
     overflow: "hidden",
     fontWeight: "bold",
-    color: "white"
+    color: "white",
+    marginLeft: 2
   },
 
   // Common user info section styles
   userSection: {
     display: "flex",
     alignItems: "center",
-    gap: 1,
-    color: "white"
+    gap: 2,
+    color: "white",
+    "& > *": {
+      margin: 0,
+      padding: 0
+    }
   }
-};
+});
 
 // Shared styled components
 export const StyledAppBarTitle = styled(Typography)(({ theme }) => ({
-  ...CommonAppBarStyles.title,
+  ...CommonAppBarStyles(theme).title,
   fontSize: theme.spacing(3)
 }));
 
-export const StyledUserSection = styled(Box)(() => ({
-  ...CommonAppBarStyles.userSection
+export const StyledUserSection = styled(Box)(({ theme }) => ({
+  ...CommonAppBarStyles(theme).userSection
 }));
 
 export const StyledOrganisationInfo = styled(Box)(({ theme }) => ({
-  marginX: theme.spacing(2),
+  marginRight: theme.spacing(1),
   color: "white",
-  fontWeight: "bold"
+  fontWeight: "bold",
+  whiteSpace: "nowrap"
 }));
 
 // Common AppBar wrapper component
 export const CommonAppBarWrapper = styled("div")(({ theme }) => ({
-  ...CommonAppBarStyles.appBarContainer,
+  ...CommonAppBarStyles(theme).appBarContainer,
   "& .MuiToolbar-root": {
-    ...CommonAppBarStyles.toolbar
+    ...CommonAppBarStyles(theme).toolbar
   }
 }));

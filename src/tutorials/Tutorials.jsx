@@ -11,7 +11,7 @@ const Tutorials = () => {
         component={Header}
         position={"sticky"}
       />
-      <div style={{ marginRight: "20%", marginLeft: "20%", marginTop: "15%" }}>
+      <div style={{ marginRight: "20%", marginLeft: "20%" }}>
         <Resources />
       </div>
     </Fragment>

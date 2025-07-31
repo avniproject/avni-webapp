@@ -69,10 +69,8 @@ export const CustomToolbar = props => (
 export const PasswordTextField = () => (
   <>
     <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-      Default temporary password is "password". User will
-    </Typography>
-    <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-      be prompted to set their own password on first login.
+      Default temporary password is sent via sms. User will be prompted to set
+      their own password on first login.
     </Typography>
   </>
 );
