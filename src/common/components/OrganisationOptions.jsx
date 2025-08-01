@@ -48,7 +48,10 @@ const OrganisationOptions = () => {
     CurrentUserService.isAdminUsingAnOrg(userInfo) ? (
     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
       <FormControl size="small" sx={{ minWidth: 200 }}>
-        <InputLabel id="organisation-select-label" sx={{ color: "white" }}>
+        <InputLabel
+          id="organisation-select-label"
+          sx={{ color: "white", marginTop: "2px" }}
+        >
           Select Organisation
         </InputLabel>
         <Select
@@ -59,12 +62,23 @@ const OrganisationOptions = () => {
           size="small"
           sx={{
             color: "white",
+            borderRadius: 0,
             "& .MuiSelect-icon": { color: "white" },
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(255, 255, 255, 0.5)"
+              border: "none",
+              borderBottom: "1px solid rgba(0, 0, 0, 0.7)",
+              borderRadius: 0
             },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "white"
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderBottom: "1px solid rgba(0, 0, 0, 0.9)"
+              }
+            },
+            "&.Mui-focused": {
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderBottom: "1px solid rgba(0, 0, 0, 1)"
+              }
             }
           }}
         >
@@ -82,7 +96,7 @@ const OrganisationOptions = () => {
           fontSize: "0.875rem",
           textTransform: "none",
           padding: "4px 8px",
-          minWidth: "auto",
+          minWidth: "160px",
           "&:hover": {
             backgroundColor: "rgba(255, 255, 255, 0.08)"
           }
