@@ -63,6 +63,7 @@ export const IdentifierSourceList = props => (
     <List
       {...props}
       title="Identifier Source"
+      sort={{ field: "id", order: "DESC" }}
       pagination={<PrettyPagination />}
     >
       <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>

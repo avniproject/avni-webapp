@@ -93,15 +93,22 @@ const FormListing = ({ onNewFormClick }) => {
     ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
       new Promise(resolve => {
         const validSortFields = ["name", "lastModifiedDateTime"];
+
+        const defaultOrderBy = orderBy || "lastModifiedDateTime";
+        const defaultOrderDirection = orderBy ? orderDirection : "desc";
+
         let apiUrl = `/web/forms?size=${encodeURIComponent(
           pageSize
         )}&page=${encodeURIComponent(page)}`;
+
         if (globalFilter) apiUrl += `&name=${encodeURIComponent(globalFilter)}`;
-        if (orderBy && validSortFields.includes(orderBy)) {
-          apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(
-            orderDirection
-          )}`;
+
+        if (validSortFields.includes(defaultOrderBy)) {
+          apiUrl += `&sort=${encodeURIComponent(
+            defaultOrderBy
+          )},${encodeURIComponent(defaultOrderDirection)}`;
         }
+
         http
           .get(apiUrl)
           .then(response => response.data)
@@ -232,6 +239,9 @@ const FormListing = ({ onNewFormClick }) => {
         }}
         route="/appdesigner/forms"
         actions={actions}
+        initialState={{
+          sorting: [{ id: "lastModifiedDateTime", desc: true }]
+        }}
       />
       {cloneFormIndicator && showCloneForm()}
     </>

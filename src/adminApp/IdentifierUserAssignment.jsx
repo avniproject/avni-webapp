@@ -37,7 +37,11 @@ const Title = ({ record }) => {
 
 export const IdentifierUserAssignmentList = props => (
   <StyledBox>
-    <List {...props} title={"Identifier User Assignment"}>
+    <List
+      {...props}
+      title={"Identifier User Assignment"}
+      sort={{ field: "id", order: "DESC" }}
+    >
       <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
         <TextField source="name" label="Source name" />
         <TextField source="userName" label="User name" />

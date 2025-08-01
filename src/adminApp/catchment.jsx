@@ -102,6 +102,7 @@ export const CatchmentList = props => (
       {...props}
       bulkActionButtons={false}
       filters={<CatchmentFilter />}
+      sort={{ field: "id", order: "DESC" }}
       pagination={<PrettyPagination />}
     >
       <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>

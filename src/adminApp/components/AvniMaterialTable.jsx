@@ -9,7 +9,7 @@ import {
 } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { useLocation, useNavigate } from "react-router-dom";
-import { IconButton, Box, Button } from "@mui/material";
+import { IconButton, Box } from "@mui/material";
 import { MRTPagination } from "../Util/MRTPagination.tsx";
 
 const AvniMaterialTable = forwardRef(

@@ -138,6 +138,7 @@ export const UserList = ({ ...props }) => {
         filter={{ organisationId: organisation.id }}
         filters={UserFilter}
         title={`${organisation.name} Users`}
+        sort={{ field: "id", order: "DESC" }}
         pagination={<PrettyPagination />}
       >
         <Datagrid rowClick="show" bulkActionButtons={false} sx={datagridStyles}>
