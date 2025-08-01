@@ -60,7 +60,15 @@ export const datagridStyles = {
 };
 
 export const StyledAutocompleteArrayInput = styled(AutocompleteArrayInput)({
-  display: "inline-block",
+  width: "auto",
+  "& .MuiInputBase-root": {
+    backgroundColor: "white",
+    width: "auto",
+    minWidth: "120px"
+  }
+});
+
+export const StyledAutocompleteInput = styled(AutocompleteArrayInput)({
   width: "auto",
   "& .MuiInputBase-root": {
     backgroundColor: "white",

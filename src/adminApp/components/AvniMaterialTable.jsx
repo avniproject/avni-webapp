@@ -10,6 +10,7 @@ import {
 import { MaterialReactTable } from "material-react-table";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IconButton, Box, Button } from "@mui/material";
+import { MRTPagination } from "../Util/MRTPagination.tsx";
 
 const AvniMaterialTable = forwardRef(
   (
@@ -46,6 +47,17 @@ const AvniMaterialTable = forwardRef(
       return orderBy ? [{ id: orderBy, desc: orderDesc === "desc" }] : [];
     });
 
+    const [globalFilter, setGlobalFilter] = useState(() => {
+      const query = new URLSearchParams(location.search);
+      return query.get("search") || "";
+    });
+
+    const [columnFilters, setColumnFilters] = useState(() => {
+      const query = new URLSearchParams(location.search);
+      const filters = query.get("filters");
+      return filters ? JSON.parse(decodeURIComponent(filters)) : [];
+    });
+
     useEffect(() => {
       const query = new URLSearchParams(location.search);
       const pageFromUrl = query.get("page");
@@ -60,6 +72,8 @@ const AvniMaterialTable = forwardRef(
       const pageFromUrl = Number(query.get("page")) || 0;
       const sortByFromUrl = query.get("sortBy");
       const sortDescFromUrl = query.get("sortDesc");
+      const searchFromUrl = query.get("search") || "";
+      const filtersFromUrl = query.get("filters");
 
       setPagination(prev => ({
         ...prev,
@@ -80,6 +94,13 @@ const AvniMaterialTable = forwardRef(
         }
         return prev;
       });
+
+      setGlobalFilter(searchFromUrl);
+
+      const newColumnFilters = filtersFromUrl
+        ? JSON.parse(decodeURIComponent(filtersFromUrl))
+        : [];
+      setColumnFilters(newColumnFilters);
     }, [location.search]);
 
     const loadData = useCallback(async () => {
@@ -92,12 +113,17 @@ const AvniMaterialTable = forwardRef(
       setIsLoading(true);
 
       try {
-        const response = await fetchData({
+        const fetchParams = {
           page: pagination.pageIndex,
           pageSize: pagination.pageSize,
           orderBy: sorting[0]?.id,
-          orderDirection: sorting[0]?.desc ? "desc" : "asc"
-        });
+          orderDirection: sorting[0]?.desc ? "desc" : "asc",
+          globalFilter: globalFilter,
+          columnFilters: columnFilters,
+          search: globalFilter
+        };
+
+        const response = await fetchData(fetchParams);
 
         const normalizedData = Array.isArray(response)
           ? { data: response, totalRecords: response.length }
@@ -120,7 +146,14 @@ const AvniMaterialTable = forwardRef(
           setIsLoading(false);
         }
       }
-    }, [pagination.pageIndex, pagination.pageSize, sorting, fetchData]);
+    }, [
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+      fetchData,
+      globalFilter,
+      columnFilters
+    ]);
 
     useEffect(() => {
       isMounted.current = true;
@@ -133,6 +166,52 @@ const AvniMaterialTable = forwardRef(
       };
     }, [loadData]);
 
+    const updateURL = useCallback(
+      newParams => {
+        const queryParams = new URLSearchParams();
+
+        if (newParams.pageIndex !== undefined && newParams.pageIndex > 0) {
+          queryParams.set("page", newParams.pageIndex.toString());
+        }
+
+        const currentSorting =
+          newParams.sorting !== undefined ? newParams.sorting : sorting;
+        if (currentSorting[0]?.id) {
+          queryParams.set("sortBy", currentSorting[0].id);
+          if (currentSorting[0].desc) {
+            queryParams.set("sortDesc", "desc");
+          }
+        }
+
+        const currentGlobalFilter =
+          newParams.globalFilter !== undefined
+            ? newParams.globalFilter
+            : globalFilter;
+        if (currentGlobalFilter) {
+          queryParams.set("search", currentGlobalFilter);
+        }
+
+        const currentColumnFilters =
+          newParams.columnFilters !== undefined
+            ? newParams.columnFilters
+            : columnFilters;
+        if (currentColumnFilters.length > 0) {
+          queryParams.set(
+            "filters",
+            encodeURIComponent(JSON.stringify(currentColumnFilters))
+          );
+        }
+
+        const queryString = queryParams.toString();
+        const newURL = queryString
+          ? `${currentPath}?${queryString}`
+          : currentPath;
+
+        navigate(newURL, { replace: true });
+      },
+      [currentPath, navigate, sorting, globalFilter, columnFilters]
+    );
+
     const handlePaginationChange = useCallback(
       updater => {
         setPagination(prev => {
@@ -140,52 +219,75 @@ const AvniMaterialTable = forwardRef(
             typeof updater === "function" ? updater(prev) : updater;
           const newPageIndex = newState.pageIndex ?? 0;
 
-          if (newPageIndex !== prev.pageIndex) {
-            const queryParams = new URLSearchParams({
-              page: newPageIndex.toString(),
-              ...(sorting[0]?.id && { sortBy: sorting[0].id }),
-              ...(sorting[0]?.desc && { sortDesc: "desc" })
-            });
-
-            navigate(`${currentPath}?${queryParams.toString()}`);
-          }
+          updateURL({ pageIndex: newPageIndex });
 
           return { ...prev, ...newState };
         });
       },
-      [currentPath, navigate, sorting]
+      [updateURL]
+    );
+
+    const handleGlobalFilterChange = useCallback(
+      filterValue => {
+        setGlobalFilter(filterValue);
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        updateURL({
+          globalFilter: filterValue,
+          pageIndex: 0
+        });
+      },
+      [updateURL]
+    );
+
+    const handleColumnFiltersChange = useCallback(
+      filters => {
+        setColumnFilters(filters);
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        updateURL({
+          columnFilters: filters,
+          pageIndex: 0
+        });
+      },
+      [updateURL]
+    );
+
+    const handleSortingChange = useCallback(
+      sortingUpdater => {
+        setSorting(prev => {
+          const newSorting =
+            typeof sortingUpdater === "function"
+              ? sortingUpdater(prev)
+              : sortingUpdater;
+          updateURL({ sorting: newSorting });
+          return newSorting;
+        });
+      },
+      [updateURL]
     );
 
     const memoizedColumns = useMemo(() => columns, [columns]);
 
+    const paginationProps = useMemo(
+      () => ({
+        page: pagination.pageIndex + 1,
+        perPage: pagination.pageSize,
+        total: totalRecords,
+        isLoading,
+        pageSizeOptions: options.pageSizeOptions
+      }),
+      [pagination, totalRecords, isLoading, handlePaginationChange]
+    );
+
     const tableProps = useMemo(
       () => ({
         enableColumnFilters: options.searching !== false,
+        enableGlobalFilter: options.searching !== false,
         enableSorting: !!options.sorting,
         enableRowActions: actions.some(action => !action.isFreeAction),
-        renderTopToolbarCustomActions: ({ table }) => (
-          <Box sx={{ display: "flex", gap: "8px" }}>
-            {actions
-              .filter(action => action.isFreeAction)
-              .map((action, index) => {
-                const Icon = action.icon;
-                const disabled = action.disabled || false;
-                return (
-                  <Button
-                    key={index}
-                    title={action.tooltip}
-                    disabled={disabled}
-                    onClick={e => !disabled && action.onClick(e, table)}
-                    startIcon={<Icon />}
-                    variant="outlined"
-                    size="small"
-                  >
-                    {action.tooltip}
-                  </Button>
-                );
-              })}
-          </Box>
-        ),
+
+        manualFiltering: true,
+        manualGlobalFilter: true,
+
         renderRowActions: actions.some(action => !action.isFreeAction)
           ? ({ row }) => (
               <Box sx={{ display: "flex", flexDirection: "row", gap: "8px" }}>
@@ -213,6 +315,7 @@ const AvniMaterialTable = forwardRef(
               </Box>
             )
           : undefined,
+        renderBottomToolbar: () => <MRTPagination {...paginationProps} />,
         ...restProps,
         ...(components.topToolbar && {
           renderTopToolbar: components.topToolbar
@@ -227,12 +330,19 @@ const AvniMaterialTable = forwardRef(
         components.topToolbar,
         components.bottomToolbar,
         restProps,
-        actions
+        actions,
+        paginationProps
       ]
     );
 
     useImperativeHandle(ref, () => ({
-      refresh: loadData
+      refresh: loadData,
+      resetFilters: () => {
+        setGlobalFilter("");
+        setColumnFilters([]);
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        updateURL({ globalFilter: "", columnFilters: [], pageIndex: 0 });
+      }
     }));
 
     return (
@@ -241,13 +351,19 @@ const AvniMaterialTable = forwardRef(
         data={data}
         manualPagination
         manualSorting
+        manualFiltering
+        manualGlobalFilter
         onPaginationChange={handlePaginationChange}
-        onSortingChange={setSorting}
+        onSortingChange={handleSortingChange}
+        onGlobalFilterChange={handleGlobalFilterChange}
+        onColumnFiltersChange={handleColumnFiltersChange}
         rowCount={totalRecords}
         state={{
           isLoading,
           pagination,
-          sorting
+          sorting,
+          globalFilter,
+          columnFilters
         }}
         {...tableProps}
       />

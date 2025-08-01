@@ -20,7 +20,9 @@ import {
   StyledBox,
   datagridStyles,
   StyledShow,
-  StyledSimpleShowLayout
+  StyledSimpleShowLayout,
+  StyledAutocompleteInput,
+  StyledSelectInput
 } from "./Util/Styles";
 
 const Title = ({ record }) => {
@@ -84,7 +86,7 @@ const IdentifierUserAssignmentForm = props => (
               }}
               {...rest}
             >
-              <AutocompleteInput
+              <StyledAutocompleteInput
                 optionText="name"
                 optionValue="id"
                 validate={[required()]}
@@ -104,7 +106,7 @@ const IdentifierUserAssignmentForm = props => (
             label="Which IdentifierSource?"
             {...rest}
           >
-            <SelectInput source="name" validate={[required()]} />
+            <StyledSelectInput source="name" validate={[required()]} />
           </ReferenceInput>
         </Fragment>
       )}

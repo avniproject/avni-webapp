@@ -181,9 +181,11 @@ const RelationshipTypeList = () => {
               ref={tableRef}
               columns={columns}
               fetchData={fetchData}
+              enableGlobalFilter={false}
+              enableColumnFilters={false}
               options={{
                 pageSize: 10,
-                pageSizeOptions: [10, 15, 20],
+                pageSizeOptions: [5, 10, 20],
                 sorting: true,
                 debounceInterval: 500,
                 search: false,

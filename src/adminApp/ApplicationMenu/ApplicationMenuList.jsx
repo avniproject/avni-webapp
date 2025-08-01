@@ -142,6 +142,7 @@ const ApplicationMenuList = () => {
           fetchData={fetchData}
           options={{
             pageSize: 10,
+            pageSizeOptions: [5, 10, 20],
             sorting: false,
             debounceInterval: 500,
             search: false,

@@ -38,7 +38,9 @@ import {
   StyledBox,
   StyledTextInput,
   datagridStyles,
-  StyledAutocompleteArrayInput
+  StyledAutocompleteArrayInput,
+  StyledShow,
+  StyledSimpleShowLayout
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
@@ -96,7 +98,7 @@ const CustomShowActions = () => {
   const record = useRecordContext();
   const resource = useResourceContext();
   return record ? (
-    <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
+    <CardActions style={{ zIndex: 2 }}>
       <EditButton label="Edit User" />
       <EnableDisableButton
         disabled={record.disabledInCognito}
@@ -108,8 +110,8 @@ const CustomShowActions = () => {
 };
 
 export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
-  <Show title={<UserTitle />} actions={<CustomShowActions />} {...props}>
-    <SimpleShowLayout>
+  <StyledShow title={<UserTitle />} actions={<CustomShowActions />} {...props}>
+    <StyledSimpleShowLayout>
       <TextField source="username" label="Login ID (username)" />
       <TextField source="name" label="Name of the Person" />
       <TextField source="email" label="Email Address" />
@@ -132,8 +134,8 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
           <TitleChip />
         </SingleFieldList>
       </ReferenceArrayField>
-    </SimpleShowLayout>
-  </Show>
+    </StyledSimpleShowLayout>
+  </StyledShow>
 );
 
 const UserForm = ({ edit = false, region }) => {

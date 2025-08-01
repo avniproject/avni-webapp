@@ -34,7 +34,9 @@ import {
   StyledBox,
   StyledTextInput,
   datagridStyles,
-  StyledSelectInput
+  StyledSelectInput,
+  StyledShow,
+  StyledSimpleShowLayout
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 export const OrganisationFilter = props => (
@@ -119,8 +121,8 @@ export const OrganisationList = ({ ...props }) => {
 
 export const OrganisationDetails = props => {
   return (
-    <Show title={<Title title={"Organisation"} />} {...props}>
-      <SimpleShowLayout>
+    <StyledShow title={<Title title={"Organisation"} />} {...props}>
+      <StyledSimpleShowLayout>
         <TextField source="name" label="Name" />
         <TextField source="dbUser" label="DB User" />
         <TextField source="schemaName" label="Schema Name" />
@@ -165,8 +167,8 @@ export const OrganisationDetails = props => {
           source="analyticsDataSyncActive"
           label="Active analytics data sync"
         />
-      </SimpleShowLayout>
-    </Show>
+      </StyledSimpleShowLayout>
+    </StyledShow>
   );
 };
 

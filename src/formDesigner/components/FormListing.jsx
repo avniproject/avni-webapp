@@ -218,6 +218,7 @@ const FormListing = ({ onNewFormClick }) => {
         ref={tableRef}
         columns={columns}
         fetchData={fetchData}
+        enableColumnFilters={false}
         options={{
           pageSize: 10,
           pageSizeOptions: [10, 15, 20],

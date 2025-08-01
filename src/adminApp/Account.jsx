@@ -11,7 +11,13 @@ import {
   SaveButton
 } from "react-admin";
 import { Title } from "./components/Title";
-import { StyledBox, StyledTextInput, datagridStyles } from "./Util/Styles";
+import {
+  StyledBox,
+  StyledTextInput,
+  datagridStyles,
+  StyledShow,
+  StyledSimpleShowLayout
+} from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 //To remove delete button from the toolbar
@@ -39,12 +45,12 @@ export const AccountList = props => (
 );
 
 export const AccountDetails = props => (
-  <Show title={<Title title={"Account"} />} {...props}>
-    <SimpleShowLayout>
+  <StyledShow title={<Title title={"Account"} />} {...props}>
+    <StyledSimpleShowLayout>
       <TextField source="name" label="Name" />
       <TextField source="region" label="Region" />
-    </SimpleShowLayout>
-  </Show>
+    </StyledSimpleShowLayout>
+  </StyledShow>
 );
 
 export const AccountCreate = props => (

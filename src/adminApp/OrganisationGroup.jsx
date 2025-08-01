@@ -24,7 +24,9 @@ import {
   StyledTextInput,
   datagridStyles,
   StyledAutocompleteArrayInput,
-  StyledSelectInput
+  StyledSelectInput,
+  StyledShow,
+  StyledSimpleShowLayout
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
@@ -95,8 +97,8 @@ export const OrganisationGroupList = props => (
 );
 
 export const OrganisationGroupShow = props => (
-  <Show title={<Title title={"Organisation group"} />} {...props}>
-    <SimpleShowLayout>
+  <StyledShow title={<Title title={"Organisation group"} />} {...props}>
+    <StyledSimpleShowLayout>
       <TextField source="name" label="Name" />
       <TextField source="dbUser" label="DB User" />
       <TextField source="schemaName" label="Schema name" />
@@ -142,8 +144,8 @@ export const OrganisationGroupShow = props => (
           />
         </SingleFieldList>
       </ReferenceArrayField>
-    </SimpleShowLayout>
-  </Show>
+    </StyledSimpleShowLayout>
+  </StyledShow>
 );
 
 export const organisationGroupCreate = props => (

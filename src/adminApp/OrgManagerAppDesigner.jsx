@@ -108,7 +108,7 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         edit={FormDetails}
       />
       <Resource
-        name="concept"
+        name="concepts"
         options={{ label: "Concepts" }}
         create={CreateConcept}
         list={Concepts}
