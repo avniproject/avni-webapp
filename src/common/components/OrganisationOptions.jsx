@@ -62,6 +62,7 @@ const OrganisationOptions = () => {
           size="small"
           sx={{
             color: "white",
+            backgroundColor: "rgba(0, 0, 0, 0.05)",
             borderRadius: 0,
             "& .MuiSelect-icon": { color: "white" },
             "& .MuiOutlinedInput-notchedOutline": {
