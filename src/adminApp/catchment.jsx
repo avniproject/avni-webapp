@@ -3,13 +3,10 @@ import {
   Datagrid,
   List,
   TextField,
-  Show,
-  SimpleShowLayout,
   TextInput,
   Create,
   Edit,
   SimpleForm,
-  EditButton,
   ReferenceArrayInput,
   SingleFieldList,
   ReferenceArrayField,
@@ -59,7 +56,7 @@ const TitleChip = () => {
 export const CatchmentCreate = props => (
   <Paper>
     <DocumentationContainer filename="Catchment.md">
-      <Create {...props}>
+      <Create redirect="show" {...props}>
         <CatchmentForm />
       </Create>
     </DocumentationContainer>

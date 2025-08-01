@@ -70,7 +70,6 @@ export const StyledAutocompleteArrayInput = styled(AutocompleteArrayInput)({
 });
 
 export const StyledSelectInput = styled(SelectInput)(({ theme }) => ({
-  display: "inline-block",
   width: "auto",
   "& .MuiInputBase-root": {
     backgroundColor: "white",

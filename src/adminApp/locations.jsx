@@ -4,8 +4,6 @@ import {
   FilterLiveSearch,
   List,
   TextField,
-  Show,
-  SimpleShowLayout,
   ReferenceManyField,
   ReferenceField,
   FunctionField,
@@ -335,7 +333,7 @@ export const LocationForm = props => {
 export const LocationCreate = props => (
   <Paper>
     <DocumentationContainer filename={"Location.md"}>
-      <Create {...props} title="Add New Location">
+      <Create {...props} redirect="show" title="Add New Location">
         <LocationForm />
       </Create>
     </DocumentationContainer>

@@ -10,7 +10,7 @@ import {
   useRecordContext
 } from "react-admin";
 import Chip from "@mui/material/Chip";
-import { FormLabel, Paper } from "@mui/material";
+import { Paper } from "@mui/material";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
@@ -53,11 +53,6 @@ const ShowSourceType = props => {
   const record = useRecordContext(props);
   return (
     <>
-      {props.showSourceTypeLabel && (
-        <>
-          <FormLabel style={{ fontSize: "12px" }}>Type</FormLabel> <br />
-        </>
-      )}
       {record && record.type && <Chip label={sourceType[record.type].name} />}
     </>
   );
@@ -88,7 +83,7 @@ export const IdentifierSourceDetail = props => (
   <StyledShow title={<Title />} {...props}>
     <StyledSimpleShowLayout>
       <TextField source="name" />
-      <ShowSourceType source="type" showSourceTypeLabel={true} />
+      <ShowSourceType source="type" showSourceTypeLabel={false} />
       <TextField source="batchGenerationSize" />
       <TextField source="minLength" />
       <TextField source="maxLength" />
@@ -181,7 +176,7 @@ export const IdentifierSourceEdit = props => (
 export const IdentifierSourceCreate = props => (
   <Paper>
     <DocumentationContainer filename="IdentifierSource.md">
-      <Create title="Add New Identifier Source" {...props}>
+      <Create title="Add New Identifier Source" redirect="show" {...props}>
         <IdentifierSourceForm />
       </Create>
     </DocumentationContainer>

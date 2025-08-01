@@ -139,7 +139,11 @@ export const IdentifierUserAssignmentCreate = props => {
   return (
     <Paper>
       <DocumentationContainer filename={"IdentifierUserAssignment.md"}>
-        <Create title="Add New Identifier User Assignment" {...props}>
+        <Create
+          title="Add New Identifier User Assignment"
+          redirect="show"
+          {...props}
+        >
           <IdentifierUserAssignmentForm />
         </Create>
       </DocumentationContainer>

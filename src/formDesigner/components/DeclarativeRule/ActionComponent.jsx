@@ -47,7 +47,7 @@ const ActionComponent = ({
               : null
           }
           options={types}
-          style={{ width: "auto" }}
+          style={{ width: "auto", minWidth: "150rem", wrap: "nowrap" }}
           onChange={event =>
             onActionChange("actionType", get(event, "value", null))
           }

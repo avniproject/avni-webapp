@@ -16,14 +16,7 @@ const DeclarativeRuleComponent = ({
   const dispatch = useDeclarativeRuleDispatch();
 
   return (
-    <Box
-      component={"div"}
-      sx={{
-        border: 1,
-        p: 1,
-        mb: 1
-      }}
-    >
+    <Box sx={{ border: 1, p: 1, mb: 1, minWidth: "60rem" }}>
       <Grid
         container
         sx={{

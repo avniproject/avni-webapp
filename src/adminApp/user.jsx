@@ -26,15 +26,12 @@ import {
   ReferenceInput,
   required,
   SelectArrayInput,
-  SelectInput,
   SimpleForm,
   SimpleFormIterator,
-  SimpleShowLayout,
   SingleFieldList,
   TextField,
   TextInput,
   useRecordContext,
-  Show,
   useResourceContext
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -81,8 +78,10 @@ import OrgManagerContext from "./OrgManagerContext";
 import {
   datagridStyles,
   StyledBox,
+  StyledSelectInput,
   StyledShow,
-  StyledSimpleShowLayout
+  StyledSimpleShowLayout,
+  StyledTextInput
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
@@ -106,7 +105,7 @@ export const UserCreate = ({ user, organisation, userInfo, ...props }) => {
   return (
     <Paper>
       <DocumentationContainer filename={"User.md"}>
-        <Create transform={addSuffixToUsername} {...props}>
+        <Create transform={addSuffixToUsername} redirect="show" {...props}>
           <UserForm
             user={user}
             nameSuffix={userInfo.usernameSuffix}
@@ -563,7 +562,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
           <Fragment>
             <Grid container alignItems="center" spacing={2}>
               <Grid size={{ xs: 3 }}>
-                <SelectInput
+                <StyledSelectInput
                   source={`syncSettings.${
                     subjectType.name
                   }.${syncAttributeName}`}
@@ -729,7 +728,11 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
     >
       {!edit && <UsernameHandler nameSuffix={nameSuffix} />}
       {edit ? (
-        <TextInput disabled source="username" label="Login ID (username)" />
+        <StyledTextInput
+          disabled
+          source="username"
+          label="Login ID (username)"
+        />
       ) : (
         <FormDataConsumer>
           {({ formData }) => {
@@ -802,7 +805,6 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
         label="Email Address"
         validate={validateEmail}
         toolTipKey={"ADMIN_USER_EMAIL"}
-        multiline
       />
       <AvniTextInput
         source="phoneNumber"
@@ -869,12 +871,18 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
           <SelectArrayInput
             label="Associated User Groups"
             optionText="name"
-            style={{ width: "fit-content", minWidth: "15em" }}
+            sx={{
+              "& .MuiInputBase-root": {
+                backgroundColor: "white"
+              },
+              width: "fit-content",
+              minWidth: "15em"
+            }}
           />
         </ReferenceArrayInput>
         <LineBreak num={1} />
       </Fragment>
-      <TextInput
+      <StyledTextInput
         disabled
         source="operatingIndividualScope"
         defaultValue={operatingScopes.NONE}
@@ -890,7 +898,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
             Settings
           </Typography>
         </ToolTipContainer>
-        <SelectInput
+        <StyledSelectInput
           source="settings.locale"
           label="Preferred Language"
           choices={languages}
@@ -965,7 +973,6 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
               </Typography>
             </ToolTipContainer>
             <AvniBooleanInput
-              style={{ marginLeft: "10px", marginTop: "10px" }}
               source="ignoreSyncSettingsInDEA"
               label="Ignore below listed Sync settings in the Data Entry app"
               toolTipKey={"IGNORE_SYNC_SETTINGS_IN_DEA"}
