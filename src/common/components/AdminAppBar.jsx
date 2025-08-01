@@ -31,7 +31,8 @@ const StyledRoot = styled("div")(({ theme }) => ({
 
 const StyledAppBar = styled(MuiAppBar)(({ theme }) => ({
   position: "fixed",
-  ...CommonAppBarStyles(theme).appBarContainer
+  ...CommonAppBarStyles(theme).appBarContainer,
+  backgroundColor: theme.palette.secondary.main
 }));
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
@@ -62,7 +63,8 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const StyledSidebarToggle = styled(SidebarToggleButton)(({ theme }) => ({
-  marginLeft: "-5px"
+  position: "relative",
+  marginLeft: "-30px"
 }));
 
 const AdminAppBar = ({ component: CustomComponent = Box, ...props }) => {
