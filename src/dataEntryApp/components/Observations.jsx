@@ -42,12 +42,13 @@ const StyledTable = styled(Table)(({ theme, highlight }) => ({
   boxShadow: highlight
     ? "0px 2px 8px rgba(33, 150, 243, 0.2)"
     : "0px 1px 3px rgba(0, 0, 0, 0.1)",
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.grey[400],
   overflow: "hidden",
   border: `1px solid ${theme.palette.grey[200]}`
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  border: `2px solid ${theme.palette.grey[200]}`,
   "&:nth-of-type(odd)": {
     backgroundColor: "rgba(0, 0, 0, 0.02)"
   },
@@ -62,13 +63,31 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }
 }));
 
+const StyledTableQGRow = styled(TableRow)(({ theme }) => ({
+  border: `2px solid ${theme.palette.grey[200]}`,
+  borderTop: `2px solid ${theme.palette.grey[400]}`,
+  borderLeft: `2px solid ${theme.palette.grey[400]}`,
+  borderRight: `1px solid ${theme.palette.grey[100]}`,
+  borderBottom: `1px solid ${theme.palette.grey[100]}`,
+  boxShadow: `inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -1px -1px 2px rgba(255, 255, 255, 0.8)`,
+  "&:nth-of-type(odd)": {
+    backgroundColor: "rgba(0, 0, 0, 0.02)"
+  },
+  "&:nth-of-type(even)": {
+    backgroundColor: theme.palette.background.paper
+  },
+  "&:hover": {
+    backgroundColor: theme.palette.action.hover,
+    boxShadow: `inset 1px 1px 3px rgba(0, 0, 0, 0.15), inset -1px -1px 2px rgba(255, 255, 255, 0.9)`
+  },
+  "&:last-child td": {
+    borderBottom: "none"
+  }
+}));
+
 const StyledTableCell = styled(TableCell)(({ theme, variant }) => ({
   padding: variant === "spacer" ? "4px 8px" : "6px 12px",
   borderBottom: `1px solid ${theme.palette.grey[100]}`,
-  color:
-    variant === "label"
-      ? theme.palette.text.primary
-      : theme.palette.text.secondary,
   fontWeight: variant === "label" ? 500 : 400,
   fontSize: variant === "label" ? "0.875rem" : "0.875rem",
   backgroundColor:
@@ -125,9 +144,10 @@ const StyledMediaBox = styled(Box)({
   alignItems: "flex-start"
 });
 
-const StyledMediaGrid = styled(Grid)({
-  alignItems: "center"
-});
+const StyledMediaGrid = styled(Grid)(({ theme }) => ({
+  alignItems: "center",
+  border: `1px solid ${theme.palette.grey[200]}`
+}));
 
 const StyledToggleBox = styled(Box)({
   display: "flex",
@@ -204,6 +224,7 @@ function renderSingleQuestionGroup(
   renderValue
 ) {
   const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
+
   return map(groupObservations, (obs, i) => (
     <StyledTableRow key={`${index}-${i}-${customKey}`}>
       <StyledTableCell variant="spacer" width={"0.1%"} />
@@ -512,7 +533,7 @@ const Observations = ({
       questionGroupRows = _.map(
         valueWrapper.repeatableObservations,
         (questionGroupValueWrapper, rqgIndex) => (
-          <Fragment key={`${index}-rqg-${rqgIndex}`}>
+          <StyledTableQGRow key={`${index}-rqg-${rqgIndex}`}>
             {renderSingleQuestionGroup(
               questionGroupValueWrapper,
               index + "rqg" + rqgIndex,
@@ -522,18 +543,22 @@ const Observations = ({
               StyledTableRow,
               renderValue
             )}
-          </Fragment>
+          </StyledTableQGRow>
         )
       );
     } else {
-      questionGroupRows = renderSingleQuestionGroup(
-        valueWrapper,
-        index + "qg-0",
-        customKey,
-        t,
-        observation,
-        StyledTableRow,
-        renderValue
+      questionGroupRows = (
+        <StyledTableQGRow key={`${index}-qg-0`}>
+          {renderSingleQuestionGroup(
+            valueWrapper,
+            index + "qg-0",
+            customKey,
+            t,
+            observation,
+            StyledTableRow,
+            renderValue
+          )}
+        </StyledTableQGRow>
       );
     }
 
