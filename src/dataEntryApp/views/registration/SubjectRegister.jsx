@@ -139,9 +139,9 @@ const SubjectRegister = () => {
         {selectedAddressLevelType && selectedAddressLevelType.id !== -1 && (
           <>
             <LineBreak num={1} />
-            {orgConfig.organisationConfig &&
-            orgConfig.organisationConfig.settings &&
-            orgConfig.organisationConfig.settings.showHierarchicalLocation ? (
+            {orgConfig &&
+            orgConfig.settings &&
+            orgConfig.settings.showHierarchicalLocation ? (
               <HierarchicalLocationSelect
                 selectedAddressLevelType={selectedAddressLevelType}
                 onSelect={location =>
