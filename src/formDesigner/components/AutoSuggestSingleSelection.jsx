@@ -47,6 +47,12 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 function renderInputComponent(inputProps) {
   const { inputRef = () => {}, ref, ...other } = inputProps;
 
+  // Filter out any Symbol-keyed properties that React 18 doesn't allow in JSX spreading
+  const filteredProps = {};
+  Object.keys(other).forEach(propKey => {
+    filteredProps[propKey] = other[propKey];
+  });
+
   return (
     <StyledTextField
       InputProps={{
@@ -55,7 +61,7 @@ function renderInputComponent(inputProps) {
           inputRef(node);
         }
       }}
-      {...other}
+      {...filteredProps}
     />
   );
 }
@@ -80,20 +86,36 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   );
 }
 
-export default function AutoSuggestSingleSelection(
-  finalReturn = false,
-  showSuggestionStartsWith = false,
-  props
-) {
+export default function AutoSuggestSingleSelection(props) {
   const ignoredDatatypesFromProps = props.dataTypesToIgnore || [];
   const dataTypesToIgnore = [...ignoredDatatypesFromProps, "NA"];
+
+  // Ensure showAnswer.name is a string
+  const safeShowAnswer = {
+    ...props.showAnswer,
+    name: props.showAnswer.name != null ? String(props.showAnswer.name) : ""
+  };
+
   const [state, setState] = useState({
     single: ""
   });
   const [stateSuggestions, setSuggestions] = useState([]);
 
   const handleSuggestionsFetchRequested = ({ value }) => {
-    const inputValue = deburr(value.trim()).toLowerCase();
+    // Safely handle value - ensure it's a string before calling trim
+    // Check if value is a Symbol and handle it appropriately
+    let safeValue = "";
+    if (value != null) {
+      if (typeof value === "symbol") {
+        // If it's a Symbol, convert it safely or use empty string
+        safeValue = value.toString();
+      } else {
+        // For other types, convert to string
+        safeValue = String(value);
+      }
+    }
+
+    const inputValue = deburr(safeValue.trim()).toLowerCase();
     const dataType = props.dataType;
     const queryString = _.isEmpty(dataType)
       ? "name=" + encodeURIComponent(inputValue)
@@ -179,7 +201,7 @@ export default function AutoSuggestSingleSelection(
           required: true,
           label: props.label,
           placeholder: props.placeholder,
-          value: props.showAnswer.name,
+          value: safeShowAnswer.name,
           onChange: handleChange("single"),
           disabled: props.visibility,
           autoFocus: true
@@ -190,12 +212,36 @@ export default function AutoSuggestSingleSelection(
           suggestionsList: StyledSuggestionsList,
           suggestion: StyledSuggestion
         }}
-        renderSuggestionsContainer={options => (
-          <Paper {...options.containerProps} square>
-            {options.children}
-          </Paper>
-        )}
+        renderSuggestionsContainer={options => {
+          const { containerProps } = options;
+
+          // Extract key separately and filter out Symbol-keyed properties
+          const { key, ...restProps } = containerProps || {};
+          const filteredContainerProps = {};
+
+          Object.keys(restProps).forEach(propKey => {
+            if (typeof propKey === "string") {
+              filteredContainerProps[propKey] = restProps[propKey];
+            }
+          });
+
+          return (
+            <Paper key={key} {...filteredContainerProps} square>
+              {options.children}
+            </Paper>
+          );
+        }}
       />
     </StyledContainer>
   );
 }
+
+AutoSuggestSingleSelection.defaultProps = {
+  finalReturn: false,
+  showSuggestionStartsWith: false,
+  dataTypesToIgnore: [],
+  showAnswer: { name: "" },
+  label: "",
+  placeholder: "",
+  visibility: false
+};

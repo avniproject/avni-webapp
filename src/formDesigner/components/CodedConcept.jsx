@@ -48,12 +48,27 @@ export const CodedConceptAnswer = ({
   onSelectAnswerMedia,
   onRemoveAnswerMedia,
   totalAnswers,
-  ...props
+  onToggleAnswerFielUUID,
+  onToggleAnswerFieldUnique,
+  onMoveUp,
+  onMoveDown,
+  onDeleteAnswer
 }) => {
+  const actionMap = {
+    onToggleAnswerFielUUID,
+    onToggleAnswerFieldUnique,
+    onMoveUp,
+    onMoveDown,
+    onDeleteAnswer
+  };
+
   const action = actionName => {
-    inlineConcept
-      ? props[actionName](groupIndex, elementIndex, index)
-      : props[actionName](index);
+    const actionFn = actionMap[actionName];
+    if (actionFn) {
+      inlineConcept
+        ? actionFn(groupIndex, elementIndex, index)
+        : actionFn(index);
+    }
   };
 
   const isDuplicateAnswerValue =
@@ -61,14 +76,8 @@ export const CodedConceptAnswer = ({
     answer.isAnswerHavingError.type === "duplicate";
 
   return (
-    <StyledGrid container spacing={0}>
-      <Grid
-        size={{
-          xs: 8,
-          sm: 3,
-          md: 4
-        }}
-      >
+    <Grid container spacing={0} alignItems="center">
+      <Grid item xs={8} sm={3} md={4}>
         <AutoSuggestSingleSelection
           visibility={!answer.editable}
           showAnswer={answer}
@@ -89,7 +98,7 @@ export const CodedConceptAnswer = ({
           <FormHelperText error>Duplicate answer specified</FormHelperText>
         )}
       </Grid>
-      <Grid>
+      <Grid item>
         <StyledFormControlLabel
           control={
             <Checkbox
@@ -112,7 +121,7 @@ export const CodedConceptAnswer = ({
           label="abnormal"
         />
       </Grid>
-      <Grid>
+      <Grid item>
         <StyledFormControlLabel
           control={
             <Checkbox
@@ -135,9 +144,9 @@ export const CodedConceptAnswer = ({
           label="unique"
         />
       </Grid>
-      <Grid>
-        <StyledGrid container direction="row">
-          <Grid>
+      <Grid item>
+        <Grid container direction="row" alignItems="center">
+          <Grid item>
             <StyledButton
               disabled={index === 0}
               color="primary"
@@ -147,7 +156,7 @@ export const CodedConceptAnswer = ({
               <ArrowDropUp /> Move up
             </StyledButton>
           </Grid>
-          <Grid>
+          <Grid item>
             <StyledButton
               disabled={index + 1 === totalAnswers}
               color="primary"
@@ -157,7 +166,7 @@ export const CodedConceptAnswer = ({
               <ArrowDropDown /> Move down
             </StyledButton>
           </Grid>
-          <Grid>
+          <Grid item>
             <StyledDeleteButton
               type="button"
               onClick={() => action("onDeleteAnswer")}
@@ -166,7 +175,7 @@ export const CodedConceptAnswer = ({
             </StyledDeleteButton>
           </Grid>
           {!inlineConcept && (
-            <Grid>
+            <Grid item>
               <AvniImageUpload
                 width={20}
                 height={20}
@@ -183,47 +192,55 @@ export const CodedConceptAnswer = ({
               />
             </Grid>
           )}
-        </StyledGrid>
+        </Grid>
       </Grid>
-    </StyledGrid>
+    </Grid>
   );
+};
+
+CodedConceptAnswer.defaultProps = {
+  inlineConcept: false,
+  elementIndex: -1,
+  groupIndex: -1
 };
 
 export default function CodedConcept(props) {
   return (
-    <StyledGridContainer>
-      <StyledButton
-        type="button"
-        color="primary"
-        onClick={props.onAlphabeticalSort}
-      >
-        Sort alphabetically
-      </StyledButton>
-      {props.answers.map((answer, index) => {
-        return (
-          !answer.voided && (
-            <Grid container key={`answer-${index}`}>
-              <CodedConceptAnswer
-                answer={answer}
-                index={index}
-                onDeleteAnswer={props.onDeleteAnswer}
-                onAddAnswer={props.onAddAnswer}
-                onChangeAnswerName={props.onChangeAnswerName}
-                onToggleAnswerField={props.onToggleAnswerField}
-                onMoveUp={props.onMoveUp}
-                onMoveDown={props.onMoveDown}
-                totalAnswers={size(props.answers)}
-                onSelectAnswerMedia={props.onSelectAnswerMedia}
-                onRemoveAnswerMedia={props.onRemoveAnswerMedia}
-              />
-            </Grid>
-          )
-        );
-      })}
+    <>
+      <Grid container style={{ marginTop: 20 }}>
+        <StyledButton
+          type="button"
+          color="primary"
+          onClick={props.onAlphabeticalSort}
+        >
+          Sort alphabetically
+        </StyledButton>
+        {props.answers.map((answer, index) => {
+          return (
+            !answer.voided && (
+              <Grid container key={`answer-${index}`}>
+                <CodedConceptAnswer
+                  answer={answer}
+                  index={index}
+                  onDeleteAnswer={props.onDeleteAnswer}
+                  onAddAnswer={props.onAddAnswer}
+                  onChangeAnswerName={props.onChangeAnswerName}
+                  onToggleAnswerField={props.onToggleAnswerField}
+                  onMoveUp={props.onMoveUp}
+                  onMoveDown={props.onMoveDown}
+                  totalAnswers={size(props.answers)}
+                  onSelectAnswerMedia={props.onSelectAnswerMedia}
+                  onRemoveAnswerMedia={props.onRemoveAnswerMedia}
+                />
+              </Grid>
+            )
+          );
+        })}
+      </Grid>
       <StyledButton type="button" color="primary" onClick={props.onAddAnswer}>
         Add New Answer
       </StyledButton>
-    </StyledGridContainer>
+    </>
   );
 }
 
