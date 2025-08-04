@@ -1,14 +1,14 @@
 import { Fragment, useState } from "react";
-import { styled } from "@mui/material/styles";
-import { Box, Paper, Typography, Button } from "@mui/material";
-import { useTranslation } from "react-i18next";
 import { Navigate } from "react-router-dom";
+import { styled } from "@mui/material/styles";
+import Summary from "./Summary";
+import { Box, Paper, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";
 import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
 import { FormElementGroup as FormElementGroupComponent } from "dataEntryApp/components/FormElementGroup";
 import _ from "lodash";
-import Summary from "./Summary";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(0, 3, 10, 3),
@@ -25,22 +25,11 @@ const StyledButtonContainer = styled(Box)({
   backgroundColor: "#f8f4f4",
   height: 80,
   width: "100%",
-  padding: "25px",
+  padding: 25,
   display: "flex"
 });
 
-const StyledButtonWrapper = styled(Box)(({ theme }) => ({
-  marginRight: theme.spacing(2.5)
-}));
-
-const StyledTitleContainer = styled(Box)({
-  display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  justifyContent: "space-between"
-});
-
-const StyledPrevButton = styled(Button)({
+const StyledPrevButton = styled(FormWizardButton)({
   color: "orange",
   width: 110,
   height: 30,
@@ -52,7 +41,7 @@ const StyledPrevButton = styled(Button)({
   backgroundColor: "white"
 });
 
-const StyledNextButton = styled(Button)({
+const StyledNextButton = styled(FormWizardButton)({
   backgroundColor: "orange",
   color: "white",
   height: 30,
@@ -60,14 +49,11 @@ const StyledNextButton = styled(Button)({
   width: 110,
   cursor: "pointer",
   borderRadius: 50,
-  padding: "4px 25px",
-  "&:hover": {
-    backgroundColor: "#e69500"
-  }
+  padding: "4px 25px"
 });
 
 const StyledErrorTypography = styled(Typography)(({ theme }) => ({
-  marginLeft: theme.spacing(2.5),
+  marginLeft: 20,
   color: theme.palette.error.main
 }));
 
@@ -113,6 +99,7 @@ const FormWizard = ({
     ? t("summaryAndRecommendations")
     : t(isRegistrationFirstPage ? "Basic Details" : formElementGroup.name);
   const pageTitle = `${pageTitleText}`;
+  // const pageCounter = `X / X`;
 
   return (
     <Fragment>
@@ -123,11 +110,17 @@ const FormWizard = ({
           ) : (
             ""
           )}
-          <StyledTitleContainer>
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+          <Box
+            display="flex"
+            flexDirection="row"
+            flexWrap="wrap"
+            justifyContent="space-between"
+          >
+            <Typography variant="subtitle1" gutterBottom>
+              {" "}
               {pageTitle}
             </Typography>
-          </StyledTitleContainer>
+          </Box>
           <StyledPaper>
             {onSummaryPage ? (
               <Summary
@@ -150,19 +143,18 @@ const FormWizard = ({
                 {children}
               </FormElementGroupComponent>
             )}
+
             <StyledButtonContainer>
-              <StyledButtonWrapper>
-                <FormWizardButton
-                  component={StyledPrevButton}
+              <Box style={{ marginRight: 20 }}>
+                <StyledPrevButton
                   text={t("previous")}
                   disabled={!onSummaryPage && isFirstPage}
                   onClick={onPrevious}
-                  id="previous"
+                  id={"previous"}
                 />
-              </StyledButtonWrapper>
+              </Box>
               <Box>
-                <FormWizardButton
-                  component={StyledNextButton}
+                <StyledNextButton
                   onClick={onSummaryPage ? onSave : onNext}
                   text={onSummaryPage ? t("save") : t("next")}
                   id={onSummaryPage ? "save" : "next"}
@@ -174,7 +166,7 @@ const FormWizard = ({
                 </StyledErrorTypography>
               )}
             </StyledButtonContainer>
-            {redirect && <Navigate to={onSaveGoto} replace />}
+            {redirect && <Navigate to={onSaveGoto} />}
             {saved && (
               <CustomizedSnackbar
                 message={t(

@@ -1,15 +1,59 @@
 # Avni WebApp Windsurf Rules
 version: 1.0.0
 
-# Code Style and Formatting
-style:
-  javascript:
-    indent: 2
-    quotes: double
-    semicolons: true
-    max_line_length: 120
-    trailing_comma: es5
-    arrow_parens: avoid
+# Package Version Guidelines
+package_versions:
+  ui_framework:
+    mui_version: "^7.2.0"
+    imports:
+      - "Use @mui/material instead of @material-ui/core"
+      - "Use @mui/icons-material instead of @material-ui/icons"
+      - "Use styled() from @mui/material/styles instead of makeStyles"
+      - "Use @mui/x-date-pickers for date components"
+    
+    styling:
+      - "Replace makeStyles with styled() components"
+      - "Use MUI v7 theming patterns"
+      - "Import theme from @mui/material/styles"
+
+  react_router:
+    version: "^7.7.0"
+    changes:
+      - "Use Navigate instead of Redirect"
+      - "Import from react-router-dom"
+      - "Use modern routing patterns"
+
+  aws_amplify:
+    version: "^6.15.1"
+    patterns:
+      - "Use functional API approach"
+      - "Import from aws-amplify/auth for authentication"
+      - "Avoid useAuthenticator from @aws-amplify/ui-react"
+
+  build_tools:
+    vite: "^7.0.4"
+    jest: "^30.0.4"
+    react: "^18"
+
+# Import Pattern Examples
+correct_imports:
+  mui: |
+    import { Box, Paper, Typography } from "@mui/material";
+    import { styled } from "@mui/material/styles";
+  
+  routing: |
+    import { Navigate } from "react-router-dom";
+  
+  auth: |
+    import { signIn, signOut } from "aws-amplify/auth";
+
+# Deprecated Patterns to Avoid
+deprecated_patterns:
+  - "@material-ui/core → Use @mui/material"
+  - "@material-ui/styles → Use @mui/material/styles"
+  - "makeStyles → Use styled() components"
+  - "Redirect → Use Navigate"
+  - "useAuthenticator → Use direct auth functions"
     
 # Code Structure and Modularity
 modularity:
