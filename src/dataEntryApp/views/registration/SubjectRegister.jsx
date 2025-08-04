@@ -121,6 +121,7 @@ const SubjectRegister = () => {
       validationResults,
       Individual.validationKeys.LOWEST_ADDRESS_LEVEL
     );
+
     const showRequired = subject.subjectType.allowEmptyLocation ? "" : "*";
     return (
       <>
@@ -227,6 +228,7 @@ const SubjectRegister = () => {
             update={date => dispatch(setRegistrationDate(date))}
           />
           <LineBreak num={1} />
+
           {subject.subjectType.isPerson() && (
             <>
               <TextFormElement
@@ -290,6 +292,7 @@ const SubjectRegister = () => {
               {renderAddress()}
             </>
           )}
+
           {!subject.subjectType.isPerson() && (
             <>
               <TextFormElement

@@ -182,6 +182,13 @@ const getAllRuleItemsFor = (entity, type, entityTypeHardCoded) => {
 const getApplicableRules = (ruledEntity, ruleType, ruledEntityType) => {
   const state = store.getState();
   const legacyRules = selectLegacyRules(state);
+
+  // CRITICAL FIX: Add null check for legacyRules
+  if (!legacyRules || !Array.isArray(legacyRules)) {
+    console.warn("Legacy rules not loaded yet, returning empty array");
+    return [];
+  }
+
   const rules = legacyRules
     .map(_.identity)
     .filter(
@@ -193,6 +200,12 @@ const getApplicableRules = (ruledEntity, ruleType, ruledEntityType) => {
 
 const getRuleFunctions = (rules = []) => {
   const allRules = selectLegacyRulesAllRules(store.getState());
+
+  if (!allRules) {
+    console.warn("All rules not loaded yet, returning empty array");
+    return [];
+  }
+
   return _.defaults(rules, [])
     .filter(ar => _.isFunction(allRules[ar.fnName]) && _.isFunction(allRules[ar.fnName].exec))
     .map(ar => ({ ...ar, fn: allRules[ar.fnName] }));

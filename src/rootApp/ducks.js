@@ -130,11 +130,7 @@ export default function(state = initialState, action) {
         },
         userInfo: action.payload
       };
-      newState.authSession.userInfoUpdate(
-        action.payload.roles,
-        action.payload.username,
-        action.payload.name
-      );
+      newState.authSession.userInfoUpdate(action.payload.roles, action.payload.username, action.payload.name);
       return newState;
     }
     case types.INIT_COMPLETE: {
