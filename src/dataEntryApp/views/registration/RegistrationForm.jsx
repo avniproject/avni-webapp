@@ -12,7 +12,7 @@ import {
 import { ObservationsHolder } from "openchs-models";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
 
-const RegistrationForm = ({ children }) => {
+const RegistrationForm = ({ children, fetchRulesResponse }) => {
   const dispatch = useDispatch();
   const registrationState = useSelector(selectRegistrationState);
 
@@ -33,6 +33,7 @@ const RegistrationForm = ({ children }) => {
       onSummaryPage={registrationState.onSummaryPage}
       wizard={registrationState.wizard}
       saveErrorMessageKey={registrationState.saveErrorMessageKey}
+      fetchRulesResponse={fetchRulesResponse}
       updateObs={(formElement, value, childFormElement, questionGroupIndex) =>
         dispatch(
           updateObs(formElement, value, childFormElement, questionGroupIndex)

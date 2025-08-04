@@ -8,8 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ScheduledVisitsTable from "dataEntryApp/components/ScheduledVisitsTable";
 import {
   selectFetchingRulesResponse,
-  selectRulesResponse,
-  fetchRulesResponse
+  selectRulesResponse
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import CustomizedBackdrop from "dataEntryApp/components/CustomizedBackdrop";
 
@@ -31,15 +30,22 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1)
 }));
 
-const Summary = ({ observations, additionalRows, form }) => {
+const Summary = ({
+  observations,
+  additionalRows,
+  form,
+  fetchRulesResponse
+}) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const rulesResponse = useSelector(selectRulesResponse);
   const fetchingRulesResponse = useSelector(selectFetchingRulesResponse);
 
   useEffect(() => {
-    dispatch(fetchRulesResponse());
-  }, [dispatch]);
+    if (fetchRulesResponse) {
+      dispatch(fetchRulesResponse());
+    }
+  }, [dispatch, fetchRulesResponse]);
 
   if (fetchingRulesResponse) {
     return <CustomizedBackdrop load={false} />;

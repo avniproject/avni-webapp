@@ -209,12 +209,26 @@ export const setAddress = lowestAddressLevel => ({
 export const fetchRegistrationRulesResponse = () => {
   return (dispatch, getState) => {
     const state = getState();
-    const individualRequestEntity = state.dataEntry.registration.subject.toResource;
+    const subject = state.dataEntry.registration.subject;
+    const registrationForm = state.dataEntry.registration.registrationForm;
+
+    // Validate that subject and form exist before making API call
+    if (!subject || !subject.toResource || !registrationForm || !registrationForm.uuid) {
+      console.warn("Cannot fetch rules response: subject or form not properly initialized", {
+        hasSubject: !!subject,
+        hasToResource: !!(subject && subject.toResource),
+        hasForm: !!registrationForm,
+        hasFormUuid: !!(registrationForm && registrationForm.uuid)
+      });
+      return;
+    }
+
+    const individualRequestEntity = subject.toResource;
     dispatch(
       fetchRulesResponse({
         individualRequestEntity,
         rule: {
-          formUuid: state.dataEntry.registration.registrationForm.uuid,
+          formUuid: registrationForm.uuid,
           workFlowType: "Individual"
         }
       })
