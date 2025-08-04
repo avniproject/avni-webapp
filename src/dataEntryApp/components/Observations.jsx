@@ -180,26 +180,17 @@ function renderSingleQuestionGroup(
   renderValue
 ) {
   const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
-  return (
-    <div style={{ borderStyle: "inset", borderWidth: "2px" }}>
-      {map(groupObservations, (obs, i) => (
-        <StyledTableRow key={`${index}-${i}-${customKey}`}>
-          <StyledTableCell variant="spacer" width={"0.1%"} />
-          <StyledTableCell
-            variant="label"
-            component="th"
-            scope="row"
-            width="25%"
-          >
-            {t(obs.concept["name"])}
-          </StyledTableCell>
-          <StyledTableCell align="left" width="75%">
-            {renderValue(obs)}
-          </StyledTableCell>
-        </StyledTableRow>
-      ))}
-    </div>
-  );
+  return map(groupObservations, (obs, i) => (
+    <StyledTableRow key={`${index}-${i}-${customKey}`}>
+      <StyledTableCell variant="spacer" width={"0.1%"} />
+      <StyledTableCell variant="label" component="th" scope="row" width="25%">
+        {t(obs.concept["name"])}
+      </StyledTableCell>
+      <StyledTableCell align="left" width="75%">
+        {renderValue(obs)}
+      </StyledTableCell>
+    </StyledTableRow>
+  ));
 }
 
 function initMediaObservations(observations) {
@@ -496,16 +487,19 @@ const Observations = ({
     if ("repeatableObservations" in valueWrapper) {
       questionGroupRows = _.map(
         valueWrapper.repeatableObservations,
-        (questionGroupValueWrapper, rqgIndex) =>
-          renderSingleQuestionGroup(
-            questionGroupValueWrapper,
-            index + "rqg" + rqgIndex,
-            customKey,
-            t,
-            observation,
-            StyledTableRow,
-            renderValue
-          )
+        (questionGroupValueWrapper, rqgIndex) => (
+          <Fragment key={`${index}-rqg-${rqgIndex}`}>
+            {renderSingleQuestionGroup(
+              questionGroupValueWrapper,
+              index + "rqg" + rqgIndex,
+              customKey,
+              t,
+              observation,
+              StyledTableRow,
+              renderValue
+            )}
+          </Fragment>
+        )
       );
     } else {
       questionGroupRows = renderSingleQuestionGroup(
