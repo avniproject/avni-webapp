@@ -236,7 +236,7 @@ const SubjectRegister = () => {
                 formElement={new StaticFormElement(t("firstName"), true, true)}
                 value={subject.firstName}
                 validationResults={validationResults}
-                update={event => dispatch(setFirstName(event.target.value))}
+                update={value => dispatch(setFirstName(value))}
                 helpText={get(subject, "subjectType.nameHelpText")}
               />
               <LineBreak num={1} />
@@ -247,7 +247,7 @@ const SubjectRegister = () => {
                 }
                 value={subject.middleName}
                 validationResults={validationResults}
-                update={event => dispatch(setMiddleName(event.target.value))}
+                update={value => dispatch(setMiddleName(value))}
               />
               <LineBreak num={1} />
               <TextFormElement
@@ -255,7 +255,7 @@ const SubjectRegister = () => {
                 formElement={new StaticFormElement(t("lastName"), true, true)}
                 value={subject.lastName}
                 validationResults={validationResults}
-                update={event => dispatch(setLastName(event.target.value))}
+                update={value => dispatch(setLastName(value))}
               />
               <LineBreak num={1} />
               {renderProfilePicture()}
@@ -300,7 +300,7 @@ const SubjectRegister = () => {
                 formElement={new StaticFormElement("name", true, true)}
                 value={subject.firstName}
                 validationResults={validationResults}
-                update={event => dispatch(setFirstName(event.target.value))}
+                update={value => dispatch(setFirstName(value))}
                 helpText={get(subject, "subjectType.nameHelpText")}
               />
               <LineBreak num={1} />
