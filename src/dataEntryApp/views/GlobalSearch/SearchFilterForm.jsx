@@ -153,11 +153,16 @@ export const SearchForm = ({
         return def[c.conceptDataType];
       });
 
-  const initialConceptList = getInitialConceptList(selectedSearchFilter);
-  const allConceptRelated = _.map(initialConceptList, itm =>
-    _.merge(itm, _.find(concept, { uuid: itm.conceptUUID }))
-  );
-  const [selectedConcepts, setSelectedConcept] = useState(allConceptRelated);
+  const [selectedConcepts, setSelectedConcept] = useState([]);
+
+  // Update selected concepts when search filter changes
+  useEffect(() => {
+    const initialConceptList = getInitialConceptList(selectedSearchFilter);
+    const allConceptRelated = _.map(initialConceptList, itm =>
+      _.merge(itm, _.find(concept, { uuid: itm.conceptUUID }))
+    );
+    setSelectedConcept(allConceptRelated);
+  }, [selectedSearchFilter, concept]);
 
   const [checked, setChecked] = useState({
     includeVoided: searchRequest.includeVoided || false,
@@ -243,7 +248,6 @@ export const SearchForm = ({
     setSelectedGender({});
     setAddressLevelIds([]);
     setSelectedDate(initialStates.entityDate);
-    setSelectedConcept(initialConceptList);
     setChecked({ includeVoided: false, includeDisplayCount: false });
   };
 
@@ -380,6 +384,77 @@ export const SearchForm = ({
         )}
       </StyledButtons>
     </FormControl>
+  );
+};
+
+const searchFilterConcept = function(
+  event,
+  searchFilterForm,
+  fieldName,
+  setSelectedConcept
+) {
+  setSelectedConcept(previousSelectedConcepts =>
+    previousSelectedConcepts.map(concept => {
+      if (concept.conceptDataType === null) {
+      } else {
+        if (["Date", "DateTime", "Time"].includes(concept.conceptDataType)) {
+          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+            return {
+              ...concept,
+              [fieldName]: event
+            };
+          } else {
+            return {
+              ...concept
+            };
+          }
+        } else if (concept.conceptDataType === "Coded") {
+          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+            const selectedCodedValue = {};
+            concept.values.forEach(element => {
+              selectedCodedValue[element] = true;
+            });
+            selectedCodedValue[event.target.name] = event.target.checked;
+
+            return {
+              ...concept,
+              values: Object.keys(selectedCodedValue).filter(
+                selectedId => selectedCodedValue[selectedId]
+              )
+            };
+          } else {
+            return {
+              ...concept
+            };
+          }
+        } else if (["Text", "Id"].includes(concept.conceptDataType)) {
+          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+            const selectedText = event.target.value;
+            return {
+              ...concept,
+              value: selectedText
+            };
+          } else {
+            return {
+              ...concept
+            };
+          }
+        } else if (concept.conceptDataType === "Numeric") {
+          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+            const selectedNumeric = event.target.value;
+            return {
+              ...concept,
+              [fieldName]: selectedNumeric
+            };
+          } else {
+            return {
+              ...concept
+            };
+          }
+        }
+      }
+      return null;
+    })
   );
 };
 
