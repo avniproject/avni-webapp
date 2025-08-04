@@ -212,14 +212,7 @@ export const fetchRegistrationRulesResponse = () => {
     const subject = state.dataEntry.registration.subject;
     const registrationForm = state.dataEntry.registration.registrationForm;
 
-    // Validate that subject and form exist before making API call
     if (!subject || !subject.toResource || !registrationForm || !registrationForm.uuid) {
-      console.warn("Cannot fetch rules response: subject or form not properly initialized", {
-        hasSubject: !!subject,
-        hasToResource: !!(subject && subject.toResource),
-        hasForm: !!registrationForm,
-        hasFormUuid: !!(registrationForm && registrationForm.uuid)
-      });
       return;
     }
 

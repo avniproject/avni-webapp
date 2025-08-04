@@ -19,7 +19,7 @@ module.exports = {
     ]
   },
   transformIgnorePatterns: [
-    "/node_modules/(?!axios|react-admin|fetchUtils|@mui|@emotion|@reduxjs|redux-toolkit|openchs-models|lodash-es)/"
+    "/node_modules/(?!axios|react-admin|fetchUtils|@mui|@emotion|@reduxjs|redux-toolkit|openchs-models|lodash-es|chai)/"
   ],
 
   // Use CommonJS for setup files to avoid ES module issues

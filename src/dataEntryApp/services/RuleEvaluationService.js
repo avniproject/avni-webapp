@@ -20,7 +20,7 @@ const getImports = () => {
     lodash,
     date_fns: { isValid },
     motherCalculations,
-    log: console.log
+    log: () => {}
   };
 };
 
@@ -106,7 +106,6 @@ const runFormElementStatusRule = (formElement, entity, entityName, questionGroup
       imports: getImports()
     });
   } catch (e) {
-    console.error(`Rule-Failure for formElement name: ${formElement.name} Error message: ${e.message} stack: ${e.stack}`);
     return null;
   }
 };
@@ -157,14 +156,12 @@ const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBund
       params: { formElementGroup, entity, services },
       imports: getImports()
     });
-  } catch (e) {
-    console.error(`Rule-Failure for formElement group name: ${formElementGroup.name} Error message : ${e}`);
-  }
+  } catch (e) {}
 };
 
 const getRuleServiceLibraryInterfaceForSharingModules = () => {
   return {
-    log: console.log,
+    log: () => {},
     common: common,
     motherCalculations: motherCalculations,
     models: models
@@ -185,7 +182,6 @@ const getApplicableRules = (ruledEntity, ruleType, ruledEntityType) => {
 
   // CRITICAL FIX: Add null check for legacyRules
   if (!legacyRules || !Array.isArray(legacyRules)) {
-    console.warn("Legacy rules not loaded yet, returning empty array");
     return [];
   }
 
@@ -202,7 +198,6 @@ const getRuleFunctions = (rules = []) => {
   const allRules = selectLegacyRulesAllRules(store.getState());
 
   if (!allRules) {
-    console.warn("All rules not loaded yet, returning empty array");
     return [];
   }
 
@@ -220,9 +215,6 @@ const runRuleAndSaveFailure = (rule, entityName, entity, ruleTypeValue, config, 
       return _.isNil(context) ? rule.fn.exec(entity, ruleTypeValue, config) : rule.fn.exec(entity, ruleTypeValue, context, config);
     }
   } catch (error) {
-    console.log("Rule-Failure", `Rule failed: ${rule.name}, uuid: ${rule.uuid}`);
-    //TODO: Implement saving rule failures by calling API
-    // this.saveFailedRules(error, rule.uuid, this.getIndividualUUID(entity, entityName));
     return ruleTypeValue;
   }
 };

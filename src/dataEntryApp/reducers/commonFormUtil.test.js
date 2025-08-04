@@ -757,7 +757,6 @@ describe("Form Element Filtering Tests", () => {
   it("should filter form elements based on status", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.filterFormElementsWithStatus) {
-      console.log("Skipping test - filterFormElementsWithStatus is not exported");
       return;
     }
 
@@ -797,7 +796,6 @@ describe("Form Element Filtering Tests", () => {
   it("should update entity observations when filtering form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.fetchFilteredFormElementsAndUpdateEntityObservations) {
-      console.log("Skipping test - fetchFilteredFormElementsAndUpdateEntityObservations is not exported");
       return;
     }
 
@@ -811,7 +809,6 @@ describe("Form Element Filtering Tests", () => {
   it("should handle question groups with values when filtering form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.hasQuestionGroupWithValueInElementStatus) {
-      console.log("Skipping test - hasQuestionGroupWithValueInElementStatus is not exported");
       return;
     }
 
@@ -832,7 +829,6 @@ describe("Form Element Filtering Tests", () => {
   it("should handle question groups without values when filtering form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.hasQuestionGroupWithValueInElementStatus) {
-      console.log("Skipping test - hasQuestionGroupWithValueInElementStatus is not exported");
       return;
     }
 
@@ -853,7 +849,6 @@ describe("Form Element Filtering Tests", () => {
   it("should get updated next filtered form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.getUpdatedNextFilteredFormElements) {
-      console.log("Skipping test - getUpdatedNextFilteredFormElements is not exported");
       return;
     }
 
@@ -902,7 +897,6 @@ describe("Form Element Filtering Tests", () => {
   it("should handle empty form element statuses", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.hasQuestionGroupWithValueInElementStatus) {
-      console.log("Skipping test - hasQuestionGroupWithValueInElementStatus is not exported");
       return;
     }
 
@@ -916,7 +910,6 @@ describe("Form Element Filtering Tests", () => {
   it("should handle null form elements", () => {
     // Skip this test if the function is not exported
     if (!commonFormUtil.hasQuestionGroupWithValueInElementStatus) {
-      console.log("Skipping test - hasQuestionGroupWithValueInElementStatus is not exported");
       return;
     }
 

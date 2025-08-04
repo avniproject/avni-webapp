@@ -102,7 +102,6 @@ export default {
   },
 
   validateIfIsMandatoryAndValueEmptyOrNull(formElement, value) {
-    console.log(" validateIfIsMandatoryAndValueEmptyOrNull ->> value", formElement, value);
     if (formElement && formElement.mandatory && isEmpty(value)) {
       return ValidationResult.failureForEmpty(formElement.uuid);
     } else {
