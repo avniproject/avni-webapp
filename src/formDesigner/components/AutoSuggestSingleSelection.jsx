@@ -1,247 +1,158 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import _, { deburr } from "lodash";
-import Autosuggest from "react-autosuggest";
-import match from "autosuggest-highlight/match";
-import parse from "autosuggest-highlight/parse";
-import { TextField, Paper, MenuItem } from "@mui/material";
+import { Autocomplete, TextField, Paper, MenuItem } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { httpClient as http } from "common/utils/httpClient";
 
-const StyledContainer = styled("div")({
-  flexGrow: 1,
-  height: 250
-});
-
-const StyledAutosuggestContainer = styled("div")(({ theme }) => ({
-  position: "relative",
-  marginTop: theme.spacing(1.25), // 10px
-  width: "100%"
-}));
-
-const StyledSuggestionsContainer = styled("div")({
-  position: "absolute",
-  zIndex: 2,
-  left: 0,
-  right: 0,
-  overflow: "auto",
-  maxHeight: "400%"
-});
-
-const StyledSuggestionsList = styled("ul")({
-  margin: 0,
-  padding: 0,
-  listStyleType: "none"
-});
-
-const StyledSuggestion = styled("li")({
-  display: "block"
-});
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
   width: "100%",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1)
-  }
+  minWidth: "300px",
+  marginTop: theme.spacing(1.25)
 }));
 
-function renderInputComponent(inputProps) {
-  const { inputRef = () => {}, ref, ...other } = inputProps;
+export default function AutoSuggestSingleSelection({
+  dataTypesToIgnore = [],
+  dataType,
+  showSuggestionStartsWith = false,
+  finalReturn = false,
+  inlineConcept,
+  onChangeAnswerName,
+  index,
+  groupIndex,
+  elementIndex,
+  showAnswer = { name: "" },
+  label = "",
+  placeholder = "",
+  visibility = false
+}) {
+  const ignoredDatatypesFromProps = dataTypesToIgnore || [];
+  const dataTypesToIgnoreList = [...ignoredDatatypesFromProps, "NA"];
 
-  // Filter out any Symbol-keyed properties that React 18 doesn't allow in JSX spreading
-  const filteredProps = {};
-  Object.keys(other).forEach(propKey => {
-    filteredProps[propKey] = other[propKey];
-  });
+  const [suggestions, setSuggestions] = useState([]);
+  const [inputValue, setInputValue] = useState(showAnswer?.name || "");
+  const [loading, setLoading] = useState(false);
+
+  // Update inputValue when showAnswer changes
+  useEffect(() => {
+    setInputValue(showAnswer?.name || "");
+  }, [showAnswer?.name]);
+
+  const fetchSuggestions = async value => {
+    if (!value || value.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    setLoading(true);
+    const inputValueLower = deburr(value.trim()).toLowerCase();
+    const queryString = _.isEmpty(dataType)
+      ? "name=" + encodeURIComponent(inputValueLower)
+      : "name=" + encodeURIComponent(inputValueLower) + "&dataType=" + dataType;
+    const inputLength = inputValueLower.length;
+
+    try {
+      const response = await http.get(`/search/concept?${queryString}`);
+      const suggestions = response.data;
+      _.sortBy(suggestions, concept => concept.name);
+
+      let filteredSuggestions;
+      if (showSuggestionStartsWith) {
+        filteredSuggestions = suggestions.filter(
+          suggestion =>
+            !suggestion.voided &&
+            suggestion.name.slice(0, inputLength).toLowerCase() ===
+              inputValueLower
+        );
+      } else {
+        filteredSuggestions = suggestions.filter(
+          suggestion =>
+            !suggestion.voided &&
+            !_.includes(dataTypesToIgnoreList, suggestion.dataType)
+        );
+      }
+      setSuggestions(filteredSuggestions);
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (event, newValue) => {
+    console.log("AutoSuggest handleChange:", {
+      newValue,
+      finalReturn,
+      inlineConcept
+    });
+
+    if (finalReturn && newValue && typeof newValue === "object") {
+      // When finalReturn is true, pass the full object
+      if (!inlineConcept) {
+        onChangeAnswerName(newValue, index);
+      } else {
+        onChangeAnswerName(newValue, groupIndex, elementIndex, index);
+      }
+    } else {
+      // Handle string input or object with name property
+      let autoSuggestedName = "";
+      if (typeof newValue === "string") {
+        autoSuggestedName = newValue;
+      } else if (newValue && newValue.name) {
+        autoSuggestedName = newValue.name;
+      }
+
+      if (!inlineConcept) {
+        onChangeAnswerName(autoSuggestedName, index, false);
+      } else {
+        onChangeAnswerName(autoSuggestedName, groupIndex, elementIndex, index);
+      }
+    }
+  };
+
+  const handleInputChange = (event, newInputValue) => {
+    setInputValue(newInputValue);
+    fetchSuggestions(newInputValue);
+  };
 
   return (
-    <StyledTextField
-      InputProps={{
-        inputRef: node => {
-          ref(node);
-          inputRef(node);
-        }
+    <StyledAutocomplete
+      options={suggestions}
+      getOptionLabel={option => {
+        if (typeof option === "string") return option;
+        return option?.name || "";
       }}
-      {...filteredProps}
+      isOptionEqualToValue={(option, value) => {
+        // Handle comparison between different types
+        if (!option || !value) return false;
+
+        const optionName = typeof option === "string" ? option : option.name;
+        const valueName = typeof value === "string" ? value : value.name;
+
+        return optionName === valueName;
+      }}
+      value={showAnswer}
+      onChange={handleChange}
+      inputValue={inputValue}
+      onInputChange={handleInputChange}
+      loading={loading}
+      disabled={visibility}
+      freeSolo
+      renderInput={params => (
+        <TextField
+          {...params}
+          label={label}
+          placeholder={placeholder}
+          required={true}
+          autoFocus={true}
+        />
+      )}
+      renderOption={(props, option) => (
+        <MenuItem {...props} key={option.uuid || option.name}>
+          {option.name} ({option.dataType})
+        </MenuItem>
+      )}
+      PaperComponent={Paper}
     />
   );
 }
-
-function renderSuggestion(suggestion, { query, isHighlighted }) {
-  const matches = match(suggestion, query);
-  const parts = parse(suggestion, matches);
-
-  return (
-    <MenuItem selected={isHighlighted} component="div">
-      <div>
-        {parts.map(part => (
-          <span
-            key={part.text.name}
-            style={{ fontWeight: part.highlight ? 500 : 400 }}
-          >
-            {part.text.name + " (" + part.text.dataType + ")"}
-          </span>
-        ))}
-      </div>
-    </MenuItem>
-  );
-}
-
-export default function AutoSuggestSingleSelection(props) {
-  const ignoredDatatypesFromProps = props.dataTypesToIgnore || [];
-  const dataTypesToIgnore = [...ignoredDatatypesFromProps, "NA"];
-
-  // Ensure showAnswer.name is a string
-  const safeShowAnswer = {
-    ...props.showAnswer,
-    name: props.showAnswer.name != null ? String(props.showAnswer.name) : ""
-  };
-
-  const [state, setState] = useState({
-    single: ""
-  });
-  const [stateSuggestions, setSuggestions] = useState([]);
-
-  const handleSuggestionsFetchRequested = ({ value }) => {
-    // Safely handle value - ensure it's a string before calling trim
-    // Check if value is a Symbol and handle it appropriately
-    let safeValue = "";
-    if (value != null) {
-      if (typeof value === "symbol") {
-        // If it's a Symbol, convert it safely or use empty string
-        safeValue = value.toString();
-      } else {
-        // For other types, convert to string
-        safeValue = String(value);
-      }
-    }
-
-    const inputValue = deburr(safeValue.trim()).toLowerCase();
-    const dataType = props.dataType;
-    const queryString = _.isEmpty(dataType)
-      ? "name=" + encodeURIComponent(inputValue)
-      : "name=" + encodeURIComponent(inputValue) + "&dataType=" + dataType;
-    const inputLength = inputValue.length;
-
-    http.get(`/search/concept?${queryString}`).then(response => {
-      const suggestions = response.data;
-      _.sortBy(suggestions, concept => concept.name);
-      if (props.showSuggestionStartsWith) {
-        const filteredSuggestions = suggestions.filter(
-          suggestion =>
-            !suggestion.voided &&
-            suggestion.name.slice(0, inputLength).toLowerCase() === inputValue
-        );
-        setSuggestions(filteredSuggestions);
-      } else {
-        const filteredSuggestions = suggestions.filter(
-          suggestion =>
-            !suggestion.voided &&
-            !_.includes(dataTypesToIgnore, suggestion.dataType)
-        );
-        setSuggestions(filteredSuggestions);
-      }
-    });
-  };
-
-  const getSuggestionValue = suggestion => {
-    if (props.finalReturn) {
-      !props.inlineConcept && props.onChangeAnswerName(suggestion, props.index);
-      props.inlineConcept &&
-        props.onChangeAnswerName(
-          suggestion,
-          props.groupIndex,
-          props.elementIndex,
-          props.index
-        );
-    }
-    return suggestion;
-  };
-
-  const handleSuggestionsClearRequested = () => {
-    setSuggestions([]);
-  };
-
-  const handleChange = name => (event, { newValue }) => {
-    let autoSuggestedName = "";
-    const datatype = typeof newValue;
-    if (datatype === "string") {
-      autoSuggestedName = newValue;
-    } else {
-      autoSuggestedName = newValue.name;
-    }
-    setState({
-      ...state,
-      [name]: autoSuggestedName
-    });
-    !props.inlineConcept &&
-      props.onChangeAnswerName(autoSuggestedName, props.index, false);
-    props.inlineConcept &&
-      props.onChangeAnswerName(
-        autoSuggestedName,
-        props.groupIndex,
-        props.elementIndex,
-        props.index
-      );
-  };
-
-  const autosuggestProps = {
-    renderInputComponent,
-    suggestions: stateSuggestions,
-    onSuggestionsFetchRequested: handleSuggestionsFetchRequested,
-    onSuggestionsClearRequested: handleSuggestionsClearRequested,
-    getSuggestionValue,
-    renderSuggestion
-  };
-
-  return (
-    <StyledContainer>
-      <Autosuggest
-        {...autosuggestProps}
-        inputProps={{
-          required: true,
-          label: props.label,
-          placeholder: props.placeholder,
-          value: safeShowAnswer.name,
-          onChange: handleChange("single"),
-          disabled: props.visibility,
-          autoFocus: true
-        }}
-        theme={{
-          container: StyledAutosuggestContainer,
-          suggestionsContainerOpen: StyledSuggestionsContainer,
-          suggestionsList: StyledSuggestionsList,
-          suggestion: StyledSuggestion
-        }}
-        renderSuggestionsContainer={options => {
-          const { containerProps } = options;
-
-          // Extract key separately and filter out Symbol-keyed properties
-          const { key, ...restProps } = containerProps || {};
-          const filteredContainerProps = {};
-
-          Object.keys(restProps).forEach(propKey => {
-            if (typeof propKey === "string") {
-              filteredContainerProps[propKey] = restProps[propKey];
-            }
-          });
-
-          return (
-            <Paper key={key} {...filteredContainerProps} square>
-              {options.children}
-            </Paper>
-          );
-        }}
-      />
-    </StyledContainer>
-  );
-}
-
-AutoSuggestSingleSelection.defaultProps = {
-  finalReturn: false,
-  showSuggestionStartsWith: false,
-  dataTypesToIgnore: [],
-  showAnswer: { name: "" },
-  label: "",
-  placeholder: "",
-  visibility: false
-};

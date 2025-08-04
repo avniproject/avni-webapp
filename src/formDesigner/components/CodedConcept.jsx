@@ -4,7 +4,8 @@ import {
   FormControlLabel,
   Button,
   Grid,
-  FormHelperText
+  FormHelperText,
+  Box
 } from "@mui/material";
 import { Delete, ArrowDropUp, ArrowDropDown } from "@mui/icons-material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
@@ -13,15 +14,11 @@ import { get, size } from "lodash";
 import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 import { WebConceptView } from "common/model/WebConcept";
 
-const StyledButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
+const StyledButton = styled(Button)({
   height: "35px",
-  width: "10%",
-  marginTop: 20
-}));
-
-const StyledGridContainer = styled(Grid)({
-  marginTop: 20
+  width: "17%",
+  justifyContent: "start",
+  marginTop: 5
 });
 
 const StyledFormControlLabel = styled(FormControlLabel)({
@@ -31,10 +28,6 @@ const StyledFormControlLabel = styled(FormControlLabel)({
 
 const StyledDeleteButton = styled(Button)({
   color: "#ff0000"
-});
-
-const StyledGrid = styled(Grid)({
-  alignItems: "center"
 });
 
 export const CodedConceptAnswer = ({
@@ -76,8 +69,9 @@ export const CodedConceptAnswer = ({
     answer.isAnswerHavingError.type === "duplicate";
 
   return (
-    <Grid container spacing={0} alignItems="center">
-      <Grid item xs={8} sm={3} md={4}>
+    <Grid container spacing={1} alignItems="center" sx={{ mb: 1 }}>
+      {/* Answer Input Field */}
+      <Grid item xs={12} sm={8} md={6}>
         <AutoSuggestSingleSelection
           visibility={!answer.editable}
           showAnswer={answer}
@@ -98,60 +92,71 @@ export const CodedConceptAnswer = ({
           <FormHelperText error>Duplicate answer specified</FormHelperText>
         )}
       </Grid>
-      <Grid item>
-        <StyledFormControlLabel
-          control={
-            <Checkbox
-              checked={answer.abnormal}
-              onChange={e =>
-                inlineConcept
-                  ? onToggleAnswerField(
-                      "abnormal",
-                      groupIndex,
-                      elementIndex,
-                      index
-                    )
-                  : onToggleAnswerField(e, index)
+
+      {/* Checkboxes - Horizontal */}
+      <Grid item xs={6} sm={4} md={2}>
+        <Grid container spacing={1} alignItems="center">
+          <Grid item>
+            <StyledFormControlLabel
+              control={
+                <Checkbox
+                  checked={answer.abnormal}
+                  onChange={e =>
+                    inlineConcept
+                      ? onToggleAnswerField(
+                          "abnormal",
+                          groupIndex,
+                          elementIndex,
+                          index
+                        )
+                      : onToggleAnswerField(e, index)
+                  }
+                  value={answer.abnormal}
+                  color="primary"
+                  id="abnormal"
+                  size="small"
+                />
               }
-              value={answer.abnormal}
-              color="primary"
-              id="abnormal"
+              label="abnormal"
             />
-          }
-          label="abnormal"
-        />
-      </Grid>
-      <Grid item>
-        <StyledFormControlLabel
-          control={
-            <Checkbox
-              checked={answer.unique}
-              onChange={e =>
-                inlineConcept
-                  ? onToggleAnswerField(
-                      "unique",
-                      groupIndex,
-                      elementIndex,
-                      index
-                    )
-                  : onToggleAnswerField(e, index)
+          </Grid>
+          <Grid item>
+            <StyledFormControlLabel
+              control={
+                <Checkbox
+                  checked={answer.unique}
+                  onChange={e =>
+                    inlineConcept
+                      ? onToggleAnswerField(
+                          "unique",
+                          groupIndex,
+                          elementIndex,
+                          index
+                        )
+                      : onToggleAnswerField(e, index)
+                  }
+                  value={answer.unique}
+                  color="primary"
+                  id="unique"
+                  size="small"
+                />
               }
-              value={answer.unique}
-              color="primary"
-              id="unique"
+              label="unique"
             />
-          }
-          label="unique"
-        />
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid item>
-        <Grid container direction="row" alignItems="center">
+
+      {/* Action Buttons - Horizontal */}
+      <Grid item xs={6} sm={4} md={4}>
+        <Grid container spacing={0.5} alignItems="center">
           <Grid item>
             <StyledButton
               disabled={index === 0}
               color="primary"
               type="button"
               onClick={() => action("onMoveUp")}
+              size="small"
             >
               <ArrowDropUp /> Move up
             </StyledButton>
@@ -162,6 +167,7 @@ export const CodedConceptAnswer = ({
               color="primary"
               type="button"
               onClick={() => action("onMoveDown")}
+              size="small"
             >
               <ArrowDropDown /> Move down
             </StyledButton>
@@ -170,6 +176,7 @@ export const CodedConceptAnswer = ({
             <StyledDeleteButton
               type="button"
               onClick={() => action("onDeleteAnswer")}
+              size="small"
             >
               <Delete fontSize="small" /> Remove
             </StyledDeleteButton>
@@ -198,49 +205,58 @@ export const CodedConceptAnswer = ({
   );
 };
 
-CodedConceptAnswer.defaultProps = {
-  inlineConcept: false,
-  elementIndex: -1,
-  groupIndex: -1
-};
-
 export default function CodedConcept(props) {
   return (
-    <>
-      <Grid container style={{ marginTop: 20 }}>
+    <Box sx={{ mt: 2 }}>
+      {/* Sort Button - Separate from answers */}
+      <Box sx={{ mb: 2 }}>
         <StyledButton
           type="button"
           color="primary"
           onClick={props.onAlphabeticalSort}
+          size="medium"
         >
           Sort alphabetically
         </StyledButton>
+      </Box>
+
+      {/* Answers List */}
+      <Box sx={{ mb: 2 }}>
         {props.answers.map((answer, index) => {
           return (
             !answer.voided && (
-              <Grid container key={`answer-${index}`}>
-                <CodedConceptAnswer
-                  answer={answer}
-                  index={index}
-                  onDeleteAnswer={props.onDeleteAnswer}
-                  onAddAnswer={props.onAddAnswer}
-                  onChangeAnswerName={props.onChangeAnswerName}
-                  onToggleAnswerField={props.onToggleAnswerField}
-                  onMoveUp={props.onMoveUp}
-                  onMoveDown={props.onMoveDown}
-                  totalAnswers={size(props.answers)}
-                  onSelectAnswerMedia={props.onSelectAnswerMedia}
-                  onRemoveAnswerMedia={props.onRemoveAnswerMedia}
-                />
-              </Grid>
+              <CodedConceptAnswer
+                key={`answer-${index}`}
+                answer={answer}
+                index={index}
+                onDeleteAnswer={props.onDeleteAnswer}
+                onAddAnswer={props.onAddAnswer}
+                onChangeAnswerName={props.onChangeAnswerName}
+                onToggleAnswerField={props.onToggleAnswerField}
+                onMoveUp={props.onMoveUp}
+                onMoveDown={props.onMoveDown}
+                totalAnswers={size(props.answers)}
+                onSelectAnswerMedia={props.onSelectAnswerMedia}
+                onRemoveAnswerMedia={props.onRemoveAnswerMedia}
+              />
             )
           );
         })}
-      </Grid>
-      <StyledButton type="button" color="primary" onClick={props.onAddAnswer}>
-        Add New Answer
-      </StyledButton>
-    </>
+      </Box>
+
+      {/* Add New Answer Button */}
+      <Box>
+        <StyledButton
+          type="button"
+          color="primary"
+          onClick={props.onAddAnswer}
+          // variant="contained"
+          size="medium"
+        >
+          Add New Answer
+        </StyledButton>
+      </Box>
+    </Box>
   );
 }
 

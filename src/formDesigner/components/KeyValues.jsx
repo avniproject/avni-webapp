@@ -18,11 +18,12 @@ const StyledForm = styled("form")(({ theme }) => ({
   }
 }));
 
-const StyledButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
-  height: 35,
-  marginTop: theme.spacing(2.5)
-}));
+const StyledButton = styled(Button)({
+  height: "35px",
+  width: "17%",
+  justifyContent: "start",
+  marginTop: 5
+});
 
 const StyledTextField = styled(TextField)({
   marginRight: 10,
@@ -35,9 +36,9 @@ const StyledBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(5)
 }));
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  marginTop: theme.spacing(1.25) // 10px
-}));
+const StyledIconButton = styled(IconButton)({
+  marginTop: 5
+});
 
 export default function KeyValues({
   keyValues,
@@ -56,7 +57,11 @@ export default function KeyValues({
           direction="row"
           sx={{ alignItems: "center" }}
         >
-          <StyledForm noValidate autoComplete="off">
+          <StyledForm
+            noValidate
+            autoComplete="off"
+            sx={{ flexDirection: "row" }}
+          >
             <StyledTextField
               id="outlined-basic"
               label="Key"
@@ -83,14 +88,14 @@ export default function KeyValues({
                 )
               }
             />
+            <StyledIconButton
+              aria-label="delete"
+              onClick={() => onDeleteKeyValue(index)}
+              disabled={readOnlyKeys.includes(item && item.key)}
+            >
+              <Delete fontSize="inherit" />
+            </StyledIconButton>
           </StyledForm>
-          <StyledIconButton
-            aria-label="delete"
-            onClick={() => onDeleteKeyValue(index)}
-            disabled={readOnlyKeys.includes(item && item.key)}
-          >
-            <Delete fontSize="inherit" />
-          </StyledIconButton>
         </Grid>
       ))}
       {error && <FormHelperText error>Key-Value can't be blank</FormHelperText>}
