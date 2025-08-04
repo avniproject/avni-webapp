@@ -10,6 +10,7 @@ import { store } from "./common/store";
 import { App, SecureApp } from "./rootApp";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { StyledEngineProvider } from "@mui/system";
+import { grey, blue, red, orange, green } from "@mui/material/colors";
 import { httpClient as http } from "./common/utils/httpClient";
 import IdpDetails from "./rootApp/security/IdpDetails";
 import { configureAuth } from "./rootApp/utils";
@@ -22,55 +23,56 @@ const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#2196f3",
-      light: "#64b5f6",
-      dark: "#1976d2",
+      main: blue[500],
+      light: blue[300],
+      dark: blue[700],
       contrastText: "#ffffff"
     },
     secondary: {
-      main: "#90caf9",
-      light: "#c3fdff",
-      dark: "#5d99c6",
+      main: grey[200],
+      light: grey[100],
+      dark: grey[400],
       contrastText: "rgba(0, 0, 0, 0.87)"
     },
+    grey: grey,
     background: {
-      default: "#f3f8ff",
-      paper: "#ffffff"
+      default: grey[100],
+      paper: grey[50]
     },
     text: {
-      primary: "rgba(0, 0, 0, 0.87)",
-      secondary: "rgba(25, 118, 210, 0.7)",
-      disabled: "rgba(0, 0, 0, 0.38)"
+      primary: grey[900],
+      secondary: grey[600],
+      disabled: grey[400]
     },
-    divider: "rgba(33, 150, 243, 0.12)",
+    divider: grey[200],
     action: {
-      hover: "rgba(33, 150, 243, 0.04)",
-      selected: "rgba(33, 150, 243, 0.08)",
-      disabled: "rgba(0, 0, 0, 0.26)",
-      disabledBackground: "rgba(0, 0, 0, 0.12)"
+      hover: grey[100],
+      selected: grey[200],
+      disabled: grey[400],
+      disabledBackground: grey[200]
     },
     error: {
-      main: "#f44336",
-      light: "#e57373",
-      dark: "#d32f2f",
+      main: red[500],
+      light: red[300],
+      dark: red[700],
       contrastText: "#ffffff"
     },
     warning: {
-      main: "#ff9800",
-      light: "#ffb74d",
-      dark: "#f57c00",
+      main: orange[500],
+      light: orange[300],
+      dark: orange[700],
       contrastText: "rgba(0, 0, 0, 0.87)"
     },
     info: {
-      main: "#2196f3",
-      light: "#64b5f6",
-      dark: "#1976d2",
+      main: blue[500],
+      light: blue[300],
+      dark: blue[700],
       contrastText: "#ffffff"
     },
     success: {
-      main: "#4caf50",
-      light: "#81c784",
-      dark: "#388e3c",
+      main: green[500],
+      light: green[300],
+      dark: green[700],
       contrastText: "rgba(0, 0, 0, 0.87)"
     }
   },

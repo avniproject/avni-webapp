@@ -37,44 +37,68 @@ import MediaObservations from "./MediaObservations";
 import { httpClient as http } from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
 
-const StyledTable = styled(Table)(({ highlight }) => ({
-  borderRadius: "3px",
-  boxShadow: "0px 0px 1px",
-  backgroundColor: highlight ? Colors.HighlightBackgroundColor : undefined
+const StyledTable = styled(Table)(({ theme, highlight }) => ({
+  borderRadius: "8px",
+  boxShadow: highlight
+    ? "0px 2px 8px rgba(33, 150, 243, 0.2)"
+    : "0px 1px 3px rgba(0, 0, 0, 0.1)",
+  backgroundColor: theme.palette.background.paper,
+  overflow: "hidden",
+  border: `1px solid ${theme.palette.grey[200]}`
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
+    backgroundColor: "rgba(0, 0, 0, 0.02)"
+  },
+  "&:nth-of-type(even)": {
+    backgroundColor: theme.palette.background.paper
+  },
+  "&:hover": {
     backgroundColor: theme.palette.action.hover
   },
-  "&:last-child td, &:last-child th": {
-    border: 0
+  "&:last-child td": {
+    borderBottom: "none"
   }
 }));
 
-const StyledTableCell = styled(TableCell)(({ variant }) => ({
-  padding: variant === "spacer" ? "6px 4px 6px 6px" : "6px 4px 6px 6px",
-  color: variant === "label" ? "#555555" : undefined,
-  background:
+const StyledTableCell = styled(TableCell)(({ theme, variant }) => ({
+  padding: variant === "spacer" ? "4px 8px" : "6px 12px",
+  borderBottom: `1px solid ${theme.palette.grey[100]}`,
+  color:
+    variant === "label"
+      ? theme.palette.text.primary
+      : theme.palette.text.secondary,
+  fontWeight: variant === "label" ? 500 : 400,
+  fontSize: variant === "label" ? "0.875rem" : "0.875rem",
+  backgroundColor:
     variant === "groupHeader"
-      ? "rgb(232 232 232)"
+      ? theme.palette.primary.main
       : variant === "fegHeader"
-      ? "lightgray"
-      : undefined
+      ? theme.palette.grey[50]
+      : "inherit",
+  color:
+    variant === "groupHeader"
+      ? theme.palette.primary.contrastText
+      : variant === "fegHeader"
+      ? theme.palette.text.secondary
+      : variant === "label"
+      ? theme.palette.text.secondary
+      : theme.palette.text.primary
 }));
 
-const StyledTableBody = styled(TableBody)({
-  background: "white"
-});
+const StyledTableBody = styled(TableBody)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper
+}));
 
 const StyledTypography = styled(Typography)(({ theme, variant }) => ({
   marginLeft: variant === "group" ? "10px" : undefined,
-  color: variant ? theme.palette.text.secondary : undefined,
+  color: variant ? theme.palette.primary.dark : undefined,
   marginBottom: theme.spacing(1)
 }));
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(2)
+  margin: theme.spacing(0.5)
 }));
 
 const StyledErrorSpan = styled("span")({

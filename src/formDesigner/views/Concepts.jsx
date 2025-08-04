@@ -23,7 +23,7 @@ const Concepts = () => {
 
   useEffect(() => {
     if (redirect) {
-      navigate("/appdesigner/concept/create");
+      navigate("/appdesigner/concepts/create");
     }
   }, [redirect, navigate]);
 
