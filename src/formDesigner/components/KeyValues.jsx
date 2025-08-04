@@ -60,7 +60,7 @@ export default function KeyValues({
           <StyledForm
             noValidate
             autoComplete="off"
-            sx={{ flexDirection: "row" }}
+            sx={{ flexDirection: "column" }}
           >
             <StyledTextField
               id="outlined-basic"
