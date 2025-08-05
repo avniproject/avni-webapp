@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import {
+  AutocompleteInput,
   Datagrid,
   FilterLiveSearch,
   List,
   TextField,
+  TextInput,
   ReferenceManyField,
   ReferenceField,
   FunctionField,
   Create,
   Edit,
   SimpleForm,
-  TextInput,
   useRecordContext,
   Toolbar,
   SaveButton,
@@ -269,18 +270,21 @@ const LocationFormInner = ({ edit }) => {
               reference="locations"
               filter={{
                 searchURI: "findAsList",
-                typeId: getParentIdOfLocationType(formData.typeId),
-                title: ""
+                typeId: getParentIdOfLocationType(formData.typeId)
               }}
-              filterToQuery={searchText => ({ title: searchText })}
               {...rest}
             >
-              <StyledSelectInput
+              <AutocompleteInput
                 validate={isRequired}
                 optionText={record =>
                   record ? `${record.titleLineage} (${record.typeString})` : ""
                 }
                 source="parentId"
+                filterToQuery={searchText => ({ title: searchText })}
+                debounce={500}
+                shouldRenderSuggestions={value => value && value.length >= 2}
+                noOptionsText="Type at least 2 characters to search locations"
+                loadingText="Searching locations..."
               />
             </ReferenceInput>
           )
