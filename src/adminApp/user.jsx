@@ -686,6 +686,17 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
             )
           );
       setLanguages(organisationLocales);
+
+      if (props.record?.settings?.locale) {
+        const currentLocale = props.record.settings.locale;
+        const localeExists = organisationLocales.some(
+          locale => locale.id === currentLocale
+        );
+        if (!localeExists && organisationLocales.length > 0) {
+          // If current locale is not in available languages, set it to the first available language
+          props.record.settings.locale = organisationLocales[0].id;
+        }
+      }
     });
   }, []);
 
@@ -902,7 +913,12 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
         <StyledSelectInput
           source="settings.locale"
           label="Preferred Language"
-          choices={languages}
+          choices={localeChoices.map(({ id, name }) => ({
+            id,
+            name
+          }))}
+          optionValue="id"
+          optionText="name"
           style={{ width: "fit-content", minWidth: "15em" }}
         />
         <AvniBooleanInput

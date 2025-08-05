@@ -24,7 +24,7 @@ export default function PasswordDialog({
   onConfirm,
   serverError
 }) {
-  let initialPassword = { password: undefined, showPassword: false };
+  let initialPassword = { password: "", showPassword: false };
   const [password, setPassword] = useState(initialPassword);
   const [confirmPassword, setConfirmPassword] = useState(initialPassword);
   const [error, setError] = useState();

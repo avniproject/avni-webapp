@@ -5,8 +5,8 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^6.11.2",
     "@babel/eslint-parser": "^7.28.0",
-    "@emotion/react": "11.13.3",
-    "@emotion/styled": "11.13.0",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.0",
     "@fontsource/roboto": "^5.0.8",
     "@jest/globals": "^30.0.4",
     "@mui/icons-material": "^7.2.0",
@@ -77,7 +77,9 @@
   },
   "resolutions": {
     "stylis": "4.2.0",
-    "@emotion/stylis": "0.8.5"
+    "@emotion/stylis": "0.8.5",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.0"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",

@@ -101,8 +101,12 @@ export const CreateEditFilters = ({
   } = selectedFilter || emptyFilter;
   const { programs, subjectTypes, encounterTypes } = operationalModules || {};
 
-  const mapToOptions = entity =>
-    map(entity, ({ name, uuid }) => ({ label: name, value: uuid }));
+  const mapToOptions = entity => {
+    return map(entity, item => {
+      const actualItem = item.that || item;
+      return { label: actualItem.name, value: actualItem.uuid };
+    });
+  };
 
   const programOptions = mapToOptions(programs);
   const encounterTypeOptions = mapToOptions(encounterTypes);
@@ -587,6 +591,7 @@ export const CreateEditFilters = ({
             message={messageStatus.message}
             getDefaultSnackbarStatus={status => setSnackBarStatus(status)}
             defaultSnackbarStatus={snackBarStatus}
+            variant="success"
           />
         )}
       </Box>

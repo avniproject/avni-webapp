@@ -71,7 +71,7 @@ export const CodedConceptAnswer = ({
   return (
     <Grid container spacing={1} alignItems="center" sx={{ mb: 1 }}>
       {/* Answer Input Field */}
-      <Grid item xs={12} sm={8} md={6}>
+      <Grid xs={12} sm={8} md={6}>
         <AutoSuggestSingleSelection
           visibility={!answer.editable}
           showAnswer={answer}
@@ -94,9 +94,9 @@ export const CodedConceptAnswer = ({
       </Grid>
 
       {/* Checkboxes - Horizontal */}
-      <Grid item xs={6} sm={4} md={2}>
+      <Grid xs={6} sm={4} md={2}>
         <Grid container spacing={1} alignItems="center">
-          <Grid item>
+          <Grid>
             <StyledFormControlLabel
               control={
                 <Checkbox
@@ -120,7 +120,7 @@ export const CodedConceptAnswer = ({
               label="abnormal"
             />
           </Grid>
-          <Grid item>
+          <Grid>
             <StyledFormControlLabel
               control={
                 <Checkbox
@@ -148,9 +148,9 @@ export const CodedConceptAnswer = ({
       </Grid>
 
       {/* Action Buttons - Horizontal */}
-      <Grid item xs={6} sm={4} md={4}>
+      <Grid xs={6} sm={4} md={4}>
         <Grid container spacing={0.5} alignItems="center">
-          <Grid item>
+          <Grid>
             <StyledButton
               disabled={index === 0}
               color="primary"
@@ -161,7 +161,7 @@ export const CodedConceptAnswer = ({
               <ArrowDropUp /> Move up
             </StyledButton>
           </Grid>
-          <Grid item>
+          <Grid>
             <StyledButton
               disabled={index + 1 === totalAnswers}
               color="primary"
@@ -172,7 +172,7 @@ export const CodedConceptAnswer = ({
               <ArrowDropDown /> Move down
             </StyledButton>
           </Grid>
-          <Grid item>
+          <Grid>
             <StyledDeleteButton
               type="button"
               onClick={() => action("onDeleteAnswer")}
@@ -182,7 +182,7 @@ export const CodedConceptAnswer = ({
             </StyledDeleteButton>
           </Grid>
           {!inlineConcept && (
-            <Grid item>
+            <Grid>
               <AvniImageUpload
                 width={20}
                 height={20}

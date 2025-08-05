@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import TutorialCard from "./TutorialCard";
 
 import {
@@ -27,6 +27,16 @@ const Resources = () => {
         alignItems: "center"
       }}
     >
+      <Grid>
+        <Typography variant="h2" sx={{ textAlign: "center" }}>
+          We are here to help!
+        </Typography>
+        <Typography variant="body2" sx={{ marginTop: 2, textAlign: "center" }}>
+          While you can always email support@avni.freshdesk.com, you can also
+          search our help articles, check out our YouTube channel, or schedule
+          time with our product experts for you and your team.
+        </Typography>
+      </Grid>
       <Grid
         size={{
           xs: 12,

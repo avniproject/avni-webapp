@@ -67,7 +67,12 @@ const StyledSidebarToggle = styled(SidebarToggleButton)(({ theme }) => ({
   marginLeft: "-30px"
 }));
 
-const AdminAppBar = ({ component: CustomComponent = Box, ...props }) => {
+//alwaysOn should not be passed that is why it has been destructured
+const AdminAppBar = ({
+  component: CustomComponent = Box,
+  alwaysOn,
+  ...props
+}) => {
   const navigate = useNavigate();
 
   const organisation = useSelector(state => state.app.organisation);

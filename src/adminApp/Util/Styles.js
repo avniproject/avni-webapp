@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/material";
-import { AutocompleteArrayInput, ReferenceArrayInput, SelectInput, TextInput, SimpleShowLayout, Show } from "react-admin";
+import { AutocompleteArrayInput, SelectInput, TextInput, SimpleShowLayout, Show } from "react-admin";
 
 export const StyledBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(1), // Reduced from 3.5 to 1 for better positioning

@@ -334,8 +334,6 @@ const UploadDashboard = () => {
     });
   }, [dispatch]);
 
-  console.log("file:", file);
-
   if (reviewStatus) {
     return (
       <MetadataDiff

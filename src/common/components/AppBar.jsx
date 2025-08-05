@@ -50,7 +50,7 @@ const StyledUserSection = styled("div")(({ theme }) => ({
   }
 }));
 
-const StyledUserInfo = styled("div")(({ theme }) => ({
+const StyledUserInfo = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   color: theme.palette.common.white
@@ -61,13 +61,22 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
   padding: theme.spacing(1)
 }));
 
-const AppBar = ({
-  component: CustomComponent = Box,
-  position,
-  handleDrawer,
-  enableLeftMenuButton,
-  title
-}) => {
+const StyledHomeButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.common.white,
+  minWidth: "auto",
+  padding: theme.spacing(1, 1.5),
+  "& .MuiButton-startIcon": {
+    marginRight: 0,
+    "& > svg": {
+      fontSize: "1.5rem"
+    }
+  },
+  "&:hover": {
+    backgroundColor: "rgba(255, 255, 255, 0.1)"
+  }
+}));
+
+const AppBar = ({ position, handleDrawer, enableLeftMenuButton, title }) => {
   const navigate = useNavigate();
 
   const organisation = useSelector(state => state.app.organisation);
@@ -127,10 +136,10 @@ const AppBar = ({
             </StyledOrganisationInfo>
 
             <StyledUserInfo>
-              <Button
-                color="inherit"
+              <StyledHomeButton
                 onClick={() => navigate("/home")}
                 startIcon={<HomeIcon />}
+                aria-label="Navigate to home"
               />
 
               <StyledIconButton
@@ -164,7 +173,6 @@ const AppBar = ({
         onConfirm={password => onSubmitNewPassword(password)}
         serverError={error}
       />
-      <CustomComponent />
     </StyledRoot>
   );
 };

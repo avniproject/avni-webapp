@@ -247,14 +247,14 @@ const SubjectTypeEdit = () => {
         </FormLabel>
       )}
       <Grid container sx={{ justifyContent: "space-between", mt: 2 }}>
-        <Grid item>
+        <Grid>
           <SaveComponent
             name="save"
             onSubmit={onSubmit}
             styles={{ marginLeft: "14px" }}
           />
         </Grid>
-        <Grid item>
+        <Grid>
           <Button
             sx={{
               backgroundColor: disableDelete ? "lightgray" : "#f44336",

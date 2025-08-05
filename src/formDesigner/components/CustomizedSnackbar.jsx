@@ -92,7 +92,7 @@ export default function CustomizedSnackbar({
   getDefaultSnackbarStatus,
   defaultSnackbarStatus = true,
   onExited,
-  variant,
+  variant = "success",
   message,
   autoHideDuration = 2000
 }) {
