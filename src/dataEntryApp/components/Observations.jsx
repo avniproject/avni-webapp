@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import {
   Grid,
@@ -582,14 +582,20 @@ const Observations = ({
 
   const renderFEGView = (fegName, index, fegRows) => {
     return (
-      <TableRow key={`${index}-${customKey}`}>
+      <TableRow key={`feg-${index}-${customKey}`}>
         <StyledTableCell variant="fegHeader" colSpan={6}>
           <StyledBox>
             <StyledTypography variant="h6" component="div">
               {t(fegName)}
             </StyledTypography>
             <Table size="small" aria-label="fegRows">
-              <StyledTableBody>{fegRows}</StyledTableBody>
+              <StyledTableBody>
+                {React.Children.map(fegRows, (row, rowIndex) =>
+                  React.cloneElement(row, {
+                    key: `feg-row-${index}-${rowIndex}`
+                  })
+                )}
+              </StyledTableBody>
             </Table>
           </StyledBox>
         </StyledTableCell>

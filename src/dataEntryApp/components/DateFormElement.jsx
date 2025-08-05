@@ -136,8 +136,10 @@ export const DateFormElement = ({
             helperText:
               validationResult &&
               t(validationResult.messageKey, validationResult.extra),
-            inputProps: { disableUnderline: !fe.editable },
             variant: "outlined"
+          },
+          input: {
+            disableUnderline: !fe.editable
           },
           actionBar: { actions: ["clear"] },
           openPickerButton: { "aria-label": "change date", color: "primary" }
@@ -248,8 +250,10 @@ export const DateAndDurationFormElement = ({
               helperText:
                 validationResult &&
                 t(validationResult.messageKey, validationResult.extra),
-              inputProps: { disableUnderline: !fe.editable },
               variant: "outlined"
+            },
+            input: {
+              disableUnderline: !fe.editable
             },
             actionBar: { actions: ["clear"] },
             openPickerButton: { "aria-label": "change date", color: "primary" }

@@ -46,7 +46,7 @@ const StyledTitle = styled(Typography)(({ theme }) => ({
 
 const StyledUserSection = styled("div")(({ theme }) => ({
   ...CommonAppBarStyles(theme).userSection,
-  "& > *:not(:first-child)": {
+  "& > *:not(:first-of-type)": {
     marginLeft: theme.spacing(2)
   }
 }));

@@ -3,6 +3,7 @@ import { TextField, Typography } from "@mui/material";
 import { find, isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { HelpText } from "../../common/components/HelpText";
+import { shouldForwardProp } from "@mui/system";
 
 const StyledContainer = styled("div")(({ isGrid }) => ({
   display: isGrid ? "flex" : "block",
@@ -11,9 +12,12 @@ const StyledContainer = styled("div")(({ isGrid }) => ({
   width: isGrid ? "50%" : undefined
 }));
 
-const StyledTypography = styled(Typography)(({ isGrid, hasHelpText }) => ({
+const StyledTypography = styled(Typography, {
+  shouldForwardProp: prop =>
+    shouldForwardProp(prop) && !["hasHelpText", "isGrid"].includes(prop)
+})(({ isGrid, hasHelpText }) => ({
   width: !isGrid ? "50%" : undefined,
-  marginBottom: !isGrid && !hasHelpText ? 8 : 0, // Converted from sx={{ mb: 1 }} (1 * 8px = 8px)
+  marginBottom: !isGrid && !hasHelpText ? 8 : 0,
   color: "rgba(0, 0, 0, 0.54)",
   flex: isGrid ? 0.5 : undefined,
   marginRight: isGrid ? "15px" : undefined,
@@ -68,7 +72,15 @@ export default ({
           const v = e.target.value;
           isEmpty(v) ? update() : update(v);
         }}
-        InputProps={{ disableUnderline: !fe.editable }}
+        variant={fe.editable ? "outlined" : "standard"}
+        sx={{
+          "& .MuiInput-underline:before": {
+            borderBottom: fe.editable ? undefined : "none"
+          },
+          "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+            borderBottom: fe.editable ? undefined : "none"
+          }
+        }}
         disabled={!fe.editable}
       />
     </StyledContainer>
