@@ -63,10 +63,10 @@ export const OrganisationDetail = ({
     <StyledBox>
       <DocumentationContainer filename={"OrganisationDetail.md"}>
         <Title title={"Organisation Details"} />
-        <Grid container direction={"row"} spacing={1}>
-          <Grid container spacing={3}>
+        <Grid container direction={"row"}>
+          <Grid container spacing={1}>
             <Grid>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
                 Organisation Name : {name}
               </Typography>
               <OrgSettings

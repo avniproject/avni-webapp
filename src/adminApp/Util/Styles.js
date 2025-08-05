@@ -21,36 +21,37 @@ export const StyledTextInput = styled(TextInput)({
 });
 
 export const datagridStyles = {
-  border: `1px solid #e0e0e0`,
+  border: `0.0625rem solid #e0e0e0`, // 1px = 0.0625rem
   borderRadius: 2,
   overflow: "hidden",
   backgroundColor: "#fff",
+  minHeight: "25rem", // 400px = 25rem
 
   "& .RaDatagrid-headerCell": {
     backgroundColor: "#f5f5f5",
     fontWeight: "600",
     fontSize: "0.9rem",
     color: "#333",
-    padding: "12px 16px",
-    borderBottom: "1px solid #e0e0e0"
+    padding: "0.75rem 1rem", // 12px 16px = 0.75rem 1rem
+    borderBottom: "0.0625rem solid #e0e0e0"
   },
 
   "& .RaDatagrid-row": {
-    borderBottom: "1px solid #f0f0f0",
+    borderBottom: "0.0625rem solid #f0f0f0",
 
     "&:hover": {
       backgroundColor: "#fafafa"
     },
 
     "& td": {
-      padding: "12px 16px",
+      padding: "0.5rem 0.75rem", // 8px 12px = 0.5rem 0.75rem
       fontSize: "0.875rem",
       color: "#444"
     }
   },
 
   "& .RaDatagrid-headerRow": {
-    borderBottom: "1px solid #ccc"
+    borderBottom: "0.0625rem solid #ccc"
   },
 
   "& .column-title": {
@@ -64,7 +65,7 @@ export const StyledAutocompleteArrayInput = styled(AutocompleteArrayInput)({
   "& .MuiInputBase-root": {
     backgroundColor: "white",
     width: "auto",
-    minWidth: "120px"
+    minWidth: "7.5rem" // 120px = 7.5rem
   }
 });
 
@@ -73,7 +74,7 @@ export const StyledAutocompleteInput = styled(AutocompleteArrayInput)({
   "& .MuiInputBase-root": {
     backgroundColor: "white",
     width: "auto",
-    minWidth: "120px"
+    minWidth: "7.5rem" // 120px = 7.5rem
   }
 });
 
@@ -97,9 +98,9 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
     fontWeight: 600,
     fontSize: "0.875rem",
     color: theme.palette.text.secondary,
-    minWidth: "140px",
+    minWidth: "8.75rem", // 140px = 8.75rem
     textTransform: "uppercase",
-    letterSpacing: "0.5px"
+    letterSpacing: "0.03125rem" // 0.5px = 0.03125rem
   },
 
   "& .RaLabeled-value": {

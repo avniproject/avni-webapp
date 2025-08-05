@@ -90,7 +90,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
           Organisation settings
         </Typography>
       </Grid>
-      <Grid container spacing={1} direction={"column"}>
+      <Grid container direction={"column"}>
         {renderSimpleSetting(
           organisationConfigSettingKeys.draftSave,
           "Draft save",
