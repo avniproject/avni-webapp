@@ -240,25 +240,16 @@ const LocationFormInner = ({ edit }) => {
         toolTipKey={"ADMIN_LOCATION_NAME"}
       />
       <FormDataConsumer toolTipKey={"ADMIN_LOCATION_TYPE"}>
-        {({ formData, ...rest }) =>
-          edit ? (
-            <AvniTextInput
-              source="Type"
-              disabled
-              defaultValue={formData.typeString}
-              {...rest}
-            />
-          ) : (
-            <LocationTypeSelectInput
-              label="Type"
-              source="typeId"
-              optionText="name"
-              resettable
-              validate={isRequired}
-              {...rest}
-            />
-          )
-        }
+        {({ ...rest }) => (
+          <LocationTypeSelectInput
+            label="Type"
+            source="typeId"
+            optionText="name"
+            disabled={edit}
+            validate={isRequired}
+            {...rest}
+          />
+        )}
       </FormDataConsumer>
       <FormDataConsumer>
         {({ formData, ...rest }) =>
