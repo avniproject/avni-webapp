@@ -266,7 +266,7 @@ export const StyledShow = styled(Show)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
     margin: 0,
 
-    "&:not(:first-child)": {
+    "&:not(:first-of-type)": {
       borderRadius: 0,
       boxShadow: "none"
     }

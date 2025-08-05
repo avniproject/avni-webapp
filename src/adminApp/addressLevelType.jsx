@@ -58,6 +58,9 @@ export const LocationTypeList = props => (
 
 const ParentReferenceField = ({ showToolTip, ...props }) => {
   const Container = showToolTip ? ToolTipContainer : Box;
+  const containerProps = showToolTip
+    ? { toolTipKey: "ADMIN_LOCATION_TYPE_PARENT" }
+    : {};
   const record = useRecordContext();
 
   const parentId = record?.parentId;
@@ -67,7 +70,7 @@ const ParentReferenceField = ({ showToolTip, ...props }) => {
   }
 
   return (
-    <Container toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}>
+    <Container {...containerProps}>
       <ReferenceField
         {...props}
         source={"parentId"}
@@ -106,7 +109,7 @@ export const LocationTypeDetail = props => (
 const CreateEditToolbar = ({ edit, ...props }) => (
   <Toolbar {...props}>
     <SaveButton />
-    {edit && <DeleteButton undoable={false} sx={{ ml: "auto" }} />}
+    {edit && <DeleteButton undoable="false" sx={{ ml: "auto" }} />}
   </Toolbar>
 );
 

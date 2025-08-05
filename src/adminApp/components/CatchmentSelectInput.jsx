@@ -4,7 +4,7 @@ export const CatchmentSelectInput = props => (
   <AutocompleteInput
     {...props}
     optionText="name"
-    resettable
+    resettable="true"
     sx={{
       display: "inline-block",
       width: "auto",
