@@ -99,8 +99,9 @@ const HierarchicalLocationSelect = ({
   return (
     <div>
       {_.map(selectedAddressLevels, ({ addressLevelType, value }, index) => {
+        if (!addressLevelType) return null;
         const parentId =
-          index > 0 ? selectedAddressLevels[index - 1].value.id : null;
+          index > 0 ? selectedAddressLevels[index - 1]?.value?.id : null;
         return (
           <div style={{ marginBottom: "2px" }} key={index}>
             <LocationSelect
@@ -109,8 +110,8 @@ const HierarchicalLocationSelect = ({
               onSelect={addressLevel =>
                 onAddressLevelSelect(addressLevel, addressLevelType)
               }
-              placeholder={"Select " + addressLevelType.name}
-              typeId={addressLevelType.id}
+              placeholder={"Select " + (addressLevelType?.name || "location")}
+              typeId={addressLevelType?.id}
             />
           </div>
         );

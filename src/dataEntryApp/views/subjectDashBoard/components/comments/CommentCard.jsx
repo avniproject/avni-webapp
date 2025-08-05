@@ -29,8 +29,13 @@ export const CommentCard = ({
 }) => {
   const { t } = useTranslation();
   const myUsername = useSelector(selectDisplayUsername);
+  if (!comment) return null;
+
   const displayUsername =
-    comment.displayUsername === myUsername ? "You" : comment.displayUsername;
+    comment?.displayUsername === myUsername
+      ? t("You")
+      : comment?.displayUsername || t("Unknown User");
+
   const textBreakPoint = displayMenu ? 10 : 9;
   const optionBreakPoint = displayMenu ? 1 : 2;
   const [anchorEl, setAnchorEl] = useState(null);
@@ -42,7 +47,7 @@ export const CommentCard = ({
       label: "Edit",
       onPress: () => {
         setAnchorEl(null);
-        dispatch(setNewCommentText(comment.text));
+        dispatch(setNewCommentText(comment?.text));
         setCommentToEdit(comment);
       }
     },
@@ -69,7 +74,7 @@ export const CommentCard = ({
   };
 
   const renderOptions = () => {
-    return comment.displayUsername === myUsername ? (
+    return comment?.displayUsername === myUsername ? (
       <div>
         <IconButton
           onClick={event => setAnchorEl(event.currentTarget)}
@@ -104,11 +109,11 @@ export const CommentCard = ({
       <Grid container direction={"column"} spacing={1} size={textBreakPoint}>
         <Grid container direction={"column"}>
           <Grid>{displayUsername}</Grid>
-          <Grid>{getFormattedDateTime(comment.createdDateTime)}</Grid>
+          <Grid>{getFormattedDateTime(comment?.createdDateTime)}</Grid>
         </Grid>
         <Grid>
           <Typography sx={{ mb: 1 }} variant="body1">
-            {comment.text}
+            {comment?.text}
           </Typography>
         </Grid>
       </Grid>
@@ -120,7 +125,7 @@ export const CommentCard = ({
         setOpen={setOpenDelete}
         title={t("deleteCommentTitle")}
         message={t("deleteCommentMessage")}
-        onConfirm={() => dispatch(onCommentDelete(comment.id))}
+        onConfirm={() => dispatch(onCommentDelete(comment?.id))}
       />
     </Grid>
   );
