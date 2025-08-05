@@ -591,6 +591,7 @@ export const CreateEditFilters = ({
             message={messageStatus.message}
             getDefaultSnackbarStatus={status => setSnackBarStatus(status)}
             defaultSnackbarStatus={snackBarStatus}
+            variant="success"
           />
         )}
       </Box>

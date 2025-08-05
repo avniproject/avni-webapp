@@ -15,7 +15,7 @@ import {
   useRecordContext
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
-import { Typography, CardActions, Chip, Paper } from "@mui/material";
+import { Typography, Chip, Paper } from "@mui/material";
 import { LineBreak } from "../common/components/utils";
 import _ from "lodash";
 import { Title } from "./components/Title";
