@@ -6,7 +6,7 @@ export const modifiedAudit = ({ lastModifiedBy, lastModifiedDateTime, lastModifi
 };
 
 export const getFormattedDateTime = dateTime => {
-  const DATE_TIME_FORMAT = `MMMM d, yyyy hh:mm a`;
+  const DATE_TIME_FORMAT = `MMMM d, yyyy_hh:mm a`;
   return isValid(new Date(dateTime)) ? format(new Date(dateTime), DATE_TIME_FORMAT).split("_") : ["-", "-"];
 };
 
