@@ -533,7 +533,7 @@ const Observations = ({
       questionGroupRows = _.map(
         valueWrapper.repeatableObservations,
         (questionGroupValueWrapper, rqgIndex) => (
-          <StyledTableQGRow key={`${index}-rqg-${rqgIndex}`}>
+          <Fragment key={`${index}-rqg-${rqgIndex}`}>
             {renderSingleQuestionGroup(
               questionGroupValueWrapper,
               index + "rqg" + rqgIndex,
@@ -543,12 +543,12 @@ const Observations = ({
               StyledTableRow,
               renderValue
             )}
-          </StyledTableQGRow>
+          </Fragment>
         )
       );
     } else {
       questionGroupRows = (
-        <StyledTableQGRow key={`${index}-qg-0`}>
+        <Fragment key={`${index}-qg-0`}>
           {renderSingleQuestionGroup(
             valueWrapper,
             index + "qg-0",
@@ -558,25 +558,25 @@ const Observations = ({
             StyledTableRow,
             renderValue
           )}
-        </StyledTableQGRow>
+        </Fragment>
       );
     }
 
     return (
-      <Fragment>
-        <TableRow key={`${index}-${customKey}`}>
-          <StyledTableCell variant="header" colSpan={6}>
-            <StyledBox>
-              <StyledTypography variant="body1" component="div">
-                {t(observation.concept["name"])}
-              </StyledTypography>
-              <Table size="small" aria-label="questionGroupRows">
-                <StyledTableBody>{questionGroupRows}</StyledTableBody>
-              </Table>
-            </StyledBox>
-          </StyledTableCell>
-        </TableRow>
-      </Fragment>
+      <TableRow key={`${index}-${customKey}`}>
+        <StyledTableCell variant="header" colSpan={6}>
+          <StyledBox>
+            <StyledTypography variant="body1" component="div">
+              {t(observation.concept["name"])}
+            </StyledTypography>
+            <Table size="small" aria-label="questionGroupRows" component="div">
+              <StyledTableBody component="div">
+                {questionGroupRows}
+              </StyledTableBody>
+            </Table>
+          </StyledBox>
+        </StyledTableCell>
+      </TableRow>
     );
   };
 
@@ -588,11 +588,12 @@ const Observations = ({
             <StyledTypography variant="h6" component="div">
               {t(fegName)}
             </StyledTypography>
-            <Table size="small" aria-label="fegRows">
-              <StyledTableBody>
+            <Table size="small" aria-label="fegRows" component="div">
+              <StyledTableBody component="div">
                 {React.Children.map(fegRows, (row, rowIndex) =>
                   React.cloneElement(row, {
-                    key: `feg-row-${index}-${rowIndex}`
+                    key: `feg-row-${index}-${rowIndex}`,
+                    component: "div"
                   })
                 )}
               </StyledTableBody>

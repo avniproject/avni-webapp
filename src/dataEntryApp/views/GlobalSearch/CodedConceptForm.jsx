@@ -56,7 +56,9 @@ function CodedConceptForm({
                             <Checkbox
                               checked={
                                 selected != null
-                                  ? selected[conceptAnswer.answerConcept.uuid]
+                                  ? Boolean(
+                                      selected[conceptAnswer.answerConcept.uuid]
+                                    )
                                   : false
                               }
                               onChange={event =>
