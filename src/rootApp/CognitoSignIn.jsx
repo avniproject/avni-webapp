@@ -25,6 +25,10 @@ export default function CognitoSignIn({ onSignedIn }) {
   const handleChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    if (error) {
+      setError(null);
+    }
   };
 
   const handleSignIn = async () => {
@@ -37,7 +41,7 @@ export default function CognitoSignIn({ onSignedIn }) {
     }
 
     if (!formData.username || !formData.password) {
-      alert("Please enter both username and password");
+      setError("Please enter both username and password");
       return;
     }
 
@@ -65,7 +69,29 @@ export default function CognitoSignIn({ onSignedIn }) {
         onSignedIn(userData);
       }
     } catch (err) {
-      setError(err.message || "Login failed");
+      // Handle specific AWS Cognito errors with user-friendly messages
+      let errorMessage = "Login failed";
+
+      if (err.name === "NotAuthorizedException") {
+        errorMessage = "Incorrect username or password";
+      } else if (err.name === "UserNotConfirmedException") {
+        errorMessage =
+          "Account not verified. Please check your email for verification instructions";
+      } else if (err.name === "UserNotFoundException") {
+        errorMessage = "Username not found";
+      } else if (err.name === "PasswordResetRequiredException") {
+        errorMessage = "Password reset required. Please reset your password";
+      } else if (err.name === "InvalidParameterException") {
+        errorMessage = "Invalid username or password format";
+      } else if (err.name === "TooManyRequestsException") {
+        errorMessage = "Too many failed attempts. Please try again later";
+      } else if (err.name === "LimitExceededException") {
+        errorMessage = "Too many attempts. Please wait before trying again";
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -105,6 +131,7 @@ export default function CognitoSignIn({ onSignedIn }) {
 
   const handleForgotPassword = () => {
     setCurrentView("FORGOT_PASSWORD");
+    setError(null);
   };
 
   const handleResetPassword = async username => {
@@ -184,6 +211,7 @@ export default function CognitoSignIn({ onSignedIn }) {
   const handleBackToSignIn = () => {
     setCurrentView("SIGN_IN");
     setResetUsername("");
+    setError(null);
   };
 
   if (currentView === "FORGOT_PASSWORD") {
@@ -227,6 +255,7 @@ export default function CognitoSignIn({ onSignedIn }) {
       onSignIn={handleSignIn}
       onForgotPassword={handleForgotPassword}
       loading={loading}
+      error={error}
     />
   );
 }
