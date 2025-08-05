@@ -15,7 +15,6 @@ import {
   useRecordContext,
   Toolbar,
   SaveButton,
-  ReferenceInput,
   required,
   DeleteButton,
   TopToolbar,
@@ -29,6 +28,7 @@ import {
 } from "react-admin";
 import { isEmpty, find, isNil } from "lodash";
 import { None } from "../common/components/utils";
+import { AvniReferenceInput } from "./components/AvniReferenceInput";
 import LocationSaveButton from "./components/LocationSaveButton";
 import { Title } from "./components/Title";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
@@ -99,15 +99,19 @@ export const LocationList = props => (
   </StyledBox>
 );
 
-const SubLocationsGrid = props =>
-  isEmpty(props.data) ? (
+const SubLocationsGrid = props => {
+  const listContext = useListContext();
+  const data = listContext?.data || props.data || [];
+
+  return isEmpty(data) ? (
     <None />
   ) : (
-    <Datagrid rowClick="show" {...props}>
+    <Datagrid rowClick="show" {...props} bulkActionButtons={false}>
       <TextField source="title" label="Name" />
       <TextField label="Type" source="typeString" />
     </Datagrid>
   );
+};
 
 const ParentLocationReferenceField = ({ addLabel = true, label, ...props }) => {
   const record = useRecordContext();
@@ -254,7 +258,7 @@ const LocationFormInner = ({ edit }) => {
       <FormDataConsumer>
         {({ formData, ...rest }) =>
           !isNil(getParentIdOfLocationType(formData.typeId)) && (
-            <ReferenceInput
+            <AvniReferenceInput
               label="Part of (location)"
               helperText="Which larger location is this location a part of?"
               source="parentId"
@@ -276,8 +280,9 @@ const LocationFormInner = ({ edit }) => {
                 shouldRenderSuggestions={value => value && value.length >= 2}
                 noOptionsText="Type at least 2 characters to search locations"
                 loadingText="Searching locations..."
+                sx={{ width: "30rem" }}
               />
-            </ReferenceInput>
+            </AvniReferenceInput>
           )
         }
       </FormDataConsumer>
