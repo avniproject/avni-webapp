@@ -37,7 +37,7 @@ export const StorageManagementConfig = () => {
       return;
     }
     http
-      .post("/web/storageManagementConfig", storageManagementConfig)
+      .post("/web/storageManagementConfig", storageManagementConfigState)
       .then(response => {
         dispatch({ type: "storageManagementConfig", payload: response.data });
         setError(null);
