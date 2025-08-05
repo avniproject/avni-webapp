@@ -142,18 +142,6 @@ const StyledSectionMobile = styled("div")(({ theme }) => ({
   }
 }));
 
-const StyledUserOptionContainer = styled("div")(({ theme }) => ({
-  width: "100%",
-  color: theme.palette.primary.main,
-  maxWidth: "22.5rem",
-  position: "absolute",
-  zIndex: "2",
-  backgroundColor: theme.palette.background.paper,
-  borderRadius: "0.75rem",
-  boxShadow: "0 0.5rem 2rem rgba(0,0,0,0.15)",
-  overflow: "hidden"
-}));
-
 const StyledPopper = styled(Popper)({
   zIndex: 100
 });
@@ -188,10 +176,11 @@ const PrimarySearchAppBar = () => {
   const isNewsAvailable = useSelector(selectIsNewsAvailable);
 
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const isProfileMenuOpen = Boolean(profileAnchorEl);
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
-  const [userOption, setUserOption] = useState(false);
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen);
@@ -209,8 +198,12 @@ const PrimarySearchAppBar = () => {
     dispatch(getNews());
   }, [dispatch]);
 
-  const handleProfileMenuOpen = () => {
-    setUserOption(prev => !prev);
+  const handleProfileMenuOpen = event => {
+    setProfileAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileAnchorEl(null);
   };
 
   const handleMobileMenuClose = () => {
@@ -219,10 +212,6 @@ const PrimarySearchAppBar = () => {
 
   const handleMobileMenuOpen = event => {
     setMobileMoreAnchorEl(event.currentTarget);
-  };
-
-  const handleClickAway = () => {
-    setUserOption(false);
   };
 
   const newHandleclose = () => {
@@ -234,12 +223,42 @@ const PrimarySearchAppBar = () => {
   };
 
   const menuId = "primary-search-account-menu";
+
   const renderMenu = (
-    <ClickAwayListener onClickAway={handleClickAway}>
-      <StyledUserOptionContainer>
-        <UserOption />
-      </StyledUserOptionContainer>
-    </ClickAwayListener>
+    <Menu
+      open={isProfileMenuOpen}
+      anchorEl={profileAnchorEl}
+      onClose={handleProfileMenuClose}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      disableScrollLock
+      disableAutoFocusItem
+      slotProps={{
+        paper: {
+          sx: {
+            overflow: "visible",
+            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.15)",
+            backgroundColor: theme.palette.secondary.main,
+            borderRadius: 300,
+            minWidth: "22rem",
+            mt: 1.5
+          }
+        },
+        list: {
+          disablePadding: true,
+          sx: {
+            overflow: "visible",
+            p: 0
+          }
+        }
+      }}
+    >
+      {isProfileMenuOpen && (
+        <Box sx={{ position: "relative", zIndex: 1 }}>
+          <UserOption />
+        </Box>
+      )}
+    </Menu>
   );
 
   const mobileMenuId = "primary-search-account-menu-mobile";
@@ -261,7 +280,10 @@ const PrimarySearchAppBar = () => {
       }}
     >
       <MenuItem
-        onClick={handleProfileMenuOpen}
+        onClick={event => {
+          handleMobileMenuClose();
+          handleProfileMenuOpen(event);
+        }}
         sx={{
           borderRadius: "0.5rem",
           margin: "0.25rem",
@@ -378,7 +400,7 @@ const PrimarySearchAppBar = () => {
         </StyledToolbar>
       </StyledAppBar>
       {renderMobileMenu}
-      {userOption ? renderMenu : ""}
+      {renderMenu}
     </StyledRoot>
   );
 };
