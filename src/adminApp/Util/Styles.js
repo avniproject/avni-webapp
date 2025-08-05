@@ -89,42 +89,53 @@ export const StyledSelectInput = styled(SelectInput)(({ theme }) => ({
 
 export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
   backgroundColor: "transparent",
-  borderRadius: 0,
+  borderRadius: theme.shape.borderRadius,
   boxShadow: "none",
-  padding: theme.spacing(2),
-  margin: 0,
 
   "& .RaLabeled-label": {
     fontWeight: 600,
-    fontSize: "0.875rem",
-    color: theme.palette.text.secondary,
-    minWidth: "8.75rem", // 140px = 8.75rem
+    fontSize: "0.75rem",
+    color: theme.palette.primary.light,
+    minWidth: "12rem",
     textTransform: "uppercase",
-    letterSpacing: "0.03125rem" // 0.5px = 0.03125rem
+    letterSpacing: "0.05rem",
+    marginLeft: theme.spacing(-1),
+    marginBottom: theme.spacing(1),
+    paddingLeft: theme.spacing(0.5)
   },
 
   "& .RaLabeled-value": {
-    fontSize: "0.95rem",
+    fontSize: "1rem",
     color: theme.palette.text.primary,
     fontWeight: 400,
-    lineHeight: 1.5
+    lineHeight: 1.6,
+    padding: theme.spacing(2, 3),
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: theme.shape.borderRadius,
+    border: `1px solid ${theme.palette.grey[200]}`,
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+    transition: "all 0.2s ease",
+
+    "&:hover": {
+      borderColor: theme.palette.primary.light,
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)"
+    }
   },
 
   "& .RaLabeled-fullWidth": {
-    marginBottom: theme.spacing(2.5),
-    paddingBottom: theme.spacing(1.5),
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    marginBottom: theme.spacing(4),
+    paddingBottom: 0,
+    borderBottom: "none",
 
     "&:last-child": {
-      borderBottom: "none",
-      marginBottom: 0,
-      paddingBottom: 0
+      marginBottom: 0
     }
   },
 
   "& .RaTextField": {
     "& span": {
-      color: theme.palette.text.primary
+      color: theme.palette.text.primary,
+      fontWeight: 400
     }
   },
 
@@ -133,57 +144,73 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
       color: theme.palette.primary.main,
       textDecoration: "none",
       fontWeight: 500,
+      padding: theme.spacing(0.5, 1),
+      borderRadius: theme.shape.borderRadius,
+      backgroundColor: `${theme.palette.primary.main}08`,
+      border: `1px solid ${theme.palette.primary.light}40`,
+      transition: "all 0.2s ease",
 
       "&:hover": {
-        textDecoration: "underline"
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+        borderColor: theme.palette.primary.main
       }
     }
   },
 
   "& .RaReferenceManyField": {
     "& .RaLabeled-value": {
-      marginTop: theme.spacing(1)
+      marginTop: theme.spacing(1),
+      backgroundColor: theme.palette.background.paper
     }
   },
 
   "& .RaSingleFieldList": {
     "& .MuiChip-root": {
-      margin: theme.spacing(0.25),
-      backgroundColor: theme.palette.primary.light,
+      margin: theme.spacing(0.5),
+      backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
-      fontSize: "0.8rem"
+      fontSize: "0.8rem",
+      fontWeight: 500,
+      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+
+      "&:hover": {
+        backgroundColor: theme.palette.primary.dark
+      }
     }
   }
 }));
 
 export const StyledShow = styled(Show)(({ theme }) => ({
   "& .RaShow-main": {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(2)
+    backgroundColor: "transparent",
+    padding: theme.spacing(3, 4),
+    minHeight: "auto"
   },
 
   "& .RaShow-card": {
     backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[2],
-    borderRadius: theme.shape.borderRadius * 2,
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+    borderRadius: theme.shape.borderRadius,
     overflow: "hidden",
-    margin: theme.spacing(1, 0),
+    margin: theme.spacing(3, 0),
+    border: `1px solid ${theme.palette.grey[200]}`,
 
     "& > *": {
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: "transparent",
       margin: 0
     }
   },
 
   "& .RaShow-main > *": {
     margin: 0,
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: "transparent"
   },
 
   "& .RaTopToolbar-root, & .RaToolbar-root": {
     backgroundColor: theme.palette.background.paper,
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    padding: theme.spacing(1.5, 3),
+    borderBottom: `1px solid ${theme.palette.grey[200]}`,
+    padding: theme.spacing(2, 4),
     minHeight: "auto",
     boxShadow: "none",
     margin: 0
@@ -191,8 +218,8 @@ export const StyledShow = styled(Show)(({ theme }) => ({
 
   "& .RaShowActions": {
     backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(1.5, 3),
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    padding: theme.spacing(2, 4),
+    borderBottom: `1px solid ${theme.palette.grey[200]}`,
     margin: 0,
     display: "flex",
     justifyContent: "flex-end",
@@ -201,8 +228,8 @@ export const StyledShow = styled(Show)(({ theme }) => ({
 
   "& .MuiCardActions-root": {
     backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(1.5, 3),
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    padding: theme.spacing(2, 4),
+    borderBottom: `1px solid ${theme.palette.grey[200]}`,
     margin: 0,
     display: "flex",
     justifyContent: "flex-end",
@@ -217,12 +244,13 @@ export const StyledShow = styled(Show)(({ theme }) => ({
 
   "& .RaShow-title, & .RaTitleForRecord": {
     backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(2, 3),
+    padding: theme.spacing(3, 4),
     margin: 0,
-    fontSize: "1.5rem",
+    fontSize: "1.75rem",
     fontWeight: 600,
     color: theme.palette.text.primary,
-    borderBottom: `1px solid ${theme.palette.divider}`
+    borderBottom: `2px solid ${theme.palette.primary.main}`,
+    borderLeft: `4px solid ${theme.palette.primary.main}`
   },
 
   "& .RaShow-header": {
@@ -235,7 +263,7 @@ export const StyledShow = styled(Show)(({ theme }) => ({
     flexWrap: "wrap",
 
     "& > *": {
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: "transparent",
       margin: 0
     }
   },
@@ -243,24 +271,29 @@ export const StyledShow = styled(Show)(({ theme }) => ({
   "& .MuiToolbar-root": {
     backgroundColor: theme.palette.background.paper,
     minHeight: "auto",
-    padding: theme.spacing(1.5, 3),
+    padding: theme.spacing(2, 4),
     margin: 0,
 
     "& .MuiButton-root": {
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
-      boxShadow: theme.shadows[1],
+      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+      borderRadius: theme.shape.borderRadius,
+      fontWeight: 500,
+      textTransform: "none",
+      transition: "all 0.2s ease",
 
       "&:hover": {
-        backgroundColor: theme.palette.primary.dark
+        backgroundColor: theme.palette.primary.dark,
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15)"
       }
     }
   },
 
   "& .RaShow-content": {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: "transparent",
     margin: 0,
-    padding: 0
+    padding: theme.spacing(4)
   },
 
   "& .MuiPaper-root": {
@@ -268,19 +301,19 @@ export const StyledShow = styled(Show)(({ theme }) => ({
     margin: 0,
 
     "&:not(:first-of-type)": {
-      borderRadius: 0,
-      boxShadow: "none"
+      borderRadius: theme.shape.borderRadius,
+      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
     }
   },
 
   "& > div": {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: "transparent",
 
     "& .MuiCardActions-root": {
       position: "relative",
       zIndex: 1,
       backgroundColor: theme.palette.background.paper,
-      borderBottom: `1px solid ${theme.palette.divider}`
+      borderBottom: `1px solid ${theme.palette.grey[200]}`
     }
   }
 }));
