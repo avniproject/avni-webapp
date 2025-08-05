@@ -148,16 +148,14 @@ export const LocationDetail = props => (
   </StyledShow>
 );
 
-const LocationCreateEditToolbar = ({ edit, ...props }) => {
-  const { undoable, mutationOptions, ...toolbarProps } = props;
-
-  return (
-    <Toolbar {...toolbarProps}>
-      {edit ? <SaveButton {...toolbarProps} /> : <LocationSaveButton />}
-      {edit && <DeleteButton redirect="list" sx={{ ml: "auto" }} />}
-    </Toolbar>
-  );
-};
+const LocationCreateEditToolbar = ({ edit, ...props }) => (
+  <Toolbar {...props}>
+    {edit ? <SaveButton {...props} /> : <LocationSaveButton />}
+    {edit && (
+      <DeleteButton undoable={false} redirect="list" sx={{ ml: "auto" }} />
+    )}
+  </Toolbar>
+);
 
 const isRequired = required("This field is required");
 
@@ -165,59 +163,55 @@ let addressLevelTypes = [];
 
 const LocationTypeSelectInput = props => {
   const [choices, setChoices] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const dataProvider = useDataProvider();
 
   useEffect(() => {
-    const fetchAddressLevelTypes = async () => {
-      try {
-        setIsLoading(true);
-        const { data } = await dataProvider.getList("addressLevelType", {
+    if (choices.length === 0 && !isLoading) {
+      setIsLoading(true);
+
+      dataProvider
+        .getList("addressLevelType", {
           pagination: { page: 1, perPage: 25 },
           sort: { field: "id", order: "DESC" },
           filter: {}
+        })
+        .then(({ data }) => {
+          console.log(
+            "LocationTypeSelectInput: fetched addressLevelTypes",
+            data
+          );
+          const mappedChoices = Array.isArray(data)
+            ? data
+            : data._embedded
+            ? data._embedded.addressLevelType.map(item => ({
+                id: item.id,
+                name: item.name,
+                parentId: item.parentId
+              }))
+            : [];
+
+          setChoices(mappedChoices);
+          addressLevelTypes = mappedChoices;
+        })
+        .catch(error => {
+          console.error(
+            "LocationTypeSelectInput: error fetching addressLevelTypes",
+            error
+          );
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-
-        console.log("LocationTypeSelectInput: fetched addressLevelTypes", data);
-
-        const mappedChoices = Array.isArray(data)
-          ? data
-          : data._embedded
-          ? data._embedded.addressLevelType.map(item => ({
-              id: item.id,
-              name: item.name,
-              parentId: item.parentId
-            }))
-          : [];
-
-        setChoices(mappedChoices);
-        addressLevelTypes = mappedChoices;
-      } catch (error) {
-        console.error(
-          "LocationTypeSelectInput: error fetching addressLevelTypes",
-          error
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (addressLevelTypes.length === 0) {
-      fetchAddressLevelTypes();
-    } else {
-      setChoices(addressLevelTypes);
-      setIsLoading(false);
     }
-  }, [dataProvider]);
-
-  const { loading: _, ...restProps } = props;
+  }, [dataProvider, choices.length, isLoading]);
 
   return (
     <StyledSelectInput
       source="typeId"
-      {...restProps}
+      {...props}
       choices={choices}
-      disabled={isLoading}
+      loading={isLoading}
     />
   );
 };
@@ -235,26 +229,6 @@ const getNameOfLocationType = typeId => {
 };
 
 const LocationFormInner = ({ edit }) => {
-  const [addressLevelTypesLoaded, setAddressLevelTypesLoaded] = useState(
-    addressLevelTypes.length > 0
-  );
-
-  useEffect(() => {
-    const checkAddressLevelTypes = () => {
-      if (addressLevelTypes.length > 0) {
-        setAddressLevelTypesLoaded(true);
-      }
-    };
-
-    // Check immediately
-    checkAddressLevelTypes();
-
-    // Set up polling to check periodically
-    const interval = setInterval(checkAddressLevelTypes, 200);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <>
       <AvniTextInput
@@ -265,43 +239,29 @@ const LocationFormInner = ({ edit }) => {
         toolTipKey={"ADMIN_LOCATION_NAME"}
       />
       <FormDataConsumer toolTipKey={"ADMIN_LOCATION_TYPE"}>
-        {({ dispatch, ...rest }) => (
-          <ReferenceInput
-            label="Type"
-            source="typeId"
-            reference="addressLevelType"
-            onChange={() =>
-              dispatch({ type: "RA/RESET", payload: { name: "parentId" } })
-            }
-            disabled={edit}
-            {...rest}
-          >
+        {({ formData, ...rest }) =>
+          edit ? (
+            <AvniTextInput
+              source="Type"
+              disabled
+              defaultValue={formData.typeString}
+              {...rest}
+            />
+          ) : (
             <LocationTypeSelectInput
+              label="Type"
+              source="typeId"
               optionText="name"
               resettable
               validate={isRequired}
-              source="typeId"
+              {...rest}
             />
-          </ReferenceInput>
-        )}
+          )
+        }
       </FormDataConsumer>
       <FormDataConsumer>
-        {({ formData, ...rest }) => (
-          <TextInput
-            source="type"
-            defaultValue={getNameOfLocationType(formData?.typeId)}
-            style={{ display: "none" }}
-            {...rest}
-          />
-        )}
-      </FormDataConsumer>
-      <FormDataConsumer>
-        {({ formData, ...rest }) => {
-          const parentTypeId = getParentIdOfLocationType(formData?.typeId);
-          const shouldShowParentInput =
-            !isNil(parentTypeId) && addressLevelTypesLoaded;
-
-          return shouldShowParentInput ? (
+        {({ formData, ...rest }) =>
+          !isNil(getParentIdOfLocationType(formData.typeId)) && (
             <ReferenceInput
               label="Part of (location)"
               helperText="Which larger location is this location a part of?"
@@ -309,7 +269,7 @@ const LocationFormInner = ({ edit }) => {
               reference="locations"
               filter={{
                 searchURI: "findAsList",
-                typeId: parentTypeId,
+                typeId: getParentIdOfLocationType(formData.typeId),
                 title: ""
               }}
               filterToQuery={searchText => ({ title: searchText })}
@@ -323,8 +283,8 @@ const LocationFormInner = ({ edit }) => {
                 source="parentId"
               />
             </ReferenceInput>
-          ) : null;
-        }}
+          )
+        }
       </FormDataConsumer>
       <TextInput
         disabled
@@ -339,32 +299,23 @@ const LocationFormInner = ({ edit }) => {
 export const LocationForm = props => {
   const notify = useNotify();
   const redirect = useRedirect();
-  const { edit, mutationOptions, undoable, ...formProps } = props;
-
-  const defaultMutationOptions = {
-    onSuccess: () => {
-      notify("Location created", { type: "info" });
-      redirect("list", "locations");
-    },
-    onError: error => {
-      notify(`Error: ${error.message}`, { type: "error" });
-    }
-  };
 
   return (
     <SimpleForm
-      toolbar={
-        <LocationCreateEditToolbar
-          edit={edit}
-          {...{ undoable, mutationOptions }}
-        />
-      }
+      toolbar={<LocationCreateEditToolbar edit={props.edit} />}
       redirect="show"
-      mutationOptions={mutationOptions || defaultMutationOptions}
-      undoable={undoable}
-      {...formProps}
+      mutationOptions={{
+        onSuccess: () => {
+          notify("Location created", { type: "info" });
+          redirect("list", "locations");
+        },
+        onError: error => {
+          notify(`Error: ${error.message}`, { type: "error" });
+        }
+      }}
+      {...props}
     >
-      <LocationFormInner edit={edit} />
+      <LocationFormInner {...props} />
     </SimpleForm>
   );
 };
