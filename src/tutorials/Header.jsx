@@ -23,11 +23,7 @@ const Header = () => {
             lg: 4,
             xl: 4
           }}
-        >
-          <Typography variant="h3" sx={{ textAlign: "center" }}>
-            We are here to help!
-          </Typography>
-        </Grid>
+        />
         <Grid
           size={{
             xs: 12,
@@ -37,6 +33,9 @@ const Header = () => {
             xl: 4
           }}
         >
+          <Typography variant="h2" sx={{ marginTop: 10, textAlign: "center" }}>
+            We are here to help!
+          </Typography>
           <Typography
             variant="body2"
             sx={{ marginTop: 2, textAlign: "center" }}
