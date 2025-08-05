@@ -76,7 +76,7 @@ const Broadcast = () => {
           />
         }
       />
-      <Route path={BroadcastPath.News} element={<News />} />
+      <Route path={`${BroadcastPath.News}/*`} element={<News />} />
       <Route path="news/:id/details" element={<NewsDetails />} />
       <Route
         path={`${BroadcastPath.WhatsApp}/:activeTab?`}

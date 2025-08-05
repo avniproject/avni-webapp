@@ -16,8 +16,19 @@ const StyledCloseButton = styled(IconButton)(({ theme }) => ({
 
 export const CustomDialogTitle = ({ children, onClose, ...other }) => {
   return (
-    <StyledDialogTitle {...other}>
-      <Typography variant="h6">{children}</Typography>
+    <StyledDialogTitle
+      {...other}
+      sx={{
+        m: 0,
+        p: 2,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}
+    >
+      <Typography variant="h6" component="span">
+        {children}
+      </Typography>
       <StyledCloseButton aria-label="close" onClick={onClose} size="large">
         <Close />
       </StyledCloseButton>
