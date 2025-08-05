@@ -35,14 +35,14 @@ const StyledContainer = styled("div")({
 });
 
 const StyledList = styled(List)(({ theme }) => ({
-  width: "22%",
-  color: "blue",
-  maxWidth: 360,
+  width: "100%",
+  color: theme.palette.primary.main,
+  maxWidth: 400,
   position: "absolute",
   zIndex: "100",
   backgroundColor: theme.palette.background.paper,
   boxShadow: "3px 3px 5px #aaaaaa",
-  padding: "1%"
+  padding: theme.spacing(1)
 }));
 
 const StyledListItemButton = styled(ListItemButton)({
@@ -50,16 +50,24 @@ const StyledListItemButton = styled(ListItemButton)({
   paddingBottom: "5px"
 });
 
-const StyledSettingsIcon = styled(Settings)({
-  color: "blue"
-});
+const StyledSettingsIcon = styled(Settings)(({ theme }) => ({
+  color: theme.palette.primary.main
+}));
 
-const StyledListItemText = styled(ListItemText)({
-  color: "blue",
+const StyledArrowUpward = styled(ArrowUpward)(({ theme }) => ({
+  color: theme.palette.primary.main
+}));
+
+const StyledLogoutIcon = styled(Logout)(({ theme }) => ({
+  color: theme.palette.primary.main
+}));
+
+const StyledListItemText = styled(ListItemText)(({ theme }) => ({
+  color: theme.palette.primary.main,
   "& .MuiListItemText-primary": {
-    color: "blue"
+    color: theme.palette.primary.main
   }
-});
+}));
 
 const StyledHr = styled("hr")({
   padding: "0px",
@@ -135,7 +143,6 @@ const UserOption = () => {
             <StyledSettingsIcon />
           </ListItemIcon>
           <StyledListItemText primary={t("settings")} />
-          {open ? <ExpandLess /> : <ExpandMore />}
         </StyledListItemButton>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <StyledFormControl component="fieldset">
@@ -168,7 +175,7 @@ const UserOption = () => {
         {hasUploadPrivilege && (
           <StyledListItemButton onClick={handleUploadClick}>
             <ListItemIcon>
-              <ArrowUpward />
+              <StyledArrowUpward />
             </ListItemIcon>
             <ListItemText primary={t("bulk upload")} />
           </StyledListItemButton>
@@ -176,7 +183,7 @@ const UserOption = () => {
         <StyledHr />
         <StyledListItemButton onClick={handleLogout}>
           <ListItemIcon>
-            <Logout />
+            <StyledLogoutIcon />
           </ListItemIcon>
           <ListItemText primary={t("logout")} />
         </StyledListItemButton>
