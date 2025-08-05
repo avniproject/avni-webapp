@@ -5,7 +5,6 @@ import {
   Button,
   IconButton,
   Menu,
-  MenuItem,
   Toolbar,
   Typography
 } from "@mui/material";
@@ -127,13 +126,13 @@ const AppBar = ({
               <b>{organisation?.name}</b> ({userInfo?.username})
             </StyledOrganisationInfo>
 
-            <Button
-              color="inherit"
-              onClick={() => navigate("/home")}
-              startIcon={<HomeIcon />}
-            />
-
             <StyledUserInfo>
+              <Button
+                color="inherit"
+                onClick={() => navigate("/home")}
+                startIcon={<HomeIcon />}
+              />
+
               <StyledIconButton
                 aria-label="account of current user"
                 onClick={handleClick}

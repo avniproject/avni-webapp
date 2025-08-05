@@ -32,7 +32,8 @@ import SubjectTypeOptions from "./SubjectTypeOptions";
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(1, 3),
-  flexGrow: 1
+  flexGrow: 1,
+  backgroundColor: "white"
 }));
 
 const StyledTypography = styled(Typography)({ fontSize: 20 });
