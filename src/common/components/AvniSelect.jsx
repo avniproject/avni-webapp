@@ -9,6 +9,7 @@ export const AvniSelect = ({ options, toolTipKey, isClearable, ...props }) => {
         sx={{
           backgroundColor: "white",
           "& .MuiInputBase-root": {
+            minWidth: "200px",
             backgroundColor: "white",
             "&:hover": {
               backgroundColor: "white"

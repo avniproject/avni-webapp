@@ -1,5 +1,7 @@
 import { styled } from "@mui/material/styles";
-import { InputLabel, FormHelperText, FormControl, Select } from "@mui/material";
+import MenuItem from "@mui/material/MenuItem";
+import { InputLabel, FormHelperText, FormControl } from "@mui/material";
+import { AvniSelect } from "./AvniSelect";
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -8,12 +10,6 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
   maxWidth: 200,
   display: "flex",
   flexWrap: "nowrap"
-}));
-
-const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
-  maxWidth: "100%",
-  textOverflow: "ellipsis",
-  paddingRight: theme.spacing(2)
 }));
 
 const DropDown = ({
@@ -26,23 +22,20 @@ const DropDown = ({
 }) => {
   return (
     <StyledFormControl required={required}>
-      <StyledInputLabel htmlFor={`${name}-required`}>{name}</StyledInputLabel>
-      <Select
+      <AvniSelect
         id={`${name}-required`}
+        label={name}
         disabled={disabled}
-        native
         value={value}
         onChange={event => onChange(event.target.value)}
         name={name}
         inputProps={{ id: `${name}-required` }}
-      >
-        <option value="" />
-        {options.map((option, index) => (
-          <option key={index} value={option.name}>
+        options={options.map((option, index) => (
+          <MenuItem key={index} value={option.name}>
             {option.name}
-          </option>
+          </MenuItem>
         ))}
-      </Select>
+      />
       {required && <FormHelperText>Required</FormHelperText>}
     </StyledFormControl>
   );

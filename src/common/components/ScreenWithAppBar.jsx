@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import _ from "lodash";
 import ListItemButton from "@mui/material/ListItemButton";
+import { fontSize } from "@mui/system";
 
 const drawerWidth = 240;
 

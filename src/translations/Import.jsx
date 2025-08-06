@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { httpClient as http } from "common/utils/httpClient";
 import { filter, find, isEmpty, isString, size } from "lodash";
 import { Box, Grid } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import UserInfo from "../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
@@ -24,6 +25,7 @@ const isInvalidFile = file => {
 
 const ImportTranslations = ({ locales = [], onSuccessfulImport }) => {
   const userInfo = useSelector(state => state.app.userInfo);
+  const theme = useTheme();
 
   const [file, setFile] = useState();
   const [language, setLanguage] = useState("");
@@ -70,20 +72,27 @@ const ImportTranslations = ({ locales = [], onSuccessfulImport }) => {
   return isEmpty(locales) ? (
     <div />
   ) : (
-    <Grid container spacing={2}>
+    <Box>
       <Grid
         container
-        sx={{ justifyContent: "space-between", alignItems: "center" }}
+        spacing={2}
+        sx={{
+          justifyContent: "flex-start",
+          alignItems: "center",
+          flexWrap: "nowrap"
+        }}
       >
-        <Grid>
+        <Grid item>
           <DropDown
             name="Language"
+            label="Language"
             value={language}
             onChange={setLanguage}
             options={locales}
           />
         </Grid>
-        <Grid>
+
+        <Grid item>
           <FileUpload
             onSelect={onFileChooseHandler}
             onUpload={onUploadPressedHandler}
@@ -100,22 +109,35 @@ const ImportTranslations = ({ locales = [], onSuccessfulImport }) => {
           />
         </Grid>
       </Grid>
-      <Box
-        sx={{
-          py: 4
-        }}
-      >
-        {!isEmpty(file) && (
-          <div>
-            <p>Summary:</p>
-            <p>File name: {file.name}</p>
-            <p>{noOfKeysWithValues(file)} keys have translations.</p>
-            <p>{noOfKeysWithoutValues(file)} keys don't have translations.</p>
-          </div>
-        )}
-        <p>{!isEmpty(error) && error}</p>
-      </Box>
-    </Grid>
+
+      <Grid container sx={{ mt: 2 }}>
+        <Grid item xs={12}>
+          {!isEmpty(file) && (
+            <Box sx={{ p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+              <p>
+                <strong>Summary:</strong>
+              </p>
+              <p>File name: {file.name}</p>
+              <p>{noOfKeysWithValues(file)} keys have translations.</p>
+              <p>{noOfKeysWithoutValues(file)} keys don't have translations.</p>
+            </Box>
+          )}
+          {!isEmpty(error) && (
+            <Box
+              sx={{
+                p: 2,
+                border: 1,
+                borderColor: theme.palette.error.light,
+                borderRadius: 1,
+                mt: 1
+              }}
+            >
+              <p style={{ color: theme.palette.error.main }}>{error}</p>
+            </Box>
+          )}
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

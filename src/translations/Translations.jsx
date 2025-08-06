@@ -103,12 +103,23 @@ const Translations = () => {
   return (
     <ScreenWithAppBar appbarTitle={`Translations`}>
       <DocumentationContainer filename={"Translation.md"}>
-        <div id={"margin"}>
+        <Box
+          sx={{
+            p: 2,
+            maxWidth: "60%",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            marginLeft: "10rem"
+          }}
+        >
           <Box
             sx={{
               border: 1,
               borderColor: "#ddd",
-              p: 2
+              p: 2,
+              mb: 2,
+              borderRadius: 1
             }}
           >
             <TranslationDashboard
@@ -116,92 +127,91 @@ const Translations = () => {
               emptyTranslationKey={EMPTY_TRANSLATION_KEY}
             />
           </Box>
-          <p />
+
           <Box
             sx={{
               border: 1,
               borderColor: "#ddd",
-              p: 2
+              p: 3,
+              mb: 3,
+              borderRadius: 1
             }}
           >
-            <Grid>
+            <Grid item xs={12}>
               <h5 id="title">Upload Translations</h5>
             </Grid>
-            <Grid
-              container
-              direction="row"
-              sx={{
-                justifyContent: "flex-start",
-                alignItems: "center"
-              }}
-            >
-              <Import
-                locales={localeChoices}
-                onSuccessfulImport={() =>
-                  getDashboardData("Android", EMPTY_TRANSLATION_KEY)
-                }
-              />
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Import
+                  locales={localeChoices}
+                  onSuccessfulImport={() =>
+                    getDashboardData("Android", EMPTY_TRANSLATION_KEY)
+                  }
+                />
+              </Grid>
             </Grid>
           </Box>
-          <p />
+
           <Box
             sx={{
               border: 1,
               borderColor: "#ddd",
-              p: 2
+              p: 3,
+              borderRadius: 1
             }}
           >
-            <Grid>
+            <Grid item xs={12}>
               <h5 id="title">Download Translations</h5>
             </Grid>
-            <Grid
-              container
-              spacing={2}
-              sx={{
-                justifyContent: "flex-start",
-                alignItems: "center",
-                flexWrap: "nowrap",
-                m: 3
-              }}
-            >
-              <Grid>
-                <DropDown
-                  name="Platform"
-                  value={platform}
-                  onChange={setPlatform}
-                  options={platforms}
-                />
-              </Grid>
-              <Grid>
-                <Box>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={excludeLocations}
-                        onChange={() => setExcludeLocations(prev => !prev)}
-                        color="primary"
-                      />
-                    }
-                    label="Exclude Locations"
-                  />
-                </Box>
-              </Grid>
-              <Grid>
-                <Box>
-                  <Button
-                    variant="contained"
-                    onClick={onDownloadPressedHandler}
-                    color="primary"
-                    aria-haspopup="false"
-                    disabled={isEmpty(platform)}
-                  >
-                    Download
-                  </Button>
-                </Box>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    flexWrap: "wrap"
+                  }}
+                >
+                  <Grid item xs={12} sm={6} md={4}>
+                    <DropDown
+                      name="Platform"
+                      label="Platform"
+                      value={platform}
+                      onChange={setPlatform}
+                      options={platforms}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={excludeLocations}
+                          onChange={() => setExcludeLocations(prev => !prev)}
+                          color="primary"
+                        />
+                      }
+                      label="Exclude Locations"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={4}>
+                    <Button
+                      variant="contained"
+                      onClick={onDownloadPressedHandler}
+                      color="primary"
+                      aria-haspopup="false"
+                      disabled={isEmpty(platform)}
+                      fullWidth
+                    >
+                      Download
+                    </Button>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </Box>
-        </div>
+        </Box>
       </DocumentationContainer>
     </ScreenWithAppBar>
   );
