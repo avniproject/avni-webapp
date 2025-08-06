@@ -1,35 +1,16 @@
-import { Link, IconButton } from "@mui/material";
+import { Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
-import { Feedback } from "@mui/icons-material";
+const StyledFooter = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.grey[50],
+  borderTop: `1px solid ${theme.palette.grey[300]}`,
+  marginTop: theme.spacing(4),
+  width: "100%",
+  boxSizing: "border-box"
+}));
 
-const Footer = () => (
-  <div
-    style={{
-      position: "fixed",
-      borderRadius: 4,
-      right: 4,
-      bottom: 4,
-      zIndex: 1,
-      padding: 6,
-      paddingHorizontal: 12,
-      backgroundColor: "#2196f3",
-      textAlign: "center"
-    }}
-  >
-    <div>
-      <Link
-        component="button"
-        variant="body2"
-        onClick={() => {
-          window.open("https://forms.gle/65q4DkxbS4onroys9", "_blank");
-        }}
-        style={{ color: "white", fontSize: 18 }}
-      >
-        <Feedback style={{ color: "white", marginRight: 8 }} />
-        Share feedback
-      </Link>
-    </div>
-  </div>
-);
+const Footer = () => {
+  return <StyledFooter />;
+};
 
 export default Footer;

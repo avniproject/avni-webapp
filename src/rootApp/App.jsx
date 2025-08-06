@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Box } from "@mui/material";
 import Routes from "./Routes";
 import { getUserInfo } from "./ducks";
 import IdpDetails from "./security/IdpDetails";
 import { httpClient } from "../common/utils/httpClient";
+import Footer from "../common/components/Footer";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -40,9 +42,18 @@ const App = () => {
   }
 
   return (
-    <div>
-      <Routes />
-    </div>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh"
+      }}
+    >
+      <Box sx={{ flex: 1 }}>
+        <Routes />
+      </Box>
+      <Footer />
+    </Box>
   );
 };
 
