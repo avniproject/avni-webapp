@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Grid, MenuItem, FormHelperText } from "@mui/material";
+import { Grid, FormHelperText } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { get } from "lodash";
 
@@ -60,11 +60,10 @@ export const SubjectConcept = props => {
           <AvniSelect
             style={{ width: "400px", height: 40, marginTop: 24 }}
             onChange={updateSubjectType}
-            options={subjectTypeOptions.map(subjectType => (
-              <MenuItem value={subjectType.uuid} key={subjectType.uuid}>
-                {subjectType.name}
-              </MenuItem>
-            ))}
+            options={subjectTypeOptions.map(subjectType => ({
+              value: subjectType.uuid,
+              label: subjectType.name
+            }))}
             value={subjectType}
             label="Subject Type"
             toolTipKey="APP_DESIGNER_CONCEPT_SUBJECT_TYPE"

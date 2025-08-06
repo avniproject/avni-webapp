@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Grid, Button, MenuItem, IconButton } from "@mui/material";
+import { Box, Grid, Button, IconButton } from "@mui/material";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { Title } from "react-admin";
 import { AvniTextField } from "../common/components/AvniTextField";
@@ -158,13 +158,10 @@ const Msg91Config = () => {
                 toolTipKey={"ADMIN_PHONE_VERIFICATION_OTPLENGTH"}
                 label={"OTP Length"}
                 value={msg91Config.otpLength || "4"}
-                options={["4", "5", "6", "7", "8", "9"].map(otpLengthValue => {
-                  return (
-                    <MenuItem key={otpLengthValue} value={otpLengthValue}>
-                      {otpLengthValue}
-                    </MenuItem>
-                  );
-                })}
+                options={["4", "5", "6", "7", "8", "9"].map(otpLengthValue => ({
+                  value: otpLengthValue,
+                  label: otpLengthValue
+                }))}
                 onChange={event => onOtpLengthChange(event.target.value)}
                 style={{ width: 100 }}
               />

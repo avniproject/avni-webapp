@@ -1,7 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
@@ -227,14 +224,36 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
 
   const handleChange = useCallback(
     stateHandler => e => {
+      console.log("Parent handleChange:", {
+        stateHandler,
+        originalValue: e.target.value,
+        valueType: typeof e.target.value
+      });
+
       const resetKeyValues =
         isCreatePage &&
         stateHandler === "dataType" &&
         e.target.value !== "Location";
+
       setConcept(prev => {
         const c = { ...prev };
-        c[stateHandler] = replace(e.target.value, "|", "");
+
+        // Use standard JavaScript string replace instead of the replace function
+        const originalValue = e.target.value;
+        const replacedValue = originalValue
+          ? String(originalValue).replace(/\|/g, "")
+          : "";
+        console.log("Replace operation:", {
+          originalValue,
+          replacedValue,
+          replacedType: typeof replacedValue
+        });
+
+        c[stateHandler] = replacedValue;
+
         if (resetKeyValues) c.keyValues = [];
+
+        console.log("Updated concept:", c);
         return c;
       });
     },
@@ -650,11 +669,10 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
                   value={concept.dataType}
                   onChange={handleChange("dataType")}
                   style={{ width: "200px" }}
-                  options={dataTypes.map(datatype => (
-                    <MenuItem value={datatype} key={datatype}>
-                      {datatype}
-                    </MenuItem>
-                  ))}
+                  options={dataTypes.map(datatype => ({
+                    value: datatype,
+                    label: datatype
+                  }))}
                   toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
                 />
                 {error.dataTypeSelectionAlert && (

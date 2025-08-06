@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import _ from "lodash";
-import { FormLabel, MenuItem } from "@mui/material";
+import { FormLabel } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
@@ -73,11 +73,10 @@ const EditProgramFields = props => {
         onChange={event => onSubjectTypeChange(event.target.value)}
         style={{ width: "200px" }}
         required
-        options={subjectTypes.map(option => (
-          <MenuItem value={option} key={option.uuid}>
-            {option.name}
-          </MenuItem>
-        ))}
+        options={subjectTypes.map(option => ({
+          value: option,
+          label: option.name
+        }))}
         toolTipKey={"APP_DESIGNER_PROGRAM_SUBJECT_TYPE"}
       />
       {!_.isNil(errors.get("SubjectType")) && (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Grid, MenuItem, FormHelperText } from "@mui/material";
+import { Grid, FormHelperText } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { filter, find, get } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -58,11 +58,10 @@ export const EncounterConcept = props => {
         key={keyOption}
         style={{ width: "400px", height: 40, marginTop: 24 }}
         onChange={event => updateKey(keyOption, event, index)}
-        options={options.map(({ uuid, name }) => (
-          <MenuItem value={uuid} key={uuid}>
-            {name}
-          </MenuItem>
-        ))}
+        options={options.map(({ uuid, name }) => ({
+          value: uuid,
+          label: name
+        }))}
         value={value}
         label={label}
         toolTipKey={toolTip}

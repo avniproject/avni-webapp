@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import MenuItem from "@mui/material/MenuItem";
-import { InputLabel, FormHelperText, FormControl } from "@mui/material";
+import { FormHelperText, FormControl } from "@mui/material";
 import { AvniSelect } from "./AvniSelect";
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
@@ -30,11 +30,10 @@ const DropDown = ({
         onChange={event => onChange(event.target.value)}
         name={name}
         inputProps={{ id: `${name}-required` }}
-        options={options.map((option, index) => (
-          <MenuItem key={index} value={option.name}>
-            {option.name}
-          </MenuItem>
-        ))}
+        options={options.map(option => ({
+          value: option.name,
+          label: option.name
+        }))}
       />
       {required && <FormHelperText>Required</FormHelperText>}
     </StyledFormControl>

@@ -1,7 +1,7 @@
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
-import { Box, MenuItem } from "@mui/material";
+import { Box } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
@@ -80,11 +80,10 @@ const EditEncounterTypeFields = ({
         onChange={event => setSubjectT(event.target.value)}
         style={{ width: "200px" }}
         required
-        options={subjectType.map(option => (
-          <MenuItem value={option} key={option.uuid}>
-            {option.name}
-          </MenuItem>
-        ))}
+        options={subjectType.map(option => ({
+          value: option,
+          label: option.name
+        }))}
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_SUBJECT"}
       />
       <p />
@@ -93,11 +92,10 @@ const EditEncounterTypeFields = ({
         value={_.isEmpty(programT) ? "" : programT}
         onChange={event => updateProgram(event.target.value)}
         style={{ width: "200px" }}
-        options={program.map(option => (
-          <MenuItem value={option} key={option.uuid}>
-            {option.name}
-          </MenuItem>
-        ))}
+        options={program.map(option => ({
+          value: option,
+          label: option.name
+        }))}
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM"}
         isClearable={true}
       />

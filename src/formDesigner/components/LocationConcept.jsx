@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Grid, MenuItem, FormHelperText } from "@mui/material";
+import { Grid, FormHelperText } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
@@ -261,14 +261,10 @@ export const LocationConcept = props => {
               marginBottom: 24
             }}
             onChange={updateLowestAddressLevelTypes}
-            options={addressLevelTypes.map(addressLevelType => (
-              <MenuItem
-                value={addressLevelType.value}
-                key={addressLevelType.value}
-              >
-                {addressLevelType.label}
-              </MenuItem>
-            ))}
+            options={addressLevelTypes.map(addressLevelType => ({
+              value: addressLevelType.value,
+              label: addressLevelType.label
+            }))}
             value={lowestAddressLevelTypes}
             label="Lowest Location Level(s) *"
             multiple
@@ -293,14 +289,10 @@ export const LocationConcept = props => {
             <AvniSelect
               style={{ width: "400px", height: 40, marginTop: 24 }}
               onChange={updateHighestAddressLevelType}
-              options={highestAddressLevelTypeOptions.map(addressLevelType => (
-                <MenuItem
-                  value={addressLevelType.value}
-                  key={addressLevelType.value}
-                >
-                  {addressLevelType.label}
-                </MenuItem>
-              ))}
+              options={highestAddressLevelTypeOptions.map(addressLevelType => ({
+                value: addressLevelType.value,
+                label: addressLevelType.label
+              }))}
               value={highestAddressLevelType}
               label="Highest Location Level"
               toolTipKey="APP_DESIGNER_CONCEPT_HIGHEST_LOCATION_LEVEL"

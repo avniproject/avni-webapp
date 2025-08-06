@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import NumericConcept from "./NumericConcept";
-import { Button, FormControl, Input, Grid, MenuItem, Box } from "@mui/material";
+import { Button, FormControl, Input, Grid, Box } from "@mui/material";
 import { CodedConceptAnswer } from "./CodedConcept";
 import { inlineConceptDataType } from "../common/constants";
 import { BackButton } from "./FormElementDetails";
@@ -103,13 +103,7 @@ function InlineConcept(props) {
           options={filter(
             inlineConceptDataType,
             t => !includes(props.dataTypesToIgnore, t)
-          ).map(datatype => {
-            return (
-              <MenuItem value={datatype} key={datatype}>
-                {datatype}
-              </MenuItem>
-            );
-          })}
+          )}
           toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
         />
       </Grid>
