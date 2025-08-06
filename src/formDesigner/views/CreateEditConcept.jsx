@@ -40,6 +40,7 @@ import {
   WebConceptAnswerView,
   WebConceptView
 } from "../../common/model/WebConcept.ts";
+import { Stack } from "@mui/material";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -551,7 +552,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             </Button>
           </Grid>
         )}
-        <Grid container direction="column" spacing={2}>
+        <Stack>
           <Grid xs={12}>
             <AvniTextField
               id="name"
@@ -583,7 +584,14 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
                     label="DataType"
                     value={concept.dataType}
                     onChange={handleChange("dataType")}
-                    sx={{ width: 400, height: 40, mt: 3 }}
+                    sx={{
+                      width: 400,
+                      height: 40,
+                      mt: 3,
+                      "& .MuiSelect-select": {
+                        backgroundColor: "white"
+                      }
+                    }}
                   >
                     {dataTypes.map(datatype => (
                       <MenuItem value={datatype} key={datatype}>
@@ -637,7 +645,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               )}
             </Grid>
           )}
-          <Grid xs={12}>{renderDataTypeComponent()}</Grid>
+          <Grid>{renderDataTypeComponent()}</Grid>
           <Grid xs={12}>
             <KeyValues
               keyValues={concept.keyValues || []}
@@ -683,7 +691,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               />
             )}
           </Grid>
-        </Grid>
+        </Stack>
       </DocumentationContainer>
       {redirectShow && (
         <Navigate to={`/appDesigner/concept/${concept.uuid}/show`} replace />

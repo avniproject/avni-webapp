@@ -11,13 +11,6 @@ import { map } from "lodash";
 import { Delete } from "@mui/icons-material";
 import { ToolTip } from "../../common/components/ToolTip";
 
-const StyledForm = styled("form")(({ theme }) => ({
-  "& > *": {
-    marginRight: theme.spacing(1),
-    width: 150
-  }
-}));
-
 const StyledButton = styled(Button)({
   height: "35px",
   width: "17%",
@@ -51,17 +44,8 @@ export default function KeyValues({
   return (
     <StyledBox>
       {map(keyValues, (item, index) => (
-        <Grid
-          key={index}
-          container
-          direction="row"
-          sx={{ alignItems: "center" }}
-        >
-          <StyledForm
-            noValidate
-            autoComplete="off"
-            sx={{ flexDirection: "column" }}
-          >
+        <Grid key={index} container sx={{ alignItems: "center" }}>
+          <Grid sx={{ marginRight: "1rem" }}>
             <StyledTextField
               id="outlined-basic"
               label="Key"
@@ -75,6 +59,9 @@ export default function KeyValues({
                 )
               }
             />
+          </Grid>
+
+          <Grid>
             <StyledTextField
               id="outlined-basic"
               label="Value"
@@ -88,6 +75,9 @@ export default function KeyValues({
                 )
               }
             />
+          </Grid>
+
+          <Grid>
             <StyledIconButton
               aria-label="delete"
               onClick={() => onDeleteKeyValue(index)}
@@ -95,7 +85,7 @@ export default function KeyValues({
             >
               <Delete fontSize="inherit" />
             </StyledIconButton>
-          </StyledForm>
+          </Grid>
         </Grid>
       ))}
       {error && <FormHelperText error>Key-Value can't be blank</FormHelperText>}
