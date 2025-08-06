@@ -194,9 +194,12 @@ const CatchmentFormContent = ({
             source="locationIds"
             perPage={1000}
             label="Locations"
-            filterToQuery={searchText => ({ title: searchText })}
           >
-            <StyledAutocompleteArrayInput optionText={optionRenderer} />
+            <StyledAutocompleteArrayInput
+              optionText={optionRenderer}
+              translateChoice={false}
+              filterToQuery={searchText => ({ title: searchText })}
+            />
           </ReferenceArrayInput>
         </div>
       </ToolTipContainer>
