@@ -80,12 +80,6 @@ export default function AutoSuggestSingleSelection({
   };
 
   const handleChange = (event, newValue) => {
-    console.log("AutoSuggest handleChange:", {
-      newValue,
-      finalReturn,
-      inlineConcept
-    });
-
     if (finalReturn && newValue && typeof newValue === "object") {
       // When finalReturn is true, pass the full object
       if (!inlineConcept) {
@@ -113,6 +107,37 @@ export default function AutoSuggestSingleSelection({
   const handleInputChange = (event, newInputValue) => {
     setInputValue(newInputValue);
     fetchSuggestions(newInputValue);
+  };
+
+  const handleBlur = () => {
+    // When user finishes typing and loses focus, save the typed text as the answer
+    if (
+      inputValue &&
+      inputValue.trim() !== "" &&
+      inputValue !== showAnswer?.name
+    ) {
+      if (!inlineConcept) {
+        onChangeAnswerName(inputValue, index, false);
+      } else {
+        onChangeAnswerName(inputValue, groupIndex, elementIndex, index);
+      }
+    }
+  };
+
+  const handleKeyDown = event => {
+    // When user presses Enter, save the typed text as the answer
+    if (
+      event.key === "Enter" &&
+      inputValue &&
+      inputValue.trim() !== "" &&
+      inputValue !== showAnswer?.name
+    ) {
+      if (!inlineConcept) {
+        onChangeAnswerName(inputValue, index, false);
+      } else {
+        onChangeAnswerName(inputValue, groupIndex, elementIndex, index);
+      }
+    }
   };
 
   return (
@@ -145,6 +170,8 @@ export default function AutoSuggestSingleSelection({
           placeholder={placeholder}
           required={true}
           autoFocus={true}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
         />
       )}
       renderOption={(props, option) => (

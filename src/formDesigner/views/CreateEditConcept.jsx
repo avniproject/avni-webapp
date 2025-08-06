@@ -17,7 +17,7 @@ import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import KeyValues from "../components/KeyValues";
-import { filter, replace, sortBy, toLower, trim } from "lodash";
+import _, { filter, replace, sortBy, toLower, trim } from "lodash";
 import {
   findKeyValue,
   getKeyValue,
@@ -41,6 +41,8 @@ import {
   WebConceptView
 } from "../../common/model/WebConcept.ts";
 import { Stack } from "@mui/material";
+import { AvniSelectInput } from "../../adminApp/components/AvniSelectInput";
+import { AvniSelect } from "../../common/components/AvniSelect";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -78,7 +80,7 @@ const resetAnswerErrorState = answers => {
 
 const checkForEmptyAnswerNames = answers => {
   answers
-    .filter(answer => answer.name.trim() === "")
+    .filter(answer => !answer.voided && answer.name.trim() === "")
     .forEach(answer => {
       answer["isAnswerHavingError"] = ConceptAnswerError.inError("required");
     });
@@ -326,27 +328,94 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     [formValidation]
   );
 
-  const afterSuccessfulValidation = useCallback(async () => {
-    const {
-      concept: savedConcept,
-      error: saveError
-    } = await ConceptService.saveConcept(concept);
-    if (saveError) {
-      const newError = {
-        nameConflict: saveError.includes("already exists"),
-        mediaUploadFailed: !saveError.includes("already exists"),
-        message: saveError
-      };
-      setError(newError);
-      return;
-    }
+  const handleSaveError = useCallback(saveError => {
+    const newError = {
+      nameConflict: saveError.includes("already exists"),
+      mediaUploadFailed: !saveError.includes("already exists"),
+      message: saveError
+    };
+    setError(newError);
+  }, []);
 
+  const handleSaveSuccess = useCallback(savedConcept => {
     setConceptCreationAlert(true);
     setDefaultSnackbarStatus(true);
     setRedirectShow(true);
     setRedirectOnDelete(false);
     setConcept(savedConcept);
-  }, [concept]);
+  }, []);
+
+  const processCodedConceptAnswers = useCallback(async conceptToProcess => {
+    const answers = [...conceptToProcess.answers];
+
+    // Process each answer to create missing concepts
+    for (let i = 0; i < answers.length; i++) {
+      const answer = answers[i];
+
+      if (answer.name && answer.name.trim() !== "") {
+        try {
+          // Check if concept exists
+          const response = await http.get(
+            `/web/concept?name=${encodeURIComponent(answer.name)}`
+          );
+          if (response.status === 200) {
+            // Concept exists, use its UUID
+            answer.uuid = response.data.uuid;
+          }
+        } catch (error) {
+          if (error.response && error.response.status === 404) {
+            // Concept doesn't exist, create it with dataType "NA"
+            const newConceptData = {
+              name: answer.name,
+              uuid: "", // Will be generated server-side
+              dataType: "NA",
+              createdBy: "",
+              lastModifiedBy: "",
+              creationDateTime: "",
+              lastModifiedDateTime: "",
+              keyValues: []
+            };
+
+            try {
+              const createResponse = await http.post("/concepts", [
+                newConceptData
+              ]);
+              if (createResponse.status === 200) {
+                // Use the created concept's UUID
+                answer.uuid = createResponse.data[0]?.uuid || "";
+              }
+            } catch (createError) {
+              console.error("Error creating answer concept:", createError);
+            }
+          }
+        }
+      }
+    }
+
+    return { ...conceptToProcess, answers };
+  }, []);
+
+  const afterSuccessfulValidation = useCallback(async () => {
+    let conceptToSave = concept;
+
+    // Handle coded concept with potential non-existing answers
+    if (concept.dataType === "Coded") {
+      conceptToSave = await processCodedConceptAnswers(concept);
+    }
+
+    // Save the concept
+    const {
+      concept: savedConcept,
+      error: saveError
+    } = await ConceptService.saveConcept(conceptToSave);
+
+    if (saveError) {
+      handleSaveError(saveError);
+      return;
+    }
+
+    handleSaveSuccess(savedConcept);
+  }, [concept, processCodedConceptAnswers, handleSaveError, handleSaveSuccess]);
 
   const onNumericConceptAttributeAssignment = useCallback(event => {
     setConcept(prev => ({
@@ -574,36 +643,24 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
           </Grid>
           <Grid xs={12}>
             {isCreatePage ? (
-              <ToolTipContainer toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}>
-                <FormControl fullWidth>
-                  <InputLabel sx={{ mt: 1.875, fontSize: 16 }}>
-                    Datatype *
-                  </InputLabel>
-                  <Select
-                    id="dataType"
-                    label="DataType"
-                    value={concept.dataType}
-                    onChange={handleChange("dataType")}
-                    sx={{
-                      width: 400,
-                      height: 40,
-                      mt: 3,
-                      "& .MuiSelect-select": {
-                        backgroundColor: "white"
-                      }
-                    }}
-                  >
-                    {dataTypes.map(datatype => (
-                      <MenuItem value={datatype} key={datatype}>
-                        {datatype}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {error.dataTypeSelectionAlert && (
-                    <FormHelperText error>*Required</FormHelperText>
-                  )}
-                </FormControl>
-              </ToolTipContainer>
+              <FormControl fullWidth>
+                <AvniSelect
+                  id="dataType"
+                  label="DataType"
+                  value={concept.dataType}
+                  onChange={handleChange("dataType")}
+                  style={{ width: "200px" }}
+                  options={dataTypes.map(datatype => (
+                    <MenuItem value={datatype} key={datatype}>
+                      {datatype}
+                    </MenuItem>
+                  ))}
+                  toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
+                />
+                {error.dataTypeSelectionAlert && (
+                  <FormHelperText error>*Required</FormHelperText>
+                )}
+              </FormControl>
             ) : (
               <AvniTextField
                 id="dataType"
