@@ -564,6 +564,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
             <Grid container alignItems="center" spacing={2}>
               <Grid size={{ xs: 3 }}>
                 <StyledSelectInput
+                  sx={{ marginBottom: 4 }}
                   source={`syncSettings.${
                     subjectType.name
                   }.${syncAttributeName}`}
@@ -602,7 +603,8 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
                       <div
                         style={{
                           color: "rgba(0, 0, 0, 0.54)",
-                          fontSize: 12,
+                          fontSize: 18,
+                          // fontWeight: "bold",
                           marginTop: 5
                         }}
                       >
@@ -771,7 +773,6 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                 {isCognito && currentUsername && (
                   <AvniBooleanInput
                     source="customPassword"
-                    style={{ marginTop: "1em" }}
                     label="Set a custom password. If custom password is not set, temporary password will be first 4 characters of username and last 4 characters of phone number."
                     onChange={(e, newVal) => {
                       if (!isNil(newVal)) {
@@ -979,7 +980,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
           toolTipKey={"ADMIN_USER_SETTINGS_TIME_PICKER_MODE"}
         />
         {isSyncSettingsRequired && (
-          <div>
+          <div style={{ width: "100%", maxWidth: "100%" }}>
             <LineBreak />
             <ToolTipContainer
               toolTipKey={"ADMIN_SYNC_SETTINGS"}

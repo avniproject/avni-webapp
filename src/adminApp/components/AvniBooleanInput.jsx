@@ -1,20 +1,22 @@
 import { BooleanInput } from "react-admin";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
-import { Grid } from "@mui/material";
+import { Box } from "@mui/material";
 
 export const AvniBooleanInput = ({ toolTipKey, ...props }) => {
   return (
     <ToolTipContainer toolTipKey={toolTipKey}>
-      <Grid
-        component="label"
-        container
-        spacing={2}
+      <Box
         sx={{
-          alignItems: "center"
+          display: "flex",
+          alignItems: "flex-start",
+          width: "200px",
+          "& .MuiFormControlLabel-label": {
+            fontSize: "14px"
+          }
         }}
       >
         <BooleanInput {...props} />
-      </Grid>
+      </Box>
     </ToolTipContainer>
   );
 };
