@@ -24,7 +24,12 @@ export const AvniSelect = ({ options, toolTipKey, isClearable, ...props }) => {
         }}
       >
         <InputLabel id={props.label}>{props.label}</InputLabel>
-        <Select {...props}>{options}</Select>
+        <Select
+          {...props}
+          MenuProps={{ slotProps: { paper: { sx: { maxHeight: "20rem" } } } }}
+        >
+          {options}
+        </Select>
         {props.children}
       </FormControl>
     </ToolTipContainer>
