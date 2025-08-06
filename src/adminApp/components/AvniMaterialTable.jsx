@@ -273,7 +273,12 @@ const AvniMaterialTable = forwardRef(
         perPage: pagination.pageSize,
         total: totalRecords,
         isLoading,
-        pageSizeOptions: options.pageSizeOptions
+        pageSizeOptions: options.pageSizeOptions,
+        //Used in MRTPagination
+        setPage: page =>
+          handlePaginationChange(prev => ({ ...prev, pageIndex: page - 1 })),
+        setPerPage: perPage =>
+          handlePaginationChange(prev => ({ ...prev, pageSize: perPage }))
       }),
       [pagination, totalRecords, isLoading, handlePaginationChange]
     );

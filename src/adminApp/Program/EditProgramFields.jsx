@@ -68,7 +68,7 @@ const EditProgramFields = props => {
       )}
 
       <AvniSelect
-        label="Select Subject Type *"
+        label="Select Subject Type"
         value={_.isEmpty(subjectType) ? "" : subjectType}
         onChange={event => onSubjectTypeChange(event.target.value)}
         style={{ width: "200px" }}
