@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import { useParams, Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Title } from "react-admin";
@@ -14,7 +14,7 @@ import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import KeyValues from "../components/KeyValues";
-import _, { filter, replace, sortBy, toLower, trim } from "lodash";
+import { filter, sortBy, toLower, trim } from "lodash";
 import {
   findKeyValue,
   getKeyValue,
@@ -23,7 +23,6 @@ import {
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
-import { ToolTipContainer } from "../../common/components/ToolTipContainer";
 import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
 import { SubjectConcept } from "../components/SubjectConcept";
 import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
@@ -38,7 +37,6 @@ import {
   WebConceptView
 } from "../../common/model/WebConcept.ts";
 import { Stack } from "@mui/material";
-import { AvniSelectInput } from "../../adminApp/components/AvniSelectInput";
 import { AvniSelect } from "../../common/components/AvniSelect";
 
 export const moveUp = (conceptAnswers, index) => {
@@ -224,12 +222,6 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
 
   const handleChange = useCallback(
     stateHandler => e => {
-      console.log("Parent handleChange:", {
-        stateHandler,
-        originalValue: e.target.value,
-        valueType: typeof e.target.value
-      });
-
       const resetKeyValues =
         isCreatePage &&
         stateHandler === "dataType" &&
@@ -240,20 +232,11 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
 
         // Use standard JavaScript string replace instead of the replace function
         const originalValue = e.target.value;
-        const replacedValue = originalValue
+        c[stateHandler] = originalValue
           ? String(originalValue).replace(/\|/g, "")
           : "";
-        console.log("Replace operation:", {
-          originalValue,
-          replacedValue,
-          replacedType: typeof replacedValue
-        });
-
-        c[stateHandler] = replacedValue;
 
         if (resetKeyValues) c.keyValues = [];
-
-        console.log("Updated concept:", c);
         return c;
       });
     },

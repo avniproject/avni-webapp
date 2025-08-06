@@ -73,6 +73,16 @@ export const MRTPagination: React.FC<MRTPaginationProps> = ({
           }}
           sx={{ minWidth: 80, "& .MuiSelect-select": { py: 0.75 } }}
           disabled={isLoading}
+          MenuProps={{
+            anchorOrigin: {
+              vertical: "top",
+              horizontal: "left"
+            },
+            transformOrigin: {
+              vertical: "bottom",
+              horizontal: "left"
+            }
+          }}
         >
           {validatedOptions.map(opt => (
             <MenuItem key={opt} value={opt}>

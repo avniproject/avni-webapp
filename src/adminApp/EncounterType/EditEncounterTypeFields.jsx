@@ -75,7 +75,7 @@ const EditEncounterTypeFields = ({
       />
       <p />
       <AvniSelect
-        label="Select subject type *"
+        label="Select subject type"
         value={_.isEmpty(subjectT) ? "" : subjectT}
         onChange={event => setSubjectT(event.target.value)}
         style={{ width: "200px" }}

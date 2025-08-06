@@ -42,6 +42,10 @@ export const AvniSelect = ({
   return (
     <ToolTipContainer toolTipKey={toolTipKey}>
       <Autocomplete
+        sx={{
+          "& .MuiInputBase-root": { backgroundColor: "white" },
+          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#ccc" }
+        }}
         options={options || []}
         value={selectedOption}
         onChange={handleChange}

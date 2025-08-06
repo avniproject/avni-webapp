@@ -42,7 +42,7 @@ const ApplicationMenuEditFields = props => {
       />
       <br />
       <AvniSelect
-        label="Select Type *"
+        label="Select Type"
         value={_.isEmpty(menuItem.type) ? "" : menuItem.type}
         onChange={event =>
           dispatch({

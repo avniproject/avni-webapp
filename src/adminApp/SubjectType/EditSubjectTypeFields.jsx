@@ -46,7 +46,7 @@ const EditSubjectTypeFields = props => {
       </>
       <>
         <AvniSelect
-          label="Select Type *"
+          label="Select Type"
           value={_.isEmpty(subjectType.type) ? "" : subjectType.type}
           onChange={event =>
             dispatch({ type: "type", payload: event.target.value })
