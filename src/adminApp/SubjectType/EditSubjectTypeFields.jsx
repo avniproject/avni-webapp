@@ -2,7 +2,6 @@ import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
 import Types, { SubjectTypeType } from "./Types";
-import { MenuItem } from "@mui/material";
 import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
@@ -55,11 +54,10 @@ const EditSubjectTypeFields = props => {
           style={{ width: "200px" }}
           required
           disabled={isUserSubjectType && source === "edit"}
-          options={SubjectTypeType.getAll().map((type, index) => (
-            <MenuItem value={type} key={index}>
-              {type}
-            </MenuItem>
-          ))}
+          options={SubjectTypeType.getAll().map(type => ({
+            value: type,
+            label: type
+          }))}
           toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
         />
         <p />

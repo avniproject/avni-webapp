@@ -1,37 +1,66 @@
-import { Select, InputLabel, FormControl } from "@mui/material";
-
+import { Autocomplete, TextField } from "@mui/material";
+import { useCallback } from "react";
 import { ToolTipContainer } from "./ToolTipContainer";
 
-export const AvniSelect = ({ options, toolTipKey, isClearable, ...props }) => {
+export const AvniSelect = ({
+  options,
+  toolTipKey,
+  isClearable,
+  onChange,
+  onOpen,
+  onClose,
+  value,
+  label,
+  required,
+  style,
+  ...otherProps
+}) => {
+  const handleChange = useCallback(
+    (event, newValue) => {
+      // Extract just the value from the selected option object
+      const actualValue = newValue?.value || null;
+
+      // Create synthetic event similar to Select onChange
+      // Don't spread the original event as its target.value might be different
+      const syntheticEvent = {
+        target: { value: actualValue },
+        type: "change",
+        currentTarget: { value: actualValue }
+      };
+
+      if (onChange) {
+        onChange(syntheticEvent);
+      }
+    },
+    [onChange]
+  );
+
+  // Find the selected option object based on the current value
+  const selectedOption =
+    options?.find(option => option.value === value) || null;
+
   return (
     <ToolTipContainer toolTipKey={toolTipKey}>
-      <FormControl
-        sx={{
-          backgroundColor: "white",
-          "& .MuiInputBase-root": {
-            backgroundColor: "white",
-            "&:hover": {
-              backgroundColor: "white"
-            }
-          },
-          "& .MuiInputLabel-root": {
-            backgroundColor: "white",
-            padding: "0 4px",
-            "&:hover": {
-              backgroundColor: "white"
-            }
-          }
-        }}
-      >
-        <InputLabel id={props.label}>{props.label}</InputLabel>
-        <Select
-          {...props}
-          MenuProps={{ slotProps: { paper: { sx: { maxHeight: "20rem" } } } }}
-        >
-          {options}
-        </Select>
-        {props.children}
-      </FormControl>
+      <Autocomplete
+        options={options || []}
+        value={selectedOption}
+        onChange={handleChange}
+        onOpen={onOpen}
+        onClose={onClose}
+        getOptionLabel={option => option?.label || ""}
+        isOptionEqualToValue={(option, value) => option?.value === value?.value}
+        clearOnBlur
+        disableClearable={!isClearable}
+        renderInput={params => (
+          <TextField
+            {...params}
+            label={label}
+            required={required}
+            style={style}
+          />
+        )}
+        {...otherProps}
+      />
     </ToolTipContainer>
   );
 };

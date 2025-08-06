@@ -6,7 +6,6 @@ import { MenuItem } from "openchs-models";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { sampleLinkFunction } from "../../formDesigner/common/SampleRule";
 import ApplicationMenuReducer from "../Reducers/ApplicationMenuReducer";
-import { MenuItem as MaterialMenuItem } from "@mui/material";
 import { JSEditor } from "../../common/components/JSEditor";
 
 const ApplicationMenuEditFields = props => {
@@ -53,11 +52,10 @@ const ApplicationMenuEditFields = props => {
         }
         style={{ width: "200px" }}
         required
-        options={MenuItem.getAllTypes().map((type, index) => (
-          <MaterialMenuItem value={type} key={index}>
-            {type}
-          </MaterialMenuItem>
-        ))}
+        options={MenuItem.getAllTypes().map(type => ({
+          value: type,
+          label: type
+        }))}
         toolTipKey={"APP_DESIGNER_MENU_ITEM_TYPE"}
       />
       <br />
@@ -72,11 +70,10 @@ const ApplicationMenuEditFields = props => {
         }
         style={{ width: "200px" }}
         required
-        options={allGroups.map((group, index) => (
-          <MaterialMenuItem value={group} key={index}>
-            {group}
-          </MaterialMenuItem>
-        ))}
+        options={allGroups.map(group => ({
+          value: group,
+          label: group
+        }))}
         toolTipKey={"APP_DESIGNER_MENU_ITEM_GROUP"}
       />
       <br />

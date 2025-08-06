@@ -22,7 +22,7 @@ import {
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
-import { Box, Grid, FormHelperText, MenuItem } from "@mui/material";
+import { Box, Grid, FormHelperText } from "@mui/material";
 import { AvniTextField } from "../common/components/AvniTextField";
 import { SaveComponent } from "../common/components/SaveComponent";
 import { AvniSelect } from "../common/components/AvniSelect";
@@ -523,13 +523,10 @@ export const OrganisationCreateComponent = () => {
               label="Organisation Category*"
               onChange={event => handleChange("categoryId", event.target.value)}
               style={classes.select}
-              options={categoryList.map(ele => {
-                return (
-                  <MenuItem value={ele.id} key={ele.id}>
-                    {ele.name}
-                  </MenuItem>
-                );
-              })}
+              options={categoryList.map(ele => ({
+                value: ele.id,
+                label: ele.name
+              }))}
               margin="normal"
             />
             {errors.categoryId && (
@@ -542,13 +539,10 @@ export const OrganisationCreateComponent = () => {
               label="Organisation Status*"
               onChange={event => handleChange("statusId", event.target.value)}
               style={classes.select}
-              options={statusList.map(ele => {
-                return (
-                  <MenuItem value={ele.id} key={ele.id}>
-                    {ele.name}
-                  </MenuItem>
-                );
-              })}
+              options={statusList.map(ele => ({
+                value: ele.id,
+                label: ele.name
+              }))}
               margin="normal"
             />
             {errors.statusId && (

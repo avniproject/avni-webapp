@@ -954,10 +954,9 @@ const FormDetails = () => {
             errormsg += `There is an error in ${numberElementError} form element.`;
           draft.errorMsg = errormsg;
         }
-      }),
-      () => {
-        if (!flag) updateForm();
-      }
+        // Store the validation result in the draft to trigger useEffect
+        draft.shouldCallUpdateForm = !flag;
+      })
     );
   }, [
     getDeclarativeRuleValidationError,
@@ -1045,6 +1044,14 @@ const FormDetails = () => {
       }));
     }
   }, [state.form, state.name, state.timed, reOrderSequence, getForm]);
+
+  useEffect(() => {
+    if (state.shouldCallUpdateForm) {
+      updateForm();
+      // Reset the flag to prevent repeated calls
+      setState(prev => ({ ...prev, shouldCallUpdateForm: false }));
+    }
+  }, [state.shouldCallUpdateForm, updateForm]);
 
   const onDragEnd = useCallback(
     result => {

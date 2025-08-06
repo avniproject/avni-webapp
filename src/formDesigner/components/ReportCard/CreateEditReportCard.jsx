@@ -4,7 +4,7 @@ import { httpClient as http } from "../../../common/utils/httpClient";
 import { get, isNil, sortBy } from "lodash";
 import Box from "@mui/material/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
-import { Grid, MenuItem } from "@mui/material";
+import { Grid } from "@mui/material";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AvniTextField } from "../../../common/components/AvniTextField";
@@ -259,11 +259,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             options={Array.from(
               { length: WebReportCard.MaximumNumberOfNestedCards },
               (_, i) => i + 1
-            ).map((num, index) => (
-              <MenuItem value={num} key={index}>
-                {num}
-              </MenuItem>
-            ))}
+            ).map(num => ({
+              value: num,
+              label: num.toString()
+            }))}
             toolTipKey={"APP_DESIGNER_CARD_COUNT"}
           />
         )}
@@ -291,11 +290,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             style={{ width: "250px" }}
             required
             options={sortBy(standardReportCardTypes, ["description"]).map(
-              (type, index) => (
-                <MenuItem value={type.name} key={index}>
-                  {type.description}
-                </MenuItem>
-              )
+              type => ({
+                value: type.name,
+                label: type.description
+              })
             )}
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
           />
@@ -305,13 +303,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             label={`${card.standardReportCardType.description} in the last*`}
             value={get(card, "standardReportCardInputRecentDuration.value")}
             unit={get(card, "standardReportCardInputRecentDuration.unit")}
-            units={StandardReportCardType.recentCardDurationUnits.map(
-              (unit, index) => (
-                <MenuItem value={unit} key={index}>
-                  {unit}
-                </MenuItem>
-              )
-            )}
+            units={StandardReportCardType.recentCardDurationUnits.map(unit => ({
+              value: unit,
+              label: unit
+            }))}
             onValueChange={event =>
               dispatch({
                 type: ReportCardReducerKeys.duration,
