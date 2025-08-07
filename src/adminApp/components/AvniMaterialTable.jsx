@@ -11,6 +11,7 @@ import { MaterialReactTable } from "material-react-table";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IconButton, Box } from "@mui/material";
 import { MRTPagination } from "../Util/MRTPagination.tsx";
+import { useMRTPagination } from "../../common/hooks/useMRTPagination";
 
 const AvniMaterialTable = forwardRef(
   (
@@ -267,21 +268,13 @@ const AvniMaterialTable = forwardRef(
 
     const memoizedColumns = useMemo(() => columns, [columns]);
 
-    const paginationProps = useMemo(
-      () => ({
-        page: pagination.pageIndex + 1,
-        perPage: pagination.pageSize,
-        total: totalRecords,
-        isLoading,
-        pageSizeOptions: options.pageSizeOptions,
-        //Used in MRTPagination
-        setPage: page =>
-          handlePaginationChange(prev => ({ ...prev, pageIndex: page - 1 })),
-        setPerPage: perPage =>
-          handlePaginationChange(prev => ({ ...prev, pageSize: perPage }))
-      }),
-      [pagination, totalRecords, isLoading, handlePaginationChange]
-    );
+    const paginationProps = useMRTPagination({
+      pagination,
+      setPagination: handlePaginationChange,
+      totalRecords,
+      isLoading,
+      pageSizeOptions: options.pageSizeOptions
+    });
 
     const tableProps = useMemo(
       () => ({

@@ -94,7 +94,13 @@ const WhatsAppHome = () => {
         customErrorMessage="Please set up a Glific Account and configure it correctly for this page to show up."
       />
 
-      <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
+      <Box
+        sx={theme => ({
+          flexGrow: 1,
+          bgcolor: theme.palette.background.paper,
+          display: "flex"
+        })}
+      >
         <Tabs
           orientation="vertical"
           variant="scrollable"

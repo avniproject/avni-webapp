@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Button, Grid, Typography } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
+import { MRTPagination } from "../../../adminApp/Util/MRTPagination.tsx";
+import { useMRTPagination } from "../../../common/hooks/useMRTPagination.js";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../common/components/utils";
 import { DeleteButton } from "../../components/DeleteButton";
@@ -121,6 +123,13 @@ const PlannedVisitsTable = ({
     </StyledTypography>
   );
 
+  const paginationProps = useMRTPagination({
+    pagination,
+    setPagination,
+    totalRecords: size(plannedVisits),
+    isLoading: false
+  });
+
   const renderTable = () => (
     <StyledTable
       columns={columns}
@@ -134,6 +143,7 @@ const PlannedVisitsTable = ({
       enableGlobalFilter={false}
       enableColumnFilters={false}
       enableTopToolbar={false}
+      renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
       initialState={{
         sorting: [{ id: "earliestVisitDateTime", desc: true }]
       }}

@@ -10,6 +10,8 @@ import {
   IconButton
 } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
+import { MRTPagination } from "../../adminApp/Util/MRTPagination.tsx";
+import { useMRTPagination } from "../../common/hooks/useMRTPagination";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Link, useParams } from "react-router-dom";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
@@ -85,6 +87,13 @@ function Members({
   useEffect(() => {
     loadData();
   }, [loadData, contactGroupMembersVersion]);
+
+  const paginationProps = useMRTPagination({
+    pagination,
+    setPagination,
+    totalRecords,
+    isLoading
+  });
 
   const removeContactFromGroup = useCallback(
     contactRows => {
@@ -166,6 +175,7 @@ function Members({
         enableGlobalFilter={false}
         enableColumnFilters={false}
         enableRowSelection
+        renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
         initialState={{ pagination: { pageSize: 10 } }}
         muiTableProps={{
           sx: { table: { backgroundColor: "#fff" } }

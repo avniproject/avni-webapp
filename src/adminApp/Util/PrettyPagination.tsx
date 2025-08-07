@@ -35,7 +35,7 @@ export const PrettyPagination: React.FC = () => {
         p: 1.5,
         borderTop: "1px solid",
         borderColor: "divider",
-        backgroundColor: "#f8fafc",
+        backgroundColor: "inherit",
         position: "sticky",
         bottom: 0,
         zIndex: 1
@@ -63,6 +63,16 @@ export const PrettyPagination: React.FC = () => {
             const next = Number(e.target.value);
             setPage(1);
             setPerPage(next);
+          }}
+          MenuProps={{
+            anchorOrigin: {
+              vertical: "top",
+              horizontal: "left"
+            },
+            transformOrigin: {
+              vertical: "bottom",
+              horizontal: "left"
+            }
           }}
           sx={{
             minWidth: 88,

@@ -18,6 +18,8 @@ import {
   TaskMetadata
 } from "../reducers/TaskAssignmentReducer";
 import { MaterialReactTable } from "material-react-table";
+import { MRTPagination } from "../../adminApp/Util/MRTPagination.tsx";
+import { useMRTPagination } from "../../common/hooks/useMRTPagination";
 import { fetchTasks } from "./FetchTasks";
 import { includes, isEmpty, map, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
@@ -80,6 +82,13 @@ const TaskAssignment = () => {
   const [sorting, setSorting] = useState([]);
 
   const tableRef = useRef(null);
+
+  const paginationProps = useMRTPagination({
+    pagination,
+    setPagination,
+    totalRecords: rowCount,
+    isLoading
+  });
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -189,9 +198,7 @@ const TaskAssignment = () => {
             initialState={{
               pagination: { pageSize: 10 }
             }}
-            muiTablePaginationProps={{
-              rowsPerPageOptions: [10, 15, 25]
-            }}
+            renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
             renderTopToolbar={({ table }) => (
               <AssignmentToolBar
                 dispatch={dispatch}

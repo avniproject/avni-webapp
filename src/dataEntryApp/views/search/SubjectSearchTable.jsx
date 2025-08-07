@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
+import { MRTPagination } from "../../../adminApp/Util/MRTPagination.tsx";
 import { httpClient as http } from "common/utils/httpClient";
 import { Box, Chip, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -13,7 +14,6 @@ import {
   isNil,
   join,
   map,
-  reject,
   size,
   uniqBy
 } from "lodash";
@@ -101,8 +101,9 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
           </Grid>
         )
       },
-      ...flatten(customColumns).map(({ name }) => ({
+      ...flatten(customColumns).map(({ name }, index) => ({
         accessorKey: name,
+        id: `custom-${name}-${index}`,
         header: t(name),
         enableSorting: false
       })),
@@ -189,8 +190,10 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       const result = await http
         .post("/web/searchAPI/v2", requestCopy)
         .then(res => res.data);
+
       setData(result.listOfRecords || []);
-      setTotalRecords(result.totalElements || 0);
+      const totalElements = result.totalElements ?? 0;
+      setTotalRecords(totalElements);
     } catch (error) {
       console.error("Failed to fetch data", error);
       setData([]);
@@ -200,15 +203,105 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     }
   }, [pagination, sorting, searchRequest, subjectTypes]);
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    // Only load data if we have a valid searchRequest
+    if (searchRequest && Object.keys(searchRequest).length > 0) {
+      loadData();
+    }
+  }, [loadData, searchRequest]);
+
+  // Custom pagination handler that also triggers data reload
+  const handlePaginationChange = useCallback(newPagination => {
+    setPagination(prev => {
+      const updated =
+        typeof newPagination === "function"
+          ? newPagination(prev)
+          : newPagination;
+      return updated;
+    });
+  }, []);
+
+  const paginationProps = useMemo(() => {
+    if (totalRecords === -1) {
+      const reachedEnd = data.length < pagination.pageSize;
+
+      // Handle the case when no records exist
+      if (data.length === 0 && pagination.pageIndex === 0) {
+        return {
+          page: 1,
+          perPage: pagination.pageSize,
+          total: 0,
+          isLoading,
+          pageSizeOptions: [10, 15, 20],
+          setPage: page =>
+            handlePaginationChange(prev => ({ ...prev, pageIndex: page - 1 })),
+          setPerPage: perPage =>
+            handlePaginationChange(prev => ({
+              ...prev,
+              pageSize: perPage,
+              pageIndex: 0
+            })),
+          customLabel: "0-0 of 0",
+          hasNextPage: false
+        };
+      }
+
+      const from = pagination.pageIndex * pagination.pageSize + 1;
+      const to = from + data.length - 1;
+
+      return {
+        page: pagination.pageIndex + 1,
+        perPage: pagination.pageSize,
+        total: reachedEnd ? to : -1, // Special case for MRTPagination
+        isLoading,
+        pageSizeOptions: [10, 15, 20],
+        setPage: page =>
+          handlePaginationChange(prev => ({ ...prev, pageIndex: page - 1 })),
+        setPerPage: perPage =>
+          handlePaginationChange(prev => ({
+            ...prev,
+            pageSize: perPage,
+            pageIndex: 0
+          })),
+        // Custom display label
+        customLabel: reachedEnd
+          ? `${from}-${to} of ${to}`
+          : `${from}-${to} of more than ${to}`,
+        // Disable next if we reached the end
+        hasNextPage: !reachedEnd
+      };
+    } else {
+      // Normal behavior when totalElements is available
+      return {
+        page: pagination.pageIndex + 1,
+        perPage: pagination.pageSize,
+        total: totalRecords,
+        isLoading,
+        pageSizeOptions: [10, 15, 20],
+        setPage: page =>
+          handlePaginationChange(prev => ({ ...prev, pageIndex: page - 1 })),
+        setPerPage: perPage =>
+          handlePaginationChange(prev => ({
+            ...prev,
+            pageSize: perPage,
+            pageIndex: 0
+          }))
+      };
+    }
+  }, [
+    pagination,
+    totalRecords,
+    data.length,
+    isLoading,
+    handlePaginationChange
+  ]);
+
   return (
     <MaterialReactTable
       columns={columns}
       data={data}
       manualPagination
       manualSorting
-      onPaginationChange={setPagination}
+      onPaginationChange={handlePaginationChange}
       onSortingChange={setSorting}
       rowCount={totalRecords}
       state={{ isLoading, pagination, sorting, rowSelection }}
@@ -227,6 +320,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
           />
         </Box>
       )}
+      renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
     />
   );
 };

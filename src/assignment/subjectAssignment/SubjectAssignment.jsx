@@ -10,6 +10,8 @@ import {
 import { styled } from "@mui/material/styles";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { MaterialReactTable } from "material-react-table";
+import { MRTPagination } from "../../adminApp/Util/MRTPagination.tsx";
+import { useMRTPagination } from "../../common/hooks/useMRTPagination";
 import api from "../api";
 import {
   getAssignmentValue,
@@ -90,6 +92,13 @@ const SubjectAssignment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState([]);
+
+  const paginationProps = useMRTPagination({
+    pagination,
+    setPagination,
+    totalRecords: rowCount,
+    isLoading
+  });
 
   useEffect(() => {
     api.getSubjectAssignmentMetadata().then(metadata => {
@@ -237,9 +246,7 @@ const SubjectAssignment = () => {
             initialState={{
               pagination: { pageSize: 10 }
             }}
-            muiTablePaginationProps={{
-              rowsPerPageOptions: [10, 15, 25]
-            }}
+            renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
             renderTopToolbar={({ table }) => (
               <AssignmentToolBar
                 dispatch={updateState}

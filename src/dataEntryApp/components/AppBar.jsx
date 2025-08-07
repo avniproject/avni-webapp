@@ -62,7 +62,7 @@ const StyledLogoContainer = styled(Box)(({ theme }) => ({
   justifyContent: "center",
   backgroundColor: "white",
   borderRadius: "0.5rem",
-  padding: "0.375rem 0.75rem",
+  padding: "0.375rem 0.5rem",
   boxShadow: "0 0.125rem 0.5rem rgba(0,0,0,0.1)",
   transition: "all 0.3s ease",
   "&:hover": {
@@ -77,12 +77,11 @@ const StyledLogoContainer = styled(Box)(({ theme }) => ({
 }));
 
 const StyledRegisterButton = styled(Button)(({ theme }) => ({
-  marginRight: theme.spacing(3),
+  marginRight: "0.625rem",
   color: "white",
   borderColor: "white",
   borderRadius: "0.5rem",
-  padding: "0.5rem 1rem",
-  fontWeight: 600,
+  fontWeight: 500,
   transition: "all 0.3s ease",
   "&:hover": {
     borderColor: "rgba(255, 255, 255, 0.9)",
@@ -93,16 +92,11 @@ const StyledRegisterButton = styled(Button)(({ theme }) => ({
 }));
 
 const StyledLinkButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
   marginRight: "0.625rem",
-  marginLeft: "0.125rem",
   color: "white",
-  backgroundColor: "rgba(255, 255, 255, 0.1)",
-  padding: "0.375rem 1rem",
+  borderColor: "white",
   borderRadius: "0.5rem",
   fontWeight: 500,
-  border: "0.0625rem solid rgba(255, 255, 255, 0.2)",
-  backdropFilter: "blur(0.625rem)",
   transition: "all 0.3s ease",
   "&:hover": {
     backgroundColor: "rgba(255, 255, 255, 0.2)",

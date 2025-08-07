@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { styled } from "@mui/material/styles";
 import { Box, Grid, IconButton } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
+import { MRTPagination } from "../../../adminApp/Util/MRTPagination.tsx";
+import { useMRTPagination } from "../../../common/hooks/useMRTPagination";
 import { httpClient as http } from "common/utils/httpClient";
 import { find, isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
@@ -223,6 +225,13 @@ const CompletedVisitsTable = ({
     loadData();
   }, [loadData]);
 
+  const paginationProps = useMRTPagination({
+    pagination,
+    setPagination,
+    totalRecords,
+    isLoading
+  });
+
   return (
     <MaterialReactTable
       columns={columns}
@@ -250,6 +259,7 @@ const CompletedVisitsTable = ({
           {row.getIsExpanded() ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
         </IconButton>
       )}
+      renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
       initialState={{
         sorting: [{ id: "encounterDateTime", desc: true }]
       }}

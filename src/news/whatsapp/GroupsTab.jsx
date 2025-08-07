@@ -1,5 +1,7 @@
-import { Fragment, useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
+import { MRTPagination } from "../../adminApp/Util/MRTPagination.tsx";
+import { useMRTPagination } from "../../common/hooks/useMRTPagination";
 import { LinearProgress, Snackbar, Box, Button } from "@mui/material";
 import AddEditContactGroup from "./AddEditContactGroup";
 import ContactService from "../api/ContactService";
@@ -41,6 +43,13 @@ const GroupsTab = ({ groups, columns }) => {
     loadData();
   }, [loadData]);
 
+  const paginationProps = useMRTPagination({
+    pagination,
+    setPagination,
+    totalRecords,
+    isLoading
+  });
+
   const onContactSaved = useCallback(() => {
     setAddingContactGroup(false);
     setSavedContactGroup(true);
@@ -62,7 +71,7 @@ const GroupsTab = ({ groups, columns }) => {
   );
 
   return (
-    <div className="container">
+    <Box className="container">
       {addingContactGroup && (
         <AddEditContactGroup
           onClose={() => setAddingContactGroup(false)}
@@ -85,7 +94,26 @@ const GroupsTab = ({ groups, columns }) => {
         enableRowSelection
         initialState={{ pagination: { pageSize: 10 } }}
         muiTableProps={{
-          sx: { table: { backgroundColor: "#fff" } }
+          sx: {
+            "& .MuiTableRow-root": {
+              backgroundColor: "#fff"
+            },
+            "& .MuiTableCell-root": {
+              backgroundColor: "#fff"
+            }
+          }
+        }}
+        muiTablePaperProps={{
+          sx: {
+            backgroundColor: "#fff",
+            boxShadow: "none",
+            border: "1px solid #e0e0e0"
+          }
+        }}
+        muiTopToolbarProps={{
+          sx: {
+            backgroundColor: "#fff"
+          }
         }}
         renderTopToolbarCustomActions={({ table }) => (
           <Box sx={{ display: "flex", gap: "8px" }}>
@@ -105,6 +133,7 @@ const GroupsTab = ({ groups, columns }) => {
             </Button>
           </Box>
         )}
+        renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
       />
       <Snackbar
         open={savedContactGroup}
@@ -112,7 +141,7 @@ const GroupsTab = ({ groups, columns }) => {
         onClose={() => setSavedContactGroup(false)}
         message="Created new contact group"
       />
-    </div>
+    </Box>
   );
 };
 
