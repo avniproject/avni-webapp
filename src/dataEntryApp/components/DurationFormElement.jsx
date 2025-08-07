@@ -55,13 +55,17 @@ const CompositeDurationFormElement = ({
 }) => {
   const compositeDuration = value
     ? CompositeDuration.fromObs(value)
-    : CompositeDuration.fromOpts(fe.durationOptions);
+    : CompositeDuration.fromOpts(fe.durationOptions || []);
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
       formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
   );
+
+  if (!fe.durationOptions || fe.durationOptions.length === 0) {
+    return null;
+  }
 
   return (
     <FormControl>
