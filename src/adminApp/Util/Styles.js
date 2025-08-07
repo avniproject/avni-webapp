@@ -22,7 +22,6 @@ export const StyledTextInput = styled(TextInput)({
 
 export const datagridStyles = {
   border: `0.0625rem solid #e0e0e0`, // 1px = 0.0625rem
-  borderRadius: 2,
   overflow: "hidden",
   backgroundColor: "#fff",
   minHeight: "25rem", // 400px = 25rem
