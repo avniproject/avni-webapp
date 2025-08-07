@@ -18,7 +18,7 @@ export default defineConfig({
   server: {
     port: 6010,
     proxy: {
-      "^/(api|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|documentation|export|translation|account|etl|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege)": {
+      "^/(me|api|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|documentation|export|translation|account|etl|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege)": {
         target: process.env.BACKEND_URL,
         changeOrigin: true,
         secure: false
