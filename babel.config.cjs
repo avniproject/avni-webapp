@@ -52,8 +52,6 @@ module.exports = {
                         allowDeclareFields: true,
                         allowNamespaces: true,
                         onlyRemoveTypeImports: true,
-                        // Add this to ensure classes are handled properly
-                        allowDeclareFields: true
                     }
                 ]
             ],

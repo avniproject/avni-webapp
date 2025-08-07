@@ -43,8 +43,10 @@ export const AvniSelect = ({
     <ToolTipContainer toolTipKey={toolTipKey}>
       <Autocomplete
         sx={{
+          minWidth: 200,
           "& .MuiInputBase-root": { backgroundColor: "white" },
-          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#ccc" }
+          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#ccc" },
+          ...style
         }}
         options={options || []}
         value={selectedOption}
@@ -55,7 +57,6 @@ export const AvniSelect = ({
         isOptionEqualToValue={(option, value) => option?.value === value?.value}
         clearOnBlur
         disableClearable={!isClearable}
-        sx={{ minWidth: 200, ...style }}
         renderInput={params => (
           <TextField {...params} label={label} required={required} />
         )}

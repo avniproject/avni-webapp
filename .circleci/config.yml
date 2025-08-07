@@ -125,7 +125,7 @@ jobs:
 
       - run:
           name: Build
-          command: NODE_OPTIONS=--max_old_space_size=8192 yarn run build
+          command: NODE_OPTIONS=--max_old_space_size=4096 yarn run build
 
       - run: cd build; zip -r ../openchs-webapp.zip *
 

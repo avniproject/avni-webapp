@@ -4,6 +4,8 @@ module.exports = {
   moduleNameMapper: {
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
     "\\.(jpg|jpeg|png|gif|svg)$": "<rootDir>/__mocks__/fileMock.js",
+    // Mock problematic ES modules
+    "^react-hotkeys-hook$": "<rootDir>/__mocks__/react-hotkeys-hook.js",
     // Map specific directory patterns - order matters!
     "^dataEntryApp/(.*)$": "<rootDir>/src/dataEntryApp/$1",
     "^common/(.*)$": "<rootDir>/src/common/$1",
@@ -19,7 +21,7 @@ module.exports = {
     ]
   },
   transformIgnorePatterns: [
-    "/node_modules/(?!axios|react-admin|fetchUtils|@mui|@emotion|@reduxjs|redux-toolkit|openchs-models|lodash-es|chai)/"
+    "/node_modules/(?!axios|react-admin|fetchUtils|@mui|@emotion|@reduxjs|redux-toolkit|openchs-models|lodash-es|chai|react-hotkeys-hook|ra-ui-materialui|ra-core)/"
   ],
 
   // Use CommonJS for setup files to avoid ES module issues

@@ -12,12 +12,13 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { StyledEngineProvider } from "@mui/system";
 import { grey, blue, red, orange, green } from "@mui/material/colors";
 import { httpClient as http } from "./common/utils/httpClient";
-import IdpDetails from "./rootApp/security/IdpDetails";
+import IdpDetails from "./rootApp/security/IdpDetails.ts";
 import { configureAuth } from "./rootApp/utils";
 import IdpFactory from "./rootApp/security/IdpFactory";
 import { ErrorFallback } from "./dataEntryApp/ErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorMessageUtil from "./common/utils/ErrorMessageUtil";
+import { handleStorageMigration } from "./common/utils/storageMigration";
 
 const theme = createTheme({
   palette: {
@@ -98,6 +99,8 @@ const MainApp = () => {
   const [genericConfig, setGenericConfig] = useState({});
 
   useEffect(() => {
+    // Handle storage migration - clears all localStorage/sessionStorage on version change
+    handleStorageMigration();
     http
       .fetchJson("/idp-details")
       .then(response => response.json)

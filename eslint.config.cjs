@@ -26,6 +26,7 @@ module.exports = [
         fetch: "readonly",
         document: "readonly",
         Headers: "readonly",
+        jest: "readonly",
         localStorage: "readonly",
         module: "readonly",
         navigator: "readonly",
