@@ -9,10 +9,8 @@ import {
   ReferenceInput,
   required,
   SaveButton,
-  Show,
   ShowButton,
   SimpleForm,
-  SimpleShowLayout,
   TextField,
   TextInput,
   Toolbar,
@@ -22,7 +20,7 @@ import {
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
-import { Box, Grid, FormHelperText } from "@mui/material";
+import { Box, Grid, FormHelperText, Stack } from "@mui/material";
 import { AvniTextField } from "../common/components/AvniTextField";
 import { SaveComponent } from "../common/components/SaveComponent";
 import { AvniSelect } from "../common/components/AvniSelect";
@@ -262,25 +260,6 @@ function OrganisationStatusInput() {
   );
 }
 
-const classes = {
-  textField: {
-    width: 400,
-    marginRight: 10
-  },
-  select: {
-    width: 400,
-    height: 40,
-    marginTop: 24
-  },
-  button: {
-    marginTop: 40
-  },
-  inputLabel: {
-    marginTop: 15,
-    fontSize: 16
-  }
-};
-
 const textFieldSet = new Set([
   "name",
   "dbUser",
@@ -437,15 +416,18 @@ export const OrganisationCreateComponent = () => {
           bgcolor: "background.paper"
         }}
       >
-        <Grid container style={{ backgroundColor: "#fff" }} direction="column">
-          <Grid size={6}>
+        <Stack>
+          <Grid>
             <AvniTextField
               id="name"
               label="Name*"
               value={data.name}
               onChange={event => handleChange("name", event.target.value)}
               onBlur={event => handleBlur("name", event.target.value)}
-              style={classes.textField}
+              sx={{
+                width: "25rem",
+                marginRight: "0.625rem"
+              }}
               margin="normal"
               autoComplete="off"
             />
@@ -453,14 +435,17 @@ export const OrganisationCreateComponent = () => {
               <FormHelperText error>{errors.name}</FormHelperText>
             )}
           </Grid>
-          <Grid size={6}>
+          <Grid>
             <AvniTextField
               id="dbUser"
               label="DB User*"
               value={data.dbUser}
               onChange={event => handleChange("dbUser", event.target.value)}
               onBlur={event => handleBlur("dbUser", event.target.value)}
-              style={classes.textField}
+              sx={{
+                width: "25rem",
+                marginRight: "0.625rem"
+              }}
               margin="normal"
               autoComplete="off"
             />
@@ -468,14 +453,17 @@ export const OrganisationCreateComponent = () => {
               <FormHelperText error>{errors.dbUser}</FormHelperText>
             )}
           </Grid>
-          <Grid size={6}>
+          <Grid>
             <AvniTextField
               id="schemaName"
               label="Schema Name*"
               value={data.schemaName}
               onChange={event => handleChange("schemaName", event.target.value)}
               onBlur={event => handleBlur("schemaName", event.target.value)}
-              style={classes.textField}
+              sx={{
+                width: "25rem",
+                marginRight: "0.625rem"
+              }}
               margin="normal"
               autoComplete="off"
             />
@@ -483,7 +471,7 @@ export const OrganisationCreateComponent = () => {
               <FormHelperText error>{errors.schemaName}</FormHelperText>
             )}
           </Grid>
-          <Grid size={6}>
+          <Grid>
             <AvniTextField
               id="mediaDirectory"
               label="Media Directory*"
@@ -492,7 +480,10 @@ export const OrganisationCreateComponent = () => {
                 handleChange("mediaDirectory", event.target.value)
               }
               onBlur={event => handleBlur("mediaDirectory", event.target.value)}
-              style={classes.textField}
+              sx={{
+                width: "25rem",
+                marginRight: "0.625rem"
+              }}
               margin="normal"
               autoComplete="off"
             />
@@ -500,7 +491,7 @@ export const OrganisationCreateComponent = () => {
               <FormHelperText error>{errors.mediaDirectory}</FormHelperText>
             )}
           </Grid>
-          <Grid size={6}>
+          <Grid>
             <AvniTextField
               id="usernameSuffix"
               label="Username Suffix*"
@@ -509,7 +500,10 @@ export const OrganisationCreateComponent = () => {
                 handleChange("usernameSuffix", event.target.value)
               }
               onBlur={event => handleBlur("usernameSuffix", event.target.value)}
-              style={classes.textField}
+              sx={{
+                width: "25rem",
+                marginRight: "0.625rem"
+              }}
               margin="normal"
               autoComplete="off"
             />
@@ -517,12 +511,17 @@ export const OrganisationCreateComponent = () => {
               <FormHelperText error>{errors.usernameSuffix}</FormHelperText>
             )}
           </Grid>
-          <Grid size={6}>
+          <Grid>
             <AvniSelect
               id="categoryId"
               label="Organisation Category*"
+              value={data.categoryId}
               onChange={event => handleChange("categoryId", event.target.value)}
-              style={classes.select}
+              sx={{
+                width: "25rem",
+                height: "2.5rem",
+                marginTop: "1rem"
+              }}
               options={categoryList.map(ele => ({
                 value: ele.id,
                 label: ele.name
@@ -533,12 +532,18 @@ export const OrganisationCreateComponent = () => {
               <FormHelperText error>{errors.categoryId}</FormHelperText>
             )}
           </Grid>
-          <Grid size={6}>
+          <Grid>
             <AvniSelect
               id="statusId"
               label="Organisation Status*"
+              value={data.statusId}
               onChange={event => handleChange("statusId", event.target.value)}
-              style={classes.select}
+              sx={{
+                width: "25rem",
+                height: "2.5rem",
+                marginTop: "1rem",
+                marginBottom: "1rem"
+              }}
               options={statusList.map(ele => ({
                 value: ele.id,
                 label: ele.name
@@ -549,7 +554,7 @@ export const OrganisationCreateComponent = () => {
               <FormHelperText error>{errors.statusId}</FormHelperText>
             )}
           </Grid>
-          <Grid size={6}>
+          <Grid>
             {errors.other && (
               <FormHelperText error>{errors.other}</FormHelperText>
             )}
@@ -568,11 +573,11 @@ export const OrganisationCreateComponent = () => {
               <SaveComponent
                 name="save"
                 onSubmit={handleSubmit}
-                styles={{ marginTop: "10px" }}
+                styles={{ marginTop: "0.625rem" }}
               />
             </Grid>
           </Grid>
-        </Grid>
+        </Stack>
       </Box>
     </>
   );

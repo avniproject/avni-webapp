@@ -103,7 +103,10 @@ function InlineConcept(props) {
           options={filter(
             inlineConceptDataType,
             t => !includes(props.dataTypesToIgnore, t)
-          )}
+          ).map(dataType => ({
+            value: dataType,
+            label: dataType
+          }))}
           toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
         />
       </Grid>

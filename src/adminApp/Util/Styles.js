@@ -181,7 +181,7 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
 
 export const StyledShow = styled(Show)(({ theme }) => ({
   "& .RaShow-main": {
-    backgroundColor: "transparent",
+    backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(3, 4),
     minHeight: "auto"
   },

@@ -105,7 +105,12 @@ function* setAdminOrgsWorker() {
 function* logoutWorker() {
   try {
     yield call(api.logout);
+    // Preserve version key to prevent false migration messages after logout
+    const versionKey = localStorage.getItem("avni_app_version");
     localStorage.clear();
+    if (versionKey) {
+      localStorage.setItem("avni_app_version", versionKey);
+    }
     clearCookies();
 
     yield call([authProvider, authProvider.logout], {});
