@@ -215,7 +215,7 @@ export function* saveProgramEncounterWorker(params) {
   if (response.success) {
     yield put(saveProgramEncounterComplete());
   } else {
-    yield put(saveProgramEncounterFailed(response.message));
+    yield put(saveProgramEncounterFailed(response.errorMessage));
   }
 }
 
