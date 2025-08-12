@@ -34,7 +34,7 @@ const SubjectTypeCreate = () => {
   const [groupValidationError, setGroupValidationError] = useState(false);
   const [error, setError] = useState("");
   const [msgError, setMsgError] = useState("");
-  const [alert, setAlert] = useState(false);
+  const [successAlert, setSuccessAlert] = useState(false);
   const [id, setId] = useState();
   const [formList, setFormList] = useState([]);
   const [formMappings, setFormMappings] = useState([]);
@@ -56,10 +56,10 @@ const SubjectTypeCreate = () => {
   }, []);
 
   useEffect(() => {
-    if (alert && id) {
+    if (successAlert && id) {
       navigate(`/appDesigner/subjectType/${id}/show`);
     }
-  }, [alert, id, navigate]);
+  }, [successAlert, id, navigate]);
 
   const onRulesChange = rules => {
     rulesDispatch({ type: "setRules", payload: rules });
@@ -93,7 +93,7 @@ const SubjectTypeCreate = () => {
         MediaFolder.ICONS
       );
       if (error) {
-        setAlert(false);
+        alert(error);
         return;
       }
       let subjectTypeSavePromise = () =>
@@ -110,7 +110,7 @@ const SubjectTypeCreate = () => {
             if (response.status === 200) {
               setError("");
               setMsgError("");
-              setAlert(true);
+              setSuccessAlert(true);
               setId(response.data.id);
               return response;
             }
@@ -119,7 +119,7 @@ const SubjectTypeCreate = () => {
             saveMessageRules(entityType, response.data.subjectTypeId, rules)
           )
           .catch(error => {
-            setAlert(false);
+            setSuccessAlert(false);
             error.response.data.message
               ? setError(error.response.data.message)
               : setMsgError(getDBValidationError(error));
@@ -200,7 +200,7 @@ const SubjectTypeCreate = () => {
           </div>
         </DocumentationContainer>
       </Box>
-      {alert && <div />}
+      {successAlert && <div />}
     </>
   );
 };
