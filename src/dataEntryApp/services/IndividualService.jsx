@@ -35,6 +35,10 @@ class IndividualService {
   findAllSubjectsWithMobileNumberForType(mobileNumber, subjectTypeUUID) {
     throw Error(notSupportedMessage);
   }
+
+  getSubjects(subjectTypeName, realmFilter) {
+    throw Error(notSupportedMessage);
+  }
 }
 
 export const individualService = new IndividualService();
