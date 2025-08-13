@@ -69,12 +69,17 @@ const EditProgramFields = props => {
 
       <AvniSelect
         label="Select Subject Type"
-        value={_.isEmpty(subjectType) ? "" : subjectType}
-        onChange={event => onSubjectTypeChange(event.target.value)}
+        value={_.isEmpty(subjectType) ? "" : subjectType?.uuid}
+        onChange={event => {
+          const selectedSubjectType = subjectTypes.find(
+            st => st.uuid === event.target.value
+          );
+          onSubjectTypeChange(selectedSubjectType);
+        }}
         style={{ width: "200px" }}
         required
         options={subjectTypes.map(option => ({
-          value: option,
+          value: option.uuid,
           label: option.name
         }))}
         toolTipKey={"APP_DESIGNER_PROGRAM_SUBJECT_TYPE"}

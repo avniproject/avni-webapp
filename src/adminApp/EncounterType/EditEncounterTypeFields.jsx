@@ -76,12 +76,17 @@ const EditEncounterTypeFields = ({
       <p />
       <AvniSelect
         label="Select subject type"
-        value={_.isEmpty(subjectT) ? "" : subjectT}
-        onChange={event => setSubjectT(event.target.value)}
+        value={_.isEmpty(subjectT) ? "" : subjectT?.uuid}
+        onChange={event => {
+          const selectedSubject = subjectType.find(
+            s => s.uuid === event.target.value
+          );
+          setSubjectT(selectedSubject);
+        }}
         style={{ width: "200px" }}
         required
         options={subjectType.map(option => ({
-          value: option,
+          value: option.uuid,
           label: option.name
         }))}
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_SUBJECT"}
@@ -89,11 +94,16 @@ const EditEncounterTypeFields = ({
       <p />
       <AvniSelect
         label="Select Program"
-        value={_.isEmpty(programT) ? "" : programT}
-        onChange={event => updateProgram(event.target.value)}
+        value={_.isEmpty(programT) ? "" : programT?.uuid || programT}
+        onChange={event => {
+          const selectedProgram = program.find(
+            p => p.uuid === event.target.value
+          );
+          updateProgram(selectedProgram);
+        }}
         style={{ width: "200px" }}
         options={program.map(option => ({
-          value: option,
+          value: option.uuid,
           label: option.name
         }))}
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM"}

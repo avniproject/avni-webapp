@@ -2,14 +2,7 @@ import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  IconButton,
-  Input,
-  MenuItem,
-  Tooltip,
-  Typography,
-  Grid
-} from "@mui/material";
+import { IconButton, Input, Tooltip, Typography, Grid } from "@mui/material";
 import { Delete, ExpandMore, ExpandLess, List } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { SelectCardsView } from "./SelectCardsView";
@@ -22,10 +15,6 @@ import { dashboardReducerActions } from "./DashboardReducer";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-
-const StyledGrid = styled(Grid)({
-  alignItems: "center"
-});
 
 const StyledTypography = styled(Typography)(({ theme, variant }) => ({
   ...(variant === "heading" && {
@@ -89,11 +78,10 @@ function EditSection({ section, index, dispatch }) {
               payload: { section, viewType: event.target.value }
             })
           }
-          options={viewTypes.map(viewType => (
-            <MenuItem value={viewType} key={viewType}>
-              {viewType}
-            </MenuItem>
-          ))}
+          options={viewTypes.map(viewType => ({
+            value: viewType,
+            label: viewType
+          }))}
           value={section.viewType}
           label="Section View Type"
           toolTipKey="APP_DESIGNER_DASHBOARD_SECTION_VIEW_TYPE"

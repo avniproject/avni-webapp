@@ -113,11 +113,10 @@ export default function GroupRoles({
             required
             options={
               subjectTypeOptions &&
-              subjectTypeOptions.filter(filterOptions).map(option => (
-                <MenuItem key={option.uuid} value={option.name}>
-                  {option.name}
-                </MenuItem>
-              ))
+              subjectTypeOptions.filter(filterOptions).map(option => ({
+                value: option.name,
+                label: option.name
+              }))
             }
             toolTipKey="APP_DESIGNER_SUBJECT_MEMBER_SUBJECT_TYPE"
           />
@@ -156,12 +155,15 @@ export default function GroupRoles({
               }
               variant="outlined"
             >
-              {subjectTypeOptions &&
+              {subjectTypeOptions ? (
                 subjectTypeOptions.filter(filterOptions).map(option => (
                   <MenuItem key={option.uuid} value={option.name}>
                     {option.name}
                   </MenuItem>
-                ))}
+                ))
+              ) : (
+                <MenuItem value="">No options available</MenuItem>
+              )}
             </TextField>
             <TextField
               disabled={Types.isHousehold(type)}

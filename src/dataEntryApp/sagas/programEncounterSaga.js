@@ -9,6 +9,7 @@ import {
   setProgramEnrolment,
   setState,
   setUnplanProgramEncounters,
+  setEligibleProgramEncounters,
   types
 } from "dataEntryApp/reducers/programEncounterReducer";
 import api from "../api";
@@ -25,7 +26,6 @@ import { setLoad } from "../reducers/loadReducer";
 import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
-import { setEligibleProgramEncounters } from "../reducers/programEncounterReducer";
 
 export default function*() {
   yield all(
@@ -215,7 +215,7 @@ export function* saveProgramEncounterWorker(params) {
   if (response.success) {
     yield put(saveProgramEncounterComplete());
   } else {
-    yield put(saveProgramEncounterFailed(response.message));
+    yield put(saveProgramEncounterFailed(response.errorMessage));
   }
 }
 
