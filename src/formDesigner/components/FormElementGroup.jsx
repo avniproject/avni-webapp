@@ -17,7 +17,7 @@ import {
   Tooltip,
   FormControlLabel,
   styled,
-  useTheme
+  useTheme,
 } from "@mui/material";
 import {
   ExpandMore,
@@ -25,7 +25,7 @@ import {
   Delete,
   Add,
   DragHandle,
-  ViewList
+  ViewList,
 } from "@mui/icons-material";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import FormElementWithAddButton from "./FormElementWithAddButton";
@@ -35,14 +35,14 @@ import { ColourStyle } from "./ColourStyle";
 
 const StyledParent = styled("div")(({ theme }) => ({
   paddingLeft: 0,
-  paddingBottom: theme.spacing(4)
+  paddingBottom: theme.spacing(4),
 }));
 
 const StyledAccordion = styled(Accordion)(({ hasError, theme }) => ({
   border: hasError ? `1px solid ${theme.palette.error.main}` : undefined,
   "&.Mui-expanded": {
-    margin: 0
-  }
+    margin: 0,
+  },
 }));
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
@@ -52,22 +52,22 @@ const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   paddingRight: 0,
   minHeight: 56,
   "&.Mui-expanded": {
-    minHeight: 56
+    minHeight: 56,
   },
   "&.Mui-focused": {
-    backgroundColor: "#dbdbdb"
+    backgroundColor: "#dbdbdb",
   },
   "& .MuiAccordionSummary-content": {
     margin: theme.spacing(1),
     "&.Mui-expanded": {
-      margin: theme.spacing(1)
-    }
+      margin: theme.spacing(1),
+    },
   },
   "& .MuiAccordionSummary-expandIconWrapper": {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    display: "inline"
-  }
+    display: "inline",
+  },
 }));
 
 const StyledDragHandler = styled("div")(({ theme }) => ({
@@ -79,34 +79,34 @@ const StyledDragHandler = styled("div")(({ theme }) => ({
   width: 24,
   display: "flex",
   alignItems: "center",
-  justifyContent: "center"
+  justifyContent: "center",
 }));
 
 const StyledDragHandleContainer = styled("div", {
-  shouldForwardProp: prop => prop !== "show"
+  shouldForwardProp: (prop) => prop !== "show",
 })(({ show }) => ({
-  display: show ? "block" : "none"
+  display: show ? "block" : "none",
 }));
 
 const StyledGroupIcon = styled(ViewList)(({ theme }) => ({
   marginLeft: theme.spacing(0.75),
-  marginRight: theme.spacing(0.25)
+  marginRight: theme.spacing(0.25),
 }));
 
 const StyledExpandIcon = styled(({ expanded, ...props }) =>
-  expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />
+  expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />,
 )(({ theme }) => ({
   marginLeft: theme.spacing(0.25),
   marginRight: theme.spacing(0.75),
-  display: "inline"
+  display: "inline",
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  fontSize: theme.typography.pxToRem(15)
+  fontSize: theme.typography.pxToRem(15),
 }));
 
 const StyledQuestionCount = styled(Typography)(({ theme }) => ({
-  paddingTop: theme.spacing(0.625)
+  paddingTop: theme.spacing(0.625),
 }));
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
@@ -117,37 +117,37 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   height: 40,
   minHeight: "26px",
   "& .MuiTabs-indicator": {
-    backgroundColor: "#fff"
-  }
+    backgroundColor: "#fff",
+  },
 }));
 
 const StyledErrorText = styled("div")(({ theme }) => ({
-  color: theme.palette.error.main
+  color: theme.palette.error.main,
 }));
 
 const StyledDetailsContainer = styled(Grid)(({ theme }) => ({
   width: "100%",
   alignContent: "center",
-  marginBottom: theme.spacing(1)
+  marginBottom: theme.spacing(1),
 }));
 
 const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
-  marginLeft: theme.spacing(1.25)
+  marginLeft: theme.spacing(1.25),
 }));
 
 const StyledFlexContainer = styled("div")({
   display: "flex",
-  flexDirection: "row"
+  flexDirection: "row",
 });
 
 const StyledFlexItem = styled("div")({
-  flex: 0.2
+  flex: 0.2,
 });
 
 const StyledFab = styled(Fab)(({ theme }) => ({
   position: "absolute",
   marginLeft: theme.spacing(-4.375),
-  marginTop: theme.spacing(-0.625)
+  marginTop: theme.spacing(-0.625),
 }));
 
 function FormElementGroup(props) {
@@ -161,13 +161,13 @@ function FormElementGroup(props) {
     props.handleGroupElementChange(index, "display", value);
   };
 
-  _.forEach(props.groupData.formElements, element => {
+  _.forEach(props.groupData.formElements, (element) => {
     if (!element.voided) {
       questionCount = questionCount + 1;
     }
   });
 
-  const handleDelete = event => {
+  const handleDelete = (event) => {
     props.deleteGroup(props.index);
     event.stopPropagation();
   };
@@ -180,7 +180,13 @@ function FormElementGroup(props) {
     props.btnGroupAdd(props.index, 0);
   };
 
-  const stopPropagation = e => e.stopPropagation();
+  const stopPropagation = (e) => e.stopPropagation();
+
+  const handleInputKeyUp = (e) => {
+    if (e.key === " " || e.code === "Space") {
+      e.preventDefault();
+    }
+  };
 
   const hoverDisplayAddGroup = () => {
     setHover(true);
@@ -195,8 +201,8 @@ function FormElementGroup(props) {
   const renderFormElements = () => {
     // Filter out voided or child elements to get visible form elements
     const visibleFormElements = props.groupData.formElements.filter(
-      formElement =>
-        !formElement.voided && _.isNil(formElement.parentFormElementUuid)
+      (formElement) =>
+        !formElement.voided && _.isNil(formElement.parentFormElementUuid),
     );
 
     return visibleFormElements.map((formElement, visibleIndex) => {
@@ -205,7 +211,7 @@ function FormElementGroup(props) {
         formElementData: formElement,
         groupIndex: props.index,
         index: props.groupData.formElements.findIndex(
-          fe => fe.uuid === formElement.uuid
+          (fe) => fe.uuid === formElement.uuid,
         ),
         btnGroupAdd: props.btnGroupAdd,
         identifierSources: props.identifierSources,
@@ -241,7 +247,7 @@ function FormElementGroup(props) {
         disableFormElement: props.disableGroup,
         subjectType: props.subjectType,
         form: props.form,
-        handleInlineEncounterAttributes: props.handleInlineEncounterAttributes
+        handleInlineEncounterAttributes: props.handleInlineEncounterAttributes,
       };
 
       return (
@@ -251,7 +257,7 @@ function FormElementGroup(props) {
           index={visibleIndex} // Use visibleIndex for correct ordering
           isDragDisabled={props.disableGroup}
         >
-          {provided => (
+          {(provided) => (
             <div {...provided.draggableProps} ref={provided.innerRef}>
               <FormElementWithAddButton
                 {...propsElement}
@@ -282,7 +288,7 @@ function FormElementGroup(props) {
       index={props.index}
       isDragDisabled={disableGroup}
     >
-      {provided => (
+      {(provided) => (
         <StyledParent
           {...provided.draggableProps}
           ref={provided.innerRef}
@@ -298,7 +304,7 @@ function FormElementGroup(props) {
                 props.handleGroupElementChange(
                   props.index,
                   "expanded",
-                  !props.groupData.expanded
+                  !props.groupData.expanded,
                 )
               }
             >
@@ -318,7 +324,7 @@ function FormElementGroup(props) {
                       display: "flex",
                       alignItems: "center",
                       gap: theme.spacing(0.5),
-                      flexBasis: "20%"
+                      flexBasis: "20%",
                     }}
                   >
                     <Tooltip title={"Grouped Questions"}>
@@ -332,7 +338,7 @@ function FormElementGroup(props) {
                       display: "flex",
                       alignItems: "center",
                       gap: theme.spacing(0.5),
-                      flexBasis: "35%"
+                      flexBasis: "35%",
                     }}
                   >
                     <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
@@ -354,8 +360,9 @@ function FormElementGroup(props) {
                           name={`name${panel}`}
                           disableUnderline
                           onClick={stopPropagation}
+                          onKeyUp={handleInputKeyUp}
                           value={props.groupData.name}
-                          onChange={event =>
+                          onChange={(event) =>
                             eventCall(props.index, "name", event.target.value)
                           }
                           autoComplete="off"
@@ -370,7 +377,7 @@ function FormElementGroup(props) {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      flexBasis: "15%"
+                      flexBasis: "15%",
                     }}
                   >
                     <DragHandler dragHandleProps={provided.dragHandleProps} />
@@ -381,7 +388,7 @@ function FormElementGroup(props) {
                       display: "flex",
                       alignItems: "center",
                       gap: theme.spacing(0.5),
-                      flexBasis: "15%"
+                      flexBasis: "15%",
                     }}
                   >
                     <StyledQuestionCount
@@ -399,7 +406,7 @@ function FormElementGroup(props) {
                       alignItems: "center",
                       gap: theme.spacing(0.5),
                       flexBasis: "15%",
-                      justifyContent: "flex-end"
+                      justifyContent: "flex-end",
                     }}
                   >
                     <IconButton
@@ -428,8 +435,8 @@ function FormElementGroup(props) {
                       sx={{
                         color: "#fff",
                         "&.Mui-selected": {
-                          color: "#fff"
-                        }
+                          color: "#fff",
+                        },
                       }}
                     />
                     <Tab
@@ -437,8 +444,8 @@ function FormElementGroup(props) {
                       sx={{
                         color: "#fff",
                         "&.Mui-selected": {
-                          color: "#fff"
-                        }
+                          color: "#fff",
+                        },
                       }}
                     />
                   </StyledTabs>
@@ -447,7 +454,7 @@ function FormElementGroup(props) {
                       droppableId={`Group${props.groupData.uuid}`}
                       type="task"
                     >
-                      {provided => (
+                      {(provided) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.droppableProps}
@@ -476,11 +483,11 @@ function FormElementGroup(props) {
                             <Checkbox
                               id="isTimed"
                               checked={props.groupData.timed}
-                              onChange={event =>
+                              onChange={(event) =>
                                 props.handleGroupElementChange(
                                   props.index,
                                   "timed",
-                                  event.target.checked
+                                  event.target.checked,
                                 )
                               }
                             />
@@ -492,11 +499,11 @@ function FormElementGroup(props) {
                         <ColourStyle
                           label="Text colour"
                           colour={props.groupData.textColour}
-                          onChange={colour =>
+                          onChange={(colour) =>
                             props.handleGroupElementChange(
                               props.index,
                               "textColour",
-                              colour
+                              colour,
                             )
                           }
                           title="APP_DESIGNER_GROUP_TEXT_COLOUR"
@@ -506,11 +513,11 @@ function FormElementGroup(props) {
                         <ColourStyle
                           label="Background colour"
                           colour={props.groupData.backgroundColour}
-                          onChange={colour =>
+                          onChange={(colour) =>
                             props.handleGroupElementChange(
                               props.index,
                               "backgroundColour",
-                              colour
+                              colour,
                             )
                           }
                           title="APP_DESIGNER_GROUP_BACKGROUND_COLOUR"

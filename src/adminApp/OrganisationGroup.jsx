@@ -14,7 +14,8 @@ import {
   SimpleForm,
   SimpleShowLayout,
   SingleFieldList,
-  TextField
+  TextField,
+  TextInput,
 } from "react-admin";
 import { TitleChip } from "./components/TitleChip";
 import { Title } from "./components/Title";
@@ -26,19 +27,19 @@ import {
   StyledAutocompleteArrayInput,
   StyledSelectInput,
   StyledShow,
-  StyledSimpleShowLayout
+  StyledSimpleShowLayout,
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
-const normalizeInput = value => {
+const normalizeInput = (value) => {
   return value ? value.trim().replace(/\s+/g, " ") : value;
 };
 
-const normalizeInputAfterExcludingSpaces = value => {
+const normalizeInputAfterExcludingSpaces = (value) => {
   return value ? value.trim().replace(/\s+/g, "") : value;
 };
 
-export const OrganisationGroupList = props => (
+export const OrganisationGroupList = (props) => (
   <StyledBox>
     <List
       {...props}
@@ -71,12 +72,12 @@ export const OrganisationGroupList = props => (
               backgroundColor: "#e3f2fd",
               color: "#1976d2",
               "&:hover": {
-                backgroundColor: "#bbdefb"
-              }
+                backgroundColor: "#bbdefb",
+              },
             },
             "& .RaReferenceArrayField-list": {
-              gap: "4px"
-            }
+              gap: "4px",
+            },
           }}
         >
           <SingleFieldList sx={{ py: 0.5 }}>
@@ -85,8 +86,8 @@ export const OrganisationGroupList = props => (
                 backgroundColor: "#e3f2fd",
                 color: "#1976d2",
                 "&:hover": {
-                  backgroundColor: "#bbdefb"
-                }
+                  backgroundColor: "#bbdefb",
+                },
               }}
             />
           </SingleFieldList>
@@ -96,7 +97,7 @@ export const OrganisationGroupList = props => (
   </StyledBox>
 );
 
-export const OrganisationGroupShow = props => (
+export const OrganisationGroupShow = (props) => (
   <StyledShow title={<Title title={"Organisation group"} />} {...props}>
     <StyledSimpleShowLayout>
       <TextField source="name" label="Name" />
@@ -124,12 +125,12 @@ export const OrganisationGroupShow = props => (
             backgroundColor: "#e3f2fd",
             color: "#1976d2",
             "&:hover": {
-              backgroundColor: "#bbdefb"
-            }
+              backgroundColor: "#bbdefb",
+            },
           },
           "& .RaReferenceArrayField-list": {
-            gap: "4px"
-          }
+            gap: "4px",
+          },
         }}
       >
         <SingleFieldList sx={{ py: 0.5 }}>
@@ -138,8 +139,8 @@ export const OrganisationGroupShow = props => (
               backgroundColor: "#e3f2fd",
               color: "#1976d2",
               "&:hover": {
-                backgroundColor: "#bbdefb"
-              }
+                backgroundColor: "#bbdefb",
+              },
             }}
           />
         </SingleFieldList>
@@ -148,7 +149,7 @@ export const OrganisationGroupShow = props => (
   </StyledShow>
 );
 
-export const organisationGroupCreate = props => (
+export const organisationGroupCreate = (props) => (
   <Create title="Add a new Organisation Group" {...props}>
     <SimpleForm redirect="list">
       <StyledTextInput
@@ -187,7 +188,7 @@ export const organisationGroupCreate = props => (
         source="organisationIds"
         perPage={1000}
         label="Organisations"
-        filterToQuery={searchText => ({ name: searchText })}
+        filterToQuery={(searchText) => ({ name: searchText })}
       >
         <StyledAutocompleteArrayInput
           validate={required("Please choose organisations")}
@@ -197,7 +198,7 @@ export const organisationGroupCreate = props => (
   </Create>
 );
 
-export const organisationGroupEdit = props => (
+export const organisationGroupEdit = (props) => (
   <Edit
     mutationMode="pessimistic"
     title={<Title title={"Edit organisation group"} />}
@@ -212,6 +213,9 @@ export const organisationGroupEdit = props => (
       />
       <StyledTextInput disabled source="dbUser" label="DB User" />
       <StyledTextInput disabled source="schemaName" label="Schema name" />
+      {/* Hidden inputs to preserve critical fields in form submission */}
+      <TextInput source="dbUser" style={{ display: "none" }} />
+      <TextInput source="schemaName" style={{ display: "none" }} />
       <BooleanField source="analyticsDataSyncActive" />
       <ToggleAnalyticsButton />
       <br />
@@ -232,7 +236,7 @@ export const organisationGroupEdit = props => (
         source="organisationIds"
         perPage={1000}
         label="Organisations"
-        filterToQuery={searchText => ({ name: searchText })}
+        filterToQuery={(searchText) => ({ name: searchText })}
       >
         <StyledAutocompleteArrayInput
           validate={required("Please choose organisations")}

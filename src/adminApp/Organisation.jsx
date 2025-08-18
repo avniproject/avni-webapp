@@ -15,7 +15,7 @@ import {
   TextInput,
   Toolbar,
   useRecordContext,
-  useNotify
+  useNotify,
 } from "react-admin";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
@@ -34,10 +34,10 @@ import {
   datagridStyles,
   StyledSelectInput,
   StyledShow,
-  StyledSimpleShowLayout
+  StyledSimpleShowLayout,
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
-export const OrganisationFilter = props => (
+export const OrganisationFilter = (props) => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
     <StyledTextInput
       label="Organisation Name"
@@ -117,7 +117,7 @@ export const OrganisationList = ({ ...props }) => {
   );
 };
 
-export const OrganisationDetails = props => {
+export const OrganisationDetails = (props) => {
   return (
     <StyledShow title={<Title title={"Organisation"} />} {...props}>
       <StyledSimpleShowLayout>
@@ -185,6 +185,10 @@ const EditForm = () => {
       <TextInput disabled source="dbUser" validate={isRequired} />
       <TextInput disabled source="schemaName" validate={isRequired} />
       <TextInput disabled source="mediaDirectory" />
+      {/* Hidden inputs to preserve critical fields in form submission */}
+      <TextInput source="dbUser" style={{ display: "none" }} />
+      <TextInput source="schemaName" style={{ display: "none" }} />
+      <TextInput source="mediaDirectory" style={{ display: "none" }} />
       <TextInput source="usernameSuffix" validate={isRequired} />
       <OrganisationCategoryInput />
       <OrganisationStatusInput />
@@ -207,7 +211,7 @@ const EditForm = () => {
   );
 };
 
-export const OrganisationEdit = props => {
+export const OrganisationEdit = (props) => {
   return (
     <Edit
       mutationMode="pessimistic"
@@ -220,7 +224,7 @@ export const OrganisationEdit = props => {
 };
 
 //To remove delete button from the toolbar
-const CustomToolbar = props => (
+const CustomToolbar = (props) => (
   <Toolbar {...props}>
     <SaveButton />
   </Toolbar>
@@ -265,7 +269,7 @@ const textFieldSet = new Set([
   "dbUser",
   "schemaName",
   "mediaDirectory",
-  "usernameSuffix"
+  "usernameSuffix",
 ]);
 
 export const OrganisationCreateComponent = () => {
@@ -277,7 +281,7 @@ export const OrganisationCreateComponent = () => {
     mediaDirectory: null,
     usernameSuffix: null,
     categoryId: null,
-    statusId: null
+    statusId: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -286,10 +290,10 @@ export const OrganisationCreateComponent = () => {
   const [category, categoryError] = useGetData("/organisationCategory");
   const [status, statusError] = useGetData("/organisationStatus");
   const categoryList = category
-    ? category._embedded.organisationCategory.map(ele => ele)
+    ? category._embedded.organisationCategory.map((ele) => ele)
     : [];
   const statusList = status
-    ? status._embedded.organisationStatus.map(ele => ele)
+    ? status._embedded.organisationStatus.map((ele) => ele)
     : [];
   const navigate = useNavigate();
 
@@ -300,20 +304,20 @@ export const OrganisationCreateComponent = () => {
   }, [redirect, navigate]);
 
   const handleChange = (property, value) => {
-    setData(currentData => ({
+    setData((currentData) => ({
       ...currentData,
       [property]:
         property === "categoryId" || property === "statusId"
           ? value
-          : value.trimStart().replace(/\s+/g, " ")
+          : value.trimStart().replace(/\s+/g, " "),
     }));
   };
 
   const handleBlur = (property, value) => {
-    setData(currentData => ({ ...currentData, [property]: value.trim() }));
+    setData((currentData) => ({ ...currentData, [property]: value.trim() }));
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     const validationError = validate();
     if (Object.keys(validationError).length !== 0) {
@@ -336,7 +340,7 @@ export const OrganisationCreateComponent = () => {
   const sendData = () => {
     httpClient
       .post("/organisation", data)
-      .then(response => {
+      .then((response) => {
         if (
           response.status &&
           parseInt(response.status) >= 200 &&
@@ -346,7 +350,7 @@ export const OrganisationCreateComponent = () => {
           setRedirect(true);
         }
       })
-      .catch(responseError => {
+      .catch((responseError) => {
         const backendError = {};
         if (responseError.response && responseError.response.data) {
           const errorData = responseError.response.data;
@@ -393,7 +397,7 @@ export const OrganisationCreateComponent = () => {
           sx={{
             boxShadow: 2,
             p: 2,
-            bgcolor: "background.paper"
+            bgcolor: "background.paper",
           }}
         >
           <Grid
@@ -413,7 +417,7 @@ export const OrganisationCreateComponent = () => {
         sx={{
           boxShadow: 2,
           p: 2,
-          bgcolor: "background.paper"
+          bgcolor: "background.paper",
         }}
       >
         <Stack>
@@ -422,11 +426,11 @@ export const OrganisationCreateComponent = () => {
               id="name"
               label="Name*"
               value={data.name}
-              onChange={event => handleChange("name", event.target.value)}
-              onBlur={event => handleBlur("name", event.target.value)}
+              onChange={(event) => handleChange("name", event.target.value)}
+              onBlur={(event) => handleBlur("name", event.target.value)}
               sx={{
                 width: "25rem",
-                marginRight: "0.625rem"
+                marginRight: "0.625rem",
               }}
               margin="normal"
               autoComplete="off"
@@ -440,11 +444,11 @@ export const OrganisationCreateComponent = () => {
               id="dbUser"
               label="DB User*"
               value={data.dbUser}
-              onChange={event => handleChange("dbUser", event.target.value)}
-              onBlur={event => handleBlur("dbUser", event.target.value)}
+              onChange={(event) => handleChange("dbUser", event.target.value)}
+              onBlur={(event) => handleBlur("dbUser", event.target.value)}
               sx={{
                 width: "25rem",
-                marginRight: "0.625rem"
+                marginRight: "0.625rem",
               }}
               margin="normal"
               autoComplete="off"
@@ -458,11 +462,13 @@ export const OrganisationCreateComponent = () => {
               id="schemaName"
               label="Schema Name*"
               value={data.schemaName}
-              onChange={event => handleChange("schemaName", event.target.value)}
-              onBlur={event => handleBlur("schemaName", event.target.value)}
+              onChange={(event) =>
+                handleChange("schemaName", event.target.value)
+              }
+              onBlur={(event) => handleBlur("schemaName", event.target.value)}
               sx={{
                 width: "25rem",
-                marginRight: "0.625rem"
+                marginRight: "0.625rem",
               }}
               margin="normal"
               autoComplete="off"
@@ -476,13 +482,15 @@ export const OrganisationCreateComponent = () => {
               id="mediaDirectory"
               label="Media Directory*"
               value={data.mediaDirectory}
-              onChange={event =>
+              onChange={(event) =>
                 handleChange("mediaDirectory", event.target.value)
               }
-              onBlur={event => handleBlur("mediaDirectory", event.target.value)}
+              onBlur={(event) =>
+                handleBlur("mediaDirectory", event.target.value)
+              }
               sx={{
                 width: "25rem",
-                marginRight: "0.625rem"
+                marginRight: "0.625rem",
               }}
               margin="normal"
               autoComplete="off"
@@ -496,13 +504,15 @@ export const OrganisationCreateComponent = () => {
               id="usernameSuffix"
               label="Username Suffix*"
               value={data.usernameSuffix}
-              onChange={event =>
+              onChange={(event) =>
                 handleChange("usernameSuffix", event.target.value)
               }
-              onBlur={event => handleBlur("usernameSuffix", event.target.value)}
+              onBlur={(event) =>
+                handleBlur("usernameSuffix", event.target.value)
+              }
               sx={{
                 width: "25rem",
-                marginRight: "0.625rem"
+                marginRight: "0.625rem",
               }}
               margin="normal"
               autoComplete="off"
@@ -516,15 +526,17 @@ export const OrganisationCreateComponent = () => {
               id="categoryId"
               label="Organisation Category*"
               value={data.categoryId}
-              onChange={event => handleChange("categoryId", event.target.value)}
+              onChange={(event) =>
+                handleChange("categoryId", event.target.value)
+              }
               sx={{
                 width: "25rem",
                 height: "2.5rem",
-                marginTop: "1rem"
+                marginTop: "1rem",
               }}
-              options={categoryList.map(ele => ({
+              options={categoryList.map((ele) => ({
                 value: ele.id,
-                label: ele.name
+                label: ele.name,
               }))}
               margin="normal"
             />
@@ -537,16 +549,16 @@ export const OrganisationCreateComponent = () => {
               id="statusId"
               label="Organisation Status*"
               value={data.statusId}
-              onChange={event => handleChange("statusId", event.target.value)}
+              onChange={(event) => handleChange("statusId", event.target.value)}
               sx={{
                 width: "25rem",
                 height: "2.5rem",
                 marginTop: "1rem",
-                marginBottom: "1rem"
+                marginBottom: "1rem",
               }}
-              options={statusList.map(ele => ({
+              options={statusList.map((ele) => ({
                 value: ele.id,
-                label: ele.name
+                label: ele.name,
               }))}
               margin="normal"
             />
@@ -562,12 +574,12 @@ export const OrganisationCreateComponent = () => {
           <Grid
             container
             size={{
-              sm: 12
+              sm: 12,
             }}
           >
             <Grid
               size={{
-                sm: 2
+                sm: 2,
               }}
             >
               <SaveComponent
@@ -584,7 +596,7 @@ export const OrganisationCreateComponent = () => {
 };
 
 OrganisationCreateComponent.propTypes = {
-  showNotification: PropTypes.func
+  showNotification: PropTypes.func,
 };
 
 export const OrganisationCreate = OrganisationCreateComponent;

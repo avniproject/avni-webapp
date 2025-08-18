@@ -50,9 +50,14 @@ const FormWizardHeader = ({ subject }) => {
     const dateOfBirth = isDate(subject.dateOfBirth)
       ? AgeUtil.getDisplayAge(subject.dateOfBirth, i18n)
       : null;
-    headerElements =
-      dateOfBirth &&
-      addElement(t("age"), dateOfBirth, headerElements, "fw-age");
+    if (dateOfBirth) {
+      headerElements = addElement(
+        t("age"),
+        dateOfBirth,
+        headerElements,
+        "fw-age",
+      );
+    }
     const gender =
       subject.gender && !isNil(subject.gender.name) ? subject.gender.name : "-";
     headerElements = addElement(

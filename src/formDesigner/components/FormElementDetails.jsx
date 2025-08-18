@@ -17,7 +17,7 @@ import {
   Radio,
   RadioGroup,
   Chip,
-  Stack
+  Stack,
 } from "@mui/material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
@@ -42,26 +42,26 @@ const StyledFormControl = styled(MuiFormControl)({
   "& .MuiInputBase-root": {
     backgroundColor: "white",
     "&:hover": {
-      backgroundColor: "white"
-    }
+      backgroundColor: "white",
+    },
   },
   "& .MuiInputLabel-root": {
     backgroundColor: "white",
     padding: "0 4px",
     "&:hover": {
-      backgroundColor: "white"
-    }
-  }
+      backgroundColor: "white",
+    },
+  },
 });
 
 const StyledFormControlNarrow = styled(MuiFormControl)(({ theme }) => ({
   margin: theme.spacing(2),
-  minWidth: 120
+  minWidth: 120,
 }));
 
 const StyledPaper = styled(Paper)({
   width: "100%",
-  marginBottom: "15px"
+  marginBottom: "15px",
 });
 
 const StyledHeader = styled("div")({
@@ -69,40 +69,40 @@ const StyledHeader = styled("div")({
   color: "white",
   height: "30px",
   display: "flex",
-  alignItems: "center"
+  alignItems: "center",
 });
 
 const StyledHeaderText = styled("span")({
   marginLeft: "10px",
-  fontSize: "small"
+  fontSize: "small",
 });
 
 const StyledContainer = styled("div")({
   marginLeft: "15px",
   marginRight: "15px",
   marginTop: "15px",
-  marginBottom: "15px"
+  marginBottom: "15px",
 });
 
 const StyledErrorText = styled("div")({
-  color: "red"
+  color: "red",
 });
 
 const StyledFormLabel = styled(FormLabel)({
-  fontSize: "13px"
+  fontSize: "13px",
 });
 
 const StyledLink = styled("a")(({ theme }) => ({
-  color: theme.palette.primary.main
+  color: theme.palette.primary.main,
 }));
 
 const StyledChipContainer = styled("div")({
-  paddingTop: 10
+  paddingTop: 10,
 });
 
 const showPicker = (pickerType, props, disableFormElement) => {
-  const picker = pickers.find(picker => picker.type === pickerType);
-  const pickerModes = picker.modes.map(mode => (
+  const picker = pickers.find((picker) => picker.type === pickerType);
+  const pickerModes = picker.modes.map((mode) => (
     <FormControlLabel
       key={mode.id}
       value={mode.id}
@@ -123,12 +123,12 @@ const showPicker = (pickerType, props, disableFormElement) => {
         aria-label={picker.label}
         name={picker.key}
         value={props.formElementData.keyValues[picker.key]}
-        onChange={event =>
+        onChange={(event) =>
           props.handleGroupElementKeyValueChange(
             props.groupIndex,
             picker.key,
             event.target.value,
-            props.index
+            props.index,
           )
         }
         row
@@ -143,7 +143,7 @@ export const BackButton = ({
   style,
   handleConceptFormLibrary,
   groupIndex,
-  elementIndex
+  elementIndex,
 }) => {
   return (
     <Button
@@ -166,7 +166,7 @@ export const multiSelectFormElementConceptDataTypes = [
   "ImageV2",
   "Video",
   "File",
-  "Encounter"
+  "Encounter",
 ];
 
 const FormElementDetails = ({
@@ -180,7 +180,7 @@ const FormElementDetails = ({
   ...rest
 }) => {
   const { t } = useTranslation();
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
   const dataTypesToIgnore = ignoreDataTypes || [];
 
   const onChangeAnswerName = (answerName, idx, flag = true) => {
@@ -191,7 +191,7 @@ const FormElementDetails = ({
           groupIndex,
           "name",
           answerName.name,
-          index
+          index,
         );
       }
     } else {
@@ -200,7 +200,7 @@ const FormElementDetails = ({
   };
 
   const identifierSourceList = () =>
-    identifierSources.map(idSource => (
+    identifierSources.map((idSource) => (
       <MenuItem key={idSource.value} value={idSource.value}>
         {idSource.label}
       </MenuItem>
@@ -215,20 +215,20 @@ const FormElementDetails = ({
 
   const groupRoleList = () => {
     const selectedGroupSubjectType = groupSubjectTypes.find(
-      ({ uuid }) => uuid === formElementData.keyValues.groupSubjectTypeUUID
+      ({ uuid }) => uuid === formElementData.keyValues.groupSubjectTypeUUID,
     );
     return (selectedGroupSubjectType?.groupRoles || []).map(
       ({ role, uuid }) => (
         <MenuItem key={uuid} value={uuid}>
           {role}
         </MenuItem>
-      )
+      ),
     );
   };
 
   const renderDurationOptions = () => {
     const durations = ["years", "months", "weeks", "days", "hours", "minutes"];
-    return durations.map(duration => (
+    return durations.map((duration) => (
       <FormControlLabel
         key={duration}
         control={
@@ -238,12 +238,12 @@ const FormElementDetails = ({
               false
             }
             value={duration}
-            onChange={event =>
+            onChange={(event) =>
               rest.handleGroupElementKeyValueChange(
                 groupIndex,
                 duration,
                 event.target.value,
-                index
+                index,
               )
             }
           />
@@ -272,12 +272,12 @@ const FormElementDetails = ({
           <Input
             id="elementNameDetails"
             value={formElementData.name}
-            onChange={event =>
+            onChange={(event) =>
               rest.handleGroupElementChange(
                 groupIndex,
                 "name",
                 replace(event.target.value, "|", ""),
-                index
+                index,
               )
             }
             disabled={disableFormElement}
@@ -296,7 +296,7 @@ const FormElementDetails = ({
                   rest.handleConceptFormLibrary(
                     groupIndex,
                     "chooseFromLibrary",
-                    index
+                    index,
                   )
                 }
                 disabled={disableFormElement}
@@ -308,7 +308,7 @@ const FormElementDetails = ({
               <br />
               {UserInfo.hasPrivilege(
                 userInfo,
-                Privilege.PrivilegeType.EditConcept
+                Privilege.PrivilegeType.EditConcept,
               ) && (
                 <Button
                   color="primary"
@@ -317,7 +317,7 @@ const FormElementDetails = ({
                     rest.handleConceptFormLibrary(
                       groupIndex,
                       "addNewConcept",
-                      index
+                      index,
                     )
                   }
                   disabled={disableFormElement}
@@ -501,7 +501,7 @@ const FormElementDetails = ({
                   <StyledChipContainer>
                     <InputLabel>Answers:</InputLabel>
                     {_.orderBy(formElementData.concept.answers, "order").map(
-                      d =>
+                      (d) =>
                         !d.excluded && !d.voided ? (
                           <Chip
                             key={d.name}
@@ -523,11 +523,11 @@ const FormElementDetails = ({
                                     d.name,
                                     true,
                                     groupIndex,
-                                    index
+                                    index,
                                   )
                             }
                           />
-                        ) : null
+                        ) : null,
                     )}
                   </StyledChipContainer>
                 </Grid>
@@ -544,7 +544,7 @@ const FormElementDetails = ({
         </StyledPaper>
         {includes(
           multiSelectFormElementConceptDataTypes,
-          formElementData.concept.dataType
+          formElementData.concept.dataType,
         ) && (
           <Grid sm={6}>
             {formElementData.errorMessage?.type && (
@@ -558,12 +558,12 @@ const FormElementDetails = ({
               <Select
                 name="type"
                 value={formElementData.type}
-                onChange={event =>
+                onChange={(event) =>
                   rest.handleGroupElementChange(
                     groupIndex,
                     "type",
                     event.target.value,
-                    index
+                    index,
                   )
                 }
                 required
@@ -591,12 +591,12 @@ const FormElementDetails = ({
           />
           <DocumentationSearch
             value={formElementData.documentation}
-            onChange={documentation =>
+            onChange={(documentation) =>
               rest.handleGroupElementChange(
                 groupIndex,
                 "documentation",
                 documentation,
-                index
+                index,
               )
             }
           />
@@ -605,7 +605,7 @@ const FormElementDetails = ({
           <Grid container sm={12}>
             <StyledChipContainer>
               <InputLabel>Excluded Answers:</InputLabel>
-              {formElementData.concept.answers.map(d =>
+              {formElementData.concept.answers.map((d) =>
                 d.excluded && !d.voided ? (
                   <Chip
                     key={d.name}
@@ -627,11 +627,11 @@ const FormElementDetails = ({
                             d.name,
                             false,
                             groupIndex,
-                            index
+                            index,
                           )
                     }
                   />
-                ) : null
+                ) : null,
               )}
             </StyledChipContainer>
           </Grid>
@@ -645,12 +645,12 @@ const FormElementDetails = ({
                 label="Duration limit(seconds)"
                 placeholder="60"
                 value={formElementData.keyValues.durationLimitInSecs}
-                onChange={event =>
+                onChange={(event) =>
                   rest.handleGroupElementKeyValueChange(
                     groupIndex,
                     "durationLimitInSecs",
                     event.target.value,
-                    index
+                    index,
                   )
                 }
                 margin="normal"
@@ -671,12 +671,12 @@ const FormElementDetails = ({
                 <Select
                   name="videoQuality"
                   value={formElementData.keyValues.videoQuality ?? "high"}
-                  onChange={event =>
+                  onChange={(event) =>
                     rest.handleGroupElementKeyValueChange(
                       groupIndex,
                       "videoQuality",
                       event.target.value,
-                      index
+                      index,
                     )
                   }
                 >
@@ -705,12 +705,12 @@ const FormElementDetails = ({
                 label="Max Height"
                 placeholder="960"
                 value={formElementData.keyValues.maxHeight}
-                onChange={event =>
+                onChange={(event) =>
                   rest.handleGroupElementKeyValueChange(
                     groupIndex,
                     "maxHeight",
                     toNumber(event.target.value),
-                    index
+                    index,
                   )
                 }
                 margin="normal"
@@ -729,12 +729,12 @@ const FormElementDetails = ({
                 label="Max Width"
                 placeholder="1280"
                 value={formElementData.keyValues.maxWidth}
-                onChange={event =>
+                onChange={(event) =>
                   rest.handleGroupElementKeyValueChange(
                     groupIndex,
                     "maxWidth",
                     toNumber(event.target.value),
-                    index
+                    index,
                   )
                 }
                 margin="normal"
@@ -755,12 +755,12 @@ const FormElementDetails = ({
                 <Select
                   name="imageQuality"
                   value={formElementData.keyValues.imageQuality ?? 1}
-                  onChange={event =>
+                  onChange={(event) =>
                     rest.handleGroupElementKeyValueChange(
                       groupIndex,
                       "imageQuality",
                       toNumber(event.target.value),
-                      index
+                      index,
                     )
                   }
                 >
@@ -779,9 +779,9 @@ const FormElementDetails = ({
               handleGroupElementKeyValueChange:
                 rest.handleGroupElementKeyValueChange,
               groupIndex,
-              index
+              index,
             },
-            disableFormElement
+            disableFormElement,
           )}
         {formElementData.errorMessage?.durationOptions && (
           <StyledErrorText sx={{ fontSize: "13px" }}>
@@ -811,9 +811,9 @@ const FormElementDetails = ({
               handleGroupElementKeyValueChange:
                 rest.handleGroupElementKeyValueChange,
               groupIndex,
-              index
+              index,
             },
-            disableFormElement
+            disableFormElement,
           )}
         {formElementData.concept.dataType === "Time" &&
           showPicker(
@@ -823,9 +823,9 @@ const FormElementDetails = ({
               handleGroupElementKeyValueChange:
                 rest.handleGroupElementKeyValueChange,
               groupIndex,
-              index
+              index,
             },
-            disableFormElement
+            disableFormElement,
           )}
         <Stack spacing={4} alignItems="center" flexWrap="wrap">
           {["Text"].includes(formElementData.concept.dataType) && (
@@ -844,12 +844,12 @@ const FormElementDetails = ({
                 <Input
                   id="validFormatRegex"
                   value={get(formElementData, "validFormat.regex", "")}
-                  onChange={event =>
+                  onChange={(event) =>
                     rest.handleGroupElementKeyValueChange(
                       groupIndex,
                       "regex",
                       event.target.value,
-                      index
+                      index,
                     )
                   }
                 />
@@ -864,12 +864,12 @@ const FormElementDetails = ({
                 <Input
                   id="validFormatDescriptionKey"
                   value={get(formElementData, "validFormat.descriptionKey", "")}
-                  onChange={event =>
+                  onChange={(event) =>
                     rest.handleGroupElementKeyValueChange(
                       groupIndex,
                       "descriptionKey",
                       event.target.value,
-                      index
+                      index,
                     )
                   }
                 />
@@ -889,12 +889,12 @@ const FormElementDetails = ({
                         id="mandatoryDetails"
                         checked={!!formElementData.mandatory}
                         value={formElementData.mandatory ? "yes" : "no"}
-                        onChange={event =>
+                        onChange={(event) =>
                           rest.handleGroupElementChange(
                             groupIndex,
                             "mandatory",
                             event.target.value === "yes" ? false : true,
-                            index
+                            index,
                           )
                         }
                       />
@@ -913,7 +913,7 @@ const FormElementDetails = ({
                   formElementData,
                   groupIndex,
                   index,
-                  ...rest
+                  ...rest,
                 }}
               />
             )}
@@ -924,7 +924,7 @@ const FormElementDetails = ({
                 "Date",
                 "DateTime",
                 "Time",
-                "Coded"
+                "Coded",
               ].includes(formElementData.concept.dataType) && (
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"}
@@ -935,12 +935,12 @@ const FormElementDetails = ({
                       <Checkbox
                         id="editable"
                         checked={formElementData.keyValues.editable ?? false}
-                        onChange={event =>
+                        onChange={(event) =>
                           rest.handleGroupElementKeyValueChange(
                             groupIndex,
                             "editable",
-                            !formElementData.keyValues.editable,
-                            index
+                            event.target.checked,
+                            index,
                           )
                         }
                       />
@@ -951,7 +951,7 @@ const FormElementDetails = ({
               )}
             </Grid>
             {["Numeric", "Text", "PhoneNumber"].includes(
-              formElementData.concept.dataType
+              formElementData.concept.dataType,
             ) && (
               <Grid sm={4}>
                 <AvniFormControl
@@ -963,12 +963,12 @@ const FormElementDetails = ({
                       <Checkbox
                         id="unique"
                         checked={!!formElementData.keyValues.unique}
-                        onChange={event =>
+                        onChange={(event) =>
                           rest.handleGroupElementKeyValueChange(
                             groupIndex,
                             "unique",
                             event.target.checked,
-                            index
+                            index,
                           )
                         }
                       />
@@ -990,12 +990,12 @@ const FormElementDetails = ({
               <Select
                 name="identifierSource"
                 value={formElementData.keyValues.IdSourceUUID}
-                onChange={event =>
+                onChange={(event) =>
                   rest.handleGroupElementKeyValueChange(
                     groupIndex,
                     "IdSourceUUID",
                     event.target.value,
-                    index
+                    index,
                   )
                 }
                 required
@@ -1016,12 +1016,12 @@ const FormElementDetails = ({
                 <Select
                   name="groupSubjectType"
                   value={formElementData.keyValues.groupSubjectTypeUUID}
-                  onChange={event =>
+                  onChange={(event) =>
                     rest.handleGroupElementKeyValueChange(
                       groupIndex,
                       "groupSubjectTypeUUID",
                       event.target.value,
-                      index
+                      index,
                     )
                   }
                   required
@@ -1040,12 +1040,12 @@ const FormElementDetails = ({
                   <Select
                     name="groupSubjectRole"
                     value={formElementData.keyValues.groupSubjectRoleUUID}
-                    onChange={event =>
+                    onChange={(event) =>
                       rest.handleGroupElementKeyValueChange(
                         groupIndex,
                         "groupSubjectRoleUUID",
                         event.target.value,
-                        index
+                        index,
                       )
                     }
                     required
@@ -1069,7 +1069,7 @@ const FormElementDetails = ({
               formElementData,
               groupIndex,
               index,
-              ...rest
+              ...rest,
             }}
           />
           <Grid container direction="row" spacing={2}>
@@ -1082,12 +1082,12 @@ const FormElementDetails = ({
                     <Checkbox
                       id="repeatable"
                       checked={!!formElementData.keyValues.repeatable}
-                      onChange={event =>
+                      onChange={(event) =>
                         rest.handleGroupElementKeyValueChange(
                           groupIndex,
                           "repeatable",
                           event.target.checked,
-                          index
+                          index,
                         )
                       }
                     />
@@ -1105,12 +1105,12 @@ const FormElementDetails = ({
                     <Checkbox
                       id="disableManualActions"
                       checked={!!formElementData.keyValues.disableManualActions}
-                      onChange={event =>
+                      onChange={(event) =>
                         rest.handleGroupElementKeyValueChange(
                           groupIndex,
                           "disableManualActions",
                           event.target.checked,
-                          index
+                          index,
                         )
                       }
                     />
@@ -1123,12 +1123,12 @@ const FormElementDetails = ({
               <ColourStyle
                 label={"Text colour"}
                 colour={formElementData.keyValues.textColour}
-                onChange={colour =>
+                onChange={(colour) =>
                   rest.handleGroupElementKeyValueChange(
                     groupIndex,
                     "textColour",
                     colour,
-                    index
+                    index,
                   )
                 }
                 toolTipKey={"APP_DESIGNER_GROUP_TEXT_COLOUR"}
@@ -1138,12 +1138,12 @@ const FormElementDetails = ({
               <ColourStyle
                 label={"Background colour"}
                 colour={formElementData.keyValues.backgroundColour}
-                onChange={colour =>
+                onChange={(colour) =>
                   rest.handleGroupElementKeyValueChange(
                     groupIndex,
                     "backgroundColour",
                     colour,
-                    index
+                    index,
                   )
                 }
                 toolTipKey={"APP_DESIGNER_GROUP_BACKGROUND_COLOUR"}

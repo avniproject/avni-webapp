@@ -7,7 +7,7 @@ import _, {
   map,
   some,
   sortBy,
-  startCase
+  startCase,
 } from "lodash";
 import { cloneElement, Fragment, useContext, useEffect, useState } from "react";
 import {
@@ -32,7 +32,7 @@ import {
   TextField,
   TextInput,
   useRecordContext,
-  useResourceContext
+  useResourceContext,
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Paper, Grid, Chip, Typography, CardActions } from "@mui/material";
@@ -41,7 +41,7 @@ import { LineBreak } from "../common/components/utils";
 import {
   datePickerModes,
   localeChoices,
-  timePickerModes
+  timePickerModes,
 } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
 import { httpClient as http } from "common/utils/httpClient";
@@ -56,7 +56,7 @@ import {
   validateEmail,
   validatePassword,
   validatePasswords,
-  validateUserName
+  validateUserName,
 } from "./UserHelper";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
@@ -66,7 +66,7 @@ import { AvniRadioButtonGroupInput } from "../common/components/AvniRadioButtonG
 import {
   activatedAudit,
   createdAudit,
-  modifiedAudit
+  modifiedAudit,
 } from "./components/AuditUtil";
 import ResetPasswordButton from "./components/ResetPasswordButton";
 import { AvniPasswordInput } from "./components/AvniPasswordInput";
@@ -81,7 +81,7 @@ import {
   StyledSelectInput,
   StyledShow,
   StyledSimpleShowLayout,
-  StyledTextInput
+  StyledTextInput,
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
@@ -95,11 +95,11 @@ const StringToLabelObject = ({ children, ...props }) => {
 };
 
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => {
-  const addSuffixToUsername = values => ({
+  const addSuffixToUsername = (values) => ({
     ...values,
     username: values.username
       ? `${values.username}@${userInfo.usernameSuffix}`
-      : values.username
+      : values.username,
   });
 
   return (
@@ -157,12 +157,12 @@ export const UserList = ({ ...props }) => {
           <TextField source="phoneNumber" label="Phone Number" />
           <FunctionField
             label="User Groups"
-            render={record => (
+            render={(record) => (
               <div style={{ maxWidth: "40em" }}>
                 {_.isArrayLike(record.userGroups) &&
                   record.userGroups
-                    .filter(ug => ug && !ug.voided)
-                    .map(userGroup => (
+                    .filter((ug) => ug && !ug.voided)
+                    .map((userGroup) => (
                       <Chip
                         style={{ margin: "0.2em" }}
                         label={userGroup.groupName}
@@ -174,12 +174,12 @@ export const UserList = ({ ...props }) => {
           />
           <FunctionField
             label="Status"
-            render={user =>
+            render={(user) =>
               user.voided === true
                 ? "Deleted"
                 : user.disabledInCognito === true
-                ? "Disabled"
-                : "Active"
+                  ? "Disabled"
+                  : "Active"
             }
           />
         </Datagrid>
@@ -200,7 +200,7 @@ const CustomShowActions = ({ hasEditUserPrivilege }) => {
           zIndex: 2,
           display: "flex",
 
-          flexDirection: "row"
+          flexDirection: "row",
         }}
       >
         <>
@@ -217,12 +217,12 @@ const CustomShowActions = ({ hasEditUserPrivilege }) => {
   );
 };
 
-const formatOperatingScope = opScope => opScope && opScope.replace(/^By/, "");
+const formatOperatingScope = (opScope) => opScope && opScope.replace(/^By/, "");
 
-const formatLang = lang =>
+const formatLang = (lang) =>
   localeChoices
-    .filter(local => local.id === lang)
-    .map(lang => lang.name)
+    .filter((local) => local.id === lang)
+    .map((lang) => lang.name)
     .join("");
 
 const SubjectTypeSyncAttributeShow = ({
@@ -234,7 +234,7 @@ const SubjectTypeSyncAttributeShow = ({
     style={{
       marginTop: 8,
       padding: 10,
-      border: "3px solid rgba(0, 0, 0, 0.05)"
+      border: "3px solid rgba(0, 0, 0, 0.05)",
     }}
   >
     <Typography
@@ -263,7 +263,7 @@ const SubjectTypeSyncAttributeShow = ({
 const ConceptSyncAttributeShow = ({
   subjectType,
   syncConceptValueMap,
-  syncAttributeName
+  syncAttributeName,
 }) => {
   const record = useRecordContext();
   const syncSettings = get(record, ["syncSettings", subjectType.name], {});
@@ -278,12 +278,12 @@ const ConceptSyncAttributeShow = ({
         style={{
           color: "rgba(0, 0, 0, 0.54)",
           fontSize: "12px",
-          marginRight: 10
+          marginRight: 10,
         }}
       >
         {startCase(syncConceptName)}
       </span>
-      {map(get(syncSettings, `${syncAttributeName}Values`, []), value => (
+      {map(get(syncSettings, `${syncAttributeName}Values`, []), (value) => (
         <Chip
           style={{ margin: "0.2em" }}
           label={syncConceptValueMap.get(value) || value}
@@ -296,25 +296,25 @@ const ConceptSyncAttributeShow = ({
 
 const SyncAttributesProvider = ({ children }) => {
   const [syncAttributesData, setSyncAttributesData] = useState({
-    subjectTypes: []
+    subjectTypes: [],
   });
 
   useEffect(() => {
     let isMounted = true;
-    http.get("/subjectType/syncAttributesData").then(res => {
+    http.get("/subjectType/syncAttributesData").then((res) => {
       const {
         subjectTypes,
         anySubjectTypeDirectlyAssignable,
-        anySubjectTypeSyncByLocation
+        anySubjectTypeSyncByLocation,
       } = res.data;
       const sortedSubjectTypes = sortBy(subjectTypes, "id");
-      getSyncConceptValueMap(sortedSubjectTypes).then(syncConceptValueMap => {
+      getSyncConceptValueMap(sortedSubjectTypes).then((syncConceptValueMap) => {
         if (isMounted) {
           setSyncAttributesData({
             subjectTypes: sortedSubjectTypes,
             anySubjectTypeDirectlyAssignable,
             anySubjectTypeSyncByLocation,
-            syncConceptValueMap
+            syncConceptValueMap,
           });
         }
       });
@@ -360,19 +360,19 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
 
         <FunctionField
           label="Operating Scope"
-          render={user => formatOperatingScope(user.operatingIndividualScope)}
+          render={(user) => formatOperatingScope(user.operatingIndividualScope)}
         />
         <LineBreak />
         <h4>Sync Settings</h4>
         <FunctionField
           label="Below Subject type Sync settings are to be ignored in the Data Entry app: "
-          render={user => (user.ignoreSyncSettingsInDEA ? "Yes" : "No")}
+          render={(user) => (user.ignoreSyncSettingsInDEA ? "Yes" : "No")}
         />
 
         <SyncAttributesProvider>
-          {syncAttributesData => (
+          {(syncAttributesData) => (
             <>
-              {map(syncAttributesData.subjectTypes, st => (
+              {map(syncAttributesData.subjectTypes, (st) => (
                 <SubjectTypeSyncAttributeShow
                   subjectType={st}
                   key={get(st, "name")}
@@ -385,25 +385,25 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
 
         <FunctionField
           label="Preferred Language"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings) ? formatLang(user.settings.locale) : ""
           }
         />
         <FunctionField
           label="Date Picker Mode"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings) ? user.settings.datePickerMode : "Calendar"
           }
         />
         <FunctionField
           label="Time Picker Mode"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings) ? user.settings.timePickerMode : "Clock"
           }
         />
         <FunctionField
           label="Track Location"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings)
               ? user.settings.trackLocation
                 ? "True"
@@ -413,7 +413,7 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         />
         <FunctionField
           label="Is Allowed To Invoke Token Generation API"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings)
               ? user.settings.isAllowedToInvokeTokenGenerationAPI
                 ? "True"
@@ -423,7 +423,7 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         />
         <FunctionField
           label="Beneficiary Mode"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings)
               ? user.settings.showBeneficiaryMode
                 ? "True"
@@ -433,7 +433,7 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         />
         <FunctionField
           label="Disable dashboard auto refresh"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings)
               ? user.settings.disableAutoRefresh
                 ? "True"
@@ -443,7 +443,7 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         />
         <FunctionField
           label="Disable auto sync"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings)
               ? user.settings.disableAutoSync
                 ? "True"
@@ -453,7 +453,7 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         />
         <FunctionField
           label="Register + Enrol"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings)
               ? user.settings.registerEnrol
                 ? "True"
@@ -463,7 +463,7 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         />
         <FunctionField
           label="Enable Call Masking"
-          render={user =>
+          render={(user) =>
             !isNil(user.settings)
               ? user.settings.enableCallMasking
                 ? "True"
@@ -472,14 +472,14 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
           }
         />
         <TextField label="Identifier prefix" source="settings.idPrefix" />
-        <FunctionField label="Created" render={user => createdAudit(user)} />
+        <FunctionField label="Created" render={(user) => createdAudit(user)} />
         <FunctionField
           label="Activated"
-          render={user => user?.lastActivatedDateTime && activatedAudit(user)}
+          render={(user) => user?.lastActivatedDateTime && activatedAudit(user)}
         />
         <FunctionField
           label="Modified"
-          render={audit => modifiedAudit(audit)}
+          render={(audit) => modifiedAudit(audit)}
         />
       </StyledSimpleShowLayout>
     </StyledShow>
@@ -489,7 +489,7 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
 const operatingScopes = Object.freeze({
   NONE: "None",
   FACILITY: "ByFacility",
-  CATCHMENT: "ByCatchment"
+  CATCHMENT: "ByCatchment",
 });
 
 const catchmentChangeMessage = `Please ensure that the user has already synced all
@@ -501,7 +501,7 @@ const SubjectTypeSyncAttributes = ({ subjectType, ...props }) => (
     style={{
       marginTop: 8,
       padding: 10,
-      border: "3px solid rgba(0, 0, 0, 0.05)"
+      border: "3px solid rgba(0, 0, 0, 0.05)",
     }}
   >
     <Typography
@@ -534,7 +534,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
       {({ formData }) => {
         const syncAttributeConceptUUID = get(
           formData,
-          `syncSettings.${subjectType.name}.${syncAttributeName}`
+          `syncSettings.${subjectType.name}.${syncAttributeName}`,
         );
         const syncAttributeConcept = subjectType[syncAttributeName];
 
@@ -543,10 +543,10 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
         }.${syncAttributeName}Values`;
         const selectedSyncAttributeValueIds = get(
           formData,
-          syncAttributeValuesFieldName
+          syncAttributeValuesFieldName,
         );
-        const selectedAnswerConcepts = filter(answerConcepts, x =>
-          some(selectedSyncAttributeValueIds, y => x.id === y)
+        const selectedAnswerConcepts = filter(answerConcepts, (x) =>
+          some(selectedSyncAttributeValueIds, (y) => x.id === y),
         );
 
         useEffect(() => {
@@ -554,7 +554,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
             setAnswerConcepts([]);
           } else {
             ConceptService.getAnswerConcepts(syncAttributeConceptUUID).then(
-              setAnswerConcepts
+              setAnswerConcepts,
             );
           }
         }, [syncAttributeConceptUUID]);
@@ -586,15 +586,16 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
                       isSearchable
                       isMulti
                       value={selectedAnswerConcepts.map(
-                        ReactSelectHelper.toReactSelectItem
+                        ReactSelectHelper.toReactSelectItem,
                       )}
                       options={answerConcepts.map(
-                        ReactSelectHelper.toReactSelectItem
+                        ReactSelectHelper.toReactSelectItem,
                       )}
-                      onChange={event => {
-                        const selectedValues = ReactSelectHelper.getCurrentValues(
-                          event
-                        ).map(x => x.id);
+                      onChange={(event) => {
+                        const selectedValues =
+                          ReactSelectHelper.getCurrentValues(event).map(
+                            (x) => x.id,
+                          );
                         setValue(syncAttributeValuesFieldName, selectedValues);
                       }}
                     />
@@ -605,7 +606,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
                           color: "rgba(0, 0, 0, 0.54)",
                           fontSize: 18,
                           // fontWeight: "bold",
-                          marginTop: 5
+                          marginTop: 5,
                         }}
                       >
                         Values to sync
@@ -632,10 +633,10 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
   );
 };
 
-const getSyncConceptValueMap = async sortedSubjectTypes => {
+const getSyncConceptValueMap = async (sortedSubjectTypes) => {
   const syncConceptValueMap = new Map();
   const codedConceptUUIDSet = new Set();
-  sortedSubjectTypes.forEach(subject => {
+  sortedSubjectTypes.forEach((subject) => {
     const syncAttribute1UUID =
       subject.syncAttribute1 &&
       subject.syncAttribute1.dataType === "Coded" &&
@@ -649,7 +650,7 @@ const getSyncConceptValueMap = async sortedSubjectTypes => {
   });
   for (const conceptUUID of codedConceptUUIDSet) {
     const content = await ConceptService.getAnswerConcepts(conceptUUID);
-    content.forEach(val => {
+    content.forEach((val) => {
       syncConceptValueMap.set(val.id, val.name);
     });
   }
@@ -672,27 +673,27 @@ const UsernameHandler = ({ nameSuffix }) => {
 const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
   const [languages, setLanguages] = useState([]);
   const [syncAttributesData, setSyncAttributesData] = useState({
-    subjectTypes: []
+    subjectTypes: [],
   });
   const isSyncSettingsRequired =
     syncAttributesData.subjectTypes.length > 0 ||
     syncAttributesData.isAnySubjectTypeDirectlyAssignable;
 
   useEffect(() => {
-    http.get("/organisationConfig").then(res => {
+    http.get("/organisationConfig").then((res) => {
       const organisationLocales = isEmpty(res.data._embedded.organisationConfig)
         ? [localeChoices[0]]
-        : filter(localeChoices, l =>
+        : filter(localeChoices, (l) =>
             res.data._embedded.organisationConfig[0].settings.languages.includes(
-              l.id
-            )
+              l.id,
+            ),
           );
       setLanguages(organisationLocales);
 
       if (props.record?.settings?.locale) {
         const currentLocale = props.record.settings.locale;
         const localeExists = organisationLocales.some(
-          locale => locale.id === currentLocale
+          (locale) => locale.id === currentLocale,
         );
         if (!localeExists && organisationLocales.length > 0) {
           // If current locale is not in available languages, set it to the first available language
@@ -704,20 +705,20 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
 
   useEffect(() => {
     let isMounted = true;
-    http.get("/subjectType/syncAttributesData").then(res => {
+    http.get("/subjectType/syncAttributesData").then((res) => {
       const {
         subjectTypes,
         anySubjectTypeDirectlyAssignable,
-        anySubjectTypeSyncByLocation
+        anySubjectTypeSyncByLocation,
       } = res.data;
       const sortedSubjectTypes = sortBy(subjectTypes, "id");
-      getSyncConceptValueMap(sortedSubjectTypes).then(syncConceptValueMap => {
+      getSyncConceptValueMap(sortedSubjectTypes).then((syncConceptValueMap) => {
         if (isMounted) {
           setSyncAttributesData({
             subjectTypes: sortedSubjectTypes,
             anySubjectTypeDirectlyAssignable,
             anySubjectTypeSyncByLocation,
-            syncConceptValueMap
+            syncConceptValueMap,
           });
         }
       });
@@ -730,7 +731,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
   const sanitizeProps = ({ record, resource, save }) => ({
     record,
     resource,
-    save
+    save,
   });
 
   return (
@@ -742,11 +743,15 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
     >
       {!edit && <UsernameHandler nameSuffix={nameSuffix} />}
       {edit ? (
-        <StyledTextInput
-          disabled
-          source="username"
-          label="Login ID (username)"
-        />
+        <>
+          <StyledTextInput
+            disabled
+            source="username"
+            label="Login ID (username)"
+          />
+          {/* Hidden input to preserve username in form submission */}
+          <TextInput source="username" style={{ display: "none" }} />
+        </>
       ) : (
         <FormDataConsumer>
           {({ formData }) => {
@@ -844,14 +849,14 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                 source="catchmentId"
                 reference="catchment"
                 label="Which catchment?"
-                filterToQuery={searchText => ({ name: searchText })}
+                filterToQuery={(searchText) => ({ name: searchText })}
                 onChange={(e, newVal) => {
                   if (edit) alert(catchmentChangeMessage);
                   setValue(
                     "operatingIndividualScope",
                     isFinite(newVal)
                       ? operatingScopes.CATCHMENT
-                      : operatingScopes.NONE
+                      : operatingScopes.NONE,
                   );
                 }}
               >
@@ -886,10 +891,10 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
             optionText="name"
             sx={{
               "& .MuiInputBase-root": {
-                backgroundColor: "white"
+                backgroundColor: "white",
               },
               width: "fit-content",
-              minWidth: "15em"
+              minWidth: "15em",
             }}
           />
         </ReferenceArrayInput>
@@ -916,7 +921,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
           label="Preferred Language"
           choices={localeChoices.map(({ id, name }) => ({
             id,
-            name
+            name,
           }))}
           optionValue="id"
           optionText="name"
@@ -995,7 +1000,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
               label="Ignore below listed Sync settings in the Data Entry app"
               toolTipKey={"IGNORE_SYNC_SETTINGS_IN_DEA"}
             />
-            {map(syncAttributesData.subjectTypes, st => (
+            {map(syncAttributesData.subjectTypes, (st) => (
               <SubjectTypeSyncAttributes
                 subjectType={st}
                 key={get(st, "name")}
