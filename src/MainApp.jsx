@@ -19,6 +19,7 @@ import { ErrorFallback } from "./dataEntryApp/ErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorMessageUtil from "./common/utils/ErrorMessageUtil";
 import { handleStorageMigration } from "./common/utils/storageMigration";
+import ChatbotWrapper from "./common/components/ChatbotWrapper.tsx";
 
 const theme = createTheme({
   palette: {
@@ -27,64 +28,64 @@ const theme = createTheme({
       main: blue[500],
       light: blue[300],
       dark: blue[700],
-      contrastText: "#ffffff"
+      contrastText: "#ffffff",
     },
     secondary: {
       main: grey[200],
       light: grey[100],
       dark: grey[400],
-      contrastText: "rgba(0, 0, 0, 0.87)"
+      contrastText: "rgba(0, 0, 0, 0.87)",
     },
     grey: grey,
     background: {
       default: grey[100],
-      paper: grey[50]
+      paper: grey[50],
     },
     text: {
       primary: grey[900],
       secondary: grey[600],
-      disabled: grey[400]
+      disabled: grey[400],
     },
     divider: grey[200],
     action: {
       hover: grey[100],
       selected: grey[200],
       disabled: grey[400],
-      disabledBackground: grey[200]
+      disabledBackground: grey[200],
     },
     error: {
       main: red[500],
       light: red[300],
       dark: red[700],
-      contrastText: "#ffffff"
+      contrastText: "#ffffff",
     },
     warning: {
       main: orange[500],
       light: orange[300],
       dark: orange[700],
-      contrastText: "rgba(0, 0, 0, 0.87)"
+      contrastText: "rgba(0, 0, 0, 0.87)",
     },
     info: {
       main: blue[500],
       light: blue[300],
       dark: blue[700],
-      contrastText: "#ffffff"
+      contrastText: "#ffffff",
     },
     success: {
       main: green[500],
       light: green[300],
       dark: green[700],
-      contrastText: "rgba(0, 0, 0, 0.87)"
-    }
+      contrastText: "rgba(0, 0, 0, 0.87)",
+    },
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    fontSize: 14
+    fontSize: 14,
   },
   spacing: 8,
   shape: {
-    borderRadius: 4
-  }
+    borderRadius: 4,
+  },
 });
 
 http.initHeadersForDevEnv();
@@ -103,8 +104,8 @@ const MainApp = () => {
     handleStorageMigration();
     http
       .fetchJson("/idp-details")
-      .then(response => response.json)
-      .then(idpDetails => {
+      .then((response) => response.json)
+      .then((idpDetails) => {
         if (IdpDetails.cognitoEnabled(idpDetails)) {
           configureAuth(idpDetails.cognito);
         }
@@ -112,14 +113,15 @@ const MainApp = () => {
         setGenericConfig(idpDetails.genericConfig);
         setInitialised(true);
       })
-      .catch(error => {
+      .catch((error) => {
         setUnhandledError(new Error(error.message));
       });
   }, []);
 
-  window.onunhandledrejection = function(error) {
-    const unhandledError = ErrorMessageUtil.fromWindowUnhandledError(error, x =>
-      setUnhandledError(x)
+  window.onunhandledrejection = function (error) {
+    const unhandledError = ErrorMessageUtil.fromWindowUnhandledError(
+      error,
+      (x) => setUnhandledError(x),
     );
     console.error("Unhandled Rejection Error", JSON.stringify(unhandledError));
     setUnhandledError(unhandledError);
@@ -137,6 +139,7 @@ const MainApp = () => {
         {!unhandledRejectionError && (
           <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
             <Provider store={store}>
+              <ChatbotWrapper />
               <HashRouter>
                 {http.idp.idpType === IdpDetails.none ? (
                   <App />

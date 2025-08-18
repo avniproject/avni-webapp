@@ -6,30 +6,36 @@ export default defineConfig({
   plugins: [
     react(),
     tsconfigPaths({
-      projects: ["./tsconfig.json"]
-    })
+      projects: ["./tsconfig.json"],
+    }),
   ],
   define: {
-    global: "window"
+    global: "window",
   },
   resolve: {
-    extensions: [".js", ".jsx", ".ts", ".tsx"]
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
   server: {
     port: 6010,
     proxy: {
-      "^/(me|api|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|documentation|export|translation|account|etl|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege)": {
-        target: process.env.BACKEND_URL,
+      "/chat": {
+        target: "http://localhost:8023",
         changeOrigin: true,
-        secure: false
-      }
-    }
+        secure: false,
+      },
+      "^/(me|api|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|documentation|export|translation|account|etl|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege)":
+        {
+          target: process.env.BACKEND_URL,
+          changeOrigin: true,
+          secure: false,
+        },
+    },
   },
   build: {
     outDir: "build",
-    sourcemap: true
+    sourcemap: true,
   },
   esbuild: {
-    target: "es2020"
-  }
+    target: "es2020",
+  },
 });
