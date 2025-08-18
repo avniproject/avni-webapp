@@ -12,29 +12,29 @@ const StyledRoot = styled("div")(({ theme }) => ({
   height: 40,
   width: "100%",
   padding: theme.spacing(1),
-  marginBottom: theme.spacing(1.25) // 10px
+  marginBottom: theme.spacing(1.25), // 10px
 }));
 
 const StyledTypographyValue = styled(Typography)({
   color: "#000",
-  fontWeight: "bold"
+  fontWeight: "bold",
 });
 
 const StyledTypographyLabel = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(1)
+  marginBottom: theme.spacing(1),
 }));
 
 function addElement(label, value, headerElements, key) {
-  const insertSeparator = headerElements.length !== 0;
+  const insertSeparator = headerElements?.length !== 0;
   headerElements.push(
     <StyledTypographyLabel variant="caption" key={`${key}-1`}>
       {(insertSeparator ? " | " : "") + label + ": "}
-    </StyledTypographyLabel>
+    </StyledTypographyLabel>,
   );
   headerElements.push(
     <StyledTypographyValue variant="caption" key={`${key}-2`}>
       {value}
-    </StyledTypographyValue>
+    </StyledTypographyValue>,
   );
   return headerElements;
 }
@@ -59,7 +59,7 @@ const FormWizardHeader = ({ subject }) => {
       t("gender"),
       gender,
       headerElements,
-      "fw-gender"
+      "fw-gender",
     );
   }
   const lowestAddressLevel = subject.lowestAddressLevel
@@ -72,7 +72,7 @@ const FormWizardHeader = ({ subject }) => {
     lowestAddressLevelType,
     lowestAddressLevel,
     headerElements,
-    "fw-address"
+    "fw-address",
   );
 
   return (

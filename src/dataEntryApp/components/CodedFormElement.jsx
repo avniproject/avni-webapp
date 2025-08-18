@@ -4,7 +4,7 @@ import {
   FormGroup,
   FormLabel,
   FormHelperText,
-  Box
+  Box,
 } from "@mui/material";
 import { xor, first, filter, find, isEmpty } from "lodash";
 import Checkbox from "./Checkbox";
@@ -23,24 +23,34 @@ export const CodedFormElement = ({
   uuid,
   errorMsg,
   disabled,
+  //to avoid Warning: React does not recognize the `groupName` prop on a DOM element. Otherwise it goes in FormControl props
+  //eslint-disable-next-line
+  groupName,
+  //to avoid Warning: React does not recognize the `validationResult` prop on a DOM element. Otherwise it goes in FormControl props
+  //eslint-disable-next-line
+  validationResult,
   ...props
 }) => {
   const { t } = useTranslation();
-  const validationResult = find(
+  const computedValidationResult = find(
     validationResults,
-    validationResult => validationResult.formIdentifier === uuid
+    (computedValidationResult) =>
+      computedValidationResult.formIdentifier === uuid,
   );
 
-  const color = item =>
+  const color = (item) =>
     isChecked(item) && item.abnormal
       ? Colors.ValidationError
       : Colors.DefaultPrimary;
 
   const renderError = () => {
-    return validationResult || errorMsg ? (
+    return computedValidationResult || errorMsg ? (
       <FormHelperText style={{ marginBottom: "20px" }}>
-        {(validationResult &&
-          t(validationResult.messageKey, validationResult.extra)) ||
+        {(computedValidationResult &&
+          t(
+            computedValidationResult.messageKey,
+            computedValidationResult.extra,
+          )) ||
           t(errorMsg)}
       </FormHelperText>
     ) : (
@@ -55,7 +65,8 @@ export const CodedFormElement = ({
       style={{ width: "80%", marginBottom: "-20px" }}
       required={mandatory}
       error={
-        (validationResult && !validationResult.success) || !isEmpty(errorMsg)
+        (computedValidationResult && !computedValidationResult.success) ||
+        !isEmpty(errorMsg)
       }
     >
       <FormLabel component="legend">{t(name)}</FormLabel>
@@ -64,10 +75,10 @@ export const CodedFormElement = ({
           sx={{
             display: "flex",
             flexWrap: "wrap",
-            alignContent: "flex-start"
+            alignContent: "flex-start",
           }}
         >
-          {items.map(item => (
+          {items.map((item) => (
             <Box key={item.uuid}>
               <FormControlLabel
                 control={

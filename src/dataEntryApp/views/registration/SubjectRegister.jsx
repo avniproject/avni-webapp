@@ -18,7 +18,7 @@ import {
   setMiddleName,
   setProfilePictureFile,
   setRegistrationDate,
-  setRemoveProfilePicture
+  setRemoveProfilePicture,
 } from "dataEntryApp/reducers/registrationReducer";
 import _, { find, get, isEmpty, sortBy } from "lodash";
 import { LineBreak } from "../../../common/components/utils";
@@ -42,18 +42,18 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(4),
   flexGrow: 1,
-  elevation: 2
+  elevation: 2,
 }));
 
 const StyledTypography = styled(Typography)({
-  marginBottom: 8
+  marginBottom: 8,
 });
 
 const StyledErrorSpan = styled("span")({
   color: "#f44336",
   fontFamily: "Roboto",
   fontWeight: 400,
-  fontSize: "0.75rem"
+  fontSize: "0.75rem",
 });
 
 const SubjectRegister = () => {
@@ -64,14 +64,14 @@ const SubjectRegister = () => {
 
   const orgConfig = useSelector(selectOrganisationConfig);
   const registrationState = useSelector(selectRegistrationState);
-  const user = useSelector(state => state.app.authSession);
-  const genders = useSelector(state => state.dataEntry.metadata.genders);
+  const user = useSelector((state) => state.app.authSession);
+  const genders = useSelector((state) => state.dataEntry.metadata.genders);
   const addressLevelTypes = useSelector(
-    state => state.dataEntry.metadata.operationalModules.addressLevelTypes
+    (state) => state.dataEntry.metadata.operationalModules.addressLevelTypes,
   );
   const customRegistrationLocations = useSelector(
-    state =>
-      state.dataEntry.metadata.operationalModules.customRegistrationLocations
+    (state) =>
+      state.dataEntry.metadata.operationalModules.customRegistrationLocations,
   );
 
   const {
@@ -79,7 +79,7 @@ const SubjectRegister = () => {
     loaded,
     saved,
     selectedAddressLevelType,
-    validationResults
+    validationResults,
   } = registrationState;
 
   const isEdit = location.pathname === "/app/editSubject";
@@ -96,11 +96,11 @@ const SubjectRegister = () => {
 
   const dobError = commonFormUtil.getValidationResult(
     validationResults,
-    Individual.validationKeys.DOB
+    Individual.validationKeys.DOB,
   );
   const genderError = commonFormUtil.getValidationResult(
     validationResults,
-    Individual.validationKeys.GENDER
+    Individual.validationKeys.GENDER,
   );
 
   function renderAddress() {
@@ -109,7 +109,7 @@ const SubjectRegister = () => {
       !isEmpty(customRegistrationLocations) &&
       find(
         customRegistrationLocations,
-        ({ subjectTypeUUID }) => subjectTypeUUID === uuid
+        ({ subjectTypeUUID }) => subjectTypeUUID === uuid,
       );
     const addressLevelTypesToRender =
       isEmpty(customRegistrationLocation) ||
@@ -119,7 +119,7 @@ const SubjectRegister = () => {
 
     const error = commonFormUtil.getValidationResult(
       validationResults,
-      Individual.validationKeys.LOWEST_ADDRESS_LEVEL
+      Individual.validationKeys.LOWEST_ADDRESS_LEVEL,
     );
 
     const showRequired = subject.subjectType.allowEmptyLocation ? "" : "*";
@@ -128,13 +128,13 @@ const SubjectRegister = () => {
         <LineBreak num={1} />
         <RadioButtonsGroup
           label={`${t("Address")}${showRequired}`}
-          items={addressLevelTypesToRender.map(a => ({
+          items={addressLevelTypesToRender.map((a) => ({
             id: a.id,
             name: a.name,
-            level: a.level
+            level: a.level,
           }))}
           value={selectedAddressLevelType.id}
-          onChange={item => dispatch(selectAddressLevelType(item))}
+          onChange={(item) => dispatch(selectAddressLevelType(item))}
         />
         {selectedAddressLevelType && selectedAddressLevelType.id !== -1 && (
           <>
@@ -144,7 +144,7 @@ const SubjectRegister = () => {
             orgConfig.settings.showHierarchicalLocation ? (
               <HierarchicalLocationSelect
                 selectedAddressLevelType={selectedAddressLevelType}
-                onSelect={location =>
+                onSelect={(location) =>
                   dispatch(
                     setAddress(
                       AddressLevel.create({
@@ -153,9 +153,9 @@ const SubjectRegister = () => {
                         title: location.title,
                         level: location.level,
                         typeString: location.typeString,
-                        titleLineage: location.titleLineage
-                      })
-                    )
+                        titleLineage: location.titleLineage,
+                      }),
+                    ),
                   )
                 }
                 selectedLocation={subject.lowestAddressLevel}
@@ -164,7 +164,7 @@ const SubjectRegister = () => {
             ) : (
               <LocationSelect
                 selectedAddressLevelType={selectedAddressLevelType}
-                onSelect={location =>
+                onSelect={(location) =>
                   dispatch(
                     setAddress(
                       AddressLevel.create({
@@ -173,9 +173,9 @@ const SubjectRegister = () => {
                         title: location.title,
                         level: location.level,
                         typeString: location.typeString,
-                        titleLineage: location.titleLineage
-                      })
-                    )
+                        titleLineage: location.titleLineage,
+                      }),
+                    ),
                   )
                 }
                 selectedLocation={subject.lowestAddressLevel}
@@ -195,7 +195,7 @@ const SubjectRegister = () => {
       subject.subjectType.allowProfilePicture && (
         <Fragment>
           <AvniImageUpload
-            onSelect={file => dispatch(setProfilePictureFile(file))}
+            onSelect={(file) => dispatch(setProfilePictureFile(file))}
             label={t("profilePicture")}
             toolTipKey={"APP_DESIGNER_PROFILE_PICTURE_ICON"}
             width={75}
@@ -225,7 +225,7 @@ const SubjectRegister = () => {
             }
             value={subject.registrationDate}
             validationResults={validationResults}
-            update={date => dispatch(setRegistrationDate(date))}
+            update={(date) => dispatch(setRegistrationDate(date))}
           />
           <LineBreak num={1} />
 
@@ -236,7 +236,7 @@ const SubjectRegister = () => {
                 formElement={new StaticFormElement(t("firstName"), true, true)}
                 value={subject.firstName}
                 validationResults={validationResults}
-                update={value => dispatch(setFirstName(value))}
+                update={(value) => dispatch(setFirstName(value))}
                 helpText={get(subject, "subjectType.nameHelpText")}
               />
               <LineBreak num={1} />
@@ -247,7 +247,7 @@ const SubjectRegister = () => {
                 }
                 value={subject.middleName}
                 validationResults={validationResults}
-                update={value => dispatch(setMiddleName(value))}
+                update={(value) => dispatch(setMiddleName(value))}
               />
               <LineBreak num={1} />
               <TextFormElement
@@ -255,14 +255,14 @@ const SubjectRegister = () => {
                 formElement={new StaticFormElement(t("lastName"), true, true)}
                 value={subject.lastName}
                 validationResults={validationResults}
-                update={value => dispatch(setLastName(value))}
+                update={(value) => dispatch(setLastName(value))}
               />
               <LineBreak num={1} />
               {renderProfilePicture()}
               <DateOfBirth
                 dateOfBirth={subject.dateOfBirth || null}
                 dobErrorMsg={dobError ? dobError.messageKey : ""}
-                onChange={date => {
+                onChange={(date) => {
                   const dateOfBirth = _.isNil(date)
                     ? undefined
                     : new Date(date);
@@ -276,10 +276,11 @@ const SubjectRegister = () => {
               )}
               <LineBreak num={1} />
               <CodedFormElement
+                name="gender"
                 groupName="Gender"
                 items={sortBy(genders, "name")}
-                isChecked={item => item.name === subject.gender}
-                onChange={value => dispatch(setGender(value))}
+                isChecked={(item) => item.name === subject.gender}
+                onChange={(value) => dispatch(setGender(value))}
                 validationResult={genderError}
                 mandatory={true}
               />
@@ -300,7 +301,7 @@ const SubjectRegister = () => {
                 formElement={new StaticFormElement("name", true, true)}
                 value={subject.firstName}
                 validationResults={validationResults}
-                update={value => dispatch(setFirstName(value))}
+                update={(value) => dispatch(setFirstName(value))}
                 helpText={get(subject, "subjectType.nameHelpText")}
               />
               <LineBreak num={1} />
