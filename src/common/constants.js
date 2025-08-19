@@ -24,7 +24,8 @@ export const LOCALES = Object.freeze({
   PUNJABI: "pu_IN",
   SANSKRIT: "sa_IN",
   URDU: "ur_IN",
-  ASSAMESE: "as_IN"
+  ASSAMESE: "as_IN",
+  BODO: "brx_IN"
 });
 
 export const datePickerModes = [{ id: "calendar", name: "Calendar" }, { id: "spinner", name: "Spinner" }];
@@ -63,5 +64,6 @@ export const localeChoices = [
   { id: LOCALES.PUNJABI, name: "Punjabi" },
   { id: LOCALES.SANSKRIT, name: "Sanskrit" },
   { id: LOCALES.URDU, name: "Urdu" },
-  { id: LOCALES.ASSAMESE, name: "Assamese" }
+  { id: LOCALES.ASSAMESE, name: "Assamese" },
+  { id: LOCALES.BODO, name: "Bodo" }
 ];
