@@ -7,31 +7,31 @@ import _ from "lodash";
 
 const variantIcon = {
   success: CheckCircle,
-  error: Error
+  error: Error,
 };
 
 const StyledSnackbarContent = styled(SnackbarContent, {
-  shouldForwardProp: prop => !["variant"].includes(prop)
+  shouldForwardProp: (prop) => !["variant"].includes(prop),
 })(({ variant }) => ({
   ...(variant === "success" && {
     backgroundColor: green[600],
-    minWidth: 220
+    minWidth: 220,
   }),
   ...(variant === "error" && {
     backgroundColor: red[300],
-    minWidth: 220
-  })
+    minWidth: 220,
+  }),
 }));
 
 const StyledMessage = styled("span")({
   display: "flex",
-  alignItems: "center"
+  alignItems: "center",
 });
 
 const StyledIcon = styled("span")(({ theme }) => ({
   fontSize: 20,
   opacity: 0.9,
-  marginRight: theme.spacing(1)
+  marginRight: theme.spacing(1),
 }));
 
 function MySnackbarContentWrapper({ message, variant, ...other }) {
@@ -54,13 +54,13 @@ function MySnackbarContentWrapper({ message, variant, ...other }) {
 
 MySnackbarContentWrapper.propTypes = {
   message: PropTypes.string,
-  variant: PropTypes.oneOf(["success", "error"]).isRequired
+  variant: PropTypes.oneOf(["success", "error"]).isRequired,
 };
 
 export default function CustomizedSnackbar({
   defaultSnackbarStatus = true,
   message,
-  onClose = _.noop
+  onClose = _.noop,
 }) {
   const isError =
     message === "Profile image URL is not correct or couldn't be loaded.";
@@ -69,11 +69,19 @@ export default function CustomizedSnackbar({
     <Snackbar
       anchorOrigin={{
         vertical: "bottom",
-        horizontal: "center"
+        horizontal: "center",
       }}
       open={defaultSnackbarStatus}
       autoHideDuration={2000}
       onClose={() => onClose()}
+      slotProps={{
+        transition: {
+          timeout: 300,
+          appear: false,
+          mountOnEnter: true,
+          unmountOnExit: true,
+        },
+      }}
     >
       <MySnackbarContentWrapper variant={variant} message={message} />
     </Snackbar>

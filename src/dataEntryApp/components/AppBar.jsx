@@ -12,13 +12,14 @@ import {
   Grow,
   Paper,
   Popper,
-  Box
+  Box,
+  Fade,
 } from "@mui/material";
 import {
   AccountCircle,
   MoreHoriz,
   ExpandMore,
-  Home
+  Home,
 } from "@mui/icons-material";
 import NewMenu from "../views/dashboardNew/NewMenu";
 import { Link, useNavigate } from "react-router-dom";
@@ -31,19 +32,19 @@ import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
 import { CommonAppBarStyles } from "../../common/components/CommonAppBarStyles";
 
 const StyledRoot = styled("div")(({ theme }) => ({
-  flexGrow: 1
+  flexGrow: 1,
 }));
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   ...CommonAppBarStyles(theme).appBarContainer,
-  boxShadow: "0 0.125rem 0.75rem rgba(0,0,0,0.15)"
+  boxShadow: "0 0.125rem 0.75rem rgba(0,0,0,0.15)",
 }));
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   ...CommonAppBarStyles(theme).toolbar,
   padding: theme.spacing(0, 2),
-  minHeight: "4rem !important"
+  minHeight: "4rem !important",
 }));
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
@@ -51,8 +52,8 @@ const StyledTitle = styled(Typography)(({ theme }) => ({
   flexGrow: 1,
   minWidth: 0,
   [theme.breakpoints.up("sm")]: {
-    display: "block"
-  }
+    display: "block",
+  },
 }));
 
 // Enhanced logo container with white background and subtle styling
@@ -67,13 +68,13 @@ const StyledLogoContainer = styled(Box)(({ theme }) => ({
   transition: "all 0.3s ease",
   "&:hover": {
     boxShadow: "0 0.25rem 1rem rgba(0,0,0,0.15)",
-    transform: "translateY(-0.0625rem)"
+    transform: "translateY(-0.0625rem)",
   },
   "& img": {
     height: "2rem",
     width: "auto",
-    display: "block"
-  }
+    display: "block",
+  },
 }));
 
 const StyledRegisterButton = styled(Button)(({ theme }) => ({
@@ -87,8 +88,8 @@ const StyledRegisterButton = styled(Button)(({ theme }) => ({
     borderColor: "rgba(255, 255, 255, 0.9)",
     backgroundColor: "rgba(255, 255, 255, 0.15)",
     transform: "translateY(-0.0625rem)",
-    boxShadow: "0 0.25rem 0.75rem rgba(0,0,0,0.2)"
-  }
+    boxShadow: "0 0.25rem 0.75rem rgba(0,0,0,0.2)",
+  },
 }));
 
 const StyledLinkButton = styled(Button)(({ theme }) => ({
@@ -103,15 +104,15 @@ const StyledLinkButton = styled(Button)(({ theme }) => ({
     borderColor: "rgba(255, 255, 255, 0.4)",
     transform: "translateY(-0.0625rem)",
     boxShadow: "0 0.25rem 0.75rem rgba(0,0,0,0.15)",
-    color: "white"
-  }
+    color: "white",
+  },
 }));
 
 const StyledUserSection = styled("div")(({ theme }) => ({
   ...CommonAppBarStyles(theme).userSection,
   display: "flex",
   alignItems: "center",
-  gap: theme.spacing(2)
+  gap: theme.spacing(2),
 }));
 
 const StyledUserName = styled("p")({
@@ -119,25 +120,25 @@ const StyledUserName = styled("p")({
   marginBottom: "0rem",
   fontWeight: "600",
   color: "white",
-  textShadow: "0 0.0625rem 0.125rem rgba(0,0,0,0.1)"
+  textShadow: "0 0.0625rem 0.125rem rgba(0,0,0,0.1)",
 });
 
 const StyledSectionDesktop = styled("div")(({ theme }) => ({
   display: "none",
   [theme.breakpoints.up("md")]: {
-    display: "flex"
-  }
+    display: "flex",
+  },
 }));
 
 const StyledSectionMobile = styled("div")(({ theme }) => ({
   display: "flex",
   [theme.breakpoints.up("md")]: {
-    display: "none"
-  }
+    display: "none",
+  },
 }));
 
 const StyledPopper = styled(Popper)({
-  zIndex: 100
+  zIndex: 100,
 });
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
@@ -148,8 +149,8 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
   "&:hover": {
     backgroundColor: "rgba(255, 255, 255, 0.15)",
     transform: "translateY(-0.0625rem)",
-    boxShadow: "0 0.25rem 0.75rem rgba(0,0,0,0.1)"
-  }
+    boxShadow: "0 0.25rem 0.75rem rgba(0,0,0,0.1)",
+  },
 }));
 
 // Enhanced Paper component for dropdown menus
@@ -157,7 +158,7 @@ const StyledDropdownPaper = styled(Paper)(({ theme }) => ({
   borderRadius: "0.75rem",
   boxShadow: "0 0.5rem 2rem rgba(0,0,0,0.15)",
   overflow: "hidden",
-  border: "0.0625rem solid rgba(0,0,0,0.08)"
+  border: "0.0625rem solid rgba(0,0,0,0.08)",
 }));
 
 const PrimarySearchAppBar = () => {
@@ -166,7 +167,7 @@ const PrimarySearchAppBar = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
   const isNewsAvailable = useSelector(selectIsNewsAvailable);
 
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
@@ -177,7 +178,7 @@ const PrimarySearchAppBar = () => {
   const anchorRef = useRef(null);
 
   const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen);
+    setOpen((prevOpen) => !prevOpen);
   };
 
   const prevOpen = useRef(open);
@@ -192,7 +193,7 @@ const PrimarySearchAppBar = () => {
     dispatch(getNews());
   }, [dispatch]);
 
-  const handleProfileMenuOpen = event => {
+  const handleProfileMenuOpen = (event) => {
     setProfileAnchorEl(event.currentTarget);
   };
 
@@ -204,7 +205,7 @@ const PrimarySearchAppBar = () => {
     setMobileMoreAnchorEl(null);
   };
 
-  const handleMobileMenuOpen = event => {
+  const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
@@ -235,16 +236,16 @@ const PrimarySearchAppBar = () => {
             backgroundColor: theme.palette.secondary.main,
             borderRadius: 300,
             minWidth: "22rem",
-            mt: 1.5
-          }
+            mt: 1.5,
+          },
         },
         list: {
           disablePadding: true,
           sx: {
             overflow: "visible",
-            p: 0
-          }
-        }
+            p: 0,
+          },
+        },
       }}
     >
       {isProfileMenuOpen && (
@@ -269,12 +270,12 @@ const PrimarySearchAppBar = () => {
         sx: {
           borderRadius: "0.75rem",
           boxShadow: "0 0.5rem 2rem rgba(0,0,0,0.15)",
-          mt: 1
-        }
+          mt: 1,
+        },
       }}
     >
       <MenuItem
-        onClick={event => {
+        onClick={(event) => {
           handleMobileMenuClose();
           handleProfileMenuOpen(event);
         }}
@@ -282,8 +283,8 @@ const PrimarySearchAppBar = () => {
           borderRadius: "0.5rem",
           margin: "0.25rem",
           "&:hover": {
-            backgroundColor: "rgba(0,0,0,0.04)"
-          }
+            backgroundColor: "rgba(0,0,0,0.04)",
+          },
         }}
       >
         <IconButton
@@ -341,7 +342,7 @@ const PrimarySearchAppBar = () => {
                     {...TransitionProps}
                     style={{
                       transformOrigin:
-                        placement === "bottom" ? "center top" : "center bottom"
+                        placement === "bottom" ? "center top" : "center bottom",
                     }}
                   >
                     <StyledDropdownPaper>
