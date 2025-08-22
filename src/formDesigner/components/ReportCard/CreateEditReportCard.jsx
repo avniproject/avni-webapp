@@ -11,7 +11,7 @@ import { AvniTextField } from "../../../common/components/AvniTextField";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { Title } from "react-admin";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import { sampleCardQuery } from "../../common/SampleRule";
 import { AvniSelect } from "../../../common/components/AvniSelect";
@@ -23,7 +23,7 @@ import {
   getErrorByKey,
   getServerError,
   hasServerError,
-  removeServerError
+  removeServerError,
 } from "../../common/ErrorUtil";
 import { JSEditor } from "../../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
@@ -34,10 +34,12 @@ import { StandardReportCardType } from "openchs-models";
 import { ValueTextUnitSelect } from "../../../common/components/ValueTextUnitSelect";
 import CustomizedSnackbar from "../CustomizedSnackbar";
 
-export const CreateEditReportCard = ({ edit, ...props }) => {
+export const CreateEditReportCard = () => {
+  const params = useParams();
+  const edit = !isNil(params.id);
   const [card, dispatch] = useReducer(
     ReportCardReducer,
-    WebReportCard.createNewReportCard()
+    WebReportCard.createNewReportCard(),
   );
   const [error, setError] = useState([]);
   const [id, setId] = useState();
@@ -48,10 +50,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
 
   useEffect(() => {
     DashboardService.getStandardReportCardTypes().then(
-      setStandardReportCardTypes
+      setStandardReportCardTypes,
     );
     if (edit) {
-      DashboardService.getReportCard(props.match.params.id).then(res => {
+      DashboardService.getReportCard(params.id).then((res) => {
         dispatch({ type: ReportCardReducerKeys.setData, payload: res });
       });
     } else {
@@ -72,13 +74,13 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         type: ReportCardReducerKeys.nested,
         payload: {
           nested: false,
-          count: WebReportCard.MinimumNumberOfNestedCards
-        }
+          count: WebReportCard.MinimumNumberOfNestedCards,
+        },
       });
     } else {
       dispatch({
         type: ReportCardReducerKeys.standardReportCardType,
-        payload: null
+        payload: null,
       });
     }
   }, [isStandardReportCard]);
@@ -91,7 +93,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
     ) {
       dispatch({
         type: ReportCardReducerKeys.duration,
-        payload: { value: "1", unit: "days" }
+        payload: { value: "1", unit: "days" },
       });
     }
   }, [card]);
@@ -108,7 +110,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
       const [s3FileKey, error] = await uploadImage(
         card.iconFileS3Key,
         file,
-        MediaFolder.ICONS
+        MediaFolder.ICONS,
       );
       if (error) {
         alert(error);
@@ -117,12 +119,12 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
       card.iconFileS3Key = s3FileKey;
 
       DashboardService.saveReportCard(card)
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
             setId(res.data.id);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           setError([createServerError(error, "error while saving card")]);
         });
     }
@@ -130,7 +132,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete card record?")) {
-      http.delete(`/web/reportCard/${props.match.params.id}`).then(response => {
+      http.delete(`/web/reportCard/${params.id}`).then((response) => {
         if (response.status === 200) {
           setRedirectAfterDelete(true);
         }
@@ -151,7 +153,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <Title title={"Create offline Card"} />
@@ -161,7 +163,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             <Button
               color="primary"
               type="button"
-              onClick={() => setId(props.match.params.id)}
+              onClick={() => setId(params.id)}
             >
               <VisibilityIcon /> Show
             </Button>
@@ -173,7 +175,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           label="Name*"
           autoComplete="off"
           value={card.name}
-          onChange={event =>
+          onChange={(event) =>
             onChange(ReportCardReducerKeys.name, event, "EMPTY_NAME")
           }
           toolTipKey={"APP_DESIGNER_CARD_NAME"}
@@ -186,10 +188,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           label="Description"
           autoComplete="off"
           value={card.description}
-          onChange={event =>
+          onChange={(event) =>
             dispatch({
               type: ReportCardReducerKeys.description,
-              payload: event.target.value
+              payload: event.target.value,
             })
           }
           toolTipKey={"APP_DESIGNER_CARD_DESCRIPTION"}
@@ -203,7 +205,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           id="colour"
           label="Colour"
           color={card.colour}
-          onChange={color =>
+          onChange={(color) =>
             dispatch({ type: ReportCardReducerKeys.color, payload: color })
           }
         />
@@ -221,7 +223,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         <p />
         <AvniSwitch
           checked={isStandardReportCard}
-          onChange={event => setIsStandardReportCard(!isStandardReportCard)}
+          onChange={(event) => setIsStandardReportCard(!isStandardReportCard)}
           name="Is Standard Report Card?"
           toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
         />
@@ -230,13 +232,13 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         {!isStandardReportCard && (
           <AvniSwitch
             checked={!isStandardReportCard && card.nested}
-            onChange={event =>
+            onChange={(event) =>
               dispatch({
                 type: ReportCardReducerKeys.nested,
                 payload: {
                   nested: !card.nested,
-                  count: WebReportCard.MinimumNumberOfNestedCards
-                }
+                  count: WebReportCard.MinimumNumberOfNestedCards,
+                },
               })
             }
             name="Is Nested Report Card?"
@@ -250,18 +252,18 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             value={card.count}
             style={{ width: "200px" }}
             required={!isStandardReportCard && card.nested}
-            onChange={event =>
+            onChange={(event) =>
               dispatch({
                 type: ReportCardReducerKeys.nested,
-                payload: { nested: card.nested, count: event.target.value }
+                payload: { nested: card.nested, count: event.target.value },
               })
             }
             options={Array.from(
               { length: WebReportCard.MaximumNumberOfNestedCards },
-              (_, i) => i + 1
-            ).map(num => ({
+              (_, i) => i + 1,
+            ).map((num) => ({
               value: num,
-              label: num.toString()
+              label: num.toString(),
             }))}
             toolTipKey={"APP_DESIGNER_CARD_COUNT"}
           />
@@ -273,27 +275,27 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
               isStandardReportCard ? "*" : ""
             }`}
             value={standardReportCardTypeName}
-            onChange={event => {
+            onChange={(event) => {
               dispatch({
                 type: ReportCardReducerKeys.standardReportCardType,
                 payload: standardReportCardTypes.find(
-                  x => event.target.value === x.name
-                )
+                  (x) => event.target.value === x.name,
+                ),
               });
               dispatch({
                 type: ReportCardReducerKeys.duration,
                 payload: card.isRecentType()
                   ? { value: "1", unit: "days" }
-                  : null
+                  : null,
               });
             }}
             style={{ width: "250px" }}
             required
             options={sortBy(standardReportCardTypes, ["description"]).map(
-              type => ({
+              (type) => ({
                 value: type.name,
-                label: type.description
-              })
+                label: type.description,
+              }),
             )}
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
           />
@@ -303,26 +305,28 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             label={`${card.standardReportCardType.description} in the last*`}
             value={get(card, "standardReportCardInputRecentDuration.value")}
             unit={get(card, "standardReportCardInputRecentDuration.unit")}
-            units={StandardReportCardType.recentCardDurationUnits.map(unit => ({
-              value: unit,
-              label: unit
-            }))}
-            onValueChange={event =>
+            units={StandardReportCardType.recentCardDurationUnits.map(
+              (unit) => ({
+                value: unit,
+                label: unit,
+              }),
+            )}
+            onValueChange={(event) =>
               dispatch({
                 type: ReportCardReducerKeys.duration,
                 payload: {
                   value: event.target.value,
-                  unit: card.standardReportCardInputRecentDuration.unit
-                }
+                  unit: card.standardReportCardInputRecentDuration.unit,
+                },
               })
             }
-            onUnitChange={event =>
+            onUnitChange={(event) =>
               dispatch({
                 type: ReportCardReducerKeys.duration,
                 payload: {
                   value: card.standardReportCardInputRecentDuration.value,
-                  unit: event.target.value
-                }
+                  unit: event.target.value,
+                },
               })
             }
             errorMsg={getErrorByKey(error, "INVALID_DURATION")}
@@ -337,10 +341,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
               selectedEncounterTypes={
                 card.standardReportCardInputEncounterTypes
               }
-              onChange={formMetaData =>
+              onChange={(formMetaData) =>
                 dispatch({
                   type: ReportCardReducerKeys.cardFormMetaData,
-                  payload: formMetaData
+                  payload: formMetaData,
                 })
               }
             />
@@ -354,7 +358,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             />
             <JSEditor
               value={card.query || sampleCardQuery(card.nested)}
-              onValueChange={event =>
+              onValueChange={(event) =>
                 dispatch({ type: ReportCardReducerKeys.query, payload: event })
               }
             />

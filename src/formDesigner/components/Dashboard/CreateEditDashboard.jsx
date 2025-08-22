@@ -23,17 +23,18 @@ import DashboardService from "../../../common/service/DashboardService";
 import OperationalModules from "../../../common/model/OperationalModules";
 import WebDashboard from "../../../common/model/reports/WebDashboard";
 
-const CreateEditDashboard = ({ edit }) => {
+const CreateEditDashboard = () => {
   const params = useParams();
+  const edit = !isNil(params.id);
   const dispatch = useDispatch();
 
   const operationalModules = useSelector(
-    state => state.reports.operationalModules
+    (state) => state.reports.operationalModules,
   );
 
   const [dashboard, dashboardDispatch] = useReducer(
     DashboardReducer,
-    WebDashboard.createNew()
+    WebDashboard.createNew(),
   );
   const [error, setError] = useState([]);
   const [id, setId] = useState();
@@ -52,20 +53,20 @@ const CreateEditDashboard = ({ edit }) => {
   useEffect(() => {
     if (edit && OperationalModules.isLoaded(operationalModules)) {
       DashboardService.getDashboard(params.id, operationalModules).then(
-        dashboard => {
+        (dashboard) => {
           dashboardDispatch({ type: "setData", payload: dashboard });
-        }
+        },
       );
     }
   }, [operationalModules, edit, params.id]);
 
-  const addSection = event => {
+  const addSection = (event) => {
     setError(error.filter(({ key }) => key !== "EMPTY_SECTIONS"));
     dashboardDispatch({ type: "addSection" });
     event.stopPropagation();
   };
 
-  const showFilterDialog = event => {
+  const showFilterDialog = (event) => {
     setSelectedFilter(null);
     setShowAddFilterModal(true);
     event.stopPropagation();
@@ -73,7 +74,7 @@ const CreateEditDashboard = ({ edit }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete dashboard record?")) {
-      http.delete(`/web/dashboard/${params.id}`).then(response => {
+      http.delete(`/web/dashboard/${params.id}`).then((response) => {
         if (response.status === 200) {
           setRedirectAfterDelete(true);
         }
@@ -99,19 +100,19 @@ const CreateEditDashboard = ({ edit }) => {
     }
 
     DashboardService.save(dashboard, edit, params.id)
-      .then(data => setId(data.id))
-      .catch(error =>
-        setError([createServerError(error, "error while saving dashboard")])
+      .then((data) => setId(data.id))
+      .catch((error) =>
+        setError([createServerError(error, "error while saving dashboard")]),
       );
   };
 
   if (!OperationalModules.isLoaded(operationalModules)) return null;
 
-  const onFilterDelete = selectedFilter => {
+  const onFilterDelete = (selectedFilter) => {
     const errors = [];
     DashboardService.validateForMissingSubjectTypeFilter(
-      reject(dashboard.filters, x => x.uuid === selectedFilter.uuid),
-      errors
+      reject(dashboard.filters, (x) => x.uuid === selectedFilter.uuid),
+      errors,
     );
     if (!isEmpty(errors)) {
       setError(errors);
@@ -119,7 +120,7 @@ const CreateEditDashboard = ({ edit }) => {
     }
     dashboardDispatch({
       type: "deleteFilter",
-      payload: { selectedFilter }
+      payload: { selectedFilter },
     });
   };
 
@@ -128,7 +129,7 @@ const CreateEditDashboard = ({ edit }) => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <Title title={"Create Offline Dashboard"} />
@@ -150,7 +151,7 @@ const CreateEditDashboard = ({ edit }) => {
           label="Dashboard Name*"
           autoComplete="off"
           value={dashboard.name}
-          onChange={event => onChange("name", event, "EMPTY_NAME")}
+          onChange={(event) => onChange("name", event, "EMPTY_NAME")}
           toolTipKey={"APP_DESIGNER_DASHBOARD_NAME"}
         />
         {getErrorByKey(error, "EMPTY_NAME")}
@@ -162,10 +163,10 @@ const CreateEditDashboard = ({ edit }) => {
           label="Dashboard Description"
           autoComplete="off"
           value={dashboard.description}
-          onChange={event =>
+          onChange={(event) =>
             dashboardDispatch({
               type: "description",
-              payload: event.target.value
+              payload: event.target.value,
             })
           }
           toolTipKey={"APP_DESIGNER_DASHBOARD_DESCRIPTION"}
@@ -176,10 +177,10 @@ const CreateEditDashboard = ({ edit }) => {
           <Grid
             container
             sx={{
-              justifyContent: "flex-start"
+              justifyContent: "flex-start",
             }}
             size={{
-              sm: 6
+              sm: 6,
             }}
           >
             <AvniFormLabel
@@ -190,10 +191,10 @@ const CreateEditDashboard = ({ edit }) => {
           <Grid
             container
             sx={{
-              justifyContent: "flex-end"
+              justifyContent: "flex-end",
             }}
             size={{
-              sm: 6
+              sm: 6,
             }}
           >
             <Button color="primary" onClick={addSection}>
@@ -224,10 +225,10 @@ const CreateEditDashboard = ({ edit }) => {
           <Grid
             container
             sx={{
-              justifyContent: "flex-start"
+              justifyContent: "flex-start",
             }}
             size={{
-              sm: 6
+              sm: 6,
             }}
           >
             <AvniFormLabel
@@ -238,10 +239,10 @@ const CreateEditDashboard = ({ edit }) => {
           <Grid
             container
             sx={{
-              justifyContent: "flex-end"
+              justifyContent: "flex-end",
             }}
             size={{
-              sm: 6
+              sm: 6,
             }}
           >
             <Button color="primary" onClick={showFilterDialog}>
@@ -255,7 +256,7 @@ const CreateEditDashboard = ({ edit }) => {
           <ShowDashboardFilters
             operationalModules={operationalModules}
             filters={dashboard.filters}
-            editAction={filter => {
+            editAction={(filter) => {
               setSelectedFilter(filter);
             }}
             deleteAction={onFilterDelete}
