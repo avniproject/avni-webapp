@@ -130,8 +130,13 @@ const Chatbot: React.FC = () => {
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = input;
     setInput("");
     setIsLoading(true);
+
+    // Create AbortController for request timeout and cancellation
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => abortController.abort(), 60000);
 
     try {
       const authToken = httpClient.getAuthToken();
@@ -145,8 +150,11 @@ const Chatbot: React.FC = () => {
       const response = await fetch(chatEndpoint, {
         method: "POST",
         headers,
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: currentInput }),
+        signal: abortController.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -166,13 +174,23 @@ const Chatbot: React.FC = () => {
       };
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
+      clearTimeout(timeoutId);
       console.error("Error fetching AI response:", error);
       let errorText = "Failed to get response. Please try again.";
 
       if (error instanceof Error) {
-        if (error.message.includes("Failed to fetch")) {
+        if (error.name === "AbortError") {
           errorText =
-            "Unable to connect to the AI service. Please check your connection.";
+            "Request timed out after 60 seconds. The AI service may be busy, please try again.";
+        } else if (
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError")
+        ) {
+          errorText =
+            "Network connection issue. Please check your internet connection and try again.";
+        } else if (error.message.includes("ERR_NETWORK_CHANGED")) {
+          errorText =
+            "Network connection changed during the request. Please try again.";
         } else if (error.message.includes("MCP server URL not configured")) {
           errorText =
             "AI service is not properly configured. Please contact your administrator.";
