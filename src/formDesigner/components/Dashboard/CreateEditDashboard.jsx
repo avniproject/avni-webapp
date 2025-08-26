@@ -1,6 +1,6 @@
 import { useState, useEffect, useReducer } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import { DashboardReducer } from "./DashboardReducer";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import { isEmpty, isNil, reject } from "lodash";
@@ -27,6 +27,7 @@ const CreateEditDashboard = () => {
   const params = useParams();
   const edit = !isNil(params.id);
   const dispatch = useDispatch();
+  const edit = !!params.id;
 
   const operationalModules = useSelector(
     (state) => state.reports.operationalModules,

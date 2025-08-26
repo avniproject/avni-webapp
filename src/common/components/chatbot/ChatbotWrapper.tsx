@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import Chatbot from "./Chatbot";
+import { Chatbot } from "./index";
 
 const ChatbotWrapper: React.FC = () => {
   const appInitialised = useSelector((state: any) => state.app?.appInitialised);

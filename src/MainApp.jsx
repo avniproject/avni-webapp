@@ -19,7 +19,7 @@ import { ErrorFallback } from "./dataEntryApp/ErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorMessageUtil from "./common/utils/ErrorMessageUtil";
 import { handleStorageMigration } from "./common/utils/storageMigration";
-import ChatbotWrapper from "./common/components/ChatbotWrapper.tsx";
+import ChatbotWrapper from "./common/components/chatbot/ChatbotWrapper.tsx";
 
 const theme = createTheme({
   palette: {

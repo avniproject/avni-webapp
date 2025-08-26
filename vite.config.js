@@ -18,12 +18,18 @@ export default defineConfig({
   server: {
     port: 6010,
     proxy: {
+      "^/etl": {
+        target: "http://localhost:8022",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/etl/, ""),
+      },
       "/chat": {
         target: "http://localhost:8023",
         changeOrigin: true,
         secure: false,
       },
-      "^/(me|api|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|documentation|export|translation|account|etl|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege)":
+      "^/(me|api|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|documentation|export|translation|account|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege)":
         {
           target: process.env.BACKEND_URL,
           changeOrigin: true,

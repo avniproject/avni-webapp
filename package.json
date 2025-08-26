@@ -123,6 +123,8 @@
     "@eslint/js": "^9.28.0",
     "@fortawesome/fontawesome-free": "^5.1.0",
     "@types/jest": "^30.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "babel-jest": "^30.0.5",
     "chai": "^4.2.0",
     "cypress": "^5.6.0",
