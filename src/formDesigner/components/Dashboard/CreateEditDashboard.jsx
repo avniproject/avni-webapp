@@ -27,7 +27,6 @@ const CreateEditDashboard = () => {
   const params = useParams();
   const edit = !isNil(params.id);
   const dispatch = useDispatch();
-  const edit = !!params.id;
 
   const operationalModules = useSelector(
     (state) => state.reports.operationalModules,
