@@ -44,7 +44,7 @@ import {
   formDesignerOnSaveInlineConcept,
   formDesignerOnToggleInlineConceptCodedAnswerAttribute,
   formDesignerUpdateConceptElementData,
-  formDesignerUpdateDragDropOrderForFirstGroup
+  formDesignerUpdateDragDropOrderForFirstGroup,
 } from "../common/FormDesignerHandlers";
 import { FormTypeEntities } from "../common/constants";
 import UserInfo from "../../common/model/UserInfo";
@@ -52,11 +52,11 @@ import { Concept } from "openchs-models";
 import { SubjectTypeType } from "../../adminApp/SubjectType/Types";
 import { multiSelectFormElementConceptDataTypes } from "../components/FormElementDetails";
 
-export const isNumeric = concept => concept.dataType === "Numeric";
+export const isNumeric = (concept) => concept.dataType === "Numeric";
 
-export const isText = concept => concept.dataType === "Text";
+export const isText = (concept) => concept.dataType === "Text";
 
-export const areValidFormatValuesValid = formElement => {
+export const areValidFormatValuesValid = (formElement) => {
   if (!isNumeric(formElement.concept) && !isText(formElement.concept))
     return true;
   if (!formElement.validFormat) return true;
@@ -76,7 +76,7 @@ export function TabContainer({ children, ...rest }) {
 }
 
 TabContainer.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 const personStaticFormElements = [
@@ -85,25 +85,25 @@ const personStaticFormElements = [
   { name: "Date of birth", dataType: Concept.dataType.Date },
   { name: "Age", dataType: Concept.dataType.Numeric },
   { name: "Gender", dataType: Concept.dataType.Coded },
-  { name: "Address", dataType: Concept.dataType.Coded }
+  { name: "Address", dataType: Concept.dataType.Coded },
 ];
 
 const nonPersonStaticFormElements = [
   { name: "Name", dataType: Concept.dataType.Text },
-  { name: "Address", dataType: Concept.dataType.Coded }
+  { name: "Address", dataType: Concept.dataType.Coded },
 ];
 
 const householdStaticFormElements = [
   { name: "Name", dataType: Concept.dataType.Text },
   { name: "Total members", dataType: Concept.dataType.Numeric },
-  { name: "Address", dataType: Concept.dataType.Coded }
+  { name: "Address", dataType: Concept.dataType.Coded },
 ];
 
 const userStaticFormElements = [
-  { name: "First name", dataType: Concept.dataType.Text }
+  { name: "First name", dataType: Concept.dataType.Text },
 ];
 
-const getStaticFormElements = subjectType => {
+const getStaticFormElements = (subjectType) => {
   if (_.isEmpty(subjectType)) {
     return [];
   }
@@ -122,7 +122,7 @@ const getStaticFormElements = subjectType => {
 const FormDetails = () => {
   const { uuid: formUUID } = useParams();
   const record = useRecordContext();
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
 
   const [state, setState] = useState({
     form: {},
@@ -138,25 +138,25 @@ const FormDetails = () => {
     detectBrowserCloseEvent: false,
     nameError: false,
     redirectToWorkflow: false,
-    availableDataTypes: []
+    availableDataTypes: [],
   });
   const multiSelectFormElementsToTypeMap = new Map();
   const questionGroupFormElementsToRepeatableMap = new Map();
 
-  const onUpdateFormName = useCallback(name => {
-    setState(prev => ({ ...prev, name, detectBrowserCloseEvent: true }));
+  const onUpdateFormName = useCallback((name) => {
+    setState((prev) => ({ ...prev, name, detectBrowserCloseEvent: true }));
   }, []);
 
   const onTabHandleChange = useCallback((event, value) => {
-    setState(prev => ({ ...prev, activeTabIndex: value }));
+    setState((prev) => ({ ...prev, activeTabIndex: value }));
   }, []);
 
-  const getDefaultSnackbarStatus = useCallback(defaultSnackbarStatus => {
-    setState(prev => ({ ...prev, defaultSnackbarStatus }));
+  const getDefaultSnackbarStatus = useCallback((defaultSnackbarStatus) => {
+    setState((prev) => ({ ...prev, defaultSnackbarStatus }));
   }, []);
 
   const setupBeforeUnloadListener = useCallback(() => {
-    const handler = ev => {
+    const handler = (ev) => {
       ev.preventDefault();
       if (state.detectBrowserCloseEvent) {
         ev.returnValue = "Are you sure you want to close?";
@@ -180,20 +180,20 @@ const FormDetails = () => {
       form.validationExpand = false;
       form.checklistExpand = false;
 
-      _.forEach(form.formElementGroups, group => {
+      _.forEach(form.formElementGroups, (group) => {
         group.groupId = (group.groupId || group.name).replace(
           /[^a-zA-Z0-9]/g,
-          "_"
+          "_",
         );
         group.expanded = false;
         group.error = false;
-        group.formElements.forEach(fe => {
+        group.formElements.forEach((fe) => {
           fe.expanded = false;
           fe.error = false;
           fe.showConceptLibrary = "chooseFromLibrary";
           let keyValueObject = {};
 
-          fe.keyValues.map(keyValue => {
+          fe.keyValues.map((keyValue) => {
             keyValueObject[keyValue.key] = keyValue.value;
             return keyValue;
           });
@@ -208,7 +208,7 @@ const FormDetails = () => {
             fe.concept.dataType === "Coded" &&
             keyValueObject.ExcludedAnswers !== undefined
           ) {
-            _.forEach(fe.concept.answers, answer => {
+            _.forEach(fe.concept.answers, (answer) => {
               if (
                 keyValueObject.ExcludedAnswers.includes(answer.name) &&
                 !answer.voided
@@ -221,7 +221,7 @@ const FormDetails = () => {
           if (
             _.includes(
               multiSelectFormElementConceptDataTypes,
-              fe.concept.dataType
+              fe.concept.dataType,
             )
           ) {
             multiSelectFormElementsToTypeMap.set(fe.uuid, fe.type);
@@ -229,7 +229,7 @@ const FormDetails = () => {
           if (fe.concept.dataType === "QuestionGroup") {
             questionGroupFormElementsToRepeatableMap.set(
               fe.uuid,
-              keyValueObject.repeatable
+              keyValueObject.repeatable,
             );
           }
           fe.keyValues = keyValueObject;
@@ -237,7 +237,7 @@ const FormDetails = () => {
       });
 
       const dataGroupFlag = countGroupElements(form);
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         form,
         name: form.name,
@@ -246,19 +246,22 @@ const FormDetails = () => {
         formType: form.formType,
         subjectType: form.subjectType,
         disableForm: form.organisationId === 1,
-        dataLoaded: true
+        dataLoaded: true,
       }));
 
       if (dataGroupFlag) {
         btnGroupClick();
       }
     } catch (error) {
-      setState(prev => ({ ...prev, errorMsg: "Failed to load form data" }));
+      setState((prev) => ({ ...prev, errorMsg: "Failed to load form data" }));
     }
   }, [formUUID]);
 
-  const countGroupElements = useCallback(form => {
-    return _.every(form.formElementGroups, groupElement => groupElement.voided);
+  const countGroupElements = useCallback((form) => {
+    return _.every(
+      form.formElementGroups,
+      (groupElement) => groupElement.voided,
+    );
   }, []);
 
   const reOrderSequence = useCallback((form, index = -1) => {
@@ -275,118 +278,118 @@ const FormDetails = () => {
 
   const deleteGroup = useCallback((index, elementIndex = -1) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         if (elementIndex === -1) {
           formDesignerDeleteGroup(draft, draft.form.formElementGroups, index);
         } else {
           formDesignerDeleteFormElement(
             draft,
             draft.form.formElementGroups[index].formElements,
-            elementIndex
+            elementIndex,
           );
         }
-      })
+      }),
     );
   }, []);
 
   const handleRegex = useCallback(
     (index, propertyName, value, elementIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerHandleRegex(
             draft.form.formElementGroups[index].formElements[elementIndex],
             propertyName,
-            value
+            value,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const handleModeForDate = useCallback(
     (index, propertyName, value, elementIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerHandleModeForDate(
             draft.form.formElementGroups[index].formElements[elementIndex],
             propertyName,
-            value
+            value,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const updateConceptElementData = useCallback(
     (index, propertyName, value, elementIndex = -1) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerUpdateConceptElementData(
             draft.form.formElementGroups[index].formElements[elementIndex],
             propertyName,
-            value
+            value,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const updateSkipLogicRule = useCallback((index, elementIndex, value) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         formDesignerHandleGroupElementChange(
           draft,
           draft.form.formElementGroups[index],
           "rule",
           value,
-          elementIndex
+          elementIndex,
         );
-      })
+      }),
     );
   }, []);
 
   const updateSkipLogicJSON = useCallback((index, elementIndex, value) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         formDesignerHandleGroupElementChange(
           draft,
           draft.form.formElementGroups[index],
           "declarativeRule",
           value,
-          elementIndex
+          elementIndex,
         );
-      })
+      }),
     );
   }, []);
 
   const updateFormElementGroupRule = useCallback((index, value) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         formDesignerHandleGroupElementChange(
           draft,
           draft.form.formElementGroups[index],
           "rule",
           value,
-          -1
+          -1,
         );
-      })
+      }),
     );
   }, []);
 
   const updateFormElementGroupRuleJSON = useCallback((index, value) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         formDesignerHandleGroupElementChange(
           draft,
           draft.form.formElementGroups[index],
           "declarativeRule",
           value,
-          -1
+          -1,
         );
-      })
+      }),
     );
   }, []);
 
@@ -396,10 +399,10 @@ const FormDetails = () => {
       sourceElementIndex,
       destinationElementIndex,
       groupOrElement = 1,
-      groupDestinationIndex
+      groupDestinationIndex,
     ) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           if (groupOrElement === 1) {
             const sourceElement =
               draft.form.formElementGroups[groupSourceIndex].formElements[
@@ -418,7 +421,7 @@ const FormDetails = () => {
               groupSourceIndex,
               groupDestinationIndex,
               sourceElementIndex,
-              destinationElementIndex
+              destinationElementIndex,
             );
           } else {
             let counter = 0;
@@ -428,7 +431,7 @@ const FormDetails = () => {
                 if (counter === destinationElementIndex) {
                   const sourceElement = form.formElementGroups.splice(
                     sourceElementIndex,
-                    1
+                    1,
                   )[0];
                   form.formElementGroups.splice(index, 0, sourceElement);
                 }
@@ -437,10 +440,10 @@ const FormDetails = () => {
             });
             draft.detectBrowserCloseEvent = true;
           }
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const getEntityNameForRules = useCallback(() => {
@@ -488,7 +491,7 @@ const FormDetails = () => {
           entityName: getEntityNameForRules(),
           disableGroup: state.disableForm,
           subjectType: state.subjectType,
-          form: state.form
+          form: state.form,
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -500,278 +503,277 @@ const FormDetails = () => {
     state.groupSubjectTypes,
     state.disableForm,
     state.subjectType,
-    state.form
+    state.form,
   ]);
 
   const handleExcludedAnswers = useCallback(
     (name, status, index, elementIndex) => {
       setState(
-        produce(draft =>
+        produce((draft) =>
           formDesignerHandleExcludedAnswers(
             draft,
             draft.form.formElementGroups[index].formElements[elementIndex],
             name,
-            status
-          )
-        )
+            status,
+          ),
+        ),
       );
     },
-    []
+    [],
   );
 
   const handleConceptFormLibrary = useCallback(
     (index, value, elementIndex, inlineConcept = false) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerHandleConceptFormLibrary(
             draft.form.formElementGroups[index].formElements[elementIndex],
             value,
-            inlineConcept
+            inlineConcept,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const handleGroupElementKeyValueChange = useCallback(
     (index, propertyName, value, elementIndex) => {
       setState(
-        produce(draft =>
+        produce((draft) =>
           formDesignerHandleGroupElementKeyValueChange(
             draft,
             draft.form.formElementGroups[index].formElements[elementIndex],
             propertyName,
-            value
-          )
-        )
+            value,
+          ),
+        ),
       );
     },
-    []
+    [],
   );
 
   const handleGroupElementChange = useCallback(
     (index, propertyName, value, elementIndex = -1) => {
       setState(
-        produce(draft =>
+        produce((draft) =>
           formDesignerHandleGroupElementChange(
             draft,
             draft.form.formElementGroups[index],
             propertyName,
             value,
-            elementIndex
-          )
-        )
+            elementIndex,
+          ),
+        ),
       );
     },
-    []
+    [],
   );
 
   const handleInlineNumericAttributes = useCallback(
     (index, propertyName, value, elementIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerHandleInlineNumericAttributes(
             draft.form.formElementGroups[index].formElements[elementIndex],
             propertyName,
-            value
+            value,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const handleInlineCodedConceptAnswers = useCallback(
     (answerName, groupIndex, elementIndex, answerIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerHandleInlineCodedConceptAnswers(
             draft.form.formElementGroups[groupIndex].formElements[elementIndex],
             answerName,
-            answerIndex
+            answerIndex,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const handleInlineCodedAnswerAddition = useCallback(
     (groupIndex, elementIndex) => {
       setState(
-        produce(draft =>
+        produce((draft) =>
           formDesignerHandleInlineCodedAnswerAddition(
-            draft.form.formElementGroups[groupIndex].formElements[elementIndex]
-          )
-        )
+            draft.form.formElementGroups[groupIndex].formElements[elementIndex],
+          ),
+        ),
       );
     },
-    []
+    [],
   );
 
   const onToggleInlineConceptCodedAnswerAttribute = useCallback(
     (propertyName, groupIndex, elementIndex, answerIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerOnToggleInlineConceptCodedAnswerAttribute(
             draft.form.formElementGroups[groupIndex].formElements[elementIndex],
             propertyName,
-            answerIndex
+            answerIndex,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const onDeleteInlineConceptCodedAnswerDelete = useCallback(
     (groupIndex, elementIndex, answerIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerOnDeleteInlineConceptCodedAnswerDelete(
             draft.form.formElementGroups[groupIndex].formElements[elementIndex],
-            answerIndex
+            answerIndex,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const onMoveUp = useCallback((groupIndex, elementIndex, answerIndex) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         formDesignerOnConceptAnswerMoveUp(
           draft.form.formElementGroups[groupIndex].formElements[elementIndex],
-          answerIndex
+          answerIndex,
         );
-      })
+      }),
     );
   }, []);
 
   const onMoveDown = useCallback((groupIndex, elementIndex, answerIndex) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         formDesignerOnConceptAnswerMoveDown(
           draft.form.formElementGroups[groupIndex].formElements[elementIndex],
-          answerIndex
+          answerIndex,
         );
-      })
+      }),
     );
   }, []);
 
   const onAlphabeticalSort = useCallback((groupIndex, elementIndex) => {
     setState(
-      produce(draft =>
+      produce((draft) =>
         formDesignerOnConceptAnswerAlphabeticalSort(
-          draft.form.formElementGroups[groupIndex].formElements[elementIndex]
-        )
-      )
+          draft.form.formElementGroups[groupIndex].formElements[elementIndex],
+        ),
+      ),
     );
   }, []);
 
   const handleInlineLocationAttributes = useCallback(
     (index, propertyName, value, elementIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerHandleInlineConceptAttributes(
             draft.form.formElementGroups[index].formElements[elementIndex],
             "inlineLocationDataTypeKeyValues",
             propertyName,
-            value
+            value,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const handleInlineSubjectAttributes = useCallback(
     (index, propertyName, value, elementIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerHandleInlineConceptAttributes(
             draft.form.formElementGroups[index].formElements[elementIndex],
             "inlineSubjectDataTypeKeyValues",
             propertyName,
-            value
+            value,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const handleInlineEncounterAttributes = useCallback(
     (index, propertyName, value, elementIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerHandleInlineConceptAttributes(
             draft.form.formElementGroups[index].formElements[elementIndex],
             "inlineEncounterDataTypeKeyValues",
             propertyName,
-            value
+            value,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const handleInlinePhoneNumberAttributes = useCallback(
     (index, propertyName, value, elementIndex) => {
       setState(
-        produce(draft => {
+        produce((draft) => {
           formDesignerHandleInlineConceptAttributes(
             draft.form.formElementGroups[index].formElements[elementIndex],
             "inlinePhoneNumberDataTypeKeyValues",
             propertyName,
-            value
+            value,
           );
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const btnGroupAdd = useCallback((index, elementIndex = -1) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         if (elementIndex === -1) {
           formDesignerAddFormElementGroup(
             draft,
             draft.form.formElementGroups,
-            index
+            index,
           );
         } else {
           formDesignerAddFormElement(
             draft,
             draft.form.formElementGroups[index].formElements,
-            elementIndex
+            elementIndex,
           );
         }
-      })
+      }),
     );
   }, []);
 
   const btnGroupClick = useCallback(() => {
     btnGroupAdd(0);
-    setState(prev => ({ ...prev, createFlag: false }));
+    setState((prev) => ({ ...prev, createFlag: false }));
   }, [btnGroupAdd]);
 
-  const getDeclarativeRuleValidationError = useCallback(declarativeRule => {
-    const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(
-      declarativeRule
-    );
+  const getDeclarativeRuleValidationError = useCallback((declarativeRule) => {
+    const declarativeRuleHolder =
+      DeclarativeRuleHolder.fromResource(declarativeRule);
     const validationError = declarativeRuleHolder.validateAndGetError();
     return { declarativeRuleHolder, validationError };
   }, []);
 
-  const getDisallowedChangesError = useCallback(formElement => {
+  const getDisallowedChangesError = useCallback((formElement) => {
     const currentType = multiSelectFormElementsToTypeMap.get(formElement.uuid);
     const currentRepeatability = questionGroupFormElementsToRepeatableMap.get(
-      formElement.uuid
+      formElement.uuid,
     );
     return (
       (multiSelectFormElementsToTypeMap.has(formElement.uuid) &&
@@ -783,21 +785,19 @@ const FormDetails = () => {
 
   const validateFormLevelRules = useCallback(
     (form, declarativeRule, ruleKey, generateRuleFuncName) => {
-      const {
-        declarativeRuleHolder,
-        validationError
-      } = getDeclarativeRuleValidationError(declarativeRule);
+      const { declarativeRuleHolder, validationError } =
+        getDeclarativeRuleValidationError(declarativeRule);
       if (!_.isEmpty(validationError)) {
         form.ruleError[ruleKey] = validationError;
         return true;
       } else if (!declarativeRuleHolder.isEmpty()) {
         form[ruleKey] = declarativeRuleHolder[generateRuleFuncName](
-          getEntityNameForRules()
+          getEntityNameForRules(),
         );
       }
       return false;
     },
-    [getDeclarativeRuleValidationError, getEntityNameForRules]
+    [getDeclarativeRuleValidationError, getEntityNameForRules],
   );
 
   const validateForm = useCallback(() => {
@@ -807,45 +807,43 @@ const FormDetails = () => {
     let numberElementError = 0;
 
     setState(
-      produce(draft => {
+      produce((draft) => {
         draft.nameError = draft.name === "";
         draft.form.ruleError = {};
         const {
           validationDeclarativeRule,
           decisionDeclarativeRule,
-          visitScheduleDeclarativeRule
+          visitScheduleDeclarativeRule,
         } = draft.form;
         const isValidationError = validateFormLevelRules(
           draft.form,
           validationDeclarativeRule,
           "validationRule",
-          "generateFormValidationRule"
+          "generateFormValidationRule",
         );
         const isDecisionError = validateFormLevelRules(
           draft.form,
           decisionDeclarativeRule,
           "decisionRule",
-          "generateDecisionRule"
+          "generateDecisionRule",
         );
         const isVisitScheduleError = validateFormLevelRules(
           draft.form,
           visitScheduleDeclarativeRule,
           "visitScheduleRule",
-          "generateVisitScheduleRule"
+          "generateVisitScheduleRule",
         );
         flag =
           isValidationError ||
           isDecisionError ||
           isVisitScheduleError ||
           draft.nameError;
-        _.forEach(draft.form.formElementGroups, group => {
+        _.forEach(draft.form.formElementGroups, (group) => {
           group.errorMessage = {};
           group.error = false;
           group.expanded = false;
-          const {
-            declarativeRuleHolder,
-            validationError
-          } = getDeclarativeRuleValidationError(group.declarativeRule);
+          const { declarativeRuleHolder, validationError } =
+            getDeclarativeRuleValidationError(group.declarativeRule);
           const isGroupNameEmpty = group.name.trim() === "";
           if (
             !group.voided &&
@@ -859,23 +857,21 @@ const FormDetails = () => {
               group.errorMessage.ruleError = validationError;
           } else if (!declarativeRuleHolder.isEmpty()) {
             group.rule = declarativeRuleHolder.generateFormElementGroupRule(
-              getEntityNameForRules()
+              getEntityNameForRules(),
             );
           }
           let groupError = false;
-          group.formElements.forEach(fe => {
+          group.formElements.forEach((fe) => {
             fe.errorMessage = {};
             fe.error = false;
             fe.expanded = false;
             if (fe.errorMessage) {
-              Object.keys(fe.errorMessage).forEach(key => {
+              Object.keys(fe.errorMessage).forEach((key) => {
                 fe.errorMessage[key] = false;
               });
             }
-            const {
-              declarativeRuleHolder,
-              validationError
-            } = getDeclarativeRuleValidationError(fe.declarativeRule);
+            const { declarativeRuleHolder, validationError } =
+              getDeclarativeRuleValidationError(fe.declarativeRule);
             const disallowedChangeError = getDisallowedChangesError(fe);
             if (
               !fe.voided &&
@@ -937,7 +933,7 @@ const FormDetails = () => {
               numberElementError += 1;
             } else if (!declarativeRuleHolder.isEmpty()) {
               fe.rule = declarativeRuleHolder.generateViewFilterRule(
-                getEntityNameForRules()
+                getEntityNameForRules(),
               );
             }
           });
@@ -952,28 +948,28 @@ const FormDetails = () => {
               errormsg += ` and ${numberElementError} form element.`;
           } else if (numberElementError !== 0)
             errormsg += `There is an error in ${numberElementError} form element.`;
-          draft.errorMsg = errormsg;
         }
+        draft.errorMsg = errormsg;
         // Store the validation result in the draft to trigger useEffect
         draft.shouldCallUpdateForm = !flag;
-      })
+      }),
     );
   }, [
     getDeclarativeRuleValidationError,
     getDisallowedChangesError,
-    getEntityNameForRules
+    getEntityNameForRules,
   ]);
 
   const updateForm = useCallback(async () => {
     let dataSend = cloneDeep(state.form);
     dataSend.name = state.name;
     dataSend.timed = state.timed;
-    _.forEach(dataSend.formElementGroups, group => {
-      _.forEach(group.formElements, element => {
+    _.forEach(dataSend.formElementGroups, (group) => {
+      _.forEach(group.formElements, (element) => {
         if (element.concept.dataType === "Coded") {
           const excluded = element.concept.answers
-            .map(answer => answer.excluded && !answer.voided && answer.name)
-            .filter(obj => obj);
+            .map((answer) => answer.excluded && !answer.voided && answer.name)
+            .filter((obj) => obj);
           if (!isEmpty(excluded)) {
             element.keyValues.ExcludedAnswers = excluded;
           } else if (element.keyValues.ExcludedAnswers) {
@@ -1007,9 +1003,9 @@ const FormDetails = () => {
           delete element.validFormat;
         }
         if (Object.keys(element.keyValues).length !== 0) {
-          element.keyValues = Object.keys(element.keyValues).map(key => ({
+          element.keyValues = Object.keys(element.keyValues).map((key) => ({
             key,
-            value: element.keyValues[key]
+            value: element.keyValues[key],
           }));
         } else {
           element.keyValues = [];
@@ -1023,12 +1019,12 @@ const FormDetails = () => {
     try {
       const response = await http.post("/forms", dataSend);
       if (response.status === 200) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           redirectToWorkflow: true,
           successAlert: true,
           defaultSnackbarStatus: true,
-          detectBrowserCloseEvent: false
+          detectBrowserCloseEvent: false,
         }));
         await getForm();
       }
@@ -1036,11 +1032,11 @@ const FormDetails = () => {
       const errorMessage = split(
         replace(error.response.data, /^org\..*: /, ""),
         /\n|\r/,
-        1
+        1,
       );
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        errorMsg: `Server error received: ${errorMessage}`
+        errorMsg: `Server error received: ${errorMessage}`,
       }));
     }
   }, [state.form, state.name, state.timed, reOrderSequence, getForm]);
@@ -1049,12 +1045,12 @@ const FormDetails = () => {
     if (state.shouldCallUpdateForm) {
       updateForm();
       // Reset the flag to prevent repeated calls
-      setState(prev => ({ ...prev, shouldCallUpdateForm: false }));
+      setState((prev) => ({ ...prev, shouldCallUpdateForm: false }));
     }
   }, [state.shouldCallUpdateForm, updateForm]);
 
   const onDragEnd = useCallback(
-    result => {
+    (result) => {
       const { destination, source } = result;
       if (
         !destination ||
@@ -1067,19 +1063,19 @@ const FormDetails = () => {
         const sourceGroupUuid = result.source.droppableId.replace("Group", "");
         const destGroupUuid = result.destination.droppableId.replace(
           "Group",
-          ""
+          "",
         );
         const groupSourceIndex = state.form.formElementGroups.findIndex(
-          g => g.uuid === sourceGroupUuid
+          (g) => g.uuid === sourceGroupUuid,
         );
         const groupDestinationIndex = state.form.formElementGroups.findIndex(
-          g => g.uuid === destGroupUuid
+          (g) => g.uuid === destGroupUuid,
         );
         if (groupSourceIndex === -1 || groupDestinationIndex === -1) return;
         const elementUuid = result.draggableId.split("Element")[1];
         const sourceElementIndex = state.form.formElementGroups[
           groupSourceIndex
-        ].formElements.findIndex(fe => fe.uuid === elementUuid);
+        ].formElements.findIndex((fe) => fe.uuid === elementUuid);
         const destinationElementIndex = result.destination.index;
         if (sourceElementIndex === -1) return;
         onUpdateDragDropOrder(
@@ -1087,12 +1083,12 @@ const FormDetails = () => {
           sourceElementIndex,
           destinationElementIndex,
           1,
-          groupDestinationIndex
+          groupDestinationIndex,
         );
       } else {
         const groupUuid = result.draggableId.replace("Group", "");
         const sourceElementIndex = state.form.formElementGroups.findIndex(
-          g => g.uuid === groupUuid
+          (g) => g.uuid === groupUuid,
         );
         const destinationElementIndex = result.destination.index;
         if (sourceElementIndex === -1) return;
@@ -1101,37 +1097,37 @@ const FormDetails = () => {
           sourceElementIndex,
           destinationElementIndex,
           0,
-          null
+          null,
         );
       }
     },
-    [state.form.formElementGroups, onUpdateDragDropOrder]
+    [state.form.formElementGroups, onUpdateDragDropOrder],
   );
 
   const onRuleUpdate = useCallback((name, value) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         draft.form[name] = value;
         draft.detectBrowserCloseEvent = true;
-      })
+      }),
     );
   }, []);
 
   const onDeclarativeRuleUpdate = useCallback((ruleName, json) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         draft.form[ruleName] = json;
         draft.detectBrowserCloseEvent = true;
-      })
+      }),
     );
   }, []);
 
-  const onDecisionConceptsUpdate = useCallback(decisionConcepts => {
+  const onDecisionConceptsUpdate = useCallback((decisionConcepts) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         draft.form.decisionConcepts = decisionConcepts;
         draft.detectBrowserCloseEvent = true;
-      })
+      }),
     );
   }, []);
 
@@ -1141,26 +1137,26 @@ const FormDetails = () => {
       let clonedFormElement =
         clonedForm.formElementGroups[groupIndex].formElements[elementIndex];
       formDesignerOnSaveInlineConcept(clonedFormElement, () =>
-        setState(prev => ({ ...prev, form: clonedForm }))
+        setState((prev) => ({ ...prev, form: clonedForm })),
       );
     },
-    [state.form]
+    [state.form],
   );
 
-  const onToggleExpandPanel = useCallback(name => {
+  const onToggleExpandPanel = useCallback((name) => {
     setState(
-      produce(draft => {
+      produce((draft) => {
         draft.form[name] = !draft.form[name];
-      })
+      }),
     );
   }, []);
 
   useEffect(() => {
     setupBeforeUnloadListener();
-    const transformIdentifierSources = identifierSourcesFromServer =>
-      _.map(identifierSourcesFromServer, source => ({
+    const transformIdentifierSources = (identifierSourcesFromServer) =>
+      _.map(identifierSourcesFromServer, (source) => ({
         value: source.uuid,
-        label: source.name
+        label: source.name,
       }));
 
     const fetchData = async () => {
@@ -1169,29 +1165,29 @@ const FormDetails = () => {
         const identifierData = _.get(
           identifierResponse,
           "data._embedded.identifierSource",
-          []
+          [],
         );
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          identifierSources: transformIdentifierSources(identifierData)
+          identifierSources: transformIdentifierSources(identifierData),
         }));
 
         const operationalModules = await http
           .fetchJson("/web/operationalModules/")
-          .then(res => res.json);
+          .then((res) => res.json);
         const groupSubjectTypes = _.filter(
           operationalModules.subjectTypes,
-          st => !!st.group
+          (st) => !!st.group,
         );
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           groupSubjectTypes,
-          encounterTypes: operationalModules.encounterTypes
+          encounterTypes: operationalModules.encounterTypes,
         }));
       } catch (error) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          errorMsg: "Failed to load initial data"
+          errorMsg: "Failed to load initial data",
         }));
       }
       await getForm();
@@ -1202,7 +1198,7 @@ const FormDetails = () => {
 
   const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(
     userInfo,
-    state.formType
+    state.formType,
   );
   const form = (
     <Grid container>
@@ -1211,7 +1207,7 @@ const FormDetails = () => {
         sx={{
           alignContent: "flex-end",
           justifyContent: "space-between",
-          width: "100%"
+          width: "100%",
         }}
       >
         <Grid size={{ sm: 10 }}>
@@ -1224,7 +1220,7 @@ const FormDetails = () => {
             label="Form name"
             placeholder="Enter form name"
             margin="normal"
-            onChange={event => onUpdateFormName(event.target.value)}
+            onChange={(event) => onUpdateFormName(event.target.value)}
             value={state.name}
             autoComplete="off"
             disabled={state.disableForm}
@@ -1252,7 +1248,7 @@ const FormDetails = () => {
               styles={{
                 marginTop: "30px",
                 marginBottom: "2px",
-                marginLeft: "80px"
+                marginLeft: "80px",
               }}
               disabledFlag={!state.detectBrowserCloseEvent || state.disableForm}
             />
@@ -1266,7 +1262,7 @@ const FormDetails = () => {
               margin: "20px",
               padding: "15px",
               fontSize: 24,
-              borderRadius: "5px"
+              borderRadius: "5px",
             }}
           >
             You do not have access to edit this form. Changes will not be saved
@@ -1280,8 +1276,8 @@ const FormDetails = () => {
           onChange={onTabHandleChange}
           sx={{
             "& .MuiTabs-indicator": {
-              backgroundColor: "#fff"
-            }
+              backgroundColor: "#fff",
+            },
           }}
         >
           <Tab
@@ -1289,8 +1285,8 @@ const FormDetails = () => {
             sx={{
               color: "#fff",
               "&.Mui-selected": {
-                color: "#fff"
-              }
+                color: "#fff",
+              },
             }}
           />
           <Tab
@@ -1298,8 +1294,8 @@ const FormDetails = () => {
             sx={{
               color: "#fff",
               "&.Mui-selected": {
-                color: "#fff"
-              }
+                color: "#fff",
+              },
             }}
           />
         </Tabs>
@@ -1328,7 +1324,7 @@ const FormDetails = () => {
               direction="vertical"
               type="row"
             >
-              {provided => (
+              {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps}>
                   {renderGroups()}
                   {provided.placeholder}
