@@ -12,7 +12,7 @@ const environments = {
   PRODUCTION: "prod",
   PRERELEASE: "prerelease",
   STAGING: "staging",
-  DEVELOPMENT: "development"
+  DEVELOPMENT: "development",
 };
 
 class ApplicationContext {
@@ -29,6 +29,10 @@ class ApplicationContext {
 
   static isNonProdAndNonDevEnv() {
     return this.avniEnvironment !== environments.DEVELOPMENT && this.avniEnvironment !== environments.PRODUCTION;
+  }
+
+  static isNonProdEnv() {
+    return this.avniEnvironment !== environments.PRODUCTION;
   }
 
   static setAvniEnvironment(environment) {
