@@ -6,31 +6,40 @@ import { format, isValid } from "date-fns";
 import ApplicationContext from "../../ApplicationContext";
 import { httpClient } from "../../common/utils/httpClient";
 import { logout } from "../../rootApp/ducks";
+import { usePostHog } from "posthog-js/react";
 
 const styles = {
   userIcon: {
     display: "flex",
     alignItems: "center",
     marginLeft: 13,
-    marginRight: 8
+    marginRight: 8,
   },
   lastLoginDate: {
     display: "flex",
     alignItems: "center",
     marginLeft: 13,
-    marginRight: 8
-  }
+    marginRight: 8,
+  },
 };
 
 const LogoutButton = ({
   username,
   onChangePassword = _.noop,
-  lastSessionTimeMillis
+  lastSessionTimeMillis,
 }) => {
   const dispatch = useDispatch();
+  const posthog = usePostHog();
 
   const handleLogout = () => {
     dispatch(logout());
+    clearPosthog();
+  };
+
+  const clearPosthog = () => {
+    posthog.capture("logout");
+    posthog.clear_opt_in_out_capturing();
+    posthog.reset();
   };
 
   return (

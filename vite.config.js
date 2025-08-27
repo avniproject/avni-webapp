@@ -38,4 +38,7 @@ export default defineConfig({
   esbuild: {
     target: "es2020",
   },
+  ssr: {
+    noExternal: ["posthog-js", "posthog-js/react"],
+  },
 });

@@ -22,6 +22,9 @@ import { useIdleTimer } from "react-idle-timer";
 import { logout } from "./ducks";
 import BaseAuthSession from "./security/BaseAuthSession";
 import { Privilege } from "openchs-models";
+import { usePostHog } from "posthog-js/react";
+import _ from "lodash";
+import { isDevEnv, isTestEnv } from "../common/constants";
 
 const RestrictedRoute = ({ element, requiredPrivileges = [], userInfo }) => {
   return CurrentUserService.isAllowedToAccess(userInfo, requiredPrivileges) ? (
@@ -35,18 +38,38 @@ const AppRoutes = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const organisation = useSelector(state => state.app?.organisation);
-  const user = useSelector(state => state.app?.authSession);
-  const userInfo = useSelector(state => state.app?.userInfo);
+  const organisation = useSelector((state) => state.app?.organisation);
+  const user = useSelector((state) => state.app?.authSession);
+  const userInfo = useSelector((state) => state.app?.userInfo);
   const genericConfig = useSelector(
-    state => state.app?.genericConfig || { webAppTimeoutInMinutes: 30 }
+    (state) => state.app?.genericConfig || { webAppTimeoutInMinutes: 30 },
   );
-
   const handleOnIdle = () => {
     console.log("User is idle, was last active at ", getLastActiveTime());
     console.log("A user has logged in?", hasSignedIn());
     hasSignedIn() && dispatch(logout());
   };
+
+  const posthog = usePostHog();
+  const analyticsOptOut = import.meta.env.MODE === "development";
+  // || isTestEnv         // TODO: uncomment after testing and before rolling out to prod
+  // || userInfo.organisationCategoryName !== 'Trial' // uncomment if we're in danger of breaching free plan 1M events
+  if (analyticsOptOut && !posthog.has_opted_out_capturing()) {
+    posthog.opt_out_capturing();
+  }
+
+  if (
+    !analyticsOptOut &&
+    _.isNil(userInfo.username) &&
+    !posthog._isIdentified()
+  ) {
+    posthog.identify(userInfo.username, {
+      orgCategory: userInfo.organisationCategoryName,
+      isAdmin: userInfo.isAdmin,
+      organisationName: userInfo.organisationName,
+      organisationId: userInfo.organisationId,
+    });
+  }
 
   const hasSignedIn = () => {
     return user?.authState === BaseAuthSession.AuthStates.SignedIn;
@@ -58,7 +81,7 @@ const AppRoutes = () => {
     debounce: 500,
     syncTimers: 200,
     crossTab: true,
-    leaderElection: true
+    leaderElection: true,
   });
 
   return (
@@ -77,7 +100,7 @@ const AppRoutes = () => {
         element={
           <RestrictedRoute
             requiredPrivileges={[
-              Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp
+              Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp,
             ]}
             userInfo={userInfo}
             element={<DataEntry />}
