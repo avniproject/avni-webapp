@@ -41,6 +41,7 @@
     "openchs-idi": "git+https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8",
     "openchs-models": "1.32.36",
     "popper.js": "^1.16.1",
+    "posthog-js": "^1.260.2",
     "prismjs": "^1.17.1",
     "prop-types": "^15.7.2",
     "query-string": "^6.12.0",
