@@ -279,7 +279,9 @@ const SubjectRegister = () => {
                 name="gender"
                 groupName="Gender"
                 items={sortBy(genders, "name")}
-                isChecked={(item) => item.name === subject.gender}
+                isChecked={(item) =>
+                  item.name === _.get(subject, "gender.name")
+                }
                 onChange={(value) => dispatch(setGender(value))}
                 validationResult={genderError}
                 mandatory={true}
