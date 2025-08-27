@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import {
   Datagrid,
   List,
@@ -7,10 +7,8 @@ import {
   Edit,
   SimpleForm,
   ReferenceField,
-  SelectInput,
   ReferenceInput,
   required,
-  AutocompleteInput
 } from "react-admin";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
@@ -22,8 +20,9 @@ import {
   StyledShow,
   StyledSimpleShowLayout,
   StyledAutocompleteInput,
-  StyledSelectInput
+  StyledSelectInput,
 } from "./Util/Styles";
+import OrgManagerContext from "./OrgManagerContext";
 
 const Title = ({ record }) => {
   return (
@@ -35,7 +34,7 @@ const Title = ({ record }) => {
   );
 };
 
-export const IdentifierUserAssignmentList = props => (
+export const IdentifierUserAssignmentList = (props) => (
   <StyledBox>
     <List
       {...props}
@@ -52,7 +51,7 @@ export const IdentifierUserAssignmentList = props => (
   </StyledBox>
 );
 
-export const IdentifierUserAssignmentDetail = props => {
+export const IdentifierUserAssignmentDetail = (props) => {
   return (
     <StyledShow title={<Title />} {...props}>
       <StyledSimpleShowLayout>
@@ -72,20 +71,19 @@ export const IdentifierUserAssignmentDetail = props => {
   );
 };
 
-const IdentifierUserAssignmentForm = props => (
+const IdentifierUserAssignmentForm = (props) => (
   <SimpleForm {...props} redirect="show">
     <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_USER_NAME"}>
       {({ formData, ...rest }) => {
-        console.log("User ReferenceInput formData:", formData, "rest:", rest);
         return (
           <Fragment>
             <ReferenceInput
               perPage={10}
               source="userId"
+              filter={{ organisationId: props.organisation.id }}
               reference="user"
               label="Which user?"
-              filterToQuery={searchText => {
-                console.log("User filterToQuery searchText:", searchText);
+              filterToQuery={(searchText) => {
                 return { name: searchText };
               }}
               {...rest}
@@ -94,7 +92,7 @@ const IdentifierUserAssignmentForm = props => (
                 optionText="name"
                 optionValue="id"
                 validate={[required()]}
-                filterToQuery={searchText => ({ name: searchText })}
+                filterToQuery={(searchText) => ({ name: searchText })}
               />
             </ReferenceInput>
           </Fragment>
@@ -128,7 +126,7 @@ const IdentifierUserAssignmentForm = props => (
   </SimpleForm>
 );
 
-export const IdentifierUserAssignmentEdit = props => {
+export const IdentifierUserAssignmentEdit = (props) => {
   return (
     <Edit
       title="Edit Identifier User Assignment"
@@ -141,7 +139,8 @@ export const IdentifierUserAssignmentEdit = props => {
   );
 };
 
-export const IdentifierUserAssignmentCreate = props => {
+export const IdentifierUserAssignmentCreate = (props) => {
+  const { organisation } = useContext(OrgManagerContext);
   return (
     <Paper>
       <DocumentationContainer filename={"IdentifierUserAssignment.md"}>
@@ -150,7 +149,7 @@ export const IdentifierUserAssignmentCreate = props => {
           redirect="show"
           {...props}
         >
-          <IdentifierUserAssignmentForm />
+          <IdentifierUserAssignmentForm organisation={organisation} />
         </Create>
       </DocumentationContainer>
     </Paper>
