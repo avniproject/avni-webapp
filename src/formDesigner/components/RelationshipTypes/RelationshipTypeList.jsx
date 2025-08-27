@@ -14,49 +14,49 @@ import { Delete } from "@mui/icons-material";
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(
     userInfo,
-    Privilege.PrivilegeType.EditSubjectType
+    Privilege.PrivilegeType.EditSubjectType,
   );
 }
 
 const RelationshipTypeList = () => {
   const navigate = useNavigate();
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
   const [result, setResult] = useState([]);
   const [
     isIndividualSubjectTypeAvailable,
-    setIsIndividualSubjectTypeAvailable
+    setIsIndividualSubjectTypeAvailable,
   ] = useState("");
   const tableRef = useRef(null);
 
   useEffect(() => {
     http
       .get("/web/subjectType")
-      .then(response => {
+      .then((response) => {
         const subjectTypes = get(response, "data._embedded.subjectType", []);
         const flag = subjectTypes.some(
-          subjectType => subjectType.type === "Person"
+          (subjectType) => subjectType.type === "Person",
         )
           ? "true"
           : "false";
         setIsIndividualSubjectTypeAvailable(flag);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Failed to fetch subject types:", error);
         setIsIndividualSubjectTypeAvailable("false");
       });
 
     http
       .get("/web/relationshipType")
-      .then(response => {
+      .then((response) => {
         console.log("RelationshipTypeList fetchData response:", response.data);
         setResult(
-          (response.data || []).map(item => ({
+          (response.data || []).map((item) => ({
             ...item,
-            voided: item.voided ?? item.isVoided ?? false
-          }))
+            voided: item.voided ?? item.isVoided ?? false,
+          })),
         );
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Failed to fetch relationship types:", error);
         setResult([]);
       });
@@ -70,7 +70,7 @@ const RelationshipTypeList = () => {
         enableSorting: true,
         Cell: ({ row }) => (
           <span>{row.original.individualAIsToBRelation?.name || "-"}</span>
-        )
+        ),
       },
       {
         accessorKey: "individualBIsToARelation.name",
@@ -78,15 +78,15 @@ const RelationshipTypeList = () => {
         enableSorting: true,
         Cell: ({ row }) => (
           <span>{row.original.individualBIsToARelation?.name || "-"}</span>
-        )
-      }
+        ),
+      },
     ],
-    []
+    [],
   );
 
   const fetchData = useCallback(
     ({ page, pageSize, orderBy, orderDirection }) =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         let sortedData = [...result];
         if (orderBy) {
           sortedData.sort((a, b) => {
@@ -100,10 +100,10 @@ const RelationshipTypeList = () => {
         const paginatedData = sortedData.slice(start, start + pageSize);
         resolve({
           data: paginatedData,
-          totalCount: sortedData.length
+          totalCount: sortedData.length,
         });
       }),
-    [result]
+    [result],
   );
 
   const actions = useMemo(
@@ -114,32 +114,40 @@ const RelationshipTypeList = () => {
               icon: Delete,
               tooltip: "Delete relationship",
               onClick: (event, row) => {
-                const voidedMessage = `Do you really want to delete the relationship type ${row
-                  .original.individualAIsToBRelation?.name || ""}?`;
+                const voidedMessage = `Do you really want to delete the relationship type ${
+                  row.original.individualAIsToBRelation?.name || ""
+                }?`;
                 if (window.confirm(voidedMessage)) {
                   http
                     .delete(`/web/relationshipType/${row.original.id}`)
-                    .then(response => {
-                      if (response.status === 200 && tableRef.current) {
-                        tableRef.current.refresh();
+                    .then((response) => {
+                      if (response.status === 200) {
+                        setResult((prevResult) =>
+                          prevResult.filter(
+                            (item) => item.id !== row.original.id,
+                          ),
+                        );
+                        if (tableRef.current) {
+                          tableRef.current.refresh();
+                        }
                       }
                     })
-                    .catch(error => {
+                    .catch((error) => {
                       console.error(
                         "Failed to delete relationship type:",
-                        error
+                        error,
                       );
                       alert(
-                        "Failed to delete relationship type. Please try again."
+                        "Failed to delete relationship type. Please try again.",
                       );
                     });
                 }
               },
-              disabled: row => row.original?.voided ?? false
-            }
+              disabled: (row) => row.original?.voided ?? false,
+            },
           ]
         : [],
-    [userInfo]
+    [userInfo],
   );
 
   const handleCreateSubmit = useCallback(() => {
@@ -153,7 +161,7 @@ const RelationshipTypeList = () => {
         p: 3,
         bgcolor: "background.paper",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
       }}
     >
       <Title title="Relationship Types" />
@@ -191,8 +199,8 @@ const RelationshipTypeList = () => {
                 search: false,
                 rowStyle: ({ original }) => ({
                   backgroundColor:
-                    original?.voided ?? false ? "#DBDBDB" : "#fff"
-                })
+                    (original?.voided ?? false) ? "#DBDBDB" : "#fff",
+                }),
               }}
               actions={actions}
               route="/appdesigner/relationshipType"

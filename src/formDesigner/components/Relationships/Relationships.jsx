@@ -2,7 +2,7 @@ import { memo, useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { get, isEqual } from "lodash";
 import { useNavigate } from "react-router-dom";
-import { Box, Grid } from "@mui/material"; // Added Grid import
+import { Box, Grid } from "@mui/material";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
@@ -134,8 +134,15 @@ const Relationships = () => {
                   http
                     .delete(`/web/relation/${row.original.id}`)
                     .then((response) => {
-                      if (response.status === 200 && tableRef.current) {
-                        tableRef.current.refresh();
+                      if (response.status === 200) {
+                        setResult((prevResult) =>
+                          prevResult.filter(
+                            (item) => item.id !== row.original.id,
+                          ),
+                        );
+                        if (tableRef.current) {
+                          tableRef.current.refresh();
+                        }
                       }
                     })
                     .catch((error) => {
