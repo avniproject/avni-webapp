@@ -6,7 +6,7 @@ import { Title } from "react-admin";
 import { isEmpty, isNil } from "lodash";
 import { AvniTextField } from "../../../common/components/AvniTextField";
 import { VideoReducer } from "./VideoReducer";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -16,17 +16,19 @@ import { createServerError, getErrorByKey } from "../../common/ErrorUtil";
 
 const initialState = { title: "", fileName: "", duration: "", description: "" };
 export const CreateEditVideo = ({ edit, ...props }) => {
+  const params = useParams();
   const [video, dispatch] = useReducer(VideoReducer, initialState);
   const [error, setError] = useState([]);
   const [id, setId] = useState();
   const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
+  const isInEditFlow = params.id;
 
   useEffect(() => {
-    if (edit) {
+    if (isInEditFlow) {
       http
-        .get(`/web/video/${props.match.params.id}`)
-        .then(res => res.data)
-        .then(res => {
+        .get(`/web/video/${params.id}`)
+        .then((res) => res.data)
+        .then((res) => {
           dispatch({ type: "setData", payload: res });
         });
     }
@@ -37,17 +39,17 @@ export const CreateEditVideo = ({ edit, ...props }) => {
     if (isEmpty(title) && isEmpty(fileName)) {
       setError([
         { key: "EMPTY_FILE_NAME", message: "Filename cannot be empty" },
-        { key: "EMPTY_TITLE", message: "Title cannot be empty" }
+        { key: "EMPTY_TITLE", message: "Title cannot be empty" },
       ]);
     } else if (isEmpty(title)) {
       setError([
         ...error,
-        { key: "EMPTY_TITLE", message: "Title cannot be empty" }
+        { key: "EMPTY_TITLE", message: "Title cannot be empty" },
       ]);
     } else if (isEmpty(fileName)) {
       setError([
         ...error,
-        { key: "EMPTY_FILE_NAME", message: "Filename cannot be empty" }
+        { key: "EMPTY_FILE_NAME", message: "Filename cannot be empty" },
       ]);
     }
   };
@@ -55,15 +57,15 @@ export const CreateEditVideo = ({ edit, ...props }) => {
   const onSave = () => {
     validateRequest();
     if (!isEmpty(video.title) && !isEmpty(video.fileName)) {
-      const url = edit ? `/web/video/${props.match.params.id}` : "/web/video";
+      const url = isInEditFlow ? `/web/video/${params.id}` : "/web/video";
       return http
         .post(url, video)
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
             setId(res.data.id);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           setError([createServerError(error, "error while saving video")]);
         });
     }
@@ -71,7 +73,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete video record?")) {
-      http.delete(`/web/video/${props.match.params.id}`).then(response => {
+      http.delete(`/web/video/${params.id}`).then((response) => {
         if (response.status === 200) {
           setRedirectAfterDelete(true);
         }
@@ -89,17 +91,17 @@ export const CreateEditVideo = ({ edit, ...props }) => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <Title title={"Create Video"} />
       <DocumentationContainer filename={"Video.md"}>
-        {edit && (
+        {isInEditFlow && (
           <Grid container style={{ justifyContent: "flex-end" }}>
             <Button
               color="primary"
               type="button"
-              onClick={() => setId(props.match.params.id)}
+              onClick={() => setId(params.id)}
             >
               <VisibilityIcon /> Show
             </Button>
@@ -110,7 +112,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
           label="Name*"
           autoComplete="off"
           value={video.title}
-          onChange={event => onChange("name", event, "EMPTY_TITLE")}
+          onChange={(event) => onChange("name", event, "EMPTY_TITLE")}
           toolTipKey={"APP_DESIGNER_VIDEO_NAME"}
         />
         {getErrorByKey(error, "EMPTY_TITLE")}
@@ -121,7 +123,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
           label="Description"
           autoComplete="off"
           value={video.description}
-          onChange={event =>
+          onChange={(event) =>
             dispatch({ type: "description", payload: event.target.value })
           }
           toolTipKey={"APP_DESIGNER_VIDEO_DESCRIPTION"}
@@ -132,7 +134,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
           label="File Name*"
           autoComplete="off"
           value={video.fileName}
-          onChange={event => onChange("fileName", event, "EMPTY_FILE_NAME")}
+          onChange={(event) => onChange("fileName", event, "EMPTY_FILE_NAME")}
           toolTipKey={"APP_DESIGNER_VIDEO_FILE_NAME"}
         />
         {getErrorByKey(error, "EMPTY_FILE_NAME")}
@@ -142,7 +144,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
           label="Duration (in seconds)"
           autoComplete="off"
           value={video.duration}
-          onChange={event =>
+          onChange={(event) =>
             dispatch({ type: "duration", payload: event.target.value })
           }
           toolTipKey={"APP_DESIGNER_VIDEO_DURATION"}
@@ -154,7 +156,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
             <SaveComponent name="save" onSubmit={onSave} />
           </Grid>
           <Grid size={11}>
-            {edit && (
+            {isInEditFlow && (
               <Button
                 style={{ float: "right", color: "red" }}
                 onClick={onDelete}

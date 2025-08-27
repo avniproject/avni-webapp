@@ -11,46 +11,47 @@ import { Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 
 function RelationshipEdit(props) {
+  const { id } = useParams();
   const [relationshipName, setRelationshipName] = useState("");
   const [error, setError] = useState("");
   const [uuid, setUUID] = useState("");
   const [relationshipGenders, setRelationshipGenders] = useState([]);
   const [
     isIndividualSubjectTypeAvailable,
-    setIsIndividualSubjectTypeAvailable
+    setIsIndividualSubjectTypeAvailable,
   ] = useState(true);
   const [genders, setGenders] = useState([]);
   const [redirectShow, setRedirectShow] = useState(false);
   const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
 
   useEffect(() => {
-    http.get("/web/subjectType").then(response => {
+    http.get("/web/subjectType").then((response) => {
       const subjectTypes = get(response, "data._embedded.subjectType");
       subjectTypes &&
-        subjectTypes.forEach(subjectType => {
+        subjectTypes.forEach((subjectType) => {
           if (subjectType.type === "Person") {
             setIsIndividualSubjectTypeAvailable(true);
           }
         });
     });
 
-    http.get("/web/gender").then(response => {
+    http.get("/web/gender").then((response) => {
       setGenders(response.data.content);
     });
 
-    http.get("/web/relation/" + props.match.params.id).then(response => {
-      const gender = response.data.genders.map(l => l.name);
+    http.get("/web/relation/" + id).then((response) => {
+      const gender = response.data.genders.map((l) => l.name);
       setRelationshipGenders(gender);
       setRelationshipName(response.data.name);
       setUUID(response.data.uuid);
     });
   }, []);
 
-  const checkGender = gender => {
+  const checkGender = (gender) => {
     if (relationshipGenders.includes(gender)) {
       const clonedRelationshipGenders = cloneDeep(relationshipGenders);
       const genderIndex = clonedRelationshipGenders.indexOf(gender);
@@ -64,19 +65,19 @@ function RelationshipEdit(props) {
   const onSubmitRelationship = () => {
     if (relationshipName.trim() !== "") {
       const genderToBesubmit = [];
-      genders.forEach(gender => {
+      genders.forEach((gender) => {
         if (relationshipGenders.includes(gender.name)) {
           genderToBesubmit.push(gender);
         }
       });
 
       return http
-        .post("/web/relation/" + props.match.params.id, {
+        .post("/web/relation/" + id, {
           name: relationshipName,
           uuid: uuid,
-          genders: genderToBesubmit
+          genders: genderToBesubmit,
         })
-        .then(response => {
+        .then((response) => {
           if (response.status === 200) {
             setRedirectShow(true);
           }
@@ -88,7 +89,7 @@ function RelationshipEdit(props) {
 
   const onDeleteRelationship = () => {
     if (window.confirm("Do you really want to delete relationship?")) {
-      http.delete("/web/relation/" + props.match.params.id).then(response => {
+      http.delete("/web/relation/" + id).then((response) => {
         if (response.status === 200) {
           setRedirectAfterDelete(true);
         }
@@ -102,7 +103,7 @@ function RelationshipEdit(props) {
         sx={{
           boxShadow: 2,
           p: 3,
-          bgcolor: "background.paper"
+          bgcolor: "background.paper",
         }}
       >
         <Title title={"Edit Relationship"} />
@@ -136,12 +137,12 @@ function RelationshipEdit(props) {
             label="Name*"
             autoComplete="off"
             value={relationshipName}
-            onChange={event => setRelationshipName(event.target.value)}
+            onChange={(event) => setRelationshipName(event.target.value)}
           />
           <div style={{ marginTop: "1%" }}>
             Genders
             <br />
-            {genders.map(gender => {
+            {genders.map((gender) => {
               return (
                 <FormControlLabel
                   control={
@@ -163,12 +164,12 @@ function RelationshipEdit(props) {
           <Grid
             container
             size={{
-              sm: 12
+              sm: 12,
             }}
           >
             <Grid
               size={{
-                sm: 1
+                sm: 1,
               }}
             >
               <SaveComponent
@@ -179,7 +180,7 @@ function RelationshipEdit(props) {
             </Grid>
             <Grid
               size={{
-                sm: 11
+                sm: 11,
               }}
             >
               <Button
@@ -192,11 +193,7 @@ function RelationshipEdit(props) {
           </Grid>
         </DocumentationContainer>
       </Box>
-      {redirectShow && (
-        <Navigate
-          to={`/appDesigner/relationship/${props.match.params.id}/show`}
-        />
-      )}
+      {redirectShow && <Navigate to={`/appDesigner/relationship/${id}/show`} />}
       {redirectAfterDelete && <Navigate to="/appDesigner/relationship" />}
     </>
   );

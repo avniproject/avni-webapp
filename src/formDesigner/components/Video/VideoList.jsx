@@ -19,7 +19,7 @@ const VideoList = () => {
   const [redirect, setRedirect] = useState(false);
   const tableRef = useRef(null);
   const navigate = useNavigate();
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
 
   const columns = useMemo(
     () => [
@@ -31,56 +31,56 @@ const VideoList = () => {
             <a href={`#/appDesigner/video/${row.original.id}/show`}>
               {row.original.title}
             </a>
-          )
+          ),
       },
       {
         accessorKey: "description",
         header: "Description",
-        Cell: ({ row }) => row.original.description
+        Cell: ({ row }) => row.original.description,
       },
       {
         accessorKey: "fileName",
         header: "Filename",
-        Cell: ({ row }) => row.original.fileName
+        Cell: ({ row }) => row.original.fileName,
       },
       {
         accessorKey: "duration",
         header: "Duration",
-        Cell: ({ row }) => row.original.duration
-      }
+        Cell: ({ row }) => row.original.duration,
+      },
     ],
-    []
+    [],
   );
 
   const fetchData = useCallback(
     ({ page, pageSize, orderBy, orderDirection }) =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         let apiUrl = `/web/video?size=${encodeURIComponent(
-          pageSize
+          pageSize,
         )}&page=${encodeURIComponent(page)}`;
         if (orderBy) {
           apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(
-            orderDirection
+            orderDirection,
           )}`;
         }
         http
           .get(apiUrl)
-          .then(response => response.data)
-          .then(result => {
+          .then((response) => response.data)
+          .then((result) => {
             resolve({
               data: result.filter(({ voided }) => !voided) || [],
-              totalCount: result.length || 0
+              totalCount: result.length || 0,
             });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Failed to fetch videos:", error);
             resolve({
               data: [],
-              totalCount: 0
+              totalCount: 0,
             });
           });
       }),
-    []
+    [],
   );
 
   const actions = useMemo(
@@ -90,7 +90,7 @@ const VideoList = () => {
             {
               icon: Edit,
               tooltip: "Edit video details",
-              onClick: (event, row) => navigate(`/video/${row.original.id}`)
+              onClick: (event, row) => navigate(`${row.original.id}`),
             },
             {
               icon: Delete,
@@ -102,21 +102,21 @@ const VideoList = () => {
                 if (window.confirm(voidedMessage)) {
                   http
                     .delete(`/web/video/${row.original.id}`)
-                    .then(response => {
+                    .then((response) => {
                       if (response.status === 200 && tableRef.current) {
                         tableRef.current.refresh();
                       }
                     })
-                    .catch(error => {
+                    .catch((error) => {
                       console.error("Failed to delete video:", error);
                       alert("Failed to delete video. Please try again.");
                     });
                 }
-              }
-            }
+              },
+            },
           ]
         : [],
-    [navigate, userInfo, tableRef]
+    [navigate, userInfo, tableRef],
   );
 
   return (
@@ -126,7 +126,7 @@ const VideoList = () => {
         p: 3,
         bgcolor: "background.paper",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
       }}
     >
       <Title title="Video Playlist" />
@@ -154,8 +154,8 @@ const VideoList = () => {
           debounceInterval: 500,
           search: false,
           rowStyle: ({ original }) => ({
-            backgroundColor: original.voided ? "#DBDBDB" : "#fff"
-          })
+            backgroundColor: original.voided ? "#DBDBDB" : "#fff",
+          }),
         }}
         actions={actions}
         route="/appdesigner/video"
