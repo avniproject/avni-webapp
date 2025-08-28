@@ -9,7 +9,9 @@ if (typeof window !== "undefined") {
     debug: import.meta.env.MODE === "development",
     capture_heatmaps: false,
     disable_session_recording: true,
-    autocapture: true,
+    autocapture: {
+      element_allowlist: ["a", "button", "form"],
+    },
     before_send: (event) => {
       //required because we use hash routing
       if (event?.properties?.$current_url) {
