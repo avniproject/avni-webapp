@@ -49,10 +49,12 @@ const Relationships = () => {
       .get("/web/relation")
       .then((response) => {
         setResult(
-          (response.data || []).map((item) => ({
-            ...item,
-            voided: item.voided ?? item.isVoided ?? false,
-          })),
+          (response.data || [])
+            .filter((item) => !item.voided)
+            .map((item) => ({
+              ...item,
+              voided: item.voided ?? item.isVoided ?? false,
+            })),
         );
       })
       .catch((error) => {
