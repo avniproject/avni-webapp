@@ -127,6 +127,7 @@ const IdentifierUserAssignmentForm = (props) => (
 );
 
 export const IdentifierUserAssignmentEdit = (props) => {
+  const { organisation } = useContext(OrgManagerContext);
   return (
     <Edit
       title="Edit Identifier User Assignment"
@@ -134,7 +135,7 @@ export const IdentifierUserAssignmentEdit = (props) => {
       {...props}
       redirect="show"
     >
-      <IdentifierUserAssignmentForm />
+      <IdentifierUserAssignmentForm organisation={organisation} />
     </Edit>
   );
 };
