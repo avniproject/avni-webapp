@@ -9,79 +9,84 @@ import {
   onNext,
   onPrevious,
   addNewQuestionGroup,
-  removeQuestionGroup
+  removeQuestionGroup,
 } from "dataEntryApp/reducers/encounterReducer";
 
-const EncounterForm = () => {
+const EncounterForm = ({ children }) => {
   const dispatch = useDispatch();
 
   const form = useSelector(
-    state => state.dataEntry.encounterReducer.encounterForm
+    (state) => state.dataEntry.encounterReducer.encounterForm,
   );
   const subject = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
   const observations = useSelector(
-    state => state.dataEntry.encounterReducer.encounter.observations
+    (state) => state.dataEntry.encounterReducer.encounter.observations,
   );
   const obsHolder = useSelector(
-    state =>
+    (state) =>
       new ObservationsHolder(
-        state.dataEntry.encounterReducer.encounter.observations
-      )
+        state.dataEntry.encounterReducer.encounter.observations,
+      ),
   );
-  const saved = useSelector(state => state.dataEntry.encounterReducer.saved);
+  const saved = useSelector((state) => state.dataEntry.encounterReducer.saved);
   const onSaveGoto = useSelector(
-    state =>
-      "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid
+    (state) =>
+      "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   );
   const validationResults = useSelector(
-    state => state.dataEntry.encounterReducer.validationResults
+    (state) => state.dataEntry.encounterReducer.validationResults,
   );
-  const message = useSelector(state =>
+  const message = useSelector((state) =>
     state.dataEntry.encounterReducer.encounter.name
       ? `${state.dataEntry.encounterReducer.encounter.name} Encounter Saved`
       : state.dataEntry.encounterReducer.encounter.encounterType.name
-      ? `${
-          state.dataEntry.encounterReducer.encounter.encounterType.name
-        } Encounter Saved`
-      : `Encounter Saved`
+        ? `${
+            state.dataEntry.encounterReducer.encounter.encounterType.name
+          } Encounter Saved`
+        : `Encounter Saved`,
   );
-  const additionalRows = useSelector(state => [
+  const additionalRows = useSelector((state) => [
     {
       label: "visitDate",
       value:
         state.dataEntry.encounterReducer.encounter.encounterDateTime &&
         isValid(
-          new Date(state.dataEntry.encounterReducer.encounter.encounterDateTime)
+          new Date(
+            state.dataEntry.encounterReducer.encounter.encounterDateTime,
+          ),
         )
           ? format(
               new Date(
-                state.dataEntry.encounterReducer.encounter.encounterDateTime
+                state.dataEntry.encounterReducer.encounter.encounterDateTime,
               ),
-              "dd-MMM-yyyy"
+              "dd-MMM-yyyy",
             )
-          : "-"
-    }
+          : "-",
+    },
   ]);
   const filteredFormElements = useSelector(
-    state => state.dataEntry.encounterReducer.filteredFormElements
+    (state) => state.dataEntry.encounterReducer.filteredFormElements,
   );
   const entity = useSelector(
-    state => state.dataEntry.encounterReducer.encounter
+    (state) => state.dataEntry.encounterReducer.encounter,
   );
   const formElementGroup = useSelector(
-    state => state.dataEntry.encounterReducer.formElementGroup
+    (state) => state.dataEntry.encounterReducer.formElementGroup,
   );
   const onSummaryPage = useSelector(
-    state => state.dataEntry.encounterReducer.onSummaryPage
+    (state) => state.dataEntry.encounterReducer.onSummaryPage,
   );
-  const wizard = useSelector(state => state.dataEntry.encounterReducer.wizard);
+  const wizard = useSelector(
+    (state) => state.dataEntry.encounterReducer.wizard,
+  );
   const saveErrorMessageKey = useSelector(
-    state => state.dataEntry.encounterReducer.encounterSaveErrorKey
+    (state) => state.dataEntry.encounterReducer.encounterSaveErrorKey,
   );
 
   const formProps = {
+    children,
     form,
     subject,
     observations,
@@ -103,10 +108,10 @@ const EncounterForm = () => {
     removeQuestionGroup: (formElement, questionGroupIndex) =>
       dispatch(removeQuestionGroup(formElement, questionGroupIndex)),
     onSave: () => dispatch(saveEncounter(false)),
-    setValidationResults: validationResults =>
+    setValidationResults: (validationResults) =>
       dispatch(setValidationResults(validationResults)),
     onNext: () => dispatch(onNext(false)),
-    onPrevious: () => dispatch(onPrevious(false))
+    onPrevious: () => dispatch(onPrevious(false)),
   };
 
   return <FormWizard {...formProps} />;

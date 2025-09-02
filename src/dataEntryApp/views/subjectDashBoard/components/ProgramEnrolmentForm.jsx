@@ -9,23 +9,24 @@ import {
   onNext,
   onPrevious,
   addNewQuestionGroup,
-  removeQuestionGroup
+  removeQuestionGroup,
 } from "dataEntryApp/reducers/programEnrolReducer";
 
-const ProgramEnrolmentForm = () => {
+const ProgramEnrolmentForm = ({ children }) => {
   const dispatch = useDispatch();
 
   const enrolmentState = useSelector(selectProgramEnrolmentState);
   const subjectProfile = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
 
   const formProps = {
+    children,
     form: enrolmentState.enrolForm,
     subject: subjectProfile,
     observations: enrolmentState.programEnrolment.observations,
     obsHolder: new ObservationsHolder(
-      enrolmentState.programEnrolment.observations
+      enrolmentState.programEnrolment.observations,
     ),
     title: `New Enrolment`,
     saved: enrolmentState.saved,
@@ -44,10 +45,10 @@ const ProgramEnrolmentForm = () => {
     removeQuestionGroup: (formElement, questionGroupIndex) =>
       dispatch(removeQuestionGroup(formElement, questionGroupIndex)),
     onSave: () => dispatch(saveProgramEnrolment(false)),
-    setValidationResults: validationResults =>
+    setValidationResults: (validationResults) =>
       dispatch(setValidationResults(validationResults)),
     onNext: () => dispatch(onNext(false)),
-    onPrevious: () => dispatch(onPrevious(false))
+    onPrevious: () => dispatch(onPrevious(false)),
   };
 
   return <FormWizard {...formProps} />;
