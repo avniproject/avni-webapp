@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Box } from "@mui/material";
 import Routes from "./Routes";
@@ -6,14 +6,38 @@ import { getUserInfo } from "./ducks";
 import IdpDetails from "./security/IdpDetails";
 import { httpClient } from "../common/utils/httpClient";
 import Footer from "../common/components/Footer";
+import DifyChatbot from "../common/components/DifyChatbot";
+
+// Initialize Dify configuration at app level
+const initializeDifyChatbot = () => {
+  const token =
+    import.meta.env.VITE_APP_DIFY_CHATBOT_TOKEN || "zzLh8cQNeOZFRVzv";
+
+  // Set global config immediately when app loads
+  window.difyChatbotConfig = {
+    token,
+    inputs: {},
+    systemVariables: {},
+    userVariables: {},
+  };
+
+  console.log(
+    "Dify config initialized at app level:",
+    window.difyChatbotConfig,
+  );
+};
+
+// Initialize immediately
+initializeDifyChatbot();
 
 const App = () => {
   const dispatch = useDispatch();
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const appInitialised = useSelector(
-    state => state.app?.appInitialised || false
+    (state) => state.app?.appInitialised || false,
   );
-  const sagaErrorState = useSelector(state => state.sagaErrorState || {});
+  const sagaErrorState = useSelector((state) => state.sagaErrorState || {});
 
   const { errorRaised = false, error = null } = sagaErrorState;
 
@@ -33,7 +57,7 @@ const App = () => {
           justifyContent: "center",
           alignItems: "center",
           height: "100vh",
-          fontSize: "18px"
+          fontSize: "18px",
         }}
       >
         Loading...
@@ -46,13 +70,23 @@ const App = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh"
+        minHeight: "100vh",
       }}
     >
-      <Box sx={{ flex: 1 }}>
-        <Routes />
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          transition: "margin-right 0.3s ease",
+          marginRight: isChatOpen ? "400px" : "0",
+        }}
+      >
+        <Box sx={{ flex: 1 }}>
+          <Routes />
+        </Box>
       </Box>
       <Footer />
+      <DifyChatbot onChatToggle={setIsChatOpen} />
     </Box>
   );
 };

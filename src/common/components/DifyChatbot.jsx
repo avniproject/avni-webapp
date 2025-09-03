@@ -1,0 +1,218 @@
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Box, Slide, useTheme, IconButton } from "@mui/material";
+import { ChevronRight } from "@mui/icons-material";
+
+const DifyChatbot = ({ onChatToggle }) => {
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const theme = useTheme();
+
+  // Notify parent when panel state changes
+  useEffect(() => {
+    onChatToggle?.(isPanelOpen);
+  }, [isPanelOpen, onChatToggle]);
+
+  // Get user and organization data from Redux state
+  const userInfo = useSelector((state) => state.app?.userInfo);
+  const organisation = useSelector((state) => state.app?.organisation);
+  const authSession = useSelector((state) => state.app?.authSession);
+
+  useEffect(() => {
+    // Update global config with user context when available
+    if (window.difyChatbotConfig && (userInfo || authSession || organisation)) {
+      const enhancedInputs = {
+        user_role:
+          authSession?.roles?.join(", ") || userInfo?.roles?.join(", "),
+        organisation_name: organisation?.name,
+        user_privileges: authSession?.privileges?.join(", "),
+        is_admin: authSession?.hasAllPrivileges || false,
+      };
+
+      const enhancedSystemVariables = {
+        user_id: userInfo?.id || userInfo?.uuid,
+        auth_token: authSession?.authToken,
+        organisation_id: organisation?.id,
+        organisation_name: organisation?.name,
+      };
+
+      const enhancedUserVariables = {
+        name: userInfo?.name || authSession?.username,
+        username: userInfo?.username || authSession?.username,
+        email: userInfo?.email,
+      };
+
+      // Update existing config with user context
+      window.difyChatbotConfig = {
+        ...window.difyChatbotConfig,
+        inputs: enhancedInputs,
+        systemVariables: enhancedSystemVariables,
+        userVariables: enhancedUserVariables,
+      };
+    }
+  }, [userInfo, organisation, authSession]);
+
+  useEffect(() => {
+    // Create chat button
+    const createChatButton = () => {
+      // Remove any existing button
+      const existing = document.getElementById("dify-chat-button");
+      if (existing) existing.remove();
+
+      const chatButton = document.createElement("button");
+      chatButton.id = "dify-chat-button";
+      chatButton.innerHTML = "💬";
+      chatButton.style.cssText = `
+        position: fixed;
+        bottom: ${theme.spacing(2.5)};
+        right: ${theme.spacing(2.5)};
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: ${theme.palette.primary.main};
+        color: ${theme.palette.primary.contrastText};
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 1201;
+        box-shadow: ${theme.shadows[4]};
+        transition: all 0.3s ease;
+        display: ${isPanelOpen ? "none" : "flex"};
+        align-items: center;
+        justify-content: center;
+      `;
+
+      chatButton.onmouseover = () => {
+        chatButton.style.transform = "scale(1.1)";
+        chatButton.style.background = theme.palette.primary.dark;
+      };
+
+      chatButton.onmouseout = () => {
+        chatButton.style.transform = "scale(1)";
+        chatButton.style.background = theme.palette.primary.main;
+      };
+
+      chatButton.onclick = () => {
+        setIsPanelOpen(true);
+      };
+
+      document.body.appendChild(chatButton);
+    };
+
+    createChatButton();
+
+    return () => {
+      const button = document.getElementById("dify-chat-button");
+      if (button) button.remove();
+    };
+  }, [isPanelOpen, theme]);
+
+  // Build chatbot URL with user context
+  const buildChatUrl = () => {
+    const token = window.difyChatbotConfig?.token || "zzLh8cQNeOZFRVzv";
+
+    const baseUrl = `https://udify.app/chat/${token}`;
+    const params = new URLSearchParams();
+
+    // Add user context as URL parameters
+    if (userInfo?.name || authSession?.name) {
+      params.append("user_name", userInfo?.name || authSession?.name);
+    }
+    if (userInfo?.username || authSession?.username) {
+      params.append("username", userInfo?.username || authSession?.username);
+    }
+    if (organisation?.name) {
+      params.append("org_name", organisation?.name);
+    }
+    if (authSession?.roles?.length) {
+      params.append("user_role", authSession.roles.join(", "));
+    }
+
+    return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+  };
+
+  return (
+    <>
+      {/* Embedded Right Panel */}
+      <Slide direction="left" in={isPanelOpen} mountOnEnter unmountOnExit>
+        <Box
+          sx={{
+            position: "fixed",
+            top: 64,
+            right: 0,
+            width: 400,
+            height: "calc(100vh - 64px)",
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: theme.shadows[8],
+            zIndex: 1200,
+            display: "flex",
+            flexDirection: "column",
+            borderLeft: `1px solid ${theme.palette.divider}`,
+          }}
+        >
+          {/* Close Button */}
+          <IconButton
+            onClick={() => setIsPanelOpen(false)}
+            sx={{
+              position: "absolute",
+              left: -20,
+              top: "50%",
+              transform: "translateY(-50%)",
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+              width: 40,
+              height: 40,
+              zIndex: 1300,
+              "&:hover": {
+                backgroundColor: theme.palette.primary.dark,
+              },
+              boxShadow: theme.shadows[4],
+            }}
+          >
+            <ChevronRight />
+          </IconButton>
+
+          {/* Chat Content Area */}
+          <Box
+            sx={{
+              flex: 1,
+              position: "relative",
+              backgroundColor: "#ffffff",
+              overflow: "hidden",
+              "& iframe": {
+                backgroundColor: "#ffffff !important",
+              },
+            }}
+          >
+            <iframe
+              src={buildChatUrl()}
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "none",
+                backgroundColor: "#ffffff",
+                colorScheme: "light",
+              }}
+              title="Avni Assistant"
+            />
+          </Box>
+
+          {/* Panel Footer - Optional branding */}
+          <Box
+            sx={{
+              p: theme.spacing(1),
+              backgroundColor: theme.palette.grey[50],
+              borderTop: `1px solid ${theme.palette.divider}`,
+              textAlign: "center",
+              fontSize: theme.typography.caption.fontSize,
+              color: theme.palette.text.secondary,
+            }}
+          >
+            Powered by Avni
+          </Box>
+        </Box>
+      </Slide>
+    </>
+  );
+};
+
+export default DifyChatbot;

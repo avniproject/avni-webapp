@@ -19,7 +19,6 @@ import { ErrorFallback } from "./dataEntryApp/ErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorMessageUtil from "./common/utils/ErrorMessageUtil";
 import { handleStorageMigration } from "./common/utils/storageMigration";
-import ChatbotWrapper from "./common/components/chatbot/ChatbotWrapper.tsx";
 import { usePostHog } from "posthog-js/react";
 import ApplicationContext from "./ApplicationContext";
 
@@ -153,7 +152,6 @@ const MainApp = () => {
         {!unhandledRejectionError && (
           <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
             <Provider store={store}>
-              <ChatbotWrapper />
               <HashRouter>
                 {http.idp.idpType === IdpDetails.none ? (
                   <App />
