@@ -363,6 +363,7 @@
     "userSyncAttributeNotConfigured": "उपयोगकर्ता सिंक विशेषता कॉन्फ़िगर नहीं है",
     "syncAttributeForUserNotValidForUpdate": "उपयोगकर्ता के लिए सिंक विशेषता अपडेट के लिए वैध नहीं है",
     "selectAllLabel": "सबका चयन करें",
-    "unselectAllLabel": "सभी को अचयनित करें"
+    "unselectAllLabel": "सभी को अचयनित करें",
+    "alreadyEnrolledInProgram": "{{programName}} में पहले से ही  एनरोल है"
   }
 }

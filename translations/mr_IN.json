@@ -336,6 +336,7 @@
     "userSyncAttributeNotConfigured": "वापरकर्ता सिंक विशेषता संरचित नाही",
     "syncAttributeForUserNotValidForUpdate": "वापरकर्ता सिंक विशेषता अपडेटसाठी वैध नाही",
     "selectAllLabel": "सर्व निवडा",
-    "unselectAllLabel": "सर्व निवड रद्द करा"
+    "unselectAllLabel": "सर्व निवड रद्द करा",
+    "alreadyEnrolledInProgram": "{{programName}} मध्ये आधीच इंरोलमेंट केली आहे"
   }
 }

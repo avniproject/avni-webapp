@@ -8,7 +8,7 @@ import {
   List,
   Grid,
   Button,
-  Paper
+  Paper,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { format, isValid } from "date-fns";
@@ -27,37 +27,38 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchSubjectSummary,
   selectFetchingRulesResponse,
-  selectSubjectSummary
+  selectSubjectSummary,
 } from "../../../reducers/serverSideRulesReducer";
 import RuleSummary from "./RuleSummary";
 import SubjectDashboardGeneralTab from "./SubjectDashboardGeneralTab";
 import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
 import { Individual } from "avni-models";
 import SubjectDashboardMessagesTab from "./SubjectDashboardMessagesTab";
+import { StyledTypographyError } from "../../../../adminApp/Util/Styles";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(2),
   boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)",
-  elevation: 2
+  elevation: 2,
 }));
 
 const StyledAccordion = styled(Accordion)({
   marginBottom: "11px",
   borderRadius: "5px",
   boxShadow:
-    "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)",
 });
 
 const StyledAccordionSummary = styled(AccordionSummary)({});
 
 const StyledAccordionDetails = styled(AccordionDetails)({
-  paddingTop: "0px"
+  paddingTop: "0px",
 });
 
 const StyledGroupMembersAccordionDetails = styled(AccordionDetails)({
   paddingTop: "0px",
-  display: "block"
+  display: "block",
 });
 
 const StyledTypographyHeading = styled(Typography)({
@@ -65,7 +66,7 @@ const StyledTypographyHeading = styled(Typography)({
   flexBasis: "33.33%",
   flexShrink: 0,
   fontWeight: "500",
-  margin: "0"
+  margin: "0",
 });
 
 const StyledTypographySubHeading = styled(Typography)(({ theme }) => ({
@@ -73,19 +74,15 @@ const StyledTypographySubHeading = styled(Typography)(({ theme }) => ({
   flexBasis: "33.33%",
   flexShrink: 0,
   fontWeight: "400",
-  margin: "0"
-}));
-
-const StyledTypographyError = styled(Typography)(({ theme }) => ({
-  color: theme.palette.error.main
+  margin: "0",
 }));
 
 const StyledTypographyNoItems = styled(Typography)({
-  marginBottom: 8 // Converted from sx={{ mb: 1 }} (1 * 8px = 8px)
+  marginBottom: 8, // Converted from sx={{ mb: 1 }} (1 * 8px = 8px)
 });
 
 const StyledExpandMore = styled(ExpandMore)({
-  color: "#0e6eff"
+  color: "#0e6eff",
 });
 
 const StyledButton = styled(Button)({
@@ -109,7 +106,7 @@ const SubjectDashboardProfileTab = ({
   displayGeneralInfoInProfileTab,
   msgs,
   showMessagesTab,
-  unVoidErrorKey
+  unVoidErrorKey,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -140,12 +137,12 @@ const SubjectDashboardProfileTab = ({
   let relativeList = [];
 
   if (profile && profile.relationships) {
-    profile.relationships.forEach(function(row) {
+    profile.relationships.forEach(function (row) {
       if (row.exitDateTime === undefined) {
         let sub = {
           enterDateTime: row.enterDateTime,
           id: row.id,
-          uuid: row.id
+          uuid: row.id,
         };
         relativeList.push(sub);
       }
@@ -256,7 +253,7 @@ const SubjectDashboardProfileTab = ({
         </StyledAccordionSummary>
         <StyledGroupMembersAccordionDetails>
           {profile.roles && profile.roles.length > 0 ? (
-            sortBy(profile.roles, [profileRole => profileRole.role]).map(
+            sortBy(profile.roles, [(profileRole) => profileRole.role]).map(
               (profileRole, index) => (
                 <StyledAccordion key={index} defaultExpanded>
                   <StyledAccordionSummary
@@ -271,14 +268,14 @@ const SubjectDashboardProfileTab = ({
                   <StyledAccordionDetails>
                     <GridCardView
                       cards={sortBy(groupMembers, [
-                        groupMember =>
-                          groupMember.memberSubject.firstName.toLowerCase()
+                        (groupMember) =>
+                          groupMember.memberSubject.firstName.toLowerCase(),
                       ])
                         .filter(
-                          groupMember =>
-                            groupMember.groupRole.uuid === profileRole.uuid
+                          (groupMember) =>
+                            groupMember.groupRole.uuid === profileRole.uuid,
                         )
-                        .map(groupMember => (
+                        .map((groupMember) => (
                           <GroupSubjectMemberCardView
                             key={groupMember.uuid}
                             setMembersChanged={setMembersChanged}
@@ -288,7 +285,7 @@ const SubjectDashboardProfileTab = ({
                     />
                   </StyledAccordionDetails>
                 </StyledAccordion>
-              )
+              ),
             )
           ) : (
             <StyledTypographyNoItems variant="caption">
@@ -306,7 +303,7 @@ const SubjectDashboardProfileTab = ({
   }
 
   function renderGroupMemberships() {
-    const groupMembershipCards = profile.memberships.map(membership => (
+    const groupMembershipCards = profile.memberships.map((membership) => (
       <GroupMembershipCardView
         key={membership.uuid}
         groupMembership={membership}
@@ -358,7 +355,7 @@ const SubjectDashboardProfileTab = ({
             unVoidConfirmation,
             setUnVoidConfirmation,
             "Are you sure you want to un-void this subject?",
-            unVoidSubject
+            unVoidSubject,
           )}
         </StyledPaper>
       ) : (
@@ -382,7 +379,7 @@ const SubjectDashboardProfileTab = ({
             voidConfirmation,
             setVoidConfirmation,
             t("SubjectVoidAlertMessage"),
-            voidSubject
+            voidSubject,
           )}
           {displayGeneralInfoInProfileTab && (
             <SubjectDashboardGeneralTab

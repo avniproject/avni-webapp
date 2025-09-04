@@ -328,6 +328,7 @@
     "userSyncAttributeNotConfigured": "વપરાશકર્તા સમન્વયન ગુણક રૂપરેખિત નથી",
     "syncAttributeForUserNotValidForUpdate": "વપરાશકર્તા માટે સમન્વયન ગુણક અપડેટ માટે માન્ય નથી",
     "selectAllLabel": "બધા સિલેક્ટ કરો",
-    "unselectAllLabel": "બધા અનસિલેક્ટ કરો"
+    "unselectAllLabel": "બધા અનસિલેક્ટ કરો",
+    "alreadyEnrolledInProgram": "{{programName}} માં પહેલેથી જ નોંધણી કરાવી છે"
   }
 }

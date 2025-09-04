@@ -7,7 +7,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Typography,
-  Stack
+  Stack,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -18,14 +18,14 @@ import { filter, get, isEmpty, isNil } from "lodash";
 import {
   clearVoidServerError,
   voidProgramEncounter,
-  voidProgramEnrolment
+  voidProgramEnrolment,
 } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import MessageDialog from "../../../components/MessageDialog";
 import {
   fetchProgramSummary,
   selectFetchingRulesResponse,
-  selectProgramSummary
+  selectProgramSummary,
 } from "../../../reducers/serverSideRulesReducer";
 import RuleSummary from "./RuleSummary";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
@@ -45,45 +45,45 @@ const StyledStackContainer = styled(Stack)({
 
 const StyledProgramLabel = styled("label")({
   fontSize: "18px",
-  fontWeight: "500"
+  fontWeight: "500",
 });
 
 const StyledGridLabel = styled(Grid)({
   justifyContent: "flex-start",
   alignItems: "flex-start",
-  flexGrow: 1
+  flexGrow: 1,
 });
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(2),
   boxShadow: "0px 0px 4px 0px rgba(0,0,0,0.3)",
-  elevation: 2
+  elevation: 2,
 }));
 
 const StyledAccordion = styled(Accordion)({
   marginBottom: "11px",
   borderRadius: "5px",
   boxShadow:
-    "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)",
 });
 
 const StyledAccordionSummary = styled(AccordionSummary)({});
 
 const StyledAccordionDetails = styled(AccordionDetails)({
   padding: 0,
-  display: "block"
+  display: "block",
 });
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   fontSize: theme.typography.pxToRem(16),
   flexBasis: "33.33%",
   flexShrink: 0,
-  fontWeight: "500"
+  fontWeight: "500",
 }));
 
 const StyledExpandMore = styled(ExpandMore)({
-  color: "#0e6eff"
+  color: "#0e6eff",
 });
 
 const ProgramView = ({
@@ -91,21 +91,24 @@ const ProgramView = ({
   subjectUuid,
   handleUpdateComponent,
   subjectTypeUuid,
-  subjectVoided
+  subjectVoided,
 }) => {
   // Use Redux hooks instead of connect
   const dispatch = useDispatch();
   const subjectProfile = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
   const programEnrolmentForm = useSelector(
-    state => state.dataEntry.subjectProgram.programEnrolmentForm
+    (state) => state.dataEntry.subjectProgram.programEnrolmentForm,
   );
   const voidError = useSelector(
-    state => state.dataEntry.subjectProfile.voidError
+    (state) => state.dataEntry.subjectProfile.voidError,
   );
   const organisationConfigs = useSelector(
-    state => state.dataEntry.metadata.organisationConfigs
+    (state) => state.dataEntry.metadata.organisationConfigs,
+  );
+  const enrolmentSaveErrorKey = useSelector(
+    (state) => state.dataEntry.enrolmentReducer.enrolmentSaveErrorKey,
   );
   const programSummary = useSelector(selectProgramSummary);
   const isFetchingSummary = useSelector(selectFetchingRulesResponse);
@@ -115,10 +118,8 @@ const ProgramView = ({
 
   const [voidConfirmation, setVoidConfirmation] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [
-    plannedEncounterUUIDToBeVoided,
-    setPlannedEncounterUUIDToBeVoided
-  ] = useState();
+  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] =
+    useState();
 
   useEffect(() => {
     const formType = programData.programExitDateTime
@@ -128,14 +129,14 @@ const ProgramView = ({
       getProgramEnrolmentForm(
         subjectProfile.subjectType.name,
         programData.program.operationalProgramName,
-        formType
-      )
+        formType,
+      ),
     );
   }, [
     dispatch,
     programData.program.operationalProgramName,
     programData.programExitDateTime,
-    subjectProfile.subjectType.name
+    subjectProfile.subjectType.name,
   ]);
 
   useEffect(() => {
@@ -146,7 +147,7 @@ const ProgramView = ({
     dispatch(undoExitEnrolment(...args));
   };
 
-  const handleVoidProgramEnrolment = uuid => {
+  const handleVoidProgramEnrolment = (uuid) => {
     dispatch(voidProgramEnrolment(uuid));
   };
 
@@ -154,14 +155,14 @@ const ProgramView = ({
     dispatch(clearVoidServerError());
   };
 
-  const handleVoidProgramEncounter = uuid => {
+  const handleVoidProgramEncounter = (uuid) => {
     dispatch(voidProgramEncounter(uuid));
   };
 
   const plannedVisits = filter(
     get(programData, "encounters", []),
     ({ voided, encounterDateTime, cancelDateTime }) =>
-      !voided && isNil(encounterDateTime) && isNil(cancelDateTime)
+      !voided && isNil(encounterDateTime) && isNil(cancelDateTime),
   );
 
   return (
@@ -174,7 +175,7 @@ const ProgramView = ({
           scopeType={extensionScopeTypes.programEnrolment}
           configExtensions={get(
             organisationConfigs,
-            "organisationConfig.extensions"
+            "organisationConfig.extensions",
           )}
         />
         <StyledGridLabel container direction="row" size={4}>
@@ -205,6 +206,7 @@ const ProgramView = ({
             undoExitEnrolment={handleUndoExitEnrolment}
             handleUpdateComponent={handleUpdateComponent}
             setVoidConfirmation={setVoidConfirmation}
+            enrolmentSaveErrorKey={enrolmentSaveErrorKey}
           />
         )}
         <EnrolmentDetails
@@ -234,7 +236,7 @@ const ProgramView = ({
               plannedVisits={plannedVisits || []}
               doBaseUrl={`/app/subject/programEncounter?encounterUuid`}
               cancelBaseURL={`/app/subject/cancelProgramEncounter?uuid`}
-              onDelete={plannedEncounter => {
+              onDelete={(plannedEncounter) => {
                 setPlannedEncounterUUIDToBeVoided(plannedEncounter.uuid);
               }}
             />
@@ -249,7 +251,7 @@ const ProgramView = ({
             />
           </StyledAccordionDetails>
         </StyledAccordion>
-        <StyledAccordion onChange={() => setIsExpanded(p => !p)}>
+        <StyledAccordion onChange={() => setIsExpanded((p) => !p)}>
           <StyledAccordionSummary
             expandIcon={<StyledExpandMore />}
             aria-controls="completedVisitPanelbh-content"

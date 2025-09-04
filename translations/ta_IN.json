@@ -285,6 +285,7 @@
     "userSyncAttributeNotConfigured": "பயனர் ஒத்திசைவு விஶேஷம் கட்டமைக்கப்படவில்லை",
     "syncAttributeForUserNotValidForUpdate": "பயனர் ஒத்திசைவு விஶேஷம் மேம்படுத்த முடியாது",
     "selectAllLabel": "அனைத்தையும் தேர்ந்தெடுக்கவும்",
-    "unselectAllLabel": "அனைத்தையும் தேர்வுநீக்கவும்"
+    "unselectAllLabel": "அனைத்தையும் தேர்வுநீக்கவும்",
+    "alreadyEnrolledInProgram": "ஏற்கனவே {{programName}} இல் சேர்ந்துள்ளார்"
   }
 }

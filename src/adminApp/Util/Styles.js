@@ -1,4 +1,4 @@
-import { Box, styled } from "@mui/material";
+import { Box, styled, Typography } from "@mui/material";
 import { AutocompleteArrayInput, AutocompleteInput, SelectInput, TextInput, SimpleShowLayout, Show } from "react-admin";
 
 export const StyledBox = styled(Box)(({ theme }) => ({
@@ -6,18 +6,18 @@ export const StyledBox = styled(Box)(({ theme }) => ({
   marginRight: theme.spacing(1.5),
   boxShadow: theme.shadows[2],
   padding: theme.spacing(3),
-  backgroundColor: theme.palette.background.paper
+  backgroundColor: theme.palette.background.paper,
 }));
 
 export const StyledTextInput = styled(TextInput)({
   "& .MuiInputBase-input": {
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   "& .RaResettableTextField-clearButton": {
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   width: "auto",
-  display: "inline-block"
+  display: "inline-block",
 });
 
 export const datagridStyles = {
@@ -32,31 +32,31 @@ export const datagridStyles = {
     fontSize: "0.9rem",
     color: "#333",
     padding: "0.75rem 1rem", // 12px 16px = 0.75rem 1rem
-    borderBottom: "0.0625rem solid #e0e0e0"
+    borderBottom: "0.0625rem solid #e0e0e0",
   },
 
   "& .RaDatagrid-row": {
     borderBottom: "0.0625rem solid #f0f0f0",
 
     "&:hover": {
-      backgroundColor: "#fafafa"
+      backgroundColor: "#fafafa",
     },
 
     "& td": {
       padding: "0.5rem 0.75rem", // 8px 12px = 0.5rem 0.75rem
       fontSize: "0.875rem",
-      color: "#444"
-    }
+      color: "#444",
+    },
   },
 
   "& .RaDatagrid-headerRow": {
-    borderBottom: "0.0625rem solid #ccc"
+    borderBottom: "0.0625rem solid #ccc",
   },
 
   "& .column-title": {
     fontWeight: "500",
-    color: "#222"
-  }
+    color: "#222",
+  },
 };
 
 export const StyledAutocompleteArrayInput = styled(AutocompleteArrayInput)({
@@ -64,8 +64,8 @@ export const StyledAutocompleteArrayInput = styled(AutocompleteArrayInput)({
   "& .MuiInputBase-root": {
     backgroundColor: "white",
     width: "auto",
-    minWidth: "7.5rem" // 120px = 7.5rem
-  }
+    minWidth: "7.5rem", // 120px = 7.5rem
+  },
 });
 
 export const StyledAutocompleteInput = styled(AutocompleteInput)({
@@ -73,16 +73,16 @@ export const StyledAutocompleteInput = styled(AutocompleteInput)({
   "& .MuiInputBase-root": {
     backgroundColor: "white",
     width: "auto",
-    minWidth: "7.5rem" // 120px = 7.5rem
-  }
+    minWidth: "7.5rem", // 120px = 7.5rem
+  },
 });
 
 export const StyledSelectInput = styled(SelectInput)(({ theme }) => ({
   width: "12rem",
   "& .MuiInputBase-root": {
     backgroundColor: "white",
-    width: "100%"
-  }
+    width: "100%",
+  },
 }));
 
 export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
@@ -99,7 +99,7 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
     letterSpacing: "0.05rem",
     marginLeft: theme.spacing(-1),
     marginBottom: theme.spacing(1),
-    paddingLeft: theme.spacing(0.5)
+    paddingLeft: theme.spacing(0.5),
   },
 
   "& .RaLabeled-value": {
@@ -116,8 +116,8 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
 
     "&:hover": {
       borderColor: theme.palette.primary.light,
-      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)"
-    }
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+    },
   },
 
   "& .RaLabeled-fullWidth": {
@@ -126,15 +126,15 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
     borderBottom: "none",
 
     "&:last-child": {
-      marginBottom: 0
-    }
+      marginBottom: 0,
+    },
   },
 
   "& .RaTextField": {
     "& span": {
       color: theme.palette.text.primary,
-      fontWeight: 400
-    }
+      fontWeight: 400,
+    },
   },
 
   "& .RaReferenceField": {
@@ -151,16 +151,16 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
       "&:hover": {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
-        borderColor: theme.palette.primary.main
-      }
-    }
+        borderColor: theme.palette.primary.main,
+      },
+    },
   },
 
   "& .RaReferenceManyField": {
     "& .RaLabeled-value": {
       marginTop: theme.spacing(1),
-      backgroundColor: theme.palette.background.paper
-    }
+      backgroundColor: theme.palette.background.paper,
+    },
   },
 
   "& .RaSingleFieldList": {
@@ -173,17 +173,17 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
       boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
 
       "&:hover": {
-        backgroundColor: theme.palette.primary.dark
-      }
-    }
-  }
+        backgroundColor: theme.palette.primary.dark,
+      },
+    },
+  },
 }));
 
 export const StyledShow = styled(Show)(({ theme }) => ({
   "& .RaShow-main": {
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(3, 4),
-    minHeight: "auto"
+    minHeight: "auto",
   },
 
   "& .RaShow-card": {
@@ -196,13 +196,13 @@ export const StyledShow = styled(Show)(({ theme }) => ({
 
     "& > *": {
       backgroundColor: "transparent",
-      margin: 0
-    }
+      margin: 0,
+    },
   },
 
   "& .RaShow-main > *": {
     margin: 0,
-    backgroundColor: "transparent"
+    backgroundColor: "transparent",
   },
 
   "& .RaTopToolbar-root, & .RaToolbar-root": {
@@ -211,7 +211,7 @@ export const StyledShow = styled(Show)(({ theme }) => ({
     padding: theme.spacing(2, 4),
     minHeight: "auto",
     boxShadow: "none",
-    margin: 0
+    margin: 0,
   },
 
   "& .RaShowActions": {
@@ -221,7 +221,7 @@ export const StyledShow = styled(Show)(({ theme }) => ({
     margin: 0,
     display: "flex",
     justifyContent: "flex-end",
-    alignItems: "center"
+    alignItems: "center",
   },
 
   "& .MuiCardActions-root": {
@@ -236,8 +236,8 @@ export const StyledShow = styled(Show)(({ theme }) => ({
 
     "& > *": {
       float: "none !important",
-      display: "inline-flex"
-    }
+      display: "inline-flex",
+    },
   },
 
   "& .RaShow-title, & .RaTitleForRecord": {
@@ -248,7 +248,7 @@ export const StyledShow = styled(Show)(({ theme }) => ({
     fontWeight: 600,
     color: theme.palette.text.primary,
     borderBottom: `2px solid ${theme.palette.primary.main}`,
-    borderLeft: `4px solid ${theme.palette.primary.main}`
+    borderLeft: `4px solid ${theme.palette.primary.main}`,
   },
 
   "& .RaShow-header": {
@@ -262,8 +262,8 @@ export const StyledShow = styled(Show)(({ theme }) => ({
 
     "& > *": {
       backgroundColor: "transparent",
-      margin: 0
-    }
+      margin: 0,
+    },
   },
 
   "& .MuiToolbar-root": {
@@ -283,15 +283,15 @@ export const StyledShow = styled(Show)(({ theme }) => ({
 
       "&:hover": {
         backgroundColor: theme.palette.primary.dark,
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15)"
-      }
-    }
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15)",
+      },
+    },
   },
 
   "& .RaShow-content": {
     backgroundColor: "transparent",
     margin: 0,
-    padding: theme.spacing(4)
+    padding: theme.spacing(4),
   },
 
   "& .MuiPaper-root": {
@@ -300,8 +300,8 @@ export const StyledShow = styled(Show)(({ theme }) => ({
 
     "&:not(:first-of-type)": {
       borderRadius: theme.shape.borderRadius,
-      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
-    }
+      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+    },
   },
 
   "& > div": {
@@ -311,7 +311,11 @@ export const StyledShow = styled(Show)(({ theme }) => ({
       position: "relative",
       zIndex: 1,
       backgroundColor: theme.palette.background.paper,
-      borderBottom: `1px solid ${theme.palette.grey[200]}`
-    }
-  }
+      borderBottom: `1px solid ${theme.palette.grey[200]}`,
+    },
+  },
+}));
+
+export const StyledTypographyError = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
 }));
