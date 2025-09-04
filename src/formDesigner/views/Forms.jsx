@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import NewFormModal from "../components/NewFormModal";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -9,7 +9,7 @@ import FormListing from "../components/FormListing";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 
-const Forms = props => {
+const Forms = (props) => {
   const [showNewFormDialog, setShowNewFormDialog] = useState(false);
   const openNewFormDialog = useCallback(() => setShowNewFormDialog(true), []);
   const closeNewFormDialog = useCallback(() => setShowNewFormDialog(false), []);
@@ -21,7 +21,8 @@ const Forms = props => {
         p: 3,
         bgcolor: "background.paper",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        width: "calc(90%)",
       }}
     >
       <Title title="Forms" />

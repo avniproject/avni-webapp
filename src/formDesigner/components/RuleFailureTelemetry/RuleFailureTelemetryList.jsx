@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { httpClient as http } from "common/utils/httpClient";
@@ -16,16 +16,16 @@ import { Grid } from "@mui/material";
 const STATUS = {
   OPEN: 1,
   CLOSED: 2,
-  ALL: 3
+  ALL: 3,
 };
 
 const RuleFailureTelemetryList = () => {
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
   const [selectedStatus, setSelectedStatus] = useState(STATUS.OPEN);
   const [selectedRows, setSelectedRows] = useState([]);
   const tableRef = useRef(null);
 
-  const onSelect = useCallback(status => {
+  const onSelect = useCallback((status) => {
     setSelectedStatus(status);
     setSelectedRows([]);
     if (tableRef.current) {
@@ -33,11 +33,11 @@ const RuleFailureTelemetryList = () => {
     }
   }, []);
 
-  const toggleRowSelection = useCallback(row => {
-    setSelectedRows(prev => {
+  const toggleRowSelection = useCallback((row) => {
+    setSelectedRows((prev) => {
       const id = row.original?.id || row.id;
-      const newSelection = prev.some(r => (r.original?.id || r.id) === id)
-        ? prev.filter(r => (r.original?.id || r.id) !== id)
+      const newSelection = prev.some((r) => (r.original?.id || r.id) === id)
+        ? prev.filter((r) => (r.original?.id || r.id) !== id)
         : [...prev, row];
       console.log("Toggle selection:", newSelection, "Row:", row);
       return newSelection;
@@ -54,25 +54,25 @@ const RuleFailureTelemetryList = () => {
         Cell: ({ row }) => (
           <Checkbox
             checked={selectedRows.some(
-              r => (r.original?.id || r.id) === (row.original?.id || row.id)
+              (r) => (r.original?.id || r.id) === (row.original?.id || row.id),
             )}
             onChange={() => toggleRowSelection(row)}
           />
-        )
+        ),
       },
       {
         accessorKey: "errorMessage",
         header: "Message",
         enableSorting: true,
         size: 200, // Reduced column width
-        Cell: ({ row }) => row.original.errorMessage || "-"
+        Cell: ({ row }) => row.original.errorMessage || "-",
       },
       {
         accessorKey: "closed",
         header: "Status",
         enableSorting: true,
         size: 80, // Reduced column width
-        Cell: ({ row }) => (row.original.closed ? "Closed" : "Open")
+        Cell: ({ row }) => (row.original.closed ? "Closed" : "Open"),
       },
       {
         accessorKey: "errorDateTime",
@@ -82,7 +82,7 @@ const RuleFailureTelemetryList = () => {
         Cell: ({ row }) =>
           isValid(new Date(row.original.errorDateTime))
             ? format(new Date(row.original.errorDateTime), "yyyy-MM-dd HH:mm")
-            : "-"
+            : "-",
       },
       {
         accessorKey: "closedDateTime",
@@ -93,21 +93,21 @@ const RuleFailureTelemetryList = () => {
           row.original.closedDateTime &&
           isValid(new Date(row.original.closedDateTime))
             ? format(new Date(row.original.closedDateTime), "yyyy-MM-dd HH:mm")
-            : "-"
+            : "-",
       },
       {
         accessorKey: "individualUuid",
         header: "Individual UUID",
         enableSorting: true,
         size: 150, // Reduced column width
-        Cell: ({ row }) => row.original.individualUuid || "-"
+        Cell: ({ row }) => row.original.individualUuid || "-",
       },
       {
         accessorKey: "ruleUuid",
         header: "Rule UUID",
         enableSorting: true,
         size: 150, // Reduced column width
-        Cell: ({ row }) => row.original.ruleUuid || "-"
+        Cell: ({ row }) => row.original.ruleUuid || "-",
       },
       {
         accessorKey: "sourceId",
@@ -121,7 +121,7 @@ const RuleFailureTelemetryList = () => {
               {row.original.sourceType ? ` (${row.original.sourceType})` : ""}
             </b>
           </>
-        )
+        ),
       },
       {
         accessorKey: "entityId",
@@ -135,26 +135,26 @@ const RuleFailureTelemetryList = () => {
               {row.original.entityType ? ` (${row.original.entityType})` : ""}
             </b>
           </>
-        )
+        ),
       },
       {
         accessorKey: "appType",
         header: "App",
         enableSorting: true,
         size: 100, // Reduced column width
-        Cell: ({ row }) => row.original.appType || "-"
-      }
+        Cell: ({ row }) => row.original.appType || "-",
+      },
     ],
-    [selectedRows, toggleRowSelection]
+    [selectedRows, toggleRowSelection],
   );
 
   const fetchData = useCallback(
     ({ page, pageSize, orderBy, orderDirection }) =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         const resourceUrl = "/web/ruleFailureTelemetry";
         const queryParams = {
           size: pageSize,
-          page
+          page,
         };
         if (selectedStatus === STATUS.CLOSED) {
           queryParams.isClosed = true;
@@ -166,7 +166,7 @@ const RuleFailureTelemetryList = () => {
         }
         http
           .get(resourceUrl, { params: queryParams })
-          .then(response => {
+          .then((response) => {
             const result = response.data;
             const items = (
               result.content ||
@@ -174,9 +174,9 @@ const RuleFailureTelemetryList = () => {
               result.ruleFailureTelemetries ||
               result.data ||
               (Array.isArray(result) ? result : [])
-            ).map(item => ({
+            ).map((item) => ({
               ...item,
-              closed: item.isClosed ?? item.closed ?? false
+              closed: item.isClosed ?? item.closed ?? false,
             }));
             const totalCount =
               result.page?.totalElements ??
@@ -185,18 +185,18 @@ const RuleFailureTelemetryList = () => {
               items.length;
             resolve({
               data: items,
-              totalCount
+              totalCount,
             });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Failed to fetch rule failures:", error);
             resolve({
               data: [],
-              totalCount: 0
+              totalCount: 0,
             });
           });
       }),
-    [selectedStatus]
+    [selectedStatus],
   );
 
   const actions = useMemo(
@@ -220,7 +220,7 @@ const RuleFailureTelemetryList = () => {
                   "Final selected:",
                   selected,
                   "Table:",
-                  table
+                  table,
                 );
                 if (!Array.isArray(selected) || selected.length === 0) {
                   alert("Please select at least one error to close.");
@@ -229,10 +229,10 @@ const RuleFailureTelemetryList = () => {
                 const request = {
                   params: {
                     ids: selected
-                      .map(row => row.original?.id || row.id)
+                      .map((row) => row.original?.id || row.id)
                       .join(","),
-                    isClosed: true
-                  }
+                    isClosed: true,
+                  },
                 };
                 http
                   .put("/web/ruleFailureTelemetry", null, request)
@@ -242,11 +242,11 @@ const RuleFailureTelemetryList = () => {
                       setSelectedRows([]);
                     }
                   })
-                  .catch(error => {
+                  .catch((error) => {
                     console.error("Failed to close selected errors:", error);
                     alert("Failed to close selected errors. Please try again.");
                   });
-              }
+              },
             },
             {
               icon: MenuOpen,
@@ -265,7 +265,7 @@ const RuleFailureTelemetryList = () => {
                   "Final selected:",
                   selected,
                   "Table:",
-                  table
+                  table,
                 );
                 if (!Array.isArray(selected) || selected.length === 0) {
                   alert("Please select at least one error to reopen.");
@@ -274,10 +274,10 @@ const RuleFailureTelemetryList = () => {
                 const request = {
                   params: {
                     ids: selected
-                      .map(row => row.original?.id || row.id)
+                      .map((row) => row.original?.id || row.id)
                       .join(","),
-                    isClosed: false
-                  }
+                    isClosed: false,
+                  },
                 };
                 http
                   .put("/web/ruleFailureTelemetry", null, request)
@@ -287,17 +287,17 @@ const RuleFailureTelemetryList = () => {
                       setSelectedRows([]);
                     }
                   })
-                  .catch(error => {
+                  .catch((error) => {
                     console.error("Failed to reopen selected errors:", error);
                     alert(
-                      "Failed to reopen selected errors. Please try again."
+                      "Failed to reopen selected errors. Please try again.",
                     );
                   });
-              }
-            }
+              },
+            },
           ]
         : [],
-    [selectedStatus, userInfo, selectedRows]
+    [selectedStatus, userInfo, selectedRows],
   );
 
   return (
@@ -307,11 +307,14 @@ const RuleFailureTelemetryList = () => {
         p: 3,
         bgcolor: "background.paper",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
       }}
     >
       <Title title="Rule Failures" />
-      <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
+      <Grid
+        container
+        sx={{ justifyContent: "flex-end", mb: 2, paddingRight: "80px" }}
+      >
         <Grid>
           <ButtonGroup color="primary">
             <Button
@@ -339,7 +342,32 @@ const RuleFailureTelemetryList = () => {
           </ButtonGroup>
         </Grid>
       </Grid>
-      <Box sx={{ overflowX: "auto", maxWidth: "100%" }}>
+      <Box
+        sx={{
+          overflowX: "auto",
+          maxWidth: "95%",
+          "& .MuiTableContainer-root": {
+            maxHeight: "70vh",
+            overflowY: "auto",
+          },
+          "& .MuiTable-root": {
+            minWidth: 800,
+            tableLayout: "fixed",
+          },
+          "& .MuiTableCell-root": {
+            padding: "8px 12px",
+            fontSize: "0.875rem",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          },
+          "& .MuiTableHead-root .MuiTableCell-root": {
+            fontWeight: 600,
+            backgroundColor: "#f5f5f5",
+            borderBottom: "2px solid #e0e0e0",
+          },
+        }}
+      >
         <AvniMaterialTable
           title=""
           ref={tableRef}
@@ -354,23 +382,43 @@ const RuleFailureTelemetryList = () => {
             debounceInterval: 500,
             search: false,
             rowStyle: ({ original }) => ({
-              backgroundColor: original?.closed ?? false ? "#DBDBDB" : "#fff"
+              backgroundColor: (original?.closed ?? false) ? "#f5f5f5" : "#fff",
             }),
-            maxBodyWidth: 1200
+            density: "compact",
+            columnResizing: true,
+            enableColumnResizing: true,
           }}
           renderDetailPanel={({ row }) => (
             <Box
               sx={{
-                p: 2
+                p: 2,
+                backgroundColor: "#f9f9f9",
+                borderTop: "1px solid #e0e0e0",
+                maxWidth: "100%",
               }}
             >
-              <div>{row.original.stacktrace || "-"}</div>
+              <Box
+                sx={{
+                  fontFamily: "monospace",
+                  fontSize: "0.8rem",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  maxHeight: "200px",
+                  overflowY: "auto",
+                  backgroundColor: "white",
+                  p: 1,
+                  border: "1px solid #e0e0e0",
+                  borderRadius: 1,
+                }}
+              >
+                {row.original.stacktrace || "No stacktrace available"}
+              </Box>
             </Box>
           )}
           onRowClick={(event, row, togglePanel) => togglePanel()}
           actions={actions}
           route="/appdesigner/ruleFailures"
-          onRowSelectionChange={selectedRowIds => {
+          onRowSelectionChange={(selectedRowIds) => {
             console.log("Native selection changed:", selectedRowIds);
           }}
         />

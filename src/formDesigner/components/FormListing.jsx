@@ -1,16 +1,16 @@
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FormTypeEntities } from "../common/constants";
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
+  DialogTitle,
+  Grid,
   IconButton,
-  Grid
 } from "@mui/material";
-import { Close, Edit, LibraryAdd, Settings, Delete } from "@mui/icons-material";
+import { Close, Delete, Edit, LibraryAdd, Settings } from "@mui/icons-material";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import NewFormModal from "../components/NewFormModal";
 import { format, isValid } from "date-fns";
@@ -25,7 +25,7 @@ function isActionDisabled(rowData, userInfo) {
 
 const FormListing = ({ onNewFormClick }) => {
   const navigate = useNavigate();
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
   const [uuid, setUUID] = useState(0);
   const tableRef = useRef(null);
@@ -44,7 +44,7 @@ const FormListing = ({ onNewFormClick }) => {
       {
         accessorKey: "name",
         header: "Name",
-        enableSorting: true
+        enableSorting: true,
       },
       {
         accessorKey: "formType",
@@ -52,25 +52,25 @@ const FormListing = ({ onNewFormClick }) => {
         Cell: ({ row }) => {
           const display = FormTypeEntities[row.original.formType]?.display;
           return typeof display === "string" ? display : "-";
-        }
+        },
       },
       {
         accessorKey: "subjectName",
         header: "Subject Name",
         Cell: ({ row }) =>
-          row.original.subjectName ? row.original.subjectName : "-"
+          row.original.subjectName ? row.original.subjectName : "-",
       },
       {
         accessorKey: "programName",
         header: "Program Name",
         Cell: ({ row }) =>
-          row.original.programName ? row.original.programName : "-"
+          row.original.programName ? row.original.programName : "-",
       },
       {
         accessorKey: "taskTypeName",
         header: "Task Type",
         Cell: ({ row }) =>
-          row.original.taskTypeName ? row.original.taskTypeName : "-"
+          row.original.taskTypeName ? row.original.taskTypeName : "-",
       },
       {
         accessorKey: "lastModifiedDateTime",
@@ -81,58 +81,58 @@ const FormListing = ({ onNewFormClick }) => {
           isValid(new Date(row.original.lastModifiedDateTime))
             ? format(
                 new Date(row.original.lastModifiedDateTime),
-                "d/M/yyyy h:mm a"
+                "d/M/yyyy h:mm a",
               )
-            : "-"
-      }
+            : "-",
+      },
     ],
-    []
+    [],
   );
 
   const fetchData = useCallback(
     ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         const validSortFields = ["name", "lastModifiedDateTime"];
 
         const defaultOrderBy = orderBy || "lastModifiedDateTime";
         const defaultOrderDirection = orderBy ? orderDirection : "desc";
 
         let apiUrl = `/web/forms?size=${encodeURIComponent(
-          pageSize
+          pageSize,
         )}&page=${encodeURIComponent(page)}`;
 
         if (globalFilter) apiUrl += `&name=${encodeURIComponent(globalFilter)}`;
 
         if (validSortFields.includes(defaultOrderBy)) {
           apiUrl += `&sort=${encodeURIComponent(
-            defaultOrderBy
+            defaultOrderBy,
           )},${encodeURIComponent(defaultOrderDirection)}`;
         }
 
         http
           .get(apiUrl)
-          .then(response => response.data)
-          .then(result => {
+          .then((response) => response.data)
+          .then((result) => {
             const forms = (result._embedded?.basicFormDetailses || []).map(
-              form => ({
+              (form) => ({
                 ...form,
-                voided: form.voided ?? form.isVoided ?? false
-              })
+                voided: form.voided ?? form.isVoided ?? false,
+              }),
             );
             resolve({
               data: forms,
-              totalCount: result.page?.totalElements || 0
+              totalCount: result.page?.totalElements || 0,
             });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Failed to fetch forms:", error);
             resolve({
               data: [],
-              totalCount: 0
+              totalCount: 0,
             });
           });
       }),
-    []
+    [],
   );
 
   const actions = useMemo(
@@ -142,24 +142,25 @@ const FormListing = ({ onNewFormClick }) => {
         tooltip: "Edit Form",
         onClick: (event, row) =>
           navigate(`/appdesigner/forms/${row.original.uuid}`),
-        disabled: row => isActionDisabled(row.original, userInfo)
+        disabled: (row) => isActionDisabled(row.original, userInfo),
       },
       {
         icon: LibraryAdd,
         tooltip: "Clone Form",
         onClick: (event, row) => onSetUuidAndIndicator(true, row.original.uuid),
-        disabled: row => isActionDisabled(row.original, userInfo)
+        disabled: (row) => isActionDisabled(row.original, userInfo),
       },
       {
         icon: Settings,
         tooltip: "Form Setting",
         onClick: (event, row) =>
           navigate(`/appdesigner/forms/${row.original.uuid}/settings`),
-        disabled: row => isActionDisabled(row.original, userInfo)
+        disabled: (row) => isActionDisabled(row.original, userInfo),
       },
       {
         icon: Delete,
-        tooltip: row => (row.original?.voided ? "Unvoid Form" : "Delete Form"),
+        tooltip: (row) =>
+          row.original?.voided ? "Unvoid Form" : "Delete Form",
         onClick: (event, row) => {
           const voidedMessage = row.original?.voided
             ? `Do you want to unvoid the form ${row.original.name}?`
@@ -167,21 +168,21 @@ const FormListing = ({ onNewFormClick }) => {
           if (window.confirm(voidedMessage)) {
             http
               .delete(`/web/forms/${row.original.uuid}`)
-              .then(response => {
+              .then((response) => {
                 if (response.status === 200 && tableRef.current) {
                   tableRef.current.refresh();
                 }
               })
-              .catch(error => {
+              .catch((error) => {
                 console.error("Failed to delete/unvoid form:", error);
                 alert("Failed to delete/unvoid form. Please try again.");
               });
           }
         },
-        disabled: row => isActionDisabled(row.original, userInfo)
-      }
+        disabled: (row) => isActionDisabled(row.original, userInfo),
+      },
     ],
-    [navigate, userInfo, onSetUuidAndIndicator]
+    [navigate, userInfo, onSetUuidAndIndicator],
   );
 
   const showCloneForm = useCallback(() => {
@@ -233,14 +234,13 @@ const FormListing = ({ onNewFormClick }) => {
           debounceInterval: 500,
           search: true,
           rowStyle: ({ original }) => ({
-            backgroundColor: original?.voided ?? false ? "#DBDBDB" : "#fff"
+            backgroundColor: (original?.voided ?? false) ? "#DBDBDB" : "#fff",
           }),
-          maxWidth: "100%"
         }}
         route="/appdesigner/forms"
         actions={actions}
         initialState={{
-          sorting: [{ id: "lastModifiedDateTime", desc: true }]
+          sorting: [{ id: "lastModifiedDateTime", desc: true }],
         }}
       />
       {cloneFormIndicator && showCloneForm()}
