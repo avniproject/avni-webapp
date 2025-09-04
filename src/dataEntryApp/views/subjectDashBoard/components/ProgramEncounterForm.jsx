@@ -9,46 +9,46 @@ import {
   onNext,
   onPrevious,
   addNewQuestionGroup,
-  removeQuestionGroup
+  removeQuestionGroup,
 } from "dataEntryApp/reducers/programEncounterReducer";
 
-const ProgramEncounterForm = () => {
+const ProgramEncounterForm = ({ children }) => {
   const dispatch = useDispatch();
 
   const form = useSelector(
-    state => state.dataEntry.programEncounterReducer.programEncounterForm
+    (state) => state.dataEntry.programEncounterReducer.programEncounterForm,
   );
   const subject = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
   const observations = useSelector(
-    state =>
-      state.dataEntry.programEncounterReducer.programEncounter.observations
+    (state) =>
+      state.dataEntry.programEncounterReducer.programEncounter.observations,
   );
   const obsHolder = useSelector(
-    state =>
+    (state) =>
       new ObservationsHolder(
-        state.dataEntry.programEncounterReducer.programEncounter.observations
-      )
+        state.dataEntry.programEncounterReducer.programEncounter.observations,
+      ),
   );
   const saved = useSelector(
-    state => state.dataEntry.programEncounterReducer.saved
+    (state) => state.dataEntry.programEncounterReducer.saved,
   );
   const onSaveGoto = useSelector(
-    state =>
-      "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid
+    (state) =>
+      "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   );
   const validationResults = useSelector(
-    state => state.dataEntry.programEncounterReducer.validationResults
+    (state) => state.dataEntry.programEncounterReducer.validationResults,
   );
-  const message = useSelector(state =>
+  const message = useSelector((state) =>
     state.dataEntry.programEncounterReducer.programEncounter.name
       ? `${
           state.dataEntry.programEncounterReducer.programEncounter.name
         } Encounter Saved`
-      : `Encounter Saved`
+      : `Encounter Saved`,
   );
-  const additionalRows = useSelector(state => [
+  const additionalRows = useSelector((state) => [
     {
       label: "visitDate",
       value:
@@ -56,38 +56,39 @@ const ProgramEncounterForm = () => {
           .encounterDateTime &&
         isValid(
           new Date(
-            state.dataEntry.programEncounterReducer.programEncounter.encounterDateTime
-          )
+            state.dataEntry.programEncounterReducer.programEncounter.encounterDateTime,
+          ),
         )
           ? format(
               new Date(
-                state.dataEntry.programEncounterReducer.programEncounter.encounterDateTime
+                state.dataEntry.programEncounterReducer.programEncounter.encounterDateTime,
               ),
-              "dd-MMM-yyyy"
+              "dd-MMM-yyyy",
             )
-          : "-"
-    }
+          : "-",
+    },
   ]);
   const filteredFormElements = useSelector(
-    state => state.dataEntry.programEncounterReducer.filteredFormElements
+    (state) => state.dataEntry.programEncounterReducer.filteredFormElements,
   );
   const entity = useSelector(
-    state => state.dataEntry.programEncounterReducer.programEncounter
+    (state) => state.dataEntry.programEncounterReducer.programEncounter,
   );
   const formElementGroup = useSelector(
-    state => state.dataEntry.programEncounterReducer.formElementGroup
+    (state) => state.dataEntry.programEncounterReducer.formElementGroup,
   );
   const onSummaryPage = useSelector(
-    state => state.dataEntry.programEncounterReducer.onSummaryPage
+    (state) => state.dataEntry.programEncounterReducer.onSummaryPage,
   );
   const wizard = useSelector(
-    state => state.dataEntry.programEncounterReducer.wizard
+    (state) => state.dataEntry.programEncounterReducer.wizard,
   );
   const saveErrorMessageKey = useSelector(
-    state => state.dataEntry.programEncounterReducer.encounterSaveErrorKey
+    (state) => state.dataEntry.programEncounterReducer.encounterSaveErrorKey,
   );
 
   const formProps = {
+    children,
     form,
     subject,
     observations,
@@ -109,10 +110,10 @@ const ProgramEncounterForm = () => {
     removeQuestionGroup: (formElement, questionGroupIndex) =>
       dispatch(removeQuestionGroup(formElement, questionGroupIndex)),
     onSave: () => dispatch(saveProgramEncounter(false)),
-    setValidationResults: validationResults =>
+    setValidationResults: (validationResults) =>
       dispatch(setValidationResults(validationResults)),
     onNext: () => dispatch(onNext(false)),
-    onPrevious: () => dispatch(onPrevious(false))
+    onPrevious: () => dispatch(onPrevious(false)),
   };
 
   return <FormWizard {...formProps} />;
