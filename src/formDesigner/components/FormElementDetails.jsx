@@ -934,12 +934,14 @@ const FormElementDetails = ({
                     control={
                       <Checkbox
                         id="editable"
-                        checked={formElementData.keyValues.editable ?? false}
+                        checked={
+                          formElementData.keyValues.editable !== undefined
+                        }
                         onChange={(event) =>
                           rest.handleGroupElementKeyValueChange(
                             groupIndex,
                             "editable",
-                            event.target.checked,
+                            event.target.checked ? "undefined" : true,
                             index,
                           )
                         }
