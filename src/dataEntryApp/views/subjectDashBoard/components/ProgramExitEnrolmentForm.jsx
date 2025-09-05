@@ -7,22 +7,24 @@ import {
   setValidationResults,
   selectProgramEnrolmentState,
   onNext,
-  onPrevious
+  onPrevious,
 } from "dataEntryApp/reducers/programEnrolReducer";
 
-const ProgramExitEnrolmentForm = () => {
+const ProgramExitEnrolmentForm = ({ children, fetchRulesResponse }) => {
   const dispatch = useDispatch();
   const enrolmentState = useSelector(selectProgramEnrolmentState);
   const subjectProfile = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
 
   const formProps = {
+    children,
+    fetchRulesResponse,
     form: enrolmentState.enrolForm,
     subject: subjectProfile,
     observations: enrolmentState.programEnrolment.programExitObservations,
     obsHolder: new ObservationsHolder(
-      enrolmentState.programEnrolment.programExitObservations
+      enrolmentState.programEnrolment.programExitObservations,
     ),
     title: `New Enrolment`,
     saved: enrolmentState.saved,
@@ -36,9 +38,9 @@ const ProgramExitEnrolmentForm = () => {
     saveErrorMessageKey: enrolmentState.enrolmentSaveErrorKey,
     updateObs: (formElement, value) => dispatch(updateObs(formElement, value)),
     onSave: () => dispatch(saveProgramEnrolment(true)),
-    setValidationResults: results => dispatch(setValidationResults(results)),
+    setValidationResults: (results) => dispatch(setValidationResults(results)),
     onNext: () => dispatch(onNext(true)),
-    onPrevious: () => dispatch(onPrevious(true))
+    onPrevious: () => dispatch(onPrevious(true)),
   };
 
   return <FormWizard {...formProps} />;

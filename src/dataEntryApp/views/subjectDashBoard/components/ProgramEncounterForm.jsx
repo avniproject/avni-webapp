@@ -12,7 +12,7 @@ import {
   removeQuestionGroup,
 } from "dataEntryApp/reducers/programEncounterReducer";
 
-const ProgramEncounterForm = ({ children }) => {
+const ProgramEncounterForm = ({ children, fetchRulesResponse }) => {
   const dispatch = useDispatch();
 
   const form = useSelector(
@@ -89,6 +89,7 @@ const ProgramEncounterForm = ({ children }) => {
 
   const formProps = {
     children,
+    fetchRulesResponse,
     form,
     subject,
     observations,

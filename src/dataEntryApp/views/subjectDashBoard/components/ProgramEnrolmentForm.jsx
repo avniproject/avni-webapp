@@ -12,7 +12,7 @@ import {
   removeQuestionGroup,
 } from "dataEntryApp/reducers/programEnrolReducer";
 
-const ProgramEnrolmentForm = ({ children }) => {
+const ProgramEnrolmentForm = ({ children, fetchRulesResponse }) => {
   const dispatch = useDispatch();
 
   const enrolmentState = useSelector(selectProgramEnrolmentState);
@@ -22,6 +22,7 @@ const ProgramEnrolmentForm = ({ children }) => {
 
   const formProps = {
     children,
+    fetchRulesResponse,
     form: enrolmentState.enrolForm,
     subject: subjectProfile,
     observations: enrolmentState.programEnrolment.observations,

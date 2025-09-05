@@ -7,60 +7,64 @@ import {
   saveEncounter,
   setValidationResults,
   onNext,
-  onPrevious
+  onPrevious,
 } from "dataEntryApp/reducers/encounterReducer";
 
-const CancelEncounterForm = () => {
+const CancelEncounterForm = ({ children, fetchRulesResponse }) => {
   const dispatch = useDispatch();
 
   const encounter = useSelector(
-    state => state.dataEntry.encounterReducer.encounter
+    (state) => state.dataEntry.encounterReducer.encounter,
   );
   const form = useSelector(
-    state => state.dataEntry.encounterReducer.encounterForm
+    (state) => state.dataEntry.encounterReducer.encounterForm,
   );
   const subject = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
   const observations = useSelector(
-    state => state.dataEntry.encounterReducer.encounter.cancelObservations
+    (state) => state.dataEntry.encounterReducer.encounter.cancelObservations,
   );
   const obsHolder = new ObservationsHolder(observations);
-  const saved = useSelector(state => state.dataEntry.encounterReducer.saved);
+  const saved = useSelector((state) => state.dataEntry.encounterReducer.saved);
   const onSaveGoto = "/app/subject?uuid=" + subject.uuid;
   const validationResults = useSelector(
-    state => state.dataEntry.encounterReducer.validationResults
+    (state) => state.dataEntry.encounterReducer.validationResults,
   );
   const message = encounter.name
     ? `${encounter.name} Encounter Canceled`
     : encounter.encounterType.name
-    ? `${encounter.encounterType.name} Encounter Canceled`
-    : `Encounter Canceled`;
+      ? `${encounter.encounterType.name} Encounter Canceled`
+      : `Encounter Canceled`;
   const additionalRows = [
     {
       label: "Cancel Date",
       value:
         encounter.cancelDateTime && isValid(new Date(encounter.cancelDateTime))
           ? format(new Date(encounter.cancelDateTime), "dd-MMM-yyyy")
-          : "-"
-    }
+          : "-",
+    },
   ];
   const filteredFormElements = useSelector(
-    state => state.dataEntry.encounterReducer.filteredFormElements
+    (state) => state.dataEntry.encounterReducer.filteredFormElements,
   );
   const entity = encounter;
   const formElementGroup = useSelector(
-    state => state.dataEntry.encounterReducer.formElementGroup
+    (state) => state.dataEntry.encounterReducer.formElementGroup,
   );
   const onSummaryPage = useSelector(
-    state => state.dataEntry.encounterReducer.onSummaryPage
+    (state) => state.dataEntry.encounterReducer.onSummaryPage,
   );
-  const wizard = useSelector(state => state.dataEntry.encounterReducer.wizard);
+  const wizard = useSelector(
+    (state) => state.dataEntry.encounterReducer.wizard,
+  );
   const saveErrorMessageKey = useSelector(
-    state => state.dataEntry.encounterReducer.encounterSaveErrorKey
+    (state) => state.dataEntry.encounterReducer.encounterSaveErrorKey,
   );
 
   const formProps = {
+    children,
+    fetchRulesResponse,
     form,
     subject,
     observations,
@@ -79,10 +83,10 @@ const CancelEncounterForm = () => {
     updateObs: (formElement, value) =>
       dispatch(updateCancelObs(formElement, value)),
     onSave: () => dispatch(saveEncounter(true)),
-    setValidationResults: validationResults =>
+    setValidationResults: (validationResults) =>
       dispatch(setValidationResults(validationResults)),
     onNext: () => dispatch(onNext(true)),
-    onPrevious: () => dispatch(onPrevious(true))
+    onPrevious: () => dispatch(onPrevious(true)),
   };
 
   return <FormWizard {...formProps} />;

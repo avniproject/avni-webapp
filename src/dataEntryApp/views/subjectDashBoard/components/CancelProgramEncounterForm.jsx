@@ -7,22 +7,24 @@ import {
   saveProgramEncounter,
   setValidationResults,
   onNext,
-  onPrevious
+  onPrevious,
 } from "dataEntryApp/reducers/programEncounterReducer";
 
-const CancelProgramEncounterForm = () => {
+const CancelProgramEncounterForm = ({ children, fetchRulesResponse }) => {
   const dispatch = useDispatch();
 
-  const formState = useSelector(state => {
+  const formState = useSelector((state) => {
     const programEncounterState = state.dataEntry.programEncounterReducer;
     const subjectProfile = state.dataEntry.subjectProfile.subjectProfile;
 
     return {
+      children,
+      fetchRulesResponse,
       form: programEncounterState.programEncounterForm,
       subject: subjectProfile,
       observations: programEncounterState.programEncounter.cancelObservations,
       obsHolder: new ObservationsHolder(
-        programEncounterState.programEncounter.cancelObservations
+        programEncounterState.programEncounter.cancelObservations,
       ),
       saved: programEncounterState.saved,
       onSaveGoto: "/app/subject?uuid=" + subjectProfile.uuid,
@@ -36,37 +38,37 @@ const CancelProgramEncounterForm = () => {
           value:
             programEncounterState.programEncounter.cancelDateTime &&
             isValid(
-              new Date(programEncounterState.programEncounter.cancelDateTime)
+              new Date(programEncounterState.programEncounter.cancelDateTime),
             )
               ? format(
                   new Date(
-                    programEncounterState.programEncounter.cancelDateTime
+                    programEncounterState.programEncounter.cancelDateTime,
                   ),
-                  "dd-MMM-yyyy"
+                  "dd-MMM-yyyy",
                 )
-              : "-"
-        }
+              : "-",
+        },
       ],
       filteredFormElements: programEncounterState.filteredFormElements,
       entity: programEncounterState.programEncounter,
       formElementGroup: programEncounterState.formElementGroup,
       onSummaryPage: programEncounterState.onSummaryPage,
       wizard: programEncounterState.wizard,
-      saveErrorMessageKey: programEncounterState.encounterSaveErrorKey
+      saveErrorMessageKey: programEncounterState.encounterSaveErrorKey,
     };
   });
 
   const formActions = {
-    updateObs: obs => dispatch(updateCancelObs(obs)),
+    updateObs: (obs) => dispatch(updateCancelObs(obs)),
     onSave: () => dispatch(saveProgramEncounter(true)),
-    setValidationResults: results => dispatch(setValidationResults(results)),
+    setValidationResults: (results) => dispatch(setValidationResults(results)),
     onNext: () => dispatch(onNext(true)),
-    onPrevious: () => dispatch(onPrevious(true))
+    onPrevious: () => dispatch(onPrevious(true)),
   };
 
   const formWizardProps = {
     ...formState,
-    ...formActions
+    ...formActions,
   };
 
   return <FormWizard {...formWizardProps} />;
