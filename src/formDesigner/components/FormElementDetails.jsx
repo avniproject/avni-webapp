@@ -567,6 +567,7 @@ const FormElementDetails = ({
                   )
                 }
                 required
+                sx={{ minWidth: "12.5rem" }}
               >
                 <MenuItem value="SingleSelect">SingleSelect</MenuItem>
                 <MenuItem value="MultiSelect">MultiSelect</MenuItem>
