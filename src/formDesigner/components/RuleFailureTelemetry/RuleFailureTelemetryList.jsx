@@ -1,17 +1,15 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import Box from "@mui/material/Box";
+import { useSelector } from "react-redux";
+import { Box, Grid, Button } from "@mui/material";
 import { Title } from "react-admin";
 import { httpClient as http } from "common/utils/httpClient";
 import { format, isValid } from "date-fns";
-import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
-import { useSelector } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { Close, MenuOpen } from "@mui/icons-material";
 import Checkbox from "@mui/material/Checkbox";
-import { Grid } from "@mui/material";
 
 const STATUS = {
   OPEN: 1,
@@ -21,6 +19,7 @@ const STATUS = {
 
 const RuleFailureTelemetryList = () => {
   const userInfo = useSelector((state) => state.app.userInfo);
+  const isChatOpen = useSelector((state) => state.app.isChatOpen);
   const [selectedStatus, setSelectedStatus] = useState(STATUS.OPEN);
   const [selectedRows, setSelectedRows] = useState([]);
   const tableRef = useRef(null);
@@ -308,6 +307,8 @@ const RuleFailureTelemetryList = () => {
         bgcolor: "background.paper",
         display: "flex",
         flexDirection: "column",
+        width: isChatOpen ? "calc(85%)" : "calc(100%)",
+        transition: "width 0.3s ease",
       }}
     >
       <Title title="Rule Failures" />

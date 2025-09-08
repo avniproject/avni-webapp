@@ -1,26 +1,26 @@
 import { useEffect, useState, useMemo } from "react";
-import { styled } from "@mui/material/styles";
+import { useDispatch, useSelector } from "react-redux";
 import _, { isEmpty } from "lodash";
+import { Button, Grid, Paper, Box, IconButton } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Title } from "react-admin";
+import { getOperationalModules } from "../reports/reducers";
 import { httpClient as http } from "common/utils/httpClient";
 import {
   MaterialReactTable,
-  useMaterialReactTable
+  useMaterialReactTable,
 } from "material-react-table";
-import { Title } from "react-admin";
 import { default as UUID } from "uuid";
-import { Box, Grid, Paper, Button, IconButton } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
-import { getOperationalModules } from "../reports/reducers";
-import { useLocation, useNavigate } from "react-router-dom";
 import commonApi from "../common/service";
 import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
 
-export const omitTableData = filters =>
-  _.map(filters, f =>
-    _.omit(f, ["tableData", "Scope", "Filter Type", "Subject"])
+export const omitTableData = (filters) =>
+  _.map(filters, (f) =>
+    _.omit(f, ["tableData", "Scope", "Filter Type", "Subject"]),
   );
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -28,18 +28,18 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   backgroundColor: theme.palette.background.paper,
   display: "flex",
-  flexDirection: "column"
+  flexDirection: "column",
 }));
 
 const StyledButtonContainer = styled(Box)(({ theme }) => ({
   display: "flex",
-  gap: theme.spacing(1)
+  gap: theme.spacing(1),
 }));
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(
     userInfo,
-    Privilege.PrivilegeType.EditOfflineDashboardAndReportCard
+    Privilege.PrivilegeType.EditOfflineDashboardAndReportCard,
   );
 }
 
@@ -48,9 +48,10 @@ const CustomFilters = ({ organisation, filename }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const operationalModules = useSelector(
-    state => state.reports.operationalModules
+    (state) => state.reports.operationalModules,
   );
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
+  const isChatOpen = useSelector((state) => state.app.isChatOpen);
 
   const typeOfFilter = location.pathname.endsWith("myDashboardFilters")
     ? "myDashboardFilters"
@@ -63,14 +64,14 @@ const CustomFilters = ({ organisation, filename }) => {
   const emptyOrgSettings = {
     uuid: UUID.v4(),
     settings: { languages: [], myDashboardFilters: [], searchFilters: [] },
-    worklistUpdationRule: ""
+    worklistUpdationRule: "",
   };
 
   const [settings, setSettings] = useState(emptyOrgSettings);
   const [worklistUpdationRule, setWorklistUpdationRule] = useState("");
   const [subjectTypes, setSubjectTypes] = useState(null);
 
-  const createOrgSettings = setting => {
+  const createOrgSettings = (setting) => {
     const { uuid, settings } = setting;
     const { languages, myDashboardFilters, searchFilters } = settings;
     return {
@@ -80,16 +81,16 @@ const CustomFilters = ({ organisation, filename }) => {
         myDashboardFilters: _.isNil(myDashboardFilters)
           ? []
           : myDashboardFilters,
-        searchFilters: _.isNil(searchFilters) ? [] : searchFilters
-      }
+        searchFilters: _.isNil(searchFilters) ? [] : searchFilters,
+      },
     };
   };
 
   useEffect(() => {
-    http.get("/organisationConfig").then(res => {
+    http.get("/organisationConfig").then((res) => {
       const settings = _.filter(
         res.data._embedded.organisationConfig,
-        config => config.organisationId === organisation.id
+        (config) => config.organisationId === organisation.id,
       );
       const orgSettings = isEmpty(settings)
         ? emptyOrgSettings
@@ -97,7 +98,7 @@ const CustomFilters = ({ organisation, filename }) => {
       setSettings(orgSettings);
       res.data._embedded.organisationConfig[0] &&
         setWorklistUpdationRule(
-          res.data._embedded.organisationConfig[0].worklistUpdationRule || ""
+          res.data._embedded.organisationConfig[0].worklistUpdationRule || "",
         );
     });
   }, [organisation.id]);
@@ -114,20 +115,20 @@ const CustomFilters = ({ organisation, filename }) => {
         accessorKey: "titleKey",
         header: "Task Assignment Filter Name",
         enableSorting: true,
-        enableColumnFilter: true
+        enableColumnFilter: true,
       },
       {
         accessorKey: "conceptName",
         header: "Concept Name",
         enableSorting: true,
-        enableColumnFilter: true
+        enableColumnFilter: true,
       },
       {
         id: "Subject",
         header: "Subject Type",
-        accessorFn: row => {
+        accessorFn: (row) => {
           const subject = _.head(
-            subjectTypes?.filter(s => s.uuid === row.subjectTypeUUID)
+            subjectTypes?.filter((s) => s.uuid === row.subjectTypeUUID),
           );
           return (subject && subject.name) || "";
         },
@@ -135,41 +136,43 @@ const CustomFilters = ({ organisation, filename }) => {
         enableColumnFilter: true,
         Cell: ({ row }) => {
           const subject = _.head(
-            subjectTypes?.filter(s => s.uuid === row.original.subjectTypeUUID)
+            subjectTypes?.filter(
+              (s) => s.uuid === row.original.subjectTypeUUID,
+            ),
           );
           return (subject && subject.name) || "";
-        }
+        },
       },
       {
         id: "Filter Type",
         header: "Filter Type",
-        accessorFn: row => _.startCase(row.type),
+        accessorFn: (row) => _.startCase(row.type),
         enableSorting: true,
         enableColumnFilter: true,
-        Cell: ({ row }) => _.startCase(row.original.type)
+        Cell: ({ row }) => _.startCase(row.original.type),
       },
       {
         id: "Widget",
         header: "Widget",
-        accessorFn: row => _.startCase(row.widget),
+        accessorFn: (row) => _.startCase(row.widget),
         enableSorting: true,
         enableColumnFilter: true,
-        Cell: ({ row }) => _.startCase(row.original.widget)
+        Cell: ({ row }) => _.startCase(row.original.widget),
       },
       {
         id: "Scope",
         header: "Scope",
-        accessorFn: row => _.startCase(row.scope),
+        accessorFn: (row) => _.startCase(row.scope),
         enableSorting: true,
         enableColumnFilter: true,
-        Cell: ({ row }) => _.startCase(row.original.scope)
-      }
+        Cell: ({ row }) => _.startCase(row.original.scope),
+      },
     ],
-    [subjectTypes]
+    [subjectTypes],
   );
 
   const editFilter = (filterType, title) => ({
-    onClick: row => {
+    onClick: (row) => {
       navigate("/appdesigner/filters", {
         state: {
           filterType,
@@ -178,41 +181,41 @@ const CustomFilters = ({ organisation, filename }) => {
           operationalModules,
           title,
           worklistUpdationRule,
-          filename
-        }
+          filename,
+        },
       });
-    }
+    },
   });
 
-  const deleteFilter = filterType => ({
-    onClick: row => {
+  const deleteFilter = (filterType) => ({
+    onClick: (row) => {
       if (window.confirm("Do you really want to delete the filter?")) {
         const filtersOfType = settings.settings[filterType];
         const updatedFilters = filtersOfType.filter(
-          filter => filter.titleKey !== row.original.titleKey
+          (filter) => filter.titleKey !== row.original.titleKey,
         );
         const updatedSettings = {
           ...settings,
           settings: {
             ...settings.settings,
-            [filterType]: updatedFilters
-          }
+            [filterType]: updatedFilters,
+          },
         };
         setSettings(updatedSettings);
 
         http
           .put("/organisationConfig", updatedSettings)
-          .then(response => {
+          .then((response) => {
             if (response.status === 200) {
               console.log("Filter deleted successfully");
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Failed to delete filter:", error);
             alert("Failed to delete filter. Please try again.");
           });
       }
-    }
+    },
   });
 
   const actions = useMemo(
@@ -222,13 +225,13 @@ const CustomFilters = ({ organisation, filename }) => {
             {
               icon: Edit,
               tooltip: `Edit ${_.startCase(typeOfFilter)}`,
-              ...editFilter(typeOfFilter, `Edit ${_.startCase(typeOfFilter)}`)
+              ...editFilter(typeOfFilter, `Edit ${_.startCase(typeOfFilter)}`),
             },
             {
               icon: Delete,
               tooltip: `Delete ${_.startCase(typeOfFilter)}`,
-              ...deleteFilter(typeOfFilter)
-            }
+              ...deleteFilter(typeOfFilter),
+            },
           ]
         : [],
     [
@@ -237,8 +240,8 @@ const CustomFilters = ({ organisation, filename }) => {
       settings,
       operationalModules,
       worklistUpdationRule,
-      filename
-    ]
+      filename,
+    ],
   );
 
   const table = useMaterialReactTable({
@@ -260,18 +263,23 @@ const CustomFilters = ({ organisation, filename }) => {
       </StyledButtonContainer>
     ),
     muiTableBodyRowProps: {
-      hover: true
+      hover: true,
     },
     muiTablePaperProps: {
       elevation: 0,
       sx: {
-        borderRadius: "0"
-      }
-    }
+        borderRadius: "0",
+      },
+    },
   });
 
   return (
-    <StyledPaper>
+    <StyledPaper
+      sx={{
+        width: isChatOpen ? "calc(85%)" : "calc(100%)",
+        transition: "width 0.3s ease",
+      }}
+    >
       <Title title={`${_.startCase(typeOfFilter)}`} />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {hasEditPrivilege(userInfo) && (
@@ -288,8 +296,8 @@ const CustomFilters = ({ organisation, filename }) => {
                     operationalModules,
                     title: `Add ${_.startCase(typeOfFilter)}`,
                     worklistUpdationRule,
-                    filename
-                  }
+                    filename,
+                  },
                 });
               }}
             >

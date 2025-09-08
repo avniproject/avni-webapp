@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useSelector } from "react-redux";
 import NewFormModal from "../components/NewFormModal";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -11,6 +12,7 @@ import { Title } from "react-admin";
 
 const Forms = (props) => {
   const [showNewFormDialog, setShowNewFormDialog] = useState(false);
+  const isChatOpen = useSelector((state) => state.app.isChatOpen);
   const openNewFormDialog = useCallback(() => setShowNewFormDialog(true), []);
   const closeNewFormDialog = useCallback(() => setShowNewFormDialog(false), []);
 
@@ -22,7 +24,8 @@ const Forms = (props) => {
         bgcolor: "background.paper",
         display: "flex",
         flexDirection: "column",
-        width: "calc(90%)",
+        width: isChatOpen ? "calc(80%)" : "calc(100%)",
+        transition: "width 0.3s ease",
       }}
     >
       <Title title="Forms" />
