@@ -9,7 +9,7 @@ import {
   FormControlLabel,
   Typography,
   Tooltip,
-  Stack
+  Stack,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import _, { concat, get, isEmpty, isNil } from "lodash";
@@ -17,7 +17,7 @@ import CloudDownload from "@mui/icons-material/CloudDownload";
 import FileUpload from "../common/components/FileUpload";
 import {
   staticTypesWithDynamicDownload,
-  staticTypesWithStaticDownload
+  staticTypesWithStaticDownload,
 } from "./Types";
 import api from "./api";
 import DropDown from "../common/components/DropDown";
@@ -33,22 +33,22 @@ import CompareMetadataService from "../adminApp/service/CompareMetadataService";
 import { httpClient } from "../common/utils/httpClient";
 import UploadStatus from "./UploadStatus";
 
-const StyledRootGrid = styled(Grid)(({ theme }) => ({
+const StyledRootGrid = styled(Grid)(({ theme, isChatOpen }) => ({
   container: true,
-  spacing: theme.spacing(2)
+  spacing: theme.spacing(2),
+  minWidth: "80%",
+  maxWidth: isChatOpen ? "80%" : "100%",
+  transition: "max-width 0.3s ease",
 }));
 
-const StyledMainGrid = styled(Grid)({
-  minWidth: 1200,
-  maxWidth: 1400
-});
+const StyledMainGrid = styled(Grid)({});
 
 const StyledUploadPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2)
+  padding: theme.spacing(2),
 }));
 
 const StyledStatusPaper = styled(Paper)(({ theme }) => ({
-  marginTop: theme.spacing(2)
+  marginTop: theme.spacing(2),
 }));
 
 const StyledReviewButton = styled(Button)(({ theme }) => ({
@@ -57,44 +57,44 @@ const StyledReviewButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#2196F3",
   color: "#fff",
   "&:hover": {
-    backgroundColor: theme.palette.primary.main
-  }
+    backgroundColor: theme.palette.primary.main,
+  },
 }));
 
 const StyledFormGrid = styled(Grid)(({ theme }) => ({
   container: true,
   spacing: theme.spacing(2),
   justifyContent: "center",
-  alignItems: "flex-start"
+  alignItems: "flex-start",
 }));
 
 const StyledFormStack = styled(Stack)(({ theme }) => ({
   spacing: theme.spacing(2),
   justifyContent: "center",
-  alignItems: "flex-start"
+  alignItems: "flex-start",
 }));
 
 const StyledFileName = styled("span")(({ theme }) => ({
-  marginLeft: theme.spacing(1)
+  marginLeft: theme.spacing(1),
 }));
 
 const StyledErrorTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
   display: "block",
-  marginBottom: theme.spacing(1)
+  marginBottom: theme.spacing(1),
 }));
 
 const UPLOAD_TYPES = {
-  LOCATIONS: "Locations"
+  LOCATIONS: "Locations",
 };
 
 const LOCATION_MODES = {
-  CREATE: "CREATE"
+  CREATE: "CREATE",
 };
 
 const ENCOUNTER_PREFIXES = {
   ENCOUNTER: "Encounter---",
-  PROGRAM_ENCOUNTER: "ProgramEncounter---"
+  PROGRAM_ENCOUNTER: "ProgramEncounter---",
 };
 
 class ReviewStatus {
@@ -110,8 +110,9 @@ const isMetadataDiffReviewEnabled = true;
 const UploadDashboard = () => {
   const dispatch = useDispatch();
   const uploadTypes =
-    useSelector(state => state.bulkUpload.uploadTypes) || new UploadTypes();
-  const userRoles = useSelector(state => state.app.authSession.roles);
+    useSelector((state) => state.bulkUpload.uploadTypes) || new UploadTypes();
+  const userRoles = useSelector((state) => state.app.authSession.roles);
+  const isChatOpen = useSelector((state) => state.app.isChatOpen);
 
   const [uploadType, setUploadType] = useState("");
   const [entityForDownload, setEntityForDownload] = useState("");
@@ -124,15 +125,15 @@ const UploadDashboard = () => {
   const [reviewStatus, setReviewStatus] = useState(null);
 
   const getUploadTypeCode = useCallback(
-    name =>
+    (name) =>
       staticTypesWithStaticDownload.getCode(name) ||
       staticTypesWithDynamicDownload.getCode(name) ||
       uploadTypes.getCode(name),
-    [uploadTypes]
+    [uploadTypes],
   );
 
   const isEncounterType = useCallback(
-    type => {
+    (type) => {
       const internalUploadType = getUploadTypeCode(type);
       return (
         internalUploadType &&
@@ -140,7 +141,7 @@ const UploadDashboard = () => {
           internalUploadType.startsWith(ENCOUNTER_PREFIXES.PROGRAM_ENCOUNTER))
       );
     },
-    [getUploadTypeCode]
+    [getUploadTypeCode],
   );
 
   const uploadAndDownloadOptions = useMemo(
@@ -148,9 +149,9 @@ const UploadDashboard = () => {
       concat(
         staticTypesWithStaticDownload.names,
         staticTypesWithDynamicDownload.names,
-        _.sortBy(uploadTypes.names, x => x.name)
+        _.sortBy(uploadTypes.names, (x) => x.name),
       ),
-    [uploadTypes.names]
+    [uploadTypes.names],
   );
 
   const handleFileSelect = useCallback((content, userFile) => {
@@ -158,20 +159,20 @@ const UploadDashboard = () => {
   }, []);
 
   const handleDropdownChange = useCallback(
-    option => {
+    (option) => {
       setAutoApprove(false);
       setLocationUploadMode(
-        option === UPLOAD_TYPES.LOCATIONS ? LOCATION_MODES.CREATE : ""
+        option === UPLOAD_TYPES.LOCATIONS ? LOCATION_MODES.CREATE : "",
       );
       setEncounterUploadMode(
-        isEncounterType(option) ? ENCOUNTER_MODES.SCHEDULE : ""
+        isEncounterType(option) ? ENCOUNTER_MODES.SCHEDULE : "",
       );
       setUploadType(option);
       if (option !== staticTypesWithStaticDownload.getName("metadataZip")) {
         setEntityForDownload(option);
       }
     },
-    [isEncounterType]
+    [isEncounterType],
   );
 
   const handleUploadFile = useCallback(async () => {
@@ -187,14 +188,14 @@ const UploadDashboard = () => {
         autoApprove,
         locationUploadModeValue,
         hierarchy || 0,
-        encounterUploadModeValue
+        encounterUploadModeValue,
       );
       if (!ok && error) {
         if (error === "Double extension file detected") {
           alert(
             `Please rename ${
               file.name
-            } to have a single extension and try again.`
+            } to have a single extension and try again.`,
           );
         } else {
           alert(`Upload failed: ${error}`);
@@ -220,10 +221,10 @@ const UploadDashboard = () => {
     hierarchy,
     getUploadTypeCode,
     dispatch,
-    encounterUploadMode
+    encounterUploadMode,
   ]);
 
-  const downloadStaticSample = useCallback(async code => {
+  const downloadStaticSample = useCallback(async (code) => {
     await api.downloadSample(code);
   }, []);
 
@@ -235,7 +236,7 @@ const UploadDashboard = () => {
     await api.downloadEncounterSample(code, mode);
   }, []);
 
-  const downloadDynamicSample = useCallback(async code => {
+  const downloadDynamicSample = useCallback(async (code) => {
     await api.downloadDynamicSample(code);
   }, []);
 
@@ -251,7 +252,7 @@ const UploadDashboard = () => {
           (locationUploadMode === LOCATION_MODES.CREATE && isEmpty(hierarchy))
         ) {
           alert(
-            "Please select a valid locationUploadMode and hierarchy for location sample."
+            "Please select a valid locationUploadMode and hierarchy for location sample.",
           );
           return;
         }
@@ -264,7 +265,7 @@ const UploadDashboard = () => {
         await downloadEncounterSample(code, encounterUploadMode);
       } else {
         const response = await httpClient.getData(
-          `/web/importSampleDownloadable?uploadType=${code}`
+          `/web/importSampleDownloadable?uploadType=${code}`,
         );
         if (response.success) await api.downloadDynamicSample(code);
         else alert(`Failed to download sample: ${response.message}`);
@@ -282,16 +283,16 @@ const UploadDashboard = () => {
     downloadStaticSample,
     downloadLocationSample,
     downloadEncounterSample,
-    downloadDynamicSample
+    downloadDynamicSample,
   ]);
 
-  const handleError = err => {
+  const handleError = (err) => {
     setReviewStatus(
       new ReviewStatus(
         false,
         null,
-        "An error occurred while comparing metadata."
-      )
+        "An error occurred while comparing metadata.",
+      ),
     );
     console.error("Review error:", err);
   };
@@ -321,13 +322,13 @@ const UploadDashboard = () => {
       locationUploadMode,
       hierarchy,
       isEncounterType,
-      encounterUploadMode
-    ]
+      encounterUploadMode,
+    ],
   );
 
   useEffect(() => {
     dispatch(getUploadTypes());
-    api.fetchLocationHierarchies().then(locHierarchies => {
+    api.fetchLocationHierarchies().then((locHierarchies) => {
       const firstHierarchy = get(locHierarchies, "[0].value", null);
       setHierarchy(firstHierarchy);
       setConfiguredHierarchies(locHierarchies);
@@ -346,7 +347,7 @@ const UploadDashboard = () => {
   }
 
   return (
-    <StyledRootGrid>
+    <StyledRootGrid isChatOpen={isChatOpen}>
       <Title title="Upload" />
       <StyledMainGrid size={12}>
         <StyledUploadPaper>
@@ -411,7 +412,9 @@ const UploadDashboard = () => {
                     control={
                       <Checkbox
                         checked={autoApprove}
-                        onChange={event => setAutoApprove(event.target.checked)}
+                        onChange={(event) =>
+                          setAutoApprove(event.target.checked)
+                        }
                         name="autoApprove"
                         color="primary"
                       />

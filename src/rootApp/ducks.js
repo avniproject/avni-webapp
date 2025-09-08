@@ -19,6 +19,7 @@ export const types = {
   SAVE_USER_INFO: "app/SAVE_USER_INFO",
   LOGOUT: "app/LOGOUT",
   INIT_GENERIC_CONFIG: "app/INIT_GENERIC_CONFIG",
+  SET_CHAT_OPEN: "app/SET_CHAT_OPEN",
 };
 
 export const getAdminOrgs = () => ({
@@ -75,6 +76,11 @@ export const initGenericConfig = (genericConfig) => ({
   payload: genericConfig,
 });
 
+export const setChatOpen = (isChatOpen) => ({
+  type: types.SET_CHAT_OPEN,
+  payload: isChatOpen,
+});
+
 const initialState = {
   idpDetails: undefined,
   authSession: new NoAuthSession(),
@@ -90,6 +96,7 @@ const initialState = {
     copilotEnabled: false,
     avniMcpServerUrl: "http://localhost:8023",
   },
+  isChatOpen: false,
 };
 
 // reducer
@@ -169,6 +176,12 @@ export default function (state = initialState, action) {
           copilotEnabled: action.payload.copilotEnabled,
           avniMcpServerUrl: action.payload.avniMcpServerUrl,
         },
+      };
+    }
+    case types.SET_CHAT_OPEN: {
+      return {
+        ...state,
+        isChatOpen: action.payload,
       };
     }
     default:
