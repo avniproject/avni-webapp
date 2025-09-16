@@ -59,6 +59,7 @@ const AppRoutes = () => {
         organisationName: userInfo.organisationName,
         organisationId: userInfo.organisationId,
       });
+      posthog.startSessionRecording();
     }
   }
   const handleOnIdle = () => {
