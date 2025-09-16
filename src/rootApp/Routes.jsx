@@ -46,13 +46,20 @@ const AppRoutes = () => {
 
   const posthog = usePostHog();
 
-  if (!_.isNil(userInfo.username) && !posthog._isIdentified()) {
-    posthog.identify(userInfo.username, {
-      organisationCategory: userInfo.organisationCategoryName,
-      isAdmin: userInfo.isAdmin,
-      organisationName: userInfo.organisationName,
-      organisationId: userInfo.organisationId,
-    });
+  if (
+    _.get(userInfo, "organisationCategoryName") !== "Trial" &&
+    !posthog.has_opted_out_capturing()
+  ) {
+    posthog.opt_out_capturing();
+  } else {
+    if (!_.isNil(userInfo.username) && !posthog._isIdentified()) {
+      posthog.identify(userInfo.username, {
+        organisationCategory: userInfo.organisationCategoryName,
+        isAdmin: userInfo.isAdmin,
+        organisationName: userInfo.organisationName,
+        organisationId: userInfo.organisationId,
+      });
+    }
   }
   const handleOnIdle = () => {
     console.log("User is idle, was last active at ", getLastActiveTime());

@@ -8,7 +8,7 @@ if (typeof window !== "undefined") {
     defaults: "2025-05-24",
     debug: import.meta.env.MODE === "development",
     capture_heatmaps: false,
-    disable_session_recording: true,
+    disable_session_recording: false,
     autocapture: {
       element_allowlist: ["a", "button", "form"],
     },
