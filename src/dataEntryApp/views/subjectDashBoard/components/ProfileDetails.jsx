@@ -13,7 +13,7 @@ import {
   InputLabel,
   NativeSelect,
   Fab,
-  Stack
+  Stack,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Modal from "./CommonModal";
@@ -34,34 +34,34 @@ const StyledTableView = styled("div")(({ theme }) => ({
   flexGrow: 1,
   alignItems: "center",
   justifyContent: "center",
-  marginBottom: theme.spacing(2.5)
+  marginBottom: theme.spacing(2.5),
 }));
 
 const StyledMainHeading = styled(Typography)({
   fontSize: "20px",
-  fontWeight: "500"
+  fontWeight: "500",
 });
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
   container: true,
   spacing: theme.spacing(1),
-  alignItems: "center"
+  alignItems: "center",
 }));
 
 const StyledProfileStack = styled(Stack)({
   container: true,
-  alignItems: "left"
+  alignItems: "left",
 });
 
 const StyledRightStack = styled(Stack)(({ theme }) => ({
   align: "right",
   display: "inline-block",
   width: "auto",
-  marginLeft: theme.spacing(10)
+  marginLeft: theme.spacing(10),
 }));
 
 const StyledTable = styled(Table)(({ theme }) => ({
-  marginTop: theme.spacing(1.25)
+  marginTop: theme.spacing(1.25),
 }));
 
 const StyledTableCell = styled(TableCell)({
@@ -69,7 +69,7 @@ const StyledTableCell = styled(TableCell)({
   fontSize: "12px",
   borderBottom: "none",
   padding: "0px 0px 0px 11px",
-  fontWeight: "500"
+  fontWeight: "500",
 });
 
 const StyledTableCellDetails = styled(TableCell)({
@@ -77,7 +77,7 @@ const StyledTableCellDetails = styled(TableCell)({
   padding: "0px 21px 0px 11px",
   fontWeight: "500",
   color: "#1010101",
-  fontSize: "14px"
+  fontSize: "14px",
 });
 
 const StyledEnrollButton = styled(Fab)({
@@ -85,7 +85,7 @@ const StyledEnrollButton = styled(Fab)({
   height: "38px",
   zIndex: 1,
   boxShadow: "none",
-  whiteSpace: "nowrap"
+  whiteSpace: "nowrap",
 });
 
 const StyledCommentButton = styled(Fab)(({ theme }) => ({
@@ -94,13 +94,13 @@ const StyledCommentButton = styled(Fab)(({ theme }) => ({
   height: "38px",
   zIndex: 1,
   boxShadow: "none",
-  whiteSpace: "nowrap"
+  whiteSpace: "nowrap",
 }));
 
 const StyledSaveButton = styled("button")({
   float: "left",
   backgroundColor: "#fc9153",
-  height: "30px"
+  height: "30px",
 });
 
 const StyledCancelButton = styled("button")({
@@ -108,7 +108,7 @@ const StyledCancelButton = styled("button")({
   backgroundColor: "#F8F9F9",
   color: "#fc9153",
   border: "1px solid #fc9153",
-  height: "30px"
+  height: "30px",
 });
 
 const StyledForm = styled("form")({
@@ -116,46 +116,46 @@ const StyledForm = styled("form")({
   flexDirection: "column",
   margin: "auto",
   minWidth: "450px",
-  minHeight: "170px"
+  minHeight: "170px",
 });
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   marginTop: theme.spacing(2),
   minWidth: 120,
-  width: "211px"
+  width: "211px",
 }));
 
 const StyledInputLabel = styled(InputLabel)(({ error }) => ({
-  color: error ? "red" : undefined
+  color: error ? "red" : undefined,
 }));
 
 const StyledNativeSelect = styled(NativeSelect)({
-  width: "211px"
+  width: "211px",
 });
 
 const StyledError = styled("div")({
   color: "red",
   padding: "3px",
-  fontSize: "12px"
+  fontSize: "12px",
 });
 
 const StyledProfilePicture = styled(SubjectProfilePicture)({
   margin: "0px",
   display: "inline-block",
-  width: "auto"
+  width: "auto",
 });
 
 const ProfileDetails = ({ profileDetails, subjectUuid }) => {
   const dispatch = useDispatch();
   const programs = useSelector(
-    state => state.dataEntry.programs?.programs || ""
+    (state) => state.dataEntry.programs?.programs || "",
   );
-  const load = useSelector(state => state.dataEntry.loadReducer.load);
+  const load = useSelector((state) => state.dataEntry.loadReducer.load);
   const tabsStatus = useSelector(
-    state => state.dataEntry.subjectProfile.tabsStatus
+    (state) => state.dataEntry.subjectProfile.tabsStatus,
   );
   const organisationConfigs = useSelector(
-    state => state.dataEntry.metadata.organisationConfigs
+    (state) => state.dataEntry.metadata.organisationConfigs,
   );
 
   const [selectedProgram, setSelectedProgram] = useState("");
@@ -165,12 +165,12 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
   const orgConfig = useSelector(selectOrganisationConfig);
   const enableComment = get(orgConfig, "settings.enableComments", false);
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setSelectedProgram(event.target.value);
     setError(!event.target.value);
   };
 
-  const handleError = isError => {
+  const handleError = (isError) => {
     setError(isError);
   };
 
@@ -204,7 +204,7 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
             onChange={handleChange}
             inputProps={{
               name: "selected_program",
-              id: "selected_program-native-helper"
+              id: "selected_program-native-helper",
             }}
             error={errorStatus}
           >
@@ -218,7 +218,7 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
               : ""}
           </StyledNativeSelect>
           {errorStatus && (
-            <StyledError>Please select program to enrol.</StyledError>
+            <StyledError>{t("Please select program to enrol.")}</StyledError>
           )}
         </StyledFormControl>
       </StyledForm>
@@ -260,7 +260,7 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
                 scopeType={extensionScopeTypes.subjectDashboard}
                 configExtensions={get(
                   organisationConfigs,
-                  "organisationConfig.extensions"
+                  "organisationConfig.extensions",
                 )}
               />
               <Grid>
@@ -286,7 +286,7 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
                       {
                         buttonType: "openButton",
                         label: t("enrolInProgram"),
-                        sx: StyledEnrollButton
+                        sx: StyledEnrollButton,
                       },
                       {
                         buttonType: "saveButton",
@@ -296,13 +296,13 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
                           profileDetails.subjectType.name
                         }`,
                         requiredField: selectedProgram,
-                        handleError: handleError
+                        handleError: handleError,
                       },
                       {
                         buttonType: "cancelButton",
                         label: t("Cancel"),
-                        sx: StyledCancelButton
-                      }
+                        sx: StyledCancelButton,
+                      },
                     ]}
                     title={t("Enrol in program")}
                     btnHandleClose={close}
@@ -357,7 +357,7 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
                       {profileDetails.dateOfBirth
                         ? AgeUtil.getDisplayAge(
                             profileDetails.dateOfBirth,
-                            i18n
+                            i18n,
                           )
                         : "-"}
                     </StyledTableCellDetails>
