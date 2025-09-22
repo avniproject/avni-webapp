@@ -13,7 +13,7 @@ import {
   setInitialState,
   setState as setProgramEnrolmentState,
   types as enrolmentTypes,
-  saveEnrolmentFailed
+  saveEnrolmentFailed,
 } from "../reducers/programEnrolReducer";
 import { assign, keys } from "lodash";
 import { mapProgramEnrolment } from "../../common/subjectModelMapper";
@@ -23,6 +23,8 @@ import { selectChecklists, selectDecisions, selectVisitSchedules } from "dataEnt
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
 import identifierAssignmentService from "dataEntryApp/services/IdentifierAssignmentService";
+import { setPrograms } from "../reducers/programReducer";
+import { selectSubjectProfile } from "./selectors";
 
 export function* enrolmentOnLoadWatcher() {
   yield takeLatest(enrolmentTypes.ON_LOAD, setupNewEnrolmentWorker);
@@ -82,7 +84,7 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName, formType, prog
     enrolForm,
     programEnrolment,
     false,
-    !isNewEnrolment
+    !isNewEnrolment,
   );
   yield put.resolve(
     onLoadSuccess(
@@ -93,8 +95,8 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName, formType, prog
       onSummaryPage,
       wizard,
       isFormEmpty,
-      identifierAssignments
-    )
+      identifierAssignments,
+    ),
   );
 }
 
@@ -115,7 +117,7 @@ export function* saveProgramEnrolmentWorker(params) {
     resource.identifierAssignmentUuids = identifierAssignmentService.getIdentifierAssignmentUuids(
       enrolmentForm,
       programEnrolment.observations,
-      identifierAssignments
+      identifierAssignments,
     );
 
     const response = yield call(api.saveProgramEnrolment, resource);
@@ -144,8 +146,12 @@ export function* undoExitProgramEnrolmentWorker({ programEnrolmentUuid }) {
 
   let resource = programEnrolment.toResource;
   const response = yield call(api.saveProgramEnrolment, resource);
-  if (response.success) yield put(saveProgramComplete());
-  else yield put(saveEnrolmentFailed(response.errorMessage));
+  if (response.success) {
+    yield put(saveProgramComplete());
+    const subject = yield select(selectSubjectProfile);
+    const programs = yield call(api.fetchPrograms, subject.uuid);
+    yield put(setPrograms(programs));
+  } else yield put(saveEnrolmentFailed(response.errorMessage));
 }
 
 export function* undoExitProgramEnrolmentWatcher() {
@@ -169,15 +175,15 @@ export function* updateExitEnrolmentObsWorker({ formElement, value, childFormEle
     programEnrolment,
     new ObservationsHolder(programEnrolment.programExitObservations),
     state.validationResults,
-    childFormElement
+    childFormElement,
   );
   yield put(
     setProgramEnrolmentState({
       ...state,
       filteredFormElements,
       programEnrolment,
-      validationResults
-    })
+      validationResults,
+    }),
   );
 }
 
@@ -191,15 +197,15 @@ export function* updateEnrolmentObsWorker({ formElement, value, childFormElement
     new ObservationsHolder(programEnrolment.observations),
     state.validationResults,
     childFormElement,
-    questionGroupIndex
+    questionGroupIndex,
   );
   yield put(
     setProgramEnrolmentState({
       ...state,
       programEnrolment,
       filteredFormElements,
-      validationResults
-    })
+      validationResults,
+    }),
   );
 }
 
@@ -215,8 +221,8 @@ export function* addNewQuestionGroupWorker({ formElement }) {
     setProgramEnrolmentState({
       ...state,
       programEnrolment,
-      filteredFormElements
-    })
+      filteredFormElements,
+    }),
   );
 }
 
@@ -232,15 +238,15 @@ export function* removeQuestionGroupWorker({ formElement, questionGroupIndex }) 
     formElement,
     programEnrolment.observations,
     state.validationResults,
-    questionGroupIndex
+    questionGroupIndex,
   );
   yield put(
     setProgramEnrolmentState({
       ...state,
       programEnrolment,
       filteredFormElements,
-      validationResults
-    })
+      validationResults,
+    }),
   );
 }
 
@@ -260,8 +266,8 @@ export function* enrolmentWizardWorker(getNextState, isNext, params) {
       setProgramEnrolmentState({
         ...state,
         onSummaryPage: isNext,
-        wizard: isNext ? new Wizard(1, 1, 2) : new Wizard(1)
-      })
+        wizard: isNext ? new Wizard(1, 1, 2) : new Wizard(1),
+      }),
     );
   } else {
     const obsToUpdate = params.isExit ? "programExitObservations" : "observations";
@@ -274,7 +280,7 @@ export function* enrolmentWizardWorker(getNextState, isNext, params) {
       onSummaryPage: state.onSummaryPage,
       wizard: state.wizard.clone(),
       entityValidations: params.isExit ? state.programEnrolment.validateExit() : state.programEnrolment.validateEnrolment(),
-      staticFormElementIds: state.wizard.isFirstPage() ? keys(ProgramEnrolment.validationKeys) : []
+      staticFormElementIds: state.wizard.isFirstPage() ? keys(ProgramEnrolment.validationKeys) : [],
     });
 
     const programEnrolment = state.programEnrolment.cloneForEdit();
@@ -286,7 +292,7 @@ export function* enrolmentWizardWorker(getNextState, isNext, params) {
       filteredFormElements,
       validationResults,
       onSummaryPage,
-      wizard
+      wizard,
     };
     yield put(setProgramEnrolmentState(nextState));
   }
@@ -303,7 +309,7 @@ export default function* enrolmentSaga() {
       enrolmentNextWatcher,
       enrolmentPreviousWatcher,
       updateExitEnrolmentObsWatcher,
-      undoExitProgramEnrolmentWatcher
-    ].map(fork)
+      undoExitProgramEnrolmentWatcher,
+    ].map(fork),
   );
 }
