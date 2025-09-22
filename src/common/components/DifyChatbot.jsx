@@ -124,6 +124,9 @@ const DifyChatbot = ({ onChatToggle }) => {
     if (organisation?.name) {
       params.append("org_name", organisation?.name);
     }
+    if (organisation?.organisationCategoryName) {
+      params.append("org_type", organisation?.organisationCategoryName);
+    }
     if (authSession?.roles?.length) {
       params.append("user_role", authSession.roles.join(", "));
     }
