@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box, Slide, useTheme, IconButton } from "@mui/material";
 import { ChevronRight } from "@mui/icons-material";
-
+import IdpDetails from "../../rootApp/security/IdpDetails";
 const DifyChatbot = ({ onChatToggle }) => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const theme = useTheme();
@@ -16,8 +16,10 @@ const DifyChatbot = ({ onChatToggle }) => {
   const userInfo = useSelector((state) => state.app?.userInfo);
   const organisation = useSelector((state) => state.app?.organisation);
   const authSession = useSelector((state) => state.app?.authSession);
+  const authToken = localStorage.getItem(IdpDetails.AuthTokenName);
 
   useEffect(() => {
+    // Doesn't update dify config. We need to keep track of the conversation id to update the inputs and config
     // Update global config with user context when available
     if (window.difyChatbotConfig && (userInfo || authSession || organisation)) {
       const enhancedInputs = {
@@ -30,7 +32,6 @@ const DifyChatbot = ({ onChatToggle }) => {
 
       const enhancedSystemVariables = {
         user_id: userInfo?.id || userInfo?.uuid,
-        auth_token: authSession?.authToken,
         organisation_id: organisation?.id,
         organisation_name: organisation?.name,
       };
@@ -49,7 +50,7 @@ const DifyChatbot = ({ onChatToggle }) => {
         userVariables: enhancedUserVariables,
       };
     }
-  }, [userInfo, organisation, authSession]);
+  }, [userInfo, organisation, authSession, authToken]);
 
   useEffect(() => {
     // Create chat button
@@ -126,6 +127,8 @@ const DifyChatbot = ({ onChatToggle }) => {
     if (authSession?.roles?.length) {
       params.append("user_role", authSession.roles.join(", "));
     }
+
+    params.append("auth_token", authToken);
 
     return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
   };
