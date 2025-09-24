@@ -17,6 +17,7 @@ function getCsrfToken() {
 class HttpClient {
   idp;
   authSession;
+  appContext;
 
   static instance;
 
@@ -41,6 +42,49 @@ class HttpClient {
     this.authSession = authSession;
   }
 
+  createScopedClientForDEA() {
+    return this.createScopedClient("DataEntryApp");
+  }
+
+  // Create a singleton scoped client for DataEntryApp with graceful error handling
+  createScopedClient(appContext) {
+    // Use singleton pattern for performance
+    if (this._scopedClients && this._scopedClients[appContext]) {
+      return this._scopedClients[appContext];
+    }
+
+    if (!this._scopedClients) {
+      this._scopedClients = {};
+    }
+
+    // Create wrapper methods that use the main httpClient with error handling
+    const methods = ["get", "post", "put", "patch", "delete", "fetchJson"];
+    const scopedClient = {};
+
+    methods.forEach((method) => {
+      scopedClient[method] = async (...args) => {
+        try {
+          return await this[method](...args);
+        } catch (error) {
+          return this._handleScopedError(error, appContext);
+        }
+      };
+    });
+
+    // Cache the scoped client
+    this._scopedClients[appContext] = scopedClient;
+    return scopedClient;
+  }
+
+  _handleScopedError(error, appContext) {
+    // Only handle 500 errors gracefully for DataEntryApp
+    if (error.response?.status === 500 && appContext === "DataEntryApp") {
+      console.warn(`DataEntryApp: Handling 500 error gracefully for ${error.config?.url}`);
+      return Promise.resolve({ data: [] }); // Return empty data instead of crashing
+    }
+    return Promise.reject(error);
+  }
+
   setOrgUuidHeader() {
     const organisationUUID = CurrentUserService.getImpersonatedOrgUUID();
     if (CurrentUserService.isOrganisationImpersonated()) {
@@ -59,7 +103,7 @@ class HttpClient {
 
   saveAuthTokenForAnalyticsApp() {
     if (this.idp?.idpType === IdpDetails.cognito) {
-      fetchAuthSession().then(session => {
+      fetchAuthSession().then((session) => {
         const authToken = session.tokens?.idToken?.toString();
         if (authToken) {
           localStorage.setItem(IdpDetails.AuthTokenName, authToken);
@@ -110,7 +154,7 @@ class HttpClient {
     if (skipOrgUUIDHeader) {
       options.headers.delete("ORGANISATION-UUID");
     }
-    return fetchUtils.fetchJson(url, options).catch(error => {
+    return fetchUtils.fetchJson(url, options).catch((error) => {
       if (error.status === 401 && this.idp.idpType === IdpDetails.keycloak) {
         this.idp.clearAccessToken();
       }
@@ -120,8 +164,8 @@ class HttpClient {
 
   async downloadFile(url, filename) {
     return await this.get(url, {
-      responseType: "blob"
-    }).then(response => {
+      responseType: "blob",
+    }).then((response) => {
       files.download(filename, response.data);
     });
   }
@@ -143,7 +187,11 @@ class HttpClient {
 
   _wrapAxiosMethod(methodName) {
     return async (...args) => {
-      await this.setTokenAndOrgUuidHeaders();
+      if (!isEmpty(this.authSession)) {
+        const options = { headers: new Headers() };
+        await this.setTokenAndOrgUuidHeaders(options);
+      }
+      this.setOrgUuidHeader();
       return axios[methodName](...args);
     };
   }
@@ -161,21 +209,21 @@ class HttpClient {
   }
 
   getData(...args) {
-    return this.get(...args).then(response => response.data);
+    return this.get(...args).then((response) => response.data);
   }
 
   getPageData(embeddedResourceCollectionName, ...args) {
-    return this.getData(args).then(responseBodyJson => {
+    return this.getData(args).then((responseBodyJson) => {
       return {
         data: responseBodyJson._embedded ? responseBodyJson._embedded[embeddedResourceCollectionName] : [],
         page: responseBodyJson.page.number,
-        totalCount: responseBodyJson.page.totalElements
+        totalCount: responseBodyJson.page.totalElements,
       };
     });
   }
 
   getAllData(embeddedResourceCollectionName, ...args) {
-    return this.getData(args).then(response => {
+    return this.getData(args).then((response) => {
       return response._embedded ? response._embedded[embeddedResourceCollectionName] : [];
     });
   }
@@ -183,8 +231,8 @@ class HttpClient {
   postUrlEncoded(url, request) {
     const options = {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     };
     const encoded = querystring.stringify(request);
     return axios.post(url, encoded, options);

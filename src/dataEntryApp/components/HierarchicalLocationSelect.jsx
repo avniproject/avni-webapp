@@ -2,43 +2,49 @@ import LocationSelect from "./LocationSelect";
 import { useEffect, useState } from "react";
 import _ from "lodash";
 import { useSelector } from "react-redux";
-import { httpClient } from "../../common/utils/httpClient";
+import { httpClient as deaHttpClient } from "../../common/utils/httpClient";
 import { Individual } from "openchs-models";
+
+// Create scoped client for DataEntryApp with graceful error handling
+const httpClient = deaHttpClient.createScopedClientForDEA();
 
 const HierarchicalLocationSelect = ({
   minLevelTypeId,
   onSelect,
-  selectedLocation
+  selectedLocation,
 }) => {
   const allAddressLevelTypes = useSelector(
-    state => state.dataEntry.metadata.operationalModules.allAddressLevels
+    (state) => state.dataEntry.metadata.operationalModules.allAddressLevels,
   );
   const selectedAddressLevelType =
     _.isNil(selectedLocation) ||
     _.isEqual(selectedLocation.uuid, "") ||
     _.isEqual(selectedLocation.uuid, Individual.getAddressLevelDummyUUID())
-      ? _.find(allAddressLevelTypes, alt => _.isNil(alt.parent))
-      : _.find(allAddressLevelTypes, alt => alt.name === selectedLocation.type);
+      ? _.find(allAddressLevelTypes, (alt) => _.isNil(alt.parent))
+      : _.find(
+          allAddressLevelTypes,
+          (alt) => alt.name === selectedLocation.type,
+        );
   const [selectedAddressLevels, setSelectedAddressLevels] = useState([
     {
-      addressLevelType: selectedAddressLevelType
-    }
+      addressLevelType: selectedAddressLevelType,
+    },
   ]);
 
   function setSelectedLocationWithParents(selectedLocation) {
     return httpClient
       .get(`/locations/parents/${selectedLocation.uuid}`)
-      .then(response => {
+      .then((response) => {
         const selectedAddressLevelsFromSelectedLocation = _.map(
-          _.orderBy(response.data, l => Number(l.level), "desc"),
-          l => {
+          _.orderBy(response.data, (l) => Number(l.level), "desc"),
+          (l) => {
             return {
               addressLevelType: addressLevelTypes.find(
-                alt => alt.name === l.typeString
+                (alt) => alt.name === l.typeString,
               ),
-              value: l
+              value: l,
             };
-          }
+          },
         );
         setSelectedAddressLevels(selectedAddressLevelsFromSelectedLocation);
       });
@@ -52,8 +58,10 @@ const HierarchicalLocationSelect = ({
     ) {
       setSelectedAddressLevels([
         {
-          addressLevelType: addressLevelTypes.find(alt => _.isNil(alt.parent))
-        }
+          addressLevelType: addressLevelTypes.find((alt) =>
+            _.isNil(alt.parent),
+          ),
+        },
       ]);
     } else {
       setSelectedLocationWithParents(selectedLocation);
@@ -64,8 +72,8 @@ const HierarchicalLocationSelect = ({
     const selectedAddressLevelsClone = [...selectedAddressLevels];
     const indexToBeChanged = _.findIndex(
       selectedAddressLevelsClone,
-      addressLevel =>
-        addressLevel.addressLevelType.uuid === addressLevelType.uuid
+      (addressLevel) =>
+        addressLevel.addressLevelType.uuid === addressLevelType.uuid,
     );
     const newSelectedAddressLevels =
       indexToBeChanged === -1
@@ -80,20 +88,21 @@ const HierarchicalLocationSelect = ({
     }
   };
 
-  const finalValueAvailable = newSelectedAddressLevels => {
+  const finalValueAvailable = (newSelectedAddressLevels) => {
     return _.last(newSelectedAddressLevels).value.typeId === minLevelTypeId;
   };
 
-  const addNextLineIfRequired = newSelectedAddressLevels => {
+  const addNextLineIfRequired = (newSelectedAddressLevels) => {
     const lastAddressLevel = _.last(newSelectedAddressLevels);
     const nextAddressLevelType = _.find(
       addressLevelTypes,
-      alt =>
-        alt.parent && alt.parent.uuid === lastAddressLevel.addressLevelType.uuid
+      (alt) =>
+        alt.parent &&
+        alt.parent.uuid === lastAddressLevel.addressLevelType.uuid,
     );
     setSelectedAddressLevels([
       ...newSelectedAddressLevels,
-      { addressLevelType: nextAddressLevelType }
+      { addressLevelType: nextAddressLevelType },
     ]);
   };
   return (
@@ -107,7 +116,7 @@ const HierarchicalLocationSelect = ({
             <LocationSelect
               parentId={parentId}
               selectedLocation={value}
-              onSelect={addressLevel =>
+              onSelect={(addressLevel) =>
                 onAddressLevelSelect(addressLevel, addressLevelType)
               }
               placeholder={"Select " + (addressLevelType?.name || "location")}

@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { MRTPagination } from "../../../adminApp/Util/MRTPagination.tsx";
-import { httpClient as http } from "common/utils/httpClient";
+import { httpClient as deaHttpClient } from "common/utils/httpClient";
 import { Box, Chip, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
+
+// Create scoped client for DataEntryApp with graceful error handling
+const http = deaHttpClient.createScopedClientForDEA();
 import {
   filter,
   find,
@@ -15,7 +18,7 @@ import {
   join,
   map,
   size,
-  uniqBy
+  uniqBy,
 } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
@@ -31,21 +34,21 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const customSearchFields = get(
     organisationConfigs,
     "organisationConfig.searchResultFields",
-    []
+    [],
   );
   const subjectType = find(
     subjectTypes,
-    ({ uuid }) => uuid === get(searchRequest, "subjectType")
+    ({ uuid }) => uuid === get(searchRequest, "subjectType"),
   );
   const isPerson = get(subjectType, "type", "Person") === "Person";
 
   useEffect(() => {
     setExtensions(
-      get(organisationConfigs, "organisationConfig.extensions", [])
+      get(organisationConfigs, "organisationConfig.extensions", []),
     );
   }, [organisationConfigs]);
 
-  const getResultConcepts = customSearchFields =>
+  const getResultConcepts = (customSearchFields) =>
     map(customSearchFields, ({ searchResultConcepts }) => searchResultConcepts);
 
   const customColumns = useMemo(() => {
@@ -54,8 +57,8 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       : getResultConcepts(
           filter(
             customSearchFields,
-            ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid
-          )
+            ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid,
+          ),
         );
   }, [subjectType, customSearchFields]);
 
@@ -77,7 +80,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
             spacing={1}
             direction={"row"}
             sx={{
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <Grid>
@@ -99,13 +102,13 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
               </div>
             </Grid>
           </Grid>
-        )
+        ),
       },
       ...flatten(customColumns).map(({ name }, index) => ({
         accessorKey: name,
         id: `custom-${name}-${index}`,
         header: t(name),
-        enableSorting: false
+        enableSorting: false,
       })),
       ...(isEmpty(subjectType) && size(subjectTypes) > 1
         ? [
@@ -113,8 +116,8 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
               accessorKey: "subjectType",
               header: t("subjectType"),
               Cell: ({ row }) =>
-                row.original.subjectTypeName && t(row.original.subjectTypeName)
-            }
+                row.original.subjectTypeName && t(row.original.subjectTypeName),
+            },
           ]
         : []),
       ...(isPerson
@@ -122,7 +125,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
             {
               accessorKey: "gender",
               header: t("gender"),
-              Cell: ({ row }) => row.original.gender && t(row.original.gender)
+              Cell: ({ row }) => row.original.gender && t(row.original.gender),
             },
             {
               accessorKey: "dateOfBirth",
@@ -130,15 +133,15 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
               Cell: ({ row }) =>
                 row.original.dateOfBirth
                   ? AgeUtil.getDisplayAge(row.original.dateOfBirth, i18n)
-                  : ""
-            }
+                  : "",
+            },
           ]
         : []),
       {
         accessorKey: "addressLevel",
         header: t("Address"),
         enableSorting: false,
-        Cell: ({ row }) => row.original.addressLevel
+        Cell: ({ row }) => row.original.addressLevel,
       },
       {
         id: "enrolments",
@@ -147,7 +150,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         Cell: ({ row }) => {
           const enrolments = row.original.enrolments;
           return enrolments
-            ? uniqBy(enrolments, enr => enr.operationalProgramName).map(
+            ? uniqBy(enrolments, (enr) => enr.operationalProgramName).map(
                 (p, key) => (
                   <Chip
                     key={key}
@@ -156,16 +159,16 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
                     style={{
                       margin: 2,
                       backgroundColor: p.programColor,
-                      color: "white"
+                      color: "white",
                     }}
                   />
-                )
+                ),
               )
             : null;
-        }
-      }
+        },
+      },
     ],
-    [customColumns, subjectType, subjectTypes, isPerson, t, i18n]
+    [customColumns, subjectType, subjectTypes, isPerson, t, i18n],
   );
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -183,13 +186,13 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         pageNumber: pagination.pageIndex,
         numberOfRecordPerPage: pagination.pageSize,
         sortColumn: sorting[0]?.id || null,
-        sortOrder: sorting[0]?.desc ? "desc" : sorting[0]?.id ? "asc" : null
+        sortOrder: sorting[0]?.desc ? "desc" : sorting[0]?.id ? "asc" : null,
       };
 
       requestCopy.pageElement = pageElement;
       const result = await http
         .post("/web/searchAPI/v2", requestCopy)
-        .then(res => res.data);
+        .then((res) => res.data);
 
       setData(result.listOfRecords || []);
       const totalElements = result.totalElements ?? 0;
@@ -210,8 +213,8 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   }, [loadData, searchRequest]);
 
   // Custom pagination handler that also triggers data reload
-  const handlePaginationChange = useCallback(newPagination => {
-    setPagination(prev => {
+  const handlePaginationChange = useCallback((newPagination) => {
+    setPagination((prev) => {
       const updated =
         typeof newPagination === "function"
           ? newPagination(prev)
@@ -232,16 +235,19 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
           total: 0,
           isLoading,
           pageSizeOptions: [10, 15, 20],
-          setPage: page =>
-            handlePaginationChange(prev => ({ ...prev, pageIndex: page - 1 })),
-          setPerPage: perPage =>
-            handlePaginationChange(prev => ({
+          setPage: (page) =>
+            handlePaginationChange((prev) => ({
+              ...prev,
+              pageIndex: page - 1,
+            })),
+          setPerPage: (perPage) =>
+            handlePaginationChange((prev) => ({
               ...prev,
               pageSize: perPage,
-              pageIndex: 0
+              pageIndex: 0,
             })),
           customLabel: "0-0 of 0",
-          hasNextPage: false
+          hasNextPage: false,
         };
       }
 
@@ -254,20 +260,20 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         total: reachedEnd ? to : -1, // Special case for MRTPagination
         isLoading,
         pageSizeOptions: [10, 15, 20],
-        setPage: page =>
-          handlePaginationChange(prev => ({ ...prev, pageIndex: page - 1 })),
-        setPerPage: perPage =>
-          handlePaginationChange(prev => ({
+        setPage: (page) =>
+          handlePaginationChange((prev) => ({ ...prev, pageIndex: page - 1 })),
+        setPerPage: (perPage) =>
+          handlePaginationChange((prev) => ({
             ...prev,
             pageSize: perPage,
-            pageIndex: 0
+            pageIndex: 0,
           })),
         // Custom display label
         customLabel: reachedEnd
           ? `${from}-${to} of ${to}`
           : `${from}-${to} of more than ${to}`,
         // Disable next if we reached the end
-        hasNextPage: !reachedEnd
+        hasNextPage: !reachedEnd,
       };
     } else {
       // Normal behavior when totalElements is available
@@ -277,14 +283,14 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         total: totalRecords,
         isLoading,
         pageSizeOptions: [10, 15, 20],
-        setPage: page =>
-          handlePaginationChange(prev => ({ ...prev, pageIndex: page - 1 })),
-        setPerPage: perPage =>
-          handlePaginationChange(prev => ({
+        setPage: (page) =>
+          handlePaginationChange((prev) => ({ ...prev, pageIndex: page - 1 })),
+        setPerPage: (perPage) =>
+          handlePaginationChange((prev) => ({
             ...prev,
             pageSize: perPage,
-            pageIndex: 0
-          }))
+            pageIndex: 0,
+          })),
       };
     }
   }, [
@@ -292,7 +298,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     totalRecords,
     data.length,
     isLoading,
-    handlePaginationChange
+    handlePaginationChange,
   ]);
 
   return (
@@ -312,8 +318,8 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         <Box sx={{ display: "flex", gap: "8px" }}>
           <ExtensionOption
             subjectUUIDs={join(
-              map(table.getSelectedRowModel().rows, row => row.original.uuid),
-              ","
+              map(table.getSelectedRowModel().rows, (row) => row.original.uuid),
+              ",",
             )}
             scopeType={extensionScopeTypes.searchResults}
             configExtensions={extensions}
