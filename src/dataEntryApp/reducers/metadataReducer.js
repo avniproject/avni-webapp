@@ -14,87 +14,87 @@ export const types = {
   GET_LEGACY_RULES_BUNDLE: `${prefix}GET_LEGACY_RULES_BUNDLE`,
   SET_LEGACY_RULES_BUNDLE: `${prefix}SET_LEGACY_RULES_BUNDLE`,
   GET_LEGACY_RULES: `${prefix}GET_LEGACY_RULES`,
-  SET_LEGACY_RULES: `${prefix}SET_LEGACY_RULES`
+  SET_LEGACY_RULES: `${prefix}SET_LEGACY_RULES`,
 };
 
 export const getOperationalModules = () => ({
-  type: types.GET_OPERATIONAL_MODULES
+  type: types.GET_OPERATIONAL_MODULES,
 });
 
-export const setOperationalModules = operationalModules => ({
+export const setOperationalModules = (operationalModules) => ({
   type: types.SET_OPERATIONAL_MODULES,
-  operationalModules
+  operationalModules,
 });
 
 export const getGenders = () => ({
-  type: types.GET_GENDERS
+  type: types.GET_GENDERS,
 });
 
-export const setGenders = genders => ({
+export const setGenders = (genders) => ({
   type: types.SET_GENDERS,
-  genders
+  genders,
 });
 
 export const getOrganisationConfig = () => ({
-  type: types.GET_ORGANISATION_CONFIG
+  type: types.GET_ORGANISATION_CONFIG,
 });
 
-export const setOrganisationConfig = organisationConfigs => ({
+export const setOrganisationConfig = (organisationConfigs) => ({
   type: types.SET_ORGANISATION_CONFIG,
-  organisationConfigs
+  organisationConfigs,
 });
 
 export const getLegacyRulesBundle = () => ({
-  type: types.GET_LEGACY_RULES_BUNDLE
+  type: types.GET_LEGACY_RULES_BUNDLE,
 });
 
-export const setLegacyRulesBundle = rulesBundle => ({
+export const setLegacyRulesBundle = (rulesBundle) => ({
   type: types.SET_LEGACY_RULES_BUNDLE,
-  rulesBundle
+  rulesBundle,
 });
 
 export const getLegacyRules = () => ({
-  type: types.GET_LEGACY_RULES
+  type: types.GET_LEGACY_RULES,
 });
 
-export const setLegacyRules = rules => ({
+export const setLegacyRules = (rules) => ({
   type: types.SET_LEGACY_RULES,
-  rules
+  rules,
 });
 
-export const selectLegacyRulesBundle = state => state.dataEntry.metadata.rulesBundle;
-export const selectLegacyRulesAllRules = state => state.dataEntry.metadata.allRules;
-export const selectLegacyRulesBundleLoaded = state => state.dataEntry.metadata.rulesBundleLoaded;
+export const selectLegacyRulesBundle = (state) => state.dataEntry.metadata.rulesBundle;
+export const selectLegacyRulesAllRules = (state) => state.dataEntry.metadata.allRules;
+export const selectLegacyRulesBundleLoaded = (state) => state.dataEntry.metadata.rulesBundleLoaded;
 
-export const selectLegacyRules = state => state.dataEntry.metadata.rules;
-export const selectLegacyRulesLoaded = state => state.dataEntry.metadata.rulesLoaded;
+export const selectLegacyRules = (state) => state.dataEntry.metadata.rules;
+export const selectLegacyRulesLoaded = (state) => state.dataEntry.metadata.rulesLoaded;
 
-export const selectAllAddressLevelTypes = state => defaultTo(get(state, "dataEntry.metadata.operationalModules.allAddressLevels"), []);
+export const selectAllAddressLevelTypes = (state) => defaultTo(get(state, "dataEntry.metadata.operationalModules.allAddressLevels"), []);
 
-export const selectSubjectTypes = state => get(state, "dataEntry.metadata.operationalModules.subjectTypes");
+export const selectSubjectTypes = (state) => get(state, "dataEntry.metadata.operationalModules.subjectTypes");
 const initialState = {
-  rules: []
+  rules: [],
 };
 
 // reducer
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case types.SET_OPERATIONAL_MODULES: {
       return {
         ...state,
-        operationalModules: action.operationalModules
+        operationalModules: action.operationalModules,
       };
     }
     case types.SET_GENDERS: {
       return {
         ...state,
-        genders: action.genders
+        genders: action.genders,
       };
     }
     case types.SET_ORGANISATION_CONFIG: {
       return {
         ...state,
-        organisationConfigs: action.organisationConfigs
+        organisationConfigs: action.organisationConfigs,
       };
     }
     case types.SET_LEGACY_RULES_BUNDLE: {
@@ -106,23 +106,32 @@ export default function(state = initialState, action) {
         log: console.log,
         common: common,
         motherCalculations: motherCalculations,
-        models: models
+        models: models,
       };
-      let rulesConfig = isEmpty(action.rulesBundle) ? {} : eval(action.rulesBundle.concat("rulesConfig;"));
+      let rulesConfig = {};
+      if (!isEmpty(action.rulesBundle)) {
+        try {
+          // Create a function constructor to safely evaluate the rules bundle
+          const getRulesConfig = new Function("ruleServiceLibraryInterfaceForSharingModules", `${action.rulesBundle} return rulesConfig;`);
+          rulesConfig = getRulesConfig(ruleServiceLibraryInterfaceForSharingModules) || {};
+        } catch (error) {
+          console.error("Error evaluating rules bundle:", error);
+        }
+      }
       /**********/
       const allRules = { ...rulesConfig };
 
       return {
         ...state,
         allRules,
-        rulesBundleLoaded: true
+        rulesBundleLoaded: true,
       };
     }
     case types.SET_LEGACY_RULES: {
       return {
         ...state,
         rules: action.rules,
-        rulesLoaded: true
+        rulesLoaded: true,
       };
     }
     default:
