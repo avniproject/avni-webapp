@@ -10,20 +10,20 @@ import {
   Box,
   TextField,
   Collapse,
-  IconButton,
+  IconButton
 } from "@mui/material";
 import {
   ReportProblem,
   KeyboardArrowDown,
   KeyboardArrowUp,
   VerifiedUser,
-  Error,
+  Error
 } from "@mui/icons-material";
 import {
   Concept,
   findMediaObservations,
   Individual,
-  Observation,
+  Observation
 } from "avni-models";
 import { conceptService, i18n } from "../services/ConceptService";
 import { addressLevelService } from "../services/AddressLevelService";
@@ -34,10 +34,7 @@ import _, { find, isEmpty, isNil, lowerCase, map } from "lodash";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
 import MediaObservations from "./MediaObservations";
-import { httpClient as deaHttpClient } from "../../common/utils/httpClient";
-
-// Create scoped client for DataEntryApp with graceful error handling
-const http = deaHttpClient.createScopedClientForDEA();
+import { httpClient as http } from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
 
 const StyledTable = styled(Table)(({ theme, highlight }) => ({
@@ -47,23 +44,23 @@ const StyledTable = styled(Table)(({ theme, highlight }) => ({
     : "0px 1px 3px rgba(0, 0, 0, 0.1)",
   backgroundColor: theme.palette.grey[400],
   overflow: "hidden",
-  border: `1px solid ${theme.palette.grey[200]}`,
+  border: `1px solid ${theme.palette.grey[200]}`
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   border: `2px solid ${theme.palette.grey[200]}`,
   "&:nth-of-type(odd)": {
-    backgroundColor: "rgba(0, 0, 0, 0.02)",
+    backgroundColor: "rgba(0, 0, 0, 0.02)"
   },
   "&:nth-of-type(even)": {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper
   },
   "&:hover": {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme.palette.action.hover
   },
   "&:last-child td": {
-    borderBottom: "none",
-  },
+    borderBottom: "none"
+  }
 }));
 
 const StyledTableQGRow = styled(TableRow)(({ theme }) => ({
@@ -74,18 +71,18 @@ const StyledTableQGRow = styled(TableRow)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.grey[100]}`,
   boxShadow: `inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -1px -1px 2px rgba(255, 255, 255, 0.8)`,
   "&:nth-of-type(odd)": {
-    backgroundColor: "rgba(0, 0, 0, 0.02)",
+    backgroundColor: "rgba(0, 0, 0, 0.02)"
   },
   "&:nth-of-type(even)": {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper
   },
   "&:hover": {
     backgroundColor: theme.palette.action.hover,
-    boxShadow: `inset 1px 1px 3px rgba(0, 0, 0, 0.15), inset -1px -1px 2px rgba(255, 255, 255, 0.9)`,
+    boxShadow: `inset 1px 1px 3px rgba(0, 0, 0, 0.15), inset -1px -1px 2px rgba(255, 255, 255, 0.9)`
   },
   "&:last-child td": {
-    borderBottom: "none",
-  },
+    borderBottom: "none"
+  }
 }));
 
 const StyledTableCell = styled(TableCell)(({ theme, variant }) => ({
@@ -97,34 +94,34 @@ const StyledTableCell = styled(TableCell)(({ theme, variant }) => ({
     variant === "groupHeader"
       ? theme.palette.primary.main
       : variant === "fegHeader"
-        ? theme.palette.grey[50]
-        : "inherit",
+      ? theme.palette.grey[50]
+      : "inherit",
   color:
     variant === "groupHeader"
       ? theme.palette.primary.contrastText
       : variant === "fegHeader"
-        ? theme.palette.text.secondary
-        : variant === "label"
-          ? theme.palette.text.secondary
-          : theme.palette.text.primary,
+      ? theme.palette.text.secondary
+      : variant === "label"
+      ? theme.palette.text.secondary
+      : theme.palette.text.primary
 }));
 
 const StyledTableBody = styled(TableBody)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.background.paper
 }));
 
 const StyledTypography = styled(Typography)(({ theme, variant }) => ({
   marginLeft: variant === "group" ? "10px" : undefined,
   color: variant ? theme.palette.primary.dark : undefined,
-  marginBottom: theme.spacing(1),
+  marginBottom: theme.spacing(1)
 }));
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(0.5),
+  margin: theme.spacing(0.5)
 }));
 
 const StyledErrorSpan = styled("span")({
-  color: "#ff4f33",
+  color: "#ff4f33"
 });
 
 const StyledMediaError = styled("p")({
@@ -135,7 +132,7 @@ const StyledMediaError = styled("p")({
   width: "200px",
   height: "200px",
   textAlign: "center",
-  overflow: "scroll",
+  overflow: "scroll"
 });
 
 const StyledMediaBox = styled(Box)({
@@ -144,30 +141,30 @@ const StyledMediaBox = styled(Box)({
   marginTop: 5,
   display: "flex",
   flexDirection: "row",
-  alignItems: "flex-start",
+  alignItems: "flex-start"
 });
 
 const StyledMediaGrid = styled(Grid)(({ theme }) => ({
   alignItems: "center",
-  border: `1px solid ${theme.palette.grey[200]}`,
+  border: `1px solid ${theme.palette.grey[200]}`
 }));
 
 const StyledToggleBox = styled(Box)({
   display: "flex",
   alignItems: "center",
-  justifyContent: "space-between",
+  justifyContent: "space-between"
 });
 
 const StyledVerifiedIcon = styled(VerifiedUser)(({ theme }) => ({
   color: Colors.SuccessColor,
   fontSize: 20,
-  marginLeft: theme.spacing(1),
+  marginLeft: theme.spacing(1)
 }));
 
 const StyledUnverifiedIcon = styled(ReportProblem)(({ theme }) => ({
   color: Colors.ValidationError,
   fontSize: 20,
-  marginLeft: theme.spacing(1),
+  marginLeft: theme.spacing(1)
 }));
 
 class MediaData {
@@ -187,7 +184,7 @@ function includeAdditionalRows(
   t,
   renderText,
   renderFEGView,
-  StyledTableRow,
+  StyledTableRow
 ) {
   const additionalObsRows = [];
   additionalRows &&
@@ -206,14 +203,14 @@ function includeAdditionalRows(
           <StyledTableCell align="left" width="75%">
             {renderText(t(row.value), row.abnormal)}
           </StyledTableCell>
-        </StyledTableRow>,
+        </StyledTableRow>
       );
     });
 
   return renderFEGView(
     "Miscellaneous Information",
     "feg-" + fegIndex,
-    additionalObsRows,
+    additionalObsRows
   );
 }
 
@@ -224,7 +221,7 @@ function renderSingleQuestionGroup(
   t,
   observation,
   StyledTableRow,
-  renderValue,
+  renderValue
 ) {
   const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
 
@@ -244,17 +241,17 @@ function renderSingleQuestionGroup(
 function initMediaObservations(observations) {
   let mediaObservations = findMediaObservations(observations);
   observations
-    .filter((obs) => obs.concept.isQuestionGroup())
-    .forEach((qgObservation) => {
+    .filter(obs => obs.concept.isQuestionGroup())
+    .forEach(qgObservation => {
       if (qgObservation.valueJSON.repeatableObservations) {
-        qgObservation.valueJSON.repeatableObservations.forEach((rqg) => {
+        qgObservation.valueJSON.repeatableObservations.forEach(rqg => {
           mediaObservations.push(
-            ...findMediaObservations(rqg.groupObservations),
+            ...findMediaObservations(rqg.groupObservations)
           );
         });
       } else {
         mediaObservations.push(
-          ...findMediaObservations(qgObservation.valueJSON.groupObservations),
+          ...findMediaObservations(qgObservation.valueJSON.groupObservations)
         );
       }
     });
@@ -267,7 +264,7 @@ const Observations = ({
   additionalRows,
   form,
   customKey,
-  highlight,
+  highlight
 }) => {
   const i = new i18n();
   const { t } = useTranslation();
@@ -290,17 +287,17 @@ const Observations = ({
     );
   };
 
-  const renderValue = (observation) => {
+  const renderValue = observation => {
     const displayable = Observation.valueForDisplay({
       observation,
       conceptService,
       addressLevelService,
       subjectService,
-      i18n: i,
+      i18n: i
     });
     if (observation.concept.datatype === "Subject") {
       return displayable.map((subject, index) =>
-        renderSubject(subject, index < displayable.length - 1),
+        renderSubject(subject, index < displayable.length - 1)
       );
     } else if (Concept.dataType.Media.includes(observation.concept.datatype)) {
       return renderMedia(displayable.displayValue, observation.concept);
@@ -311,7 +308,7 @@ const Observations = ({
     }
   };
 
-  const renderPhoneNumber = (phoneNumber) => {
+  const renderPhoneNumber = phoneNumber => {
     const isVerified = phoneNumber.isVerified();
     const Icon = isVerified ? StyledVerifiedIcon : StyledUnverifiedIcon;
     return (
@@ -332,7 +329,7 @@ const Observations = ({
     );
   };
 
-  const mediaPreviewMap = (signedMediaUrl) => ({
+  const mediaPreviewMap = signedMediaUrl => ({
     [Concept.dataType.Image]: (
       <img
         src={signedMediaUrl}
@@ -340,7 +337,7 @@ const Observations = ({
         align="center"
         width={200}
         height={200}
-        onClick={(event) => {
+        onClick={event => {
           event.preventDefault();
           showMediaOverlay(signedMediaUrl);
         }}
@@ -352,20 +349,20 @@ const Observations = ({
         controls
         width={200}
         height={200}
-        onClick={(event) => {
+        onClick={event => {
           event.stopPropagation();
         }}
       >
         <source src={signedMediaUrl} type="video/mp4" />
         Sorry, your browser doesn't support embedded videos.
       </video>
-    ),
+    )
   });
 
-  const updateOpen = (observationValue) => {
-    setOpen((oldOpen) => ({
+  const updateOpen = observationValue => {
+    setOpen(oldOpen => ({
       ...oldOpen,
-      [observationValue]: !oldOpen[observationValue],
+      [observationValue]: !oldOpen[observationValue]
     }));
   };
 
@@ -379,7 +376,7 @@ const Observations = ({
           <StyledToggleBox>
             <Link
               to="#"
-              onClick={(event) => {
+              onClick={event => {
                 event.preventDefault();
               }}
             >
@@ -399,7 +396,7 @@ const Observations = ({
             {mediaUrls.map((unsignedMediaUrl, index) => {
               const mediaData = _.find(
                 mediaDataList,
-                (x) => x.unsignedUrl === unsignedMediaUrl,
+                x => x.unsignedUrl === unsignedMediaUrl
               );
               const couldntSignMessage = MediaData.MissingSignedMediaMessage;
               const signedMediaUrl = _.get(mediaData, "url");
@@ -423,10 +420,10 @@ const Observations = ({
     );
   };
 
-  const fileOptions = (conceptName) => {
+  const fileOptions = conceptName => {
     const signedURLS = mediaDataList
-      .filter((mediaData) => mediaData.altTag === conceptName)
-      .map((mediaData) => mediaData.url);
+      .filter(mediaData => mediaData.altTag === conceptName)
+      .map(mediaData => mediaData.url);
     return _.isEmpty(signedURLS) ? (
       <TextField>{MediaData.MissingSignedMediaMessage}</TextField>
     ) : (
@@ -435,7 +432,7 @@ const Observations = ({
           <Fragment key={index}>
             <Link
               to="#"
-              onClick={(event) => {
+              onClick={event => {
                 event.preventDefault();
                 window.open(signedURL, "_blank");
               }}
@@ -463,7 +460,7 @@ const Observations = ({
     }
   };
 
-  const getSignedUrl = async (url) => {
+  const getSignedUrl = async url => {
     try {
       return await http.get(`/media/signedUrl?url=${url}`);
     } catch (e) {
@@ -474,14 +471,14 @@ const Observations = ({
   const refreshSignedUrlsForMedia = async () => {
     if (!isEmpty(mediaObservations)) {
       return await Promise.all(
-        mediaObservations.flatMap((obs) => {
+        mediaObservations.flatMap(obs => {
           const observationValue = obs.valueJSON.answer;
           const isMultiSelect =
             observationValue && _.isArrayLikeObject(observationValue);
           const mediaUrls = isMultiSelect
             ? observationValue
             : [observationValue];
-          return mediaUrls.map(async (unsignedMediaUrl) => {
+          return mediaUrls.map(async unsignedMediaUrl => {
             const signedUrl = await getSignedUrl(unsignedMediaUrl);
             const type =
               obs.concept.datatype === "Image"
@@ -491,17 +488,17 @@ const Observations = ({
               _.get(signedUrl, "data"),
               type,
               obs.concept.name,
-              unsignedMediaUrl,
+              unsignedMediaUrl
             );
           });
-        }),
+        })
       );
     }
   };
 
-  const showMediaOverlay = (unsignedMediaUrl) => {
+  const showMediaOverlay = unsignedMediaUrl => {
     setCurrentMediaItem(
-      find(mediaDataList, (img) => img.url === unsignedMediaUrl),
+      find(mediaDataList, img => img.url === unsignedMediaUrl)
     );
     setShowMedia(true);
   };
@@ -513,15 +510,15 @@ const Observations = ({
   const mediaObservations = initMediaObservations(observations);
 
   useEffect(() => {
-    refreshSignedUrlsForMedia().then((mediaDataList) =>
-      setMediaDataList(mediaDataList),
+    refreshSignedUrlsForMedia().then(mediaDataList =>
+      setMediaDataList(mediaDataList)
     );
   }, []);
 
   useEffect(() => {
     const refreshedMediaUrls = setInterval(async () => {
-      refreshSignedUrlsForMedia().then((signedUrls) =>
-        setMediaDataList(signedUrls),
+      refreshSignedUrlsForMedia().then(signedUrls =>
+        setMediaDataList(signedUrls)
       );
     }, 110000);
 
@@ -544,10 +541,10 @@ const Observations = ({
               t,
               observation,
               StyledTableRow,
-              renderValue,
+              renderValue
             )}
           </Fragment>
-        ),
+        )
       );
     } else {
       questionGroupRows = (
@@ -559,7 +556,7 @@ const Observations = ({
             t,
             observation,
             StyledTableRow,
-            renderValue,
+            renderValue
           )}
         </Fragment>
       );
@@ -596,8 +593,8 @@ const Observations = ({
                 {React.Children.map(fegRows, (row, rowIndex) =>
                   React.cloneElement(row, {
                     key: `feg-row-${index}-${rowIndex}`,
-                    component: "div",
-                  }),
+                    component: "div"
+                  })
                 )}
               </StyledTableBody>
             </Table>
@@ -624,7 +621,7 @@ const Observations = ({
   const renderObservationValue = (
     observation,
     index,
-    isNotAssociatedWithForm,
+    isNotAssociatedWithForm
   ) => {
     if (isNotAssociatedWithForm) {
       return observation.concept.isQuestionGroup()
@@ -634,7 +631,7 @@ const Observations = ({
       const fegRows = _.map(
         observation.sortedObservationsArray,
         (obs, feIndex) =>
-          renderObservationValue(obs, "feg-" + index + "fe-" + feIndex, true),
+          renderObservationValue(obs, "feg-" + index + "fe-" + feIndex, true)
       );
       return renderFEGView(observation.feg.name, "feg-" + index, fegRows);
     }
@@ -642,9 +639,9 @@ const Observations = ({
 
   const rows = _.filter(
     orderedObs,
-    (obs) => isNotAssociatedWithForm || !_.isEmpty(obs.sortedObservationsArray),
+    obs => isNotAssociatedWithForm || !_.isEmpty(obs.sortedObservationsArray)
   ).map((obs, fegIndex) =>
-    renderObservationValue(obs, fegIndex, isNotAssociatedWithForm),
+    renderObservationValue(obs, fegIndex, isNotAssociatedWithForm)
   );
 
   additionalRows &&
@@ -656,8 +653,8 @@ const Observations = ({
         t,
         renderText,
         renderFEGView,
-        StyledTableRow,
-      ),
+        StyledTableRow
+      )
     );
 
   return isEmpty(rows) ? (
@@ -689,10 +686,10 @@ Observations.propTypes = {
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       value: PropTypes.string.isRequired,
-      abnormal: PropTypes.bool,
-    }),
+      abnormal: PropTypes.bool
+    })
   ),
-  highlight: PropTypes.bool,
+  highlight: PropTypes.bool
 };
 
 export default Observations;

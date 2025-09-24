@@ -1,7 +1,4 @@
-import { httpClient as deaHttpClient } from "common/utils/httpClient";
-
-// Create scoped client for DataEntryApp with graceful error handling
-const httpClient = deaHttpClient.createScopedClientForDEA();
+import { httpClient } from "common/utils/httpClient";
 
 class SubjectSearchService {
   static search(searchRequest) {
@@ -11,16 +8,16 @@ class SubjectSearchService {
     searchRequest.pageElement = pageElement;
     return httpClient
       .post(apiUrl, searchRequest)
-      .then((response) => response.data)
-      .then((result) => result);
+      .then(response => response.data)
+      .then(result => result);
   }
   static searchByUuid(subjectUuid) {
     const apiUrl = `/web/individual/${subjectUuid}`;
 
     return httpClient
       .get(apiUrl)
-      .then((response) => response.data)
-      .then((result) => result);
+      .then(response => response.data)
+      .then(result => result);
   }
 }
 

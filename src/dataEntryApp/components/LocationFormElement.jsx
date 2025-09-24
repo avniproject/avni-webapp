@@ -8,19 +8,16 @@ import { selectAllAddressLevelTypes } from "../reducers/metadataReducer";
 import { find, includes, isEmpty, isNil, orderBy } from "lodash";
 import { ValidationError } from "./ValidationError";
 import { addressLevelService } from "../services/AddressLevelService";
-import { httpClient as deaHttpClient } from "common/utils/httpClient";
+import { httpClient as http } from "common/utils/httpClient";
 import { selectOrganisationConfig } from "../sagas/selectors";
 import HierarchicalLocationSelect from "./HierarchicalLocationSelect";
-
-// Create scoped client for DataEntryApp with graceful error handling
-const http = deaHttpClient.createScopedClientForDEA();
 
 export default function LocationFormElement({
   obsHolder,
   formElement,
   update,
   validationResults,
-  uuid,
+  uuid
 }) {
   const { t } = useTranslation();
   const { mandatory, name, concept } = formElement;
@@ -29,33 +26,33 @@ export default function LocationFormElement({
     validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
       formIdentifier === uuid &&
-      questionGroupIndex === formElement.questionGroupIndex,
+      questionGroupIndex === formElement.questionGroupIndex
   );
   const orgConfig = useSelector(selectOrganisationConfig);
 
   const lowestAddressLevelTypeUUIDs = concept.recordValueByKey(
-    Concept.keys.lowestAddressLevelTypeUUIDs,
+    Concept.keys.lowestAddressLevelTypeUUIDs
   );
   const highestAddressLevelTypeUUID = concept.recordValueByKey(
-    Concept.keys.highestAddressLevelTypeUUID,
+    Concept.keys.highestAddressLevelTypeUUID
   );
 
   const allAddressLevelTypes = useSelector(selectAllAddressLevelTypes);
   const highestAddressLevelType = find(
     allAddressLevelTypes,
-    (alt) => alt.uuid === highestAddressLevelTypeUUID,
+    alt => alt.uuid === highestAddressLevelTypeUUID
   );
   const allowedLowerAddressLevelTypes = orderBy(
     allAddressLevelTypes,
     "level",
-    "asc",
-  ).filter((alt) => includes(lowestAddressLevelTypeUUIDs, alt.uuid));
+    "asc"
+  ).filter(alt => includes(lowestAddressLevelTypeUUIDs, alt.uuid));
   const lowestAddressLevelType = allowedLowerAddressLevelTypes[0];
   const applicableAddressLevelTypes = orderBy(
     allAddressLevelTypes,
     "level",
-    "asc",
-  ).filter((alt) => alt.level <= highestAddressLevelType.level);
+    "asc"
+  ).filter(alt => alt.level <= highestAddressLevelType.level);
   const [level, setLevel] = useState(lowestAddressLevelType);
   const locationUUID = isNil(observation)
     ? null
@@ -64,11 +61,11 @@ export default function LocationFormElement({
 
   useEffect(() => {
     if (!isEmpty(locationUUID)) {
-      http.get(`/locations/web?uuid=${locationUUID}`).then((response) => {
+      http.get(`/locations/web?uuid=${locationUUID}`).then(response => {
         if (response.status === 200) {
           const location = response.data;
           const currentLevel = applicableAddressLevelTypes.find(
-            (alt) => alt.name === location.type,
+            alt => alt.name === location.type
           );
           setLevel(currentLevel);
           addressLevelService.addAddressLevel(location);
@@ -84,10 +81,10 @@ export default function LocationFormElement({
     <Fragment>
       <RadioButtonsGroup
         label={`${t(name)}${mandatory ? "*" : ""}`}
-        items={allowedLowerAddressLevelTypes.map((a) => ({
+        items={allowedLowerAddressLevelTypes.map(a => ({
           id: a.id,
           name: a.name,
-          level: a.level,
+          level: a.level
         }))}
         value={level.id}
         onChange={setLevel}
@@ -96,14 +93,14 @@ export default function LocationFormElement({
         <HierarchicalLocationSelect
           selectedLocation={location}
           minLevelTypeId={level.id}
-          onSelect={(location) => {
+          onSelect={location => {
             update(location.uuid);
           }}
         />
       ) : (
         <LocationSelect
           selectedLocation={location}
-          onSelect={(location) => update(location.uuid)}
+          onSelect={location => update(location.uuid)}
           placeholder={level.name}
           typeId={level.id}
         />

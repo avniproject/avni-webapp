@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import { httpClient as deaHttpClient } from "../../common/utils/httpClient";
-
-// Create scoped client for DataEntryApp with graceful error handling
-const http = deaHttpClient.createScopedClientForDEA();
+import { httpClient as http } from "../../common/utils/httpClient";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { IconButton, Dialog, DialogContent } from "@mui/material";
@@ -16,11 +13,11 @@ const StyledDialogTitle = styled("div")(({ theme }) => ({
     position: "absolute",
     right: theme.spacing(1),
     top: theme.spacing(0),
-    color: theme.palette.grey[500],
-  },
+    color: theme.palette.grey[500]
+  }
 }));
 
-const DialogTitle = (props) => {
+const DialogTitle = props => {
   const { children, onClose, ...other } = props;
   return (
     <StyledDialogTitle {...other}>
@@ -46,7 +43,7 @@ export const AudioPlayer = ({ url }) => {
   const updateSignedURL = () =>
     http
       .get(`/media/signedUrl?url=${url}`)
-      .then((signedURL) => setSignedURL(signedURL.data));
+      .then(signedURL => setSignedURL(signedURL.data));
 
   useEffect(() => {
     updateSignedURL();
@@ -57,7 +54,7 @@ export const AudioPlayer = ({ url }) => {
     return () => clearInterval(refreshedMediaUrls);
   }, []);
 
-  const onViewMedia = (event) => {
+  const onViewMedia = event => {
     event.preventDefault();
     setOpenModal(true);
   };

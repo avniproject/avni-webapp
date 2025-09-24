@@ -4,17 +4,14 @@ import { debounce, deburr, get, isEmpty, map } from "lodash";
 import { locationNameRenderer } from "../utils/LocationUtil";
 import { addressLevelService } from "../services/AddressLevelService";
 import AsyncSelect from "react-select/async";
-import { httpClient as deaHttpClient } from "../../common/utils/httpClient";
-
-// Create scoped client for DataEntryApp with graceful error handling
-const httpClient = deaHttpClient.createScopedClientForDEA();
+import { httpClient } from "../../common/utils/httpClient";
 
 const LocationSelect = ({
   onSelect,
   selectedLocation,
   placeholder,
   typeId,
-  parentId,
+  parentId
 }) => {
   const { t } = useTranslation();
   const [selectedLocationValue, setSelectedLocationValue] = useState();
@@ -31,7 +28,7 @@ const LocationSelect = ({
       setSelectedLocationValue({
         label: selectedLocation.name,
         value: selectedLocation,
-        optionLabel: locationNameRenderer(selectedLocation),
+        optionLabel: locationNameRenderer(selectedLocation)
       });
     } else {
       setSelectedLocationValue(null);
@@ -42,7 +39,7 @@ const LocationSelect = ({
     fetchLocation("", setDefaultOptions);
   }, [parentId, typeId]);
 
-  const onLocationSelected = (location) => {
+  const onLocationSelected = location => {
     onSelect(location.value);
     addressLevelService.addAddressLevel(location.value);
   };
@@ -73,20 +70,20 @@ const LocationSelect = ({
     let title = encodeURIComponent(inputValue);
     let apiUrl = `/locations/search/find?title=${title}${makeParameter(
       "typeId",
-      typeId,
+      typeId
     )}${makeParameter("parentId", parentId)}&size=100&page=0`;
     httpClient
       .get(apiUrl)
-      .then((response) =>
-        callback(getLocationOptions(get(response, "data.content", []))),
+      .then(response =>
+        callback(getLocationOptions(get(response, "data.content", [])))
       );
   }
 
-  const getLocationOptions = (locations) =>
-    map(locations, (location) => ({
+  const getLocationOptions = locations =>
+    map(locations, location => ({
       label: location.title,
       value: location,
-      optionLabel: locationNameRenderer(location),
+      optionLabel: locationNameRenderer(location)
     }));
 
   return (
