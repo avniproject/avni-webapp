@@ -1,4 +1,4 @@
-import { fetchRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
+import { fetchRulesResponse } from "./serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 
 const prefix = "app/dataEntry/reducer/registration/";
@@ -34,51 +34,51 @@ export const types = {
   SET_GENDER: `${prefix}SET_GENDER`,
   SET_ADDRESS: `${prefix}SET_ADDRESS`,
   ADD_NEW_QG: `${prefix}ADD_NEW_QG`,
-  REMOVE_QG: `${prefix}REMOVE_QG`
+  REMOVE_QG: `${prefix}REMOVE_QG`,
 };
 
-export const selectAddressLevelType = addressLevelType => ({
+export const selectAddressLevelType = (addressLevelType) => ({
   type: types.SELECT_ADDRESS_LEVEL_TYPE,
-  addressLevelType
+  addressLevelType,
 });
 
 export const saveSubject = () => ({
-  type: types.SAVE_SUBJECT
+  type: types.SAVE_SUBJECT,
 });
 
-export const getRegistrationForm = subjectTypeName => ({
+export const getRegistrationForm = (subjectTypeName) => ({
   type: types.GET_REGISTRATION_FORM,
-  subjectTypeName
+  subjectTypeName,
 });
 
-export const setRegistrationForm = form => ({
+export const setRegistrationForm = (form) => ({
   type: types.SET_REGISTRATION_FORM,
-  form
+  form,
 });
 
 export const getSubject = () => ({
-  type: types.GET_SUBJECT
+  type: types.GET_SUBJECT,
 });
 
-export const setSubject = subject => ({
+export const setSubject = (subject) => ({
   type: types.SET_SUBJECT,
-  subject
+  subject,
 });
 
 export const updateSubject = (field, value) => ({
   type: types.UPDATE_SUBJECT,
   field,
-  value
+  value,
 });
 
-export const onLoad = subjectTypeName => ({
+export const onLoad = (subjectTypeName) => ({
   type: types.ON_LOAD,
-  subjectTypeName
+  subjectTypeName,
 });
 
-export const onLoadEdit = subjectUuid => ({
+export const onLoadEdit = (subjectUuid) => ({
   type: types.ON_LOAD_EDIT,
-  subjectUuid
+  subjectUuid,
 });
 
 export const onLoadSuccess = (
@@ -89,7 +89,7 @@ export const onLoadSuccess = (
   onSummaryPage,
   wizard,
   isFormEmpty,
-  identifierAssignments
+  identifierAssignments,
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   subject,
@@ -99,11 +99,11 @@ export const onLoadSuccess = (
   onSummaryPage,
   wizard,
   isFormEmpty,
-  identifierAssignments
+  identifierAssignments,
 });
 
 export const setLoaded = () => ({
-  type: types.SET_LOADED
+  type: types.SET_LOADED,
 });
 
 export const updateObs = (formElement, value, childFormElement, questionGroupIndex) => ({
@@ -111,99 +111,99 @@ export const updateObs = (formElement, value, childFormElement, questionGroupInd
   formElement,
   value,
   childFormElement,
-  questionGroupIndex
+  questionGroupIndex,
 });
 
-export const addNewQuestionGroup = formElement => ({
+export const addNewQuestionGroup = (formElement) => ({
   type: types.ADD_NEW_QG,
-  formElement
+  formElement,
 });
 
 export const removeQuestionGroup = (formElement, questionGroupIndex) => ({
   type: types.REMOVE_QG,
   formElement,
-  questionGroupIndex
+  questionGroupIndex,
 });
 
 export const saveComplete = () => ({
-  type: types.SAVE_COMPLETE
+  type: types.SAVE_COMPLETE,
 });
 
-export const saveCompleteFalse = saveErrorMessageKey => ({
+export const saveCompleteFalse = (saveErrorMessageKey) => ({
   type: types.SAVE_COMPLETE_FALSE,
-  saveErrorMessageKey
+  saveErrorMessageKey,
 });
 
-export const setValidationResults = validationResults => ({
+export const setValidationResults = (validationResults) => ({
   type: types.SET_VALIDATION_RESULTS,
-  validationResults
+  validationResults,
 });
 
 export const setInitialSubjectState = () => ({
-  type: types.SET_INITIAL_SUBJECT_STATE
+  type: types.SET_INITIAL_SUBJECT_STATE,
 });
 
 export const onNext = () => ({
-  type: types.ON_NEXT
+  type: types.ON_NEXT,
 });
 
 export const onPrevious = () => ({
-  type: types.ON_PREVIOUS
+  type: types.ON_PREVIOUS,
 });
 
-export const setState = state => ({
+export const setState = (state) => ({
   type: types.SET_STATE,
-  state
+  state,
 });
 
-export const setFilteredFormElements = filteredFormElements => ({
+export const setFilteredFormElements = (filteredFormElements) => ({
   type: types.SET_FILTERED_FORM_ELEMENTS,
-  filteredFormElements
+  filteredFormElements,
 });
 
-export const setRegistrationDate = registrationDate => ({
+export const setRegistrationDate = (registrationDate) => ({
   type: types.SET_REGISTRATION_DATE,
-  registrationDate
+  registrationDate,
 });
 
-export const setFirstName = firstName => ({
+export const setFirstName = (firstName) => ({
   type: types.SET_FIRST_NAME,
-  firstName
+  firstName,
 });
 
-export const setMiddleName = middleName => ({
+export const setMiddleName = (middleName) => ({
   type: types.SET_MIDDLE_NAME,
-  middleName
+  middleName,
 });
 
-export const setLastName = lastName => ({
+export const setLastName = (lastName) => ({
   type: types.SET_LAST_NAME,
-  lastName
+  lastName,
 });
 
-export const setProfilePictureFile = profilePictureFile => ({
+export const setProfilePictureFile = (profilePictureFile) => ({
   type: types.SET_PROFILE_PICTURE_FILE,
-  profilePictureFile
+  profilePictureFile,
 });
 
-export const setRemoveProfilePicture = removeProfilePicture => ({
+export const setRemoveProfilePicture = (removeProfilePicture) => ({
   type: types.SET_REMOVE_PROFILE_PICTURE,
-  removeProfilePicture
+  removeProfilePicture,
 });
 
-export const setDateOfBirth = dateOfBirth => ({
+export const setDateOfBirth = (dateOfBirth) => ({
   type: types.SET_DATE_OF_BIRTH,
-  dateOfBirth
+  dateOfBirth,
 });
 
-export const setGender = gender => ({
+export const setGender = (gender) => ({
   type: types.SET_GENDER,
-  gender
+  gender,
 });
 
-export const setAddress = lowestAddressLevel => ({
+export const setAddress = (lowestAddressLevel) => ({
   type: types.SET_ADDRESS,
-  lowestAddressLevel
+  lowestAddressLevel,
 });
 
 export const fetchRegistrationRulesResponse = () => {
@@ -222,16 +222,16 @@ export const fetchRegistrationRulesResponse = () => {
         individualRequestEntity,
         rule: {
           formUuid: registrationForm.uuid,
-          workFlowType: "Individual"
-        }
-      })
+          workFlowType: "Individual",
+        },
+      }),
     );
   };
 };
 
-export const selectRegistrationState = state => state.dataEntry.registration;
-export const selectRegistrationForm = state => selectRegistrationState(state).registrationForm;
-export const selectIdentifierAssignments = state => selectRegistrationState(state).identifierAssignments;
+export const selectRegistrationState = (state) => state.dataEntry.registration;
+export const selectRegistrationForm = (state) => selectRegistrationState(state).registrationForm;
+export const selectIdentifierAssignments = (state) => selectRegistrationState(state).identifierAssignments;
 
 const initialState = {
   saved: false,
@@ -240,7 +240,7 @@ const initialState = {
   loaded: false,
   profilePictureFile: null,
   removeProfilePicture: false,
-  saveErrorMessageKey: null
+  saveErrorMessageKey: null,
 };
 
 // reducer
@@ -249,19 +249,19 @@ export default (state = initialState, action) => {
     case types.SET_REGISTRATION_FORM: {
       return {
         ...state,
-        registrationForm: action.form
+        registrationForm: action.form,
       };
     }
     case types.SET_SUBJECT: {
       return {
         ...state,
-        subject: action.subject
+        subject: action.subject,
       };
     }
     case types.SET_LOADED: {
       return {
         ...state,
-        loaded: true
+        loaded: true,
       };
     }
     case types.UPDATE_SUBJECT: {
@@ -269,32 +269,32 @@ export default (state = initialState, action) => {
       subject[action.field] = action.value;
       return {
         ...state,
-        subject
+        subject,
       };
     }
     case types.SELECT_ADDRESS_LEVEL_TYPE: {
       return {
         ...state,
-        selectedAddressLevelType: action.addressLevelType
+        selectedAddressLevelType: action.addressLevelType,
       };
     }
     case types.SAVE_COMPLETE: {
       return {
         ...state,
-        saved: true
+        saved: true,
       };
     }
     case types.SAVE_COMPLETE_FALSE: {
       return {
         ...state,
         saveErrorMessageKey: action.saveErrorMessageKey,
-        saved: false
+        saved: false,
       };
     }
     case types.SET_VALIDATION_RESULTS: {
       return {
         ...state,
-        validationResults: action.validationResults
+        validationResults: action.validationResults,
       };
     }
     case types.SET_INITIAL_SUBJECT_STATE: {
@@ -313,7 +313,7 @@ export default (state = initialState, action) => {
         onSummaryPage: action.onSummaryPage,
         wizard: action.wizard,
         isFormEmpty: action.isFormEmpty,
-        identifierAssignments: action.identifierAssignments
+        identifierAssignments: action.identifierAssignments,
       };
     }
     case types.SET_STATE: {
@@ -322,7 +322,7 @@ export default (state = initialState, action) => {
     case types.SET_FILTERED_FORM_ELEMENTS: {
       return {
         ...state,
-        filteredFormElements: action.filteredFormElements
+        filteredFormElements: action.filteredFormElements,
       };
     }
     case types.SET_REGISTRATION_DATE: {
@@ -332,7 +332,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         subject,
-        validationResults
+        validationResults,
       };
     }
     case types.SET_FIRST_NAME: {
@@ -342,7 +342,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         subject,
-        validationResults
+        validationResults,
       };
     }
     case types.SET_MIDDLE_NAME: {
@@ -352,7 +352,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         subject,
-        validationResults
+        validationResults,
       };
     }
     case types.SET_LAST_NAME: {
@@ -362,7 +362,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         subject,
-        validationResults
+        validationResults,
       };
     }
     case types.SET_PROFILE_PICTURE_FILE: {
@@ -370,7 +370,7 @@ export default (state = initialState, action) => {
         ...state,
         profilePictureFile: action.profilePictureFile,
         removeProfilePicture: false,
-        validationResults: []
+        validationResults: [],
       };
     }
     case types.SET_REMOVE_PROFILE_PICTURE: {
@@ -378,7 +378,7 @@ export default (state = initialState, action) => {
         ...state,
         profilePictureFile: action.removeProfilePicture ? null : state.profilePictureFile,
         removeProfilePicture: action.removeProfilePicture,
-        validationResults: []
+        validationResults: [],
       };
     }
     case types.SET_DATE_OF_BIRTH: {
@@ -388,7 +388,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         subject,
-        validationResults
+        validationResults,
       };
     }
     case types.SET_GENDER: {
@@ -398,7 +398,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         subject,
-        validationResults
+        validationResults,
       };
     }
     case types.SET_ADDRESS: {
@@ -410,7 +410,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         subject,
-        validationResults
+        validationResults,
       };
     }
     default:
