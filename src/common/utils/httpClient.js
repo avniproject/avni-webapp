@@ -8,6 +8,7 @@ import { fetchAuthSession } from "aws-amplify/auth";
 import querystring from "querystring";
 import IdpDetails from "../../rootApp/security/IdpDetails";
 import CurrentUserService from "../service/CurrentUserService";
+import { toast } from "../components/Toast";
 
 function getCsrfToken() {
   // eslint-disable-next-line no-useless-escape
@@ -30,7 +31,24 @@ class HttpClient {
     this.put = this._wrapAxiosMethod("put");
     this.patch = this._wrapAxiosMethod("patch");
     this.delete = this._wrapAxiosMethod("delete");
+    this.setupErrorInterceptor();
     HttpClient.instance = this;
+  }
+
+  setupErrorInterceptor() {
+    // Add axios response interceptor for global error handling
+    axios.interceptors.response.use(
+      (response) => response, // Pass through successful responses
+      (error) => {
+        const handled500Response = this._handle500Error(error);
+        if (handled500Response) {
+          return Promise.resolve(handled500Response);
+        }
+
+        // For non-500 errors, reject normally so they can be handled by calling code
+        return Promise.reject(error);
+      },
+    );
   }
 
   setIdp(idp) {
@@ -39,6 +57,28 @@ class HttpClient {
 
   initAuthSession(authSession) {
     this.authSession = authSession;
+  }
+
+  _handle500Error(error, url) {
+    const is500Error =
+      error.response?.status === 500 || error.status === 500 || (error.message && error.message.includes("Internal Server Error"));
+
+    if (is500Error) {
+      console.warn(`Handling 500 error gracefully for ${error.config?.url || url || "unknown URL"}`);
+      toast.showError("Server error. Please try again later, contact support if the issue persists.");
+
+      // Return successful response with empty data to prevent saga crashes
+      return {
+        json: [],
+        data: [],
+        status: 200,
+        statusText: "OK",
+        headers: {},
+        config: error.config,
+      };
+    }
+
+    return null; // Not a 500 error
   }
 
   setOrgUuidHeader() {
@@ -59,7 +99,7 @@ class HttpClient {
 
   saveAuthTokenForAnalyticsApp() {
     if (this.idp?.idpType === IdpDetails.cognito) {
-      fetchAuthSession().then(session => {
+      fetchAuthSession().then((session) => {
         const authToken = session.tokens?.idToken?.toString();
         if (authToken) {
           localStorage.setItem(IdpDetails.AuthTokenName, authToken);
@@ -110,18 +150,24 @@ class HttpClient {
     if (skipOrgUUIDHeader) {
       options.headers.delete("ORGANISATION-UUID");
     }
-    return fetchUtils.fetchJson(url, options).catch(error => {
+    return fetchUtils.fetchJson(url, options).catch((error) => {
       if (error.status === 401 && this.idp.idpType === IdpDetails.keycloak) {
         this.idp.clearAccessToken();
       }
+
+      const handled500Response = this._handle500Error(error, url);
+      if (handled500Response) {
+        return Promise.resolve(handled500Response);
+      }
+
       throw error;
     });
   }
 
   async downloadFile(url, filename) {
     return await this.get(url, {
-      responseType: "blob"
-    }).then(response => {
+      responseType: "blob",
+    }).then((response) => {
       files.download(filename, response.data);
     });
   }
@@ -143,7 +189,11 @@ class HttpClient {
 
   _wrapAxiosMethod(methodName) {
     return async (...args) => {
-      await this.setTokenAndOrgUuidHeaders();
+      if (!isEmpty(this.authSession)) {
+        const options = { headers: new Headers() };
+        await this.setTokenAndOrgUuidHeaders(options);
+      }
+      this.setOrgUuidHeader();
       return axios[methodName](...args);
     };
   }
@@ -161,21 +211,21 @@ class HttpClient {
   }
 
   getData(...args) {
-    return this.get(...args).then(response => response.data);
+    return this.get(...args).then((response) => response.data);
   }
 
   getPageData(embeddedResourceCollectionName, ...args) {
-    return this.getData(args).then(responseBodyJson => {
+    return this.getData(args).then((responseBodyJson) => {
       return {
         data: responseBodyJson._embedded ? responseBodyJson._embedded[embeddedResourceCollectionName] : [],
         page: responseBodyJson.page.number,
-        totalCount: responseBodyJson.page.totalElements
+        totalCount: responseBodyJson.page.totalElements,
       };
     });
   }
 
   getAllData(embeddedResourceCollectionName, ...args) {
-    return this.getData(args).then(response => {
+    return this.getData(args).then((response) => {
       return response._embedded ? response._embedded[embeddedResourceCollectionName] : [];
     });
   }
@@ -183,8 +233,8 @@ class HttpClient {
   postUrlEncoded(url, request) {
     const options = {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     };
     const encoded = querystring.stringify(request);
     return axios.post(url, encoded, options);
