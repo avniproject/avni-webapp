@@ -67,10 +67,18 @@ class HttpClient {
       console.warn(`Handling 500 error gracefully for ${error.config?.url || url || "unknown URL"}`);
       toast.showError("Server error. Please try again later, contact support if the issue persists.");
 
-      // Return successful response with empty data to prevent saga crashes
+      // Return successful response with empty data and pagination info to prevent crashes
+      // Structure: response.data should contain the API response format
       return {
-        json: [],
-        data: [],
+        data: {
+          _embedded: {},
+          page: {
+            number: 0,
+            totalElements: 0,
+            size: 0,
+            totalPages: 0,
+          },
+        },
         status: 200,
         statusText: "OK",
         headers: {},
@@ -218,8 +226,8 @@ class HttpClient {
     return this.getData(args).then((responseBodyJson) => {
       return {
         data: responseBodyJson._embedded ? responseBodyJson._embedded[embeddedResourceCollectionName] : [],
-        page: responseBodyJson.page.number,
-        totalCount: responseBodyJson.page.totalElements,
+        page: responseBodyJson.page?.number || 0,
+        totalCount: responseBodyJson.page?.totalElements || 0,
       };
     });
   }
