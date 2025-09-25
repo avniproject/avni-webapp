@@ -95,7 +95,7 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
     fontSize: "0.75rem",
     color: theme.palette.primary.light,
     minWidth: "12rem",
-    textTransform: "uppercase",
+    textTransform: "capitalize",
     letterSpacing: "0.05rem",
     marginLeft: theme.spacing(-1),
     marginBottom: theme.spacing(1),
