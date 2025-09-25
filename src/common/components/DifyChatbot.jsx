@@ -145,7 +145,7 @@ const DifyChatbot = ({ onChatToggle }) => {
             position: "fixed",
             top: 64,
             right: 0,
-            width: "40.75rem",
+            width: 400,
             height: "calc(100vh - 64px)",
             backgroundColor: theme.palette.background.paper,
             boxShadow: theme.shadows[8],
