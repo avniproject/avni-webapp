@@ -215,11 +215,7 @@ class HttpClient {
 
   _wrapAxiosMethod(methodName) {
     return async (...args) => {
-      if (!isEmpty(this.authSession)) {
-        const options = { headers: new Headers() };
-        await this.setTokenAndOrgUuidHeaders(options);
-      }
-      this.setOrgUuidHeader();
+      await this.setTokenAndOrgUuidHeaders();
       return axios[methodName](...args);
     };
   }
