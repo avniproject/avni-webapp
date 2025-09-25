@@ -99,17 +99,6 @@ const MainApp = () => {
   const [initialised, setInitialised] = useState(false);
   const [unhandledRejectionError, setUnhandledError] = useState(null);
   const [genericConfig, setGenericConfig] = useState({});
-  const posthog = usePostHog();
-
-  const setupPostHog = () => {
-    const analyticsOptOut = ApplicationContext.isNonProdEnv();
-    const analyticsOptOutTemp = false; // TODO: remove after testing and before rolling out to prod
-    console.log("analyticsOptOut", analyticsOptOut);
-
-    if (analyticsOptOutTemp && !posthog.has_opted_out_capturing()) {
-      posthog.opt_out_capturing();
-    }
-  };
 
   useEffect(() => {
     // Handle storage migration - clears all localStorage/sessionStorage on version change
@@ -123,7 +112,6 @@ const MainApp = () => {
         }
         http.setIdp(IdpFactory.createIdp(idpDetails.idpType, idpDetails));
         setGenericConfig(idpDetails.genericConfig);
-        setupPostHog();
         setInitialised(true);
       })
       .catch((error) => {

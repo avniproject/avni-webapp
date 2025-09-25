@@ -47,11 +47,9 @@ const AppRoutes = () => {
   const posthog = usePostHog();
 
   if (
-    _.get(userInfo, "organisationCategoryName") !== "Trial" &&
-    !posthog.has_opted_out_capturing()
+    _.get(userInfo, "organisationCategoryName") === "Trial" &&
+    !userInfo.isAdmin
   ) {
-    posthog.opt_out_capturing();
-  } else {
     if (!_.isNil(userInfo.username) && !posthog._isIdentified()) {
       posthog.identify(userInfo.username, {
         organisationCategory: userInfo.organisationCategoryName,
@@ -60,6 +58,10 @@ const AppRoutes = () => {
         organisationId: userInfo.organisationId,
       });
       posthog.startSessionRecording();
+    }
+  } else {
+    if (!posthog.has_opted_out_capturing()) {
+      posthog.opt_out_capturing();
     }
   }
   const handleOnIdle = () => {
