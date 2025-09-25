@@ -9,6 +9,7 @@ import querystring from "querystring";
 import IdpDetails from "../../rootApp/security/IdpDetails";
 import CurrentUserService from "../service/CurrentUserService";
 import { toast } from "../components/Toast";
+import posthog from "posthog-js";
 
 function getCsrfToken() {
   // eslint-disable-next-line no-useless-escape
@@ -58,14 +59,24 @@ class HttpClient {
   initAuthSession(authSession) {
     this.authSession = authSession;
   }
-
   _handle500Error(error, url) {
     const is500Error =
       error.response?.status === 500 || error.status === 500 || (error.message && error.message.includes("Internal Server Error"));
 
     if (is500Error) {
-      console.warn(`Handling 500 error gracefully for ${error.config?.url || url || "unknown URL"}`);
+      const errorUrl = error.config?.url || url || "unknown URL";
+
+      console.warn(`Handling 500 error gracefully for ${errorUrl}`);
       toast.showError("Server error. Please try again later, contact support if the issue persists.");
+
+      // Track 500 error handling to prevent app crashes
+      posthog.capture("server_error_handled_gracefully", {
+        url: errorUrl,
+        error_message: error.message,
+        error_status: error.response?.status || error.status,
+        user_agent: navigator.userAgent,
+        timestamp: new Date().toISOString(),
+      });
 
       // Return successful response with comprehensive empty data structure to prevent crashes
       return {
