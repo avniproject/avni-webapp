@@ -67,10 +67,11 @@ class HttpClient {
       console.warn(`Handling 500 error gracefully for ${error.config?.url || url || "unknown URL"}`);
       toast.showError("Server error. Please try again later, contact support if the issue persists.");
 
-      // Return successful response with empty data and pagination info to prevent crashes
-      // Structure: response.data should contain the API response format
+      // Return successful response with comprehensive empty data structure to prevent crashes
       return {
+        json: [],
         data: {
+          // Standard paginated API structure
           _embedded: {},
           page: {
             number: 0,
@@ -78,6 +79,12 @@ class HttpClient {
             size: 0,
             totalPages: 0,
           },
+          // Search API specific structure
+          content: [],
+          totalElements: 0,
+          totalPages: 0,
+          size: 0,
+          number: 0,
         },
         status: 200,
         statusText: "OK",
