@@ -92,7 +92,7 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
 
   "& .RaLabeled-label": {
     fontWeight: 600,
-    fontSize: "1rem",
+    fontSize: "0.75rem",
     color: theme.palette.primary.light,
     minWidth: "12rem",
     textTransform: "capitalize",
