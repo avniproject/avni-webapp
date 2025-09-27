@@ -3,8 +3,11 @@ import ResourceListView from "../../common/ResourceListView";
 import { useSelector } from "react-redux";
 import { Privilege } from "openchs-models";
 import { get } from "lodash";
+import {useNavigate} from "react-router-dom";
 
 const ReportCardList = () => {
+
+  const navigate = useNavigate();
   const userInfo = useSelector(state => state.app.userInfo);
   const columns = [
     {
