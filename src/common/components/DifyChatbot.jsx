@@ -62,7 +62,7 @@ const DifyChatbot = ({ onChatToggle }) => {
       const chatButton = document.createElement("button");
       chatButton.id = "dify-chat-button";
       chatButton.innerHTML = `
-        <img src="src/robot-chat-icon.png" alt="Chat with AI" width="32" height="32" style="border-radius: 4px;" />
+        <img src="/icons/robot-chat-icon.png" alt="Chat with AI" width="32" height="32" style="border-radius: 4px;" />
       `.trim();
 
       chatButton.style.cssText = `
