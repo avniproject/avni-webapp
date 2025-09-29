@@ -58,6 +58,7 @@ export const OrganisationList = ({ ...props }) => {
         sort={{ field: "id", order: "DESC" }}
         filters={<OrganisationFilter />}
         pagination={<PrettyPagination />}
+        sx={{ overflowX: "auto", maxWidth: "88%" }}
       >
         <Datagrid bulkActionButtons={false} sx={datagridStyles}>
           <TextField source="name" label="Name" />
