@@ -1,10 +1,9 @@
 import { AutocompleteInput } from "react-admin";
 
-export const CatchmentSelectInput = (props) => (
+export const CatchmentSelectInput = props => (
   <AutocompleteInput
     {...props}
     optionText="name"
-    filterToQuery={(searchText) => ({ name: searchText })}
     resettable="true"
     sx={{
       display: "inline-block",
@@ -12,8 +11,8 @@ export const CatchmentSelectInput = (props) => (
       "& .MuiInputBase-root": {
         backgroundColor: "white",
         width: "auto",
-        minWidth: "120px",
-      },
+        minWidth: "120px"
+      }
     }}
   />
 );
