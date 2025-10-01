@@ -2,15 +2,39 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box, Slide, useTheme, IconButton } from "@mui/material";
 import { ChevronRight } from "@mui/icons-material";
-import IdpDetails from "../../rootApp/security/IdpDetails";
+import IdpDetails from "../../rootApp/security/IdpDetails.ts";
 const DifyChatbot = ({ onChatToggle }) => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const theme = useTheme();
+
+  const [aiConfig, setAiConfig] = useState(null);
+  const [configError, setConfigError] = useState(false);
 
   // Notify parent when panel state changes
   useEffect(() => {
     onChatToggle?.(isPanelOpen);
   }, [isPanelOpen, onChatToggle]);
+
+  // Fetch AI assistant configuration
+  useEffect(() => {
+    const fetchAiConfig = async () => {
+      try {
+        const response = await fetch("/config");
+        if (response.ok) {
+          const config = await response.json();
+          setAiConfig(config.copilotConfig);
+          setConfigError(false);
+        } else {
+          setConfigError(true);
+        }
+      } catch (error) {
+        console.error("Failed to fetch AI assistant config:", error);
+        setConfigError(true);
+      }
+    };
+
+    fetchAiConfig();
+  }, []);
 
   // Get user and organization data from Redux state
   const userInfo = useSelector((state) => state.app?.userInfo);
@@ -53,6 +77,11 @@ const DifyChatbot = ({ onChatToggle }) => {
   }, [userInfo, organisation, authSession, authToken]);
 
   useEffect(() => {
+    // Don't create button if config failed or copilot is disabled
+    if (configError || !aiConfig?.avni_copilot_enabled) {
+      return;
+    }
+
     // Create chat button
     const createChatButton = () => {
       // Remove any existing button
@@ -61,7 +90,9 @@ const DifyChatbot = ({ onChatToggle }) => {
 
       const chatButton = document.createElement("button");
       chatButton.id = "dify-chat-button";
-      chatButton.innerHTML = "💬";
+      chatButton.innerHTML = `
+        <img src="/icons/robot-chat-icon.png" alt="Chat with AI" width="32" height="32" style="border-radius: 4px;" />
+      `.trim();
       chatButton.style.cssText = `
         position: fixed;
         bottom: ${theme.spacing(2.5)};
@@ -105,11 +136,11 @@ const DifyChatbot = ({ onChatToggle }) => {
       const button = document.getElementById("dify-chat-button");
       if (button) button.remove();
     };
-  }, [isPanelOpen, theme]);
+  }, [isPanelOpen, theme, aiConfig, configError]);
 
   // Build chatbot URL with user context
   const buildChatUrl = () => {
-    const token = window.difyChatbotConfig?.token || "zzLh8cQNeOZFRVzv";
+    const token = aiConfig?.avni_copilot_token;
 
     const baseUrl = `https://udify.app/chat/${token}`;
     const params = new URLSearchParams();

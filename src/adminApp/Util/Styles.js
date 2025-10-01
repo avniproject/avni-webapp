@@ -91,11 +91,11 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
   boxShadow: "none",
 
   "& .RaLabeled-label": {
-    fontWeight: 600,
-    fontSize: "0.75rem",
+    fontWeight: "600 !important",
+    fontSize: "0.9rem !important", // Bigger label font size
     color: theme.palette.primary.light,
-    minWidth: "12rem",
-    textTransform: "uppercase",
+    minWidth: "15rem !important", // Wider labels
+    textTransform: "capitalize",
     letterSpacing: "0.05rem",
     marginLeft: theme.spacing(-1),
     marginBottom: theme.spacing(1),
@@ -154,6 +154,29 @@ export const StyledSimpleShowLayout = styled(SimpleShowLayout)(({ theme }) => ({
         borderColor: theme.palette.primary.main,
       },
     },
+  },
+
+  // User Details Page styling - make elements bigger
+  "& .RaSimpleShowLayout-row": {
+    marginBottom: theme.spacing(1.5), // Reduced spacing between rows
+  },
+
+  // Target field values - RaTextField-root and other value containers
+  "& .RaTextField-root, & .MuiTypography-body2": {
+    fontSize: "1rem !important", // Bigger value font size
+    lineHeight: "1.4 !important", // Reduced line spacing
+  },
+
+  // Style the reference field links
+  "& .RaReferenceField-link": {
+    fontSize: "1.1rem !important",
+  },
+
+  // Make chips bigger too
+  "& .MuiChip-root": {
+    fontSize: "0.875rem !important",
+    height: "2rem !important",
+    margin: "0.25rem !important",
   },
 
   "& .RaReferenceManyField": {
