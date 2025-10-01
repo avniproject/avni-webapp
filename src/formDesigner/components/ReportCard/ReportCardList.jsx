@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Privilege } from "openchs-models";
 import { get } from "lodash";
-import {useNavigate} from "react-router-dom";
 
 const ReportCardList = () => {
 const navigate = useNavigate();
