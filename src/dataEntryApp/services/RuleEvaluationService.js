@@ -8,9 +8,10 @@ import { common, motherCalculations, RuleRegistry } from "avni-health-modules";
 import { store } from "common/store/createStore";
 import { selectLegacyRules, selectLegacyRulesAllRules } from "dataEntryApp/reducers/metadataReducer";
 import { individualService } from "./IndividualService";
+import moment from "moment";
 
 const services = {
-  individualService
+  individualService,
 };
 
 const getImports = () => {
@@ -18,9 +19,10 @@ const getImports = () => {
     rulesConfig,
     common,
     lodash,
+    moment,
     date_fns: { isValid },
     motherCalculations,
-    log: () => {}
+    log: () => {},
   };
 };
 
@@ -35,7 +37,7 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
 
   const mapOfBundleFormElementStatuses = !_.isEmpty(rulesFromTheBundle)
     ? rulesFromTheBundle
-        .map(r => runRuleAndSaveFailure(r, entityName, entity, formElementGroup, new Date()))
+        .map((r) => runRuleAndSaveFailure(r, entityName, entity, formElementGroup, new Date()))
         .reduce((all, curr) => all.concat(curr), [])
         .reduce(updateMapUsingKeyPattern(), new Map())
     : new Map();
@@ -43,21 +45,21 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
   const formElementStatusAfterGroupRule = runFormElementGroupRule(formElementGroup, entity, entityName, mapOfBundleFormElementStatuses);
   let mapOfFormElementStatuses = new Map();
   const visibleFormElementsUUIDs = _.filter(formElementStatusAfterGroupRule, ({ visibility }) => visibility === true).map(
-    ({ uuid }) => uuid
+    ({ uuid }) => uuid,
   );
-  const applicableFormElements = allFEGFormElements.filter(fe => _.includes(visibleFormElementsUUIDs, fe.uuid));
+  const applicableFormElements = allFEGFormElements.filter((fe) => _.includes(visibleFormElementsUUIDs, fe.uuid));
   if (!_.isEmpty(formElementStatusAfterGroupRule)) {
     mapOfFormElementStatuses = formElementStatusAfterGroupRule.reduce(updateMapUsingKeyPattern(), mapOfFormElementStatuses);
   }
   if (!_.isEmpty(allFEGFormElements) && !_.isEmpty(visibleFormElementsUUIDs)) {
     mapOfFormElementStatuses = applicableFormElements
-      .map(formElement => {
+      .map((formElement) => {
         if (formElement.groupUuid) {
           return getTheChildFormElementStatuses(formElement, entity, entityName, mapOfBundleFormElementStatuses);
         }
         return runFormElementStatusRule(formElement, entity, entityName, null, mapOfBundleFormElementStatuses);
       })
-      .filter(fs => !_.isNil(fs))
+      .filter((fs) => !_.isNil(fs))
       .reduce((all, curr) => all.concat(curr), [])
       .reduce(updateMapUsingKeyPattern(), mapOfFormElementStatuses);
   }
@@ -67,18 +69,18 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
 const getTheChildFormElementStatuses = (childFormElement, entity, entityName, mapOfBundleFormElementStatuses) => {
   const size = getRepeatableObservationSize(childFormElement, entity);
   return _.range(size)
-    .map(questionGroupIndex => {
+    .map((questionGroupIndex) => {
       const formElementStatus = runFormElementStatusRule(
         childFormElement,
         entity,
         entityName,
         questionGroupIndex,
-        mapOfBundleFormElementStatuses
+        mapOfBundleFormElementStatuses,
       );
       if (formElementStatus) formElementStatus.addQuestionGroupInformation(questionGroupIndex);
       return formElementStatus;
     })
-    .filter(fs => !_.isNil(fs))
+    .filter((fs) => !_.isNil(fs))
     .reduce((all, curr) => all.concat(curr), []);
 };
 
@@ -93,7 +95,7 @@ const runFormElementStatusRule = (formElement, entity, entityName, questionGroup
   if (_.isNil(formElement.rule) || _.isEmpty(_.trim(formElement.rule))) {
     return getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
       uuid: formElement.uuid,
-      questionGroupIndex
+      questionGroupIndex,
     });
   }
   try {
@@ -103,7 +105,7 @@ const runFormElementStatusRule = (formElement, entity, entityName, questionGroup
     const ruleFunc = eval(formElement.rule);
     return ruleFunc({
       params: { formElement, entity, questionGroupIndex, services },
-      imports: getImports()
+      imports: getImports(),
     });
   } catch (e) {
     return null;
@@ -128,13 +130,13 @@ const getDefaultFormElementStatusIfNotFoundInBundleFESs = (mapOfBundleFormElemen
 
 const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBundleFormElementStatuses) => {
   if (_.isNil(formElementGroup.rule) || _.isEmpty(_.trim(formElementGroup.rule))) {
-    return formElementGroup.getFormElements().flatMap(formElement => {
+    return formElementGroup.getFormElements().flatMap((formElement) => {
       if (formElement.groupUuid) {
         const size = getRepeatableObservationSize(formElement, entity);
-        return _.range(size).map(questionGroupIndex => {
+        return _.range(size).map((questionGroupIndex) => {
           const formElementStatus = getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
             uuid: formElement.uuid,
-            questionGroupIndex
+            questionGroupIndex,
           });
           formElementStatus.addQuestionGroupInformation(questionGroupIndex);
           return formElementStatus;
@@ -142,7 +144,7 @@ const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBund
       } else {
         return getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
           uuid: formElement.uuid,
-          questionGroupIndex: null
+          questionGroupIndex: null,
         });
       }
     });
@@ -154,7 +156,7 @@ const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBund
     const ruleFunc = eval(formElementGroup.rule);
     return ruleFunc({
       params: { formElementGroup, entity, services },
-      imports: getImports()
+      imports: getImports(),
     });
   } catch (e) {}
 };
@@ -164,7 +166,7 @@ const getRuleServiceLibraryInterfaceForSharingModules = () => {
     log: () => {},
     common: common,
     motherCalculations: motherCalculations,
-    models: models
+    models: models,
   };
 };
 
@@ -172,7 +174,7 @@ const getAllRuleItemsFor = (entity, type, entityTypeHardCoded) => {
   const entityType = _.get(entity, "constructor.schema.name", entityTypeHardCoded);
   const applicableRules = RuleRegistry.getRulesFor(entity.uuid, type, entityType); //Core module rules
   const additionalRules = getApplicableRules(entity, type, entityType);
-  const ruleItems = _.sortBy(applicableRules.concat(additionalRules), r => r.executionOrder);
+  const ruleItems = _.sortBy(applicableRules.concat(additionalRules), (r) => r.executionOrder);
   return ruleItems;
 };
 
@@ -188,8 +190,8 @@ const getApplicableRules = (ruledEntity, ruleType, ruledEntityType) => {
   const rules = legacyRules
     .map(_.identity)
     .filter(
-      rule =>
-        rule.voided === false && rule.type === ruleType && rule.entity.uuid === ruledEntity.uuid && rule.entity.type === ruledEntityType
+      (rule) =>
+        rule.voided === false && rule.type === ruleType && rule.entity.uuid === ruledEntity.uuid && rule.entity.type === ruledEntityType,
     );
   return getRuleFunctions(rules);
 };
@@ -202,8 +204,8 @@ const getRuleFunctions = (rules = []) => {
   }
 
   return _.defaults(rules, [])
-    .filter(ar => _.isFunction(allRules[ar.fnName]) && _.isFunction(allRules[ar.fnName].exec))
-    .map(ar => ({ ...ar, fn: allRules[ar.fnName] }));
+    .filter((ar) => _.isFunction(allRules[ar.fnName]) && _.isFunction(allRules[ar.fnName].exec))
+    .map((ar) => ({ ...ar, fn: allRules[ar.fnName] }));
 };
 
 const runRuleAndSaveFailure = (rule, entityName, entity, ruleTypeValue, config, context) => {
