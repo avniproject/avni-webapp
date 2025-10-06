@@ -8,10 +8,10 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
-import { Close, MenuOpen } from "@mui/icons-material";
 import Checkbox from "@mui/material/Checkbox";
+import RuleFailureToolbar from "./RuleFailureToolbar";
 
-const STATUS = {
+export const STATUS = {
   OPEN: 1,
   CLOSED: 2,
   ALL: 3,
@@ -42,6 +42,29 @@ const RuleFailureTelemetryList = () => {
       return newSelection;
     });
   }, []);
+
+  const renderTopToolbar = useCallback(
+    ({ table }) =>
+      UserInfo.hasPrivilege(
+        userInfo,
+        Privilege.PrivilegeType.EditRuleFailure,
+      ) ? (
+        <RuleFailureToolbar
+          tableRef={tableRef}
+          selectedRows={selectedRows}
+          selectedStatus={selectedStatus}
+          onSelectionChange={setSelectedRows}
+        />
+      ) : undefined,
+    [selectedRows, selectedStatus, userInfo],
+  );
+
+  const components = useMemo(
+    () => ({
+      topToolbar: renderTopToolbar,
+    }),
+    [renderTopToolbar],
+  );
 
   const columns = useMemo(
     () => [
@@ -198,107 +221,6 @@ const RuleFailureTelemetryList = () => {
     [selectedStatus],
   );
 
-  const actions = useMemo(
-    () =>
-      UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditRuleFailure)
-        ? [
-            {
-              icon: Close,
-              tooltip: "Close Selected Errors",
-              isFreeAction: true,
-              disabled: selectedStatus === STATUS.CLOSED,
-              onClick: (event, table) => {
-                const nativeSelected = table?.getSelectedRowModel()?.rows;
-                const selected =
-                  nativeSelected?.length > 0 ? nativeSelected : selectedRows;
-                console.log(
-                  "Close action - Native selected:",
-                  nativeSelected,
-                  "Custom selected:",
-                  selectedRows,
-                  "Final selected:",
-                  selected,
-                  "Table:",
-                  table,
-                );
-                if (!Array.isArray(selected) || selected.length === 0) {
-                  alert("Please select at least one error to close.");
-                  return;
-                }
-                const request = {
-                  params: {
-                    ids: selected
-                      .map((row) => row.original?.id || row.id)
-                      .join(","),
-                    isClosed: true,
-                  },
-                };
-                http
-                  .put("/web/ruleFailureTelemetry", null, request)
-                  .then(() => {
-                    if (tableRef.current) {
-                      tableRef.current.refresh();
-                      setSelectedRows([]);
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Failed to close selected errors:", error);
-                    alert("Failed to close selected errors. Please try again.");
-                  });
-              },
-            },
-            {
-              icon: MenuOpen,
-              tooltip: "Reopen Selected Errors",
-              isFreeAction: true,
-              disabled: selectedStatus === STATUS.OPEN,
-              onClick: (event, table) => {
-                const nativeSelected = table?.getSelectedRowModel()?.rows;
-                const selected =
-                  nativeSelected?.length > 0 ? nativeSelected : selectedRows;
-                console.log(
-                  "Reopen action - Native selected:",
-                  nativeSelected,
-                  "Custom selected:",
-                  selectedRows,
-                  "Final selected:",
-                  selected,
-                  "Table:",
-                  table,
-                );
-                if (!Array.isArray(selected) || selected.length === 0) {
-                  alert("Please select at least one error to reopen.");
-                  return;
-                }
-                const request = {
-                  params: {
-                    ids: selected
-                      .map((row) => row.original?.id || row.id)
-                      .join(","),
-                    isClosed: false,
-                  },
-                };
-                http
-                  .put("/web/ruleFailureTelemetry", null, request)
-                  .then(() => {
-                    if (tableRef.current) {
-                      tableRef.current.refresh();
-                      setSelectedRows([]);
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Failed to reopen selected errors:", error);
-                    alert(
-                      "Failed to reopen selected errors. Please try again.",
-                    );
-                  });
-              },
-            },
-          ]
-        : [],
-    [selectedStatus, userInfo, selectedRows],
-  );
-
   return (
     <Box
       sx={{
@@ -417,7 +339,7 @@ const RuleFailureTelemetryList = () => {
             </Box>
           )}
           onRowClick={(event, row, togglePanel) => togglePanel()}
-          actions={actions}
+          components={components}
           route="/appdesigner/ruleFailures"
           onRowSelectionChange={(selectedRowIds) => {
             console.log("Native selection changed:", selectedRowIds);
