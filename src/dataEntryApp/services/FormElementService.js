@@ -58,21 +58,21 @@ export default {
     isChildFormElement && validationResult.addQuestionGroupIndex(childFormElement.questionGroupIndex);
     remove(
       validationResults,
-      existingValidationResult =>
+      (existingValidationResult) =>
         existingValidationResult.formIdentifier === validationResult.formIdentifier ||
         (isChildFormElement &&
           existingValidationResult.formIdentifier === childFormElement.uuid &&
-          existingValidationResult.questionGroupIndex === childFormElement.questionGroupIndex)
+          existingValidationResult.questionGroupIndex === childFormElement.questionGroupIndex),
     );
     validationResults.push(validationResult);
     const ruleValidationErrors = getRuleValidationErrors(formElementStatuses);
-    const hiddenFormElementStatus = filter(formElementStatuses, status => status.visibility === false);
+    const hiddenFormElementStatus = filter(formElementStatuses, (status) => status.visibility === false);
     const ruleErrorsAdded = addPreviousValidationErrors(ruleValidationErrors, validationResult, validationResults);
-    remove(ruleErrorsAdded, result => result.success);
+    remove(ruleErrorsAdded, (result) => result.success);
     return differenceWith(
       ruleErrorsAdded,
       hiddenFormElementStatus,
-      (a, b) => a.formIdentifier === b.uuid && a.questionGroupIndex === b.questionGroupIndex
+      (a, b) => a.formIdentifier === b.uuid && a.questionGroupIndex === b.questionGroupIndex,
     );
   },
 
@@ -84,20 +84,20 @@ export default {
     isChildFormElement && validationResult.addQuestionGroupIndex(childFormElement.questionGroupIndex);
     remove(
       validationResults,
-      existingValidationResult =>
+      (existingValidationResult) =>
         existingValidationResult.formIdentifier === validationResult.formIdentifier ||
         (isChildFormElement &&
           existingValidationResult.formIdentifier === childFormElement.uuid &&
-          existingValidationResult.questionGroupIndex === childFormElement.questionGroupIndex)
+          existingValidationResult.questionGroupIndex === childFormElement.questionGroupIndex),
     );
     validationResults.push(validationResult);
-    const hiddenFormElementStatus = filter(formElementStatuses, status => status.visibility === false);
+    const hiddenFormElementStatus = filter(formElementStatuses, (status) => status.visibility === false);
     const ruleErrorsAdded = addPreviousValidationErrors([], validationResult, validationResults);
-    remove(ruleErrorsAdded, result => result.success);
+    remove(ruleErrorsAdded, (result) => result.success);
     return differenceWith(
       ruleErrorsAdded,
       hiddenFormElementStatus,
-      (a, b) => a.formIdentifier === b.uuid && a.questionGroupIndex === b.questionGroupIndex
+      (a, b) => a.formIdentifier === b.uuid && a.questionGroupIndex === b.questionGroupIndex,
     );
   },
 
@@ -107,7 +107,7 @@ export default {
     } else {
       return ValidationResult.successful(formElement.uuid);
     }
-  }
+  },
 };
 
 export function getFormElementStatuses(entity, formElementGroup, observationsHolder) {
@@ -121,23 +121,23 @@ export function getFormElementStatuses(entity, formElementGroup, observationsHol
   return getFormElementStatuses(entity, formElementGroup, observationsHolder);
 }
 
-const getRuleValidationErrors = formElementStatuses => {
+const getRuleValidationErrors = (formElementStatuses) => {
   return flatMap(
     formElementStatuses,
-    status =>
+    (status) =>
       new ValidationResult(
         isEmpty(status.validationErrors),
         status.uuid,
         head(status.validationErrors),
         null,
         status.questionGroupIndex,
-        ValidationResult.ValidationTypes.Rule
-      )
+        ValidationResult.ValidationTypes.Rule,
+      ),
   );
 };
 
 const checkValidationResult = (ruleValidationErrors, validationResult) => {
-  return map(ruleValidationErrors, error => {
+  return map(ruleValidationErrors, (error) => {
     const { formIdentifier, questionGroupIndex, success } = validationResult;
     if (
       error.formIdentifier === formIdentifier &&
@@ -153,14 +153,14 @@ const checkValidationResult = (ruleValidationErrors, validationResult) => {
 
 const addPreviousValidationErrors = (ruleValidationErrors, validationResult, previousErrors) => {
   const validationResultsThatNeedToBePreserved = previousErrors.filter(
-    ({ validationType }) => validationType !== ValidationResult.ValidationTypes.Rule
+    ({ validationType }) => validationType !== ValidationResult.ValidationTypes.Rule,
   );
 
   // Filter out the current validationResult from previousErrors to avoid duplicates
   const filteredPreviousErrors = validationResultsThatNeedToBePreserved.filter(
     ({ formIdentifier, questionGroupIndex }) =>
       formIdentifier !== validationResult.formIdentifier ||
-      (questionGroupIndex !== validationResult.questionGroupIndex && !isNil(questionGroupIndex))
+      (questionGroupIndex !== validationResult.questionGroupIndex && !isNil(questionGroupIndex)),
   );
 
   // Handle case where ruleValidationErrors is empty and validationResult.success is false
@@ -181,28 +181,37 @@ export const filterFormElementStatusesAndConvertToValidationResults = (formEleme
   const filteredFE = formElementGroup.filterElements(formElementStatuses);
 
   // Filter form element statuses to only include those that are visible and whose parents are visible
-  const filteredFeStatuses = filter(formElementStatuses, status => {
+  const filteredFeStatuses = filter(formElementStatuses, (status) => {
     // Check if the current form element is in the filtered list
-    const isVisible = some(filteredFE && filteredFE.map(fe => fe.uuid), feUUID => status.uuid === feUUID);
+    const isVisible = some(filteredFE && filteredFE.map((fe) => fe.uuid), (feUUID) => status.uuid === feUUID);
 
     if (!isVisible) return false;
 
     // Check if parent is visible (if there is a parent)
-    const correspondingFormElement = find(formElementGroup.getFormElements(), fe => fe.uuid === status.uuid);
+    const correspondingFormElement = find(formElementGroup.getFormElements(), (fe) => fe.uuid === status.uuid);
     if (correspondingFormElement && correspondingFormElement.groupUuid) {
-      const parentStatus = find(formElementStatuses, s => s.uuid === correspondingFormElement.groupUuid);
+      const parentStatus = find(formElementStatuses, (s) => s.uuid === correspondingFormElement.groupUuid);
       return parentStatus ? parentStatus.visibility !== false : true;
     }
 
     return true; // Include if no parent (top-level form element)
   });
 
-  return getRuleValidationErrors(filteredFeStatuses);
+  const ruleValidationErrors = getRuleValidationErrors(filteredFeStatuses);
+
+  // For static form element groups, include entity validation errors
+  const isStaticFormElementGroup = formElementGroup.constructor.name === "StaticFormElementGroup";
+  if (isStaticFormElementGroup && entity?.validate) {
+    const entityValidationErrors = entity.validate().filter((validation) => !validation.success);
+    return [...ruleValidationErrors, ...entityValidationErrors];
+  }
+
+  return ruleValidationErrors;
 };
 
 export function getNonNestedFormElements(formElements) {
   const nested = [];
-  formElements.forEach(x => {
+  formElements.forEach((x) => {
     isNil(x.group) && nested.push(x);
   });
   return nested;
