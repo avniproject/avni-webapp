@@ -1,4 +1,4 @@
-import { Concept, ValidationResult } from "avni-models";
+import { Concept, ValidationResult, StaticFormElementGroup } from "avni-models";
 import { differenceWith, find, filter, flatMap, head, isEmpty, isNil, map, remove, some } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
@@ -200,7 +200,7 @@ export const filterFormElementStatusesAndConvertToValidationResults = (formEleme
   const ruleValidationErrors = getRuleValidationErrors(filteredFeStatuses);
 
   // For static form element groups, include entity validation errors
-  const isStaticFormElementGroup = formElementGroup.constructor.name === "StaticFormElementGroup";
+  const isStaticFormElementGroup = formElementGroup instanceof StaticFormElementGroup;
   if (isStaticFormElementGroup && entity?.validate) {
     const entityValidationErrors = entity.validate().filter((validation) => !validation.success);
     return [...ruleValidationErrors, ...entityValidationErrors];
