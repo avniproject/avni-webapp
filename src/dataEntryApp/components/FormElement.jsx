@@ -15,6 +15,7 @@ import LocationFormElement from "./LocationFormElement";
 import LandingSubjectFormElement from "./LandingSubjectFormElement";
 import QuestionGroupFormElement from "./QuestionGroupFormElement";
 import { RepeatableQuestionGroupElement } from "./RepeatableQuestionGroupElement";
+import SignatureFormElement from "./SignatureFormElement";
 
 const StyledContainer = styled("div")(({ isGrid }) => ({
   ...(isGrid && {
@@ -42,6 +43,7 @@ const elements = {
   Video: MediaFormElement,
   Audio: MediaFormElement,
   File: MediaFormElement,
+  Signature: SignatureFormElement,
   Id: TextFormElement,
   PhoneNumber: PhoneNumberFormElement,
   Subject: LandingSubjectFormElement,
