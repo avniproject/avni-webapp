@@ -12,7 +12,7 @@ export const EditorContainer = styled("div")(({ theme }) => ({
   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   borderRadius: "12px",
   fontFamily: "Arial, sans-serif",
-  maxWidth: "75%"
+  maxWidth: "75%",
 }));
 
 export const EditorStyles = styled("div")({
@@ -23,7 +23,7 @@ export const EditorStyles = styled("div")({
   borderStyle: "solid",
   borderWidth: "1px",
   borderRadius: "8px",
-  backgroundColor: "#f5f5f5"
+  backgroundColor: "#f5f5f5",
 });
 
 export const ErrorMessage = styled("div")({
@@ -32,21 +32,21 @@ export const ErrorMessage = styled("div")({
   backgroundColor: "#ffdddd",
   borderRadius: "8px",
   border: "1px solid #d8000c",
-  fontSize: "14px"
+  fontSize: "14px",
 });
 
 export const ErrorPre = styled("pre")({
   color: "black",
   borderRadius: "2px",
   backgroundColor: "#ffdddd",
-  margin: 0
+  margin: 0,
 });
 
 export const JSEditor = ({
   value,
   onValueChange,
   readOnly = false,
-  disabled = false
+  disabled = false,
 }) => {
   const [error, setError] = useState(null);
 
@@ -65,9 +65,9 @@ export const JSEditor = ({
         <Editor
           readOnly={readOnly}
           disabled={disabled}
-          value={value || " "}
+          value={value || ""}
           onValueChange={onValueChange}
-          highlight={code => Prism.highlight(code, Prism.languages.js)}
+          highlight={(code) => Prism.highlight(code, Prism.languages.js)}
           padding={10}
         />
       </EditorStyles>

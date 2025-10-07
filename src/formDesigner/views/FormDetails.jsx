@@ -1194,7 +1194,7 @@ const FormDetails = () => {
     };
 
     fetchData();
-  }, [setupBeforeUnloadListener, getForm]);
+  }, [getForm]);
 
   const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(
     userInfo,

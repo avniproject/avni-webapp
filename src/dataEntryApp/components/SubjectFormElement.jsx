@@ -8,10 +8,10 @@ import { debounce, find, first, isEmpty, xor } from "lodash";
 import { Individual } from "avni-models";
 import { Concept } from "openchs-models";
 
-const SubjectFormElement = props => {
+const SubjectFormElement = (props) => {
   const { t } = useTranslation();
   const subjectTypeUuid = props.formElement.concept.recordValueByKey(
-    Concept.keys.subjectTypeUUID
+    Concept.keys.subjectTypeUUID,
   );
   const isMultiSelect = props.formElement.type === "MultiSelect";
   const isMandatory = props.formElement.mandatory;
@@ -30,28 +30,28 @@ const SubjectFormElement = props => {
     if (props.value === null) return;
     if (isMultiSelect) {
       setSelectedSubjects(
-        props.value.map(uuid => {
+        props.value.map((uuid) => {
           const subject = subjectService.findByUUID(uuid);
           return { label: constructSubjectLabel(subject), value: subject };
-        })
+        }),
       );
     } else {
       const subject = subjectService.findByUUID(props.value);
       setSelectedSubjects({
         label: constructSubjectLabel(subject),
-        value: subject
+        value: subject,
       });
     }
-  }, []);
+  }, [props.value]);
 
   const validationResult = find(
     props.validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
       formIdentifier === props.uuid &&
-      questionGroupIndex === props.formElement.questionGroupIndex
+      questionGroupIndex === props.formElement.questionGroupIndex,
   );
 
-  const onSelectedSubjectsChange = event => {
+  const onSelectedSubjectsChange = (event) => {
     const toggledSubject = isMultiSelect
       ? first(xor(event, selectedSubjects))
       : event || selectedSubjects;
@@ -66,18 +66,18 @@ const SubjectFormElement = props => {
   const loadSubjects = (inputValue, callback) => {
     SubjectSearchService.search({
       name: inputValue,
-      subjectType: subjectTypeUuid
+      subjectType: subjectTypeUuid,
     })
-      .then(searchResults =>
+      .then((searchResults) =>
         searchResults.listOfRecords
-          .filter(subject =>
+          .filter((subject) =>
             isMultiSelect && selectedSubjects
               ? selectedSubjects
-                  .map(selectedSubject => selectedSubject.value.uuid)
+                  .map((selectedSubject) => selectedSubject.value.uuid)
                   .indexOf(subject.uuid) === -1
-              : true
+              : true,
           )
-          .map(subject => {
+          .map((subject) => {
             const value = {
               id: subject.id,
               uuid: subject.uuid,
@@ -86,14 +86,14 @@ const SubjectFormElement = props => {
               lastName: subject.lastName,
               fullName: subject.fullName,
               profilePicture: subject.profilePicture,
-              addressLevel: subject.addressLevel
+              addressLevel: subject.addressLevel,
             };
             subjectService.addSubject(value);
             return {
               label: constructSubjectLabel(subject, true),
-              value: value
+              value: value,
             };
-          })
+          }),
       )
       .then(callback);
   };

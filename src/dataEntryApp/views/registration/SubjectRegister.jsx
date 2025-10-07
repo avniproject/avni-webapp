@@ -49,7 +49,7 @@ const StyledTypography = styled(Typography)({
   marginBottom: 8,
 });
 
-const StyledErrorSpan = styled("span")({
+const StyledErrorDiv = styled("div")({
   color: "#f44336",
   fontFamily: "Roboto",
   fontWeight: 400,
@@ -183,7 +183,12 @@ const SubjectRegister = () => {
                 typeId={selectedAddressLevelType.id}
               />
             )}
-            {error && <StyledErrorSpan>{t(error.messageKey)}</StyledErrorSpan>}
+          </>
+        )}
+        {error && (
+          <>
+            <LineBreak num={1} />
+            <StyledErrorDiv>{t(error.messageKey)}</StyledErrorDiv>
           </>
         )}
       </>
@@ -269,11 +274,6 @@ const SubjectRegister = () => {
                   dispatch(setDateOfBirth(dateOfBirth));
                 }}
               />
-              {dobError && (
-                <StyledErrorSpan>
-                  {t(dobError.messageKey, dobError.extra)}
-                </StyledErrorSpan>
-              )}
               <LineBreak num={1} />
               <CodedFormElement
                 name="gender"
@@ -287,9 +287,9 @@ const SubjectRegister = () => {
                 mandatory={true}
               />
               {genderError && (
-                <StyledErrorSpan>
+                <StyledErrorDiv>
                   {t(genderError.messageKey, genderError.extra)}
-                </StyledErrorSpan>
+                </StyledErrorDiv>
               )}
               <LineBreak num={2} />
               {renderAddress()}
