@@ -229,6 +229,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
           : newPagination;
       return updated;
     });
+    setRowSelection({});
   }, []);
 
   const paginationProps = useMemo(() => {
