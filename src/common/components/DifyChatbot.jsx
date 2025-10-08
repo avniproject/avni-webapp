@@ -4,7 +4,11 @@ import { Box, Slide, useTheme, IconButton } from "@mui/material";
 import { ChevronRight } from "@mui/icons-material";
 import IdpDetails from "../../rootApp/security/IdpDetails";
 const DifyChatbot = ({ onChatToggle }) => {
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  // Check if this is first time after login
+  const [isPanelOpen, setIsPanelOpen] = useState(() => {
+    const hasSeenChatbot = localStorage.getItem("avni-chatbot-seen");
+    return !hasSeenChatbot; // Open only if user hasn't seen it before
+  });
   const theme = useTheme();
 
   // Notify parent when panel state changes
@@ -61,8 +65,43 @@ const DifyChatbot = ({ onChatToggle }) => {
 
       const chatButton = document.createElement("button");
       chatButton.id = "dify-chat-button";
+
+      // Add CSS keyframe animations to the document head
+      const styleElement = document.createElement("style");
+      styleElement.textContent = `
+        @keyframes aiGlow {
+          0%, 100% { 
+            box-shadow: 0 0 8px ${theme.palette.primary.main}, 
+                        0 0 12px ${theme.palette.primary.main}, 
+                        0 0 16px ${theme.palette.primary.main};
+          }
+          50% { 
+            box-shadow: 0 0 12px ${theme.palette.primary.light}, 
+                        0 0 16px ${theme.palette.primary.light}, 
+                        0 0 20px ${theme.palette.primary.light};
+          }
+        }
+        
+        #dify-chat-button {
+          animation: aiGlow 2s ease-in-out infinite, aiFlip 6s ease-in-out infinite;
+          animation-delay: 0s, 4s;
+          transform-style: preserve-3d;
+        }
+        
+        #dify-chat-button img {
+          transition: all 0.3s ease;
+        }
+      `;
+
+      // Remove existing style if it exists
+      const existingStyle = document.getElementById("dify-chat-animations");
+      if (existingStyle) existingStyle.remove();
+
+      styleElement.id = "dify-chat-animations";
+      document.head.appendChild(styleElement);
+
       chatButton.innerHTML = `
-        <img src="/icons/robot-chat-icon.png" alt="Chat with AI" width="32" height="32" style="border-radius: 4px;" />
+        <img src="/icons/ai-chat-icon.png" alt="Chat with AI" width="32" height="32" style="border-radius: 4px;" />
       `.trim();
 
       chatButton.style.cssText = `
@@ -107,6 +146,9 @@ const DifyChatbot = ({ onChatToggle }) => {
     return () => {
       const button = document.getElementById("dify-chat-button");
       if (button) button.remove();
+
+      const style = document.getElementById("dify-chat-animations");
+      if (style) style.remove();
     };
   }, [isPanelOpen, theme]);
 
@@ -148,7 +190,7 @@ const DifyChatbot = ({ onChatToggle }) => {
             position: "fixed",
             top: 64,
             right: 0,
-            width: "40.75rem",
+            width: 400,
             height: "calc(100vh - 64px)",
             backgroundColor: theme.palette.background.paper,
             boxShadow: theme.shadows[8],
@@ -160,7 +202,11 @@ const DifyChatbot = ({ onChatToggle }) => {
         >
           {/* Close Button */}
           <IconButton
-            onClick={() => setIsPanelOpen(false)}
+            onClick={() => {
+              setIsPanelOpen(false);
+              // Mark chatbot as seen so it won't auto-open again
+              localStorage.setItem("avni-chatbot-seen", "true");
+            }}
             sx={{
               position: "absolute",
               left: -20,
