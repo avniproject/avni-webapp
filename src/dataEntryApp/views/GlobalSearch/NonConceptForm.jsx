@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
-import { TextField, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useTranslation } from "react-i18next";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -9,18 +9,18 @@ import { dateFormat } from "dataEntryApp/constants";
 
 const StyledGrid = styled(Grid)({
   marginTop: "1%",
-  marginBottom: "1%"
+  marginBottom: "1%",
 });
 
 const StyledTypography = styled(Typography)({
   marginBottom: 10,
-  color: "rgba(0, 0, 0, 0.54)"
+  color: "rgba(0, 0, 0, 0.54)",
 });
 
 function NonConceptForm({
   searchFilterForms = [],
   selectedDate,
-  onDateChange
+  onDateChange,
 }) {
   const { t } = useTranslation();
 
@@ -41,8 +41,14 @@ function NonConceptForm({
                 <DatePicker
                   id="date-picker-dialog"
                   format={dateFormat}
-                  value={selectedDate[`${searchFilterForm.type}`].minValue}
-                  onChange={minDate =>
+                  value={
+                    selectedDate[`${searchFilterForm.type}`].minValue
+                      ? new Date(
+                          selectedDate[`${searchFilterForm.type}`].minValue,
+                        )
+                      : null
+                  }
+                  onChange={(minDate) =>
                     onDateChange(minDate, null, searchFilterForm.type)
                   }
                   slotProps={{
@@ -50,8 +56,8 @@ function NonConceptForm({
                     actionBar: { actions: ["clear"] },
                     openPickerButton: {
                       "aria-label": "change date",
-                      color: "primary"
-                    }
+                      color: "primary",
+                    },
                   }}
                 />
               </LocalizationProvider>
@@ -70,14 +76,22 @@ function NonConceptForm({
                   id="date-picker-dialog"
                   format={dateFormat}
                   placeholder="From"
-                  value={selectedDate[`${searchFilterForm.type}`].minValue}
-                  onChange={minDate =>
+                  value={
+                    selectedDate[`${searchFilterForm.type}`].minValue
+                      ? new Date(
+                          selectedDate[`${searchFilterForm.type}`].minValue,
+                        )
+                      : null
+                  }
+                  onChange={(minDate) =>
                     onDateChange(
                       minDate,
                       selectedDate[`${searchFilterForm.type}`].maxValue !== null
-                        ? selectedDate[`${searchFilterForm.type}`].maxValue
+                        ? new Date(
+                            selectedDate[`${searchFilterForm.type}`].maxValue,
+                          )
                         : null,
-                      searchFilterForm.type
+                      searchFilterForm.type,
                     )
                   }
                   slotProps={{
@@ -85,22 +99,30 @@ function NonConceptForm({
                     actionBar: { actions: ["clear"] },
                     openPickerButton: {
                       "aria-label": "change date",
-                      color: "primary"
-                    }
+                      color: "primary",
+                    },
                   }}
                 />
                 <DatePicker
                   id="date-picker-dialog"
                   format={dateFormat}
                   placeholder="To"
-                  value={selectedDate[`${searchFilterForm.type}`].maxValue}
-                  onChange={maxDate =>
+                  value={
+                    selectedDate[`${searchFilterForm.type}`].maxValue
+                      ? new Date(
+                          selectedDate[`${searchFilterForm.type}`].maxValue,
+                        )
+                      : null
+                  }
+                  onChange={(maxDate) =>
                     onDateChange(
                       selectedDate[`${searchFilterForm.type}`].minValue !== null
-                        ? selectedDate[`${searchFilterForm.type}`].minValue
+                        ? new Date(
+                            selectedDate[`${searchFilterForm.type}`].minValue,
+                          )
                         : null,
                       maxDate,
-                      searchFilterForm.type
+                      searchFilterForm.type,
                     )
                   }
                   slotProps={{
@@ -108,13 +130,13 @@ function NonConceptForm({
                     actionBar: { actions: ["clear"] },
                     openPickerButton: {
                       "aria-label": "change date",
-                      color: "primary"
-                    }
+                      color: "primary",
+                    },
                   }}
                 />
               </LocalizationProvider>
             </Grid>
-          ) : null
+          ) : null,
         )}
       </StyledGrid>
     </Fragment>
