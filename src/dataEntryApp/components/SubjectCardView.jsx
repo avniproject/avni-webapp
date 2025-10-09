@@ -10,27 +10,27 @@ const StyledCard = styled(Card)(({ theme }) => ({
   width: "auto",
   whiteSpace: "nowrap",
   overflowWrap: "normal",
-  height: 150,
+  minHeight: 150,
   justifyContent: "center",
   margin: 20,
   textDecoration: "none",
   alignItems: "center",
-  background: theme.palette.background.paper
+  background: theme.palette.background.paper,
 }));
 
 const StyledGridContainer = styled(Grid)({
   justifyContent: "center",
   alignItems: "center",
-  flexWrap: "nowrap"
+  flexWrap: "nowrap",
 });
 
 const StyledTypography = styled(Typography)({
   textAlign: "center",
-  marginBottom: 8
+  marginBottom: 8,
 });
 
 const StyledSubjectProfilePicture = styled(SubjectProfilePicture)({
-  margin: "0px"
+  margin: "0px",
 });
 
 const SubjectCardView = ({
