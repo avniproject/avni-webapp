@@ -7,7 +7,7 @@ import {
   setProgramEnrolment,
   fetchEnrolmentRulesResponse,
   setEnrolmentDate,
-  setExitDate
+  setExitDate,
 } from "dataEntryApp/reducers/programEnrolReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation, useSearchParams } from "react-router-dom";
@@ -24,18 +24,18 @@ import { LineBreak } from "../../../../common/components/utils";
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(1, 3),
-  flexGrow: 1
+  flexGrow: 1,
 }));
 
 const StyledTypography = styled(Typography)({
-  fontSize: "20px"
+  fontSize: "20px",
 });
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
   container: true,
   spacing: theme.spacing(3),
   justifyContent: "center",
-  alignItems: "center"
+  alignItems: "center",
 }));
 
 const ProgramEnrol = () => {
@@ -45,17 +45,17 @@ const ProgramEnrol = () => {
   const [searchParams] = useSearchParams();
 
   const enrolForm = useSelector(
-    state => state.dataEntry.enrolmentReducer.enrolForm
+    (state) => state.dataEntry.enrolmentReducer.enrolForm,
   );
   const subjectProfile = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
   const programEnrolment = useSelector(
-    state => state.dataEntry.enrolmentReducer.programEnrolment
+    (state) => state.dataEntry.enrolmentReducer.programEnrolment,
   );
-  const load = useSelector(state => state.dataEntry.enrolmentReducer.load);
+  const load = useSelector((state) => state.dataEntry.enrolmentReducer.load);
   const validationResults = useSelector(
-    state => state.dataEntry.enrolmentReducer.validationResults
+    (state) => state.dataEntry.enrolmentReducer.validationResults,
   );
 
   const formType = searchParams.get("formType");
@@ -66,7 +66,13 @@ const ProgramEnrol = () => {
 
   useEffect(() => {
     dispatch(
-      onLoad(subjectTypeName, programName, formType, programEnrolmentUuid, uuid)
+      onLoad(
+        subjectTypeName,
+        programName,
+        formType,
+        programEnrolmentUuid,
+        uuid,
+      ),
     );
   }, [
     dispatch,
@@ -74,7 +80,7 @@ const ProgramEnrol = () => {
     programName,
     formType,
     programEnrolmentUuid,
-    uuid
+    uuid,
   ]);
 
   return load ? (
@@ -95,7 +101,7 @@ const ProgramEnrol = () => {
                 }
                 value={programEnrolment.enrolmentDateTime}
                 validationResults={validationResults}
-                update={value => dispatch(setEnrolmentDate(value))}
+                update={(value) => dispatch(setEnrolmentDate(value))}
               />
               <LineBreak num={3} />
             </ProgramEnrolmentForm>
@@ -111,12 +117,12 @@ const ProgramEnrol = () => {
                 }
                 value={programEnrolment.programExitDateTime}
                 validationResults={validationResults}
-                update={value => dispatch(setExitDate(value))}
+                update={(value) => dispatch(setExitDate(value))}
               />
               <LineBreak num={3} />
             </ProgramExitEnrolmentForm>
           ) : (
-            <div>Loading</div>
+            <div>{t("Loading")}</div>
           )}
         </StyledGrid>
       </StyledPaper>
