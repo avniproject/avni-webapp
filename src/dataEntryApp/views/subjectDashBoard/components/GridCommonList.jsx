@@ -50,7 +50,15 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
     <StyledGridContainer container size={12}>
       {gridListDetails &&
         gridListDetails
-          .filter(relative => relative !== undefined && !relative.voided)
+          .filter(
+            relative =>
+              relative !== undefined &&
+              !relative.voided &&
+              relative.individualB &&
+              relative.individualB.subjectType &&
+              relative.individualB.subjectType.type &&
+              relative.individualB.subjectType.name
+          )
           .map((relative, index) => (
             <StyledGridItem key={index} size={3}>
               <StyledCard>
