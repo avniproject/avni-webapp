@@ -8,28 +8,6 @@ import { httpClient } from "../common/utils/httpClient";
 import Footer from "../common/components/Footer";
 import DifyChatbot from "../common/components/DifyChatbot";
 
-// Initialize Dify configuration at app level
-const initializeDifyChatbot = () => {
-  const token =
-    import.meta.env.VITE_APP_DIFY_CHATBOT_TOKEN || "zzLh8cQNeOZFRVzv";
-
-  // Set global config immediately when app loads
-  window.difyChatbotConfig = {
-    token,
-    inputs: {},
-    systemVariables: {},
-    userVariables: {},
-  };
-
-  console.log(
-    "Dify config initialized at app level:",
-    window.difyChatbotConfig,
-  );
-};
-
-// Initialize immediately
-initializeDifyChatbot();
-
 const App = () => {
   const dispatch = useDispatch();
   const [isChatOpen, setIsChatOpen] = useState(false);
