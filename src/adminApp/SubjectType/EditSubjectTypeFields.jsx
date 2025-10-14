@@ -2,7 +2,7 @@ import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
 import Types, { SubjectTypeType } from "./Types";
-import { AvniImageUpload } from "../../common/components/AvniImageUpload";
+import { AvniMediaUpload } from "../../common/components/AvniMediaUpload";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { findRegistrationForms } from "../domain/formMapping";
@@ -11,12 +11,12 @@ import GroupRoles from "./GroupRoles";
 import {
   sampleMemberAdditionEligibilityCheckRule,
   sampleSubjectProgramEligibilityCheckRule,
-  sampleSubjectSummaryRule
+  sampleSubjectSummaryRule,
 } from "../../formDesigner/common/SampleRule";
 import PropTypes from "prop-types";
 import { JSEditor } from "../../common/components/JSEditor";
 
-const EditSubjectTypeFields = props => {
+const EditSubjectTypeFields = (props) => {
   const {
     subjectType,
     onRemoveFile,
@@ -24,7 +24,7 @@ const EditSubjectTypeFields = props => {
     formList,
     groupValidationError,
     dispatch,
-    source
+    source,
   } = props;
 
   const isUserSubjectType = subjectType.type === SubjectTypeType.User;
@@ -37,7 +37,7 @@ const EditSubjectTypeFields = props => {
           autoComplete="off"
           disabled={isUserSubjectType && source === "edit"}
           value={subjectType.name}
-          onChange={event =>
+          onChange={(event) =>
             dispatch({ type: "name", payload: event.target.value })
           }
           toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
@@ -48,23 +48,24 @@ const EditSubjectTypeFields = props => {
         <AvniSelect
           label="Select Type"
           value={_.isEmpty(subjectType.type) ? "" : subjectType.type}
-          onChange={event =>
+          onChange={(event) =>
             dispatch({ type: "type", payload: event.target.value })
           }
           style={{ width: "200px" }}
           required
           disabled={isUserSubjectType && source === "edit"}
-          options={SubjectTypeType.getAll().map(type => ({
+          options={SubjectTypeType.getAll().map((type) => ({
             value: type,
-            label: type
+            label: type,
           }))}
           toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
         />
         <p />
       </>
-      <AvniImageUpload
+      <AvniMediaUpload
         onSelect={onSetFile}
         label={"Icon"}
+        accept="image/*"
         toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ICON"}
         width={75}
         height={75}
@@ -75,7 +76,7 @@ const EditSubjectTypeFields = props => {
       <p />
       <AvniSwitch
         checked={!!subjectType.active}
-        onChange={event =>
+        onChange={(event) =>
           dispatch({ type: "active", payload: event.target.checked })
         }
         name="Active"
@@ -85,10 +86,10 @@ const EditSubjectTypeFields = props => {
       <AvniSelectForm
         label={"Registration Form"}
         value={_.get(subjectType, "registrationForm.formName")}
-        onChange={selectedForm =>
+        onChange={(selectedForm) =>
           dispatch({
             type: "registrationForm",
-            payload: selectedForm
+            payload: selectedForm,
           })
         }
         formList={findRegistrationForms(formList)}
@@ -122,7 +123,7 @@ const EditSubjectTypeFields = props => {
       />
       <JSEditor
         value={subjectType.subjectSummaryRule || sampleSubjectSummaryRule()}
-        onValueChange={event =>
+        onValueChange={(event) =>
           dispatch({ type: "subjectSummaryRule", payload: event })
         }
       />
@@ -136,7 +137,7 @@ const EditSubjectTypeFields = props => {
           subjectType.programEligibilityCheckRule ||
           sampleSubjectProgramEligibilityCheckRule()
         }
-        onValueChange={event =>
+        onValueChange={(event) =>
           dispatch({ type: "programEligibilityCheckRule", payload: event })
         }
       />
@@ -152,10 +153,10 @@ const EditSubjectTypeFields = props => {
               subjectType.memberAdditionEligibilityCheckRule ||
               sampleMemberAdditionEligibilityCheckRule()
             }
-            onValueChange={event =>
+            onValueChange={(event) =>
               dispatch({
                 type: "memberAdditionEligibilityCheckRule",
-                payload: event
+                payload: event,
               })
             }
           />
@@ -171,7 +172,7 @@ EditSubjectTypeFields.propTypes = {
   onRemoveFile: PropTypes.func.isRequired,
   formList: PropTypes.array.isRequired,
   groupValidationError: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired
+  dispatch: PropTypes.func.isRequired,
 };
 
 export default EditSubjectTypeFields;

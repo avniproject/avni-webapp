@@ -15,11 +15,11 @@ export class ConceptMapper {
         webConceptAnswerView.abnormal = conceptAnswer.abnormal;
         webConceptAnswerView.order = conceptAnswer.order;
         webConceptAnswerView.voided = conceptAnswer.voided;
-        webConceptAnswerView.mediaUrl = conceptAnswer.answerConcept.mediaUrl;
+        webConceptAnswerView.media = conceptAnswer.answerConcept.media;
         return webConceptAnswerView;
       });
       answers = answers.filter((answer: any) => !answer.voided);
-      answers.sort(function(conceptOrder1: any, conceptOrder2: any) {
+      answers.sort(function (conceptOrder1: any, conceptOrder2: any) {
         return conceptOrder1.order - conceptOrder2.order;
       });
     }
@@ -40,7 +40,7 @@ export class ConceptMapper {
     webConceptView.lastModifiedDateTime = conceptResponse.lastModifiedDateTime;
     webConceptView.keyValues = conceptResponse.keyValues;
     webConceptView.answers = answers;
-    webConceptView.mediaUrl = conceptResponse.mediaUrl;
+    webConceptView.media = conceptResponse.media;
     return webConceptView;
   }
 }

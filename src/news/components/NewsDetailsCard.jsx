@@ -4,7 +4,7 @@ import { getFormattedDateTime } from "../../adminApp/components/AuditUtil";
 import { Delete, Edit } from "@mui/icons-material";
 import { ActionButton } from "./ActionButton";
 import { isNil } from "lodash";
-import { AvniImageUpload } from "../../common/components/AvniImageUpload";
+import { AvniMediaUpload } from "../../common/components/AvniMediaUpload";
 import DOMPurify from "dompurify";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -16,13 +16,13 @@ const NewsDetailsCard = ({
   setDeleteAlert,
   setOpenEdit,
   setPublishAlert,
-  displayActions
+  displayActions,
 }) => {
   const navigate = useNavigate();
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
   const canEditNews = UserInfo.hasPrivilege(
     userInfo,
-    Privilege.PrivilegeType.EditNews
+    Privilege.PrivilegeType.EditNews,
   );
 
   return (
@@ -31,7 +31,7 @@ const NewsDetailsCard = ({
         container
         direction="row"
         sx={{
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
         <Grid container direction={"column"} size={6}>
@@ -62,7 +62,7 @@ const NewsDetailsCard = ({
             container
             spacing={2}
             sx={{
-              justifyContent: "flex-end"
+              justifyContent: "flex-end",
             }}
             size={6}
           >
@@ -100,32 +100,33 @@ const NewsDetailsCard = ({
       </Grid>
       <Box
         sx={{
-          mt: 2
+          mt: 2,
         }}
       />
       <Divider />
       <Box
         sx={{
-          mt: 2
+          mt: 2,
         }}
       />
       <Grid container spacing={5} direction="column">
         <Grid align={"center"}>
-          <AvniImageUpload
+          <AvniMediaUpload
             oldImgUrl={news.heroImage}
             height={"400"}
             width={"80%"}
+            accept="image/*"
           />
         </Grid>
         <Grid
           container
           sx={{
-            justifyContent: "flex-start"
+            justifyContent: "flex-start",
           }}
         >
           <div
             dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(news.contentHtml)
+              __html: DOMPurify.sanitize(news.contentHtml),
             }}
           />
         </Grid>

@@ -16,7 +16,6 @@ import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import { sampleCardQuery } from "../../common/SampleRule";
 import { AvniSelect } from "../../../common/components/AvniSelect";
 import { AvniSwitch } from "../../../common/components/AvniSwitch";
-import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
 import { MediaFolder, uploadImage } from "../../../common/utils/S3Client";
 import {
   createServerError,
@@ -33,6 +32,7 @@ import FormMetaDataSelect from "../../../common/components/FormMetaDataSelect";
 import { StandardReportCardType } from "openchs-models";
 import { ValueTextUnitSelect } from "../../../common/components/ValueTextUnitSelect";
 import CustomizedSnackbar from "../CustomizedSnackbar";
+import { AvniMediaUpload } from "../../../common/components/AvniMediaUpload";
 
 export const CreateEditReportCard = () => {
   const params = useParams();
@@ -211,9 +211,10 @@ export const CreateEditReportCard = () => {
         />
         {getErrorByKey(error, "EMPTY_COLOR")}
         <p />
-        <AvniImageUpload
+        <AvniMediaUpload
           onSelect={setFile}
           label={"Icon"}
+          accept="image/*"
           toolTipKey={"APP_DESIGNER_CARD_ICON"}
           width={75}
           height={75}

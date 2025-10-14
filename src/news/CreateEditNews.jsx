@@ -7,11 +7,10 @@ import {
   DialogContent,
   Grid,
   Typography,
-  TextField
+  TextField,
 } from "@mui/material";
 import RichTextEditor from "./components/RichTextEditor";
 import { ActionButton } from "./components/ActionButton";
-import { AvniImageUpload } from "../common/components/AvniImageUpload";
 import { isEmpty } from "lodash";
 import { MediaFolder, uploadImage } from "../common/utils/S3Client";
 import { newsInitialState, NewsReducer } from "./reducers";
@@ -23,32 +22,33 @@ import CustomizedBackdrop from "../dataEntryApp/components/CustomizedBackdrop";
 import API from "./api";
 import MuiComponentHelper from "../common/utils/MuiComponentHelper";
 import { createServerError } from "../formDesigner/common/ErrorUtil";
+import { AvniMediaUpload } from "../common/components/AvniMediaUpload";
 
 const StyledDialog = styled(Dialog)({
   "& .MuiDialog-paper": {
     minHeight: "90%",
-    minWidth: "80%"
-  }
+    minWidth: "80%",
+  },
 });
 
 const StyledBox = styled(Box)(({ theme }) => ({
   border: 1,
   marginTop: theme.spacing(2),
   borderColor: "#ddd",
-  padding: theme.spacing(2)
+  padding: theme.spacing(2),
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   margin: theme.spacing(1),
-  width: "100%"
+  width: "100%",
 }));
 
 const StyledActionButton = styled(ActionButton)(({ theme }) => ({
-  padding: theme.spacing(0, 1.25)
+  padding: theme.spacing(0, 1.25),
 }));
 
 const StyledTypography = styled(Typography)({
-  opacity: 0.5
+  opacity: 0.5,
 });
 
 export const CreateEditNews = ({
@@ -56,7 +56,7 @@ export const CreateEditNews = ({
   open,
   headerTitle,
   edit,
-  existingNews
+  existingNews,
 }) => {
   const [news, dispatch] = useReducer(NewsReducer, newsInitialState);
   const [file, setFile] = useState();
@@ -84,14 +84,14 @@ export const CreateEditNews = ({
     if (isEmpty(title)) {
       setError([
         ...error,
-        { key: "EMPTY_TITLE", message: "title cannot be empty" }
+        { key: "EMPTY_TITLE", message: "title cannot be empty" },
       ]);
       isValid = false;
     }
     if (getWordCount() < 10) {
       setError([
         ...error,
-        { key: "LESS_CONTENT", message: "Please type at least 10 words" }
+        { key: "LESS_CONTENT", message: "Please type at least 10 words" },
       ]);
       isValid = false;
     }
@@ -107,7 +107,7 @@ export const CreateEditNews = ({
       const [s3FileKey, error] = await uploadImage(
         news.heroImage,
         file,
-        MediaFolder.NEWS
+        MediaFolder.NEWS,
       );
       if (error) {
         setSaving(false);
@@ -120,12 +120,12 @@ export const CreateEditNews = ({
         publishedDate: news.publishedDate,
         heroImage: s3FileKey,
         content,
-        contentHtml
+        contentHtml,
       };
 
       const response = edit ? API.editNews(payload) : API.createNews(payload);
       return response
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
             setSaving(false);
             dispatch({ type: "reset" });
@@ -133,7 +133,7 @@ export const CreateEditNews = ({
             handleClose();
           }
         })
-        .catch(error => {
+        .catch((error) => {
           setSaving(false);
           setError([createServerError(error, "error while saving news")]);
         });
@@ -149,8 +149,9 @@ export const CreateEditNews = ({
       <DialogContent>
         <Grid container spacing={4} direction="column">
           <Grid>
-            <AvniImageUpload
+            <AvniMediaUpload
               label="Header image"
+              accept="image/*"
               onSelect={setFile}
               oldImgUrl={news.heroImage}
               height="300"
@@ -164,14 +165,14 @@ export const CreateEditNews = ({
               fullWidth
               margin="normal"
               value={news.title || ""}
-              onChange={event =>
+              onChange={(event) =>
                 dispatchActionAndClearError(
                   "title",
                   event.target.value,
                   "EMPTY_TITLE",
                   dispatch,
                   error,
-                  setError
+                  setError,
                 )
               }
             />
@@ -183,14 +184,14 @@ export const CreateEditNews = ({
               <StyledBox>
                 <RichTextEditor
                   editorState={news.editorState}
-                  setEditorState={newState =>
+                  setEditorState={(newState) =>
                     dispatchActionAndClearError(
                       "editorState",
                       newState,
                       "LESS_CONTENT",
                       dispatch,
                       error,
-                      setError
+                      setError,
                     )
                   }
                 />

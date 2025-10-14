@@ -5,7 +5,7 @@ export class WebConcept {
   keyValues: any[];
   answers: any[];
   active: boolean;
-  mediaUrl: string;
+  media: any[];
   lowAbsolute: number;
   highAbsolute: number;
   lowNormal: number;
@@ -47,7 +47,7 @@ export class WebConcept {
 
     const isNullOrLessThanOrEqual = (
       value: number | null,
-      otherValue: number | null
+      otherValue: number | null,
     ) => {
       return value === null || otherValue == null || value <= otherValue;
     };
@@ -78,14 +78,16 @@ export class WebConceptAnswer {
   editable: boolean;
   voided: boolean;
   order: number;
-  mediaUrl: string;
+  media: any[];
 }
 
 export class WebConceptView extends WebConcept {
-  unSavedMediaFile: File;
+  unsavedImage: File;
+  unsavedVideo: File;
   answerUIViews: WebConceptAnswerView[];
 
-  static MaxFileSize = 150 * 1024;
+  static MaxImageFileSize = 150 * 1024; //150kB
+  static MaxVideoFileSize = 10 * 1024 * 1024; //10mB
 
   static emptyConcept() {
     const webConceptView = new WebConceptView();
@@ -112,7 +114,8 @@ export class ConceptAnswerError {
 }
 
 export class WebConceptAnswerView extends WebConceptAnswer {
-  unSavedMediaFile: File;
+  unsavedImage: File;
+  unsavedVideo: File;
   isAnswerHavingError: ConceptAnswerError;
 
   static emptyAnswer() {

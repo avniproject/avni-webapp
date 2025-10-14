@@ -5,29 +5,29 @@ import {
   Button,
   Grid,
   FormHelperText,
-  Box
+  Box,
 } from "@mui/material";
 import { Delete, ArrowDropUp, ArrowDropDown } from "@mui/icons-material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import PropTypes from "prop-types";
-import { get, size } from "lodash";
-import { AvniImageUpload } from "../../common/components/AvniImageUpload";
+import { get, isEmpty, size } from "lodash";
+import { AvniMediaUpload } from "../../common/components/AvniMediaUpload";
 import { WebConceptView } from "common/model/WebConcept";
 
 const StyledButton = styled(Button)({
   height: "35px",
   width: "17%",
   justifyContent: "start",
-  marginTop: 5
+  marginTop: 5,
 });
 
 const StyledFormControlLabel = styled(FormControlLabel)({
   marginTop: 15,
-  marginLeft: 2
+  marginLeft: 2,
 });
 
 const StyledDeleteButton = styled(Button)({
-  color: "#ff0000"
+  color: "#ff0000",
 });
 
 export const CodedConceptAnswer = ({
@@ -45,17 +45,17 @@ export const CodedConceptAnswer = ({
   onToggleAnswerFieldUnique,
   onMoveUp,
   onMoveDown,
-  onDeleteAnswer
+  onDeleteAnswer,
 }) => {
   const actionMap = {
     onToggleAnswerFielUUID,
     onToggleAnswerFieldUnique,
     onMoveUp,
     onMoveDown,
-    onDeleteAnswer
+    onDeleteAnswer,
   };
 
-  const action = actionName => {
+  const action = (actionName) => {
     const actionFn = actionMap[actionName];
     if (actionFn) {
       inlineConcept
@@ -68,6 +68,16 @@ export const CodedConceptAnswer = ({
     get(answer, "isAnswerHavingError.isErrored") &&
     answer.isAnswerHavingError.type === "duplicate";
 
+  const currentImageUrl =
+    !isEmpty(answer.media) &&
+    !isEmpty(answer.media.filter((m) => m.type === "Image"))
+      ? answer.media.filter((m) => m.type === "Image")[0].url
+      : null;
+  const currentVideoUrl =
+    !isEmpty(answer.media) &&
+    !isEmpty(answer.media.filter((m) => m.type === "Video"))
+      ? answer.media.filter((m) => m.type === "Video")[0].url
+      : null;
   return (
     <Grid container spacing={1} alignItems="center" sx={{ mb: 1 }}>
       {/* Answer Input Field */}
@@ -101,13 +111,13 @@ export const CodedConceptAnswer = ({
               control={
                 <Checkbox
                   checked={answer.abnormal}
-                  onChange={e =>
+                  onChange={(e) =>
                     inlineConcept
                       ? onToggleAnswerField(
                           "abnormal",
                           groupIndex,
                           elementIndex,
-                          index
+                          index,
                         )
                       : onToggleAnswerField(e, index)
                   }
@@ -125,13 +135,13 @@ export const CodedConceptAnswer = ({
               control={
                 <Checkbox
                   checked={answer.unique}
-                  onChange={e =>
+                  onChange={(e) =>
                     inlineConcept
                       ? onToggleAnswerField(
                           "unique",
                           groupIndex,
                           elementIndex,
-                          index
+                          index,
                         )
                       : onToggleAnswerField(e, index)
                   }
@@ -183,18 +193,38 @@ export const CodedConceptAnswer = ({
           </Grid>
           {!inlineConcept && (
             <Grid>
-              <AvniImageUpload
+              <AvniMediaUpload
                 width={20}
                 height={20}
+                accept="image/*"
                 allowUpload={true}
-                onSelect={mediaFile => onSelectAnswerMedia(mediaFile, index)}
-                maxFileSize={WebConceptView.MaxFileSize}
-                onDelete={() => onRemoveAnswerMedia(index)}
-                oldImgUrl={answer.mediaUrl}
-                uniqueName={"answer" + index}
+                onSelect={(mediaFile) =>
+                  onSelectAnswerMedia(mediaFile, index, "Image")
+                }
+                maxFileSize={WebConceptView.MaxImageFileSize}
+                onDelete={() => onRemoveAnswerMedia(index, "Image")}
+                oldImgUrl={currentImageUrl}
+                uniqueName={"answer-image-" + index}
                 localMediaUrl={
-                  answer.unSavedMediaFile &&
-                  URL.createObjectURL(answer.unSavedMediaFile)
+                  answer.unsavedImage &&
+                  URL.createObjectURL(answer.unsavedImage)
+                }
+              />
+              <AvniMediaUpload
+                width={20}
+                height={20}
+                accept="video/*"
+                allowUpload={true}
+                onSelect={(mediaFile) =>
+                  onSelectAnswerMedia(mediaFile, index, "Video")
+                }
+                maxFileSize={WebConceptView.MaxVideoFileSize}
+                onDelete={() => onRemoveAnswerMedia(index, "Video")}
+                oldImgUrl={currentVideoUrl}
+                uniqueName={"answer-video-" + index}
+                localMediaUrl={
+                  answer.unsavedVideo &&
+                  URL.createObjectURL(answer.unsavedVideo)
                 }
               />
             </Grid>
@@ -265,5 +295,5 @@ CodedConcept.propTypes = {
   onDeleteAnswer: PropTypes.func.isRequired,
   onAddAnswer: PropTypes.func.isRequired,
   onChangeAnswerName: PropTypes.func.isRequired,
-  onToggleAnswerField: PropTypes.func.isRequired
+  onToggleAnswerField: PropTypes.func.isRequired,
 };

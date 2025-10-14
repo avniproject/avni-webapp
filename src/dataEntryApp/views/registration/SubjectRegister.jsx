@@ -33,7 +33,7 @@ import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import TextFormElement from "dataEntryApp/components/TextFormElement";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
-import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
+import { AvniMediaUpload } from "../../../common/components/AvniMediaUpload";
 import HierarchicalLocationSelect from "../../components/HierarchicalLocationSelect";
 import LocationSelect from "../../components/LocationSelect";
 import { selectOrganisationConfig } from "../../sagas/selectors";
@@ -199,9 +199,10 @@ const SubjectRegister = () => {
     return (
       subject.subjectType.allowProfilePicture && (
         <Fragment>
-          <AvniImageUpload
+          <AvniMediaUpload
             onSelect={(file) => dispatch(setProfilePictureFile(file))}
             label={t("profilePicture")}
+            accept="image/*"
             toolTipKey={"APP_DESIGNER_PROFILE_PICTURE_ICON"}
             width={75}
             height={75}
