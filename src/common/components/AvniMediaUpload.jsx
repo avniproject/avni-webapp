@@ -14,8 +14,8 @@ import { AddAPhoto, VideoCall, Close } from "@mui/icons-material";
 import MediaService from "../../adminApp/service/MediaService";
 
 const MEDIA_TYPES = {
-  IMAGE: "image",
-  VIDEO: "video",
+  IMAGE: "Image",
+  VIDEO: "Video",
 };
 
 const getMediaType = (file) => {
@@ -30,7 +30,6 @@ export const MediaPreview = ({
   height,
   onDelete,
 }) => {
-  console.log("MediaPreview", mediaType, mediaUrl);
   const [openPreview, setOpenPreview] = useState(false);
   const isVideo = toLower(mediaType) === toLower(MEDIA_TYPES.VIDEO);
 
@@ -52,7 +51,7 @@ export const MediaPreview = ({
     return (
       <img
         src={url}
-        alt={"Preview"}
+        alt={""}
         width={width}
         height={height}
         style={{ cursor: "pointer", objectFit: "cover" }}
@@ -161,12 +160,14 @@ export const AvniMediaUpload = ({
       MediaService.getMedia(oldImgUrl).then((res) => {
         setMediaPreview(res);
         // Try to determine media type from URL extension if possible
-        const isVideo = oldImgUrl.toLowerCase().match(/\.(mp4|webm|ogg)$/i);
+        const isVideo = oldImgUrl.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/i);
         setMediaType(isVideo ? MEDIA_TYPES.VIDEO : MEDIA_TYPES.IMAGE);
       });
     } else if (!isEmpty(localMediaUrl)) {
       setMediaPreview(localMediaUrl);
-      const isVideo = localMediaUrl.toLowerCase().match(/\.(mp4|webm|ogg)$/i);
+      const isVideo = localMediaUrl
+        .toLowerCase()
+        .match(/\.(mp4|webm|ogg|mov)$/i);
       setMediaType(isVideo ? MEDIA_TYPES.VIDEO : MEDIA_TYPES.IMAGE);
     } else {
       setMediaPreview();

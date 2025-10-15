@@ -192,41 +192,45 @@ export const CodedConceptAnswer = ({
             </StyledDeleteButton>
           </Grid>
           {!inlineConcept && (
-            <Grid>
-              <AvniMediaUpload
-                width={20}
-                height={20}
-                accept="image/*"
-                allowUpload={true}
-                onSelect={(mediaFile) =>
-                  onSelectAnswerMedia(mediaFile, index, "Image")
-                }
-                maxFileSize={WebConceptView.MaxImageFileSize}
-                onDelete={() => onRemoveAnswerMedia(index, "Image")}
-                oldImgUrl={currentImageUrl}
-                uniqueName={"answer-image-" + index}
-                localMediaUrl={
-                  answer.unsavedImage &&
-                  URL.createObjectURL(answer.unsavedImage)
-                }
-              />
-              <AvniMediaUpload
-                width={20}
-                height={20}
-                accept="video/*"
-                allowUpload={true}
-                onSelect={(mediaFile) =>
-                  onSelectAnswerMedia(mediaFile, index, "Video")
-                }
-                maxFileSize={WebConceptView.MaxVideoFileSize}
-                onDelete={() => onRemoveAnswerMedia(index, "Video")}
-                oldImgUrl={currentVideoUrl}
-                uniqueName={"answer-video-" + index}
-                localMediaUrl={
-                  answer.unsavedVideo &&
-                  URL.createObjectURL(answer.unsavedVideo)
-                }
-              />
+            <Grid container spacing={2}>
+              <Grid item>
+                <AvniMediaUpload
+                  width={20}
+                  height={20}
+                  accept="image/*"
+                  allowUpload={true}
+                  onSelect={(mediaFile) =>
+                    onSelectAnswerMedia(mediaFile, index, "Image")
+                  }
+                  maxFileSize={WebConceptView.MaxImageFileSize}
+                  onDelete={() => onRemoveAnswerMedia(index, "Image")}
+                  oldImgUrl={currentImageUrl}
+                  uniqueName={"answer-image-" + index}
+                  localMediaUrl={
+                    answer.unsavedImage &&
+                    URL.createObjectURL(answer.unsavedImage)
+                  }
+                />
+              </Grid>
+              <Grid item>
+                <AvniMediaUpload
+                  width={20}
+                  height={20}
+                  accept="video/*"
+                  allowUpload={true}
+                  onSelect={(mediaFile) =>
+                    onSelectAnswerMedia(mediaFile, index, "Video")
+                  }
+                  maxFileSize={WebConceptView.MaxVideoFileSize}
+                  onDelete={() => onRemoveAnswerMedia(index, "Video")}
+                  oldImgUrl={currentVideoUrl}
+                  uniqueName={"answer-video-" + index}
+                  localMediaUrl={
+                    answer.unsavedVideo &&
+                    URL.createObjectURL(answer.unsavedVideo)
+                  }
+                />
+              </Grid>
             </Grid>
           )}
         </Grid>
