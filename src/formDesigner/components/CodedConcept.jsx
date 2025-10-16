@@ -217,6 +217,7 @@ export const CodedConceptAnswer = ({
                   width={20}
                   height={20}
                   accept="video/*"
+                  mediaType={"Video"}
                   allowUpload={true}
                   onSelect={(mediaFile) =>
                     onSelectAnswerMedia(mediaFile, index, "Video")

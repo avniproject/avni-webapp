@@ -18,11 +18,6 @@ const MEDIA_TYPES = {
   VIDEO: "Video",
 };
 
-const getMediaType = (file) => {
-  if (!file) return null;
-  return file.type.startsWith("video/") ? MEDIA_TYPES.VIDEO : MEDIA_TYPES.IMAGE;
-};
-
 export const MediaPreview = ({
   mediaUrl,
   mediaType,
@@ -39,7 +34,11 @@ export const MediaPreview = ({
         <video
           width={width}
           height={height}
-          style={{ cursor: "pointer", objectFit: "cover" }}
+          style={{
+            cursor: "pointer",
+            objectFit: "cover",
+            border: "1px dashed #ccc",
+          }}
           onClick={() => setOpenPreview(true)}
         >
           <source src={url} type="video/mp4" />
@@ -54,7 +53,11 @@ export const MediaPreview = ({
         alt={""}
         width={width}
         height={height}
-        style={{ cursor: "pointer", objectFit: "cover" }}
+        style={{
+          cursor: "pointer",
+          objectFit: "cover",
+          border: "1px dashed #ccc",
+        }}
         onClick={() => setOpenPreview(true)}
       />
     );
@@ -134,11 +137,11 @@ export const AvniMediaUpload = ({
   uniqueName = "0",
   localMediaUrl,
   accept = "*/*",
+  mediaType = MEDIA_TYPES.IMAGE,
 }) => {
   const [value, setValue] = useState("");
   const [file, setFile] = useState();
   const [mediaPreview, setMediaPreview] = useState();
-  const [mediaType, setMediaType] = useState(null);
   const [fileSizeError, setFileSizeError] = useState("");
 
   useEffect(() => {
@@ -149,7 +152,6 @@ export const AvniMediaUpload = ({
 
     const objectUrl = URL.createObjectURL(file);
     setMediaPreview(objectUrl);
-    setMediaType(getMediaType(file));
 
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
@@ -159,32 +161,36 @@ export const AvniMediaUpload = ({
     if (!isEmpty(oldImgUrl)) {
       MediaService.getMedia(oldImgUrl).then((res) => {
         setMediaPreview(res);
-        // Try to determine media type from URL extension if possible
-        const isVideo = oldImgUrl.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/i);
-        setMediaType(isVideo ? MEDIA_TYPES.VIDEO : MEDIA_TYPES.IMAGE);
       });
     } else if (!isEmpty(localMediaUrl)) {
       setMediaPreview(localMediaUrl);
-      const isVideo = localMediaUrl
-        .toLowerCase()
-        .match(/\.(mp4|webm|ogg|mov)$/i);
-      setMediaType(isVideo ? MEDIA_TYPES.VIDEO : MEDIA_TYPES.IMAGE);
     } else {
       setMediaPreview();
-      setMediaType(null);
     }
   }, [oldImgUrl, localMediaUrl]);
 
+  const constructErrorMessage = (mediaType, selectedFileSize, maxFileSize) => {
+    const unit = mediaType === "Video" ? "MB" : "KB";
+    const friendlySelectedFileSize =
+      Math.round(
+        (mediaType === "Video"
+          ? selectedFileSize / 1024 / 1024
+          : selectedFileSize / 1024 + Number.EPSILON) * 10,
+      ) / 10;
+    const friendlyMaxFileSize =
+      Math.round(
+        (mediaType === "Video"
+          ? maxFileSize / 1024 / 1024
+          : maxFileSize / 1024 + Number.EPSILON) * 10,
+      ) / 10;
+    return `File size ${friendlySelectedFileSize} ${unit} exceeds the maximum allowed size of ${friendlyMaxFileSize} ${unit}.`;
+  };
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       if (maxFileSize && selectedFile.size > maxFileSize) {
         setFileSizeError(
-          `File size ${
-            Math.round((selectedFile.size / 1024 + Number.EPSILON) * 10) / 10
-          } KB exceeds the maximum allowed size of ${
-            Math.round((maxFileSize / 1024 + Number.EPSILON) * 10) / 10
-          } KB.`,
+          constructErrorMessage(mediaType, selectedFile.size, maxFileSize),
         );
         setFile(undefined);
         setValue("");
@@ -222,7 +228,11 @@ export const AvniMediaUpload = ({
             component="span"
             style={{ width, height, border: "1px dashed #ccc" }}
           >
-            {accept.includes("video") ? <VideoCall /> : <AddAPhoto />}
+            {accept.includes("video") ? (
+              <VideoCall fontSize={"large"} />
+            ) : (
+              <AddAPhoto />
+            )}
           </IconButton>
         </label>
       </Fragment>
@@ -231,21 +241,22 @@ export const AvniMediaUpload = ({
 
   return (
     <Fragment>
-      <FormControl>
+      <FormControl fullWidth>
         <Grid
           container
           direction="row"
-          spacing={1}
-          sx={{
-            alignItems: "center",
-          }}
+          spacing={2}
+          alignItems="center"
+          wrap="nowrap"
         >
-          <Grid>
-            <Typography sx={{ opacity: 0.5 }}>{label}</Typography>
+          <Grid item>
+            <Typography sx={{ opacity: 0.5, whiteSpace: "nowrap" }}>
+              {label}
+            </Typography>
           </Grid>
-          {allowUpload && <Grid>{renderUploadButton()}</Grid>}
+          {allowUpload && <Grid item>{renderUploadButton()}</Grid>}
           {mediaPreview && mediaType && (
-            <Grid>
+            <Grid item>
               <ToolTipContainer toolTipKey={toolTipKey} toolTipText={label}>
                 <MediaPreview
                   mediaUrl={mediaPreview}

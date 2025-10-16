@@ -209,6 +209,9 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
   const onSelectAnswerMedia = useCallback((mediaFile, index, type) => {
     setConcept((prev) => {
       const answers = [...prev.answers];
+      answers[index].media = answers[index].media
+        ? answers[index].media.filter((m) => m.type !== type)
+        : [];
       type === "Video"
         ? (answers[index].unsavedVideo = mediaFile)
         : (answers[index].unsavedImage = mediaFile);
@@ -735,6 +738,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               width={20}
               accept="video/*"
               onSelect={handleVideoSelect}
+              mediaType={"Video"}
               label={`Video (max ${
                 Math.round(
                   (WebConceptView.MaxVideoFileSize / 1024 / 1024 +
