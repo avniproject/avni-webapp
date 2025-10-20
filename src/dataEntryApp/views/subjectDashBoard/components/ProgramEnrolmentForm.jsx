@@ -40,7 +40,10 @@ const ProgramEnrolmentForm = ({ children, fetchRulesResponse }) => {
     onSummaryPage: enrolmentState.onSummaryPage,
     wizard: enrolmentState.wizard,
     saveErrorMessageKey: enrolmentState.enrolmentSaveErrorKey,
-    updateObs: (formElement, value) => dispatch(updateObs(formElement, value)),
+    updateObs: (formElement, value, childFormElement, questionGroupIndex) =>
+      dispatch(
+        updateObs(formElement, value, childFormElement, questionGroupIndex),
+      ),
     addNewQuestionGroup: (formElement, questionGroup) =>
       dispatch(addNewQuestionGroup(formElement, questionGroup)),
     removeQuestionGroup: (formElement, questionGroupIndex) =>
