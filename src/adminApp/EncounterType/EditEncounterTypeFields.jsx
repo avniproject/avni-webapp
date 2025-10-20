@@ -13,7 +13,7 @@ import {
   findEncounterCancellationForms,
   findEncounterForms,
   findProgramEncounterCancellationForms,
-  findProgramEncounterForms
+  findProgramEncounterForms,
 } from "../domain/formMapping";
 
 const EditEncounterTypeFields = ({
@@ -29,7 +29,7 @@ const EditEncounterTypeFields = ({
   ruleValidationError,
   formMappings,
   setProgram,
-  allPrograms
+  allPrograms,
 }) => {
   function getCancellationForms() {
     return _.isEmpty(programT)
@@ -46,17 +46,17 @@ const EditEncounterTypeFields = ({
   useEffect(() => {
     if (!_.isEmpty(subjectT)) {
       const matchingFormMappings = formMappings.filter(
-        formMapping =>
+        (formMapping) =>
           formMapping.subjectTypeUUID === subjectT.uuid &&
-          !_.isNil(formMapping.programUUID)
+          !_.isNil(formMapping.programUUID),
       );
       setProgram(
-        allPrograms.filter(program =>
+        allPrograms.filter((program) =>
           _.includes(
-            matchingFormMappings.map(formMapping => formMapping.programUUID),
-            program.uuid
-          )
-        )
+            matchingFormMappings.map((formMapping) => formMapping.programUUID),
+            program.uuid,
+          ),
+        ),
       );
     }
   }, [subjectT]);
@@ -68,7 +68,7 @@ const EditEncounterTypeFields = ({
         label="Name*"
         autoComplete="off"
         value={encounterType.name}
-        onChange={event =>
+        onChange={(event) =>
           dispatch({ type: "name", payload: event.target.value })
         }
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_NAME"}
@@ -77,17 +77,17 @@ const EditEncounterTypeFields = ({
       <AvniSelect
         label="Select subject type"
         value={_.isEmpty(subjectT) ? "" : subjectT?.uuid}
-        onChange={event => {
+        onChange={(event) => {
           const selectedSubject = subjectType.find(
-            s => s.uuid === event.target.value
+            (s) => s.uuid === event.target.value,
           );
           setSubjectT(selectedSubject);
         }}
         style={{ width: "200px" }}
         required
-        options={subjectType.map(option => ({
+        options={subjectType.map((option) => ({
           value: option.uuid,
-          label: option.name
+          label: option.name,
         }))}
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_SUBJECT"}
       />
@@ -95,16 +95,16 @@ const EditEncounterTypeFields = ({
       <AvniSelect
         label="Select Program"
         value={_.isEmpty(programT) ? "" : programT?.uuid || programT}
-        onChange={event => {
+        onChange={(event) => {
           const selectedProgram = program.find(
-            p => p.uuid === event.target.value
+            (p) => p.uuid === event.target.value,
           );
           updateProgram(selectedProgram);
         }}
         style={{ width: "200px" }}
-        options={program.map(option => ({
+        options={program.map((option) => ({
           value: option.uuid,
-          label: option.name
+          label: option.name,
         }))}
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM"}
         isClearable={true}
@@ -113,10 +113,10 @@ const EditEncounterTypeFields = ({
       <AvniSelectForm
         label={"Select Encounter Form"}
         value={_.get(encounterType, "programEncounterForm.formName")}
-        onChange={selectedForm =>
+        onChange={(selectedForm) =>
           dispatch({
             type: "programEncounterForm",
-            payload: selectedForm
+            payload: selectedForm,
           })
         }
         formList={getEncounterForms()}
@@ -127,12 +127,12 @@ const EditEncounterTypeFields = ({
         label={"Select Encounter Cancellation Form"}
         value={_.get(
           encounterType,
-          "programEncounterCancellationForm.formName"
+          "programEncounterCancellationForm.formName",
         )}
-        onChange={selectedForm =>
+        onChange={(selectedForm) =>
           dispatch({
             type: "programEncounterCancellationForm",
-            payload: selectedForm
+            payload: selectedForm,
           })
         }
         formList={getCancellationForms()}
@@ -147,38 +147,41 @@ const EditEncounterTypeFields = ({
         <Box sx={{ maxWidth: "75%" }}>
           <RuleDesigner
             rulesJson={encounterType.encounterEligibilityCheckDeclarativeRule}
-            onValueChange={jsonData =>
+            onValueChange={(jsonData) =>
               dispatch({
                 type: "encounterEligibilityCheckDeclarativeRule",
-                payload: jsonData
+                payload: jsonData,
               })
             }
-            updateJsCode={declarativeRuleHolder =>
+            updateJsCode={(declarativeRuleHolder) =>
               dispatch({
                 type: "encounterEligibilityCheckRule",
-                payload: declarativeRuleHolder.generateEligibilityRule()
+                payload: declarativeRuleHolder.generateEligibilityRule(),
               })
             }
             jsCode={encounterType.encounterEligibilityCheckRule}
             error={ruleValidationError}
             subjectType={subjectT}
-            getApplicableActions={state =>
+            form={{
+              formType: _.isEmpty(programT) ? "Encounter" : "ProgramEncounter",
+            }}
+            getApplicableActions={(state) =>
               state.getApplicableEncounterEligibilityActions()
             }
             sampleRule={sampleEncounterEligibilityCheckRule()}
-            onJsCodeChange={event => {
+            onJsCodeChange={(event) => {
               confirmBeforeRuleEdit(
                 encounterType.encounterEligibilityCheckDeclarativeRule,
                 () =>
                   dispatch({
                     type: "encounterEligibilityCheckRule",
-                    payload: event
+                    payload: event,
                   }),
                 () =>
                   dispatch({
                     type: "encounterEligibilityCheckDeclarativeRule",
-                    payload: null
-                  })
+                    payload: null,
+                  }),
               );
             }}
           />
@@ -188,10 +191,10 @@ const EditEncounterTypeFields = ({
       <AvniSwitch
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_IMMUTABLE"}
         name={"Immutable"}
-        onChange={e =>
+        onChange={(e) =>
           dispatch({
             type: "setImmutable",
-            payload: e.target.checked
+            payload: e.target.checked,
           })
         }
         checked={!!encounterType.immutable}
