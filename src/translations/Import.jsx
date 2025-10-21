@@ -9,22 +9,24 @@ import { useTheme } from "@mui/material/styles";
 import UserInfo from "../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-const noOfKeysWithValues = file => {
+const noOfKeysWithValues = (file) => {
+  console.log(file);
   return size(file && file.json) - noOfKeysWithoutValues(file);
 };
 
-const noOfKeysWithoutValues = file => {
-  return filter(file && file.json, value =>
-    ["", undefined, null].includes(value)
+const noOfKeysWithoutValues = (file) => {
+  return filter(file && file.json, (value) =>
+    ["", undefined, null].includes(value),
   ).length;
 };
 
-const isInvalidFile = file => {
-  return !file ? false : isEmpty(filter(file && file.json, isString));
+const isInvalidFile = (file) => {
+  if (!file || !file.json) return false;
+  return Object.values(file.json).some((value) => typeof value !== "string");
 };
 
 const ImportTranslations = ({ locales = [], onSuccessfulImport }) => {
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
   const theme = useTheme();
 
   const [file, setFile] = useState();
@@ -49,16 +51,16 @@ const ImportTranslations = ({ locales = [], onSuccessfulImport }) => {
   };
 
   const onUploadPressedHandler = () => {
-    const languageId = find(locales, local => local.name === language).id;
+    const languageId = find(locales, (local) => local.name === language).id;
     http
       .post("/translation", { translations: file.json, language: languageId })
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           alert("Upload successful");
           onSuccessfulImport();
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response) {
           alert(error.response.data);
         } else {
@@ -79,7 +81,7 @@ const ImportTranslations = ({ locales = [], onSuccessfulImport }) => {
         sx={{
           justifyContent: "flex-start",
           alignItems: "center",
-          flexWrap: "nowrap"
+          flexWrap: "nowrap",
         }}
       >
         <Grid item>
@@ -99,11 +101,12 @@ const ImportTranslations = ({ locales = [], onSuccessfulImport }) => {
             canSelect={!isEmpty(language)}
             canUpload={
               file &&
-              noOfKeysWithoutValues(file) === 0 &&
+              //  &&
+              // noOfKeysWithoutValues(file) === 0
               isEmpty(error) &&
               UserInfo.hasPrivilege(
                 userInfo,
-                Privilege.PrivilegeType.EditLanguage
+                Privilege.PrivilegeType.EditLanguage,
               )
             }
           />
@@ -129,7 +132,7 @@ const ImportTranslations = ({ locales = [], onSuccessfulImport }) => {
                 border: 1,
                 borderColor: theme.palette.error.light,
                 borderRadius: 1,
-                mt: 1
+                mt: 1,
               }}
             >
               <p style={{ color: theme.palette.error.main }}>{error}</p>

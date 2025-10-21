@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const FormWizardButton = ({
   text,
@@ -7,8 +8,9 @@ const FormWizardButton = ({
   params,
   onClick,
   disabled,
-  id
+  id,
 }) => {
+  const { t } = useTranslation();
   return (
     <Button
       disabled={disabled}
@@ -17,7 +19,7 @@ const FormWizardButton = ({
       type="button"
       id={id}
     >
-      {text}
+      {t(text)}
     </Button>
   );
 };
