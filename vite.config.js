@@ -29,7 +29,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
-      "^/(me|api|ai-assistant|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|documentation|export|translation|account|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege)":
+      "^/(me|api|ai-assistant|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|documentation|export|translation|account|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege|implementation)":
         {
           target: process.env.BACKEND_URL,
           changeOrigin: true,
