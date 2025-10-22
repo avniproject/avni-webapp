@@ -83,18 +83,20 @@ const EditSubjectTypeFields = (props) => {
         toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ACTIVE"}
       />
       <p />
-      <AvniSelectForm
-        label={"Registration Form"}
-        value={_.get(subjectType, "registrationForm.formName")}
-        onChange={(selectedForm) =>
-          dispatch({
-            type: "registrationForm",
-            payload: selectedForm,
-          })
-        }
-        formList={findRegistrationForms(formList)}
-        toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM"}
-      />
+      {!isUserSubjectType && (
+        <AvniSelectForm
+          label={"Registration Form"}
+          value={_.get(subjectType, "registrationForm.formName")}
+          onChange={(selectedForm) =>
+            dispatch({
+              type: "registrationForm",
+              payload: selectedForm,
+            })
+          }
+          formList={findRegistrationForms(formList)}
+          toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM"}
+        />
+      )}
       <p />
       {Types.isGroup(subjectType.type) && (
         <>
