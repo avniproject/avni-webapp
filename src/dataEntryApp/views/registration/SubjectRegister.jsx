@@ -312,7 +312,6 @@ const SubjectRegister = () => {
               {renderAddress()}
             </>
           )}
-          {subject.subjectType.isPerson() && renderProfilePicture()}
         </RegistrationForm>
       </StyledPaper>
     </Fragment>

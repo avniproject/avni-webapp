@@ -103,7 +103,10 @@ const EncounterForm = ({ children, fetchRulesResponse }) => {
     onSummaryPage,
     wizard,
     saveErrorMessageKey,
-    updateObs: (formElement, value) => dispatch(updateObs(formElement, value)),
+    updateObs: (formElement, value, childFormElement, questionGroupIndex) =>
+      dispatch(
+        updateObs(formElement, value, childFormElement, questionGroupIndex),
+      ),
     addNewQuestionGroup: (formElement, questionGroupIndex) =>
       dispatch(addNewQuestionGroup(formElement, questionGroupIndex)),
     removeQuestionGroup: (formElement, questionGroupIndex) =>
