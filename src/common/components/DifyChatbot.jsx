@@ -45,6 +45,7 @@ const DifyChatbot = ({ onChatToggle }) => {
   const organisation = useSelector((state) => state.app?.organisation);
   const authSession = useSelector((state) => state.app?.authSession);
   const authToken = localStorage.getItem(IdpDetails.AuthTokenName);
+  const avni_mcp_server_url = aiConfig?.mcp_server_url || "";
 
   useEffect(() => {
     // Doesn't update dify config. We need to keep track of the conversation id to update the inputs and config
@@ -205,6 +206,7 @@ const DifyChatbot = ({ onChatToggle }) => {
     }
 
     params.append("auth_token", authToken);
+    params.append("avni_mcp_server_url", avni_mcp_server_url);
 
     return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
   };
