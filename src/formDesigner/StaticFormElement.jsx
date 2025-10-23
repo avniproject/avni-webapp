@@ -5,7 +5,7 @@ import {
   Typography,
   Tooltip,
   Grid,
-  InputLabel
+  InputLabel,
 } from "@mui/material";
 import { ToolTip } from "../common/components/ToolTip";
 import { dataTypeIcons } from "./components/FormElement";
@@ -13,9 +13,9 @@ import { dataTypeIcons } from "./components/FormElement";
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
   width: "100%",
   "&.Mui-expanded": {
-    margin: 0
+    margin: 0,
   },
-  backgroundColor: "#E0E0E0"
+  backgroundColor: "#E0E0E0",
 }));
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
@@ -25,34 +25,34 @@ const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   paddingRight: 0,
   minHeight: 56,
   "&.Mui-expanded": {
-    minHeight: 56
+    minHeight: 56,
   },
   "&.Mui-focused": {
-    backgroundColor: "#dbdbdb"
+    backgroundColor: "#dbdbdb",
   },
   "& .MuiAccordionSummary-content": {
     margin: theme.spacing(1),
     "&.Mui-expanded": {
-      margin: theme.spacing(1)
-    }
-  }
+      margin: theme.spacing(1),
+    },
+  },
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  fontSize: theme.typography.pxToRem(15)
+  fontSize: theme.typography.pxToRem(15),
 }));
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   display: "inline-block",
   "& .MuiInputLabel-asterisk": {
-    color: theme.palette.error.main
-  }
+    color: theme.palette.error.main,
+  },
 }));
 
 const StyledIconContainer = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  padding: theme.spacing(1)
+  padding: theme.spacing(1),
 }));
 
 const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
@@ -64,7 +64,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
     groupIndex,
     index,
     dataType,
-    name
+    name,
   });
 
   return (
@@ -87,7 +87,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
               display: "flex",
               alignItems: "center",
               gap: theme.spacing(0.5),
-              flexBasis: "20%"
+              flexBasis: "20%",
             }}
           >
             <StyledIconContainer>
@@ -107,7 +107,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
               display: "flex",
               alignItems: "center",
               gap: theme.spacing(0.5),
-              flexBasis: "65%"
+              flexBasis: "65%",
             }}
           >
             <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
@@ -123,11 +123,11 @@ const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
               alignItems: "center",
               gap: theme.spacing(0.5),
               flexBasis: "15%",
-              justifyContent: "flex-end"
+              justifyContent: "flex-end",
             }}
           >
             <ToolTip
-              title="APP_DESIGNER_FORM_ELEMENT_NAME"
+              toolTipKey="APP_DESIGNER_FORM_ELEMENT_NAME"
               displayPosition="top"
             />
           </Grid>

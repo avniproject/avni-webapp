@@ -8,7 +8,7 @@ import {
   Grid,
   InputLabel,
   IconButton,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 import {
   ExpandMore,
@@ -28,7 +28,7 @@ import {
   PinDrop,
   DragHandle,
   Audiotrack,
-  InsertDriveFile
+  InsertDriveFile,
 } from "@mui/icons-material";
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
@@ -37,9 +37,9 @@ import { ToolTip } from "../../common/components/ToolTip";
 const StyledAccordion = styled(Accordion)(({ error, theme }) => ({
   width: "100%",
   "&.Mui-expanded": {
-    margin: 0
+    margin: 0,
   },
-  backgroundColor: "#E0E0E0"
+  backgroundColor: "#E0E0E0",
 }));
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
@@ -48,19 +48,19 @@ const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   paddingLeft: 0,
   paddingRight: 0,
   "&.Mui-focused": {
-    backgroundColor: "#dbdbdb"
+    backgroundColor: "#dbdbdb",
   },
   "& .MuiAccordionSummary-content": {
     margin: theme.spacing(1),
     "&.Mui-expanded": {
-      margin: theme.spacing(1)
-    }
-  }
+      margin: theme.spacing(1),
+    },
+  },
 }));
 
 const StyledAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
   backgroundColor: "#fff",
-  padding: theme.spacing(1.25)
+  padding: theme.spacing(1.25),
 }));
 
 const StyledDragHandler = styled("div")(({ theme }) => ({
@@ -72,34 +72,34 @@ const StyledDragHandler = styled("div")(({ theme }) => ({
   width: 24,
   display: "flex",
   alignItems: "center",
-  justifyContent: "center"
+  justifyContent: "center",
 }));
 
 const StyledDragHandleContainer = styled("div", {
-  shouldForwardProp: prop => prop !== "show"
+  shouldForwardProp: (prop) => prop !== "show",
 })(({ show }) => ({
-  display: show ? "block" : "none"
+  display: show ? "block" : "none",
 }));
 
 const StyledIconContainer = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  padding: theme.spacing(1)
+  padding: theme.spacing(1),
 }));
 
 const StyledExpandIcon = styled(({ expanded, ...props }) =>
-  expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />
+  expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />,
 )(({ theme }) => ({
   marginLeft: theme.spacing(0.25),
   marginRight: theme.spacing(0.75),
-  display: "inline"
+  display: "inline",
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   fontSize: theme.typography.pxToRem(15),
   whiteSpace: "normal",
   overflowWrap: "break-word",
-  wordBreak: "break-all"
+  wordBreak: "break-all",
 }));
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
@@ -108,20 +108,20 @@ const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   overflowWrap: "anywhere",
   wordBreak: "break-word",
   "& .MuiInputLabel-asterisk": {
-    color: theme.palette.error.main
-  }
+    color: theme.palette.error.main,
+  },
 }));
 
 const StyledGridContainer = styled(Grid)(({ theme }) => ({
   alignItems: "center",
-  width: "100%"
+  width: "100%",
 }));
 
 export const dataTypeIcons = {
   concept: {
     SingleSelect: <RadioButtonChecked />,
     MultiSelect: <CheckCircleOutline />,
-    "": <b />
+    "": <b />,
   },
   Date: <CalendarToday />,
   Numeric: <b>123</b>,
@@ -142,10 +142,10 @@ export const dataTypeIcons = {
   QuestionGroup: <b>QG</b>,
   Audio: <Audiotrack />,
   File: <InsertDriveFile />,
-  "": <b />
+  "": <b />,
 };
 
-const FormElement = props => {
+const FormElement = (props) => {
   const panel = `panel${props.groupIndex}${props.index}`;
   const [dragElement, setDragElement] = useState(false);
   const disableFormElement = props.disableFormElement;
@@ -156,7 +156,7 @@ const FormElement = props => {
     groupIndex: props.groupIndex,
     index: props.index,
     formElementData: props.formElementData,
-    disableFormElement
+    disableFormElement,
   });
 
   const DragHandler = ({ dragHandleProps }) => (
@@ -167,10 +167,10 @@ const FormElement = props => {
     </StyledDragHandler>
   );
 
-  const handleDelete = event => {
+  const handleDelete = (event) => {
     console.log("[FormElement] Deleting element:", {
       groupIndex: props.groupIndex,
-      index: props.index
+      index: props.index,
     });
     props.deleteGroup(props.groupIndex, props.index);
     event.stopPropagation();
@@ -189,13 +189,13 @@ const FormElement = props => {
       onChange={() => {
         console.log(
           "[FormElement] Accordion toggled, expanded:",
-          !props.formElementData?.expanded
+          !props.formElementData?.expanded,
         );
         props.handleGroupElementChange(
           props.groupIndex,
           "expanded",
           !props.formElementData?.expanded,
-          props.index
+          props.index,
         );
       }}
       onMouseEnter={() => setDragElement(true)}
@@ -212,7 +212,7 @@ const FormElement = props => {
               display: "flex",
               alignItems: "center",
               gap: theme.spacing(0.5),
-              flexBasis: "20%"
+              flexBasis: "20%",
             }}
           >
             <StyledIconContainer>
@@ -235,7 +235,7 @@ const FormElement = props => {
                 "Audio",
                 "File",
                 "QuestionGroup",
-                "Encounter"
+                "Encounter",
               ].includes(dataType) && (
                 <Tooltip title={dataType}>
                   {dataTypeIcons[dataType] || <b />}
@@ -259,7 +259,7 @@ const FormElement = props => {
               gap: theme.spacing(0.5),
               flexBasis: "50%",
               flexShrink: 1,
-              minWidth: 0
+              minWidth: 0,
             }}
           >
             <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
@@ -278,7 +278,7 @@ const FormElement = props => {
               display: "flex",
               alignItems: "center",
               gap: theme.spacing(0.5),
-              flexBasis: "15%"
+              flexBasis: "15%",
             }}
           >
             <DragHandler dragHandleProps={props.dragHandleProps} />
@@ -290,7 +290,7 @@ const FormElement = props => {
               alignItems: "center",
               gap: theme.spacing(0.5),
               flexBasis: "15%",
-              justifyContent: "flex-end"
+              justifyContent: "flex-end",
             }}
           >
             <IconButton
@@ -302,7 +302,7 @@ const FormElement = props => {
               <Delete fontSize="small" />
             </IconButton>
             <ToolTip
-              title="APP_DESIGNER_FORM_ELEMENT_NAME"
+              toolTipKey="APP_DESIGNER_FORM_ELEMENT_NAME"
               displayPosition="top"
             />
           </Grid>

@@ -418,7 +418,7 @@ function FormElementGroup(props) {
                       <Delete fontSize="small" />
                     </IconButton>
                     <ToolTip
-                      title="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"
+                      toolTipKey="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"
                       displayPosition="top"
                     />
                   </Grid>

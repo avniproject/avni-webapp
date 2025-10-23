@@ -12,20 +12,20 @@ import {
   Tooltip,
   FormControl,
   Input,
-  useTheme
+  useTheme,
 } from "@mui/material";
 
 const StyledParent = styled("div")(({ theme }) => ({
   paddingLeft: 0,
-  paddingBottom: theme.spacing(4)
+  paddingBottom: theme.spacing(4),
 }));
 
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
   width: "100%",
   "&.Mui-expanded": {
-    margin: 0
+    margin: 0,
   },
-  backgroundColor: "#E0E0E0"
+  backgroundColor: "#E0E0E0",
 }));
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
@@ -35,63 +35,63 @@ const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   paddingRight: 0,
   minHeight: 56,
   "&.Mui-expanded": {
-    minHeight: 56
+    minHeight: 56,
   },
   "&.Mui-focused": {
-    backgroundColor: "#dbdbdb"
+    backgroundColor: "#dbdbdb",
   },
   "& .MuiAccordionSummary-content": {
     margin: theme.spacing(1),
     "&.Mui-expanded": {
-      margin: theme.spacing(1)
-    }
+      margin: theme.spacing(1),
+    },
   },
   "& .MuiAccordionSummary-expandIconWrapper": {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    display: "inline"
-  }
+    display: "inline",
+  },
 }));
 
 const StyledAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
-  padding: 0
+  padding: 0,
 }));
 
 const StyledGroupIcon = styled(Group)(({ theme }) => ({
   marginLeft: theme.spacing(0.75),
-  marginRight: theme.spacing(0.25)
+  marginRight: theme.spacing(0.25),
 }));
 
 const StyledExpandIcon = styled(({ expanded, ...props }) =>
-  expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />
+  expanded ? <ExpandLess {...props} /> : <ExpandMore {...props} />,
 )(({ theme }) => ({
   marginLeft: theme.spacing(0.25),
   marginRight: theme.spacing(0.75),
-  display: "inline"
+  display: "inline",
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  fontSize: theme.typography.pxToRem(15)
+  fontSize: theme.typography.pxToRem(15),
 }));
 
 const StyledQuestionCount = styled(Typography)(({ theme }) => ({
-  paddingTop: theme.spacing(0.625)
+  paddingTop: theme.spacing(0.625),
 }));
 
 const StyledFormElementContainer = styled("div")({
   paddingLeft: "20px",
-  paddingBottom: "30px"
+  paddingBottom: "30px",
 });
 
 const StyledContentGrid = styled(Grid)({
   width: "100%",
   alignContent: "center",
-  marginBottom: 8
+  marginBottom: 8,
 });
 
 const StyledOuterGrid = styled(Grid)({
   width: "100%",
-  marginTop: 20
+  marginTop: 20,
 });
 
 const StaticFormElementGroup = ({ name, formElements }) => {
@@ -136,7 +136,7 @@ const StaticFormElementGroup = ({ name, formElements }) => {
                   display: "flex",
                   alignItems: "center",
                   gap: theme.spacing(0.5),
-                  flexBasis: "20%"
+                  flexBasis: "20%",
                 }}
               >
                 <Tooltip title="Grouped Questions">
@@ -150,7 +150,7 @@ const StaticFormElementGroup = ({ name, formElements }) => {
                   display: "flex",
                   alignItems: "center",
                   gap: theme.spacing(0.5),
-                  flexBasis: "50%"
+                  flexBasis: "50%",
                 }}
               >
                 <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
@@ -173,7 +173,7 @@ const StaticFormElementGroup = ({ name, formElements }) => {
                   display: "flex",
                   alignItems: "center",
                   gap: theme.spacing(0.5),
-                  flexBasis: "15%"
+                  flexBasis: "15%",
                 }}
               >
                 <StyledQuestionCount
@@ -191,11 +191,11 @@ const StaticFormElementGroup = ({ name, formElements }) => {
                   alignItems: "center",
                   gap: theme.spacing(0.5),
                   flexBasis: "15%",
-                  justifyContent: "flex-end"
+                  justifyContent: "flex-end",
                 }}
               >
                 <ToolTip
-                  title="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"
+                  toolTipKey="APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"
                   displayPosition="top"
                 />
               </Grid>
