@@ -5,7 +5,7 @@ import {
   Dialog,
   DialogActions as MuiDialogActions,
   IconButton,
-  Fab
+  Fab,
 } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import { Link } from "react-router-dom";
@@ -18,18 +18,18 @@ const DialogTitleWrapper = styled("div")(({ theme }) => ({
   color: "white",
   display: "flex",
   alignItems: "center",
-  justifyContent: "space-between"
+  justifyContent: "space-between",
 }));
 
 const StyledCloseButton = styled(IconButton)({
-  color: "white"
+  color: "white",
 });
 
 const DialogActions = styled(MuiDialogActions)({
   padding: "11px",
   backgroundColor: "#F8F9F9",
   float: "left",
-  display: "inline"
+  display: "inline",
 });
 
 const CommonModal = ({
@@ -54,7 +54,7 @@ const CommonModal = ({
     btnHandleClose();
   };
 
-  const pick = type => buttonsSet.find(btn => btn.buttonType === type);
+  const pick = (type) => buttonsSet.find((btn) => btn.buttonType === type);
 
   const mainButton = pick("openButton");
   const filterButton = pick("filterButton");
@@ -74,6 +74,7 @@ const CommonModal = ({
           color="primary"
           aria-label="add"
           onClick={handleClickOpen}
+          sx={mainButton.sx}
         >
           {mainButton.label}
         </Fab>

@@ -7,7 +7,7 @@ import SubjectProfilePicture from "./SubjectProfilePicture";
 const StyledCard = styled(Card)(({ theme }) => ({
   boxShadow: theme.shadows[2],
   borderRadius: "2",
-  width: "auto",
+  width: "100%",
   whiteSpace: "nowrap",
   overflowWrap: "normal",
   minHeight: 150,

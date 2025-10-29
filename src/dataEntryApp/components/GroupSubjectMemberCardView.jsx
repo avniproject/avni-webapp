@@ -4,7 +4,7 @@ import {
   Button,
   Typography,
   DialogContent,
-  Grid
+  Grid,
 } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
@@ -15,16 +15,16 @@ import SubjectCardView from "./SubjectCardView";
 
 const StyledCardActions = styled(CardActions)({
   display: "flex",
-  justifyContent: "space-between"
+  justifyContent: "space-between",
 });
 
 const StyledDialogContent = styled(DialogContent)({
   width: 600,
-  height: "auto"
+  height: "auto",
 });
 
 const StyledEditButton = styled(Button)({
-  minWidth: "0px"
+  minWidth: "0px",
 });
 
 const removeButtonStyle = {
@@ -33,11 +33,11 @@ const removeButtonStyle = {
   marginTop: "1px",
   boxShadow: "none",
   color: "#0e6eff",
-  backgroundColor: "#fff",
+  backgroundColor: "#F8F9F9",
   "&:hover": {
     color: "#0e6eff",
-    backgroundColor: "#fff"
-  }
+    backgroundColor: "#F8F9F9",
+  },
 };
 
 const applyButtonStyle = {
@@ -46,8 +46,8 @@ const applyButtonStyle = {
   height: "30px",
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: "#f27510"
-  }
+    backgroundColor: "#f27510",
+  },
 };
 
 const cancelButtonStyle = {
@@ -58,8 +58,8 @@ const cancelButtonStyle = {
   height: "30px",
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: "#F8F9F9"
-  }
+    backgroundColor: "#F8F9F9",
+  },
 };
 
 const GroupSubjectMemberCardView = ({
@@ -67,8 +67,8 @@ const GroupSubjectMemberCardView = ({
   groupSubject: {
     memberSubject,
     encounterMetadata: { dueEncounters, overdueEncounters },
-    uuid
-  }
+    uuid,
+  },
 }) => {
   const { t } = useTranslation();
 
@@ -91,8 +91,8 @@ const GroupSubjectMemberCardView = ({
       {dueEncounters && dueEncounters > 0 ? (
         <Typography
           sx={{
-            color: theme => theme.palette.text.secondary,
-            textAlign: "center"
+            color: (theme) => theme.palette.text.secondary,
+            textAlign: "center",
           }}
         >
           {t("Due") + ": " + dueEncounters}
@@ -103,8 +103,8 @@ const GroupSubjectMemberCardView = ({
       {overdueEncounters && overdueEncounters > 0 ? (
         <Typography
           sx={{
-            color: theme => theme.palette.text.secondary,
-            textAlign: "center"
+            color: (theme) => theme.palette.text.secondary,
+            textAlign: "center",
           }}
         >
           {t("Overdue") + ": " + overdueEncounters}
@@ -133,7 +133,7 @@ const GroupSubjectMemberCardView = ({
             {
               buttonType: "openButton",
               label: t("remove"),
-              sx: removeButtonStyle
+              sx: removeButtonStyle,
             },
             {
               buttonType: "applyButton",
@@ -144,13 +144,13 @@ const GroupSubjectMemberCardView = ({
                 api
                   .deleteGroupSubject(uuid)
                   .then(() => setTimeout(() => setMembersChanged(true), 250));
-              }
+              },
             },
             {
               buttonType: "cancelButton",
               label: t("cancel"),
-              sx: cancelButtonStyle
-            }
+              sx: cancelButtonStyle,
+            },
           ]}
           title="Remove Member"
           btnHandleClose={noop}
