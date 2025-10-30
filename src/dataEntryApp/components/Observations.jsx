@@ -48,7 +48,7 @@ const StyledTable = styled(Table)(({ theme, highlight }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  border: `2px solid ${theme.palette.grey[200]}`,
+  border: `2px solid ${theme.palette.grey[300]}`,
   "&:nth-of-type(odd)": {
     backgroundColor: "rgba(0, 0, 0, 0.02)",
   },
@@ -57,28 +57,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
   "&:hover": {
     backgroundColor: theme.palette.action.hover,
-  },
-  "&:last-child td": {
-    borderBottom: "none",
-  },
-}));
-
-const StyledTableQGRow = styled(TableRow)(({ theme }) => ({
-  border: `2px solid ${theme.palette.grey[200]}`,
-  borderTop: `2px solid ${theme.palette.grey[400]}`,
-  borderLeft: `2px solid ${theme.palette.grey[400]}`,
-  borderRight: `1px solid ${theme.palette.grey[100]}`,
-  borderBottom: `1px solid ${theme.palette.grey[100]}`,
-  boxShadow: `inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -1px -1px 2px rgba(255, 255, 255, 0.8)`,
-  "&:nth-of-type(odd)": {
-    backgroundColor: "rgba(0, 0, 0, 0.02)",
-  },
-  "&:nth-of-type(even)": {
-    backgroundColor: theme.palette.background.paper,
-  },
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-    boxShadow: `inset 1px 1px 3px rgba(0, 0, 0, 0.15), inset -1px -1px 2px rgba(255, 255, 255, 0.9)`,
   },
   "&:last-child td": {
     borderBottom: "none",
@@ -564,7 +542,7 @@ const Observations = ({
     }
 
     return (
-      <TableRow key={`${index}-${customKey}`}>
+      <StyledTableRow key={`${index}-${customKey}`}>
         <StyledTableCell variant="header" colSpan={6}>
           <StyledBox>
             <StyledTypography variant="body1" component="div">
@@ -577,7 +555,7 @@ const Observations = ({
             </Table>
           </StyledBox>
         </StyledTableCell>
-      </TableRow>
+      </StyledTableRow>
     );
   };
 
