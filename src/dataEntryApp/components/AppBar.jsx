@@ -308,7 +308,7 @@ const PrimarySearchAppBar = () => {
 
   return (
     <StyledRoot>
-      <StyledAppBar position="static">
+      <StyledAppBar position="fixed">
         <StyledToolbar>
           <StyledTitle variant="h6" noWrap>
             <InternalLink to={"/app"}>
