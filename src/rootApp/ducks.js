@@ -20,6 +20,7 @@ export const types = {
   LOGOUT: "app/LOGOUT",
   INIT_GENERIC_CONFIG: "app/INIT_GENERIC_CONFIG",
   SET_CHAT_OPEN: "app/SET_CHAT_OPEN",
+  SET_IS_NEW_IMPLEMENTATION: "app/SET_IS_NEW_IMPLEMENTATION",
 };
 
 export const getAdminOrgs = () => ({
@@ -81,6 +82,11 @@ export const setChatOpen = (isChatOpen) => ({
   payload: isChatOpen,
 });
 
+export const setIsNewImplementation = (isNewImplementation) => ({
+  type: types.SET_IS_NEW_IMPLEMENTATION,
+  payload: isNewImplementation,
+});
+
 const initialState = {
   idpDetails: undefined,
   authSession: new NoAuthSession(),
@@ -96,7 +102,11 @@ const initialState = {
     copilotEnabled: false,
     avniMcpServerUrl: "http://localhost:8023",
   },
-  isChatOpen: false,
+  isChatOpen: (() => {
+    const hasSeenChatbot = localStorage.getItem("avni-chatbot-seen");
+    return !hasSeenChatbot; // Open if user hasn't seen it before
+  })(),
+  isNewImplementation: false,
 };
 
 // reducer
@@ -182,6 +192,12 @@ export default function (state = initialState, action) {
       return {
         ...state,
         isChatOpen: action.payload,
+      };
+    }
+    case types.SET_IS_NEW_IMPLEMENTATION: {
+      return {
+        ...state,
+        isNewImplementation: action.payload,
       };
     }
     default:

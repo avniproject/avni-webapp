@@ -1,8 +1,9 @@
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Grid } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { httpClient } from "../../common/utils/httpClient";
 import { HomePageCard } from "./HomePageCard";
+import WelcomeModal from "../../common/WelcomeModal";
 import {
   SurroundSound,
   Assessment,
@@ -13,26 +14,46 @@ import {
   Help,
   Keyboard,
   SupervisorAccount,
-  Translate
+  Translate,
 } from "@mui/icons-material";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import ApplicationContext from "../../ApplicationContext";
+import { useState } from "react";
+import { setChatOpen } from "../ducks";
 
 const Homepage = () => {
-  const userInfo = useSelector(state => state.app.userInfo);
-  const organisation = useSelector(state => state.app.organisation);
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.app.userInfo);
+  const organisation = useSelector((state) => state.app.organisation);
+  const isNewImplementation = useSelector(
+    (state) => state.app.isNewImplementation,
+  );
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
 
   httpClient.saveAuthTokenForAnalyticsApp();
 
   const showAnalytics = UserInfo.hasPrivilege(
     userInfo,
-    Privilege.PrivilegeType.Analytics
+    Privilege.PrivilegeType.Analytics,
   );
   const showDataEntryApp = UserInfo.hasPrivilege(
     userInfo,
-    Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp
+    Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp,
   );
+
+  const handleWelcomeOptionSelect = (option) => {
+    switch (option) {
+      case "templates":
+        // Navigate to templates or show templates
+        break;
+      case "ai":
+        dispatch(setChatOpen(true));
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <ScreenWithAppBar
@@ -43,7 +64,7 @@ const Homepage = () => {
       <Grid
         container
         sx={{
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <HomePageCard
@@ -127,6 +148,13 @@ const Homepage = () => {
           }
         />
       </Grid>
+      {isNewImplementation && (
+        <WelcomeModal
+          open={showWelcomeModal}
+          onClose={() => setShowWelcomeModal(false)}
+          onOptionSelect={handleWelcomeOptionSelect}
+        />
+      )}
     </ScreenWithAppBar>
   );
 };

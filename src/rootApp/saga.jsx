@@ -5,7 +5,8 @@ import {
   setAdminOrgs,
   setOrganisationConfig,
   setUserInfo,
-  types
+  setIsNewImplementation,
+  types,
 } from "./ducks";
 import { httpClient as http } from "common/utils/httpClient";
 import i18n from "i18next";
@@ -17,15 +18,15 @@ import { authProvider } from "adminApp/react-admin-config/authProvider";
 
 const api = {
   fetchUserInfo: () =>
-    http.fetchJson("/web/userInfo").then(response => response.json),
+    http.fetchJson("/web/userInfo").then((response) => response.json),
   fetchAdminOrgs: () =>
-    http.fetchJson("/organisation", {}, true).then(response => response.json),
+    http.fetchJson("/organisation", {}, true).then((response) => response.json),
   fetchTranslations: () =>
-    http.fetchJson("/web/translations").then(response => response.json),
+    http.fetchJson("/web/translations").then((response) => response.json),
   fetchOrganisationConfig: () =>
-    http.fetchJson("/web/organisationConfig").then(response => response.json),
-  saveUserInfo: userInfo => http.post("/me", userInfo),
-  logout: () => http.get("/web/logout")
+    http.fetchJson("/web/organisationConfig").then((response) => response.json),
+  saveUserInfo: (userInfo) => http.post("/me", userInfo),
+  logout: () => http.get("/web/logout"),
 };
 
 export function* onSetAuthSession() {
@@ -59,13 +60,20 @@ function* setUserDetails() {
 
   const organisationName = get(userDetails, "organisationName", "");
   document.cookie = `IMPLEMENTATION-NAME=${encodeURIComponent(
-    organisationName
+    organisationName,
   )}; path=/; SameSite=Lax; Secure=true`;
 
   if (!isEmpty(organisationName)) {
-    const organisationConfig = yield call(api.fetchOrganisationConfig);
+    const organisationConfigResponse = yield call(api.fetchOrganisationConfig);
     yield put(
-      setOrganisationConfig(get(organisationConfig, "organisationConfig", {}))
+      setOrganisationConfig(
+        get(organisationConfigResponse, "organisationConfig", {}),
+      ),
+    );
+    yield put(
+      setIsNewImplementation(
+        organisationConfigResponse.isNewImplementation || false,
+      ),
     );
   }
 
@@ -81,13 +89,13 @@ function* setUserDetails() {
     nsSeparator: false,
     interpolation: {
       escapeValue: false,
-      formatSeparator: ","
+      formatSeparator: ",",
     },
     react: {
-      useSuspense: false
-    }
+      useSuspense: false,
+    },
   };
-  const init = params => i18nInstance.init(params);
+  const init = (params) => i18nInstance.init(params);
   yield call(init, i18nParams);
 
   yield put(sendInitComplete());
