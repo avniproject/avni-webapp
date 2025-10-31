@@ -96,7 +96,10 @@ const initialState = {
     copilotEnabled: false,
     avniMcpServerUrl: "http://localhost:8023",
   },
-  isChatOpen: false,
+  isChatOpen: (() => {
+    const hasSeenChatbot = localStorage.getItem("avni-chatbot-seen");
+    return !hasSeenChatbot; // Open if user hasn't seen it before
+  })(),
 };
 
 // reducer

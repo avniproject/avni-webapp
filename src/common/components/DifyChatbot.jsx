@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Box, Slide, useTheme, IconButton } from "@mui/material";
 import { ChevronRight } from "@mui/icons-material";
 import IdpDetails from "../../rootApp/security/IdpDetails.ts";
-const DifyChatbot = ({ onChatToggle }) => {
-  // Check if this is first time after login
-  const [isPanelOpen, setIsPanelOpen] = useState(() => {
-    const hasSeenChatbot = localStorage.getItem("avni-chatbot-seen");
-    return !hasSeenChatbot; // Open only if user hasn't seen it before
-  });
+import { setChatOpen } from "../../rootApp/ducks";
+const DifyChatbot = () => {
+  const dispatch = useDispatch();
   const theme = useTheme();
 
   const [aiConfig, setAiConfig] = useState(null);
   const [configError, setConfigError] = useState(false);
 
-  // Notify parent when panel state changes
-  useEffect(() => {
-    onChatToggle?.(isPanelOpen);
-  }, [isPanelOpen, onChatToggle]);
+  // Get user and organization data from Redux state
+  const userInfo = useSelector((state) => state.app?.userInfo);
+  const organisation = useSelector((state) => state.app?.organisation);
+  const authSession = useSelector((state) => state.app?.authSession);
+  const isChatOpen = useSelector((state) => state.app?.isChatOpen);
 
   // Fetch AI assistant configuration
   useEffect(() => {
@@ -39,11 +37,6 @@ const DifyChatbot = ({ onChatToggle }) => {
 
     fetchAiConfig();
   }, []);
-
-  // Get user and organization data from Redux state
-  const userInfo = useSelector((state) => state.app?.userInfo);
-  const organisation = useSelector((state) => state.app?.organisation);
-  const authSession = useSelector((state) => state.app?.authSession);
   const authToken = localStorage.getItem(IdpDetails.AuthTokenName);
   const avni_mcp_server_url = aiConfig?.mcp_server_url || "";
 
@@ -148,7 +141,7 @@ const DifyChatbot = ({ onChatToggle }) => {
         z-index: 1201;
         box-shadow: ${theme.shadows[4]};
         transition: all 0.3s ease;
-        display: ${isPanelOpen ? "none" : "flex"};
+        display: ${isChatOpen ? "none" : "flex"};
         align-items: center;
         justify-content: center;
       `;
@@ -164,7 +157,7 @@ const DifyChatbot = ({ onChatToggle }) => {
       };
 
       chatButton.onclick = () => {
-        setIsPanelOpen(true);
+        dispatch(setChatOpen(true));
       };
 
       document.body.appendChild(chatButton);
@@ -179,7 +172,7 @@ const DifyChatbot = ({ onChatToggle }) => {
       const style = document.getElementById("dify-chat-animations");
       if (style) style.remove();
     };
-  }, [isPanelOpen, theme, aiConfig, configError]);
+  }, [isChatOpen, theme, aiConfig, configError, dispatch]);
 
   // Build chatbot URL with user context
   const buildChatUrl = () => {
@@ -214,7 +207,7 @@ const DifyChatbot = ({ onChatToggle }) => {
   return (
     <>
       {/* Embedded Right Panel */}
-      <Slide direction="left" in={isPanelOpen} mountOnEnter unmountOnExit>
+      <Slide direction="left" in={isChatOpen} mountOnEnter unmountOnExit>
         <Box
           sx={{
             position: "fixed",
@@ -233,7 +226,7 @@ const DifyChatbot = ({ onChatToggle }) => {
           {/* Close Button */}
           <IconButton
             onClick={() => {
-              setIsPanelOpen(false);
+              dispatch(setChatOpen(false));
               // Mark chatbot as seen so it won't auto-open again
               localStorage.setItem("avni-chatbot-seen", "true");
             }}

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Box } from "@mui/material";
 import Routes from "./Routes";
-import { getUserInfo, setChatOpen } from "./ducks";
+import { getUserInfo } from "./ducks";
 import IdpDetails from "./security/IdpDetails";
 import { httpClient } from "../common/utils/httpClient";
 import Footer from "../common/components/Footer";
@@ -10,12 +10,7 @@ import DifyChatbot from "../common/components/DifyChatbot";
 
 const App = () => {
   const dispatch = useDispatch();
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
-  // Dispatch chat state to Redux when it changes
-  useEffect(() => {
-    dispatch(setChatOpen(isChatOpen));
-  }, [isChatOpen, dispatch]);
+  const isChatOpen = useSelector((state) => state.app.isChatOpen);
 
   const appInitialised = useSelector(
     (state) => state.app?.appInitialised || false,
@@ -69,7 +64,7 @@ const App = () => {
         </Box>
       </Box>
       <Footer />
-      <DifyChatbot onChatToggle={setIsChatOpen} />
+      <DifyChatbot />
     </Box>
   );
 };
