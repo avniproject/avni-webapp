@@ -101,6 +101,7 @@ const initialState = {
     avniEnvironment: "development",
     copilotEnabled: false,
     avniMcpServerUrl: "http://localhost:8023",
+    show_templates: false,
   },
   isChatOpen: (() => {
     const hasSeenChatbot = localStorage.getItem("avni-chatbot-seen");
@@ -185,6 +186,7 @@ export default function (state = initialState, action) {
           avniEnvironment: action.payload.avniEnvironment,
           copilotEnabled: action.payload.copilotEnabled,
           avniMcpServerUrl: action.payload.avniMcpServerUrl,
+          show_templates: action.payload.show_templates,
         },
       };
     }

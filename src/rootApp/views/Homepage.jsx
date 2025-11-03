@@ -29,6 +29,7 @@ const Homepage = () => {
   const isNewImplementation = useSelector(
     (state) => state.app.isNewImplementation,
   );
+  const genericConfig = useSelector((state) => state.app.genericConfig);
   const [showWelcomeModal, setShowWelcomeModal] = useState(true);
 
   httpClient.saveAuthTokenForAnalyticsApp();
@@ -148,7 +149,7 @@ const Homepage = () => {
           }
         />
       </Grid>
-      {isNewImplementation && (
+      {genericConfig.show_templates && isNewImplementation && (
         <WelcomeModal
           open={showWelcomeModal}
           onClose={() => setShowWelcomeModal(false)}
