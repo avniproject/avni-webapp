@@ -55,6 +55,7 @@ import { UserMessagingConfig } from "../formDesigner/components/UserMessagingCon
 import { StorageManagementConfig } from "../formDesigner/components/StorageManagement/StorageManagementConfig";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
+import { TemplateOrganisations } from "../formDesigner/components/TemplateOrganisations/TemplateOrganisations";
 
 const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
   const navigate = useNavigate();
@@ -77,6 +78,11 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
       layout={AdminLayout}
       darkTheme={null}
     >
+      <Resource
+        name={"templates"}
+        options={{ label: "Templates" }}
+        list={TemplateOrganisations}
+      />
       <Resource
         name="subjectType"
         options={{ label: "Subject Types" }}
@@ -118,7 +124,7 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         options={{ label: "My Dashboard Filters" }}
         list={WithProps(
           { organisation, filename: "MyDashboardFilter.md" },
-          customFilters
+          customFilters,
         )}
       />
       <Resource
@@ -126,12 +132,12 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         options={{ label: "Search Filters" }}
         list={WithProps(
           { organisation, filename: "SearchFilter.md" },
-          customFilters
+          customFilters,
         )}
       />
       {UserInfo.hasPrivilege(
         userInfo,
-        Privilege.PrivilegeType.EditOfflineDashboardAndReportCard
+        Privilege.PrivilegeType.EditOfflineDashboardAndReportCard,
       ) && (
         <Resource
           name="searchResultFields"
@@ -199,7 +205,7 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
       />
       {UserInfo.hasPrivilege(
         userInfo,
-        Privilege.PrivilegeType.EditOrganisationConfiguration
+        Privilege.PrivilegeType.EditOrganisationConfiguration,
       ) && (
         <Resource
           name="userMessagingConfig"
@@ -222,7 +228,7 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
       />
       {UserInfo.hasPrivilege(
         userInfo,
-        Privilege.PrivilegeType.EditOrganisationConfiguration
+        Privilege.PrivilegeType.EditOrganisationConfiguration,
       ) && (
         <Resource
           name="appStorageConfig"
@@ -249,7 +255,7 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
 OrgManagerAppDesigner.propTypes = {
   organisation: PropTypes.object,
   user: PropTypes.object,
-  userInfo: PropTypes.object
+  userInfo: PropTypes.object,
 };
 
 export default OrgManagerAppDesigner;
