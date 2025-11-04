@@ -496,10 +496,18 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
   }, []);
 
   const handleImageSelect = useCallback((mediaFile) => {
-    setConcept((prev) => ({ ...prev, unsavedImage: mediaFile }));
+    setConcept((prev) => ({
+      ...prev,
+      media: prev.media ? prev.media.filter((m) => m.type !== "Image") : [],
+      unsavedImage: mediaFile,
+    }));
   }, []);
   const handleVideoSelect = useCallback((mediaFile) => {
-    setConcept((prev) => ({ ...prev, unsavedVideo: mediaFile }));
+    setConcept((prev) => ({
+      ...prev,
+      media: prev.media ? prev.media.filter((m) => m.type !== "Video") : [],
+      unsavedVideo: mediaFile,
+    }));
   }, []);
 
   const onDeleteConcept = useCallback(() => {
@@ -729,6 +737,11 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               } KB)`}
               maxFileSize={WebConceptView.MaxImageFileSize}
               oldImgUrl={currentImageUrl}
+              localMediaUrl={
+                concept.unsavedImage
+                  ? URL.createObjectURL(concept.unsavedImage)
+                  : null
+              }
               onDelete={handleImageDelete}
             />
             <AvniMediaUpload
@@ -748,6 +761,11 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               } MB)`}
               maxFileSize={WebConceptView.MaxVideoFileSize}
               oldImgUrl={currentVideoUrl}
+              localMediaUrl={
+                concept.unsavedVideo
+                  ? URL.createObjectURL(concept.unsavedVideo)
+                  : null
+              }
               onDelete={handleVideoDelete}
             />
             {error && error.mediaUploadFailed && (

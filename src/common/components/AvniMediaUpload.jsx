@@ -98,8 +98,8 @@ export const MediaPreview = ({
               controls
               autoPlay
               style={{
-                maxWidth: "90vw",
-                maxHeight: "90vh",
+                maxWidth: "100%",
+                maxHeight: "100%",
                 display: "block",
               }}
             >
