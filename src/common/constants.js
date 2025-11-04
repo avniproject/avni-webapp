@@ -3,40 +3,15 @@ import { getEnvVar } from "./utils/General";
 
 // Helper function to get the current mode/environment
 function getCurrentMode() {
-  // Try to get mode from various sources
-  let mode;
-
-  // Check globalThis first
-  const importMeta = globalThis.importMeta || (typeof globalThis.import !== "undefined" && globalThis.import.meta);
-  if (importMeta && importMeta.env && importMeta.env.MODE) {
-    mode = importMeta.env.MODE;
-  }
-
-  // Try the safer method for Vite
-  if (!mode) {
-    try {
-      const meta = new Function('return typeof import !== "undefined" && import.meta')();
-      if (meta && meta.env && meta.env.MODE) {
-        mode = meta.env.MODE;
-      }
-    } catch (e) {
-      // Continue to process.env
-    }
-  }
-
-  // Fallback to NODE_ENV
-  if (!mode && typeof process !== "undefined" && process.env && process.env.NODE_ENV) {
-    mode = process.env.NODE_ENV;
-  }
-
-  return mode || "development";
+  return process.env.MODE || process.env.NODE_ENV || "development";
 }
 
 export const isDevEnv = ApplicationContext.isDevEnv();
 export const isProdEnv = ApplicationContext.isProdEnv();
 
 // Environment variables with fallbacks
-export const devEnvUserName = getEnvVar("VITE_REACT_APP_DEV_ENV_USER") || getEnvVar("REACT_APP_DEV_ENV_USER");
+// Using process.env which works in both Vite and Jest environments
+export const devEnvUserName = process.env.VITE_REACT_APP_DEV_ENV_USER;
 
 // Check for test environment - works in both Vite and Jest
 export const isTestEnv = getCurrentMode() === "test" || getEnvVar("NODE_ENV") === "test" || getEnvVar("MODE") === "test";
@@ -88,7 +63,7 @@ export const pickers = [
   },
 ];
 
-// export const phoneCountryPrefix = import.meta.env.VITE_REACT_APP_PHONE_COUNTRY_PREFIX || "+91";
+// export const phoneCountryPrefix = process.env.VITE_REACT_APP_PHONE_COUNTRY_PREFIX || "+91";
 
 export const localeChoices = [
   { id: LOCALES.ENGLISH, name: "English" },

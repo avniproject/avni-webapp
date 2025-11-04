@@ -6,7 +6,7 @@ if (typeof window !== "undefined") {
     //ok to be public https://posthog.com/docs/privacy#is-it-ok-for-my-api-key-to-be-exposed-and-public
     api_host: "https://eu.i.posthog.com",
     defaults: "2025-05-24",
-    debug: import.meta.env.MODE === "development",
+    debug: process.env.MODE === "development",
     capture_heatmaps: false,
     disable_session_recording: true,
     autocapture: {
@@ -23,7 +23,7 @@ if (typeof window !== "undefined") {
       return event;
     },
     // loaded: (ph) => {
-    //     if (import.meta.env.MODE === 'development') {
+    //     if (process.env.MODE === 'development') {
     //         ph.opt_out_capturing();
     //     }
     // }
