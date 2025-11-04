@@ -21,6 +21,7 @@ import UserInfo from "../../common/model/UserInfo";
 import ApplicationContext from "../../ApplicationContext";
 import { useState } from "react";
 import { setChatOpen } from "../ducks";
+import CurrentUserService from "../../common/service/CurrentUserService.ts";
 
 const Homepage = () => {
   const dispatch = useDispatch();
@@ -149,13 +150,15 @@ const Homepage = () => {
           }
         />
       </Grid>
-      {genericConfig.show_templates && isNewImplementation && (
-        <WelcomeModal
-          open={showWelcomeModal}
-          onClose={() => setShowWelcomeModal(false)}
-          onOptionSelect={handleWelcomeOptionSelect}
-        />
-      )}
+      {!CurrentUserService.isAdminButNotImpersonating(userInfo) &&
+        genericConfig.show_templates &&
+        isNewImplementation && (
+          <WelcomeModal
+            open={showWelcomeModal}
+            onClose={() => setShowWelcomeModal(false)}
+            onOptionSelect={handleWelcomeOptionSelect}
+          />
+        )}
     </ScreenWithAppBar>
   );
 };
