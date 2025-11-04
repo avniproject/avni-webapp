@@ -11,8 +11,8 @@ class CurrentUserService {
       !isEmpty(
         intersection(
           resourcePrivileges,
-          uInfo.privileges.map(x => x.privilegeType)
-        )
+          uInfo.privileges.map((x) => x.privilegeType),
+        ),
       )
     );
   }
@@ -35,6 +35,10 @@ class CurrentUserService {
 
   static isAdminButNotImpersonating(userInfo) {
     return userInfo.isAdmin && !this.isOrganisationImpersonated();
+  }
+
+  static isAdminAndImpersonating(userInfo) {
+    return userInfo.isAdmin && this.isOrganisationImpersonated();
   }
 
   static hasOrganisationContext(userInfo) {

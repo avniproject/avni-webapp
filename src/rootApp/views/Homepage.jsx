@@ -153,7 +153,7 @@ const Homepage = () => {
           }
         />
       </Grid>
-      {!CurrentUserService.isAdminButNotImpersonating(userInfo) &&
+      {!CurrentUserService.isAdminAndImpersonating(userInfo) &&
         genericConfig.show_templates &&
         isNewImplementation && (
           <WelcomeModal
