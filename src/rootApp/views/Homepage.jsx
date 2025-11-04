@@ -31,7 +31,10 @@ const Homepage = () => {
     (state) => state.app.isNewImplementation,
   );
   const genericConfig = useSelector((state) => state.app.genericConfig);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(() => {
+    const hasSeenWelcomeModal = localStorage.getItem("avni-welcome-modal-seen");
+    return !hasSeenWelcomeModal;
+  });
 
   httpClient.saveAuthTokenForAnalyticsApp();
 
@@ -155,7 +158,10 @@ const Homepage = () => {
         isNewImplementation && (
           <WelcomeModal
             open={showWelcomeModal}
-            onClose={() => setShowWelcomeModal(false)}
+            onClose={() => {
+              setShowWelcomeModal(false);
+              localStorage.setItem("avni-welcome-modal-seen", "true");
+            }}
             onOptionSelect={handleWelcomeOptionSelect}
           />
         )}
