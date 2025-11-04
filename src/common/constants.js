@@ -36,7 +36,7 @@ export const isDevEnv = ApplicationContext.isDevEnv();
 export const isProdEnv = ApplicationContext.isProdEnv();
 
 // Environment variables with fallbacks
-export const devEnvUserName = getEnvVar("VITE_REACT_APP_DEV_ENV_USER") || getEnvVar("REACT_APP_DEV_ENV_USER");
+export const devEnvUserName = import.meta.env.VITE_REACT_APP_DEV_ENV_USER;
 
 // Check for test environment - works in both Vite and Jest
 export const isTestEnv = getCurrentMode() === "test" || getEnvVar("NODE_ENV") === "test" || getEnvVar("MODE") === "test";
@@ -59,11 +59,17 @@ export const LOCALES = Object.freeze({
   SANSKRIT: "sa_IN",
   URDU: "ur_IN",
   ASSAMESE: "as_IN",
-  BODO: "brx_IN"
+  BODO: "brx_IN",
 });
 
-export const datePickerModes = [{ id: "calendar", name: "Calendar" }, { id: "spinner", name: "Spinner" }];
-export const timePickerModes = [{ id: "clock", name: "Clock" }, { id: "spinner", name: "Spinner" }];
+export const datePickerModes = [
+  { id: "calendar", name: "Calendar" },
+  { id: "spinner", name: "Spinner" },
+];
+export const timePickerModes = [
+  { id: "clock", name: "Clock" },
+  { id: "spinner", name: "Spinner" },
+];
 
 export const pickers = [
   {
@@ -71,15 +77,15 @@ export const pickers = [
     key: "datePickerMode",
     modes: datePickerModes,
     label: "Date Picker Mode",
-    toolTipKey: "APP_DESIGNER_FORM_ELEMENT_DATE_PICKER_MODE"
+    toolTipKey: "APP_DESIGNER_FORM_ELEMENT_DATE_PICKER_MODE",
   },
   {
     type: "time",
     key: "timePickerMode",
     modes: timePickerModes,
     label: "Time Picker Mode",
-    toolTipKey: "APP_DESIGNER_FORM_ELEMENT_TIME_PICKER_MODE"
-  }
+    toolTipKey: "APP_DESIGNER_FORM_ELEMENT_TIME_PICKER_MODE",
+  },
 ];
 
 // export const phoneCountryPrefix = import.meta.env.VITE_REACT_APP_PHONE_COUNTRY_PREFIX || "+91";
@@ -99,5 +105,5 @@ export const localeChoices = [
   { id: LOCALES.SANSKRIT, name: "Sanskrit" },
   { id: LOCALES.URDU, name: "Urdu" },
   { id: LOCALES.ASSAMESE, name: "Assamese" },
-  { id: LOCALES.BODO, name: "Bodo" }
+  { id: LOCALES.BODO, name: "Bodo" },
 ];
