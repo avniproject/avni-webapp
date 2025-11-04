@@ -36,7 +36,7 @@ export const isDevEnv = ApplicationContext.isDevEnv();
 export const isProdEnv = ApplicationContext.isProdEnv();
 
 // Environment variables with fallbacks
-export const devEnvUserName = import.meta.env.VITE_REACT_APP_DEV_ENV_USER;
+export const devEnvUserName = getEnvVar("VITE_REACT_APP_DEV_ENV_USER") || getEnvVar("REACT_APP_DEV_ENV_USER");
 
 // Check for test environment - works in both Vite and Jest
 export const isTestEnv = getCurrentMode() === "test" || getEnvVar("NODE_ENV") === "test" || getEnvVar("MODE") === "test";
