@@ -6,12 +6,12 @@ import {
   Grid,
   IconButton,
   Typography,
-  Snackbar,
   FormControl,
 } from "@mui/material";
 import { ToolTipContainer } from "./ToolTipContainer";
 import { AddAPhoto, VideoCall, Close } from "@mui/icons-material";
 import MediaService from "../../adminApp/service/MediaService";
+import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
 const MEDIA_TYPES = {
   IMAGE: "Image",
@@ -139,7 +139,6 @@ export const AvniMediaUpload = ({
   accept = "*/*",
   mediaType = MEDIA_TYPES.IMAGE,
 }) => {
-  const [value, setValue] = useState("");
   const [file, setFile] = useState();
   const [mediaPreview, setMediaPreview] = useState();
   const [fileSizeError, setFileSizeError] = useState("");
@@ -193,13 +192,13 @@ export const AvniMediaUpload = ({
           constructErrorMessage(mediaType, selectedFile.size, maxFileSize),
         );
         setFile(undefined);
-        setValue("");
+        // Reset file input value so selecting the same invalid file again triggers onChange
+        event.target.value = "";
         return;
       } else {
         setFileSizeError("");
       }
       setFile(selectedFile);
-      setValue(selectedFile.name);
       if (onSelect) {
         onSelect(selectedFile);
       }
@@ -270,25 +269,13 @@ export const AvniMediaUpload = ({
           )}
         </Grid>
       </FormControl>
-      <Snackbar
-        open={Boolean(fileSizeError)}
+      <CustomizedSnackbar
+        getDefaultSnackbarStatus={setFileSizeError}
+        defaultSnackbarStatus={Boolean(fileSizeError)}
+        variant="error"
+        message={fileSizeError}
         autoHideDuration={6000}
-        onClose={() => setFileSizeError("")}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 4,
-            padding: 12,
-            boxShadow: "0px 2px 8px rgba(0,0,0,0.2)",
-          }}
-        >
-          <Typography variant="body2" sx={{ color: "error.main" }}>
-            {fileSizeError}
-          </Typography>
-        </div>
-      </Snackbar>
+      />
     </Fragment>
   );
 };
