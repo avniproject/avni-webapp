@@ -21,19 +21,19 @@ import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
 const StyledLink = styled(Link)({
   textTransform: "uppercase",
-  fontWeight: 500
+  fontWeight: 500,
 });
 
 const StyledGrid = styled(Grid)({
   alignItems: "center",
-  alignContent: "center"
+  alignContent: "center",
 });
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(1)
+  margin: theme.spacing(1),
 }));
 
-const transformApiResponse = response => {
+const transformApiResponse = (response) => {
   response.observations = mapObservations(response.observations);
   response.cancelObservations = mapObservations(response.cancelObservations);
 };
@@ -41,25 +41,25 @@ const transformApiResponse = response => {
 const EditVisitLink = ({
   editEncounterUrl,
   encounter,
-  isForProgramEncounters
+  isForProgramEncounters,
 }) => {
   const { t } = useTranslation();
 
-  const encounterFormMapping = useSelector(state =>
+  const encounterFormMapping = useSelector((state) =>
     selectFormMappingForEncounter(
       encounter.encounterType.uuid,
-      state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
-    )(state)
+      state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid,
+    )(state),
   );
 
   const programEncounterFormMapping = useSelector(
-    state =>
+    (state) =>
       isForProgramEncounters &&
       selectFormMappingForProgramEncounter(
         encounter.encounterType.uuid,
         state.dataEntry.programEncounterReducer.programEnrolment.program.uuid,
-        state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
-      )(state)
+        state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid,
+      )(state),
   );
 
   const isFormAvailable = isForProgramEncounters
@@ -78,25 +78,25 @@ const EditVisitLink = ({
 const EncounterObs = ({ encounter, isForProgramEncounters }) => {
   const dispatch = useDispatch();
 
-  const encounterFormMapping = useSelector(state =>
+  const encounterFormMapping = useSelector((state) =>
     selectFormMappingForEncounter(
       encounter.encounterType.uuid,
-      state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
-    )(state)
+      state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid,
+    )(state),
   );
 
   const programEncounterFormMapping = useSelector(
-    state =>
+    (state) =>
       isForProgramEncounters &&
       selectFormMappingForProgramEncounter(
         encounter.encounterType.uuid,
         state.dataEntry.programEncounterReducer.programEnrolment.program.uuid,
-        state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
-      )(state)
+        state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid,
+      )(state),
   );
 
   const encounterForms = useSelector(
-    state => state.dataEntry.subjectProgram.encounterForms
+    (state) => state.dataEntry.subjectProgram.encounterForms,
   );
 
   const formMapping = isForProgramEncounters
@@ -105,7 +105,7 @@ const EncounterObs = ({ encounter, isForProgramEncounters }) => {
   const formUUID = formMapping.formUUID;
   const requiredFormDetails = find(
     encounterForms,
-    ef => ef.formUUID === formUUID
+    (ef) => ef.formUUID === formUUID,
   );
 
   useEffect(() => {
@@ -135,7 +135,7 @@ const CompletedVisitsTable = ({
   filterParams,
   editEncounterUrl,
   isForProgramEncounters,
-  onDelete
+  onDelete,
 }) => {
   const { t } = useTranslation();
   const [data, setData] = useState([]);
@@ -143,7 +143,7 @@ const CompletedVisitsTable = ({
   const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState([
-    { id: "encounterDateTime", desc: true }
+    { id: "encounterDateTime", desc: true },
   ]);
 
   const columns = useMemo(
@@ -152,22 +152,22 @@ const CompletedVisitsTable = ({
         accessorKey: "name",
         header: t("visitName"),
         Cell: ({ row }) =>
-          t(row.original.name || row.original.encounterType.name)
+          t(row.original.name || row.original.encounterType.name),
       },
       {
         accessorKey: "encounterDateTime",
         header: t("visitcompleteddate"),
-        Cell: ({ row }) => formatDate(row.original.encounterDateTime)
+        Cell: ({ row }) => formatDate(row.original.encounterDateTime),
       },
       {
         accessorKey: "cancelDateTime",
         header: t("visitCanceldate"),
-        Cell: ({ row }) => formatDate(row.original.cancelDateTime)
+        Cell: ({ row }) => formatDate(row.original.cancelDateTime),
       },
       {
         accessorKey: "earliestVisitDateTime",
         header: t("visitscheduledate"),
-        Cell: ({ row }) => formatDate(row.original.earliestVisitDateTime)
+        Cell: ({ row }) => formatDate(row.original.earliestVisitDateTime),
       },
       {
         id: "actions",
@@ -178,7 +178,7 @@ const CompletedVisitsTable = ({
             <Grid>
               <EditVisitLink
                 editEncounterUrl={editEncounterUrl(
-                  row.original.cancelDateTime ? "cancel" : ""
+                  row.original.cancelDateTime ? "Cancel" : "",
                 )}
                 encounter={row.original}
                 isForProgramEncounters={isForProgramEncounters}
@@ -188,10 +188,10 @@ const CompletedVisitsTable = ({
               <DeleteButton onDelete={() => onDelete(row.original)} />
             </Grid>
           </StyledGrid>
-        )
-      }
+        ),
+      },
     ],
-    [t, editEncounterUrl, isForProgramEncounters, onDelete]
+    [t, editEncounterUrl, isForProgramEncounters, onDelete],
   );
 
   const loadData = useCallback(async () => {
@@ -208,8 +208,8 @@ const CompletedVisitsTable = ({
       const filterQueryString = new URLSearchParams(params).toString();
       const result = await http
         .get(`${apiUrl}?${filterQueryString}`)
-        .then(response => response.data);
-      result.content.forEach(e => transformApiResponse(e));
+        .then((response) => response.data);
+      result.content.forEach((e) => transformApiResponse(e));
       setData(result.content || []);
       setTotalRecords(result.totalElements || 0);
     } catch (error) {
@@ -229,7 +229,7 @@ const CompletedVisitsTable = ({
     pagination,
     setPagination,
     totalRecords,
-    isLoading
+    isLoading,
   });
 
   return (
@@ -261,7 +261,7 @@ const CompletedVisitsTable = ({
       )}
       renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
       initialState={{
-        sorting: [{ id: "encounterDateTime", desc: true }]
+        sorting: [{ id: "encounterDateTime", desc: true }],
       }}
     />
   );
