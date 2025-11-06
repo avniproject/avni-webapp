@@ -744,6 +744,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
               }
               onDelete={handleImageDelete}
             />
+            <Box />
             <AvniMediaUpload
               key="video-upload"
               uniqueName="concept-video-upload"

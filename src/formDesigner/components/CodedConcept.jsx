@@ -192,7 +192,7 @@ export const CodedConceptAnswer = ({
             </StyledDeleteButton>
           </Grid>
           {!inlineConcept && (
-            <Grid container spacing={2}>
+            <>
               <Grid item>
                 <AvniMediaUpload
                   width={20}
@@ -232,7 +232,7 @@ export const CodedConceptAnswer = ({
                   }
                 />
               </Grid>
-            </Grid>
+            </>
           )}
         </Grid>
       </Grid>

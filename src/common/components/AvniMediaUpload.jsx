@@ -7,6 +7,7 @@ import {
   IconButton,
   Typography,
   FormControl,
+  Stack,
 } from "@mui/material";
 import { ToolTipContainer } from "./ToolTipContainer";
 import { AddAPhoto, VideoCall, Close } from "@mui/icons-material";
@@ -240,19 +241,22 @@ export const AvniMediaUpload = ({
 
   return (
     <Fragment>
-      <FormControl fullWidth>
-        <Grid
-          container
-          direction="row"
-          spacing={2}
+      <FormControl sx={{ width: "fit-content" }}>
+        <Stack
           alignItems="center"
-          wrap="nowrap"
+          justifyContent="center"
+          padding={1}
+          borderRadius={2}
+          border="1px dashed rgba(0, 0, 0, 0.23)"
+          sx={{
+            backgroundColor: "rgba(0, 0, 0, 0.02)",
+            transition: "all 0.2s ease-in-out",
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+              borderColor: "rgba(0, 0, 0, 0.4)",
+            },
+          }}
         >
-          <Grid item>
-            <Typography sx={{ opacity: 0.5, whiteSpace: "nowrap" }}>
-              {label}
-            </Typography>
-          </Grid>
           {allowUpload && <Grid item>{renderUploadButton()}</Grid>}
           {mediaPreview && mediaType && (
             <Grid item>
@@ -267,7 +271,12 @@ export const AvniMediaUpload = ({
               </ToolTipContainer>
             </Grid>
           )}
-        </Grid>
+          <Grid item>
+            <Typography sx={{ opacity: 0.5, whiteSpace: "nowrap" }}>
+              {label}
+            </Typography>
+          </Grid>
+        </Stack>
       </FormControl>
       <CustomizedSnackbar
         getDefaultSnackbarStatus={setFileSizeError}
