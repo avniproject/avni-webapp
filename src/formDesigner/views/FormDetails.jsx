@@ -553,6 +553,36 @@ const FormDetails = () => {
     [],
   );
 
+  const generateWarningFromLLM = useCallback(
+    async (formElement, entireForm, groupIndex, elementIndex) => {
+      try {
+        const response = await http.post("/api/llm/generate-warning", {
+          currentElement: {
+            name: formElement.name,
+            dataType: formElement.concept?.dataType,
+            mandatory: formElement.mandatory,
+            type: formElement.type,
+          },
+          entireForm: entireForm,
+          formType: entireForm.formType,
+        });
+
+        if (response.data.warning) {
+          setState(
+            produce((draft) => {
+              draft.form.formElementGroups[groupIndex].formElements[
+                elementIndex
+              ].warning = response.data.warning;
+            }),
+          );
+        }
+      } catch (error) {
+        console.error("Failed to generate warning:", error);
+      }
+    },
+    [],
+  );
+
   const handleGroupElementChange = useCallback(
     (index, propertyName, value, elementIndex = -1) => {
       setState(
@@ -566,8 +596,28 @@ const FormDetails = () => {
           ),
         ),
       );
+
+      // Trigger LLM call for form element changes (exclude UI-only properties)
+      if (
+        elementIndex !== -1 &&
+        !["display", "expand"].includes(propertyName)
+      ) {
+        // Use setTimeout to ensure state is updated first
+        setTimeout(() => {
+          const formElement =
+            state.form.formElementGroups[index]?.formElements[elementIndex];
+          if (formElement?.name && formElement?.concept?.name) {
+            generateWarningFromLLM(
+              formElement,
+              state.form,
+              index,
+              elementIndex,
+            );
+          }
+        }, 0);
+      }
     },
-    [],
+    [state.form, generateWarningFromLLM],
   );
 
   const handleInlineNumericAttributes = useCallback(

@@ -59,14 +59,6 @@ const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
   const panel = `panel${groupIndex}${index}`;
   const theme = useTheme();
 
-  // Debug log to inspect props
-  console.log("[StaticFormElement] Props received:", {
-    groupIndex,
-    index,
-    dataType,
-    name,
-  });
-
   return (
     <StyledAccordion
       TransitionProps={{ mountOnEnter: false, unmountOnExit: false }}
