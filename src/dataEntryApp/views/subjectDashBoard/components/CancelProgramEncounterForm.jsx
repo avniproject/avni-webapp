@@ -59,7 +59,8 @@ const CancelProgramEncounterForm = ({ children, fetchRulesResponse }) => {
   });
 
   const formActions = {
-    updateObs: (obs) => dispatch(updateCancelObs(obs)),
+    updateObs: (formElement, value) =>
+      dispatch(updateCancelObs(formElement, value)),
     onSave: () => dispatch(saveProgramEncounter(true)),
     setValidationResults: (results) => dispatch(setValidationResults(results)),
     onNext: () => dispatch(onNext(true)),
