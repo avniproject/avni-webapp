@@ -8,37 +8,15 @@ const DifyChatbot = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
 
-  const [aiConfig, setAiConfig] = useState(null);
-  const [configError, setConfigError] = useState(false);
-
   // Get user and organization data from Redux state
   const userInfo = useSelector((state) => state.app?.userInfo);
   const organisation = useSelector((state) => state.app?.organisation);
   const authSession = useSelector((state) => state.app?.authSession);
   const isChatOpen = useSelector((state) => state.app?.isChatOpen);
+  const aiConfig = useSelector((state) => state.app?.genericConfig.avniAi);
 
-  // Fetch AI assistant configuration
-  useEffect(() => {
-    const fetchAiConfig = async () => {
-      try {
-        const response = await fetch("/config");
-        if (response.ok) {
-          const config = await response.json();
-          setAiConfig(config.copilotConfig);
-          setConfigError(false);
-        } else {
-          setConfigError(true);
-        }
-      } catch (error) {
-        console.error("Failed to fetch AI assistant config:", error);
-        setConfigError(true);
-      }
-    };
-
-    fetchAiConfig();
-  }, []);
   const authToken = localStorage.getItem(IdpDetails.AuthTokenName);
-  const avni_mcp_server_url = aiConfig?.mcp_server_url || "";
+  const avni_mcp_server_url = aiConfig?.mcpServerUrl || "";
 
   useEffect(() => {
     // Doesn't update dify config. We need to keep track of the conversation id to update the inputs and config
@@ -76,7 +54,7 @@ const DifyChatbot = () => {
 
   useEffect(() => {
     // Don't create button if config failed or copilot is disabled
-    if (configError || !aiConfig?.avni_copilot_enabled) {
+    if (!aiConfig?.enabled) {
       return;
     }
 
@@ -172,11 +150,11 @@ const DifyChatbot = () => {
       const style = document.getElementById("dify-chat-animations");
       if (style) style.remove();
     };
-  }, [isChatOpen, theme, aiConfig, configError, dispatch]);
+  }, [isChatOpen, theme, aiConfig, dispatch]);
 
   // Build chatbot URL with user context
   const buildChatUrl = () => {
-    const token = aiConfig?.avni_copilot_token;
+    const token = aiConfig?.token;
 
     const baseUrl = `https://udify.app/chat/${token}`;
     const params = new URLSearchParams();

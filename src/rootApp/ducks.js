@@ -99,9 +99,13 @@ const initialState = {
   genericConfig: {
     webAppTimeoutInMinutes: SESSION_IDLE_MINUTES,
     avniEnvironment: "development",
-    copilotEnabled: false,
-    avniMcpServerUrl: "http://localhost:8023",
-    show_templates: false,
+    avniAi: {
+      enabled: false,
+      token: null,
+      baseUrl: "http://localhost:8021",
+      mcpServerUrl: "http://localhost:8023",
+      showTemplates: false,
+    },
   },
   isChatOpen: (() => {
     const hasSeenChatbot = localStorage.getItem("avni-chatbot-seen");
@@ -184,9 +188,7 @@ export default function (state = initialState, action) {
         genericConfig: {
           webAppTimeoutInMinutes: action.payload.webAppTimeoutInMinutes,
           avniEnvironment: action.payload.avniEnvironment,
-          copilotEnabled: action.payload.copilotEnabled,
-          avniMcpServerUrl: action.payload.avniMcpServerUrl,
-          show_templates: action.payload.show_templates,
+          avniAi: action.payload.avniAi,
         },
       };
     }

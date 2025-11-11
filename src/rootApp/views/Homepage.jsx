@@ -154,7 +154,7 @@ const Homepage = () => {
         />
       </Grid>
       {!CurrentUserService.isAdminAndImpersonating(userInfo) &&
-        genericConfig.show_templates &&
+        genericConfig.avniAi.showTemplates &&
         isNewImplementation && (
           <WelcomeModal
             open={showWelcomeModal}
