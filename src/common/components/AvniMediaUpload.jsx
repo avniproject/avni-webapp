@@ -90,7 +90,7 @@ export const MediaPreview = ({
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            padding: 0,
+            padding: "1rem",
             backgroundColor: "#000",
           }}
         >
@@ -99,8 +99,10 @@ export const MediaPreview = ({
               controls
               autoPlay
               style={{
-                maxWidth: "100%",
-                maxHeight: "100%",
+                width: "100%",
+                height: "auto",
+                maxWidth: "90vw",
+                maxHeight: "90vh",
                 display: "block",
               }}
             >
