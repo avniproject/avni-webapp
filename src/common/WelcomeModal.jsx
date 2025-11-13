@@ -8,7 +8,8 @@ import {
   CardContent,
   Grid,
 } from "@mui/material";
-import { Close as CloseIcon, Description, SmartToy } from "@mui/icons-material";
+import { Close as CloseIcon, SmartToy } from "@mui/icons-material";
+import Icon from "./components/Icon";
 import { styled } from "@mui/material/styles";
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
@@ -105,13 +106,13 @@ const WelcomeModal = ({ open, onClose, onOptionSelect }) => {
             <StyledCard onClick={() => handleOptionClick("templates")}>
               <CardContentWrapper>
                 <IconContainer>
-                  <Description />
+                  <Icon name="templates" width={64} height={64} />
                 </IconContainer>
                 <Typography
                   variant="h6"
                   sx={{ fontWeight: 500, marginBottom: 2 }}
                 >
-                  Explore Avni Templates
+                  Explore All Templates
                 </Typography>
                 <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
                   Learn about Avni through our varied use cases
@@ -131,6 +132,25 @@ const WelcomeModal = ({ open, onClose, onOptionSelect }) => {
                   sx={{ fontWeight: 500, marginBottom: 2 }}
                 >
                   Explore Using AI
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
+                  Design your programs from scratch using the AI Assistant
+                </Typography>
+              </CardContentWrapper>
+            </StyledCard>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <StyledCard onClick={() => handleOptionClick("appdesigner")}>
+              <CardContentWrapper>
+                <IconContainer>
+                  <Icon name="startFresh" width={64} height={64} />
+                </IconContainer>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 500, marginBottom: 2 }}
+                >
+                  Start Fresh
                 </Typography>
                 <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
                   Design your programs from scratch using the App Designer

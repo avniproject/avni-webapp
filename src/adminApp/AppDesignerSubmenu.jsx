@@ -5,9 +5,16 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const Submenu = ({ text, icon, children }) => {
-  const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const [open, setOpen] = useState(() => {
+    return (
+      location.pathname.startsWith("/appdesigner") &&
+      !location.pathname.startsWith("/appdesigner/templates")
+    );
+  });
 
   const handleClick = () => {
     setOpen(!open);
@@ -15,11 +22,20 @@ const Submenu = ({ text, icon, children }) => {
 
   return (
     <>
-      <MenuItem onClick={handleClick}>
+      <MenuItem
+        onClick={handleClick}
+        sx={{
+          "& .MuiListItemText-primary": {
+            fontWeight: open ? "bold" : "normal",
+          },
+          border: "1px solid #E5E5E5",
+          backgroundColor: "background.paper",
+        }}
+      >
+        <ListItemText primary={text} />
         <ListItemIcon>
           {open ? <ExpandLess /> : icon || <ExpandMore />}
         </ListItemIcon>
-        <ListItemText primary={text} />
       </MenuItem>
       <Collapse
         in={open}
@@ -29,6 +45,7 @@ const Submenu = ({ text, icon, children }) => {
           "& .RaMenuItemLink-icon": {
             paddingLeft: 1,
           },
+          paddingLeft: "1rem",
         }}
       >
         {children}

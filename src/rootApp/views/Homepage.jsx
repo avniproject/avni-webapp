@@ -20,11 +20,14 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import ApplicationContext from "../../ApplicationContext";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { setChatOpen } from "../ducks";
 import CurrentUserService from "../../common/service/CurrentUserService.ts";
+import { isProduction } from "../../adminApp/OrganisationDetail";
 
 const Homepage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const userInfo = useSelector((state) => state.app.userInfo);
   const organisation = useSelector((state) => state.app.organisation);
   const isNewImplementation = useSelector(
@@ -50,10 +53,13 @@ const Homepage = () => {
   const handleWelcomeOptionSelect = (option) => {
     switch (option) {
       case "templates":
-        // Navigate to templates or show templates
+        navigate("/appdesigner/templates");
         break;
       case "ai":
         dispatch(setChatOpen(true));
+        break;
+      case "appdesigner":
+        navigate("/appdesigner/subjectType");
         break;
       default:
         break;
@@ -154,6 +160,7 @@ const Homepage = () => {
         />
       </Grid>
       {!CurrentUserService.isAdminAndImpersonating(userInfo) &&
+        !isProduction(organisation) &&
         genericConfig.avniAi.showTemplates &&
         isNewImplementation && (
           <WelcomeModal
