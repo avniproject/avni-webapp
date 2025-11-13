@@ -17,6 +17,7 @@ import EncounterTypeEdit from "./EncounterType/EncounterTypeEdit";
 import EncounterTypeShow from "./EncounterType/EncounterTypeShow";
 import EncounterTypeCreate from "./EncounterType/EncounterTypeCreate";
 import { WithProps } from "../common/components/utils";
+import AppDesignerLayout from "./AppDesignerLayout";
 import AdminLayout from "../common/components/AdminLayout";
 import Forms from "../formDesigner/views/Forms";
 import Concepts from "../formDesigner/views/Concepts";
@@ -56,6 +57,7 @@ import { StorageManagementConfig } from "../formDesigner/components/StorageManag
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
 import { TemplateOrganisations } from "../formDesigner/components/TemplateOrganisations/TemplateOrganisations";
+import { isProduction } from "./OrganisationDetail";
 
 const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
   const navigate = useNavigate();
@@ -69,13 +71,15 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
 
   const CreateConcept = () => <CreateEditConcept isCreatePage={true} />;
 
+  const layout = isProduction(organisation) ? AdminLayout : AppDesignerLayout;
+
   return (
     <Admin
       title="Manage Organisation"
       basename="/appdesigner"
       authProvider={authProvider}
       dataProvider={dataProvider}
-      layout={AdminLayout}
+      layout={layout}
       darkTheme={null}
     >
       <Resource

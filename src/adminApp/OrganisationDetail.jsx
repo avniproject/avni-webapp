@@ -7,7 +7,7 @@ import {
   Button,
   Snackbar,
   SnackbarContent,
-  Typography
+  Typography,
 } from "@mui/material";
 import { Title } from "react-admin";
 import { DeleteData } from "./components/DeleteData";
@@ -19,26 +19,28 @@ import _ from "lodash";
 const StyledBox = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[2],
   padding: theme.spacing(3),
-  backgroundColor: theme.palette.background.paper
+  backgroundColor: theme.palette.background.paper,
 }));
 
 const StyledButton = styled(Button)({
-  backgroundColor: "red"
+  backgroundColor: "red",
 });
 
 const StyledSnackbarContent = styled(SnackbarContent)({
-  backgroundColor: "red"
+  backgroundColor: "red",
 });
 
-function isProduction(organisation) {
-  return organisation.category === OrganisationCategory.Production;
+export function isProduction(organisation) {
+  return (
+    organisation.organisationCategoryName === OrganisationCategory.Production
+  );
 }
 
 export const OrganisationDetail = ({
   organisation: { name, id },
   hasEditPrivilege,
   hasOrgAdminConfigDeletionPrivilege,
-  hasOrgMetadataDeletionPrivilege
+  hasOrgMetadataDeletionPrivilege,
 }) => {
   const [openModal, setOpenModal] = useState(false);
   const [dataDeletedIndicator, setDataDeletedIndicator] = useState(false);
@@ -54,8 +56,8 @@ export const OrganisationDetail = ({
   }
 
   useEffect(() => {
-    OrganisationService.getApplicableOrganisation(id).then(x =>
-      setOrganisation(x)
+    OrganisationService.getApplicableOrganisation(id).then((x) =>
+      setOrganisation(x),
     );
   }, []);
 
