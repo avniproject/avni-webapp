@@ -38,6 +38,7 @@ import {
 } from "../../common/model/WebConcept.ts";
 import { Stack } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
+import { ModelGeneral as General } from "avni-models";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -156,10 +157,14 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
   }, []);
 
   const onAddAnswer = useCallback(() => {
-    setConcept((prev) => ({
-      ...prev,
-      answers: [...prev.answers, WebConceptAnswerView.emptyAnswer()],
-    }));
+    setConcept((prev) => {
+      const newAnswer = WebConceptAnswerView.emptyAnswer();
+      newAnswer.uuid = General.randomUUID();
+      return {
+        ...prev,
+        answers: [...prev.answers, newAnswer],
+      };
+    });
   }, []);
 
   const onChangeAnswerName = useCallback((answer, index) => {

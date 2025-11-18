@@ -228,7 +228,7 @@ export const AvniMediaUpload = ({
             color="primary"
             aria-label="upload media"
             component="span"
-            style={{ width, height, border: "1px dashed #ccc" }}
+            style={{ width, height }}
           >
             {accept.includes("video") ? (
               <VideoCall fontSize={"large"} />

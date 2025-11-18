@@ -205,7 +205,7 @@ export const CodedConceptAnswer = ({
                   maxFileSize={WebConceptView.MaxImageFileSize}
                   onDelete={() => onRemoveAnswerMedia(index, "Image")}
                   oldImgUrl={currentImageUrl}
-                  uniqueName={"answer-image-" + index}
+                  uniqueName={"answer-image-" + answer.uuid}
                   localMediaUrl={
                     answer.unsavedImage &&
                     URL.createObjectURL(answer.unsavedImage)
@@ -225,7 +225,7 @@ export const CodedConceptAnswer = ({
                   maxFileSize={WebConceptView.MaxVideoFileSize}
                   onDelete={() => onRemoveAnswerMedia(index, "Video")}
                   oldImgUrl={currentVideoUrl}
-                  uniqueName={"answer-video-" + index}
+                  uniqueName={"answer-video-" + answer.uuid}
                   localMediaUrl={
                     answer.unsavedVideo &&
                     URL.createObjectURL(answer.unsavedVideo)
@@ -261,7 +261,7 @@ export default function CodedConcept(props) {
           return (
             !answer.voided && (
               <CodedConceptAnswer
-                key={`answer-${index}`}
+                key={answer.uuid}
                 answer={answer}
                 index={index}
                 onDeleteAnswer={props.onDeleteAnswer}
