@@ -77,7 +77,21 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
       case "STOPPED":
         return "Your template could not be applied. Please try again after some time.";
       case "COMPLETED":
-        return "Your template has been applied successfully. You can download Avni App to test it out or try this on our Data Entry Web App";
+        return (
+          <span>
+            Your template has been applied successfully. You can{" "}
+            <a
+              href="https://play.google.com/store/apps/details?id=com.openchsclient"
+              target={"_blank"}
+            >
+              download Avni App
+            </a>{" "}
+            to test it out or try this on our{" "}
+            <a href="#/app" target={"_blank"}>
+              Data Entry Web App
+            </a>
+          </span>
+        );
       default:
         return "Please wait while we build this program template for you. It will take a few mins.";
     }
