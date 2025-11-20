@@ -6,9 +6,9 @@ import { Privilege } from "openchs-models";
 import { get } from "lodash";
 
 const ReportCardList = () => {
-  const navigate = useNavigate();
-  const userInfo = useSelector((state) => state.app.userInfo);
-  const columns = [
+const navigate = useNavigate();
+const userInfo = useSelector((state) => state.app.userInfo);
+const columns = [
     {
       accessorKey: "name",
       header: "Name",
