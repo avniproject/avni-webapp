@@ -87,7 +87,7 @@ const Homepage = () => {
         />
         <HomePageCard
           href={"/#/appdesigner"}
-          name={"App Designer"}
+          name={"Create App"}
           customIconComponent={
             <Build color="primary" style={{ fontSize: 100 }} />
           }
