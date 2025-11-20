@@ -13,12 +13,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import ReactMarkdown from "react-markdown";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { CircularProgress } from "@mui/material";
+import { ApplyTemplateDialog } from "./ApplyTemplateDialog";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   width: "100%",
@@ -44,128 +39,40 @@ const CardContainer = styled(Box)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
   gap: theme.spacing(3),
-  width: "100%",
   padding: theme.spacing(2, 0),
   maxWidth: "100%",
   margin: 0,
 }));
 
-const TemplateOrganisationDetail = ({ template, onBack }) => {
-  const [openDialog, setOpenDialog] = useState(false);
+// Custom hook for handling template application dialog state
+const useApplyTemplateDialog = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState(null);
-  const [applyStatus, setApplyStatus] = useState(null);
 
-  function getDialogTitle(applyStatus) {
-    switch (applyStatus) {
-      case "FAILED":
-      case "ABANDONED":
-      case "UNKNOWN":
-      case "STOPPED":
-        return "Error in applying template";
-      case "COMPLETED":
-        return "Cheers! Your app is ready for use";
-      default:
-        return "Applying Template!";
-    }
-  }
-
-  function getDialogContent(applyStatus) {
-    switch (applyStatus) {
-      case "FAILED":
-      case "ABANDONED":
-      case "UNKNOWN":
-      case "STOPPED":
-        return "Your template could not be applied. Please try again after some time.";
-      case "COMPLETED":
-        return (
-          <span>
-            Your template has been applied successfully. You can{" "}
-            <a
-              href="https://play.google.com/store/apps/details?id=com.openchsclient"
-              target={"_blank"}
-            >
-              download Avni App
-            </a>{" "}
-            to test it out or try this on our{" "}
-            <a href="#/app" target={"_blank"}>
-              Data Entry Web App
-            </a>
-          </span>
-        );
-      default:
-        return "Please wait while we build this program template for you. It will take a few mins.";
-    }
-  }
-
-  function isTerminalStatus(applyStatus) {
-    switch (applyStatus) {
-      case "FAILED":
-      case "ABANDONED":
-      case "UNKNOWN":
-      case "STOPPED":
-      case "COMPLETED":
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  const handleClickOpenConfirmDialog = (templateId) => {
+  const openDialog = (templateId) => {
     setSelectedTemplateId(templateId);
-    setOpenDialog(true);
+    setIsDialogOpen(true);
   };
 
-  const handleCloseConfirmDialog = () => {
-    setOpenDialog(false);
+  const closeDialog = () => {
+    setIsDialogOpen(false);
     setSelectedTemplateId(null);
-    setApplyStatus(null);
   };
 
-  const pollApplyJobStatus = () => {
-    const pollInterval = setInterval(() => {
-      http
-        .get("/web/templateOrganisations/apply/status")
-        .then((response) => {
-          const { applyTemplateJob } = response.data;
-          setApplyStatus(applyTemplateJob.status);
-          if (applyTemplateJob?.endDateTime) {
-            clearInterval(pollInterval);
-            // Handle successful completion
-            console.log(
-              "Template application completed at:",
-              applyTemplateJob.endDateTime,
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Error polling job status:", error);
-          clearInterval(pollInterval);
-          setApplyStatus("POLL_ERROR");
-        });
-    }, 3000);
-
-    // Clean up interval when component unmounts
-    return () => clearInterval(pollInterval);
+  return {
+    isDialogOpen,
+    selectedTemplateId,
+    openDialog,
+    closeDialog,
   };
+};
 
-  const applyTemplate = (templateId) => {
-    setApplyStatus("JOB_REQUESTED");
-    http
-      .post(`/web/templateOrganisations/${templateId}/apply`)
-      .then(() => {
-        setApplyStatus("JOB_CREATED");
-        pollApplyJobStatus();
-      })
-      .catch((err) => {
-        console.error(err);
-        setApplyStatus("FAILED");
-      });
-  };
+const TemplateOrganisationDetail = ({ template, onBack }) => {
+  const { isDialogOpen, openDialog, closeDialog } = useApplyTemplateDialog();
 
-  const handleApplyConfirm = () => {
-    if (selectedTemplateId) {
-      applyTemplate(selectedTemplateId);
-    }
+  const handleApplySuccess = () => {
+    // Handle any success actions after template application
+    console.log("Template applied successfully");
   };
 
   return (
@@ -240,29 +147,35 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
             minWidth: 150,
           }}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleClickOpenConfirmDialog(template.id)}
+          <Box
             sx={{
-              minWidth: 180,
-              "&:hover": {
-                backgroundColor: "primary.dark",
-              },
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
             }}
           >
-            Apply Template
-          </Button>
-          <Box sx={{ width: "100%", mt: 0.5, maxWidth: 180 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => openDialog(template.id)}
+              sx={{
+                minWidth: 180,
+                "&:hover": {
+                  backgroundColor: "primary.dark",
+                },
+              }}
+            >
+              Apply Template
+            </Button>
             <Typography
               variant="caption"
               color="text.secondary"
               sx={{
-                display: "block",
+                mt: 0.5,
+                maxWidth: 180,
                 textAlign: "left",
                 whiteSpace: "normal",
                 lineHeight: 1.3,
-                width: "100%",
               }}
             >
               NOTE: Currently you can apply only one template at a time.
@@ -279,126 +192,29 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
         </Box>
       </Box>
 
-      <Dialog
-        open={openDialog}
-        onClose={(event, reason) => {
-          if (reason === "backdropClick" || reason === "escapeKeyDown") {
-            return;
-          }
-          handleCloseConfirmDialog();
-        }}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          style: {
-            minHeight: "300px",
-            maxWidth: "500px",
-            width: "100%",
-            margin: "16px",
-            display: "flex",
-            flexDirection: "column",
-          },
-        }}
-      >
-        {applyStatus ? (
-          <>
-            <DialogTitle id="alert-dialog-title">
-              {getDialogTitle(applyStatus)}
-            </DialogTitle>
-            <DialogContent
-              sx={{
-                flex: "1 1 auto",
-                py: 2,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-              }}
-            >
-              {!isTerminalStatus(applyStatus) && (
-                <CircularProgress size={50} sx={{ mb: 3 }} />
-              )}
-              <Typography
-                variant="body1"
-                sx={{
-                  maxWidth: "80%",
-                  whiteSpace: "pre-line",
-                }}
-              >
-                {getDialogContent(applyStatus)}
-              </Typography>
-            </DialogContent>
-            <DialogActions
-              sx={{
-                px: 3,
-                pb: 2,
-                pt: 1,
-                justifyContent: "flex-end",
-                "& > :not(:first-of-type)": {
-                  ml: 2,
-                },
-              }}
-            >
-              <Button
-                onClick={handleCloseConfirmDialog}
-                disabled={!isTerminalStatus(applyStatus)}
-                variant="contained"
-                sx={{ minWidth: 100 }}
-              >
-                OK
-              </Button>
-            </DialogActions>
-          </>
-        ) : (
-          <>
-            <DialogTitle id="alert-dialog-title">
-              Are you sure you want to apply this template?
-            </DialogTitle>
-            <DialogContent sx={{ flex: "1 1 auto", py: 2 }}>
-              <DialogContentText id="alert-dialog-description">
-                Once applied, you cannot revert this change but you can
-                customise it according to your needs.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions
-              sx={{
-                px: 3,
-                pb: 2,
-                pt: 1,
-                justifyContent: "flex-end",
-                "& > :not(:first-of-type)": {
-                  ml: 2,
-                },
-              }}
-            >
-              <Button
-                onClick={handleCloseConfirmDialog}
-                variant="outlined"
-                sx={{ minWidth: 100 }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleApplyConfirm}
-                variant="contained"
-                color="primary"
-                sx={{ minWidth: 100 }}
-                autoFocus
-              >
-                Apply
-              </Button>
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
+      <ApplyTemplateDialog
+        open={isDialogOpen}
+        onClose={closeDialog}
+        templateId={template.id}
+        onApplySuccess={handleApplySuccess}
+      />
     </Box>
   );
 };
 
 const TemplateOrganisationCard = ({ template, onViewDetails }) => {
+  const { isDialogOpen, openDialog, closeDialog } = useApplyTemplateDialog();
+
+  const handleApplySuccess = () => {
+    // Handle any success actions after template application
+    console.log("Template applied successfully");
+  };
+
+  const handleApplyClick = (e, templateId) => {
+    e.stopPropagation();
+    openDialog(templateId);
+  };
+
   return (
     <StyledCard>
       <CardContent>
@@ -450,10 +266,7 @@ const TemplateOrganisationCard = ({ template, onViewDetails }) => {
           variant="contained"
           color="primary"
           size="small"
-          onClick={(e) => {
-            e.stopPropagation();
-            // (template.id);
-          }}
+          onClick={(e) => handleApplyClick(e, template.id)}
           sx={{
             color: "common.white",
             "&:hover": {
@@ -464,6 +277,13 @@ const TemplateOrganisationCard = ({ template, onViewDetails }) => {
           Apply Template
         </Button>
       </CardActions>
+
+      <ApplyTemplateDialog
+        open={isDialogOpen}
+        onClose={closeDialog}
+        templateId={template.id}
+        onApplySuccess={handleApplySuccess}
+      />
     </StyledCard>
   );
 };
