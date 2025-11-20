@@ -222,12 +222,17 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
           mb: 4,
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: "flex-start",
         }}
       >
-        <Typography variant="h5" component="h1" gutterBottom>
-          {template.name}
-        </Typography>
+        <Box sx={{ flex: 1, mr: 4 }}>
+          <Typography variant="h5" component="h1" gutterBottom>
+            {template.name}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {template.description}
+          </Typography>
+        </Box>
         <Box
           sx={{
             display: "flex",
@@ -241,8 +246,7 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
             color="primary"
             onClick={() => handleClickOpenConfirmDialog(template.id)}
             sx={{
-              width: "100%",
-              minWidth: 150,
+              minWidth: 180,
               "&:hover": {
                 backgroundColor: "primary.dark",
               },
@@ -250,7 +254,7 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
           >
             Apply Template
           </Button>
-          <Box sx={{ width: "100%", maxWidth: 200, mt: 0.5 }}>
+          <Box sx={{ width: "100%", mt: 0.5, maxWidth: 180 }}>
             <Typography
               variant="caption"
               color="text.secondary"
@@ -259,6 +263,7 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
                 textAlign: "left",
                 whiteSpace: "normal",
                 lineHeight: 1.3,
+                width: "100%",
               }}
             >
               NOTE: Currently you can apply only one template at a time.
@@ -270,24 +275,6 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
       <Divider sx={{ mb: 3 }} />
 
       <Box sx={{ p: 2 }}>
-        <Typography
-          variant="subtitle1"
-          gutterBottom
-          sx={{ fontWeight: "medium" }}
-        >
-          Description
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          {template.description || "No description available"}
-        </Typography>
-
-        <Typography
-          variant="subtitle1"
-          gutterBottom
-          sx={{ fontWeight: "medium" }}
-        >
-          Details
-        </Typography>
         <Box sx={{ mb: 4 }}>
           <ReactMarkdown children={template.summary} />
         </Box>
