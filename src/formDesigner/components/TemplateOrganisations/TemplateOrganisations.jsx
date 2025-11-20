@@ -42,7 +42,7 @@ const CardContent = styled(MuiCardContent)(({ theme }) => ({
 
 const CardContainer = styled(Box)(({ theme }) => ({
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
   gap: theme.spacing(3),
   width: "100%",
   padding: theme.spacing(2, 0),
@@ -153,7 +153,6 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
     http
       .post(`/web/templateOrganisations/${templateId}/apply`)
       .then(() => {
-        setOpenDialog(true);
         setApplyStatus("JOB_CREATED");
         pollApplyJobStatus();
       })
@@ -425,7 +424,27 @@ const TemplateOrganisationCard = ({ template, onViewDetails }) => {
           </Typography>
         )}
       </CardContent>
-      <CardActions sx={{ p: 2, mt: "auto" }}>
+      <CardActions sx={{ p: 2, mt: "auto", display: "flex", gap: 1 }}>
+        <Button
+          fullWidth
+          variant="outlined"
+          color="primary"
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewDetails(template);
+          }}
+          sx={{
+            color: "primary.main",
+            borderColor: "primary.main",
+            "&:hover": {
+              borderColor: "primary.dark",
+              backgroundColor: "primary.light",
+            },
+          }}
+        >
+          View Details
+        </Button>
         <Button
           fullWidth
           variant="contained"
@@ -433,7 +452,7 @@ const TemplateOrganisationCard = ({ template, onViewDetails }) => {
           size="small"
           onClick={(e) => {
             e.stopPropagation();
-            onViewDetails(template);
+            // (template.id);
           }}
           sx={{
             color: "common.white",
@@ -442,7 +461,7 @@ const TemplateOrganisationCard = ({ template, onViewDetails }) => {
             },
           }}
         >
-          View Details
+          Apply Template
         </Button>
       </CardActions>
     </StyledCard>
