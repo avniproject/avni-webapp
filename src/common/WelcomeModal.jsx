@@ -8,7 +8,7 @@ import {
   CardContent,
   Grid,
 } from "@mui/material";
-import { Close as CloseIcon, SmartToy } from "@mui/icons-material";
+import { Close as CloseIcon } from "@mui/icons-material";
 import Icon from "./components/Icon";
 import { styled } from "@mui/material/styles";
 
@@ -116,25 +116,6 @@ const WelcomeModal = ({ open, onClose, onOptionSelect }) => {
                 </Typography>
                 <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
                   Learn about Avni through our varied use cases
-                </Typography>
-              </CardContentWrapper>
-            </StyledCard>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <StyledCard onClick={() => handleOptionClick("ai")}>
-              <CardContentWrapper>
-                <IconContainer>
-                  <SmartToy />
-                </IconContainer>
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: 500, marginBottom: 2 }}
-                >
-                  Explore Using AI
-                </Typography>
-                <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
-                  Design your programs from scratch using the AI Assistant
                 </Typography>
               </CardContentWrapper>
             </StyledCard>

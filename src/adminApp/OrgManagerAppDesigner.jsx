@@ -71,7 +71,8 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
 
   const CreateConcept = () => <CreateEditConcept isCreatePage={true} />;
 
-  const layout = isProduction(organisation) ? AdminLayout : AppDesignerLayout;
+  const isProdOrg = isProduction(organisation);
+  const layout = isProdOrg ? AdminLayout : AppDesignerLayout;
 
   return (
     <Admin
@@ -82,11 +83,13 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
       layout={layout}
       darkTheme={null}
     >
-      <Resource
-        name={"templates"}
-        options={{ label: "Templates" }}
-        list={TemplateOrganisations}
-      />
+      {!isProdOrg ? (
+        <Resource
+          name={"templates"}
+          options={{ label: "Templates" }}
+          list={TemplateOrganisations}
+        />
+      ) : null}
       <Resource
         name="subjectType"
         options={{ label: "Subject Types" }}
