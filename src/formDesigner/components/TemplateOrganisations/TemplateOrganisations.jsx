@@ -13,7 +13,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import ReactMarkdown from "react-markdown";
-import { ApplyTemplateDialog } from "./ApplyTemplateDialog";
+import { ApplyTemplateDialog, BUTTON_CONFIG } from "./ApplyTemplateDialog";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   width: "100%",
@@ -159,7 +159,7 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
               color="primary"
               onClick={() => openDialog(template.id)}
               sx={{
-                minWidth: 180,
+                minWidth: BUTTON_CONFIG.applyMinWidth,
                 "&:hover": {
                   backgroundColor: "primary.dark",
                 },

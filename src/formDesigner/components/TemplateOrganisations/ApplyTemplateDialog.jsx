@@ -8,9 +8,41 @@ import {
   Button,
   Typography,
   CircularProgress,
+  Box,
 } from "@mui/material";
+import PropTypes from "prop-types";
 
 export const TEMPLATE_APPLY_PROGRESS_KEY = "template-apply-in-progress";
+
+export const MAX_POLLING_TIME = 300000; // 5 minutes in milliseconds
+
+export const MAX_RETRY_ATTEMPTS = 3;
+
+export const RETRY_BASE_DELAY = 1000; // 1 second
+
+export const POLLING_INTERVAL = 3000; // 3 seconds
+
+export const DIALOG_CONFIG = {
+  maxWidth: "sm",
+  fullWidth: true,
+  minHeight: "300px",
+  dialogMaxWidth: "500px",
+  margin: "16px",
+};
+
+export const PROGRESS_SIZE = {
+  dialog: 50,
+  button: 24,
+};
+
+export const TYPOGRAPHY_CONFIG = {
+  maxWidth: "80%",
+};
+
+export const BUTTON_CONFIG = {
+  minWidth: 100,
+  applyMinWidth: 180,
+};
 
 export const isTerminalStatus = (status) => {
   switch (status) {
@@ -33,17 +65,39 @@ export const ApplyTemplateDialog = ({
 }) => {
   const [applyStatus, setApplyStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [intervalId, setIntervalId] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     if (!open) {
       // Reset state when dialog is closed
       setApplyStatus(null);
       setIsSubmitting(false);
+      setRetryCount(0);
+      // Clear any running intervals
+      setIntervalId((currentIntervalId) => {
+        if (currentIntervalId) {
+          clearInterval(currentIntervalId);
+        }
+        return null;
+      });
     }
   }, [open]);
 
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
+      }
+    };
+  }, [intervalId]);
+
   const getDialogTitle = (status) => {
     switch (status) {
+      case "TIMEOUT":
+        return "Template Application Timed Out";
       case "FAILED":
       case "ABANDONED":
       case "UNKNOWN":
@@ -58,6 +112,8 @@ export const ApplyTemplateDialog = ({
 
   const getDialogContent = (status) => {
     switch (status) {
+      case "TIMEOUT":
+        return "Template application timed out. Please try again.";
       case "FAILED":
       case "ABANDONED":
       case "UNKNOWN":
@@ -85,18 +141,30 @@ export const ApplyTemplateDialog = ({
     }
   };
 
-  const pollApplyJobStatus = (pollInterval) => {
-    const intervalId = setInterval(() => {
+  const pollApplyJobStatus = () => {
+    const startTime = Date.now();
+
+    const newIntervalId = setInterval(() => {
+      // Check for timeout
+      if (Date.now() - startTime > MAX_POLLING_TIME) {
+        clearInterval(newIntervalId);
+        setApplyStatus("TIMEOUT");
+        setIsSubmitting(false);
+        localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
+        return;
+      }
+
       http
         .get("/web/templateOrganisations/apply/status")
         .then((response) => {
           const { applyTemplateJob } = response.data;
           setApplyStatus(applyTemplateJob.status);
+          setRetryCount(0); // Reset retry count on successful request
           if (
             applyTemplateJob?.endDateTime ||
             isTerminalStatus(applyTemplateJob.status)
           ) {
-            clearInterval(intervalId);
+            clearInterval(newIntervalId);
             setIsSubmitting(false);
             localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
             if (applyTemplateJob.status === "COMPLETED" && onApplySuccess) {
@@ -106,14 +174,29 @@ export const ApplyTemplateDialog = ({
         })
         .catch((error) => {
           console.error("Error polling job status:", error);
-          clearInterval(intervalId);
-          setApplyStatus("POLL_ERROR");
-          setIsSubmitting(false);
-          localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
-        });
-    }, 3000);
 
-    return intervalId;
+          // Check if we should retry
+          if (retryCount < MAX_RETRY_ATTEMPTS) {
+            const delay = RETRY_BASE_DELAY * Math.pow(2, retryCount);
+            console.log(
+              `Retrying poll attempt ${retryCount + 1} after ${delay}ms`,
+            );
+
+            setTimeout(() => {
+              setRetryCount((prev) => prev + 1);
+            }, delay);
+          } else {
+            // Max retries reached, give up
+            clearInterval(newIntervalId);
+            setApplyStatus("POLL_ERROR");
+            setIsSubmitting(false);
+            localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
+            setRetryCount(0);
+          }
+        });
+    }, POLLING_INTERVAL);
+
+    return newIntervalId;
   };
 
   const handleApply = () => {
@@ -127,8 +210,8 @@ export const ApplyTemplateDialog = ({
       .post(`/web/templateOrganisations/${templateId}/apply`)
       .then(() => {
         setApplyStatus("JOB_CREATED");
-        const intervalId = pollApplyJobStatus();
-        return () => clearInterval(intervalId);
+        const newIntervalId = pollApplyJobStatus();
+        setIntervalId(newIntervalId);
       })
       .catch((err) => {
         console.error(err);
@@ -143,9 +226,7 @@ export const ApplyTemplateDialog = ({
     onClose();
   };
 
-  const isConfirmDialog = !applyStatus;
   const isInProgress = applyStatus && !isTerminalStatus(applyStatus);
-  const isComplete = applyStatus && isTerminalStatus(applyStatus);
 
   return (
     <Dialog
@@ -161,14 +242,16 @@ export const ApplyTemplateDialog = ({
       }}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
-      maxWidth="sm"
-      fullWidth
+      role="dialog"
+      aria-modal="true"
+      maxWidth={DIALOG_CONFIG.maxWidth}
+      fullWidth={DIALOG_CONFIG.fullWidth}
       PaperProps={{
         style: {
-          minHeight: "300px",
-          maxWidth: "500px",
+          minHeight: DIALOG_CONFIG.minHeight,
+          maxWidth: DIALOG_CONFIG.dialogMaxWidth,
           width: "100%",
-          margin: "16px",
+          margin: DIALOG_CONFIG.margin,
           display: "flex",
           flexDirection: "column",
         },
@@ -177,9 +260,12 @@ export const ApplyTemplateDialog = ({
       {applyStatus ? (
         <>
           <DialogTitle id="alert-dialog-title">
-            {getDialogTitle(applyStatus)}
+            <Typography variant="h6" component="h2">
+              {getDialogTitle(applyStatus)}
+            </Typography>
           </DialogTitle>
           <DialogContent
+            id="alert-dialog-description"
             sx={{
               flex: "1 1 auto",
               py: 2,
@@ -190,11 +276,31 @@ export const ApplyTemplateDialog = ({
               textAlign: "center",
             }}
           >
-            {isInProgress && <CircularProgress size={50} sx={{ mb: 3 }} />}
+            {isInProgress && (
+              <Box sx={{ mb: 3 }} role="status" aria-live="polite">
+                <CircularProgress size={PROGRESS_SIZE.dialog} />
+                <Typography
+                  variant="srOnly"
+                  sx={{
+                    position: "absolute",
+                    width: 1,
+                    height: 1,
+                    padding: 0,
+                    margin: -1,
+                    overflow: "hidden",
+                    clip: "rect(0, 0, 0, 0)",
+                    whiteSpace: "nowrap",
+                    border: 0,
+                  }}
+                >
+                  Loading template application status
+                </Typography>
+              </Box>
+            )}
             <Typography
               variant="body1"
               sx={{
-                maxWidth: "80%",
+                maxWidth: TYPOGRAPHY_CONFIG.maxWidth,
                 whiteSpace: "pre-line",
               }}
             >
@@ -216,7 +322,7 @@ export const ApplyTemplateDialog = ({
               onClick={handleClose}
               disabled={!isTerminalStatus(applyStatus)}
               variant="contained"
-              sx={{ minWidth: 100 }}
+              sx={{ minWidth: BUTTON_CONFIG.minWidth }}
             >
               OK
             </Button>
@@ -225,10 +331,12 @@ export const ApplyTemplateDialog = ({
       ) : (
         <>
           <DialogTitle id="alert-dialog-title">
-            Are you sure you want to apply this template?
+            <Typography variant="h6" component="h2">
+              Are you sure you want to apply this template?
+            </Typography>
           </DialogTitle>
           <DialogContent sx={{ flex: "1 1 auto", py: 2 }}>
-            <Typography>
+            <Typography id="alert-dialog-description">
               Once applied, you cannot revert this change but you can customize
               it according to your needs.
             </Typography>
@@ -247,8 +355,9 @@ export const ApplyTemplateDialog = ({
             <Button
               onClick={handleClose}
               variant="outlined"
-              sx={{ minWidth: 100 }}
+              sx={{ minWidth: BUTTON_CONFIG.minWidth }}
               disabled={isSubmitting}
+              aria-describedby="alert-dialog-description"
             >
               Cancel
             </Button>
@@ -256,12 +365,13 @@ export const ApplyTemplateDialog = ({
               onClick={handleApply}
               variant="contained"
               color="primary"
-              sx={{ minWidth: 100 }}
+              sx={{ minWidth: BUTTON_CONFIG.minWidth }}
               autoFocus
               disabled={isSubmitting}
+              aria-describedby="alert-dialog-description"
             >
               {isSubmitting ? (
-                <CircularProgress size={24} color="inherit" />
+                <CircularProgress size={PROGRESS_SIZE.button} color="inherit" />
               ) : (
                 "Apply"
               )}
@@ -271,6 +381,17 @@ export const ApplyTemplateDialog = ({
       )}
     </Dialog>
   );
+};
+
+ApplyTemplateDialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  templateId: PropTypes.string.isRequired,
+  onApplySuccess: PropTypes.func,
+};
+
+ApplyTemplateDialog.defaultProps = {
+  onApplySuccess: () => {},
 };
 
 export default ApplyTemplateDialog;

@@ -180,17 +180,8 @@ const Homepage = () => {
                 <Typography
                   variant="body2"
                   sx={{ minWidth: "1.875rem", color: "#666" }}
-                >
-                  20%
-                </Typography>
+                />
               </Box>
-              <IconButton
-                onClick={handleCloseProgressBar}
-                size="small"
-                sx={{ ml: 2, color: "#666" }}
-              >
-                <Close fontSize="small" />
-              </IconButton>
             </Box>
           )
         );
