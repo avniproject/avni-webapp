@@ -26,7 +26,7 @@ import {
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import ApplicationContext from "../../ApplicationContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { setChatOpen } from "../ducks";
 import CurrentUserService from "../../common/service/CurrentUserService.ts";
@@ -50,6 +50,7 @@ const Homepage = () => {
     return !hasSeenWelcomeModal;
   });
   const [showProgressBar, setShowProgressBar] = useState(false);
+  const intervalRef = useRef(null);
 
   httpClient.saveAuthTokenForAnalyticsApp();
 
@@ -63,8 +64,6 @@ const Homepage = () => {
       return;
     }
 
-    let intervalId;
-
     const pollJobStatus = () => {
       httpClient
         .get("/web/templateOrganisations/apply/status")
@@ -75,28 +74,28 @@ const Homepage = () => {
             setShowProgressBar(shouldShowProgress);
 
             if (isTerminalStatus(applyTemplateJob.status)) {
-              clearInterval(intervalId);
+              clearInterval(intervalRef.current);
               setShowProgressBar(false);
               localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
             }
           } else {
             setShowProgressBar(false);
             localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
-            clearInterval(intervalId);
+            clearInterval(intervalRef.current);
           }
         })
         .catch((error) => {
           setShowProgressBar(false);
           localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
-          clearInterval(intervalId);
+          clearInterval(intervalRef.current);
         });
     };
 
     pollJobStatus();
-    intervalId = setInterval(pollJobStatus, 3000);
+    intervalRef.current = setInterval(pollJobStatus, 3000);
 
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
 
