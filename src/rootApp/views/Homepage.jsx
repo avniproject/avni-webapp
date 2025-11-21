@@ -23,7 +23,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { setChatOpen } from "../ducks";
 import CurrentUserService from "../../common/service/CurrentUserService.ts";
-import { isProduction } from "../../adminApp/OrganisationDetail";
+import { showTemplatesCheck } from "../../adminApp/OrgManagerAppDesigner";
 
 const Homepage = () => {
   const dispatch = useDispatch();
@@ -160,8 +160,7 @@ const Homepage = () => {
         />
       </Grid>
       {!CurrentUserService.isAdminAndImpersonating(userInfo) &&
-        !isProduction(organisation) &&
-        genericConfig.avniAi.showTemplates &&
+        showTemplatesCheck(organisation, genericConfig) &&
         isNewImplementation && (
           <WelcomeModal
             open={showWelcomeModal}

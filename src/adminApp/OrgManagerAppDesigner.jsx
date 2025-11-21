@@ -58,10 +58,14 @@ import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
 import { TemplateOrganisations } from "../formDesigner/components/TemplateOrganisations/TemplateOrganisations";
 import { isProduction } from "./OrganisationDetail";
+import { useSelector } from "react-redux";
+
+export const showTemplatesCheck = (organisation, genericConfig) =>
+  !isProduction(organisation) && genericConfig.avniAi.showTemplates;
 
 const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
   const navigate = useNavigate();
-
+  const genericConfig = useSelector((state) => state.app.genericConfig);
   useEffect(() => {
     const currentPath = window.location.hash;
     if (["#/appdesigner", "#/appdesigner/"].includes(currentPath)) {
@@ -71,8 +75,8 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
 
   const CreateConcept = () => <CreateEditConcept isCreatePage={true} />;
 
-  const isProdOrg = isProduction(organisation);
-  const layout = isProdOrg ? AdminLayout : AppDesignerLayout;
+  const showTemplates = showTemplatesCheck(organisation, genericConfig);
+  const layout = showTemplates ? AppDesignerLayout : AdminLayout;
 
   return (
     <Admin
@@ -83,7 +87,7 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
       layout={layout}
       darkTheme={null}
     >
-      {!isProdOrg ? (
+      {showTemplates ? (
         <Resource
           name={"templates"}
           options={{ label: "Templates" }}
