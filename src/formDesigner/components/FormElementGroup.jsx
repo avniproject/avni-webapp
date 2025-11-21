@@ -506,7 +506,7 @@ function FormElementGroup(props) {
                               colour,
                             )
                           }
-                          title="APP_DESIGNER_GROUP_TEXT_COLOUR"
+                          toolTipKey="APP_DESIGNER_GROUP_TEXT_COLOUR"
                         />
                       </StyledFlexItem>
                       <StyledFlexItem>
@@ -520,7 +520,7 @@ function FormElementGroup(props) {
                               colour,
                             )
                           }
-                          title="APP_DESIGNER_GROUP_BACKGROUND_COLOUR"
+                          toolTipKey="APP_DESIGNER_GROUP_BACKGROUND_COLOUR"
                         />
                       </StyledFlexItem>
                     </StyledFlexContainer>
