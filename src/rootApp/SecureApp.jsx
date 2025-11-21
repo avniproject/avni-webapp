@@ -9,14 +9,14 @@ import CognitoSignIn from "./CognitoSignIn";
 import { httpClient } from "../common/utils/httpClient";
 import IdpDetails from "./security/IdpDetails.ts";
 import KeycloakSignInView from "./views/KeycloakSignInView";
-import { initGenericConfig, setAuthSession } from "./ducks";
+import { setAuthSession } from "./ducks";
 import BaseAuthSession from "./security/BaseAuthSession";
 import ChooseIdpView from "./ChooseIdpView";
 import KeycloakWebClient from "./security/KeycloakWebClient";
 
-function SecureApp({ genericConfig }) {
+function SecureApp() {
   const dispatch = useDispatch();
-  const authSession = useSelector(state => state.app?.authSession);
+  const authSession = useSelector((state) => state.app?.authSession);
 
   useEffect(() => {
     if (KeycloakWebClient.isAuthenticatedWithKeycloak()) {
@@ -24,14 +24,11 @@ function SecureApp({ genericConfig }) {
         setAuthSession(
           BaseAuthSession.AuthStates.SignedIn,
           null,
-          IdpDetails.keycloak
-        )
+          IdpDetails.keycloak,
+        ),
       );
     }
-    if (genericConfig) {
-      dispatch(initGenericConfig(genericConfig));
-    }
-  }, [dispatch, genericConfig]);
+  }, [dispatch]);
 
   const hasSignedIn = () => {
     return (
@@ -40,7 +37,7 @@ function SecureApp({ genericConfig }) {
   };
 
   const redirect_url = new URLSearchParams(window.location.search).get(
-    "redirect_url"
+    "redirect_url",
   );
   if (!_.isEmpty(redirect_url) && hasSignedIn()) {
     httpClient.fetchJson("/ping").then(() => {
@@ -58,13 +55,13 @@ function SecureApp({ genericConfig }) {
       <div className="centerContainer">
         <Authenticator.Provider>
           <CognitoSignIn
-            onSignedIn={user =>
+            onSignedIn={(user) =>
               dispatch(
                 setAuthSession(
                   BaseAuthSession.AuthStates.SignedIn,
                   user,
-                  IdpDetails.cognito
-                )
+                  IdpDetails.cognito,
+                ),
               )
             }
           />

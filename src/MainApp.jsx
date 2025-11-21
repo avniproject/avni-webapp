@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import { HashRouter } from "react-router-dom";
 import "./index.css";
 import "@aws-amplify/ui-react/styles.css";
@@ -21,6 +21,7 @@ import ErrorMessageUtil from "./common/utils/ErrorMessageUtil";
 import { handleStorageMigration } from "./common/utils/storageMigration";
 import { usePostHog } from "posthog-js/react";
 import ApplicationContext from "./ApplicationContext";
+import { initGenericConfig } from "./rootApp/ducks";
 
 const theme = createTheme({
   palette: {
@@ -95,6 +96,22 @@ function ErrorBoundaryFallback({ error, onClose }) {
   return <ErrorFallback error={error} onClose={onClose} />;
 }
 
+const AppContent = ({ genericConfig }) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (genericConfig) {
+      dispatch(initGenericConfig(genericConfig));
+    }
+  }, [dispatch, genericConfig]);
+
+  return (
+    <HashRouter>
+      {http.idp.idpType === IdpDetails.none ? <App /> : <SecureApp />}
+    </HashRouter>
+  );
+};
+
 const MainApp = () => {
   const [initialised, setInitialised] = useState(false);
   const [unhandledRejectionError, setUnhandledError] = useState(null);
@@ -140,13 +157,7 @@ const MainApp = () => {
         {!unhandledRejectionError && (
           <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
             <Provider store={store}>
-              <HashRouter>
-                {http.idp.idpType === IdpDetails.none ? (
-                  <App />
-                ) : (
-                  <SecureApp genericConfig={genericConfig} />
-                )}
-              </HashRouter>
+              <AppContent genericConfig={genericConfig} />
             </Provider>
           </ErrorBoundary>
         )}
