@@ -8,8 +8,22 @@ import {
   Button,
   Typography,
   CircularProgress,
-  Box,
 } from "@mui/material";
+
+export const TEMPLATE_APPLY_PROGRESS_KEY = "template-apply-in-progress";
+
+export const isTerminalStatus = (status) => {
+  switch (status) {
+    case "FAILED":
+    case "ABANDONED":
+    case "UNKNOWN":
+    case "STOPPED":
+    case "COMPLETED":
+      return true;
+    default:
+      return false;
+  }
+};
 
 export const ApplyTemplateDialog = ({
   open,
@@ -71,19 +85,6 @@ export const ApplyTemplateDialog = ({
     }
   };
 
-  const isTerminalStatus = (status) => {
-    switch (status) {
-      case "FAILED":
-      case "ABANDONED":
-      case "UNKNOWN":
-      case "STOPPED":
-      case "COMPLETED":
-        return true;
-      default:
-        return false;
-    }
-  };
-
   const pollApplyJobStatus = (pollInterval) => {
     const intervalId = setInterval(() => {
       http
@@ -97,6 +98,7 @@ export const ApplyTemplateDialog = ({
           ) {
             clearInterval(intervalId);
             setIsSubmitting(false);
+            localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
             if (applyTemplateJob.status === "COMPLETED" && onApplySuccess) {
               onApplySuccess();
             }
@@ -107,6 +109,7 @@ export const ApplyTemplateDialog = ({
           clearInterval(intervalId);
           setApplyStatus("POLL_ERROR");
           setIsSubmitting(false);
+          localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
         });
     }, 3000);
 
@@ -118,6 +121,7 @@ export const ApplyTemplateDialog = ({
 
     setIsSubmitting(true);
     setApplyStatus("JOB_REQUESTED");
+    localStorage.setItem(TEMPLATE_APPLY_PROGRESS_KEY, "true");
 
     http
       .post(`/web/templateOrganisations/${templateId}/apply`)
@@ -130,6 +134,7 @@ export const ApplyTemplateDialog = ({
         console.error(err);
         setApplyStatus("FAILED");
         setIsSubmitting(false);
+        localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
       });
   };
 

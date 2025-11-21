@@ -1,5 +1,11 @@
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import { Grid } from "@mui/material";
+import {
+  Grid,
+  Box,
+  LinearProgress,
+  Typography,
+  IconButton,
+} from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { httpClient } from "../../common/utils/httpClient";
 import { HomePageCard } from "./HomePageCard";
@@ -9,6 +15,7 @@ import {
   Assessment,
   AssignmentTurnedIn,
   Build,
+  Close,
   Collections,
   Description,
   Help,
@@ -19,11 +26,15 @@ import {
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import ApplicationContext from "../../ApplicationContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setChatOpen } from "../ducks";
 import CurrentUserService from "../../common/service/CurrentUserService.ts";
 import { showTemplatesCheck } from "../../adminApp/OrgManagerAppDesigner";
+import {
+  isTerminalStatus,
+  TEMPLATE_APPLY_PROGRESS_KEY,
+} from "../../formDesigner/components/TemplateOrganisations/ApplyTemplateDialog";
 
 const Homepage = () => {
   const dispatch = useDispatch();
@@ -38,8 +49,61 @@ const Homepage = () => {
     const hasSeenWelcomeModal = localStorage.getItem("avni-welcome-modal-seen");
     return !hasSeenWelcomeModal;
   });
+  const [showProgressBar, setShowProgressBar] = useState(false);
 
   httpClient.saveAuthTokenForAnalyticsApp();
+
+  useEffect(() => {
+    const isTemplateApplyInProgress = localStorage.getItem(
+      TEMPLATE_APPLY_PROGRESS_KEY,
+    );
+
+    if (!isTemplateApplyInProgress) {
+      setShowProgressBar(false);
+      return;
+    }
+
+    let intervalId;
+
+    const pollJobStatus = () => {
+      httpClient
+        .get("/web/templateOrganisations/apply/status")
+        .then((response) => {
+          const { applyTemplateJob } = response.data;
+          if (applyTemplateJob) {
+            const shouldShowProgress = applyTemplateJob.status !== "NOT_FOUND";
+            setShowProgressBar(shouldShowProgress);
+
+            if (isTerminalStatus(applyTemplateJob.status)) {
+              clearInterval(intervalId);
+              setShowProgressBar(false);
+              localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
+            }
+          } else {
+            setShowProgressBar(false);
+            localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
+            clearInterval(intervalId);
+          }
+        })
+        .catch((error) => {
+          setShowProgressBar(false);
+          localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
+          clearInterval(intervalId);
+        });
+    };
+
+    pollJobStatus();
+    intervalId = setInterval(pollJobStatus, 3000);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, []);
+
+  const handleCloseProgressBar = () => {
+    setShowProgressBar(false);
+    localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
+  };
 
   const showAnalytics = UserInfo.hasPrivilege(
     userInfo,
@@ -72,6 +136,65 @@ const Homepage = () => {
         organisation.organisationCategoryName
       }`}
     >
+      {(() => {
+        return (
+          showProgressBar && (
+            <Box
+              sx={{
+                position: "sticky",
+                top: 0,
+                zIndex: 1000,
+                backgroundColor: "#f5f5f5",
+                borderBottom: "1px solid #e0e0e0",
+                padding: "0.5rem 1rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                APPLYING TEMPLATE
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  marginLeft: "auto",
+                }}
+              >
+                <Box sx={{ width: "18.75rem" }}>
+                  <LinearProgress
+                    variant="indeterminate"
+                    sx={{
+                      height: "0.5rem",
+                      borderRadius: "0.25rem",
+                      backgroundColor: "#e0e0e0",
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "#2196f3",
+                        borderRadius: "0.25rem",
+                      },
+                    }}
+                  />
+                </Box>
+                <Typography
+                  variant="body2"
+                  sx={{ minWidth: "1.875rem", color: "#666" }}
+                >
+                  20%
+                </Typography>
+              </Box>
+              <IconButton
+                onClick={handleCloseProgressBar}
+                size="small"
+                sx={{ ml: 2, color: "#666" }}
+              >
+                <Close fontSize="small" />
+              </IconButton>
+            </Box>
+          )
+        );
+      })()}
       <Grid
         container
         sx={{
