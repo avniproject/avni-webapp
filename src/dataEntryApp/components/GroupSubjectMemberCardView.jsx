@@ -27,18 +27,19 @@ const StyledEditButton = styled(Button)({
   minWidth: "0px",
 });
 
-const removeButtonStyle = {
+const removeButtonStyle = (theme) => ({
   height: "28px",
   zIndex: 1,
   marginTop: "1px",
   boxShadow: "none",
-  color: "#0e6eff",
-  backgroundColor: "#F8F9F9",
+  color: theme.palette.primary.main,
+  backgroundColor: theme.palette.background.paper,
   "&:hover": {
-    color: "#0e6eff",
-    backgroundColor: "#F8F9F9",
+    color: theme.palette.primary.main,
+    backgroundColor: theme.palette.background.paper,
+    textDecoration: "underline",
   },
-};
+});
 
 const applyButtonStyle = {
   float: "left",
