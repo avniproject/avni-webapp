@@ -74,7 +74,6 @@ const CommonModal = ({
           color="primary"
           aria-label="add"
           onClick={handleClickOpen}
-          sx={mainButton.sx}
         >
           {mainButton.label}
         </Fab>
