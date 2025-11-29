@@ -9,7 +9,6 @@ import {
   InputLabel,
   IconButton,
   Tooltip,
-  Alert,
 } from "@mui/material";
 import {
   ExpandMore,
@@ -30,7 +29,6 @@ import {
   DragHandle,
   Audiotrack,
   InsertDriveFile,
-  Warning,
 } from "@mui/icons-material";
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
@@ -153,6 +151,14 @@ const FormElement = (props) => {
   const disableFormElement = props.disableFormElement;
   const theme = useTheme();
 
+  // Debug log: Inspect props
+  console.log("[FormElement] Props received:", {
+    groupIndex: props.groupIndex,
+    index: props.index,
+    formElementData: props.formElementData,
+    disableFormElement,
+  });
+
   const DragHandler = ({ dragHandleProps }) => (
     <StyledDragHandler {...dragHandleProps}>
       <StyledDragHandleContainer show={dragElement && !disableFormElement}>
@@ -162,6 +168,10 @@ const FormElement = (props) => {
   );
 
   const handleDelete = (event) => {
+    console.log("[FormElement] Deleting element:", {
+      groupIndex: props.groupIndex,
+      index: props.index,
+    });
     props.deleteGroup(props.groupIndex, props.index);
     event.stopPropagation();
   };
@@ -170,8 +180,6 @@ const FormElement = (props) => {
   const elementType = props.formElementData?.type || "";
   const elementName = props.formElementData?.name || "";
   const isMandatory = props.formElementData?.mandatory || false;
-  const warning = props.formElementData?.warning || null;
-  const showTips = Boolean(warning);
 
   return (
     <StyledAccordion
@@ -179,6 +187,10 @@ const FormElement = (props) => {
       expanded={props.formElementData?.expanded || false}
       error={props.formElementData?.error || false}
       onChange={() => {
+        console.log(
+          "[FormElement] Accordion toggled, expanded:",
+          !props.formElementData?.expanded,
+        );
         props.handleGroupElementChange(
           props.groupIndex,
           "expanded",
@@ -281,17 +293,6 @@ const FormElement = (props) => {
               justifyContent: "flex-end",
             }}
           >
-            {showTips && (
-              <Tooltip title={warning} placement="bottom">
-                <Warning
-                  fontSize="small"
-                  sx={{
-                    color: theme.palette.warning.main,
-                    cursor: "default",
-                  }}
-                />
-              </Tooltip>
-            )}
             <IconButton
               aria-label="delete"
               onClick={handleDelete}
@@ -312,15 +313,6 @@ const FormElement = (props) => {
           {...props}
           indexTab={`${props.groupIndex}${props.index}`}
         />
-        {showTips && (
-          <Alert
-            severity="warning"
-            sx={{ marginTop: 2 }}
-            icon={<Warning fontSize="small" />}
-          >
-            {warning}
-          </Alert>
-        )}
       </StyledAccordionDetails>
     </StyledAccordion>
   );
