@@ -16,7 +16,8 @@ const RuleDesigner = ({
   disableEditor,
   encounterTypes,
   form,
-  parentConceptUuid
+  parentConceptUuid,
+  onOpenAiRuleModal,
 }) => {
   return (
     <>
@@ -32,6 +33,7 @@ const RuleDesigner = ({
           encounterTypes={encounterTypes}
           form={form}
           parentConceptUuid={parentConceptUuid}
+          onOpenAiRuleModal={onOpenAiRuleModal}
         />
       </Box>
       <JSEditor
