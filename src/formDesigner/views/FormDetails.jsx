@@ -598,19 +598,24 @@ const FormDetails = () => {
         elementIndex !== -1 &&
         !["display", "expand"].includes(propertyName)
       ) {
-        // Use setTimeout to ensure state is updated first
-        setTimeout(() => {
-          const formElement =
-            state.form.formElementGroups[index]?.formElements[elementIndex];
-          if (formElement?.name && formElement?.concept?.name) {
+        // Get current form element and apply the new change to avoid stale state
+        const currentFormElement =
+          state.form.formElementGroups[index]?.formElements[elementIndex];
+        if (currentFormElement) {
+          const updatedFormElement = {
+            ...currentFormElement,
+            [propertyName]: value,
+          };
+
+          if (updatedFormElement?.name && updatedFormElement?.concept?.name) {
             generateWarningFromLLM(
-              formElement,
+              updatedFormElement,
               state.form,
               index,
               elementIndex,
             );
           }
-        }, 0);
+        }
       }
     },
     [state.form, generateWarningFromLLM],
