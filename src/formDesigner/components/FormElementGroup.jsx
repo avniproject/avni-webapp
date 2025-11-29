@@ -400,7 +400,6 @@ function FormElementGroup(props) {
                   </Grid>
 
                   <Grid
-                    item
                     sx={{
                       display: "flex",
                       alignItems: "center",
