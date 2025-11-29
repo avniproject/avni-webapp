@@ -18,7 +18,12 @@ class DifyFormValidationService {
     return this.apiKey;
   }
 
-  formatQuestionForDify(formElement, formType = "", formContext = {}) {
+  formatQuestionForDify(formElement, formType = "", formContext = {}, requestType = "FormValidation") {
+    if (requestType === "VisitSchedule") {
+      return this.formatVisitScheduleQuestion(formElement, formType, formContext);
+    }
+
+    // Default FormValidation logic
     const options = formElement.concept?.answers?.length > 0 ? formElement.concept.answers.map((answer) => answer.name).join(", ") : "None";
 
     // Build enhanced context string following Python pattern
@@ -48,19 +53,48 @@ Context: ${contextString}
 Please validate this form element according to Avni rules and provide recommendations.`;
   }
 
-  async validateSingleFormElement(formElement, formType = "", formContext = {}) {
+  formatVisitScheduleQuestion(formElement, formType, _formContext) {
+    const contextInfo =
+      _formContext && Object.keys(_formContext).length > 0
+        ? `Additional context: ${JSON.stringify(_formContext)}`
+        : "No additional context";
+
+    return `Entity: ${formType || "Unknown"}
+Requirements: ${formElement.requirements || "Not specified"}
+Context: Visit scheduling rule generation
+${contextInfo}
+
+Please generate a JavaScript visit schedule rule based on the requirements. The rule should be valid JavaScript code that follows Avni's visit schedule rule pattern.
+
+Return only the JavaScript code without any markdown formatting or explanations.`;
+  }
+
+  async validateSingleFormElement(formElement, formType = "", _formContext = {}, requestType = "FormValidation") {
     if (!this.apiKey) {
       console.warn("Dify API key not configured");
       return [];
     }
 
     try {
-      const question = this.formatQuestionForDify(formElement, formType, formContext);
+      const question = this.formatQuestionForDify(formElement, formType, _formContext, requestType);
+
+      // Prepare inputs object for VisitSchedule requests
+      const inputs =
+        requestType === "VisitSchedule"
+          ? {
+              auth_token: null,
+              org_name: null,
+              org_type: "trial",
+              user_name: null,
+              avni_mcp_server_url: "https://staging-mcp.avniproject.org",
+              requestType: "VisitSchedule",
+            }
+          : {};
 
       const response = await difyAxios.post(
         `${this.baseUrl}/chat-messages`,
         {
-          inputs: {},
+          inputs,
           query: question,
           response_mode: "blocking",
           conversation_id: this.conversationId || "", // Use stored conversation ID for context
@@ -72,11 +106,11 @@ Please validate this form element according to Avni rules and provide recommenda
             "Content-Type": "application/json",
           },
           withCredentials: false,
-          timeout: 5000, // 5 second timeout
+          timeout: requestType === "VisitSchedule" ? 10000 : 3000, // 10s for VisitSchedule, 3s for FormValidation
         },
       );
 
-      const validationResults = this.parseDifyResponse(response);
+      const validationResults = this.parseDifyResponse(response, requestType);
       return validationResults;
     } catch (error) {
       console.error("Dify validation API call failed:", error);
@@ -121,7 +155,7 @@ Please validate this form element according to Avni rules and provide recommenda
     }
   }
 
-  parseDifyResponse(response) {
+  parseDifyResponse(response, requestType = "FormValidation") {
     try {
       const answer = response.data?.answer || "";
       const conversationId = response.data?.conversation_id || "";
@@ -131,7 +165,35 @@ Please validate this form element according to Avni rules and provide recommenda
       }
 
       if (answer) {
-        // Strip markdown code fences if present (handles ```json, ```JSON, ``` json, etc.)
+        // For VisitSchedule, detect if it's scenarios or code
+        if (requestType === "VisitSchedule") {
+          // Check if response contains JavaScript code (function signature)
+          const hasJavaScriptCode =
+            answer.includes("({params, imports}) =>") || answer.includes("```javascript") || answer.includes("```js");
+
+          if (hasJavaScriptCode) {
+            // This is final code - extract and return it
+            let cleanCode = answer.trim();
+            const codeBlockMatch = cleanCode.match(/```(?:javascript|js)?\s*\n?([\s\S]*?)\n?```/i);
+            if (codeBlockMatch) {
+              cleanCode = codeBlockMatch[1].trim();
+            }
+            return {
+              type: "code",
+              content: cleanCode,
+              conversationId,
+            };
+          } else {
+            // This is scenarios text - return as-is
+            return {
+              type: "scenarios",
+              content: answer.trim(),
+              conversationId,
+            };
+          }
+        }
+
+        // For FormValidation, parse as JSON (existing behavior)
         let cleanAnswer = answer.trim();
         const codeBlockMatch = cleanAnswer.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/i);
         if (codeBlockMatch) {

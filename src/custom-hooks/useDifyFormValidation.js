@@ -13,7 +13,7 @@ export const useDifyFormValidation = (formType, apiKey) => {
   }, [apiKey]);
 
   const validateFormElement = useCallback(
-    async (formElement, onSuccess) => {
+    async (formElement, onSuccess, requestType = "FormValidation") => {
       if (!formElement || !formElement.name) {
         return;
       }
@@ -26,13 +26,21 @@ export const useDifyFormValidation = (formType, apiKey) => {
           formElement,
           formType,
           {}, // Empty formContext for now, can be enhanced later
+          requestType,
         );
 
-        if (validationResult && validationResult.length > 0) {
-          const warningMessages = validationResult.map((v) => v.message).join("\n\n");
-          onSuccess(warningMessages);
+        // Handle different response formats based on requestType
+        if (requestType === "VisitSchedule") {
+          // For VisitSchedule, pass the structured response directly
+          onSuccess(validationResult);
         } else {
-          onSuccess(null); // Clear warning if no validation issues
+          // For FormValidation, handle array of validation results
+          if (validationResult && validationResult.length > 0) {
+            const warningMessages = validationResult.map((v) => v.message).join("\n\n");
+            onSuccess(warningMessages);
+          } else {
+            onSuccess(null); // Clear warning if no validation issues
+          }
         }
       } catch (err) {
         console.error("Form validation failed:", err);
@@ -70,13 +78,13 @@ export const useDifyFormValidation = (formType, apiKey) => {
   );
 
   const debouncedValidateFormElement = useCallback(
-    (formElement, onSuccess) => {
+    (formElement, onSuccess, requestType) => {
       if (debouncedValidatorRef.current) {
         debouncedValidatorRef.current.cancel();
       }
 
       debouncedValidatorRef.current = difyFormValidationService.createDebouncedValidator(
-        () => validateFormElement(formElement, onSuccess),
+        () => validateFormElement(formElement, onSuccess, requestType),
         500, // 500ms debounce as specified
       );
 

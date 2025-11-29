@@ -23,6 +23,7 @@ import StaticFormElementGroup from "../components/StaticFormElementGroup";
 import { DeclarativeRuleHolder } from "rules-config";
 import FormDesignerContext from "./FormDesignerContext";
 import { useDifyFormValidation } from "../../custom-hooks/useDifyFormValidation";
+import AiRuleCreationModal from "../components/AiRuleCreationModal";
 import {
   formDesignerAddFormElement,
   formDesignerAddFormElementGroup,
@@ -146,10 +147,38 @@ const FormDetails = () => {
   const questionGroupFormElementsToRepeatableMap = new Map();
 
   // Initialize Dify form validation hook
-  const { validateFormElement } = useDifyFormValidation(
-    state.form?.formType,
-    aiConfig?.copilotFormValidationApiKey,
-  );
+  const { validateFormElement, isLoading: isValidationLoading } =
+    useDifyFormValidation(
+      state.form?.formType,
+      aiConfig?.copilotFormValidationApiKey,
+    );
+
+  // AI Rule Creation Modal state
+  const [aiRuleModalOpen, setAiRuleModalOpen] = useState(false);
+  const [aiRuleError, setAiRuleError] = useState(null);
+  const [conversationId, setConversationId] = useState(null);
+  const [pendingSuccessCallback, setPendingSuccessCallback] = useState(null);
+  const [scenariosContent, setScenariosContent] = useState(null);
+
+  // Cleanup conversation state when component unmounts or form changes
+  useEffect(() => {
+    return () => {
+      // Reset conversation state on cleanup
+      setConversationId(null);
+      setPendingSuccessCallback(null);
+      setScenariosContent(null);
+    };
+  }, []);
+
+  // Cleanup when form changes to prevent orphaned conversations
+  useEffect(() => {
+    if (state.form?.uuid) {
+      // Reset conversation state when switching forms
+      setConversationId(null);
+      setPendingSuccessCallback(null);
+      setScenariosContent(null);
+    }
+  }, [state.form?.uuid]);
 
   const onUpdateFormName = useCallback((name) => {
     setState((prev) => ({ ...prev, name, detectBrowserCloseEvent: true }));
@@ -1164,6 +1193,128 @@ const FormDetails = () => {
     );
   }, []);
 
+  const handleAiRuleCreation = useCallback(
+    async (requirements, ruleType = "VisitSchedule") => {
+      // Prevent duplicate API calls while one is in progress
+      if (isValidationLoading) {
+        return;
+      }
+
+      setAiRuleError(null); // Clear any previous errors
+
+      // Set the success callback BEFORE making the API call
+      setPendingSuccessCallback(() => (code) => {
+        onRuleUpdate("visitScheduleRule", code);
+      });
+
+      const handleRuleGeneration = (response) => {
+        // Handle structured response from validation service
+        if (response && typeof response === "object" && response.type) {
+          if (response.type === "scenarios") {
+            // This is a scenarios response - store conversationId and show scenarios
+            setConversationId(response.conversationId);
+            setScenariosContent(response.content);
+            return;
+          } else if (response.type === "code") {
+            // This is final code - route to JSEditor via pending callback
+            if (pendingSuccessCallback) {
+              pendingSuccessCallback(response.content);
+            }
+            setAiRuleModalOpen(false);
+            setAiRuleError(null);
+            setConversationId(null);
+            setPendingSuccessCallback(null);
+            return;
+          }
+        }
+
+        // Fallback for non-structured responses (backward compatibility)
+        if (typeof response === "string") {
+          if (response.includes("({params, imports}) =>")) {
+            // This is final code
+            if (pendingSuccessCallback) {
+              pendingSuccessCallback(response);
+            }
+            setAiRuleModalOpen(false);
+            setAiRuleError(null);
+            setConversationId(null);
+            setPendingSuccessCallback(null);
+          }
+        }
+      };
+
+      // Create a form element-like object for the API
+      const ruleRequest = {
+        name: `${ruleType} Rule`,
+        requirements,
+      };
+
+      try {
+        validateFormElement(ruleRequest, handleRuleGeneration, ruleType);
+      } catch (error) {
+        console.error("AI rule creation failed:", error);
+        setAiRuleError("Failed to generate rule. Please try again.");
+      }
+    },
+    [validateFormElement, onRuleUpdate, isValidationLoading],
+  );
+
+  const handleAiConfirmation = useCallback(
+    async (confirmation = "yes") => {
+      setAiRuleError(null);
+
+      // Guard clause: ensure we have conversation state
+      if (!conversationId || !pendingSuccessCallback) {
+        setAiRuleError("Conversation state lost. Please start over.");
+        // Reset state
+        setConversationId(null);
+        setPendingSuccessCallback(null);
+        setScenariosContent(null);
+        return;
+      }
+
+      const handleRuleGeneration = (response) => {
+        // Handle structured response from confirmation
+        if (
+          response &&
+          typeof response === "object" &&
+          response.type === "code"
+        ) {
+          // This should be the final code
+          if (pendingSuccessCallback) {
+            pendingSuccessCallback(response.content);
+          }
+          setAiRuleModalOpen(false);
+          setAiRuleError(null);
+          setConversationId(null);
+          setPendingSuccessCallback(null);
+          setScenariosContent(null);
+        } else {
+          // Handle unexpected response format
+          setAiRuleError("Unexpected response format. Please try again.");
+        }
+      };
+
+      // Create confirmation request
+      const confirmationRequest = {
+        name: "Visit Schedule Rule Confirmation",
+        requirements: confirmation,
+      };
+
+      try {
+        validateFormElement(
+          confirmationRequest,
+          handleRuleGeneration,
+          "VisitSchedule",
+        );
+      } catch (error) {
+        console.error("AI confirmation failed:", error);
+        setAiRuleError("Failed to generate final code. Please try again.");
+      }
+    },
+    [validateFormElement, pendingSuccessCallback, conversationId],
+  );
+
   const onDeclarativeRuleUpdate = useCallback((ruleName, json) => {
     setState(
       produce((draft) => {
@@ -1392,6 +1543,8 @@ const FormDetails = () => {
             onDeclarativeRuleUpdate={onDeclarativeRuleUpdate}
             onDecisionConceptsUpdate={onDecisionConceptsUpdate}
             onToggleExpandPanel={onToggleExpandPanel}
+            onOpenAiRuleModal={() => setAiRuleModalOpen(true)}
+            onAiRuleCreation={handleAiRuleCreation}
             entityName={getEntityNameForRules()}
             disabled={state.disableForm}
             encounterTypes={state.encounterTypes}
@@ -1418,6 +1571,25 @@ const FormDetails = () => {
             defaultSnackbarStatus={state.defaultSnackbarStatus}
           />
         )}
+
+        {/* AI Rule Creation Modal */}
+        <AiRuleCreationModal
+          open={aiRuleModalOpen}
+          onClose={() => {
+            setAiRuleModalOpen(false);
+            setAiRuleError(null);
+            setConversationId(null);
+            setPendingSuccessCallback(null);
+            setScenariosContent(null);
+          }}
+          onSubmit={handleAiRuleCreation}
+          onConfirmation={(confirmation) => handleAiConfirmation(confirmation)}
+          scenariosContent={scenariosContent}
+          title="Create Visit Schedule Rule with AI"
+          placeholder="Describe your visit schedule requirements (e.g., 'Generate visits every month for 6 months', 'Create weekly visits for pregnant women', etc.)"
+          loading={isValidationLoading}
+          error={aiRuleError}
+        />
       </Box>
     </FormDesignerContext.Provider>
   );
