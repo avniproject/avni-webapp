@@ -22,6 +22,7 @@ import { SystemInfo } from "../components/SystemInfo";
 import StaticFormElementGroup from "../components/StaticFormElementGroup";
 import { DeclarativeRuleHolder } from "rules-config";
 import FormDesignerContext from "./FormDesignerContext";
+import { useDifyFormValidation } from "../../custom-hooks/useDifyFormValidation";
 import {
   formDesignerAddFormElement,
   formDesignerAddFormElementGroup,
@@ -123,6 +124,7 @@ const FormDetails = () => {
   const { uuid: formUUID } = useParams();
   const record = useRecordContext();
   const userInfo = useSelector((state) => state.app.userInfo);
+  const aiConfig = useSelector((state) => state.app.genericConfig?.avniAi);
 
   const [state, setState] = useState({
     form: {},
@@ -142,6 +144,12 @@ const FormDetails = () => {
   });
   const multiSelectFormElementsToTypeMap = new Map();
   const questionGroupFormElementsToRepeatableMap = new Map();
+
+  // Initialize Dify form validation hook
+  const { validateFormElement } = useDifyFormValidation(
+    state.form?.formType,
+    aiConfig?.copilotFormValidationApiKey,
+  );
 
   const onUpdateFormName = useCallback((name) => {
     setState((prev) => ({ ...prev, name, detectBrowserCloseEvent: true }));
@@ -252,7 +260,7 @@ const FormDetails = () => {
       if (dataGroupFlag) {
         btnGroupClick();
       }
-    } catch (error) {
+    } catch {
       setState((prev) => ({ ...prev, errorMsg: "Failed to load form data" }));
     }
   }, [formUUID]);
@@ -488,6 +496,7 @@ const FormDetails = () => {
           handleInlineEncounterAttributes,
           handleInlinePhoneNumberAttributes,
           updateFormElementGroupRule,
+          generateWarningFromLLM,
           entityName: getEntityNameForRules(),
           disableGroup: state.disableForm,
           subjectType: state.subjectType,
@@ -555,32 +564,19 @@ const FormDetails = () => {
 
   const generateWarningFromLLM = useCallback(
     async (formElement, entireForm, groupIndex, elementIndex) => {
-      try {
-        const response = await http.post("/api/llm/generate-warning", {
-          currentElement: {
-            name: formElement.name,
-            dataType: formElement.concept?.dataType,
-            mandatory: formElement.mandatory,
-            type: formElement.type,
-          },
-          entireForm: entireForm,
-          formType: entireForm.formType,
-        });
+      const handleValidationResult = (warningMessage) => {
+        setState(
+          produce((draft) => {
+            draft.form.formElementGroups[groupIndex].formElements[
+              elementIndex
+            ].warning = warningMessage;
+          }),
+        );
+      };
 
-        if (response.data.warning) {
-          setState(
-            produce((draft) => {
-              draft.form.formElementGroups[groupIndex].formElements[
-                elementIndex
-              ].warning = response.data.warning;
-            }),
-          );
-        }
-      } catch (error) {
-        console.error("Failed to generate warning:", error);
-      }
+      validateFormElement(formElement, handleValidationResult);
     },
-    [],
+    [validateFormElement],
   );
 
   const handleGroupElementChange = useCallback(
@@ -1234,7 +1230,7 @@ const FormDetails = () => {
           groupSubjectTypes,
           encounterTypes: operationalModules.encounterTypes,
         }));
-      } catch (error) {
+      } catch {
         setState((prev) => ({
           ...prev,
           errorMsg: "Failed to load initial data",
