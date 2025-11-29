@@ -276,13 +276,29 @@ const FormElementDetails = ({
   return (
     <Fragment>
       <Grid container sx={{ width: "100%" }}>
-        {formElementData.errorMessage?.name && (
-          <StyledErrorText>Please enter name</StyledErrorText>
-        )}
+        {/* Validation messages in decreasing order of priority */}
         {formElementData.errorMessage?.ruleError && (
-          <StyledErrorText>
-            Please check the rule validation errors
-          </StyledErrorText>
+          <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
+            <Typography variant="body2">
+              Please check the rule validation errors
+            </Typography>
+          </Alert>
+        )}
+        {formElementData.errorMessage?.name && (
+          <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
+            <Typography variant="body2">Please enter name</Typography>
+          </Alert>
+        )}
+        {formElementData.warning && (
+          <Alert
+            severity="warning"
+            sx={{ mt: 1, mb: 1 }}
+            onClose={() => {
+              rest.handleGroupElementChange(groupIndex, "warning", null, index);
+            }}
+          >
+            <Typography variant="body2">{formElementData.warning}</Typography>
+          </Alert>
         )}
         <StyledFormControl>
           <AvniFormLabel
@@ -389,29 +405,6 @@ const FormElementDetails = ({
                 dataTypesToIgnore={dataTypesToIgnore}
                 onSelectAnswerMedia={rest.onSelectAnswerMedia}
               />
-            </StyledContainer>
-          )}
-
-          {/* Dify Form Validation Warning Display */}
-          {formElementData.warning && (
-            <StyledContainer>
-              <Alert
-                severity="warning"
-                sx={{ mt: 2, mb: 1 }}
-                onClose={() => {
-                  // Clear warning when user dismisses
-                  rest.handleGroupElementChange(
-                    groupIndex,
-                    "warning",
-                    null,
-                    index,
-                  );
-                }}
-              >
-                <Typography variant="body2">
-                  {formElementData.warning}
-                </Typography>
-              </Alert>
             </StyledContainer>
           )}
 
