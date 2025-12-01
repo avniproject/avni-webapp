@@ -6,7 +6,6 @@ import {
   Typography,
   Grid,
   Box,
-  Button,
 } from "@mui/material";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import PropTypes from "prop-types";
@@ -70,6 +69,7 @@ const DeclarativeFormRule = ({
   encounterTypes,
   onAiRuleCreation,
   onOpenAiRuleModal,
+  ruleType,
 }) => {
   return (
     <RulePanel
@@ -91,6 +91,7 @@ const DeclarativeFormRule = ({
             disableEditor={disabled}
             encounterTypes={encounterTypes}
             onOpenAiRuleModal={onOpenAiRuleModal}
+            ruleType={ruleType}
           />
           <div>{children}</div>
         </Fragment>
@@ -232,6 +233,7 @@ const FormLevelRules = ({
             () => onDeclarativeRuleUpdate("visitScheduleDeclarativeRule", null),
           )
         }
+        ruleType="visitSchedule"
         {...commonProps}
       />
       <DeclarativeFormRule
