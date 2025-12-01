@@ -22,6 +22,7 @@ const AiRuleCreationModal = ({
   loading = false,
   error = null,
   scenariosContent,
+  conversationHistory = [],
 }) => {
   const [requirements, setRequirements] = useState("");
   const [conversationStage, setConversationStage] = useState("input"); // "input", "scenarios", "complete"
@@ -78,6 +79,64 @@ const AiRuleCreationModal = ({
           <Typography color="error" sx={{ mb: 2, fontSize: "0.875rem" }}>
             {error}
           </Typography>
+        )}
+
+        {/* Conversation History Display */}
+        {conversationHistory.length > 0 && (
+          <Box
+            sx={{
+              mb: 3,
+              p: 2,
+              bgcolor: "grey.50",
+              borderRadius: 1,
+              maxHeight: "300px",
+              overflowY: "auto",
+            }}
+          >
+            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+              Conversation History:
+            </Typography>
+            {conversationHistory.map((message, index) => (
+              <Box
+                key={index}
+                sx={{
+                  mb: 2,
+                  p: 1.5,
+                  borderLeft: 3,
+                  borderLeftColor:
+                    message.role === "user" ? "primary.main" : "success.main",
+                  bgcolor: "white",
+                  borderRadius: 1,
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color:
+                      message.role === "user" ? "primary.main" : "success.main",
+                    fontWeight: "bold",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {message.role === "user" ? "You" : "AI Assistant"}
+                  {message.type && ` (${message.type})`}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 0.5,
+                    whiteSpace:
+                      message.type === "code" ? "pre-wrap" : "pre-line",
+                    fontFamily:
+                      message.type === "code" ? "monospace" : "inherit",
+                    fontSize: message.type === "code" ? "0.75rem" : "0.875rem",
+                  }}
+                >
+                  {message.content}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
         )}
 
         {conversationStage === "input" && (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 import _, { cloneDeep, isEmpty, replace, split } from "lodash";
 import { httpClient as http } from "common/utils/httpClient";
@@ -157,16 +157,18 @@ const FormDetails = () => {
   const [aiRuleModalOpen, setAiRuleModalOpen] = useState(false);
   const [aiRuleError, setAiRuleError] = useState(null);
   const [conversationId, setConversationId] = useState(null);
-  const [pendingSuccessCallback, setPendingSuccessCallback] = useState(null);
+  const pendingSuccessCallbackRef = useRef(null);
   const [scenariosContent, setScenariosContent] = useState(null);
+  const [conversationHistory, setConversationHistory] = useState([]);
 
   // Cleanup conversation state when component unmounts or form changes
   useEffect(() => {
     return () => {
       // Reset conversation state on cleanup
       setConversationId(null);
-      setPendingSuccessCallback(null);
+      pendingSuccessCallbackRef.current = null;
       setScenariosContent(null);
+      setConversationHistory([]);
     };
   }, []);
 
@@ -175,8 +177,9 @@ const FormDetails = () => {
     if (state.form?.uuid) {
       // Reset conversation state when switching forms
       setConversationId(null);
-      setPendingSuccessCallback(null);
+      pendingSuccessCallbackRef.current = null;
       setScenariosContent(null);
+      setConversationHistory([]);
     }
   }, [state.form?.uuid]);
 
@@ -1202,10 +1205,20 @@ const FormDetails = () => {
 
       setAiRuleError(null); // Clear any previous errors
 
-      // Set the success callback BEFORE making the API call
-      setPendingSuccessCallback(() => (code) => {
+      // Add user message to conversation history
+      setConversationHistory((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: requirements,
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+
+      // Set the success callback BEFORE making the API call - using ref for immediate access
+      pendingSuccessCallbackRef.current = (code) => {
         onRuleUpdate("visitScheduleRule", code);
-      });
+      };
 
       const handleRuleGeneration = (response) => {
         // Handle structured response from validation service
@@ -1214,16 +1227,39 @@ const FormDetails = () => {
             // This is a scenarios response - store conversationId and show scenarios
             setConversationId(response.conversationId);
             setScenariosContent(response.content);
+
+            // Add AI scenarios response to conversation history
+            setConversationHistory((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                content: response.content,
+                type: "scenarios",
+                timestamp: new Date().toISOString(),
+              },
+            ]);
             return;
           } else if (response.type === "code") {
             // This is final code - route to JSEditor via pending callback
-            if (pendingSuccessCallback) {
-              pendingSuccessCallback(response.content);
+            if (pendingSuccessCallbackRef.current) {
+              pendingSuccessCallbackRef.current(response.content);
             }
+
+            // Add AI code response to conversation history
+            setConversationHistory((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                content: response.content,
+                type: "code",
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
             setAiRuleModalOpen(false);
             setAiRuleError(null);
             setConversationId(null);
-            setPendingSuccessCallback(null);
+            pendingSuccessCallbackRef.current = null;
             return;
           }
         }
@@ -1232,13 +1268,25 @@ const FormDetails = () => {
         if (typeof response === "string") {
           if (response.includes("({params, imports}) =>")) {
             // This is final code
-            if (pendingSuccessCallback) {
-              pendingSuccessCallback(response);
+            if (pendingSuccessCallbackRef.current) {
+              pendingSuccessCallbackRef.current(response);
             }
+
+            // Add AI code response to conversation history
+            setConversationHistory((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                content: response,
+                type: "code",
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
             setAiRuleModalOpen(false);
             setAiRuleError(null);
             setConversationId(null);
-            setPendingSuccessCallback(null);
+            pendingSuccessCallbackRef.current = null;
           }
         }
       };
@@ -1264,11 +1312,11 @@ const FormDetails = () => {
       setAiRuleError(null);
 
       // Guard clause: ensure we have conversation state
-      if (!conversationId || !pendingSuccessCallback) {
+      if (!conversationId || !pendingSuccessCallbackRef.current) {
         setAiRuleError("Conversation state lost. Please start over.");
         // Reset state
         setConversationId(null);
-        setPendingSuccessCallback(null);
+        pendingSuccessCallbackRef.current = null;
         setScenariosContent(null);
         return;
       }
@@ -1281,13 +1329,13 @@ const FormDetails = () => {
           response.type === "code"
         ) {
           // This should be the final code
-          if (pendingSuccessCallback) {
-            pendingSuccessCallback(response.content);
+          if (pendingSuccessCallbackRef.current) {
+            pendingSuccessCallbackRef.current(response.content);
           }
           setAiRuleModalOpen(false);
           setAiRuleError(null);
           setConversationId(null);
-          setPendingSuccessCallback(null);
+          pendingSuccessCallbackRef.current = null;
           setScenariosContent(null);
         } else {
           // Handle unexpected response format
@@ -1312,7 +1360,7 @@ const FormDetails = () => {
         setAiRuleError("Failed to generate final code. Please try again.");
       }
     },
-    [validateFormElement, pendingSuccessCallback, conversationId],
+    [validateFormElement, conversationId],
   );
 
   const onDeclarativeRuleUpdate = useCallback((ruleName, json) => {
@@ -1579,12 +1627,14 @@ const FormDetails = () => {
             setAiRuleModalOpen(false);
             setAiRuleError(null);
             setConversationId(null);
-            setPendingSuccessCallback(null);
+            pendingSuccessCallbackRef.current = null;
             setScenariosContent(null);
+            setConversationHistory([]);
           }}
           onSubmit={handleAiRuleCreation}
           onConfirmation={(confirmation) => handleAiConfirmation(confirmation)}
           scenariosContent={scenariosContent}
+          conversationHistory={conversationHistory}
           title="Create Visit Schedule Rule with AI"
           placeholder="Describe your visit schedule requirements (e.g., 'Generate visits every month for 6 months', 'Create weekly visits for pregnant women', etc.)"
           loading={isValidationLoading}
