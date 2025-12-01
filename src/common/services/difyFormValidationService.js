@@ -7,7 +7,8 @@ const difyAxios = axios.create();
 class DifyFormValidationService {
   constructor() {
     this.apiKey = null;
-    this.baseUrl = "https://api.dify.ai/v1";
+    // Use Vite proxy to avoid CORS issues
+    this.baseUrl = "/dify-api/v1";
   }
 
   setApiKey(apiKey) {
@@ -106,7 +107,7 @@ Return only the JavaScript code without any markdown formatting or explanations.
             "Content-Type": "application/json",
           },
           withCredentials: false,
-          timeout: requestType === "VisitSchedule" ? 10000 : 3000, // 10s for VisitSchedule, 3s for FormValidation
+          timeout: requestType === "VisitSchedule" ? 10000 : 5000, // 10s for VisitSchedule, 5s for FormValidation
         },
       );
 

@@ -46,6 +46,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        "/dify-api": {
+          target: "https://api.dify.ai",
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/dify-api/, ""),
+        },
         "^/(me|api|ai-assistant|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|export|translation|account|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege|implementation)":
           {
             target: process.env.BACKEND_URL,
