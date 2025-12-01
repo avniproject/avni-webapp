@@ -21,7 +21,7 @@ class DifyFormValidationService {
 
   formatQuestionForDify(formElement, formType = "", formContext = {}, requestType = "FormValidation") {
     if (requestType === "VisitSchedule") {
-      return this.formatVisitScheduleQuestion(formElement, formType, formContext);
+      return this.formatVisitScheduleQuestion(formElement);
     }
 
     // Default FormValidation logic
@@ -54,19 +54,10 @@ Context: ${contextString}
 Please validate this form element according to Avni rules and provide recommendations.`;
   }
 
-  formatVisitScheduleQuestion(formElement, formType, _formContext) {
-    const contextInfo =
-      _formContext && Object.keys(_formContext).length > 0
-        ? `Additional context: ${JSON.stringify(_formContext)}`
-        : "No additional context";
-
-    return `Entity: ${formType || "Unknown"}
-Requirements: ${formElement.requirements || "Not specified"}
-Context: Visit scheduling rule generation
-${contextInfo}
-
-Please generate a JavaScript visit schedule rule based on the requirements. The rule should be valid JavaScript code that follows Avni's visit schedule rule pattern.
-
+  formatVisitScheduleQuestion(formElement) {
+    return `Requirements: ${formElement.requirements || "Not specified"}
+Please generate a JavaScript visit schedule rule based on the requirements. 
+The rule should be valid JavaScript code that follows Avni's visit schedule rule pattern.
 Return only the JavaScript code without any markdown formatting or explanations.`;
   }
 
@@ -89,6 +80,7 @@ Return only the JavaScript code without any markdown formatting or explanations.
               user_name: null,
               avni_mcp_server_url: "https://staging-mcp.avniproject.org",
               requestType: "VisitSchedule",
+              context: formElement.context || {},
             }
           : {};
 
