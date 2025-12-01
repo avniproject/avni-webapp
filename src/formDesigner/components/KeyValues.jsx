@@ -5,7 +5,7 @@ import {
   Button,
   IconButton,
   Grid,
-  FormHelperText
+  FormHelperText,
 } from "@mui/material";
 import { map } from "lodash";
 import { Delete } from "@mui/icons-material";
@@ -15,22 +15,22 @@ const StyledButton = styled(Button)({
   height: "35px",
   width: "17%",
   justifyContent: "start",
-  marginTop: 5
+  marginTop: 5,
 });
 
 const StyledTextField = styled(TextField)({
   marginRight: 10,
   "& .MuiInputBase-input": {
-    height: 20
-  }
+    height: 20,
+  },
 });
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(5)
+  marginTop: theme.spacing(5),
 }));
 
 const StyledIconButton = styled(IconButton)({
-  marginTop: 5
+  marginTop: 5,
 });
 
 export default function KeyValues({
@@ -39,7 +39,7 @@ export default function KeyValues({
   onAddNewKeyValue,
   onDeleteKeyValue,
   error,
-  readOnlyKeys = []
+  readOnlyKeys = [],
 }) {
   return (
     <StyledBox>
@@ -52,10 +52,10 @@ export default function KeyValues({
               variant="outlined"
               disabled={readOnlyKeys.includes(item && item.key)}
               value={(item && item.key) || ""}
-              onChange={event =>
+              onChange={(event) =>
                 onKeyValueChange(
                   { key: event.target.value, value: item && item.value },
-                  index
+                  index,
                 )
               }
             />
@@ -67,11 +67,11 @@ export default function KeyValues({
               label="Value"
               variant="outlined"
               disabled={readOnlyKeys.includes(item && item.key)}
-              value={(item && item.value) || ""}
-              onChange={event =>
+              value={item && item.value}
+              onChange={(event) =>
                 onKeyValueChange(
                   { key: item && item.key, value: event.target.value },
-                  index
+                  index,
                 )
               }
             />
