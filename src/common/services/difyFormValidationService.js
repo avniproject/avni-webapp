@@ -179,6 +179,7 @@ Return only the JavaScript code without any markdown formatting or explanations.
             if (codeBlockMatch) {
               cleanCode = codeBlockMatch[1].trim();
             }
+
             return {
               type: "code",
               content: cleanCode,
