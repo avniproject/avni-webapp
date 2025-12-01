@@ -1291,10 +1291,78 @@ const FormDetails = () => {
         }
       };
 
+      // Build context for VisitSchedule requests
+      const buildVisitScheduleContext = () => {
+        const context = {
+          formType: state.form?.formType || "Unknown",
+        };
+
+        // For registration forms (IndividualProfile): Include current subject type being registered
+        if (state.form?.subjectType) {
+          context.currentSubjectType =
+            typeof state.form.subjectType === "object"
+              ? state.form.subjectType.name
+              : state.form.subjectType;
+        }
+
+        // For enrolment forms (ProgramEnrolment): Include current program being enrolled into
+        // Resolved from form mappings and stored in state
+        if (state.currentProgram) {
+          context.currentProgram = state.currentProgram;
+        }
+
+        // For encounter forms (ProgramEncounter / Encounter): Include current encounter type being used
+        // Resolved from form mappings and stored in state
+        if (state.currentEncounterType) {
+          context.currentEncounterType = state.currentEncounterType;
+        }
+
+        // Add all available subject types (from operational modules)
+        if (state.subjectTypes && state.subjectTypes.length > 0) {
+          context.subjectTypes = state.subjectTypes.map((st) => st.name);
+        }
+
+        // Add all available programs (from operational modules)
+        if (state.programs && state.programs.length > 0) {
+          context.programs = state.programs.map(
+            (p) => p.name || p.operationalProgramName,
+          );
+        }
+
+        // Add all available encounter types (from operational modules)
+        if (state.encounterTypes && state.encounterTypes.length > 0) {
+          context.encounterTypes = state.encounterTypes.map((et) => ({
+            name: et.name,
+            program: et.programName || et.program,
+          }));
+        }
+
+        // Extract concept names from form elements
+        if (state.form?.formElementGroups) {
+          const conceptNames = [];
+          state.form.formElementGroups.forEach((group) => {
+            if (!group.voided && group.formElements) {
+              group.formElements.forEach((fe) => {
+                if (!fe.voided && fe.concept?.name) {
+                  conceptNames.push(fe.concept.name);
+                }
+              });
+            }
+          });
+          if (conceptNames.length > 0) {
+            context.concepts = conceptNames;
+          }
+        }
+
+        return context;
+      };
+
       // Create a form element-like object for the API
       const ruleRequest = {
         name: `${ruleType} Rule`,
         requirements,
+        context:
+          ruleType === "VisitSchedule" ? buildVisitScheduleContext() : {},
       };
 
       try {
@@ -1304,7 +1372,17 @@ const FormDetails = () => {
         setAiRuleError("Failed to generate rule. Please try again.");
       }
     },
-    [validateFormElement, onRuleUpdate, isValidationLoading],
+    [
+      validateFormElement,
+      onRuleUpdate,
+      isValidationLoading,
+      state.form,
+      state.subjectTypes,
+      state.programs,
+      state.encounterTypes,
+      state.currentProgram,
+      state.currentEncounterType,
+    ],
   );
 
   const handleAiConfirmation = useCallback(
@@ -1429,10 +1507,42 @@ const FormDetails = () => {
           operationalModules.subjectTypes,
           (st) => !!st.group,
         );
+
+        // Get form mappings to resolve program and encounter type for this form
+        const formMappings = operationalModules.formMappings.filter(
+          (fm) => fm.formUUID === formUUID && !fm.voided,
+        );
+
+        // Resolve program and encounter type names from mappings
+        let currentProgram = null;
+        let currentEncounterType = null;
+
+        if (formMappings.length > 0) {
+          const mapping = formMappings[0]; // Take first non-voided mapping
+
+          if (mapping.programUUID) {
+            const program = operationalModules.programs.find(
+              (p) => p.uuid === mapping.programUUID,
+            );
+            currentProgram = program?.operationalProgramName || program?.name;
+          }
+
+          if (mapping.encounterTypeUUID) {
+            const encounterType = operationalModules.encounterTypes.find(
+              (et) => et.uuid === mapping.encounterTypeUUID,
+            );
+            currentEncounterType = encounterType?.name;
+          }
+        }
+
         setState((prev) => ({
           ...prev,
           groupSubjectTypes,
+          subjectTypes: operationalModules.subjectTypes,
+          programs: operationalModules.programs,
           encounterTypes: operationalModules.encounterTypes,
+          currentProgram,
+          currentEncounterType,
         }));
       } catch {
         setState((prev) => ({
@@ -1444,7 +1554,7 @@ const FormDetails = () => {
     };
 
     fetchData();
-  }, [getForm]);
+  }, [getForm, formUUID]);
 
   const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(
     userInfo,
