@@ -21,6 +21,7 @@ const DeclarativeRules = ({
   form,
   parentConceptUuid,
   onOpenAiRuleModal,
+  ruleType,
 }) => {
   const initialState = DeclarativeRuleHolder.fromResource(rulesJson);
   const [declarativeRuleHolder, dispatcher] = useReducer(
@@ -135,22 +136,24 @@ const DeclarativeRules = ({
           {"Validate and generate rule"}
         </Button>
       </div>
-      {/* AI Rule Creation Button */}
-      <Box sx={{ mt: 2, mb: 2 }}>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => {
-            // Open the AI modal for user input
-            if (onOpenAiRuleModal) {
-              onOpenAiRuleModal();
-            }
-          }}
-          sx={{ mr: 2 }}
-        >
-          Create with AI
-        </Button>
-      </Box>
+      {/* AI Rule Creation Button - Only for Visit Schedule Rules */}
+      {ruleType === "visitSchedule" && (
+        <Box sx={{ mt: 2, mb: 2 }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              // Open the AI modal for user input
+              if (onOpenAiRuleModal) {
+                onOpenAiRuleModal();
+              }
+            }}
+            sx={{ mr: 2 }}
+          >
+            Create with AI
+          </Button>
+        </Box>
+      )}
     </DeclarativeRuleContext.Provider>
   );
 };
