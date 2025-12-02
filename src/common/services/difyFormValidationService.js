@@ -55,10 +55,7 @@ Please validate this form element according to Avni rules and provide recommenda
   }
 
   formatVisitScheduleQuestion(formElement) {
-    return `Requirements: ${formElement.requirements || "Not specified"}
-Please generate a JavaScript visit schedule rule based on the requirements. 
-The rule should be valid JavaScript code that follows Avni's visit schedule rule pattern.
-Return only the JavaScript code without any markdown formatting or explanations.`;
+    return `Requirements: ${formElement.requirements || "Not specified"}`;
   }
 
   async validateSingleFormElement(formElement, formType = "", _formContext = {}, requestType = "FormValidation") {
@@ -99,7 +96,7 @@ Return only the JavaScript code without any markdown formatting or explanations.
             "Content-Type": "application/json",
           },
           withCredentials: false,
-          timeout: requestType === "VisitSchedule" ? 10000 : 5000, // 10s for VisitSchedule, 5s for FormValidation
+          timeout: requestType === "VisitSchedule" ? 20000 : 5000, // 10s for VisitSchedule, 5s for FormValidation
         },
       );
 
@@ -137,7 +134,7 @@ Return only the JavaScript code without any markdown formatting or explanations.
             "Content-Type": "application/json",
           },
           withCredentials: false,
-          timeout: 10000, // 10 second timeout for batch
+          timeout: 20000, // 20 second timeout for batch
         },
       );
 
@@ -196,7 +193,12 @@ Return only the JavaScript code without any markdown formatting or explanations.
 
         try {
           const parsed = JSON.parse(cleanAnswer);
-          return parsed;
+          // Handle new response format with "issues" wrapper
+          if (parsed.issues && Array.isArray(parsed.issues)) {
+            return parsed.issues;
+          }
+          // Handle old format (direct array)
+          return Array.isArray(parsed) ? parsed : parsed;
         } catch {
           return this.extractValidationFromText(answer);
         }

@@ -16,7 +16,6 @@ const AiRuleCreationModal = ({
   open,
   onClose,
   onSubmit,
-  onConfirmation,
   title = "Create Rule with AI",
   placeholder = "Describe your rule requirements...",
   loading = false,
@@ -235,7 +234,7 @@ const AiRuleCreationModal = ({
                 Cancel
               </Button>
               <Button
-                onClick={() => onConfirmation && onConfirmation("yes")}
+                onClick={() => onSubmit && onSubmit("yes")}
                 variant="contained"
                 disabled={loading}
                 startIcon={<Send />}

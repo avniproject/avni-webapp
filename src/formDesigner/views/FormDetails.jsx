@@ -156,7 +156,6 @@ const FormDetails = () => {
   // AI Rule Creation Modal state
   const [aiRuleModalOpen, setAiRuleModalOpen] = useState(false);
   const [aiRuleError, setAiRuleError] = useState(null);
-  const [conversationId, setConversationId] = useState(null);
   const pendingSuccessCallbackRef = useRef(null);
   const [scenariosContent, setScenariosContent] = useState(null);
   const [conversationHistory, setConversationHistory] = useState([]);
@@ -165,7 +164,6 @@ const FormDetails = () => {
   useEffect(() => {
     return () => {
       // Reset conversation state on cleanup
-      setConversationId(null);
       pendingSuccessCallbackRef.current = null;
       setScenariosContent(null);
       setConversationHistory([]);
@@ -176,7 +174,6 @@ const FormDetails = () => {
   useEffect(() => {
     if (state.form?.uuid) {
       // Reset conversation state when switching forms
-      setConversationId(null);
       pendingSuccessCallbackRef.current = null;
       setScenariosContent(null);
       setConversationHistory([]);
@@ -1224,8 +1221,7 @@ const FormDetails = () => {
         // Handle structured response from validation service
         if (response && typeof response === "object" && response.type) {
           if (response.type === "scenarios") {
-            // This is a scenarios response - store conversationId and show scenarios
-            setConversationId(response.conversationId);
+            // This is a scenarios response - show scenarios
             setScenariosContent(response.content);
 
             // Add AI scenarios response to conversation history
@@ -1256,10 +1252,16 @@ const FormDetails = () => {
               },
             ]);
 
-            setAiRuleModalOpen(false);
-            setAiRuleError(null);
-            setConversationId(null);
-            pendingSuccessCallbackRef.current = null;
+            // Show success briefly before closing
+            setScenariosContent(
+              "✅ Rule generated successfully! The code has been added to the editor.",
+            );
+            setTimeout(() => {
+              setAiRuleModalOpen(false);
+              setAiRuleError(null);
+              pendingSuccessCallbackRef.current = null;
+              setScenariosContent(null);
+            }, 2000);
             return;
           }
         }
@@ -1283,10 +1285,16 @@ const FormDetails = () => {
               },
             ]);
 
-            setAiRuleModalOpen(false);
-            setAiRuleError(null);
-            setConversationId(null);
-            pendingSuccessCallbackRef.current = null;
+            // Show success briefly before closing
+            setScenariosContent(
+              "✅ Rule generated successfully! The code has been added to the editor.",
+            );
+            setTimeout(() => {
+              setAiRuleModalOpen(false);
+              setAiRuleError(null);
+              pendingSuccessCallbackRef.current = null;
+              setScenariosContent(null);
+            }, 2000);
           }
         }
       };
@@ -1383,62 +1391,6 @@ const FormDetails = () => {
       state.currentProgram,
       state.currentEncounterType,
     ],
-  );
-
-  const handleAiConfirmation = useCallback(
-    async (confirmation = "yes") => {
-      setAiRuleError(null);
-
-      // Guard clause: ensure we have conversation state
-      if (!conversationId || !pendingSuccessCallbackRef.current) {
-        setAiRuleError("Conversation state lost. Please start over.");
-        // Reset state
-        setConversationId(null);
-        pendingSuccessCallbackRef.current = null;
-        setScenariosContent(null);
-        return;
-      }
-
-      const handleRuleGeneration = (response) => {
-        // Handle structured response from confirmation
-        if (
-          response &&
-          typeof response === "object" &&
-          response.type === "code"
-        ) {
-          // This should be the final code
-          if (pendingSuccessCallbackRef.current) {
-            pendingSuccessCallbackRef.current(response.content);
-          }
-          setAiRuleModalOpen(false);
-          setAiRuleError(null);
-          setConversationId(null);
-          pendingSuccessCallbackRef.current = null;
-          setScenariosContent(null);
-        } else {
-          // Handle unexpected response format
-          setAiRuleError("Unexpected response format. Please try again.");
-        }
-      };
-
-      // Create confirmation request
-      const confirmationRequest = {
-        name: "Visit Schedule Rule Confirmation",
-        requirements: confirmation,
-      };
-
-      try {
-        validateFormElement(
-          confirmationRequest,
-          handleRuleGeneration,
-          "VisitSchedule",
-        );
-      } catch (error) {
-        console.error("AI confirmation failed:", error);
-        setAiRuleError("Failed to generate final code. Please try again.");
-      }
-    },
-    [validateFormElement, conversationId],
   );
 
   const onDeclarativeRuleUpdate = useCallback((ruleName, json) => {
@@ -1736,13 +1688,11 @@ const FormDetails = () => {
           onClose={() => {
             setAiRuleModalOpen(false);
             setAiRuleError(null);
-            setConversationId(null);
             pendingSuccessCallbackRef.current = null;
             setScenariosContent(null);
             setConversationHistory([]);
           }}
           onSubmit={handleAiRuleCreation}
-          onConfirmation={(confirmation) => handleAiConfirmation(confirmation)}
           scenariosContent={scenariosContent}
           conversationHistory={conversationHistory}
           title="Create Visit Schedule Rule with AI"
