@@ -35,6 +35,9 @@ export function isProduction(organisation) {
     organisation.organisationCategoryName === OrganisationCategory.Production
   );
 }
+export function isUAT(organisation) {
+  return organisation.organisationCategoryName === OrganisationCategory.UAT;
+}
 
 export const OrganisationDetail = ({
   organisation: { name, id },

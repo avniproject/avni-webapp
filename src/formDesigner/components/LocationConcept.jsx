@@ -1,81 +1,80 @@
 import { useState, useEffect, useMemo } from "react";
-import { Grid, FormHelperText } from "@mui/material";
+import { Grid, FormHelperText, Stack } from "@mui/material";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
 import { httpClient as http } from "../../common/utils/httpClient";
 
-export const LocationConcept = props => {
+export const LocationConcept = (props) => {
   const [addressLevelTypes, setAddressLevelTypes] = useState([]);
   const [addressLevelTypeHierarchy, setAddressLevelTypeHierarchy] = useState(
-    new Map()
+    new Map(),
   );
   const [isWithinCatchment, setWithinCatchment] = useState(true);
   const [lowestAddressLevelTypes, setLowestAddressLevelTypes] = useState([]);
-  const [
-    highestAddressLevelTypeOptions,
-    setHighestAddressLevelTypeOptions
-  ] = useState([]);
+  const [highestAddressLevelTypeOptions, setHighestAddressLevelTypeOptions] =
+    useState([]);
   const [highestAddressLevelType, setHighestAddressLevelType] = useState("");
 
   useEffect(() => {
     http
       .get("/addressLevelType?page=0&size=10&sort=level%2CDESC")
-      .then(response => {
+      .then((response) => {
         if (response.status === 200) {
           const addressLevelTypes = response.data.content.map(
-            addressLevelType => ({
+            (addressLevelType) => ({
               label: addressLevelType.name,
               value: addressLevelType.uuid,
               level: addressLevelType.level,
-              parent: addressLevelType.parent
-            })
+              parent: addressLevelType.parent,
+            }),
           );
           setAddressLevelTypes(addressLevelTypes);
         } else {
           console.error(
-            `Response code for /addressLevelType call: ${response.status}`
+            `Response code for /addressLevelType call: ${response.status}`,
           );
         }
       });
   }, []);
 
-  const keyValuesArr = useMemo(() => [...props.keyValues], [
-    ...props.keyValues
-  ]);
+  const keyValuesArr = useMemo(() => [...props.keyValues], [props.keyValues]);
 
   useEffect(() => {
-    if (props.isCreatePage || props.keyValues.length === 0) {
+    if (
+      (props.isCreatePage || props.keyValues.length === 0) &&
+      !props.keyValues.find((kv) => kv.key === "isWithinCatchment")
+    ) {
       updateIsWithinCatchment();
     } else {
       const withinCatchment =
         props.keyValues.find(
-          keyValue => keyValue.key === "isWithinCatchment"
+          (keyValue) => keyValue.key === "isWithinCatchment",
         ) !== undefined
           ? props.keyValues.find(
-              keyValue => keyValue.key === "isWithinCatchment"
+              (keyValue) => keyValue.key === "isWithinCatchment",
             ).value
           : true;
       setWithinCatchment(
-        withinCatchment === true || withinCatchment === "true"
+        withinCatchment === true || withinCatchment === "true",
       );
 
       const lowest =
         props.keyValues.find(
-          keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs"
+          (keyValue) => keyValue.key === "lowestAddressLevelTypeUUIDs",
         ) !== undefined
           ? props.keyValues.find(
-              keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs"
+              (keyValue) => keyValue.key === "lowestAddressLevelTypeUUIDs",
             ).value
           : undefined;
       setLowestAddressLevelTypes(lowest !== undefined ? lowest : []);
 
       const highest =
         props.keyValues.find(
-          keyValue => keyValue.key === "highestAddressLevelTypeUUID"
+          (keyValue) => keyValue.key === "highestAddressLevelTypeUUID",
         ) !== undefined
           ? props.keyValues.find(
-              keyValue => keyValue.key === "highestAddressLevelTypeUUID"
+              (keyValue) => keyValue.key === "highestAddressLevelTypeUUID",
             ).value
           : undefined;
       setHighestAddressLevelType(highest !== undefined ? highest : "");
@@ -99,7 +98,7 @@ export const LocationConcept = props => {
   function generateAddressLevelTypeHierarchy() {
     let hierarchy = new Map();
 
-    addressLevelTypes.forEach(addressLevelType => {
+    addressLevelTypes.forEach((addressLevelType) => {
       let currentElement = addressLevelType.parent;
       let currentTypeHierarchy = [];
       let i = 0;
@@ -140,7 +139,7 @@ export const LocationConcept = props => {
     }
   }
 
-  const updateIsWithinCatchment = event => {
+  const updateIsWithinCatchment = (event) => {
     const updateValue = event === undefined ? true : event.target.checked;
     setWithinCatchment(updateValue);
     props.inlineConcept
@@ -148,14 +147,14 @@ export const LocationConcept = props => {
           props.groupIndex,
           "isWithinCatchment",
           updateValue,
-          props.index
+          props.index,
         )
       : props.updateConceptKeyValues(
           {
             key: "isWithinCatchment",
-            value: updateValue
+            value: updateValue,
           },
-          0
+          0,
         );
   };
 
@@ -168,29 +167,29 @@ export const LocationConcept = props => {
           props.groupIndex,
           "lowestAddressLevelTypeUUIDs",
           lowestAddressLevelTypeUUIDs,
-          props.index
+          props.index,
         )
       : props.updateConceptKeyValues(
           {
             key: "lowestAddressLevelTypeUUIDs",
-            value: lowestAddressLevelTypeUUIDs
+            value: lowestAddressLevelTypeUUIDs,
           },
-          1
+          1,
         );
   };
 
   function refreshHighestAddressLevelTypeOptions() {
     if (addressLevelTypeHierarchy.size === 0) return;
     let intersection = Array.from(addressLevelTypeHierarchy.keys());
-    lowestAddressLevelTypes.forEach(levelType => {
+    lowestAddressLevelTypes.forEach((levelType) => {
       intersection = _.intersection(
         intersection,
-        addressLevelTypeHierarchy.get(levelType)
+        addressLevelTypeHierarchy.get(levelType),
       );
     });
 
-    const highestOptions = addressLevelTypes.filter(addressLevelType =>
-      intersection.includes(addressLevelType.value)
+    const highestOptions = addressLevelTypes.filter((addressLevelType) =>
+      intersection.includes(addressLevelType.value),
     );
     setHighestAddressLevelTypeOptions(highestOptions);
     props.error["noCommonAncestor"] =
@@ -205,7 +204,7 @@ export const LocationConcept = props => {
     }
   }
 
-  const updateHighestAddressLevelType = event => {
+  const updateHighestAddressLevelType = (event) => {
     const updateValue = event === undefined ? "" : event.target.value;
 
     setHighestAddressLevelType(updateValue);
@@ -214,30 +213,30 @@ export const LocationConcept = props => {
           props.groupIndex,
           "highestAddressLevelTypeUUID",
           updateValue,
-          props.index
+          props.index,
         )
       : props.updateConceptKeyValues(
           {
             key: "highestAddressLevelTypeUUID",
-            value: updateValue
+            value: updateValue,
           },
-          2
+          2,
         );
   };
 
   return (
     <>
       <br />
-      <Grid
+      <Stack
         container
         sx={{
-          justifyContent: "flex-start"
+          justifyContent: "flex-start",
         }}
       >
         <Grid
           size={{
             xs: 12,
-            sm: 12
+            sm: 12,
           }}
         >
           <AvniSwitch
@@ -250,20 +249,18 @@ export const LocationConcept = props => {
         <Grid
           size={{
             xs: 12,
-            sm: 12
+            sm: 12,
           }}
         >
           <AvniSelect
             style={{
-              width: "400px",
-              height: 40,
-              marginTop: 24,
-              marginBottom: 24
+              width: "26rem",
+              height: "auto",
             }}
             onChange={updateLowestAddressLevelTypes}
-            options={addressLevelTypes.map(addressLevelType => ({
+            options={addressLevelTypes.map((addressLevelType) => ({
               value: addressLevelType.value,
-              label: addressLevelType.label
+              label: addressLevelType.label,
             }))}
             value={lowestAddressLevelTypes}
             label="Lowest Location Level(s) *"
@@ -283,23 +280,25 @@ export const LocationConcept = props => {
           <Grid
             size={{
               xs: 12,
-              sm: 12
+              sm: 12,
             }}
           >
             <AvniSelect
-              style={{ width: "400px", height: 40, marginTop: 24 }}
+              style={{ width: "26rem", height: "auto", marginTop: "1rem" }}
               onChange={updateHighestAddressLevelType}
-              options={highestAddressLevelTypeOptions.map(addressLevelType => ({
-                value: addressLevelType.value,
-                label: addressLevelType.label
-              }))}
+              options={highestAddressLevelTypeOptions.map(
+                (addressLevelType) => ({
+                  value: addressLevelType.value,
+                  label: addressLevelType.label,
+                }),
+              )}
               value={highestAddressLevelType}
               label="Highest Location Level"
               toolTipKey="APP_DESIGNER_CONCEPT_HIGHEST_LOCATION_LEVEL"
             />
           </Grid>
         )}
-      </Grid>
+      </Stack>
     </>
   );
 };

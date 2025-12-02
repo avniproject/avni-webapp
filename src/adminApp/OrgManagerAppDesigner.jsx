@@ -57,11 +57,13 @@ import { StorageManagementConfig } from "../formDesigner/components/StorageManag
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
 import { TemplateOrganisations } from "../formDesigner/components/TemplateOrganisations/TemplateOrganisations";
-import { isProduction } from "./OrganisationDetail";
+import { isProduction, isUAT } from "./OrganisationDetail";
 import { useSelector } from "react-redux";
 
 export const showTemplatesCheck = (organisation, genericConfig) =>
-  !isProduction(organisation) && genericConfig.avniAi.showTemplates;
+  !isProduction(organisation) &&
+  !isUAT(organisation) &&
+  genericConfig.avniAi.showTemplates;
 
 const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
   const navigate = useNavigate();

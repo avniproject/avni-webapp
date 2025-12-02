@@ -795,7 +795,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             item
             xs={12}
             container
-            justifyContent="flex-end"
+            justifyContent="space-between"
             alignItems="center"
             spacing={2}
           >
