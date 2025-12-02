@@ -1696,7 +1696,7 @@ const FormDetails = () => {
           scenariosContent={scenariosContent}
           conversationHistory={conversationHistory}
           title="Create Visit Schedule Rule with AI"
-          placeholder="Describe your visit schedule requirements (e.g., 'Generate visits every month for 6 months', 'Create weekly visits for pregnant women', etc.)"
+          placeholder="Describe: 1) What triggers the visit (encounter completion/enrolment), 2) Timing (e.g., 28 days after), 3) Next visit type. Example: 'After ANC encounter, schedule ANC Follow-up in 28 days'"
           loading={isValidationLoading}
           error={aiRuleError}
         />
