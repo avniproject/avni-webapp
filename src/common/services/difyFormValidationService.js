@@ -96,7 +96,7 @@ Please validate this form element according to Avni rules and provide recommenda
             "Content-Type": "application/json",
           },
           withCredentials: false,
-          timeout: requestType === "VisitSchedule" ? 20000 : 5000, // 10s for VisitSchedule, 5s for FormValidation
+          timeout: requestType === "VisitSchedule" ? 20000 : 10000, // 20s for VisitSchedule, 10s for FormValidation
         },
       );
 
@@ -196,6 +196,10 @@ Please validate this form element according to Avni rules and provide recommenda
           // Handle new response format with "issues" wrapper
           if (parsed.issues && Array.isArray(parsed.issues)) {
             return parsed.issues;
+          }
+
+          if (parsed.Issues && Array.isArray(parsed.Issues)) {
+            return parsed.Issues;
           }
           // Handle old format (direct array)
           return Array.isArray(parsed) ? parsed : parsed;
