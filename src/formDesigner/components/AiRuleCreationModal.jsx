@@ -20,57 +20,34 @@ const AiRuleCreationModal = ({
   placeholder = "Describe your rule requirements...",
   loading = false,
   error = null,
-  scenariosContent,
   conversationHistory = [],
 }) => {
-  const [requirements, setRequirements] = useState("");
-  const [conversationStage, setConversationStage] = useState("input"); // "input", "scenarios", "complete"
-  const [scenariosResponse, setScenariosResponse] = useState("");
-  const storageKey = "ai-rule-creation-requirements";
+  const [userInput, setUserInput] = useState("");
 
-  // Load previous input on mount and manage conversation stage
+  // Clear input when modal opens
   useEffect(() => {
     if (open) {
-      // Clear stale input on fresh load
-      localStorage.removeItem(storageKey);
-      setRequirements("");
-      // Reset to input stage when opening
-      setConversationStage("input");
-      setScenariosResponse("");
+      setUserInput("");
     }
-  }, [open, storageKey]);
+  }, [open]);
 
-  // Update conversation stage when scenariosContent is provided
-  useEffect(() => {
-    if (scenariosContent) {
-      setScenariosResponse(scenariosContent);
-      setConversationStage("scenarios");
-    }
-  }, [scenariosContent]);
-
-  // Save input to localStorage on change
-  const handleRequirementsChange = (event) => {
-    const value = event.target.value;
-    setRequirements(value);
-    localStorage.setItem(storageKey, value);
+  const handleInputChange = (event) => {
+    setUserInput(event.target.value);
   };
 
-  const handleClose = () => {
-    // Reset conversation state when closing
-    setConversationStage("input");
-    setScenariosResponse("");
-    onClose();
+  const handleSubmit = () => {
+    if (userInput.trim() && onSubmit) {
+      onSubmit(userInput);
+      setUserInput("");
+    }
   };
 
   const handleClear = () => {
-    setRequirements("");
-    setConversationStage("input");
-    setScenariosResponse("");
-    localStorage.removeItem(storageKey);
+    setUserInput("");
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>{title}</DialogTitle>
 
       <DialogContent>
@@ -138,54 +115,17 @@ const AiRuleCreationModal = ({
           </Box>
         )}
 
-        {conversationStage === "input" && (
-          <TextField
-            multiline
-            rows={6}
-            fullWidth
-            placeholder={placeholder}
-            value={requirements}
-            onChange={handleRequirementsChange}
-            variant="outlined"
-            disabled={loading}
-            sx={{ mt: 1 }}
-          />
-        )}
-
-        {conversationStage === "scenarios" && (
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              AI Generated Scenarios:
-            </Typography>
-            <Box
-              sx={{
-                p: 2,
-                border: 1,
-                borderColor: "grey.300",
-                borderRadius: 1,
-                bgcolor: "grey.50",
-                fontFamily: "monospace",
-                fontSize: "0.875rem",
-                whiteSpace: "pre-line",
-              }}
-            >
-              {scenariosResponse}
-            </Box>
-            <Typography variant="body2" sx={{ mt: 2, color: "text.secondary" }}>
-              Do these scenarios match what you want? Click "Confirm" to
-              generate the final rule code.
-            </Typography>
-          </Box>
-        )}
-
-        {conversationStage === "complete" && (
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="h6" sx={{ mb: 2, color: "success.main" }}>
-              Rule generated successfully! The code has been added to the
-              editor.
-            </Typography>
-          </Box>
-        )}
+        <TextField
+          multiline
+          rows={4}
+          fullWidth
+          placeholder={placeholder}
+          value={userInput}
+          onChange={handleInputChange}
+          variant="outlined"
+          disabled={loading}
+          sx={{ mt: 1 }}
+        />
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>
@@ -196,67 +136,27 @@ const AiRuleCreationModal = ({
             width: "100%",
           }}
         >
-          {conversationStage === "input" && (
-            <>
-              <IconButton
-                onClick={handleClear}
-                disabled={loading || !requirements.trim()}
-                color="secondary"
-                title="Clear input"
-              >
-                <Clear />
-              </IconButton>
-              <Box>
-                <Button onClick={handleClose} disabled={loading} sx={{ mr: 1 }}>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => onSubmit && onSubmit(requirements)}
-                  variant="contained"
-                  disabled={loading || !requirements.trim()}
-                  startIcon={<Send />}
-                >
-                  {loading ? "Generating..." : "Generate"}
-                </Button>
-              </Box>
-            </>
-          )}
-
-          {conversationStage === "scenarios" && (
-            <Box
-              sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "flex-end",
-              }}
+          <IconButton
+            onClick={handleClear}
+            disabled={loading || !userInput.trim()}
+            color="secondary"
+            title="Clear input"
+          >
+            <Clear />
+          </IconButton>
+          <Box>
+            <Button onClick={onClose} disabled={loading} sx={{ mr: 1 }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              disabled={loading || !userInput.trim()}
+              startIcon={<Send />}
             >
-              <Button onClick={handleClose} disabled={loading} sx={{ mr: 1 }}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => onSubmit && onSubmit("yes")}
-                variant="contained"
-                disabled={loading}
-                startIcon={<Send />}
-              >
-                {loading ? "Generating..." : "Confirm & Generate Code"}
-              </Button>
-            </Box>
-          )}
-
-          {conversationStage === "complete" && (
-            <Box
-              sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "flex-end",
-              }}
-            >
-              <Button onClick={handleClose} variant="contained">
-                Done
-              </Button>
-            </Box>
-          )}
+              {loading ? "Processing..." : "Submit"}
+            </Button>
+          </Box>
         </Box>
       </DialogActions>
     </Dialog>
