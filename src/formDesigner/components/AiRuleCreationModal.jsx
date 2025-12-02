@@ -11,6 +11,17 @@ import {
   Typography,
 } from "@mui/material";
 import { Clear, Send } from "@mui/icons-material";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+// Helper to normalize content for markdown rendering
+const normalizeMarkdownContent = (content) => {
+  if (!content) return "";
+  // Replace literal \n with actual newlines if they exist as escaped strings
+  let normalized = content.replace(/\\n/g, "\n");
+  // Ensure proper line breaks for markdown tables
+  return normalized;
+};
 
 const AiRuleCreationModal = ({
   open,
@@ -97,19 +108,71 @@ const AiRuleCreationModal = ({
                   {message.role === "user" ? "You" : "AI Assistant"}
                   {message.type && ` (${message.type})`}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    mt: 0.5,
-                    whiteSpace:
-                      message.type === "code" ? "pre-wrap" : "pre-line",
-                    fontFamily:
-                      message.type === "code" ? "monospace" : "inherit",
-                    fontSize: message.type === "code" ? "0.75rem" : "0.875rem",
-                  }}
-                >
-                  {message.content}
-                </Typography>
+                {message.role === "user" ? (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      mt: 0.5,
+                      whiteSpace: "pre-line",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    {message.content}
+                  </Typography>
+                ) : (
+                  <Box
+                    sx={{
+                      mt: 0.5,
+                      fontSize: "0.875rem",
+                      "& p": { margin: "0.5em 0" },
+                      "& pre": {
+                        bgcolor: "grey.100",
+                        p: 1.5,
+                        borderRadius: 1,
+                        overflow: "auto",
+                        fontSize: "0.75rem",
+                      },
+                      "& code": {
+                        fontFamily: "monospace",
+                        bgcolor: "grey.100",
+                        px: 0.5,
+                        borderRadius: 0.5,
+                        fontSize: "0.8em",
+                      },
+                      "& pre code": {
+                        bgcolor: "transparent",
+                        px: 0,
+                      },
+                      "& table": {
+                        borderCollapse: "collapse",
+                        width: "100%",
+                        my: 1,
+                        fontSize: "0.75rem",
+                        display: "block",
+                        overflowX: "auto",
+                      },
+                      "& th, & td": {
+                        border: "1px solid",
+                        borderColor: "grey.300",
+                        px: 1,
+                        py: 0.5,
+                        textAlign: "left",
+                        whiteSpace: "nowrap",
+                      },
+                      "& th": {
+                        bgcolor: "grey.100",
+                        fontWeight: "bold",
+                      },
+                      "& ul, & ol": { pl: 2, my: 0.5 },
+                      "& li": { my: 0.25 },
+                      "& strong": { fontWeight: "bold" },
+                    }}
+                  >
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {normalizeMarkdownContent(message.content)}
+                    </ReactMarkdown>
+                  </Box>
+                )}
               </Box>
             ))}
           </Box>
