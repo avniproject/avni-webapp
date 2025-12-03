@@ -109,8 +109,8 @@ export const useDifyFormValidation = (formType, apiKey) => {
     [validateBatchFormElements],
   );
 
-  const clearValidationCache = useCallback(() => {
-    difyFormValidationService.clearCache();
+  const clearValidationCache = useCallback((requestType = null) => {
+    difyFormValidationService.clearCache(requestType);
   }, []);
 
   return {

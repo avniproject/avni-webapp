@@ -147,11 +147,14 @@ const FormDetails = () => {
   const questionGroupFormElementsToRepeatableMap = new Map();
 
   // Initialize Dify form validation hook
-  const { validateFormElement, isLoading: isValidationLoading } =
-    useDifyFormValidation(
-      state.form?.formType,
-      aiConfig?.copilotFormValidationApiKey,
-    );
+  const {
+    validateFormElement,
+    isLoading: isValidationLoading,
+    clearValidationCache,
+  } = useDifyFormValidation(
+    state.form?.formType,
+    aiConfig?.copilotFormValidationApiKey,
+  );
 
   // AI Rule Creation Modal state
   const [aiRuleModalOpen, setAiRuleModalOpen] = useState(false);
@@ -177,8 +180,10 @@ const FormDetails = () => {
       pendingSuccessCallbackRef.current = null;
       setScenariosContent(null);
       setConversationHistory([]);
+      // Clear Dify conversation cache for fresh context on new form
+      clearValidationCache();
     }
-  }, [state.form?.uuid]);
+  }, [state.form?.uuid, clearValidationCache]);
 
   const onUpdateFormName = useCallback((name) => {
     setState((prev) => ({ ...prev, name, detectBrowserCloseEvent: true }));
@@ -1301,13 +1306,13 @@ const FormDetails = () => {
 
       // Build context for VisitSchedule requests
       const buildVisitScheduleContext = () => {
-        const context = {
+        const form_context = {
           formType: state.form?.formType || "Unknown",
         };
 
         // For registration forms (IndividualProfile): Include current subject type being registered
         if (state.form?.subjectType) {
-          context.currentSubjectType =
+          form_context.currentSubjectType =
             typeof state.form.subjectType === "object"
               ? state.form.subjectType.name
               : state.form.subjectType;
@@ -1316,30 +1321,30 @@ const FormDetails = () => {
         // For enrolment forms (ProgramEnrolment): Include current program being enrolled into
         // Resolved from form mappings and stored in state
         if (state.currentProgram) {
-          context.currentProgram = state.currentProgram;
+          form_context.currentProgram = state.currentProgram;
         }
 
         // For encounter forms (ProgramEncounter / Encounter): Include current encounter type being used
         // Resolved from form mappings and stored in state
         if (state.currentEncounterType) {
-          context.currentEncounterType = state.currentEncounterType;
+          form_context.currentEncounterType = state.currentEncounterType;
         }
 
         // Add all available subject types (from operational modules)
         if (state.subjectTypes && state.subjectTypes.length > 0) {
-          context.subjectTypes = state.subjectTypes.map((st) => st.name);
+          form_context.subjectTypes = state.subjectTypes.map((st) => st.name);
         }
 
         // Add all available programs (from operational modules)
         if (state.programs && state.programs.length > 0) {
-          context.programs = state.programs.map(
+          form_context.programs = state.programs.map(
             (p) => p.name || p.operationalProgramName,
           );
         }
 
         // Add all available encounter types (from operational modules)
         if (state.encounterTypes && state.encounterTypes.length > 0) {
-          context.encounterTypes = state.encounterTypes.map((et) => ({
+          form_context.encounterTypes = state.encounterTypes.map((et) => ({
             name: et.name,
             program: et.programName || et.program,
           }));
@@ -1358,18 +1363,18 @@ const FormDetails = () => {
             }
           });
           if (conceptNames.length > 0) {
-            context.concepts = conceptNames;
+            form_context.concepts = conceptNames;
           }
         }
 
-        return context;
+        return form_context;
       };
 
       // Create a form element-like object for the API
       const ruleRequest = {
         name: `${ruleType} Rule`,
         requirements,
-        context:
+        form_context:
           ruleType === "VisitSchedule" ? buildVisitScheduleContext() : {},
       };
 

@@ -80,7 +80,7 @@ Please validate this form element according to Avni rules and provide recommenda
               user_name: null,
               avni_mcp_server_url: "https://staging-mcp.avniproject.org",
               requestType: "VisitSchedule",
-              context: formElement.context || {},
+              form_context: formElement.form_context || {},
             }
           : {};
 
