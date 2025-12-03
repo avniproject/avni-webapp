@@ -7,8 +7,11 @@ const difyAxios = axios.create();
 class DifyFormValidationService {
   constructor() {
     this.apiKey = null;
-    // Use Vite proxy to avoid CORS issues
-    this.baseUrl = "/dify-api/v1";
+    // Use Vite proxy in development, direct API URL in production
+    // In dev mode, Vite proxies /dify-api to https://api.dify.ai to avoid CORS
+    this.baseUrl = import.meta.env.DEV ? "/dify-api/v1" : "https://api.dify.ai/v1";
+    // Maintain separate conversation IDs for each request type
+    this.conversationIds = {};
   }
 
   setApiKey(apiKey) {
@@ -87,7 +90,7 @@ Please validate this form element according to Avni rules and provide recommenda
           inputs,
           query: question,
           response_mode: "blocking",
-          conversation_id: this.conversationId || "", // Use stored conversation ID for context
+          conversation_id: this.conversationIds[requestType] || "", // Use stored conversation ID for this request type
           user: "avni-form-designer",
         },
         {
@@ -151,7 +154,7 @@ Please validate this form element according to Avni rules and provide recommenda
       const conversationId = response.data?.conversation_id || "";
 
       if (conversationId) {
-        this.conversationId = conversationId;
+        this.conversationIds[requestType] = conversationId;
       }
 
       if (answer) {
@@ -237,9 +240,13 @@ Please validate this form element according to Avni rules and provide recommenda
     return debounce(callback, delay);
   }
 
-  clearCache() {
-    // Cache removed - method kept for API compatibility
-    this.conversationId = null;
+  clearCache(requestType = null) {
+    // Clear conversation ID(s) - optionally for a specific request type
+    if (requestType) {
+      delete this.conversationIds[requestType];
+    } else {
+      this.conversationIds = {};
+    }
   }
 }
 
