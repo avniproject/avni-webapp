@@ -1375,7 +1375,9 @@ const FormDetails = () => {
         name: `${ruleType} Rule`,
         requirements,
         form_context:
-          ruleType === "VisitSchedule" ? buildVisitScheduleContext() : {},
+          ruleType === "VisitSchedule"
+            ? JSON.stringify(buildVisitScheduleContext())
+            : "{}",
       };
 
       try {
