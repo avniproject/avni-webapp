@@ -175,7 +175,7 @@ const OrgManager = () => {
             IdentifierSourceCreate
           }
           edit={
-            hasPrivilege(userInfo, EditIdentifierSource) && IdentifierSourceEdit
+            false
           }
         />
         <Resource
