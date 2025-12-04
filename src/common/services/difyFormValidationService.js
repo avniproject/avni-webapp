@@ -58,7 +58,7 @@ Please validate this form element according to Avni rules and provide recommenda
   }
 
   formatVisitScheduleQuestion(formElement) {
-    return `Requirements: ${formElement.requirements || "Not specified"}`;
+    return `${formElement.requirements || "Requirements not specified"}`;
   }
 
   async validateSingleFormElement(formElement, formType = "", _formContext = {}, requestType = "FormValidation") {
@@ -162,7 +162,10 @@ Please validate this form element according to Avni rules and provide recommenda
         if (requestType === "VisitSchedule") {
           // Check if response contains JavaScript code (function signature)
           const hasJavaScriptCode =
-            answer.includes("({params, imports}) =>") || answer.includes("```javascript") || answer.includes("```js");
+            answer.includes('"use strict";') ||
+            answer.includes("({params, imports}) =>") ||
+            answer.includes("```javascript") ||
+            answer.includes("```js");
 
           if (hasJavaScriptCode) {
             // This is final code - extract and return it
