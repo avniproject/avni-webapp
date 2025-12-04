@@ -99,7 +99,7 @@ Please validate this form element according to Avni rules and provide recommenda
             "Content-Type": "application/json",
           },
           withCredentials: false,
-          timeout: requestType === "VisitSchedule" ? 20000 : 10000, // 20s for VisitSchedule, 10s for FormValidation
+          timeout: requestType === "VisitSchedule" ? 30000 : 10000, // 30s for VisitSchedule, 10s for FormValidation
         },
       );
 
@@ -137,7 +137,7 @@ Please validate this form element according to Avni rules and provide recommenda
             "Content-Type": "application/json",
           },
           withCredentials: false,
-          timeout: 20000, // 20 second timeout for batch
+          timeout: 30000, // 30 second timeout for batch
         },
       );
 
