@@ -23,180 +23,273 @@ class DifyFormValidationService {
   }
 
   formatQuestionForDify(formElement, formType = "", formContext = {}, requestType = "FormValidation") {
-    if (requestType === "VisitSchedule") {
-      return this.formatVisitScheduleQuestion(formElement);
-    }
-
-    // Default FormValidation logic
-    const options = formElement.concept?.answers?.length > 0 ? formElement.concept.answers.map((answer) => answer.name).join(", ") : "None";
-
-    // Build enhanced context string following Python pattern
-    const contextParts = [];
-
-    // Add current field configuration
-    if (formElement.concept) {
-      contextParts.push(`Current dataType: ${formElement.concept.dataType || "Unknown"}`);
-      contextParts.push(`Current type: ${formElement.type || "Unknown"}`);
-      if (formElement.mandatory != null) {
-        contextParts.push(`Mandatory: ${formElement.mandatory}`);
+    try {
+      if (requestType === "VisitSchedule") {
+        return this.formatVisitScheduleQuestion(formElement);
       }
 
-      // Add numeric bounds info if available
-      if (formElement.concept.dataType === "Numeric") {
-        const bounds = [];
-        if (formElement.concept.lowAbsolute != null) bounds.push(`lowAbsolute: ${formElement.concept.lowAbsolute}`);
-        if (formElement.concept.highAbsolute != null) bounds.push(`highAbsolute: ${formElement.concept.highAbsolute}`);
-        if (formElement.concept.lowNormal != null) bounds.push(`lowNormal: ${formElement.concept.lowNormal}`);
-        if (formElement.concept.highNormal != null) bounds.push(`highNormal: ${formElement.concept.highNormal}`);
-        if (formElement.concept.unit) bounds.push(`unit: ${formElement.concept.unit}`);
-        if (bounds.length > 0) {
-          contextParts.push(`Numeric bounds: ${bounds.join(", ")}`);
-        }
+      // Defensive: ensure formElement exists
+      if (!formElement) {
+        return "Question Text: Unknown\nOptions: None\nContext: No context available\n\nPlease validate this form element.";
       }
 
-      // Add duration options if available
-      if (formElement.concept.dataType === "Duration" && formElement.keyValues?.durationOptions?.length > 0) {
-        contextParts.push(`Duration options: ${formElement.keyValues.durationOptions.join(", ")}`);
+      // Default FormValidation logic with defensive checks
+      let options = "None";
+      try {
+        options =
+          formElement.concept?.answers?.length > 0
+            ? formElement.concept.answers.map((answer) => answer?.name || "Unknown").join(", ")
+            : "None";
+      } catch {
+        options = "None";
       }
 
-      // Add date/time picker mode if available
-      if (formElement.concept.dataType === "Date" || formElement.concept.dataType === "DateTime") {
-        const dateConfig = [];
-        if (formElement.keyValues?.datePickerMode) dateConfig.push(`datePickerMode: ${formElement.keyValues.datePickerMode}`);
-        if (formElement.keyValues?.timePickerMode) dateConfig.push(`timePickerMode: ${formElement.keyValues.timePickerMode}`);
-        if (dateConfig.length > 0) {
-          contextParts.push(`Date config: ${dateConfig.join(", ")}`);
+      // Build enhanced context string with defensive checks
+      const contextParts = [];
+
+      try {
+        // Add current field configuration
+        if (formElement.concept) {
+          contextParts.push(`Current dataType: ${formElement.concept.dataType || "Unknown"}`);
+          contextParts.push(`Current type: ${formElement.type || "Unknown"}`);
+          if (formElement.mandatory != null) {
+            contextParts.push(`Mandatory: ${formElement.mandatory}`);
+          }
+
+          const dataType = formElement.concept.dataType;
+
+          // Add numeric bounds info if available
+          if (dataType === "Numeric") {
+            try {
+              const bounds = [];
+              if (formElement.concept.lowAbsolute != null) bounds.push(`lowAbsolute: ${formElement.concept.lowAbsolute}`);
+              if (formElement.concept.highAbsolute != null) bounds.push(`highAbsolute: ${formElement.concept.highAbsolute}`);
+              if (formElement.concept.lowNormal != null) bounds.push(`lowNormal: ${formElement.concept.lowNormal}`);
+              if (formElement.concept.highNormal != null) bounds.push(`highNormal: ${formElement.concept.highNormal}`);
+              if (formElement.concept.unit) bounds.push(`unit: ${formElement.concept.unit}`);
+              if (bounds.length > 0) {
+                contextParts.push(`Numeric bounds: ${bounds.join(", ")}`);
+              }
+            } catch {
+              // Silently ignore numeric bounds errors
+            }
+          }
+
+          // Add duration options if available
+          if (dataType === "Duration") {
+            try {
+              if (formElement.keyValues?.durationOptions?.length > 0) {
+                contextParts.push(`Duration options: ${formElement.keyValues.durationOptions.join(", ")}`);
+              }
+            } catch {
+              // Silently ignore duration errors
+            }
+          }
+
+          // Add date/time picker mode if available
+          if (dataType === "Date" || dataType === "DateTime") {
+            try {
+              const dateConfig = [];
+              if (formElement.keyValues?.datePickerMode) dateConfig.push(`datePickerMode: ${formElement.keyValues.datePickerMode}`);
+              if (formElement.keyValues?.timePickerMode) dateConfig.push(`timePickerMode: ${formElement.keyValues.timePickerMode}`);
+              if (dateConfig.length > 0) {
+                contextParts.push(`Date config: ${dateConfig.join(", ")}`);
+              }
+            } catch {
+              // Silently ignore date config errors
+            }
+          }
+
+          // Add location config if available
+          if (dataType === "Location") {
+            try {
+              const locationConfig = [];
+              if (formElement.keyValues?.isWithinCatchment != null) {
+                locationConfig.push(`isWithinCatchment: ${formElement.keyValues.isWithinCatchment}`);
+              }
+              if (formElement.keyValues?.lowestAddressLevelTypeUUIDs?.length > 0) {
+                locationConfig.push(`lowestAddressLevelTypes: configured`);
+              }
+              if (formElement.keyValues?.highestAddressLevelTypeUUID) {
+                locationConfig.push(`highestAddressLevelType: configured`);
+              }
+              if (locationConfig.length > 0) {
+                contextParts.push(`Location config: ${locationConfig.join(", ")}`);
+              }
+            } catch {
+              // Silently ignore location config errors
+            }
+          }
+
+          // Add subject type config if available
+          if (dataType === "Subject") {
+            try {
+              const subjectConfig = [];
+              if (formElement.keyValues?.subjectTypeUUID) subjectConfig.push(`subjectType: configured`);
+              if (formElement.keyValues?.groupSubjectTypeUUID) subjectConfig.push(`groupSubjectType: configured`);
+              if (formElement.keyValues?.groupSubjectRoleUUID) subjectConfig.push(`groupSubjectRole: configured`);
+              if (subjectConfig.length > 0) {
+                contextParts.push(`Subject config: ${subjectConfig.join(", ")}`);
+              }
+            } catch {
+              // Silently ignore subject config errors
+            }
+          }
+
+          // Add encounter config if available
+          if (dataType === "Encounter") {
+            try {
+              const encounterConfig = [];
+              if (formElement.keyValues?.encounterTypeUUID) encounterConfig.push(`encounterType: configured`);
+              if (formElement.keyValues?.encounterScope) encounterConfig.push(`encounterScope: ${formElement.keyValues.encounterScope}`);
+              if (formElement.keyValues?.encounterIdentifier)
+                encounterConfig.push(`encounterIdentifier: ${formElement.keyValues.encounterIdentifier}`);
+              if (encounterConfig.length > 0) {
+                contextParts.push(`Encounter config: ${encounterConfig.join(", ")}`);
+              }
+            } catch {
+              // Silently ignore encounter config errors
+            }
+          }
+
+          // Add phone number config if available
+          if (dataType === "PhoneNumber") {
+            try {
+              if (formElement.keyValues?.verifyPhoneNumber != null) {
+                contextParts.push(`Phone config: verifyPhoneNumber: ${formElement.keyValues.verifyPhoneNumber}`);
+              }
+            } catch {
+              // Silently ignore phone config errors
+            }
+          }
+
+          // Add Id config if available
+          if (dataType === "Id") {
+            try {
+              const idConfig = [];
+              if (formElement.keyValues?.IdSourceUUID) idConfig.push(`idSource: configured`);
+              if (formElement.keyValues?.unique != null) idConfig.push(`unique: ${formElement.keyValues.unique}`);
+              if (formElement.keyValues?.editable != null) idConfig.push(`editable: ${formElement.keyValues.editable}`);
+              if (idConfig.length > 0) {
+                contextParts.push(`Id config: ${idConfig.join(", ")}`);
+              }
+            } catch {
+              // Silently ignore id config errors
+            }
+          }
+
+          // Add file/image/video/audio constraints if available
+          if (["Image", "Video", "Audio", "File"].includes(dataType)) {
+            try {
+              const fileConfig = [];
+              if (formElement.keyValues?.maxHeight) fileConfig.push(`maxHeight: ${formElement.keyValues.maxHeight}`);
+              if (formElement.keyValues?.maxWidth) fileConfig.push(`maxWidth: ${formElement.keyValues.maxWidth}`);
+              if (formElement.keyValues?.imageQuality) fileConfig.push(`imageQuality: ${formElement.keyValues.imageQuality}`);
+              if (formElement.keyValues?.videoQuality) fileConfig.push(`videoQuality: ${formElement.keyValues.videoQuality}`);
+              if (formElement.keyValues?.durationLimitInSecs)
+                fileConfig.push(`durationLimitInSecs: ${formElement.keyValues.durationLimitInSecs}`);
+              if (fileConfig.length > 0) {
+                contextParts.push(`File config: ${fileConfig.join(", ")}`);
+              }
+            } catch {
+              // Silently ignore file config errors
+            }
+          }
+
+          // Add text validation format if available
+          if (dataType === "Text") {
+            try {
+              if (formElement.validFormat) {
+                const textConfig = [];
+                if (formElement.validFormat.regex) textConfig.push(`regex: ${formElement.validFormat.regex}`);
+                if (formElement.validFormat.descriptionKey) textConfig.push(`description: ${formElement.validFormat.descriptionKey}`);
+                if (textConfig.length > 0) {
+                  contextParts.push(`Text validation: ${textConfig.join(", ")}`);
+                }
+              }
+            } catch {
+              // Silently ignore text validation errors
+            }
+          }
+
+          // Add QuestionGroup config if available
+          if (dataType === "QuestionGroup") {
+            try {
+              if (formElement.keyValues?.repeatable != null) {
+                contextParts.push(`QuestionGroup config: repeatable: ${formElement.keyValues.repeatable}`);
+              }
+            } catch {
+              // Silently ignore question group config errors
+            }
+          }
+
+          // Add coded concept answer details if available
+          if (dataType === "Coded") {
+            try {
+              if (formElement.concept.answers?.length > 0) {
+                const uniqueAnswers = formElement.concept.answers.filter((a) => a?.unique).map((a) => a?.name || "Unknown");
+                const abnormalAnswers = formElement.concept.answers.filter((a) => a?.abnormal).map((a) => a?.name || "Unknown");
+                const excludedAnswers = formElement.concept.answers.filter((a) => a?.excluded).map((a) => a?.name || "Unknown");
+                if (uniqueAnswers.length > 0) {
+                  contextParts.push(`Unique answers: ${uniqueAnswers.join(", ")}`);
+                }
+                if (abnormalAnswers.length > 0) {
+                  contextParts.push(`Abnormal answers: ${abnormalAnswers.join(", ")}`);
+                }
+                if (excludedAnswers.length > 0) {
+                  contextParts.push(`Excluded answers: ${excludedAnswers.join(", ")}`);
+                }
+              }
+            } catch {
+              // Silently ignore coded answer errors
+            }
+          }
         }
+      } catch {
+        // Silently ignore concept-level errors
       }
 
-      // Add location config if available
-      if (formElement.concept.dataType === "Location") {
-        const locationConfig = [];
-        if (formElement.keyValues?.isWithinCatchment != null) {
-          locationConfig.push(`isWithinCatchment: ${formElement.keyValues.isWithinCatchment}`);
+      // Add form context with defensive checks
+      try {
+        if (formType) {
+          contextParts.push(`Form type: ${formType}`);
         }
-        if (formElement.keyValues?.lowestAddressLevelTypeUUIDs?.length > 0) {
-          locationConfig.push(`lowestAddressLevelTypes: configured`);
+
+        if (formContext?.domain) {
+          contextParts.push(`Domain: ${formContext.domain}`);
         }
-        if (formElement.keyValues?.highestAddressLevelTypeUUID) {
-          locationConfig.push(`highestAddressLevelType: configured`);
+
+        if (formContext?.subjectTypeType) {
+          contextParts.push(`Subject type: ${formContext.subjectTypeType}`);
         }
-        if (locationConfig.length > 0) {
-          contextParts.push(`Location config: ${locationConfig.join(", ")}`);
-        }
+      } catch {
+        // Silently ignore form context errors
       }
 
-      // Add subject type config if available
-      if (formElement.concept.dataType === "Subject") {
-        const subjectConfig = [];
-        if (formElement.keyValues?.subjectTypeUUID) subjectConfig.push(`subjectType: configured`);
-        if (formElement.keyValues?.groupSubjectTypeUUID) subjectConfig.push(`groupSubjectType: configured`);
-        if (formElement.keyValues?.groupSubjectRoleUUID) subjectConfig.push(`groupSubjectRole: configured`);
-        if (subjectConfig.length > 0) {
-          contextParts.push(`Subject config: ${subjectConfig.join(", ")}`);
-        }
-      }
+      const contextString = contextParts.length > 0 ? contextParts.join(" | ") : "No specific context provided";
 
-      // Add encounter config if available
-      if (formElement.concept.dataType === "Encounter") {
-        const encounterConfig = [];
-        if (formElement.keyValues?.encounterTypeUUID) encounterConfig.push(`encounterType: configured`);
-        if (formElement.keyValues?.encounterScope) encounterConfig.push(`encounterScope: ${formElement.keyValues.encounterScope}`);
-        if (formElement.keyValues?.encounterIdentifier) encounterConfig.push(`encounterIdentifier: ${formElement.keyValues.encounterIdentifier}`);
-        if (encounterConfig.length > 0) {
-          contextParts.push(`Encounter config: ${encounterConfig.join(", ")}`);
-        }
-      }
-
-      // Add phone number config if available
-      if (formElement.concept.dataType === "PhoneNumber") {
-        if (formElement.keyValues?.verifyPhoneNumber != null) {
-          contextParts.push(`Phone config: verifyPhoneNumber: ${formElement.keyValues.verifyPhoneNumber}`);
-        }
-      }
-
-      // Add Id config if available
-      if (formElement.concept.dataType === "Id") {
-        const idConfig = [];
-        if (formElement.keyValues?.IdSourceUUID) idConfig.push(`idSource: configured`);
-        if (formElement.keyValues?.unique != null) idConfig.push(`unique: ${formElement.keyValues.unique}`);
-        if (formElement.keyValues?.editable != null) idConfig.push(`editable: ${formElement.keyValues.editable}`);
-        if (idConfig.length > 0) {
-          contextParts.push(`Id config: ${idConfig.join(", ")}`);
-        }
-      }
-
-      // Add file/image/video/audio constraints if available
-      if (["Image", "Video", "Audio", "File"].includes(formElement.concept.dataType)) {
-        const fileConfig = [];
-        if (formElement.keyValues?.maxHeight) fileConfig.push(`maxHeight: ${formElement.keyValues.maxHeight}`);
-        if (formElement.keyValues?.maxWidth) fileConfig.push(`maxWidth: ${formElement.keyValues.maxWidth}`);
-        if (formElement.keyValues?.imageQuality) fileConfig.push(`imageQuality: ${formElement.keyValues.imageQuality}`);
-        if (formElement.keyValues?.videoQuality) fileConfig.push(`videoQuality: ${formElement.keyValues.videoQuality}`);
-        if (formElement.keyValues?.durationLimitInSecs) fileConfig.push(`durationLimitInSecs: ${formElement.keyValues.durationLimitInSecs}`);
-        if (fileConfig.length > 0) {
-          contextParts.push(`File config: ${fileConfig.join(", ")}`);
-        }
-      }
-
-      // Add text validation format if available
-      if (formElement.concept.dataType === "Text" && formElement.validFormat) {
-        const textConfig = [];
-        if (formElement.validFormat.regex) textConfig.push(`regex: ${formElement.validFormat.regex}`);
-        if (formElement.validFormat.descriptionKey) textConfig.push(`description: ${formElement.validFormat.descriptionKey}`);
-        if (textConfig.length > 0) {
-          contextParts.push(`Text validation: ${textConfig.join(", ")}`);
-        }
-      }
-
-      // Add QuestionGroup config if available
-      if (formElement.concept.dataType === "QuestionGroup") {
-        if (formElement.keyValues?.repeatable != null) {
-          contextParts.push(`QuestionGroup config: repeatable: ${formElement.keyValues.repeatable}`);
-        }
-      }
-
-      // Add coded concept answer details if available
-      if (formElement.concept.dataType === "Coded" && formElement.concept.answers?.length > 0) {
-        const uniqueAnswers = formElement.concept.answers.filter((a) => a.unique).map((a) => a.name);
-        const abnormalAnswers = formElement.concept.answers.filter((a) => a.abnormal).map((a) => a.name);
-        const excludedAnswers = formElement.concept.answers.filter((a) => a.excluded).map((a) => a.name);
-        if (uniqueAnswers.length > 0) {
-          contextParts.push(`Unique answers: ${uniqueAnswers.join(", ")}`);
-        }
-        if (abnormalAnswers.length > 0) {
-          contextParts.push(`Abnormal answers: ${abnormalAnswers.join(", ")}`);
-        }
-        if (excludedAnswers.length > 0) {
-          contextParts.push(`Excluded answers: ${excludedAnswers.join(", ")}`);
-        }
-      }
-    }
-
-    // Add form context
-    if (formType) {
-      contextParts.push(`Form type: ${formType}`);
-    }
-
-    if (formContext.domain) {
-      contextParts.push(`Domain: ${formContext.domain}`);
-    }
-
-    if (formContext.subjectTypeType) {
-      contextParts.push(`Subject type: ${formContext.subjectTypeType}`);
-    }
-
-    const contextString = contextParts.length > 0 ? contextParts.join(" | ") : "No specific context provided";
-
-    return `Question Text: ${formElement.name}
+      return `Question Text: ${formElement.name || "Unknown"}
 Options: ${options}
 Context: ${contextString}
 
 Please validate this form element according to Avni rules and provide recommendations.`;
+    } catch (error) {
+      // Ultimate fallback - return minimal valid prompt
+      console.warn("formatQuestionForDify failed, using fallback:", error);
+      return `Question Text: ${formElement?.name || "Unknown"}
+Options: None
+Context: No context available
+
+Please validate this form element.`;
+    }
   }
 
   formatVisitScheduleQuestion(formElement) {
-    return `${formElement.requirements || "Requirements not specified"}`;
+    try {
+      return `${formElement?.requirements || "Requirements not specified"}`;
+    } catch {
+      return "Requirements not specified";
+    }
   }
 
   async validateSingleFormElement(formElement, formType = "", _formContext = {}, requestType = "FormValidation") {
@@ -212,14 +305,14 @@ Please validate this form element according to Avni rules and provide recommenda
       const inputs =
         requestType === "VisitSchedule"
           ? {
-            auth_token: null,
-            org_name: null,
-            org_type: "trial",
-            user_name: null,
-            avni_mcp_server_url: "https://staging-mcp.avniproject.org",
-            requestType: "VisitSchedule",
-            form_context: JSON.stringify(formElement.form_context || {}),
-          }
+              auth_token: null,
+              org_name: null,
+              org_type: "trial",
+              user_name: null,
+              avni_mcp_server_url: "https://staging-mcp.avniproject.org",
+              requestType: "VisitSchedule",
+              form_context: JSON.stringify(formElement.form_context || {}),
+            }
           : {};
 
       const payload = {
@@ -245,18 +338,25 @@ Please validate this form element according to Avni rules and provide recommenda
       const validationResults = this.parseDifyResponse(response, requestType);
       return validationResults;
     } catch (error) {
-      console.error("Dify validation API call failed:", error);
+      console.warn("Dify validation API call failed (non-critical):", error?.message || error);
       return [];
     }
   }
 
   async validateBatchFormElements(formElements, formType) {
+    // Defensive: ensure formElements is a valid array
+    const safeFormElements = Array.isArray(formElements) ? formElements : [];
+
     if (!this.apiKey) {
       console.warn("Dify API key not configured");
-      return formElements.map(() => []);
+      return safeFormElements.map(() => []);
     }
 
-    const questions = formElements.map((formElement) => this.formatQuestionForDify(formElement, formType));
+    if (safeFormElements.length === 0) {
+      return [];
+    }
+
+    const questions = safeFormElements.map((formElement) => this.formatQuestionForDify(formElement, formType || ""));
 
     try {
       const batchQuestion = questions.join("\n\n---\n\n");
@@ -279,10 +379,10 @@ Please validate this form element according to Avni rules and provide recommenda
         },
       );
 
-      return this.parseBatchDifyResponse(response.data, formElements.length);
+      return this.parseBatchDifyResponse(response.data, safeFormElements.length);
     } catch (error) {
-      console.error("Dify batch validation API call failed:", error);
-      return formElements.map(() => []);
+      console.warn("Dify batch validation API call failed (non-critical):", error?.message || error);
+      return safeFormElements.map(() => []);
     }
   }
 
@@ -354,38 +454,64 @@ Please validate this form element according to Avni rules and provide recommenda
 
       return [];
     } catch (error) {
-      console.error("Failed to parse Dify response:", error);
+      console.warn("Failed to parse Dify response (non-critical):", error?.message || error);
       return [];
     }
   }
 
   extractValidationFromText(text) {
-    // Extract validation messages from plain text response
-    const lines = text.split("\n").filter((line) => line.trim());
-    const validations = [];
-
-    lines.forEach((line) => {
-      if (line.includes("CRITICAL:") || line.includes("HIGH:") || line.includes("MEDIUM:") || line.includes("LOW:")) {
-        validations.push({
-          formElementUuid: null,
-          formElementName: "Unknown",
-          message: line.trim(),
-        });
+    try {
+      // Defensive: ensure text is a string
+      if (!text || typeof text !== "string") {
+        return [];
       }
-    });
 
-    return validations.length > 0 ? validations : [];
+      // Extract validation messages from plain text response
+      const lines = text.split("\n").filter((line) => line && line.trim());
+      const validations = [];
+
+      lines.forEach((line) => {
+        try {
+          if (line.includes("CRITICAL:") || line.includes("HIGH:") || line.includes("MEDIUM:") || line.includes("LOW:")) {
+            validations.push({
+              formElementUuid: null,
+              formElementName: "Unknown",
+              message: line.trim(),
+            });
+          }
+        } catch {
+          // Silently ignore individual line parsing errors
+        }
+      });
+
+      return validations.length > 0 ? validations : [];
+    } catch {
+      return [];
+    }
   }
 
   createDebouncedValidator(callback, delay = 500) {
-    return debounce(callback, delay);
+    try {
+      // Defensive: ensure callback is a function
+      if (typeof callback !== "function") {
+        return () => {}; // Return no-op function
+      }
+      return debounce(callback, delay);
+    } catch {
+      return () => {}; // Return no-op function on error
+    }
   }
 
   clearCache(requestType = null) {
-    // Clear conversation ID(s) - optionally for a specific request type
-    if (requestType) {
-      delete this.conversationIds[requestType];
-    } else {
+    try {
+      // Clear conversation ID(s) - optionally for a specific request type
+      if (requestType) {
+        delete this.conversationIds[requestType];
+      } else {
+        this.conversationIds = {};
+      }
+    } catch {
+      // Silently ignore cache clearing errors
       this.conversationIds = {};
     }
   }

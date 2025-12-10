@@ -14,7 +14,12 @@ export const useDifyFormValidation = (formType, apiKey, subjectTypeType) => {
 
   const validateFormElement = useCallback(
     async (formElement, onSuccess, requestType = "FormValidation") => {
+      // Defensive: ensure onSuccess is a function
+      const safeOnSuccess = typeof onSuccess === "function" ? onSuccess : () => {};
+
+      // Defensive: validate formElement exists and has required properties
       if (!formElement || !formElement.name) {
+        safeOnSuccess(null);
         return;
       }
 
@@ -24,28 +29,32 @@ export const useDifyFormValidation = (formType, apiKey, subjectTypeType) => {
       try {
         const validationResult = await difyFormValidationService.validateSingleFormElement(
           formElement,
-          formType,
-          { subjectTypeType }, // Pass subjectTypeType in formContext
+          formType || "",
+          { subjectTypeType: subjectTypeType || "" }, // Pass subjectTypeType in formContext with fallback
           requestType,
         );
 
         // Handle different response formats based on requestType
         if (requestType === "VisitSchedule") {
           // For VisitSchedule, pass the structured response directly
-          onSuccess(validationResult);
+          safeOnSuccess(validationResult);
         } else {
-          // For FormValidation, handle array of validation results
-          if (validationResult && validationResult.length > 0) {
-            const warningMessages = validationResult.map((v) => v.message).join("\n\n");
-            onSuccess(warningMessages);
+          // For FormValidation, handle array of validation results with defensive checks
+          if (validationResult && Array.isArray(validationResult) && validationResult.length > 0) {
+            const warningMessages = validationResult
+              .filter((v) => v && v.message) // Filter out invalid entries
+              .map((v) => v.message)
+              .join("\n\n");
+            safeOnSuccess(warningMessages || null);
           } else {
-            onSuccess(null); // Clear warning if no validation issues
+            safeOnSuccess(null); // Clear warning if no validation issues
           }
         }
       } catch (err) {
-        console.error("Form validation failed:", err);
-        setError(err.message);
-        onSuccess(null); // Fallback to no warnings on error
+        // Silent failure - log but don't break the app
+        console.warn("Form validation failed (non-critical):", err?.message || err);
+        setError(err?.message || "Validation failed");
+        safeOnSuccess(null); // Fallback to no warnings on error
       } finally {
         setIsLoading(false);
       }
@@ -55,7 +64,12 @@ export const useDifyFormValidation = (formType, apiKey, subjectTypeType) => {
 
   const validateBatchFormElements = useCallback(
     async (formElements, onSuccess) => {
-      if (!formElements || formElements.length === 0) {
+      // Defensive: ensure onSuccess is a function
+      const safeOnSuccess = typeof onSuccess === "function" ? onSuccess : () => {};
+
+      // Defensive: validate formElements exists and is an array
+      if (!formElements || !Array.isArray(formElements) || formElements.length === 0) {
+        safeOnSuccess([]);
         return;
       }
 
@@ -63,13 +77,15 @@ export const useDifyFormValidation = (formType, apiKey, subjectTypeType) => {
       setError(null);
 
       try {
-        const validationResults = await difyFormValidationService.validateBatchFormElements(formElements, formType);
+        const validationResults = await difyFormValidationService.validateBatchFormElements(formElements, formType || "");
 
-        onSuccess(validationResults);
+        // Defensive: ensure we return an array
+        safeOnSuccess(Array.isArray(validationResults) ? validationResults : formElements.map(() => []));
       } catch (err) {
-        console.error("Batch form validation failed:", err);
-        setError(err.message);
-        onSuccess(formElements.map(() => [])); // Fallback to empty warnings for all elements
+        // Silent failure - log but don't break the app
+        console.warn("Batch form validation failed (non-critical):", err?.message || err);
+        setError(err?.message || "Batch validation failed");
+        safeOnSuccess(formElements.map(() => [])); // Fallback to empty warnings for all elements
       } finally {
         setIsLoading(false);
       }
@@ -79,38 +95,59 @@ export const useDifyFormValidation = (formType, apiKey, subjectTypeType) => {
 
   const debouncedValidateFormElement = useCallback(
     (formElement, onSuccess, requestType) => {
-      if (debouncedValidatorRef.current) {
-        debouncedValidatorRef.current.cancel();
+      try {
+        // Defensive: cancel existing debounced call safely
+        if (debouncedValidatorRef.current && typeof debouncedValidatorRef.current.cancel === "function") {
+          debouncedValidatorRef.current.cancel();
+        }
+
+        debouncedValidatorRef.current = difyFormValidationService.createDebouncedValidator(
+          () => validateFormElement(formElement, onSuccess, requestType),
+          500, // 500ms debounce as specified
+        );
+
+        if (typeof debouncedValidatorRef.current === "function") {
+          debouncedValidatorRef.current();
+        }
+      } catch (err) {
+        // Silent failure - validation is non-critical
+        console.warn("Debounced validation setup failed (non-critical):", err?.message || err);
       }
-
-      debouncedValidatorRef.current = difyFormValidationService.createDebouncedValidator(
-        () => validateFormElement(formElement, onSuccess, requestType),
-        500, // 500ms debounce as specified
-      );
-
-      debouncedValidatorRef.current();
     },
     [validateFormElement],
   );
 
   const debouncedValidateBatchFormElements = useCallback(
     (formElements, onSuccess) => {
-      if (debouncedValidatorRef.current) {
-        debouncedValidatorRef.current.cancel();
+      try {
+        // Defensive: cancel existing debounced call safely
+        if (debouncedValidatorRef.current && typeof debouncedValidatorRef.current.cancel === "function") {
+          debouncedValidatorRef.current.cancel();
+        }
+
+        debouncedValidatorRef.current = difyFormValidationService.createDebouncedValidator(
+          () => validateBatchFormElements(formElements, onSuccess),
+          500, // 500ms debounce as specified
+        );
+
+        if (typeof debouncedValidatorRef.current === "function") {
+          debouncedValidatorRef.current();
+        }
+      } catch (err) {
+        // Silent failure - validation is non-critical
+        console.warn("Debounced batch validation setup failed (non-critical):", err?.message || err);
       }
-
-      debouncedValidatorRef.current = difyFormValidationService.createDebouncedValidator(
-        () => validateBatchFormElements(formElements, onSuccess),
-        500, // 500ms debounce as specified
-      );
-
-      debouncedValidatorRef.current();
     },
     [validateBatchFormElements],
   );
 
   const clearValidationCache = useCallback((requestType = null) => {
-    difyFormValidationService.clearCache(requestType);
+    try {
+      difyFormValidationService.clearCache(requestType);
+    } catch (err) {
+      // Silent failure - cache clearing is non-critical
+      console.warn("Clear validation cache failed (non-critical):", err?.message || err);
+    }
   }, []);
 
   return {
