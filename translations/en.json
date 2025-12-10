@@ -225,6 +225,7 @@
     "anotherRegistration": "register another {{subject}}",
     "saveAnd": "Save and",
     "registrationSavedMsg": "Registration Saved",
+    "noCatchmentAssignedToThisUser": "Catchment not assigned to you",
     "enrolmentSavedMsg": "{{programName}} Enrolment Saved",
     "enrolmentExitMsg": "Exited From {{programName}} Program",
     "encounterSavedMsg": "{{encounterName}} Encounter Saved",
