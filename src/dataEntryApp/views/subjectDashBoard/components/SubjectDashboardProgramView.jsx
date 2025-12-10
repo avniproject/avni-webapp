@@ -281,7 +281,7 @@ const ProgramView = ({
       <MessageDialog
         title={t("ProgramEnrolmentErrorTitle")}
         open={!isEmpty(voidError)}
-        message={voidError}
+        message={t(voidError)}
         onOk={handleClearVoidServerError}
       />
     </StyledStackContainer>
