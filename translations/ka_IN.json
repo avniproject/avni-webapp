@@ -224,6 +224,7 @@
     "anotherRegistration": "ಮತ್ತೊಂದು ನೊಂದಾಯಿಸಿ {{subject}}",
     "saveAnd": "ಉಳಿಸಿ ಮತ್ತು",
     "registrationSavedMsg": "ನೋಂದಣಿ ಉಳಿಸಲಾಗಿದೆ",
+    "noCatchmentAssignedToThisUser": "ಕ್ಯಾಚ್ಮೆಂಟ್ ನಿಮಗೆ ನಿಯೋಜಿಸಲಾಗಿಲ್ಲ.",
     "enrolmentSavedMsg": "{{programName}} ದಾಖಲಾತಿ ಉಳಿಸಲಾಗಿದೆ",
     "enrolmentExitMsg": "{{programName}} ಪ್ರೋಗ್ರಾಂನಿಂದ ನಿರ್ಗಮಿಸಲಾಗಿದೆ",
     "encounterSavedMsg": "{{encounterName}} ಎನ್‌ಕೌಂಟರ್ ಉಳಿಸಲಾಗಿದೆ",

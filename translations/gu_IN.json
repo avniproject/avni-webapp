@@ -227,6 +227,7 @@
     "anotherRegistration": "અન્ય {{subject}} માં નોંધણી કરો",
     "saveAnd": "સાચવો અને",
     "registrationSavedMsg": "નોંધણી પૂર્ણ થઈ",
+    "noCatchmentAssignedToThisUser": "કેટચમેન્ટ તમને સોંપવામાં આવ્યો નથી.",
     "enrolmentSavedMsg": "{{programName}} એનરોલમેન્ટ સાચવેલ",
     "enrolmentExitMsg": "{{programName}} પ્રોગ્રામમાંથી બહાર ગયું",
     "encounterSavedMsg": "{{encounterName}} એન્કાઉન્ટર સાચવેલ",

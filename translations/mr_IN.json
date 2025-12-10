@@ -196,6 +196,7 @@
     "syncTimeoutError": "क्षमस्व ते खूप वेळ घेत आहे. कृपया आपले इंटरनेट कनेक्शन तपासा.",
     "tryAgain": "पुन्हा प्रयत्न करा",
     "registrationSavedMsg": "नोंदणी पूर्ण",
+    "noCatchmentAssignedToThisUser": "तुम्हाला कोणताही कार्यक्षेत्र नियुक्त केलेल नाही.",
     "enrolmentSavedMsg": "{{programName}} एनरोलमेण्ट जतन",
     "enrolmentExitMsg": "{{programName}} प्रोग्रामधून बाहेर आला",
     "encounterSavedMsg": "{{encounterName}} एंकॉउंटर जतन",
