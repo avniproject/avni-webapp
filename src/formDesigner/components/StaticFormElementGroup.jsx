@@ -20,13 +20,13 @@ const StyledParent = styled("div")(({ theme }) => ({
   paddingBottom: theme.spacing(4),
 }));
 
-const StyledAccordion = styled(Accordion)(({ theme }) => ({
+const StyledAccordion = styled(Accordion)({
   width: "100%",
   "&.Mui-expanded": {
     margin: 0,
   },
   backgroundColor: "#E0E0E0",
-}));
+});
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   position: "relative",
@@ -53,9 +53,9 @@ const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   },
 }));
 
-const StyledAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
+const StyledAccordionDetails = styled(AccordionDetails)({
   padding: 0,
-}));
+});
 
 const StyledGroupIcon = styled(Group)(({ theme }) => ({
   marginLeft: theme.spacing(0.75),
@@ -185,7 +185,6 @@ const StaticFormElementGroup = ({ name, formElements }) => {
               </Grid>
 
               <Grid
-                item
                 sx={{
                   display: "flex",
                   alignItems: "center",

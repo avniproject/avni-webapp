@@ -20,12 +20,13 @@ const DeclarativeRules = ({
   encounterTypes = [],
   form,
   parentConceptUuid,
-  ...props
+  onOpenAiRuleModal,
+  ruleType,
 }) => {
   const initialState = DeclarativeRuleHolder.fromResource(rulesJson);
   const [declarativeRuleHolder, dispatcher] = useReducer(
     DeclarativeRuleReducer,
-    initialState
+    initialState,
   );
   const [validationError, setValidationError] = useState();
   const summary = isEmpty(validationError)
@@ -35,7 +36,7 @@ const DeclarativeRules = ({
   const { declarativeRules } = declarativeRuleHolder;
   const errorMessage = error || validationError;
 
-  const updateProps = state => {
+  const updateProps = (state) => {
     setValidationError();
     const value = state.isEmpty() ? null : state.declarativeRules;
     onValueChange(value);
@@ -60,13 +61,12 @@ const DeclarativeRules = ({
       updateJsCode(declarativeRuleHolder);
 
       // Adding new action
-      const declarativeRule = declarativeRuleHolder.getDeclarativeRuleAtIndex(
-        0
-      );
+      const declarativeRule =
+        declarativeRuleHolder.getDeclarativeRuleAtIndex(0);
       if (declarativeRule.actions.length > 0) {
         dispatch({
           type: "newAction",
-          payload: { declarativeRuleIndex: 0 }
+          payload: { declarativeRuleIndex: 0 },
         });
       }
     } else {
@@ -83,7 +83,7 @@ const DeclarativeRules = ({
         subjectType: subjectType,
         encounterTypes: encounterTypes,
         form: form,
-        parentConceptUuid: parentConceptUuid
+        parentConceptUuid: parentConceptUuid,
       }}
     >
       {!isEmpty(errorMessage) && (
@@ -95,7 +95,7 @@ const DeclarativeRules = ({
           sx={{
             mb: 1,
             p: 2,
-            border: 1
+            border: 1,
           }}
         >
           <Typography sx={{ mb: 1 }} variant={"subtitle1"}>
@@ -136,6 +136,24 @@ const DeclarativeRules = ({
           {"Validate and generate rule"}
         </Button>
       </div>
+      {/* AI Rule Creation Button - Only for Visit Schedule Rules */}
+      {ruleType === "visitSchedule" && (
+        <Box sx={{ mt: 2, mb: 2 }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              // Open the AI modal for user input
+              if (onOpenAiRuleModal) {
+                onOpenAiRuleModal();
+              }
+            }}
+            sx={{ mr: 2 }}
+          >
+            Create with AI
+          </Button>
+        </Box>
+      )}
     </DeclarativeRuleContext.Provider>
   );
 };

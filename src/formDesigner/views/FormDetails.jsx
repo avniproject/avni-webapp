@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 import _, { cloneDeep, isEmpty, replace, split } from "lodash";
 import { httpClient as http } from "common/utils/httpClient";
@@ -22,6 +22,8 @@ import { SystemInfo } from "../components/SystemInfo";
 import StaticFormElementGroup from "../components/StaticFormElementGroup";
 import { DeclarativeRuleHolder } from "rules-config";
 import FormDesignerContext from "./FormDesignerContext";
+import { useDifyFormValidation } from "../../custom-hooks/useDifyFormValidation";
+import AiRuleCreationModal from "../components/AiRuleCreationModal";
 import {
   formDesignerAddFormElement,
   formDesignerAddFormElementGroup,
@@ -123,6 +125,7 @@ const FormDetails = () => {
   const { uuid: formUUID } = useParams();
   const record = useRecordContext();
   const userInfo = useSelector((state) => state.app.userInfo);
+  const aiConfig = useSelector((state) => state.app.genericConfig?.avniAi);
 
   const [state, setState] = useState({
     form: {},
@@ -142,6 +145,45 @@ const FormDetails = () => {
   });
   const multiSelectFormElementsToTypeMap = new Map();
   const questionGroupFormElementsToRepeatableMap = new Map();
+
+  // Initialize Dify form validation hook
+  const {
+    validateFormElement,
+    isLoading: isValidationLoading,
+    clearValidationCache,
+  } = useDifyFormValidation(
+    state.form?.formType,
+    aiConfig?.copilotFormValidationApiKey,
+  );
+
+  // AI Rule Creation Modal state
+  const [aiRuleModalOpen, setAiRuleModalOpen] = useState(false);
+  const [aiRuleError, setAiRuleError] = useState(null);
+  const pendingSuccessCallbackRef = useRef(null);
+  const [scenariosContent, setScenariosContent] = useState(null);
+  const [conversationHistory, setConversationHistory] = useState([]);
+
+  // Cleanup conversation state when component unmounts or form changes
+  useEffect(() => {
+    return () => {
+      // Reset conversation state on cleanup
+      pendingSuccessCallbackRef.current = null;
+      setScenariosContent(null);
+      setConversationHistory([]);
+    };
+  }, []);
+
+  // Cleanup when form changes to prevent orphaned conversations
+  useEffect(() => {
+    if (state.form?.uuid) {
+      // Reset conversation state when switching forms
+      pendingSuccessCallbackRef.current = null;
+      setScenariosContent(null);
+      setConversationHistory([]);
+      // Clear Dify conversation cache for fresh context on new form
+      clearValidationCache();
+    }
+  }, [state.form?.uuid, clearValidationCache]);
 
   const onUpdateFormName = useCallback((name) => {
     setState((prev) => ({ ...prev, name, detectBrowserCloseEvent: true }));
@@ -252,7 +294,7 @@ const FormDetails = () => {
       if (dataGroupFlag) {
         btnGroupClick();
       }
-    } catch (error) {
+    } catch {
       setState((prev) => ({ ...prev, errorMsg: "Failed to load form data" }));
     }
   }, [formUUID]);
@@ -488,6 +530,7 @@ const FormDetails = () => {
           handleInlineEncounterAttributes,
           handleInlinePhoneNumberAttributes,
           updateFormElementGroupRule,
+          generateWarningFromLLM,
           entityName: getEntityNameForRules(),
           disableGroup: state.disableForm,
           subjectType: state.subjectType,
@@ -553,6 +596,23 @@ const FormDetails = () => {
     [],
   );
 
+  const generateWarningFromLLM = useCallback(
+    async (formElement, entireForm, groupIndex, elementIndex) => {
+      const handleValidationResult = (warningMessage) => {
+        setState(
+          produce((draft) => {
+            draft.form.formElementGroups[groupIndex].formElements[
+              elementIndex
+            ].warning = warningMessage;
+          }),
+        );
+      };
+
+      validateFormElement(formElement, handleValidationResult);
+    },
+    [validateFormElement],
+  );
+
   const handleGroupElementChange = useCallback(
     (index, propertyName, value, elementIndex = -1) => {
       setState(
@@ -566,8 +626,33 @@ const FormDetails = () => {
           ),
         ),
       );
+
+      // Trigger LLM call for form element changes (exclude UI-only properties)
+      if (
+        elementIndex !== -1 &&
+        !["display", "expand"].includes(propertyName)
+      ) {
+        // Get current form element and apply the new change to avoid stale state
+        const currentFormElement =
+          state.form.formElementGroups[index]?.formElements[elementIndex];
+        if (currentFormElement) {
+          const updatedFormElement = {
+            ...currentFormElement,
+            [propertyName]: value,
+          };
+
+          if (updatedFormElement?.name && updatedFormElement?.concept?.name) {
+            generateWarningFromLLM(
+              updatedFormElement,
+              state.form,
+              index,
+              elementIndex,
+            );
+          }
+        }
+      }
     },
-    [],
+    [state.form, generateWarningFromLLM],
   );
 
   const handleInlineNumericAttributes = useCallback(
@@ -1113,6 +1198,208 @@ const FormDetails = () => {
     );
   }, []);
 
+  const handleAiRuleCreation = useCallback(
+    async (requirements, ruleType = "VisitSchedule") => {
+      // Prevent duplicate API calls while one is in progress
+      if (isValidationLoading) {
+        return;
+      }
+
+      setAiRuleError(null); // Clear any previous errors
+
+      // Add user message to conversation history
+      setConversationHistory((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: requirements,
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+
+      // Set the success callback BEFORE making the API call - using ref for immediate access
+      pendingSuccessCallbackRef.current = (code) => {
+        onRuleUpdate("visitScheduleRule", code);
+      };
+
+      const handleRuleGeneration = (response) => {
+        // Handle structured response from validation service
+        if (response && typeof response === "object" && response.type) {
+          if (response.type === "scenarios") {
+            // This is a scenarios response - show scenarios
+            setScenariosContent(response.content);
+
+            // Add AI scenarios response to conversation history
+            setConversationHistory((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                content: response.content,
+                type: "scenarios",
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+            return;
+          } else if (response.type === "code") {
+            // This is final code - route to JSEditor via pending callback
+            if (pendingSuccessCallbackRef.current) {
+              pendingSuccessCallbackRef.current(response.content);
+            }
+
+            // Add AI code response to conversation history
+            setConversationHistory((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                content: response.content,
+                type: "code",
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
+            // Show success briefly before closing
+            setScenariosContent(
+              "✅ Rule generated successfully! The code has been added to the editor.",
+            );
+            setTimeout(() => {
+              setAiRuleModalOpen(false);
+              setAiRuleError(null);
+              pendingSuccessCallbackRef.current = null;
+              setScenariosContent(null);
+            }, 2000);
+            return;
+          }
+        }
+
+        // Fallback for non-structured responses (backward compatibility)
+        if (typeof response === "string") {
+          if (response.includes("({params, imports}) =>")) {
+            // This is final code
+            if (pendingSuccessCallbackRef.current) {
+              pendingSuccessCallbackRef.current(response);
+            }
+
+            // Add AI code response to conversation history
+            setConversationHistory((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                content: response,
+                type: "code",
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
+            // Show success briefly before closing
+            setScenariosContent(
+              "✅ Rule generated successfully! The code has been added to the editor.",
+            );
+            setTimeout(() => {
+              setAiRuleModalOpen(false);
+              setAiRuleError(null);
+              pendingSuccessCallbackRef.current = null;
+              setScenariosContent(null);
+            }, 2000);
+          }
+        }
+      };
+
+      // Build context for VisitSchedule requests
+      const buildVisitScheduleContext = () => {
+        const form_context = {
+          formType: state.form?.formType || "Unknown",
+        };
+
+        // For registration forms (IndividualProfile): Include current subject type being registered
+        if (state.form?.subjectType) {
+          form_context.currentSubjectType =
+            typeof state.form.subjectType === "object"
+              ? state.form.subjectType.name
+              : state.form.subjectType;
+        }
+
+        // For enrolment forms (ProgramEnrolment): Include current program being enrolled into
+        // Resolved from form mappings and stored in state
+        if (state.currentProgram) {
+          form_context.currentProgram = state.currentProgram;
+        }
+
+        // For encounter forms (ProgramEncounter / Encounter): Include current encounter type being used
+        // Resolved from form mappings and stored in state
+        if (state.currentEncounterType) {
+          form_context.currentEncounterType = state.currentEncounterType;
+        }
+
+        // Add all available subject types (from operational modules)
+        if (state.subjectTypes && state.subjectTypes.length > 0) {
+          form_context.subjectTypes = state.subjectTypes.map((st) => st.name);
+        }
+
+        // Add all available programs (from operational modules)
+        if (state.programs && state.programs.length > 0) {
+          form_context.programs = state.programs.map(
+            (p) => p.name || p.operationalProgramName,
+          );
+        }
+
+        // Add all available encounter types (from operational modules)
+        if (state.encounterTypes && state.encounterTypes.length > 0) {
+          form_context.encounterTypes = state.encounterTypes.map((et) => ({
+            name: et.name,
+            program: et.programName || et.program,
+          }));
+        }
+
+        // Extract concept names from form elements
+        if (state.form?.formElementGroups) {
+          const conceptNames = [];
+          state.form.formElementGroups.forEach((group) => {
+            if (!group.voided && group.formElements) {
+              group.formElements.forEach((fe) => {
+                if (!fe.voided && fe.concept?.name) {
+                  conceptNames.push(fe.concept.name);
+                }
+              });
+            }
+          });
+          if (conceptNames.length > 0) {
+            form_context.concepts = conceptNames;
+          }
+        }
+
+        return form_context;
+      };
+
+      // Create a form element-like object for the API
+      const ruleRequest = {
+        name: `${ruleType} Rule`,
+        requirements,
+        form_context:
+          ruleType === "VisitSchedule"
+            ? JSON.stringify(buildVisitScheduleContext())
+            : "{}",
+      };
+
+      try {
+        validateFormElement(ruleRequest, handleRuleGeneration, ruleType);
+      } catch (error) {
+        console.error("AI rule creation failed:", error);
+        setAiRuleError("Failed to generate rule. Please try again.");
+      }
+    },
+    [
+      validateFormElement,
+      onRuleUpdate,
+      isValidationLoading,
+      state.form,
+      state.subjectTypes,
+      state.programs,
+      state.encounterTypes,
+      state.currentProgram,
+      state.currentEncounterType,
+    ],
+  );
+
   const onDeclarativeRuleUpdate = useCallback((ruleName, json) => {
     setState(
       produce((draft) => {
@@ -1179,12 +1466,44 @@ const FormDetails = () => {
           operationalModules.subjectTypes,
           (st) => !!st.group,
         );
+
+        // Get form mappings to resolve program and encounter type for this form
+        const formMappings = operationalModules.formMappings.filter(
+          (fm) => fm.formUUID === formUUID && !fm.voided,
+        );
+
+        // Resolve program and encounter type names from mappings
+        let currentProgram = null;
+        let currentEncounterType = null;
+
+        if (formMappings.length > 0) {
+          const mapping = formMappings[0]; // Take first non-voided mapping
+
+          if (mapping.programUUID) {
+            const program = operationalModules.programs.find(
+              (p) => p.uuid === mapping.programUUID,
+            );
+            currentProgram = program?.operationalProgramName || program?.name;
+          }
+
+          if (mapping.encounterTypeUUID) {
+            const encounterType = operationalModules.encounterTypes.find(
+              (et) => et.uuid === mapping.encounterTypeUUID,
+            );
+            currentEncounterType = encounterType?.name;
+          }
+        }
+
         setState((prev) => ({
           ...prev,
           groupSubjectTypes,
+          subjectTypes: operationalModules.subjectTypes,
+          programs: operationalModules.programs,
           encounterTypes: operationalModules.encounterTypes,
+          currentProgram,
+          currentEncounterType,
         }));
-      } catch (error) {
+      } catch {
         setState((prev) => ({
           ...prev,
           errorMsg: "Failed to load initial data",
@@ -1194,7 +1513,7 @@ const FormDetails = () => {
     };
 
     fetchData();
-  }, [getForm]);
+  }, [getForm, formUUID]);
 
   const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(
     userInfo,
@@ -1341,6 +1660,8 @@ const FormDetails = () => {
             onDeclarativeRuleUpdate={onDeclarativeRuleUpdate}
             onDecisionConceptsUpdate={onDecisionConceptsUpdate}
             onToggleExpandPanel={onToggleExpandPanel}
+            onOpenAiRuleModal={() => setAiRuleModalOpen(true)}
+            onAiRuleCreation={handleAiRuleCreation}
             entityName={getEntityNameForRules()}
             disabled={state.disableForm}
             encounterTypes={state.encounterTypes}
@@ -1367,6 +1688,25 @@ const FormDetails = () => {
             defaultSnackbarStatus={state.defaultSnackbarStatus}
           />
         )}
+
+        {/* AI Rule Creation Modal */}
+        <AiRuleCreationModal
+          open={aiRuleModalOpen}
+          onClose={() => {
+            setAiRuleModalOpen(false);
+            setAiRuleError(null);
+            pendingSuccessCallbackRef.current = null;
+            setScenariosContent(null);
+            setConversationHistory([]);
+          }}
+          onSubmit={handleAiRuleCreation}
+          scenariosContent={scenariosContent}
+          conversationHistory={conversationHistory}
+          title="Create Visit Schedule Rule with AI"
+          placeholder="Describe: 1) What triggers the visit (encounter completion/enrolment), 2) Timing (e.g., 28 days after), 3) Next visit type. Example: 'After ANC encounter, schedule ANC Follow-up in 28 days'"
+          loading={isValidationLoading}
+          error={aiRuleError}
+        />
       </Box>
     </FormDesignerContext.Provider>
   );

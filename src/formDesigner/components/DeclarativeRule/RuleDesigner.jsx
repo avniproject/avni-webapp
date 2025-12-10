@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import DeclarativeRules from "./DeclarativeRules";
 import { JSEditor } from "../../../common/components/JSEditor";
 import { Box } from "@mui/material";
@@ -16,7 +15,9 @@ const RuleDesigner = ({
   disableEditor,
   encounterTypes,
   form,
-  parentConceptUuid
+  parentConceptUuid,
+  onOpenAiRuleModal,
+  ruleType,
 }) => {
   return (
     <>
@@ -32,6 +33,8 @@ const RuleDesigner = ({
           encounterTypes={encounterTypes}
           form={form}
           parentConceptUuid={parentConceptUuid}
+          onOpenAiRuleModal={onOpenAiRuleModal}
+          ruleType={ruleType}
         />
       </Box>
       <JSEditor

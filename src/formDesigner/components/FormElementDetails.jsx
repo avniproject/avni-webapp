@@ -18,6 +18,8 @@ import {
   RadioGroup,
   Chip,
   Stack,
+  Alert,
+  Typography,
 } from "@mui/material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
@@ -113,7 +115,7 @@ const showPicker = (pickerType, props, disableFormElement) => {
   ));
 
   return (
-    <Grid container sm={12}>
+    <Grid container sx={{ width: "100%" }}>
       <AvniFormLabel
         label={picker.label}
         toolTipKey={picker.toolTipKey}
@@ -194,6 +196,24 @@ const FormElementDetails = ({
           index,
         );
       }
+
+      // Trigger Dify form validation when concept/name changes
+      if (rest.generateWarningFromLLM && answerName && answerName.name) {
+        const updatedFormElement = {
+          ...formElementData,
+          name:
+            formElementData.name === ""
+              ? answerName.name
+              : formElementData.name,
+          concept: answerName,
+        };
+        rest.generateWarningFromLLM(
+          updatedFormElement,
+          rest.form || {},
+          groupIndex,
+          index,
+        );
+      }
     } else {
       rest.updateConceptElementData(groupIndex, "name", answerName, index);
     }
@@ -255,14 +275,30 @@ const FormElementDetails = ({
 
   return (
     <Fragment>
-      <Grid container sm={12}>
-        {formElementData.errorMessage?.name && (
-          <StyledErrorText>Please enter name</StyledErrorText>
-        )}
+      <Grid container sx={{ width: "100%" }}>
+        {/* Validation messages in decreasing order of priority */}
         {formElementData.errorMessage?.ruleError && (
-          <StyledErrorText>
-            Please check the rule validation errors
-          </StyledErrorText>
+          <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
+            <Typography variant="body2">
+              Please check the rule validation errors
+            </Typography>
+          </Alert>
+        )}
+        {formElementData.errorMessage?.name && (
+          <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
+            <Typography variant="body2">Please enter name</Typography>
+          </Alert>
+        )}
+        {formElementData.warning && (
+          <Alert
+            severity="warning"
+            sx={{ mt: 1, mb: 1 }}
+            onClose={() => {
+              rest.handleGroupElementChange(groupIndex, "warning", null, index);
+            }}
+          >
+            <Typography variant="body2">{formElementData.warning}</Typography>
+          </Alert>
         )}
         <StyledFormControl>
           <AvniFormLabel
@@ -371,6 +407,7 @@ const FormElementDetails = ({
               />
             </StyledContainer>
           )}
+
           {formElementData.showConceptLibrary === "chooseFromLibrary" && (
             <StyledContainer>
               <Grid sm={12}>
@@ -406,10 +443,12 @@ const FormElementDetails = ({
                   )}
                 </StyledFormControl>
               </Grid>
-              {formElementData.concept.dataType !== "Coded" && <Grid sm={6} />}
+              {formElementData.concept.dataType !== "Coded" && (
+                <Grid sx={{ flexBasis: "50%" }} />
+              )}
               {formElementData.concept.dataType === "Numeric" && (
-                <Grid container sm={12}>
-                  <Grid sm={2}>
+                <Grid container sx={{ width: "100%" }}>
+                  <Grid sx={{ flexBasis: "16.66%" }}>
                     <StyledFormControl>
                       <AvniFormLabel
                         label={"Low Absolute"}
@@ -426,7 +465,7 @@ const FormElementDetails = ({
                       />
                     </StyledFormControl>
                   </Grid>
-                  <Grid sm={2}>
+                  <Grid sx={{ flexBasis: "16.66%" }}>
                     <StyledFormControl>
                       <AvniFormLabel
                         label={"High Absolute"}
@@ -443,7 +482,7 @@ const FormElementDetails = ({
                       />
                     </StyledFormControl>
                   </Grid>
-                  <Grid sm={2}>
+                  <Grid sx={{ flexBasis: "16.66%" }}>
                     <StyledFormControl>
                       <AvniFormLabel
                         label={"Low normal"}
@@ -460,7 +499,7 @@ const FormElementDetails = ({
                       />
                     </StyledFormControl>
                   </Grid>
-                  <Grid sm={2}>
+                  <Grid sx={{ flexBasis: "16.66%" }}>
                     <StyledFormControl>
                       <AvniFormLabel
                         label={"High normal"}
@@ -477,7 +516,7 @@ const FormElementDetails = ({
                       />
                     </StyledFormControl>
                   </Grid>
-                  <Grid sm={2}>
+                  <Grid sx={{ flexBasis: "16.66%" }}>
                     <StyledFormControl>
                       <AvniFormLabel
                         label={"Unit"}
@@ -497,7 +536,7 @@ const FormElementDetails = ({
                 </Grid>
               )}
               {formElementData.concept.dataType === "Coded" && (
-                <Grid container sm={12}>
+                <Grid container sx={{ width: "100%" }}>
                   <StyledChipContainer>
                     <InputLabel>Answers:</InputLabel>
                     {_.orderBy(formElementData.concept.answers, "order").map(
@@ -546,7 +585,7 @@ const FormElementDetails = ({
           multiSelectFormElementConceptDataTypes,
           formElementData.concept.dataType,
         ) && (
-          <Grid sm={6}>
+          <Grid sx={{ flexBasis: "50%" }}>
             {formElementData.errorMessage?.type && (
               <StyledErrorText>Please select type</StyledErrorText>
             )}
@@ -603,7 +642,7 @@ const FormElementDetails = ({
           />
         </StyledFormControl>
         {formElementData.concept.dataType === "Coded" && (
-          <Grid container sm={12}>
+          <Grid container sx={{ width: "100%" }}>
             <StyledChipContainer>
               <InputLabel>Excluded Answers:</InputLabel>
               {formElementData.concept.answers.map((d) =>
@@ -638,8 +677,8 @@ const FormElementDetails = ({
           </Grid>
         )}
         {formElementData.concept.dataType === "Video" && (
-          <Grid container sm={12}>
-            <Grid sm={4}>
+          <Grid container sx={{ width: "100%" }}>
+            <Grid sx={{ flexBasis: "33.33%" }}>
               <TextField
                 type="number"
                 name="durationLimitInSecs"
@@ -662,8 +701,8 @@ const FormElementDetails = ({
                 <StyledErrorText>Please enter positive number</StyledErrorText>
               )}
             </Grid>
-            <Grid sm={1} />
-            <Grid sm={3}>
+            <Grid sx={{ flexBasis: "8.33%" }} />
+            <Grid sx={{ flexBasis: "25%" }}>
               <StyledFormControlNarrow disabled={disableFormElement}>
                 <AvniFormLabel
                   label={"Video Quality"}
@@ -698,8 +737,8 @@ const FormElementDetails = ({
         )}
         {(formElementData.concept.dataType === "Image" ||
           formElementData.concept.dataType === "ImageV2") && (
-          <Grid container sm={12}>
-            <Grid sm={3}>
+          <Grid container sx={{ width: "100%" }}>
+            <Grid sx={{ flexBasis: "25%" }}>
               <TextField
                 name="maxHeight"
                 type="number"
@@ -722,8 +761,8 @@ const FormElementDetails = ({
                 <StyledErrorText>Please enter positive number</StyledErrorText>
               )}
             </Grid>
-            <Grid sm={1} />
-            <Grid sm={3}>
+            <Grid sx={{ flexBasis: "8.33%" }} />
+            <Grid sx={{ flexBasis: "25%" }}>
               <TextField
                 type="number"
                 name="maxWidth"
@@ -746,8 +785,8 @@ const FormElementDetails = ({
                 <StyledErrorText>Please enter positive number</StyledErrorText>
               )}
             </Grid>
-            <Grid sm={1} />
-            <Grid sm={3}>
+            <Grid sx={{ flexBasis: "8.33%" }} />
+            <Grid sx={{ flexBasis: "25%" }}>
               <StyledFormControlNarrow disabled={disableFormElement}>
                 <AvniFormLabel
                   label={"Image Quality"}
@@ -790,7 +829,7 @@ const FormElementDetails = ({
           </StyledErrorText>
         )}
         {["Date", "Duration"].includes(formElementData.concept.dataType) && (
-          <Grid container sm={12}>
+          <Grid container sx={{ width: "100%" }}>
             <AvniFormLabel
               label={"Duration Options"}
               toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DURATION_OPTIONS"}
@@ -877,9 +916,9 @@ const FormElementDetails = ({
               </StyledFormControl>
             </Grid>
           )}
-          <Grid container sm={12}>
+          <Grid container sx={{ width: "100%" }}>
             {formElementData.concept.dataType !== "QuestionGroup" && (
-              <Grid sm={4}>
+              <Grid sx={{ flexBasis: "33.33%" }}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}
                   disabled={disableFormElement}
@@ -918,7 +957,7 @@ const FormElementDetails = ({
                 }}
               />
             )}
-            <Grid sm={4}>
+            <Grid sx={{ flexBasis: "33.33%" }}>
               {[
                 "Numeric",
                 "Text",
@@ -956,7 +995,7 @@ const FormElementDetails = ({
             {["Numeric", "Text", "PhoneNumber"].includes(
               formElementData.concept.dataType,
             ) && (
-              <Grid sm={4}>
+              <Grid sx={{ flexBasis: "33.33%" }}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"}
                   disabled={disableFormElement}
@@ -984,7 +1023,7 @@ const FormElementDetails = ({
           </Grid>
         </Stack>
         {formElementData.concept.dataType === "Id" && (
-          <Grid sm={6}>
+          <Grid sx={{ flexBasis: "50%" }}>
             <StyledFormControl disabled={disableFormElement}>
               <AvniFormLabel
                 label={"Identifier Source"}
@@ -1010,7 +1049,7 @@ const FormElementDetails = ({
         )}
         {formElementData.concept.dataType === "GroupAffiliation" && (
           <Grid container spacing={5}>
-            <Grid sm={6}>
+            <Grid sx={{ flexBasis: "50%" }}>
               <StyledFormControl disabled={disableFormElement}>
                 <AvniFormLabel
                   label={"Group Subject Type"}
@@ -1033,7 +1072,7 @@ const FormElementDetails = ({
                 </Select>
               </StyledFormControl>
             </Grid>
-            <Grid sm={6}>
+            <Grid sx={{ flexBasis: "50%" }}>
               {formElementData.keyValues.groupSubjectTypeUUID && (
                 <StyledFormControl disabled={disableFormElement}>
                   <AvniFormLabel
