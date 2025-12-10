@@ -37,6 +37,19 @@ class DifyFormValidationService {
     if (formElement.concept) {
       contextParts.push(`Current dataType: ${formElement.concept.dataType || "Unknown"}`);
       contextParts.push(`Current type: ${formElement.type || "Unknown"}`);
+
+      // Add numeric bounds info if available
+      if (formElement.concept.dataType === "Numeric") {
+        const bounds = [];
+        if (formElement.concept.lowAbsolute != null) bounds.push(`lowAbsolute: ${formElement.concept.lowAbsolute}`);
+        if (formElement.concept.highAbsolute != null) bounds.push(`highAbsolute: ${formElement.concept.highAbsolute}`);
+        if (formElement.concept.lowNormal != null) bounds.push(`lowNormal: ${formElement.concept.lowNormal}`);
+        if (formElement.concept.highNormal != null) bounds.push(`highNormal: ${formElement.concept.highNormal}`);
+        if (formElement.concept.unit) bounds.push(`unit: ${formElement.concept.unit}`);
+        if (bounds.length > 0) {
+          contextParts.push(`Numeric bounds: ${bounds.join(", ")}`);
+        }
+      }
     }
 
     // Add form context
@@ -46,6 +59,10 @@ class DifyFormValidationService {
 
     if (formContext.domain) {
       contextParts.push(`Domain: ${formContext.domain}`);
+    }
+
+    if (formContext.subjectTypeType) {
+      contextParts.push(`Subject type: ${formContext.subjectTypeType}`);
     }
 
     const contextString = contextParts.length > 0 ? contextParts.join(" | ") : "No specific context provided";
@@ -84,24 +101,25 @@ Please validate this form element according to Avni rules and provide recommenda
             }
           : {};
 
-      const response = await difyAxios.post(
-        `${this.baseUrl}/chat-messages`,
-        {
-          inputs,
-          query: question,
-          response_mode: "blocking",
-          conversation_id: this.conversationIds[requestType] || "", // Use stored conversation ID for this request type
-          user: "avni-form-designer",
+      const payload = {
+        inputs,
+        query: question,
+        response_mode: "blocking",
+        user: "avni-form-designer",
+      };
+      // Only add conversation_id if it has a value (Dify expects omission for new conversations)
+      if (this.conversationIds[requestType]) {
+        payload.conversation_id = this.conversationIds[requestType];
+      }
+
+      const response = await difyAxios.post(`${this.baseUrl}/chat-messages`, payload, {
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
         },
-        {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            "Content-Type": "application/json",
-          },
-          withCredentials: false,
-          timeout: requestType === "VisitSchedule" ? 30000 : 10000, // 30s for VisitSchedule, 10s for FormValidation
-        },
-      );
+        withCredentials: false,
+        timeout: requestType === "VisitSchedule" ? 30000 : 10000, // 30s for VisitSchedule, 10s for FormValidation
+      });
 
       const validationResults = this.parseDifyResponse(response, requestType);
       return validationResults;
@@ -128,7 +146,6 @@ Please validate this form element according to Avni rules and provide recommenda
           inputs: {},
           query: batchQuestion,
           response_mode: "blocking",
-          conversation_id: "",
           user: "avni-form-designer",
         },
         {

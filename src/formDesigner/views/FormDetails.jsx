@@ -154,6 +154,7 @@ const FormDetails = () => {
   } = useDifyFormValidation(
     state.form?.formType,
     aiConfig?.copilotFormValidationApiKey,
+    state.form?.subjectType?.type,
   );
 
   // AI Rule Creation Modal state

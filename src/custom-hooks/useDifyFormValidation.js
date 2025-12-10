@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import difyFormValidationService from "../common/services/difyFormValidationService";
 
-export const useDifyFormValidation = (formType, apiKey) => {
+export const useDifyFormValidation = (formType, apiKey, subjectTypeType) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const debouncedValidatorRef = useRef(null);
@@ -25,7 +25,7 @@ export const useDifyFormValidation = (formType, apiKey) => {
         const validationResult = await difyFormValidationService.validateSingleFormElement(
           formElement,
           formType,
-          {}, // Empty formContext for now, can be enhanced later
+          { subjectTypeType }, // Pass subjectTypeType in formContext
           requestType,
         );
 
@@ -50,7 +50,7 @@ export const useDifyFormValidation = (formType, apiKey) => {
         setIsLoading(false);
       }
     },
-    [formType],
+    [formType, subjectTypeType],
   );
 
   const validateBatchFormElements = useCallback(
