@@ -465,10 +465,23 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     (keyValue, index) => {
       setConcept((prev) => {
         const keyValues = [...safeKeyValues(prev.keyValues)];
-        keyValues[index] =
-          typeof keyValue.value === "object"
-            ? handleObjectValue(keyValue)
-            : castValueToBooleanOrInt(keyValue);
+        if (
+          keyValue &&
+          (keyValue.value === undefined ||
+            keyValue.value === null ||
+            keyValue.value === "")
+        ) {
+          const keyIndex = keyValues.findIndex((kv) => kv.key === keyValue.key);
+          if (keyIndex >= 0) {
+            keyValues.splice(keyIndex, 1);
+          }
+        } else {
+          keyValues[index] =
+            typeof keyValue.value === "object"
+              ? handleObjectValue(keyValue)
+              : castValueToBooleanOrInt(keyValue);
+        }
+
         return { ...prev, keyValues };
       });
     },

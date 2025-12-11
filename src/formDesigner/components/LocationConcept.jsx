@@ -196,9 +196,26 @@ export const LocationConcept = (props) => {
       highestOptions.length === 0 &&
       lowestAddressLevelTypes.length !== 1 &&
       lowestAddressLevelTypes[0].parent !== null;
+
+    if (props.error["noCommonAncestor"]) {
+      setHighestAddressLevelType("");
+      props.inlineConcept
+        ? props.updateConceptKeyValues(
+            props.groupIndex,
+            "highestAddressLevelTypeUUID",
+            undefined,
+            props.index,
+          )
+        : props.updateConceptKeyValues(
+            { key: "highestAddressLevelTypeUUID", value: undefined },
+            2,
+          );
+    }
+
     if (
       highestAddressLevelType !== "" &&
-      !intersection.includes(highestAddressLevelType)
+      !intersection.includes(highestAddressLevelType) &&
+      !props.error["noCommonAncestor"]
     ) {
       updateHighestAddressLevelType();
     }
@@ -206,8 +223,7 @@ export const LocationConcept = (props) => {
 
   const updateHighestAddressLevelType = (event) => {
     const updateValue = event === undefined ? "" : event.target.value;
-
-    setHighestAddressLevelType(updateValue);
+    setHighestAddressLevelType(updateValue || "");
     props.inlineConcept
       ? props.updateConceptKeyValues(
           props.groupIndex,
@@ -286,6 +302,7 @@ export const LocationConcept = (props) => {
             <AvniSelect
               style={{ width: "26rem", height: "auto", marginTop: "1rem" }}
               onChange={updateHighestAddressLevelType}
+              isClearable={true}
               options={highestAddressLevelTypeOptions.map(
                 (addressLevelType) => ({
                   value: addressLevelType.value,
