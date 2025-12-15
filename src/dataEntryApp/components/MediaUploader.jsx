@@ -7,7 +7,7 @@ import {
   isEmpty,
   lowerCase,
   omit,
-  startsWith
+  startsWith,
 } from "lodash";
 import { Box, Button, Grid, Typography, FormControl } from "@mui/material";
 import { httpClient as http } from "../../common/utils/httpClient";
@@ -16,7 +16,7 @@ import {
   VideoCall,
   Audiotrack,
   CloudUpload,
-  Close
+  Close,
 } from "@mui/icons-material";
 import CustomizedBackdrop from "./CustomizedBackdrop";
 import ReactImageVideoLightbox from "react-image-video-lightbox";
@@ -25,7 +25,7 @@ import { FilePreview } from "./FilePreview";
 import MediaService from "../../adminApp/service/MediaService";
 
 const StyledTypography = styled(Typography)({
-  color: "rgba(0, 0, 0, 0.54)"
+  color: "rgba(0, 0, 0, 0.54)",
 });
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -34,16 +34,16 @@ const StyledBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(0.625), // 5px
   display: "flex",
   flexDirection: "row",
-  alignItems: "flex-start"
+  alignItems: "flex-start",
 }));
 
 const StyledIcon = styled("span")(({ theme }) => ({
   marginRight: theme.spacing(0.625), // 5px
-  fontSize: 20
+  fontSize: 20,
 }));
 
 const StyledInput = styled("input")({
-  display: "none"
+  display: "none",
 });
 
 const StyledErrorMessage = styled("p")(({ theme }) => ({
@@ -54,28 +54,28 @@ const StyledErrorMessage = styled("p")(({ theme }) => ({
   width: 200,
   height: 200,
   textAlign: "center",
-  overflow: "scroll"
+  overflow: "scroll",
 }));
 
 const StyledDeleteButton = styled(Button)({
   float: "left",
-  color: "red"
+  color: "red",
 });
 
 const StyledLightboxContainer = styled("div")({
   "& .reactLightbox": {
-    zIndex: 2
-  }
+    zIndex: 2,
+  },
 });
 
 const iconMap = {
   image: AddAPhoto,
   video: VideoCall,
   audio: Audiotrack,
-  file: CloudUpload
+  file: CloudUpload,
 };
 
-const getFileMimeType = formElement => {
+const getFileMimeType = (formElement) => {
   const allowedTypes = formElement.allowedTypes;
   return !isEmpty(allowedTypes) ? allowedTypes.join(",") : "*";
 };
@@ -98,19 +98,19 @@ const isValidType = (formElement, type, isFile) => {
 function addObsResultsToPreview(observationValue, setPreview) {
   if (!isEmpty(observationValue)) {
     if (isArrayLikeObject(observationValue)) {
-      observationValue.forEach(obsItrValue => {
-        MediaService.getMedia(obsItrValue).then(res =>
-          setPreview(oldPreview => ({
+      observationValue.forEach((obsItrValue) => {
+        MediaService.getMedia(obsItrValue).then((res) =>
+          setPreview((oldPreview) => ({
             ...oldPreview,
-            [obsItrValue]: res
-          }))
+            [obsItrValue]: res,
+          })),
         );
       });
     } else {
-      MediaService.getMedia(observationValue).then(res =>
+      MediaService.getMedia(observationValue).then((res) =>
         setPreview({
-          [observationValue]: res
-        })
+          [observationValue]: res,
+        }),
       );
     }
   }
@@ -118,7 +118,7 @@ function addObsResultsToPreview(observationValue, setPreview) {
 
 function removeFileFromPreview(fileName, preview, setPreview) {
   preview[fileName] && URL.revokeObjectURL(preview[fileName]);
-  setPreview(oldPreview => omit(oldPreview, fileName));
+  setPreview((oldPreview) => omit(oldPreview, fileName));
 }
 
 function invokeUpdate(update, mediaUrl) {
@@ -130,14 +130,14 @@ function addMediaUrlToLocalObsValue(
   fileName,
   isMultiSelect,
   localObsValue,
-  setLocalObsValue
+  setLocalObsValue,
 ) {
   invokeUpdate(update, fileName);
   if (isMultiSelect) {
-    setLocalObsValue(locObsValue =>
+    setLocalObsValue((locObsValue) =>
       locObsValue && !isArrayLikeObject(locObsValue)
-        ? [locObsValue, fileName].filter(ele => !isEmpty(ele))
-        : [...(locObsValue || []), fileName].filter(ele => !isEmpty(ele))
+        ? [locObsValue, fileName].filter((ele) => !isEmpty(ele))
+        : [...(locObsValue || []), fileName].filter((ele) => !isEmpty(ele)),
     );
   } else {
     setLocalObsValue(fileName);
@@ -149,12 +149,12 @@ function removeMediaUrlFromLocalObsValue(
   fileName,
   isMultiSelect,
   localObsValue,
-  setLocalObsValue
+  setLocalObsValue,
 ) {
   invokeUpdate(update, fileName);
   if (isMultiSelect && isArrayLikeObject(localObsValue)) {
-    setLocalObsValue(locObsValue =>
-      locObsValue.filter(item => item !== fileName)
+    setLocalObsValue((locObsValue) =>
+      locObsValue.filter((item) => item !== fileName),
     );
   } else {
     if (localObsValue === fileName) setLocalObsValue();
@@ -163,20 +163,22 @@ function removeMediaUrlFromLocalObsValue(
 
 function consolidateAlerts(etFiles, formElement, isFileDataType) {
   const alerts = [];
-  etFiles.forEach(file => {
+  etFiles.forEach((file) => {
     if (!isValidType(formElement, file.type, isFileDataType)) {
       alerts.push(
         `Selected files type not supported for file ${
           file.name
-        }. Please choose proper files.\n`
+        }. Please choose proper files.\n`,
       );
     }
     if (isFileDataType && isBiggerFile(formElement, file.size)) {
       const oneMBInBytes = 1000000;
       alerts.push(
-        `Selected file size ${file.size /
-          oneMBInBytes} MB is more than the set max file size ${formElement.allowedMaxSize /
-          oneMBInBytes} MB for file ${file.name}.\n`
+        `Selected file size ${
+          file.size / oneMBInBytes
+        } MB is more than the set max file size ${
+          formElement.allowedMaxSize / oneMBInBytes
+        } MB for file ${file.name}.\n`,
       );
     }
   });
@@ -190,30 +192,32 @@ function uploadMediaAndUpdateObservationValue(
   isMultiSelect,
   localObsValue,
   update,
-  onDelete
+  onDelete,
 ) {
-  etFiles.forEach(file => {
+  etFiles.forEach((file) => {
     const fileReader = new FileReader();
     file && fileReader.readAsText(file);
-    setUploadButtonClicked(oldValue => oldValue + 1);
+    setUploadButtonClicked((oldValue) => oldValue + 1);
     fileReader.onloadend = () => {
       http
         .uploadFile("/web/uploadMedia", file)
-        .then(r => {
-          setUploadButtonClicked(oldValue => oldValue - 1);
+        .then((r) => {
+          setUploadButtonClicked((oldValue) => oldValue - 1);
           addMediaUrlToLocalObsValue(
             update,
             r.data,
             isMultiSelect,
             localObsValue,
-            setLocalObsValue
+            setLocalObsValue,
           );
         })
-        .catch(r => {
-          const error = `${get(r, "response.data") ||
+        .catch((r) => {
+          const error = `${
+            get(r, "response.data") ||
             get(r, "message") ||
-            "Unknown error occurred while uploading media"}`;
-          setUploadButtonClicked(oldValue => oldValue - 1);
+            "Unknown error occurred while uploading media"
+          }`;
+          setUploadButtonClicked((oldValue) => oldValue - 1);
           onDelete(file.name);
           alert(error);
         });
@@ -228,7 +232,7 @@ export const MediaUploader = ({
   obsValue,
   mediaType,
   update,
-  formElement
+  formElement,
 }) => {
   const Icon = iconMap[mediaType];
   const [localObsValue, setLocalObsValue] = useState(obsValue);
@@ -250,7 +254,7 @@ export const MediaUploader = ({
     setUploading(uploadButtonClicked > 0);
   }, [uploadButtonClicked]);
 
-  const onMediaSelect = event => {
+  const onMediaSelect = (event) => {
     const etFiles = Array.from(event.target.files);
     const alerts = consolidateAlerts(etFiles, formElement, isFileDataType);
     if (!isEmpty(alerts)) {
@@ -264,17 +268,17 @@ export const MediaUploader = ({
       isMultiSelect,
       localObsValue,
       update,
-      onDelete
+      onDelete,
     );
   };
 
-  const onDelete = fileName => {
+  const onDelete = (fileName) => {
     removeMediaUrlFromLocalObsValue(
       update,
       fileName,
       isMultiSelect,
       localObsValue,
-      setLocalObsValue
+      setLocalObsValue,
     );
     removeFileFromPreview(fileName, preview, setPreview);
   };
@@ -309,10 +313,10 @@ export const MediaUploader = ({
         controlsList="nodownload"
       />
     ),
-    file: <FilePreview url={fileToPreview} obsValue={previewValue} />
+    file: <FilePreview url={fileToPreview} obsValue={previewValue} />,
   });
 
-  const renderMedia = fileName => (
+  const renderMedia = (fileName) => (
     <StyledBox>
       {startsWith(preview[fileName], MissingSignedMediaMessage) ? (
         <StyledErrorMessage>{preview[fileName]}</StyledErrorMessage>
@@ -327,6 +331,15 @@ export const MediaUploader = ({
     </StyledBox>
   );
 
+  useEffect(() => {
+    const lightboxContainer = document.querySelector(
+      "div.imagePreviewContainer",
+    );
+    if (lightboxContainer?.firstChild) {
+      lightboxContainer.firstChild.style.zIndex = "1200"; // appbar with 'fixed' position default z-index is 1100 so this needs to be greater than that
+    }
+  }, [openImage]);
+
   const previewImage = () => {
     let startIndex = 0;
     const data = Object.entries(preview).map(([fileName, imgSrc], index) => {
@@ -336,7 +349,7 @@ export const MediaUploader = ({
       return {
         url: imgSrc,
         type: "photo",
-        altTag: fileName
+        altTag: fileName,
       };
     });
     return (
@@ -373,14 +386,14 @@ export const MediaUploader = ({
                 type="file"
                 multiple={isMultiSelect}
                 onChange={onMediaSelect}
-                onClick={event => (event.target.value = null)}
+                onClick={(event) => (event.target.value = null)}
               />
             </Button>
           </Grid>
         </Grid>
       </FormControl>
       <Grid container direction="row" spacing={1} sx={{ alignItems: "center" }}>
-        {Object.keys(preview).map(fileName => (
+        {Object.keys(preview).map((fileName) => (
           <Grid key={fileName}>
             {preview[fileName] ? renderMedia(fileName) : null}
           </Grid>
