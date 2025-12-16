@@ -398,15 +398,26 @@ const Observations = ({
     );
   };
 
-  const fileOptions = (conceptName) => {
-    const signedURLS = mediaDataList
-      .filter((mediaData) => mediaData.altTag === conceptName)
-      .map((mediaData) => mediaData.url);
-    return _.isEmpty(signedURLS) ? (
-      <TextField>{MediaData.MissingSignedMediaMessage}</TextField>
-    ) : (
+  const fileOptions = (observationValue, concept) => {
+    const isMultiSelect =
+      observationValue && _.isArrayLikeObject(observationValue);
+    const mediaUrls = isMultiSelect ? observationValue : [observationValue];
+
+    const signedUrls = mediaUrls.map((unsignedMediaUrl) => {
+      const mediaData = _.find(
+        mediaDataList,
+        (x) => x.unsignedUrl === unsignedMediaUrl,
+      );
+      return mediaData ? mediaData.url : null;
+    });
+
+    if (_.isEmpty(signedUrls)) {
+      return <TextField>{MediaData.MissingSignedMediaMessage}</TextField>;
+    }
+
+    return (
       <>
-        {signedURLS.map((signedURL, index) => (
+        {signedUrls.map((signedURL, index) => (
           <Fragment key={index}>
             <Link
               to="#"
@@ -417,7 +428,7 @@ const Observations = ({
             >
               {t("View/Download File")}
             </Link>
-            <br />
+            {index < signedUrls.length - 1 && <br />}
           </Fragment>
         ))}
       </>
@@ -432,7 +443,7 @@ const Observations = ({
       case Concept.dataType.Video:
         return imageVideoOptions(unsignedMediaUrl, concept);
       case Concept.dataType.File:
-        return fileOptions(concept.name);
+        return fileOptions(unsignedMediaUrl, concept);
       default:
         return <div />;
     }
