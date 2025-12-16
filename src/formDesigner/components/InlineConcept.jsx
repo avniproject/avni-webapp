@@ -14,13 +14,13 @@ import { httpClient as http } from "../../common/utils/httpClient";
 import { EncounterConcept } from "./EncounterConcept";
 
 function getKeyValues(obj) {
-  return Object.keys(obj).map(key => ({ key: key, value: obj[key] }));
+  return Object.keys(obj).map((key) => ({ key: key, value: obj[key] }));
 }
 
 function InlineConcept(props) {
   const [operationalModules, setOperationalModules] = useState({});
   useEffect(() => {
-    http.get("/web/operationalModules").then(response => {
+    http.get("/web/operationalModules").then((response) => {
       setOperationalModules(response.data);
     });
   }, []);
@@ -31,7 +31,7 @@ function InlineConcept(props) {
         props.groupIndex,
         key,
         value,
-        props.index
+        props.index,
       );
     return (
       <PhoneNumberConcept
@@ -54,7 +54,7 @@ function InlineConcept(props) {
       )}
       <Grid
         size={{
-          sm: 12
+          sm: 12,
         }}
       >
         <FormControl fullWidth>
@@ -66,12 +66,12 @@ function InlineConcept(props) {
             id="elementName"
             value={props.formElementData.inlineConceptName}
             autoComplete="off"
-            onChange={event =>
+            onChange={(event) =>
               props.handleGroupElementChange(
                 props.groupIndex,
                 "inlineConceptName",
                 replace(event.target.value, "|", ""),
-                props.index
+                props.index,
               )
             }
           />
@@ -84,28 +84,28 @@ function InlineConcept(props) {
       )}
       <Grid
         size={{
-          sm: 12
+          sm: 12,
         }}
       >
         <AvniSelect
-          label="Datatype *"
+          label="Datatype"
           value={props.formElementData.inlineConceptDataType}
-          onChange={event =>
+          onChange={(event) =>
             props.handleGroupElementChange(
               props.groupIndex,
               "inlineConceptDataType",
               event.target.value,
-              props.index
+              props.index,
             )
           }
-          style={{ width: "200px", marginBottom: "10px" }}
+          style={{ width: "auto", marginBottom: "0.1rem" }}
           required
           options={filter(
             inlineConceptDataType,
-            t => !includes(props.dataTypesToIgnore, t)
-          ).map(dataType => ({
+            (t) => !includes(props.dataTypesToIgnore, t),
+          ).map((dataType) => ({
             value: dataType,
-            label: dataType
+            label: dataType,
           }))}
           toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
         />
@@ -131,7 +131,7 @@ function InlineConcept(props) {
       {props.formElementData.inlineConceptDataType === "Coded" && (
         <Box
           sx={{
-            mt: 2
+            mt: 2,
           }}
         >
           <Button
@@ -174,10 +174,10 @@ function InlineConcept(props) {
           <Button
             color="primary"
             margin="normal"
-            onClick={event =>
+            onClick={(event) =>
               props.handleInlineCodedAnswerAddition(
                 props.groupIndex,
-                props.index
+                props.index,
               )
             }
           >
@@ -191,7 +191,7 @@ function InlineConcept(props) {
           <LocationConcept
             updateConceptKeyValues={props.handleInlineLocationAttributes}
             keyValues={getKeyValues(
-              props.formElementData.inlineLocationDataTypeKeyValues
+              props.formElementData.inlineLocationDataTypeKeyValues,
             )}
             error={props.formElementData.inlineLocationDataTypeKeyValues.error}
             isCreatePage={false}
@@ -207,7 +207,7 @@ function InlineConcept(props) {
           <SubjectConcept
             updateKeyValues={props.handleInlineSubjectAttributes}
             keyValues={getKeyValues(
-              props.formElementData.inlineSubjectDataTypeKeyValues
+              props.formElementData.inlineSubjectDataTypeKeyValues,
             )}
             error={props.formElementData.inlineSubjectDataTypeKeyValues.error}
             isCreatePage={false}
@@ -239,7 +239,7 @@ function InlineConcept(props) {
         variant="contained"
         color="primary"
         margin="normal"
-        onClick={event =>
+        onClick={(event) =>
           props.onSaveInlineConcept(props.groupIndex, props.index)
         }
       >

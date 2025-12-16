@@ -16,34 +16,32 @@ const StyledLabel = styled("label")({
   backgroundColor: "#ffeaea",
   fontSize: "12px",
   alignItems: "center",
-  margin: 0
+  margin: 0,
 });
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  marginLeft: theme.spacing(1.25)
+  marginLeft: theme.spacing(1.25),
 }));
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
-  container: true,
-  spacing: theme.spacing(10),
   alignItems: "center",
-  alignContent: "center"
+  alignContent: "center",
 }));
 
 const StyledTable = styled(MaterialReactTable)({
-  tableLayout: "auto"
+  tableLayout: "auto",
 });
 
 const PlannedVisitsTable = ({
   plannedVisits,
   doBaseUrl,
   cancelBaseURL,
-  onDelete
+  onDelete,
 }) => {
   const { t } = useTranslation();
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState([
-    { id: "earliestVisitDateTime", desc: true }
+    { id: "earliestVisitDateTime", desc: true },
   ]);
 
   const getStatus = ({ maxVisitDateTime, earliestVisitDateTime }) => {
@@ -68,12 +66,12 @@ const PlannedVisitsTable = ({
     () => [
       {
         accessorKey: "name",
-        header: t("visitName")
+        header: t("visitName"),
       },
       {
         accessorKey: "earliestVisitDateTime",
         header: t("visitscheduledate"),
-        Cell: ({ row }) => formatDate(row.original.earliestVisitDateTime)
+        Cell: ({ row }) => formatDate(row.original.earliestVisitDateTime),
       },
       {
         id: "status",
@@ -81,14 +79,14 @@ const PlannedVisitsTable = ({
         enableSorting: false,
         Cell: ({ row }) => (
           <StyledLabel>{t(getStatus(row.original))}</StyledLabel>
-        )
+        ),
       },
       {
         id: "actions",
         header: t("actions"),
         enableSorting: false,
         Cell: ({ row }) => (
-          <StyledGrid>
+          <StyledGrid container>
             <Grid>
               <InternalLink to={`${doBaseUrl}=${row.original.uuid}`}>
                 <Button id={`do-visit-${row.original.uuid}`} color="primary">
@@ -110,10 +108,10 @@ const PlannedVisitsTable = ({
               <DeleteButton onDelete={() => onDelete(row.original)} />
             </Grid>
           </StyledGrid>
-        )
-      }
+        ),
+      },
     ],
-    [t, doBaseUrl, cancelBaseURL, onDelete]
+    [t, doBaseUrl, cancelBaseURL, onDelete],
   );
 
   const renderNoVisitMessage = () => (
@@ -127,7 +125,7 @@ const PlannedVisitsTable = ({
     pagination,
     setPagination,
     totalRecords: size(plannedVisits),
-    isLoading: false
+    isLoading: false,
   });
 
   const renderTable = () => (
@@ -145,7 +143,7 @@ const PlannedVisitsTable = ({
       enableTopToolbar={false}
       renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
       initialState={{
-        sorting: [{ id: "earliestVisitDateTime", desc: true }]
+        sorting: [{ id: "earliestVisitDateTime", desc: true }],
       }}
     />
   );

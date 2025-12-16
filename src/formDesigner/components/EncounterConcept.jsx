@@ -4,37 +4,40 @@ import { AvniSelect } from "../../common/components/AvniSelect";
 import { filter, find, get } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
 
-export const EncounterConcept = props => {
+export const EncounterConcept = (props) => {
   const [keyValues, setKeyValues] = useState(get(props, "keyValues", []));
 
-  const getValueOfKey = keyToSearch =>
-    get(find(keyValues, ({ key }) => key === keyToSearch), "value");
+  const getValueOfKey = (keyToSearch) =>
+    get(
+      find(keyValues, ({ key }) => key === keyToSearch),
+      "value",
+    );
   const encounterTypeOptions = get(
     props.operationalModules,
     "encounterTypes",
-    []
+    [],
   );
   const encounterScopeOptions = [
-    { name: "Within Subject", uuid: "Within Subject" }
+    { name: "Within Subject", uuid: "Within Subject" },
   ];
   const selectedEncounterTypeUUID = getValueOfKey("encounterTypeUUID");
 
   const updateKey = (key, event, index) => {
-    const otherKeyValues = filter(keyValues, kv => kv.key !== key);
+    const otherKeyValues = filter(keyValues, (kv) => kv.key !== key);
     setKeyValues([...otherKeyValues, { key, value: event.target.value }]);
     props.inlineConcept
       ? props.updateKeyValues(
           props.groupIndex,
           key,
           event.target.value,
-          props.index
+          props.index,
         )
       : props.updateKeyValues(
           {
             key: key,
-            value: event.target.value
+            value: event.target.value,
           },
-          index
+          index,
         );
   };
 
@@ -45,22 +48,22 @@ export const EncounterConcept = props => {
     label,
     toolTip,
     errorKey,
-    index
+    index,
   }) => (
     <Grid
-      style={{ marginTop: "10px" }}
+      style={{ marginTop: "1rem", marginBottom: "1rem" }}
       size={{
         xs: 12,
-        sm: 12
+        sm: 12,
       }}
     >
       <AvniSelect
         key={keyOption}
-        style={{ width: "400px", height: 40, marginTop: 24 }}
-        onChange={event => updateKey(keyOption, event, index)}
+        style={{ width: "400px", height: 40, marginTop: "0.1rem" }}
+        onChange={(event) => updateKey(keyOption, event, index)}
         options={options.map(({ uuid, name }) => ({
           value: uuid,
-          label: name
+          label: name,
         }))}
         value={value}
         label={label}
@@ -76,7 +79,7 @@ export const EncounterConcept = props => {
     <Grid
       container
       sx={{
-        justifyContent: "flex-start"
+        justifyContent: "flex-start",
       }}
     >
       <KeyValue
@@ -101,7 +104,7 @@ export const EncounterConcept = props => {
         id="encounterIdentifier"
         label="Encounter Identifier"
         value={getValueOfKey("encounterIdentifier")}
-        onChange={event => updateKey("encounterIdentifier", event, 2)}
+        onChange={(event) => updateKey("encounterIdentifier", event, 2)}
         margin="normal"
         autoComplete="off"
         toolTipKey={"APP_DESIGNER_CONCEPT_ENCOUNTER_IDENTIFIER"}

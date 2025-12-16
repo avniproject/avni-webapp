@@ -1596,7 +1596,7 @@ const FormDetails = () => {
           onChange={onTabHandleChange}
           sx={{
             "& .MuiTabs-indicator": {
-              backgroundColor: "#fff",
+              backgroundColor: "#000000",
             },
           }}
         >

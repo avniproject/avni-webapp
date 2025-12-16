@@ -20,7 +20,7 @@ function TabPanel(props) {
       {value === index && (
         <Box
           sx={{
-            p: 3
+            p: 3,
           }}
         >
           {children}
@@ -33,7 +33,7 @@ function TabPanel(props) {
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+  value: PropTypes.any.isRequired,
 };
 
 export const TabView = ({ groupId, groupName, hasAllPrivileges, ...props }) => {
@@ -52,8 +52,8 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, ...props }) => {
           onChange={handleChange}
           sx={{
             "& .MuiTabs-indicator": {
-              backgroundColor: "#fff"
-            }
+              backgroundColor: "#000000",
+            },
           }}
         >
           <Tab
@@ -61,8 +61,8 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, ...props }) => {
             sx={{
               color: "#fff",
               "&.Mui-selected": {
-                color: "#fff"
-              }
+                color: "#fff",
+              },
             }}
           />
           <Tab
@@ -70,8 +70,8 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, ...props }) => {
             sx={{
               color: "#fff",
               "&.Mui-selected": {
-                color: "#fff"
-              }
+                color: "#fff",
+              },
             }}
           />
           <Tab
@@ -79,8 +79,8 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, ...props }) => {
             sx={{
               color: "#fff",
               "&.Mui-selected": {
-                color: "#fff"
-              }
+                color: "#fff",
+              },
             }}
           />
         </Tabs>

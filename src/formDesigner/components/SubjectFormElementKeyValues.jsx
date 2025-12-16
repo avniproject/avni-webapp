@@ -4,15 +4,11 @@ import { AvniFormControl } from "../../common/components/AvniFormControl";
 import { FormElement } from "avni-models";
 import Types from "../../adminApp/SubjectType/Types";
 
-const SubjectFormElementKeyValues = props => {
+const SubjectFormElementKeyValues = (props) => {
   const { subjectType } = props;
   return (
     <Fragment>
-      <Grid
-        size={{
-          sm: 4
-        }}
-      >
+      <Grid size="auto">
         {Types.isGroup(subjectType.type) && (
           <AvniFormControl
             toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DISPLAY_ALL_GROUP_MEMBERS"}
@@ -23,12 +19,12 @@ const SubjectFormElementKeyValues = props => {
                   checked={
                     props.formElementData.keyValues.displayAllGroupMembers
                   }
-                  onChange={event =>
+                  onChange={(event) =>
                     props.handleGroupElementKeyValueChange(
                       props.groupIndex,
                       FormElement.keys.displayAllGroupMembers,
                       event.target.checked,
-                      props.index
+                      props.index,
                     )
                   }
                 />

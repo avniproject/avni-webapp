@@ -275,7 +275,7 @@ const FormElementDetails = ({
 
   return (
     <Fragment>
-      <Grid container sx={{ width: "100%" }}>
+      <Grid container sm={12} sx={{ width: "100%" }}>
         {/* Validation messages in decreasing order of priority */}
         {formElementData.errorMessage?.ruleError && (
           <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
@@ -737,7 +737,7 @@ const FormElementDetails = ({
         )}
         {(formElementData.concept.dataType === "Image" ||
           formElementData.concept.dataType === "ImageV2") && (
-          <Grid container sx={{ width: "100%" }}>
+          <Grid container spacing={2} sx={{ width: "100%" }}>
             <Grid sx={{ flexBasis: "25%" }}>
               <TextField
                 name="maxHeight"
@@ -756,12 +756,12 @@ const FormElementDetails = ({
                 margin="normal"
                 inputProps={{ min: 0 }}
                 disabled={disableFormElement}
+                sx={{ minWidth: "10rem" }}
               />
               {formElementData.errorMessage?.maxHeight && (
                 <StyledErrorText>Please enter positive number</StyledErrorText>
               )}
             </Grid>
-            <Grid sx={{ flexBasis: "8.33%" }} />
             <Grid sx={{ flexBasis: "25%" }}>
               <TextField
                 type="number"
@@ -780,34 +780,33 @@ const FormElementDetails = ({
                 margin="normal"
                 inputProps={{ min: 0 }}
                 disabled={disableFormElement}
+                sx={{ minWidth: "10rem" }}
               />
               {formElementData.errorMessage?.maxWidth && (
                 <StyledErrorText>Please enter positive number</StyledErrorText>
               )}
             </Grid>
-            <Grid sx={{ flexBasis: "8.33%" }} />
             <Grid sx={{ flexBasis: "25%" }}>
-              <StyledFormControlNarrow disabled={disableFormElement}>
-                <AvniFormLabel
-                  label={"Image Quality"}
-                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IMAGE_QUALITY"}
-                />
-                <Select
-                  name="imageQuality"
-                  value={formElementData.keyValues.imageQuality ?? 1}
-                  onChange={(event) =>
-                    rest.handleGroupElementKeyValueChange(
-                      groupIndex,
-                      "imageQuality",
-                      toNumber(event.target.value),
-                      index,
-                    )
-                  }
-                >
-                  <MenuItem value="0.5">Low</MenuItem>
-                  <MenuItem value="1">High</MenuItem>
-                </Select>
-              </StyledFormControlNarrow>
+              <TextField
+                select
+                name="imageQuality"
+                label="Image Quality"
+                value={formElementData.keyValues.imageQuality ?? 1}
+                onChange={(event) =>
+                  rest.handleGroupElementKeyValueChange(
+                    groupIndex,
+                    "imageQuality",
+                    toNumber(event.target.value),
+                    index,
+                  )
+                }
+                margin="normal"
+                disabled={disableFormElement}
+                sx={{ width: "10rem" }}
+              >
+                <MenuItem value="0.5">Low</MenuItem>
+                <MenuItem value="1">High</MenuItem>
+              </TextField>
             </Grid>
           </Grid>
         )}
@@ -916,9 +915,9 @@ const FormElementDetails = ({
               </StyledFormControl>
             </Grid>
           )}
-          <Grid container sx={{ width: "100%" }}>
+          <Grid container spacing={2} sm={12} sx={{ width: "100%" }}>
             {formElementData.concept.dataType !== "QuestionGroup" && (
-              <Grid sx={{ flexBasis: "33.33%" }}>
+              <Grid sm={4}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}
                   disabled={disableFormElement}
@@ -957,7 +956,7 @@ const FormElementDetails = ({
                 }}
               />
             )}
-            <Grid sx={{ flexBasis: "33.33%" }}>
+            <Grid sm={4}>
               {[
                 "Numeric",
                 "Text",
