@@ -52,7 +52,7 @@ export default defineConfig(({ mode }) => {
           secure: true,
           rewrite: (path) => path.replace(/^\/dify-api/, ""),
         },
-        "^/(me|api|ai-assistant|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|export|translation|account|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege|implementation)":
+        "^/(me|api|ai-assistant|web|search|config|idp-details|login|logout|auth|addressLevelType|locations|catchment|user|import|organisation|organisationConfig|subjectType|export|translation|account|forms|group|groups|concept|extension|viewsInDb|createReportingViews|groupPrivilege|implementation|individualRelationships)":
           {
             target: process.env.BACKEND_URL,
             changeOrigin: true,
