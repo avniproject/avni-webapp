@@ -573,15 +573,8 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
                   onChange={(e, newVal) => {
                     if (newVal !== syncAttributeConceptUUID) {
                       alert(catchmentChangeMessage);
-                      setValue(syncAttributeValuesFieldName, null, {
-                        shouldDirty: true,
-                      });
+                      setValue(syncAttributeValuesFieldName, null);
                     }
-                    setValue(
-                      `syncSettings.${subjectType.name}.${syncAttributeName}`,
-                      newVal,
-                      { shouldDirty: true },
-                    );
                   }}
                 />
               </Grid>
@@ -603,9 +596,7 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
                           ReactSelectHelper.getCurrentValues(event).map(
                             (x) => x.id,
                           );
-                        setValue(syncAttributeValuesFieldName, selectedValues, {
-                          shouldDirty: true,
-                        });
+                        setValue(syncAttributeValuesFieldName, selectedValues);
                       }}
                     />
                   ) : (
