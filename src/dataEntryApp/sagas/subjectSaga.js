@@ -5,22 +5,26 @@ import {
   saveCompleteFalse,
   selectAddressLevelType,
   selectIdentifierAssignments,
+  selectRegistrationForm,
   selectRegistrationState,
+  setFilteredFormElements,
+  setInitialSubjectState,
   setRegistrationForm,
   setState as setRegistrationState,
-  types as subjectTypes
+  types as subjectTypes,
 } from "../reducers/registrationReducer";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
 import { all, call, fork, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 import api from "../api";
 import { getGenders } from "../reducers/metadataReducer";
+import { getAPIErrorMessage } from "./sagaUtils";
 import {
   selectRegistrationFormMappingForSubjectType,
   selectRegistrationProfilePictureFile,
   selectRegistrationRemoveProfilePicture,
   selectRegistrationSubject,
-  selectSubjectTypeFromName
+  selectSubjectTypeFromName,
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
@@ -30,7 +34,6 @@ import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/ser
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
 import { filterFormElements } from "dataEntryApp/services/FormElementService";
-import { selectRegistrationForm, setFilteredFormElements, setInitialSubjectState } from "dataEntryApp/reducers/registrationReducer";
 import identifierAssignmentService from "dataEntryApp/services/IdentifierAssignmentService";
 import { MediaFolder, uploadImage } from "../../common/utils/S3Client";
 
@@ -79,14 +82,18 @@ export function* saveSubjectWorker() {
   resource.identifierAssignmentUuids = identifierAssignmentService.getIdentifierAssignmentUuids(
     registrationForm,
     subject.observations,
-    identifierAssignments
+    identifierAssignments,
   );
 
-  const response = yield call(api.saveSubject, resource);
-  if (response.success) {
-    yield put(saveComplete());
-  } else {
-    yield put(saveCompleteFalse(response.errorMessage));
+  try {
+    const response = yield call(api.saveSubject, resource);
+    if (response.success) {
+      yield put(saveComplete());
+    } else {
+      yield put(saveCompleteFalse(response.errorMessage));
+    }
+  } catch (e) {
+    yield put(saveCompleteFalse(getAPIErrorMessage(e)));
   }
 }
 
@@ -146,7 +153,7 @@ export function* setRegistrationOnLoadState(registrationForm, subject, identifie
   const onSummaryPage = false;
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(registrationForm.nonVoidedFormElementGroups(), "displayOrder"),
-    formElementGroup => filterFormElements(formElementGroup, subject).length !== 0
+    (formElementGroup) => filterFormElements(formElementGroup, subject).length !== 0,
   );
   const isFormEmpty = isNil(firstGroupWithAtLeastOneVisibleElement);
 
@@ -159,8 +166,8 @@ export function* setRegistrationOnLoadState(registrationForm, subject, identifie
       onSummaryPage,
       wizard,
       isFormEmpty,
-      identifierAssignments
-    )
+      identifierAssignments,
+    ),
   );
 }
 
@@ -178,15 +185,15 @@ export function* updateObsWorker({ formElement, value, childFormElement, questio
     new ObservationsHolder(subject.observations),
     state.validationResults,
     childFormElement,
-    questionGroupIndex
+    questionGroupIndex,
   );
   yield put(
     setRegistrationState({
       ...state,
       filteredFormElements,
       subject,
-      validationResults
-    })
+      validationResults,
+    }),
   );
 }
 
@@ -201,8 +208,8 @@ export function* addNewQuestionGroupWorker({ formElement }) {
     setRegistrationState({
       ...state,
       subject,
-      filteredFormElements
-    })
+      filteredFormElements,
+    }),
   );
 }
 
@@ -217,15 +224,15 @@ export function* removeQuestionGroupWorker({ formElement, questionGroupIndex }) 
     formElement,
     subject.observations,
     state.validationResults,
-    questionGroupIndex
+    questionGroupIndex,
   );
   yield put(
     setRegistrationState({
       ...state,
       subject,
       filteredFormElements,
-      validationResults
-    })
+      validationResults,
+    }),
   );
 }
 
@@ -246,7 +253,7 @@ export function* registrationWizardWorkerNext() {
     onSummaryPage: state.onSummaryPage,
     wizard: state.wizard.clone(),
     entityValidations: subject.validate(),
-    staticFormElementIds: state.wizard.isFirstPage() ? keys(Individual.validationKeys) : []
+    staticFormElementIds: state.wizard.isFirstPage() ? keys(Individual.validationKeys) : [],
   });
 
   subject.observations = observations;
@@ -257,7 +264,7 @@ export function* registrationWizardWorkerNext() {
     filteredFormElements,
     validationResults,
     onSummaryPage,
-    wizard
+    wizard,
   };
   yield put(setRegistrationState(nextState));
 }
@@ -282,7 +289,7 @@ export function* registrationWizardWorkerPrev() {
       ...state,
       formElementGroup: new StaticFormElementGroup(state.registrationForm),
       filteredFormElements: [],
-      wizard
+      wizard,
     };
     yield put(setRegistrationState(nextState));
   } else {
@@ -293,7 +300,7 @@ export function* registrationWizardWorkerPrev() {
       entity: subject,
       validationResults: state.validationResults,
       onSummaryPage: state.onSummaryPage,
-      wizard: state.wizard.clone()
+      wizard: state.wizard.clone(),
     });
     subject.observations = observations;
     const nextState = {
@@ -303,7 +310,7 @@ export function* registrationWizardWorkerPrev() {
       filteredFormElements,
       validationResults,
       onSummaryPage,
-      wizard
+      wizard,
     };
     yield put(setRegistrationState(nextState));
   }
@@ -321,7 +328,7 @@ export default function* subjectSaga() {
       removeQuestionGroupWatcher,
       registrationNextWatcher,
       registrationPreviousWatcher,
-      saveSubjectWatcher
-    ].map(fork)
+      saveSubjectWatcher,
+    ].map(fork),
   );
 }

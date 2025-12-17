@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import {
-  Box,
-  Paper,
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Typography
+  Box,
+  Paper,
+  Typography,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import _, { filter, isEmpty, isNil } from "lodash";
+import { filter, isEmpty, isNil } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import SubjectVoided from "../../../components/SubjectVoided";
 import PlannedVisitsTable from "../PlannedVisitsTable";
 import {
   clearVoidServerError,
-  voidGeneralEncounter
+  voidGeneralEncounter,
 } from "../../../reducers/subjectDashboardReducer";
 import CompletedVisits from "./CompletedVisits";
 import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
@@ -26,36 +26,36 @@ import MessageDialog from "../../../components/MessageDialog";
 const StyledPaper = styled(Paper)(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(2),
-  boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)"
+  boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)",
 }));
 
 const StyledBox = styled(Box)({
-  flexGrow: 1
+  flexGrow: 1,
 });
 
 const StyledAccordion = styled(Accordion)({
   marginBottom: "11px",
   borderRadius: "5px",
   boxShadow:
-    "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)",
 });
 
 const StyledAccordionSummary = styled(AccordionSummary)({});
 
 const StyledAccordionDetails = styled(AccordionDetails)({
   padding: 0,
-  display: "block"
+  display: "block",
 });
 
 const StyledTypography = styled(Typography)({
   fontSize: "1rem",
   flexBasis: "33.33%",
   flexShrink: 0,
-  fontWeight: "500"
+  fontWeight: "500",
 });
 
 const StyledExpandMore = styled(ExpandMore)({
-  color: "#0e6eff"
+  color: "#0e6eff",
 });
 
 const SubjectDashboardGeneralTab = ({
@@ -63,22 +63,22 @@ const SubjectDashboardGeneralTab = ({
   subjectUuid,
   subjectTypeUuid,
   subjectVoided,
-  displayGeneralInfoInProfileTab
+  displayGeneralInfoInProfileTab,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
   // Use useSelector to get state from Redux store
-  const voidError = useSelector(state => state.subjectDashboard?.voidError);
+  const voidError = useSelector(
+    (state) => state.dataEntry.subjectProfile.voidError,
+  );
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const [
-    plannedEncounterUUIDToBeVoided,
-    setPlannedEncounterUUIDToBeVoided
-  ] = useState("");
+  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] =
+    useState("");
 
   // Action dispatchers using useDispatch hook
-  const handleVoidGeneralEncounter = encounterUuid => {
+  const handleVoidGeneralEncounter = (encounterUuid) => {
     dispatch(voidGeneralEncounter(encounterUuid));
   };
 
@@ -89,7 +89,7 @@ const SubjectDashboardGeneralTab = ({
   const plannedVisits = filter(
     general,
     ({ voided, encounterDateTime, cancelDateTime }) =>
-      !voided && isNil(encounterDateTime) && isNil(cancelDateTime)
+      !voided && isNil(encounterDateTime) && isNil(cancelDateTime),
   );
   const ContainerComponent = displayGeneralInfoInProfileTab
     ? StyledBox
@@ -116,7 +116,7 @@ const SubjectDashboardGeneralTab = ({
             plannedVisits={plannedVisits || []}
             doBaseUrl={`/app/subject/encounter?encounterUuid`}
             cancelBaseURL={`/app/subject/cancelEncounter?uuid`}
-            onDelete={plannedEncounter => {
+            onDelete={(plannedEncounter) => {
               setPlannedEncounterUUIDToBeVoided(plannedEncounter.uuid);
             }}
           />
@@ -131,7 +131,7 @@ const SubjectDashboardGeneralTab = ({
           />
         </StyledAccordionDetails>
       </StyledAccordion>
-      <StyledAccordion onChange={() => setIsExpanded(p => !p)}>
+      <StyledAccordion onChange={() => setIsExpanded((p) => !p)}>
         <StyledAccordionSummary
           expandIcon={<StyledExpandMore />}
           aria-controls="completedVisitPanelbh-content"
