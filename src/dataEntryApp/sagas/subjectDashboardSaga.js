@@ -128,10 +128,10 @@ export function* voidSubject() {
     if (response.success) {
       yield put(getSubjectProfile(subject.uuid));
     } else {
-      yield put(setVoidServerError(response.errorMessage));
+      yield put(setVoidServerError(response.errorMessage, "subject"));
     }
   } catch (e) {
-    yield put(setVoidServerError(getAPIErrorMessage(e)));
+    yield put(setVoidServerError(getAPIErrorMessage(e), "subject"));
   }
   yield put.resolve(setLoad(true));
 }
@@ -180,7 +180,7 @@ export function* voidProgramEnrolmentWorker({ uuid }) {
   try {
     const response = yield call(api.voidProgramEnrolment, uuid);
     if (!response.success) {
-      yield put(setVoidServerError(response.errorMessage));
+      yield put(setVoidServerError(response.errorMessage, "programEnrolment"));
     } else {
       const subject = yield select(selectSubjectProfile);
       const subjectProgram = yield call(api.fetchSubjectProgram, subject.uuid);
@@ -189,7 +189,7 @@ export function* voidProgramEnrolmentWorker({ uuid }) {
       yield put(setPrograms(programs));
     }
   } catch (e) {
-    yield put(setVoidServerError(getAPIErrorMessage(e)));
+    yield put(setVoidServerError(getAPIErrorMessage(e), "programEnrolment"));
   }
   yield put.resolve(setLoad(true));
 }
@@ -203,14 +203,14 @@ export function* voidProgramEncounterWorker({ uuid }) {
   try {
     const response = yield call(api.voidProgramEncounter, uuid);
     if (!response.success) {
-      yield put(setVoidServerError(response.errorMessage));
+      yield put(setVoidServerError(response.errorMessage, "programEncounter"));
     } else {
       const subject = yield select(selectSubjectProfile);
       const subjectProgram = yield call(api.fetchSubjectProgram, subject.uuid);
       yield put(setSubjectProgram(mapProgram(subjectProgram)));
     }
   } catch (e) {
-    yield put(setVoidServerError(getAPIErrorMessage(e)));
+    yield put(setVoidServerError(getAPIErrorMessage(e), "programEncounter"));
   }
   yield put.resolve(setLoad(true));
 }
@@ -224,14 +224,14 @@ export function* voidGeneralEncounterWorker({ uuid }) {
   try {
     const response = yield call(api.voidEncounter, uuid);
     if (!response.success) {
-      yield put(setVoidServerError(response.errorMessage));
+      yield put(setVoidServerError(response.errorMessage, "generalEncounter"));
     } else {
       const subject = yield select(selectSubjectProfile);
       const subjectGeneral = yield call(api.fetchSubjectGeneral, subject.uuid);
       yield put(setSubjectGeneral(mapGeneral(subjectGeneral)));
     }
   } catch (e) {
-    yield put(setVoidServerError(getAPIErrorMessage(e)));
+    yield put(setVoidServerError(getAPIErrorMessage(e), "generalEncounter"));
   }
   yield put.resolve(setLoad(true));
 }

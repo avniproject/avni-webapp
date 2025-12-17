@@ -10,7 +10,7 @@ import {
   voidSubject,
   getGroupMembers,
   clearVoidServerError,
-  loadSubjectDashboard
+  loadSubjectDashboard,
 } from "../../reducers/subjectDashboardReducer";
 import { getSubjectProgram } from "../../reducers/programSubjectDashboardReducer";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
@@ -19,7 +19,7 @@ import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(1, 3),
-  flexGrow: 1
+  flexGrow: 1,
 }));
 
 const SubjectDashboard = ({ tab }) => {
@@ -32,33 +32,36 @@ const SubjectDashboard = ({ tab }) => {
 
   // Use modern Redux hooks
   const unVoidErrorKey = useSelector(
-    state => state.dataEntry.subjectProfile.unVoidErrorKey
+    (state) => state.dataEntry.subjectProfile.unVoidErrorKey,
   );
   const subjectProfile = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
   const subjectGeneral = useSelector(
-    state => state.dataEntry.subjectGenerel.subjectGeneral
+    (state) => state.dataEntry.subjectGenerel.subjectGeneral,
   );
   const subjectProgram = useSelector(
-    state => state.dataEntry.subjectProgram.subjectProgram
+    (state) => state.dataEntry.subjectProgram.subjectProgram,
   );
   const load = useSelector(
-    state => state.dataEntry.subjectProfile.dashboardLoaded
+    (state) => state.dataEntry.subjectProfile.dashboardLoaded,
   );
   const registrationForm = useSelector(
-    state => state.dataEntry.registration.registrationForm
+    (state) => state.dataEntry.registration.registrationForm,
   );
   const tabsStatus = useSelector(
-    state => state.dataEntry.subjectProfile.tabsStatus
+    (state) => state.dataEntry.subjectProfile.tabsStatus,
   );
   const groupMembers = useSelector(
-    state => state.dataEntry.subjectProfile.groupMembers
+    (state) => state.dataEntry.subjectProfile.groupMembers,
   );
   const voidError = useSelector(
-    state => state.dataEntry.subjectProfile.voidError
+    (state) => state.dataEntry.subjectProfile.voidError,
   );
-  const msgs = useSelector(state => state.dataEntry.msgs);
+  const voidErrorType = useSelector(
+    (state) => state.dataEntry.subjectProfile.voidErrorType,
+  );
+  const msgs = useSelector((state) => state.dataEntry.msgs);
 
   let paperInfo;
 
@@ -81,14 +84,15 @@ const SubjectDashboard = ({ tab }) => {
           program={subjectProgram}
           msgs={msgs}
           handleUpdateComponent={handleUpdateComponent}
-          voidSubject={subjectUuid => dispatch(voidSubject(subjectUuid))}
+          voidSubject={(subjectUuid) => dispatch(voidSubject(subjectUuid))}
           voidError={voidError}
+          voidErrorType={voidErrorType}
           clearVoidServerError={() => dispatch(clearVoidServerError())}
-          unVoidSubject={subjectUuid => dispatch(unVoidSubject(subjectUuid))}
+          unVoidSubject={(subjectUuid) => dispatch(unVoidSubject(subjectUuid))}
           registrationForm={registrationForm}
           tab={tab}
           tabsStatus={tabsStatus}
-          getGroupMembers={subjectUuid =>
+          getGroupMembers={(subjectUuid) =>
             dispatch(getGroupMembers(subjectUuid))
           }
           groupMembers={groupMembers}

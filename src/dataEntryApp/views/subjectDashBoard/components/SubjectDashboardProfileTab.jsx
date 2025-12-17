@@ -100,6 +100,7 @@ const SubjectDashboardProfileTab = ({
   getGroupMembers,
   groupMembers,
   voidError,
+  voidErrorType,
   clearVoidServerError,
   hideDOB,
   general,
@@ -401,7 +402,15 @@ const SubjectDashboardProfileTab = ({
         </StyledPaper>
       )}
       <MessageDialog
-        title={t("SubjectErrorTitle")}
+        title={t(
+          voidErrorType === "generalEncounter"
+            ? "GeneralEncounterErrorTitle"
+            : voidErrorType === "programEncounter"
+              ? "ProgramEncounterErrorTitle"
+              : voidErrorType === "programEnrolment"
+                ? "ProgramEnrolmentErrorTitle"
+                : "SubjectErrorTitle",
+        )}
         open={!isEmpty(voidError)}
         message={t(voidError)}
         onOk={clearVoidServerError}

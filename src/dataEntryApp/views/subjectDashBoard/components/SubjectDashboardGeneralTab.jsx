@@ -72,6 +72,9 @@ const SubjectDashboardGeneralTab = ({
   const voidError = useSelector(
     (state) => state.dataEntry.subjectProfile.voidError,
   );
+  const voidErrorType = useSelector(
+    (state) => state.dataEntry.subjectProfile.voidErrorType,
+  );
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] =
@@ -151,7 +154,15 @@ const SubjectDashboardGeneralTab = ({
         </StyledAccordionDetails>
       </StyledAccordion>
       <MessageDialog
-        title={t("SubjectErrorTitle")}
+        title={t(
+          voidErrorType === "generalEncounter"
+            ? "GeneralEncounterErrorTitle"
+            : voidErrorType === "programEncounter"
+              ? "ProgramEncounterErrorTitle"
+              : voidErrorType === "programEnrolment"
+                ? "ProgramEnrolmentErrorTitle"
+                : "SubjectErrorTitle",
+        )}
         open={!isEmpty(voidError)}
         message={t(voidError)}
         onOk={handleClearVoidServerError}
