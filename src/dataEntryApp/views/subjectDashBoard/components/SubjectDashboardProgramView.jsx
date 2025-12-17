@@ -104,6 +104,9 @@ const ProgramView = ({
   const voidError = useSelector(
     (state) => state.dataEntry.subjectProfile.voidError,
   );
+  const voidErrorType = useSelector(
+    (state) => state.dataEntry.subjectProfile.voidErrorType,
+  );
   const organisationConfigs = useSelector(
     (state) => state.dataEntry.metadata.organisationConfigs,
   );
@@ -279,7 +282,11 @@ const ProgramView = ({
         onConfirm={() => handleVoidProgramEnrolment(programData.uuid)}
       />
       <MessageDialog
-        title={t("ProgramEnrolmentErrorTitle")}
+        title={t(
+          voidErrorType === "programEncounter"
+            ? "ProgramEncounterErrorTitle"
+            : "ProgramEnrolmentErrorTitle",
+        )}
         open={!isEmpty(voidError)}
         message={t(voidError)}
         onOk={handleClearVoidServerError}
