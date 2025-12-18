@@ -102,9 +102,7 @@ export default {
   },
 
   validateIfIsMandatoryAndValueEmptyOrNull(formElement, value) {
-    // TODO: Temporary exception for GroupAffiliation - remove once GroupAffiliation form element support is added in DEA
-    const isGroupAffiliation = formElement?.concept?.datatype === Concept.dataType.GroupAffiliation;
-    if (formElement && formElement.mandatory && isEmpty(value) && !isGroupAffiliation) {
+    if (formElement && formElement.mandatory && isEmpty(value)) {
       return ValidationResult.failureForEmpty(formElement.uuid);
     } else {
       return ValidationResult.successful(formElement.uuid);
