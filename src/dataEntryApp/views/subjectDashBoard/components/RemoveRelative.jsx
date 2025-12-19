@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { DialogContent, Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -73,6 +74,16 @@ const RemoveRelative = (props) => {
   const relationshipError = useSelector(
     (state) => state.dataEntry.relations.relationshipError,
   );
+  const saveComplete = useSelector(
+    (state) => state.dataEntry.relations.saveComplete,
+  );
+
+  useEffect(() => {
+    if (saveComplete) {
+      dispatch(getSubjectProfile(props.relationAuuid));
+      navigate(`/app/subject/subjectProfile?uuid=${props.relationAuuid}`);
+    }
+  }, [saveComplete, dispatch, navigate, props.relationAuuid]);
 
   const close = () => {};
 
@@ -89,11 +100,6 @@ const RemoveRelative = (props) => {
       voided: true,
     };
     dispatch(saveRelationShip(RelationData));
-
-    setTimeout(() => {
-      dispatch(getSubjectProfile(props.relationAuuid));
-      navigate(`/app/subject/subjectProfile?uuid=${props.relationAuuid}`);
-    }, 500);
   };
 
   const searchContent = (

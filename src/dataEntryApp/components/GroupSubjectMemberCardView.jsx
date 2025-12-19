@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import {
   CardActions,
@@ -5,6 +6,8 @@ import {
   Typography,
   DialogContent,
   Grid,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
@@ -12,6 +15,7 @@ import Modal from "../views/subjectDashBoard/components/CommonModal";
 import { noop } from "lodash";
 import api from "../api";
 import SubjectCardView from "./SubjectCardView";
+import { getAPIErrorMessage } from "../sagas/sagaUtils";
 
 const StyledCardActions = styled(CardActions)({
   display: "flex",
@@ -72,6 +76,7 @@ const GroupSubjectMemberCardView = ({
   },
 }) => {
   const { t } = useTranslation();
+  const [error, setError] = useState(null);
 
   return (
     <SubjectCardView
@@ -144,7 +149,8 @@ const GroupSubjectMemberCardView = ({
               click: () => {
                 api
                   .deleteGroupSubject(uuid)
-                  .then(() => setTimeout(() => setMembersChanged(true), 250));
+                  .then(() => setTimeout(() => setMembersChanged(true), 250))
+                  .catch((e) => setError(getAPIErrorMessage(e)));
               },
             },
             {
@@ -157,6 +163,16 @@ const GroupSubjectMemberCardView = ({
           btnHandleClose={noop}
         />
       </StyledCardActions>
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity="error" onClose={() => setError(null)}>
+          {t(error)}
+        </Alert>
+      </Snackbar>
     </SubjectCardView>
   );
 };
