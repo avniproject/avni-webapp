@@ -56,7 +56,9 @@ export const normalizeForMatching = (str) => {
 export const extractMessageFromJavaStackTrace = (stackTrace) => {
   if (!stackTrace || typeof stackTrace !== "string") return null;
 
-  const javaExceptionPattern = /([\w.]+(?:Exception|Error)):\s*(\S+)\s+at\s+/;
+  // Match patterns like "java.lang.RuntimeException: notInThisUsersCatchment at org..."
+  // or "org.springframework.transaction.NoTransactionException: No transaction... at org..."
+  const javaExceptionPattern = /([\w.]+(?:Exception|Error)):\s*(.+?)\s+at\s+[\w.]+/;
   const match = stackTrace.match(javaExceptionPattern);
 
   if (match && match[2]) {
@@ -115,6 +117,10 @@ export const getAPIErrorMessage = (error) => {
     const extractedMessage = extractMessageFromJavaStackTrace(serverMessage);
     if (extractedMessage) {
       return mapToStandardErrorMessage(extractedMessage);
+    }
+    // If we couldn't extract a message from stack trace and the serverMessage looks like a stack trace, return default
+    if (serverMessage.includes(" at ") && serverMessage.includes("Exception")) {
+      return defaultMessage;
     }
     return mapToStandardErrorMessage(serverMessage);
   }

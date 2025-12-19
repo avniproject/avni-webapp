@@ -9,10 +9,15 @@ import {
   CardActionArea,
   CardContent,
   Button,
-  IconButton
+  IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Comment, ChevronRight } from "@mui/icons-material";
-import { onThreadReply } from "../../../../reducers/CommentReducer";
+import {
+  clearCommentError,
+  onThreadReply,
+} from "../../../../reducers/CommentReducer";
 import NewCommentThreadDialog from "./NewCommentThreadDialog";
 import { CommentCard } from "./CommentCard";
 import { useTranslation } from "react-i18next";
@@ -25,7 +30,7 @@ const StyledHeader = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 1),
   ...theme.mixins.toolbar,
   justifyContent: "space-between",
-  backgroundColor: "#313a46"
+  backgroundColor: "#313a46",
 }));
 
 const StyledCommentButton = styled(Button)({
@@ -33,8 +38,8 @@ const StyledCommentButton = styled(Button)({
   background: "#fff",
   textTransform: "none",
   "&:hover": {
-    backgroundColor: "#bababa"
-  }
+    backgroundColor: "#bababa",
+  },
 });
 
 const StyledIconContainer = styled("div")({
@@ -43,7 +48,7 @@ const StyledIconContainer = styled("div")({
   height: 40,
   width: 50,
   alignItems: "center",
-  marginLeft: 5
+  marginLeft: 5,
 });
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -53,21 +58,21 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   paddingLeft: theme.spacing(1),
   paddingRight: theme.spacing(1),
   flexWrap: "wrap",
-  elevation: 0
+  elevation: 0,
 }));
 
 const StyledCommentIcon = styled(Comment)({
   color: "#fff",
   marginRight: 5,
-  marginLeft: 5
+  marginLeft: 5,
 });
 
 const StyledChevronRight = styled(ChevronRight)({
-  color: "#fff"
+  color: "#fff",
 });
 
 const StyledTypography = styled(Typography)({
-  color: "#fff"
+  color: "#fff",
 });
 
 export const ThreadListing = ({
@@ -76,10 +81,15 @@ export const ThreadListing = ({
   setOpen,
   newCommentText,
   onCommentChange,
-  subjectUUID
+  subjectUUID,
+  commentError,
 }) => {
   const { t } = useTranslation();
   const [openCommentThread, setOpenCommentThread] = useState(false);
+
+  const handleCloseError = () => {
+    dispatch(clearCommentError());
+  };
 
   return (
     <Fragment>
@@ -88,7 +98,7 @@ export const ThreadListing = ({
           style={{
             display: "flex",
             flexDirection: "row",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <StyledCommentIcon />
@@ -135,6 +145,16 @@ export const ThreadListing = ({
         onCommentChange={onCommentChange}
         subjectUUID={subjectUUID}
       />
+      <Snackbar
+        open={!!commentError}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity="error" onClose={handleCloseError}>
+          {t(commentError)}
+        </Alert>
+      </Snackbar>
     </Fragment>
   );
 };

@@ -6,7 +6,7 @@ import {
   getCommentThreads,
   selectCommentState,
   setLoadCommentListing,
-  setNewCommentText
+  setNewCommentText,
 } from "../../../../reducers/CommentReducer";
 import { ThreadListing } from "./ThreadListing";
 import { CommentListing } from "./CommentListing";
@@ -17,8 +17,8 @@ const StyledDrawer = styled(Drawer)({
   width: drawerWidth,
   "& .MuiDrawer-paper": {
     width: drawerWidth,
-    backgroundColor: "#f5f5f5"
-  }
+    backgroundColor: "#f5f5f5",
+  },
 });
 
 export const CommentDrawer = ({ open, setOpen, subjectUUID }) => {
@@ -27,7 +27,8 @@ export const CommentDrawer = ({ open, setOpen, subjectUUID }) => {
     commentThreads,
     comments,
     loadCommentListing,
-    newCommentText
+    newCommentText,
+    commentError,
   } = useSelector(selectCommentState);
 
   useEffect(() => {
@@ -37,14 +38,15 @@ export const CommentDrawer = ({ open, setOpen, subjectUUID }) => {
     }
   }, [open]);
 
-  const onCommentChange = event =>
+  const onCommentChange = (event) =>
     dispatch(setNewCommentText(event.target.value));
   const commonProps = {
     dispatch,
     onCommentChange,
     subjectUUID,
     newCommentText,
-    setOpen
+    setOpen,
+    commentError,
   };
 
   return (

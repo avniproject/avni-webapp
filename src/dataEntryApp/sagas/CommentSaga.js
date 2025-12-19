@@ -3,16 +3,18 @@ import {
   selectCommentState,
   setActiveThread,
   setComments,
+  setCommentError,
   setCommentThreads,
   setLoadCommentListing,
   setLoading,
   setNewCommentText,
-  types
+  types,
 } from "../reducers/CommentReducer";
 import API from "../api";
 import { find, get, map } from "lodash";
+import { getAPIErrorMessage } from "./sagaUtils";
 
-export default function*() {
+export default function* () {
   yield all(
     [
       fetchCommentWatcher,
@@ -21,8 +23,8 @@ export default function*() {
       threadReplyWatcher,
       newCommentWatcher,
       commentDeleteWatcher,
-      commentEditWatcher
-    ].map(fork)
+      commentEditWatcher,
+    ].map(fork),
   );
 }
 
@@ -63,21 +65,23 @@ export function* fetchCommentWorker({ subjectUUID }) {
 }
 
 export function* newCommentThreadWorker({ text, subjectUUID }) {
-  yield put.resolve(setLoadCommentListing(false));
-  const payload = { comments: [{ text, subjectUUID }] };
-  yield call(API.newCommentThread, payload);
-  const commentThreads = yield call(API.fetchCommentThreads, subjectUUID);
-  yield put(setCommentThreads(commentThreads));
-  yield put.resolve(setNewCommentText(""));
+  try {
+    yield put.resolve(setLoadCommentListing(false));
+    const payload = { comments: [{ text, subjectUUID }] };
+    yield call(API.newCommentThread, payload);
+    const commentThreads = yield call(API.fetchCommentThreads, subjectUUID);
+    yield put(setCommentThreads(commentThreads));
+    yield put.resolve(setNewCommentText(""));
+  } catch (e) {
+    yield put(setCommentError(getAPIErrorMessage(e)));
+  }
 }
 
 export function* resolveThreadWorker() {
   yield put.resolve(setLoadCommentListing(false));
   const state = yield select(selectCommentState);
   const resolvedThread = yield call(API.resolveThread, get(state, "activeThread.id"));
-  const commentThreads = map(state.commentThreads, thread =>
-    thread.uuid === resolvedThread.uuid ? resolvedThread : thread
-  );
+  const commentThreads = map(state.commentThreads, (thread) => (thread.uuid === resolvedThread.uuid ? resolvedThread : thread));
   yield put(setCommentThreads(commentThreads));
 }
 
