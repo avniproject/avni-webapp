@@ -1,6 +1,11 @@
 import { call, put } from "redux-saga/effects";
 import { relationshipTypeWorker, removeRelatioshipWorker, saveRelatioshipWorker } from "./relationshipSaga";
-import { removeRelationshipFailed, saveRelationshipFailed, setRelationshipTypes } from "../reducers/relationshipReducer";
+import {
+  removeRelationshipFailed,
+  saveRelationshipFailed,
+  saveRelationshipSuccess,
+  setRelationshipTypes,
+} from "../reducers/relationshipReducer";
 import api from "../api";
 import { getAPIErrorMessage } from "./sagaUtils";
 
@@ -19,6 +24,9 @@ describe("relationshipSaga", () => {
 
       const callEffect = gen.next().value;
       expect(callEffect).toEqual(call(api.saveRelationShip, relationData));
+
+      const putEffect = gen.next().value;
+      expect(putEffect).toEqual(put(saveRelationshipSuccess()));
 
       const result = gen.next().done;
       expect(result).toBe(true);
