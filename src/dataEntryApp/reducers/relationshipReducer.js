@@ -4,6 +4,7 @@ export const types = {
   GET_RELATIONSHIP_TYPES: `${prefix}GET_RELATIONSHIP_TYPES`,
   SET_RELATIONSHIP_TYPES: `${prefix}SET_RELATIONSHIP_TYPES`,
   SAVE_RELATION: `${prefix}SAVE_RELATION`,
+  SAVE_RELATION_SUCCESS: `${prefix}SAVE_RELATION_SUCCESS`,
   SAVE_RELATION_FAILED: `${prefix}SAVE_RELATION_FAILED`,
   REMOVE_RELATION: `${prefix}REMOVE_RELATION`,
   REMOVE_RELATION_FAILED: `${prefix}REMOVE_RELATION_FAILED`,
@@ -30,6 +31,10 @@ export const removeRelationShip = (relationId) => ({
   relationId,
 });
 
+export const saveRelationshipSuccess = () => ({
+  type: types.SAVE_RELATION_SUCCESS,
+});
+
 export const saveRelationshipFailed = (errorKey) => ({
   type: types.SAVE_RELATION_FAILED,
   errorKey,
@@ -47,6 +52,7 @@ export const clearRelationshipError = () => ({
 const initialState = {
   relationshipTypes: [],
   relationshipError: null,
+  saveComplete: false,
 };
 
 export default function (state = { initialState }, action) {
@@ -55,6 +61,19 @@ export default function (state = { initialState }, action) {
       return {
         ...state,
         relationshipTypes: action.relationshipTypes,
+      };
+    }
+    case types.SAVE_RELATION: {
+      return {
+        ...state,
+        saveComplete: false,
+        relationshipError: null,
+      };
+    }
+    case types.SAVE_RELATION_SUCCESS: {
+      return {
+        ...state,
+        saveComplete: true,
       };
     }
     case types.SET_LISTOFRELATIVES: {

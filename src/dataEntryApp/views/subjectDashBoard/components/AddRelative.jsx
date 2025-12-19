@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import {
+  Alert,
   Box,
   Button,
   FormControl,
@@ -17,11 +18,9 @@ import {
 } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
-  clearRelationshipError,
   getRelationshipTypes,
   saveRelationShip,
 } from "../../../reducers/relationshipReducer";
-import MessageDialog from "../../../components/MessageDialog";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,7 +28,7 @@ import { ModelGeneral as General } from "avni-models";
 import FindRelative from "../components/FindRelative";
 import { LineBreak } from "../../../../common/components/utils";
 import { useTranslation } from "react-i18next";
-import { find, get, head, includes, isEmpty } from "lodash";
+import { find, get, head, isEmpty } from "lodash";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import {
   getGenders,
@@ -180,6 +179,9 @@ const AddRelative = () => {
   const relationshipError = useSelector(
     (state) => state.dataEntry.relations.relationshipError,
   );
+  const saveComplete = useSelector(
+    (state) => state.dataEntry.relations.saveComplete,
+  );
 
   // Create match object for compatibility
   const match = {
@@ -195,6 +197,14 @@ const AddRelative = () => {
       dispatch(getGenders());
     }
   }, [dispatch, uuid]);
+
+  useEffect(() => {
+    if (saveComplete) {
+      sessionStorage.removeItem("selectedRelativeslist");
+      dispatch(getSubjectProfile(uuid));
+      navigate(`/app/subject/subjectProfile?uuid=${uuid}`);
+    }
+  }, [saveComplete, dispatch, navigate, uuid]);
 
   const selectedRelative = head(
     JSON.parse(sessionStorage.getItem("selectedRelativeslist")),
@@ -245,12 +255,14 @@ const AddRelative = () => {
       return;
     } else {
       setError("");
-      true;
     }
-    const isReverseRelation = includes(
-      get(relationshipType, "individualAIsToBRelation.uuid", []),
-      selectedRelationUUID,
-    );
+    if (!relationshipType) {
+      setError("relationshipTypeNotFound");
+      return;
+    }
+    const isReverseRelation =
+      get(relationshipType, "individualAIsToBRelation.uuid") ===
+      selectedRelationUUID;
     setRelationData({
       ...relationData,
       relationshipTypeUUID: relationshipType.uuid,
@@ -261,11 +273,6 @@ const AddRelative = () => {
 
   const addRelatives = () => {
     dispatch(saveRelationShip(relationData));
-    sessionStorage.removeItem("selectedRelativeslist");
-    (async function fetchData() {
-      await dispatch(getSubjectProfile(uuid));
-    })();
-    navigate(`/app/subject/subjectProfile?uuid=${uuid}`);
   };
 
   const cancelRelation = () => {
@@ -273,18 +280,8 @@ const AddRelative = () => {
     navigate(`/app/subject/subjectProfile?uuid=${uuid}`);
   };
 
-  const handleCloseError = () => {
-    dispatch(clearRelationshipError());
-  };
-
   return subjectProfile ? (
     <Fragment>
-      <MessageDialog
-        title={t("relationshipError")}
-        message={t(relationshipError)}
-        open={!!relationshipError}
-        onOk={handleCloseError}
-      />
       <Breadcrumbs path={match.path} />
       <StyledPaper>
         <StyledInnerDiv>
@@ -422,7 +419,7 @@ const AddRelative = () => {
           )}
         </StyledInnerDiv>
         <StyledButtonBox>
-          <Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <StyledCancelButton variant="outlined" onClick={cancelRelation}>
               CANCEL
             </StyledCancelButton>
@@ -436,6 +433,11 @@ const AddRelative = () => {
             >
               ADD
             </StyledAddButton>
+            {relationshipError && (
+              <Alert severity="error" sx={{ ml: 2, py: 0 }}>
+                {t(relationshipError)}
+              </Alert>
+            )}
           </Box>
         </StyledButtonBox>
       </StyledPaper>

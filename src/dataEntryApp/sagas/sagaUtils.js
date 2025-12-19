@@ -53,6 +53,19 @@ export const normalizeForMatching = (str) => {
   );
 };
 
+export const extractMessageFromJavaStackTrace = (stackTrace) => {
+  if (!stackTrace || typeof stackTrace !== "string") return null;
+
+  const javaExceptionPattern = /([\w.]+(?:Exception|Error)):\s*(\S+)\s+at\s+/;
+  const match = stackTrace.match(javaExceptionPattern);
+
+  if (match && match[2]) {
+    return match[2].trim();
+  }
+
+  return null;
+};
+
 export const mapToStandardErrorMessage = (serverMessage) => {
   if (!serverMessage) return null;
 
@@ -73,15 +86,38 @@ export const getAPIErrorMessage = (error) => {
 
   if (!error) return defaultMessage;
 
-  if (error.response && error.response.data) {
-    const serverMessage =
-      get(error.response.data, "message") || get(error.response.data, "errorMessage") || get(error.response.data, "error");
+  let serverMessage = null;
 
-    if (serverMessage) {
-      return mapToStandardErrorMessage(serverMessage);
+  // Handle react-admin fetchUtils.fetchJson error format (error.body)
+  if (error.body) {
+    if (typeof error.body === "string") {
+      serverMessage = error.body;
+    } else {
+      serverMessage = get(error.body, "message") || get(error.body, "errorMessage") || get(error.body, "error");
     }
-    return defaultMessage;
   }
 
-  return error.message ? mapToStandardErrorMessage(error.message) : defaultMessage;
+  // Handle axios error format (error.response.data)
+  if (!serverMessage && error.response && error.response.data) {
+    if (typeof error.response.data === "string") {
+      serverMessage = error.response.data;
+    } else {
+      serverMessage = get(error.response.data, "message") || get(error.response.data, "errorMessage") || get(error.response.data, "error");
+    }
+  }
+
+  // Handle plain error message
+  if (!serverMessage && error.message) {
+    serverMessage = error.message;
+  }
+
+  if (serverMessage) {
+    const extractedMessage = extractMessageFromJavaStackTrace(serverMessage);
+    if (extractedMessage) {
+      return mapToStandardErrorMessage(extractedMessage);
+    }
+    return mapToStandardErrorMessage(serverMessage);
+  }
+
+  return defaultMessage;
 };

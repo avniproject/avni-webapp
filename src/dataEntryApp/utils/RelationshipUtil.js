@@ -8,13 +8,13 @@ export const findApplicableRelations = (relationshipTypes, selectedRelative) => 
     if (includes(individualAIsToBRelation.genders, selectedRelativeGender)) {
       applicableRelations.push({
         uuid: individualAIsToBRelation.uuid,
-        name: individualAIsToBRelation.name
+        name: individualAIsToBRelation.name,
       });
     }
     if (includes(individualBIsToARelation.genders, selectedRelativeGender)) {
       applicableRelations.push({
         uuid: individualBIsToARelation.uuid,
-        name: individualBIsToARelation.name
+        name: individualBIsToARelation.name,
       });
     }
   });
@@ -24,14 +24,13 @@ export const findApplicableRelations = (relationshipTypes, selectedRelative) => 
 export const validateRelative = (relative, individual, selectedRelation, existingRelatives) => {
   const isRelativeAlreadyAdded = !!find(
     existingRelatives,
-    existingRelative =>
-      get(existingRelative, "individualB.uuid") === relative.uuid ||
-      get(existingRelative, "individualA.uuid") === relative.uuid
+    (existingRelative) =>
+      get(existingRelative, "individualB.uuid") === relative.uuid || get(existingRelative, "individualA.uuid") === relative.uuid,
   );
   if (isRelativeAlreadyAdded) {
     return "relativeAlreadyAdded";
   }
-  const individualRelative = new IndividualRelative.createEmptyInstance();
+  const individualRelative = IndividualRelative.createEmptyInstance();
   individualRelative.individual.uuid = individual.uuid;
   individualRelative.individual.name = individual.name;
   individualRelative.individual.dateOfBirth = individual.dateOfBirth;
@@ -49,8 +48,7 @@ export const getRelationshipType = (individual, relationUUID, relationshipTypes)
   const filteredRelationshipTypes = filter(
     relationshipTypes,
     ({ individualAIsToBRelation, individualBIsToARelation }) =>
-      individualAIsToBRelation.uuid === relationUUID ||
-      individualBIsToARelation.uuid === relationUUID
+      individualAIsToBRelation.uuid === relationUUID || individualBIsToARelation.uuid === relationUUID,
   );
   if (filteredRelationshipTypes.length === 1) {
     return filteredRelationshipTypes[0];
@@ -59,6 +57,6 @@ export const getRelationshipType = (individual, relationUUID, relationshipTypes)
     filteredRelationshipTypes,
     ({ individualAIsToBRelation, individualBIsToARelation }) =>
       includes(individualAIsToBRelation.genders, individual.gender.name) ||
-      includes(individualBIsToARelation.genders, individual.gender.name)
+      includes(individualBIsToARelation.genders, individual.gender.name),
   );
 };

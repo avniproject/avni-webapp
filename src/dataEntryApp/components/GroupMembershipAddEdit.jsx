@@ -2,6 +2,7 @@ import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Breadcrumbs from "./Breadcrumbs";
 import {
+  Alert,
   Box,
   Button,
   Grid,
@@ -10,34 +11,35 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  FormLabel
+  FormLabel,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import api from "../api/index";
 import AsyncSelect from "react-select/async";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { debounce } from "lodash";
+import { getAPIErrorMessage } from "../sagas/sagaUtils";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   margin: theme.spacing(1, 3),
   flexGrow: 1,
   boxShadow:
-    "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)",
 }));
 
 const StyledInnerContainer = styled("div")(({ theme }) => ({
   padding: theme.spacing(2),
   margin: theme.spacing(1),
-  height: 500
+  height: 500,
 }));
 
 const StyledMainHeading = styled(Typography)(({ theme }) => ({
   fontSize: 20,
   fontWeight: 500,
   marginLeft: theme.spacing(1.25), // 10px
-  marginBottom: theme.spacing(1.25)
+  marginBottom: theme.spacing(1.25),
 }));
 
 const StyledButtonContainer = styled(Box)(({ theme }) => ({
@@ -48,14 +50,14 @@ const StyledButtonContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   flexWrap: "wrap",
-  justifyContent: "flex-start"
+  justifyContent: "flex-start",
 }));
 
 const StyledGridContainer = styled(Grid)(({ theme }) => ({
-  marginTop: theme.spacing(2) // Replace <br />
+  marginTop: theme.spacing(2), // Replace <br />
 }));
 
-const renderMember = member => (
+const renderMember = (member) => (
   <Typography component="div">{member.memberSubject.nameString}</Typography>
 );
 
@@ -77,27 +79,28 @@ const GroupMembershipAddEdit = () => {
   const path = location.pathname;
 
   const groupRoles = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile.roles
+    (state) => state.dataEntry.subjectProfile.subjectProfile.roles,
   );
   const groupSubject = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
   const memberGroupSubjects = useSelector(
-    state => state.dataEntry.subjectProfile.groupMembers
+    (state) => state.dataEntry.subjectProfile.groupMembers,
   );
 
   const memberGroupSubject =
-    memberGroupSubjects && memberGroupSubjects.find(mgs => mgs.uuid === uuid);
+    memberGroupSubjects && memberGroupSubjects.find((mgs) => mgs.uuid === uuid);
   const [memberSubject, setMemberSubject] = useState(
     memberGroupSubject && {
       label: constructSubjectLabel(memberGroupSubject.memberSubject),
-      value: memberGroupSubject.memberSubject
-    }
+      value: memberGroupSubject.memberSubject,
+    },
   );
   const groupRole = memberGroupSubject && memberGroupSubject.groupRole;
   const [selectedRole, setSelectedRole] = useState(
-    groupRole ? groupRoles.find(role => role.uuid === groupRole.uuid) : null
+    groupRole ? groupRoles.find((role) => role.uuid === groupRole.uuid) : null,
   );
+  const [error, setError] = useState(null);
   // const isHousehold = groupSubject.isHousehold();
   const editFlow =
     uuid != null && memberGroupSubject != null && groupRole != null;
@@ -109,21 +112,21 @@ const GroupMembershipAddEdit = () => {
   const searchSubjects = (subjectName, callback) => {
     SubjectSearchService.search({
       name: subjectName,
-      subjectTypeUUID: selectedRole.memberSubjectTypeUUID
+      subjectTypeUUID: selectedRole.memberSubjectTypeUUID,
     })
-      .then(searchResults =>
+      .then((searchResults) =>
         searchResults.listOfRecords
-          .filter(subject =>
+          .filter((subject) =>
             memberGroupSubjects
               ? memberGroupSubjects
-                  .map(groupSubject => groupSubject.memberSubject.uuid)
+                  .map((groupSubject) => groupSubject.memberSubject.uuid)
                   .indexOf(subject.uuid) === -1
-              : true
+              : true,
           )
-          .map(subject => ({
+          .map((subject) => ({
             label: constructSubjectLabel(subject, true),
-            value: subject
-          }))
+            value: subject,
+          })),
       )
       .then(callback);
   };
@@ -142,24 +145,28 @@ const GroupMembershipAddEdit = () => {
         selectedRole === null ? t("selectRoleToEnable") : t("typeNameToSearch")
       }
       value={memberSubject}
-      onChange={subject => setMemberSubject(subject)}
+      onChange={(subject) => setMemberSubject(subject)}
       noOptionsMessage={() => t("zeroNumberOfResults")}
     />
   );
 
   const handleSave = () => {
+    setError(null);
     api
       .addEditGroupSubject({
         uuid: editFlow ? uuid : null,
         groupSubjectUUID: groupSubject.uuid,
         memberSubjectUUID: memberSubject.value.uuid,
-        groupRoleUUID: selectedRole.uuid
+        groupRoleUUID: selectedRole.uuid,
       })
-      .then(returnToGroupSubjectProfile);
+      .then(returnToGroupSubjectProfile)
+      .catch((e) => {
+        setError(getAPIErrorMessage(e));
+      });
   };
 
-  const onRoleChange = uuid => {
-    const updatedRole = groupRoles.find(role => role.uuid === uuid);
+  const onRoleChange = (uuid) => {
+    const updatedRole = groupRoles.find((role) => role.uuid === uuid);
     if (
       !editFlow &&
       selectedRole &&
@@ -194,7 +201,7 @@ const GroupMembershipAddEdit = () => {
                 aria-label="roles"
                 name="roles"
                 value={selectedRole ? selectedRole.uuid : ""}
-                onChange={event => onRoleChange(event.target.value)}
+                onChange={(event) => onRoleChange(event.target.value)}
               >
                 {groupRoles.map((item, index) => (
                   <FormControlLabel
@@ -206,7 +213,7 @@ const GroupMembershipAddEdit = () => {
                         disabled={
                           item.maximumNumberOfMembers <=
                           memberGroupSubjects.filter(
-                            mgs => mgs.groupRole.uuid === item.uuid
+                            (mgs) => mgs.groupRole.uuid === item.uuid,
                           ).length
                         }
                       />
@@ -223,7 +230,7 @@ const GroupMembershipAddEdit = () => {
           </StyledGridContainer>
         </StyledInnerContainer>
         <StyledButtonContainer>
-          <Box sx={{ display: "flex", gap: 2.5 }}>
+          <Box sx={{ display: "flex", gap: 2.5, alignItems: "center" }}>
             <Button
               variant="outlined"
               sx={{
@@ -233,7 +240,7 @@ const GroupMembershipAddEdit = () => {
                 fontSize: 12,
                 borderColor: "orange",
                 borderRadius: 50,
-                padding: "4px 25px"
+                padding: "4px 25px",
               }}
               onClick={returnToGroupSubjectProfile}
             >
@@ -249,13 +256,18 @@ const GroupMembershipAddEdit = () => {
                 borderRadius: 50,
                 padding: "4px 25px",
                 backgroundColor: "orange",
-                "&:hover": { backgroundColor: "darkorange" }
+                "&:hover": { backgroundColor: "darkorange" },
               }}
               onClick={handleSave}
               disabled={!hasSelectionChanged()}
             >
               {t("save")}
             </Button>
+            {error && (
+              <Alert severity="error" sx={{ ml: 2, py: 0 }}>
+                {t(error)}
+              </Alert>
+            )}
           </Box>
         </StyledButtonContainer>
       </StyledPaper>

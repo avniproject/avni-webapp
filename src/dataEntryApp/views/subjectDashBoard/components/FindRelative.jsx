@@ -9,7 +9,7 @@ import { SearchForm } from "../../GlobalSearch/SearchFilterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const StyledContainer = styled("div")(({ theme }) => ({
-  margin: theme.spacing(3.75)
+  margin: theme.spacing(3.75),
 }));
 
 const filterButtonStyle = {
@@ -17,7 +17,7 @@ const filterButtonStyle = {
   zIndex: 1,
   marginTop: "1px",
   boxShadow: "none",
-  backgroundColor: "#0e6eff"
+  backgroundColor: "#0e6eff",
 };
 
 const applyButtonStyle = {
@@ -26,8 +26,8 @@ const applyButtonStyle = {
   height: "30px",
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: "#f27510"
-  }
+    backgroundColor: "#f27510",
+  },
 };
 
 const FindRelative = ({
@@ -36,20 +36,20 @@ const FindRelative = ({
   genders,
   organisationConfigs,
   searchRequest,
-  setError
+  setError,
 }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
-  const Relations = useSelector(state => state.dataEntry.relations);
-  const subjects = useSelector(state => state.dataEntry.search.subjects);
+  const Relations = useSelector((state) => state.dataEntry.relations);
+  const subjects = useSelector((state) => state.dataEntry.search.subjects);
   const searchParams = useSelector(
-    state => state.dataEntry.search.subjectSearchParams
+    (state) => state.dataEntry.search.subjectSearchParams,
   );
   const subjectType = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile.subjectType
+    (state) => state.dataEntry.subjectProfile.subjectProfile?.subjectType,
   );
-  const load = useSelector(state => state.dataEntry.loadReducer.load);
+  const load = useSelector((state) => state.dataEntry.loadReducer.load);
 
   const close = () => {
     dispatch(setSubjects());
@@ -65,20 +65,20 @@ const FindRelative = ({
     dispatch(setSubjects());
     let localSavedRelativeData = [];
     let localsSelctedRelative = JSON.parse(
-      sessionStorage.getItem("selectedRelative")
+      sessionStorage.getItem("selectedRelative"),
     );
     localSavedRelativeData.push(localsSelctedRelative);
     if (localsSelctedRelative !== null) {
       sessionStorage.setItem(
         "selectedRelativeslist",
-        JSON.stringify(localSavedRelativeData)
+        JSON.stringify(localSavedRelativeData),
       );
     }
     sessionStorage.removeItem("selectedRelative");
     setError("");
   };
 
-  const handleSearch = filterRequest => {
+  const handleSearch = (filterRequest) => {
     dispatch(searchSubjects(filterRequest));
   };
 
@@ -87,7 +87,7 @@ const FindRelative = ({
       {subjects && subjects.listOfRecords ? (
         <FindRelativeTable
           subjectData={subjects.listOfRecords.filter(
-            subject => subjectProfile.uuid !== subject.uuid
+            (subject) => subjectProfile.uuid !== subject.uuid,
           )}
         />
       ) : (
@@ -112,7 +112,7 @@ const FindRelative = ({
         {
           buttonType: "openButton",
           label: t("searchRelative"),
-          sx: filterButtonStyle
+          sx: filterButtonStyle,
         },
         subjects && subjects.listOfRecords
           ? {
@@ -120,7 +120,7 @@ const FindRelative = ({
               label: "OK",
               sx: applyButtonStyle,
               click: applyHandler,
-              left: 40
+              left: 40,
             }
           : "",
         subjects && subjects.listOfRecords
@@ -129,9 +129,9 @@ const FindRelative = ({
               label: "Modify search",
               sx: applyButtonStyle,
               click: modifySearch,
-              left: 95
+              left: 95,
             }
-          : ""
+          : "",
       ]}
       title={t("searchRelative")}
       btnHandleClose={close}

@@ -1,5 +1,11 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import { removeRelationshipFailed, saveRelationshipFailed, setRelationshipTypes, types } from "../reducers/relationshipReducer";
+import {
+  removeRelationshipFailed,
+  saveRelationshipFailed,
+  saveRelationshipSuccess,
+  setRelationshipTypes,
+  types,
+} from "../reducers/relationshipReducer";
 import api from "../api";
 import { getAPIErrorMessage } from "./sagaUtils";
 
@@ -14,7 +20,12 @@ export function* relationshipTypeWatcher() {
 export function* saveRelatioshipWorker({ relationData }) {
   try {
     yield call(api.saveRelationShip, relationData);
+    yield put(saveRelationshipSuccess());
   } catch (e) {
+    console.log("saveRelationship error:", e);
+    console.log("error.body:", e.body);
+    console.log("error.message:", e.message);
+    console.log("error.status:", e.status);
     yield put(saveRelationshipFailed(getAPIErrorMessage(e)));
   }
 }
