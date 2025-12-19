@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
+  clearRelationshipError,
   getRelationshipTypes,
   saveRelationShip,
 } from "../../../reducers/relationshipReducer";
@@ -190,6 +191,7 @@ const AddRelative = () => {
   };
 
   useEffect(() => {
+    dispatch(clearRelationshipError());
     if (uuid) {
       dispatch(getSubjectProfile(uuid));
       dispatch(getRelationshipTypes());
