@@ -6,8 +6,6 @@ import {
   Typography,
   DialogContent,
   Grid,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
@@ -16,6 +14,7 @@ import { noop } from "lodash";
 import api from "../api";
 import SubjectCardView from "./SubjectCardView";
 import { getAPIErrorMessage } from "../sagas/sagaUtils";
+import CustomizedSnackbar from "./CustomizedSnackbar";
 
 const StyledCardActions = styled(CardActions)({
   display: "flex",
@@ -163,16 +162,14 @@ const GroupSubjectMemberCardView = ({
           btnHandleClose={noop}
         />
       </StyledCardActions>
-      <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={() => setError(null)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert severity="error" onClose={() => setError(null)}>
-          {t(error)}
-        </Alert>
-      </Snackbar>
+      {!!error && (
+        <CustomizedSnackbar
+          defaultSnackbarStatus={true}
+          message={t(error)}
+          onClose={() => setError(null)}
+          variant={"error"}
+        />
+      )}
     </SubjectCardView>
   );
 };

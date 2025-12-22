@@ -10,8 +10,6 @@ import {
   CardContent,
   Button,
   IconButton,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { Comment, ChevronRight } from "@mui/icons-material";
 import {
@@ -21,6 +19,7 @@ import {
 import NewCommentThreadDialog from "./NewCommentThreadDialog";
 import { CommentCard } from "./CommentCard";
 import { useTranslation } from "react-i18next";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar";
 
 const StyledHeader = styled("div")(({ theme }) => ({
   width: 500,
@@ -145,16 +144,14 @@ export const ThreadListing = ({
         onCommentChange={onCommentChange}
         subjectUUID={subjectUUID}
       />
-      <Snackbar
-        open={!!commentError}
-        autoHideDuration={6000}
-        onClose={handleCloseError}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert severity="error" onClose={handleCloseError}>
-          {t(commentError)}
-        </Alert>
-      </Snackbar>
+      {!!commentError && (
+        <CustomizedSnackbar
+          defaultSnackbarStatus={true}
+          message={t(commentError)}
+          onClose={handleCloseError}
+          variant={"error"}
+        />
+      )}
     </Fragment>
   );
 };
