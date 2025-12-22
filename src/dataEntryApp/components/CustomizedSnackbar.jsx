@@ -26,10 +26,11 @@ const StyledSnackbarContent = styled(SnackbarContent, {
 const StyledMessage = styled("span")({
   display: "flex",
   alignItems: "center",
+  fontSize: "1rem",
 });
 
 const StyledIcon = styled("span")(({ theme }) => ({
-  fontSize: 20,
+  fontSize: 24,
   opacity: 0.9,
   marginRight: theme.spacing(1),
 }));
