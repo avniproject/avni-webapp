@@ -17,7 +17,8 @@ function hasEditPrivilege(userInfo) {
 
 const Concepts = () => {
   const navigate = useNavigate();
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
+  const organisation = useSelector((state) => state.app.organisation);
   const [redirect, setRedirect] = useState(false);
   const tableRef = useRef(null);
 
@@ -37,53 +38,53 @@ const Concepts = () => {
           <a href={`#/appDesigner/concept/${row.original.uuid}/show`}>
             {row.original.name}
           </a>
-        )
+        ),
       },
       {
         accessorKey: "dataType",
-        header: "DataType"
+        header: "DataType",
       },
       {
         accessorKey: "organisationId",
         header: "Organization Id",
-        type: "number"
-      }
+        type: "number",
+      },
     ],
-    []
+    [],
   );
 
   const fetchData = useCallback(
     ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         let apiUrl = `/web/concepts?size=${encodeURIComponent(
-          pageSize
+          pageSize,
         )}&page=${encodeURIComponent(page)}`;
         if (!isEmpty(globalFilter)) {
           apiUrl += `&name=${encodeURIComponent(globalFilter)}`;
         }
         if (orderBy) {
           apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(
-            orderDirection
+            orderDirection,
           )}`;
         }
         http
           .get(apiUrl)
-          .then(response => response.data)
-          .then(result => {
+          .then((response) => response.data)
+          .then((result) => {
             resolve({
               data: result._embedded?.concept || [],
-              totalCount: result.page?.totalElements || 0
+              totalCount: result.page?.totalElements || 0,
             });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Failed to fetch concepts:", error);
             resolve({
               data: [],
-              totalCount: 0
+              totalCount: 0,
             });
           });
       }),
-    []
+    [],
   );
 
   const actions = useMemo(
@@ -92,18 +93,19 @@ const Concepts = () => {
         ? [
             {
               icon: Edit,
-              tooltip: row =>
+              tooltip: (row) =>
                 row.original.organisationId === 1
                   ? "Cannot edit core concepts"
                   : "Edit Concept",
               onClick: (event, row) =>
                 navigate(`/appdesigner/concept/${row.original.uuid}/edit`),
-              disabled: row =>
-                row.original.organisationId === 1 || row.original.voided
+              disabled: (row) =>
+                row.original.organisationId !== organisation.id ||
+                row.original.voided,
             },
             {
               icon: Delete,
-              tooltip: row =>
+              tooltip: (row) =>
                 row.original.organisationId === 1
                   ? "Cannot delete core concepts"
                   : "Delete Concept",
@@ -114,23 +116,24 @@ const Concepts = () => {
                 if (window.confirm(voidedMessage)) {
                   http
                     .delete(`/concept/${row.original.uuid}`)
-                    .then(response => {
+                    .then((response) => {
                       if (response.status === 200 && tableRef.current) {
                         tableRef.current.refresh();
                       }
                     })
-                    .catch(error => {
+                    .catch((error) => {
                       console.error("Failed to delete concept:", error);
                       alert("Failed to delete concept. Please try again.");
                     });
                 }
               },
-              disabled: row =>
-                row.original.organisationId === 1 || row.original.voided
-            }
+              disabled: (row) =>
+                row.original.organisationId !== organisation.id ||
+                row.original.voided,
+            },
           ]
         : [],
-    [navigate, userInfo, tableRef]
+    [navigate, userInfo, tableRef],
   );
 
   return (
@@ -140,7 +143,7 @@ const Concepts = () => {
         p: 3,
         bgcolor: "background.paper",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
       }}
     >
       <Title title="Concepts" color="primary" />
@@ -167,8 +170,8 @@ const Concepts = () => {
           debounceInterval: 500,
           search: true,
           rowStyle: ({ original }) => ({
-            backgroundColor: original.voided ? "#DBDBDB" : "#fff"
-          })
+            backgroundColor: original.voided ? "#DBDBDB" : "#fff",
+          }),
         }}
         actions={actions}
         route="/appdesigner/concepts"

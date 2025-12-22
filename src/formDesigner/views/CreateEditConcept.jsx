@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import { Navigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Title } from "react-admin";
@@ -39,6 +40,7 @@ import {
 import { Stack } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { ModelGeneral as General } from "avni-models";
+import { canEditConcept } from "../util/ConceptPermissionUtil";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -98,6 +100,8 @@ const checkForDuplicateAnswers = (answers) => {
 
 const CreateEditConcept = ({ isCreatePage = false }) => {
   const params = useParams();
+  const userInfo = useSelector((state) => state.app.userInfo);
+  const organisation = useSelector((state) => state.app.organisation);
 
   const emptyConcept = WebConceptView.emptyConcept();
   emptyConcept.keyValues = emptyConcept.keyValues || [];
@@ -129,6 +133,11 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
       setDataTypes(sortBy(response.data));
     } else {
       const conceptData = await ConceptService.getConcept(params.uuid);
+      const canEdit = canEditConcept(conceptData, userInfo, organisation);
+      if (!canEdit) {
+        setRedirectShow(true);
+        return;
+      }
       setConcept(conceptData);
     }
 

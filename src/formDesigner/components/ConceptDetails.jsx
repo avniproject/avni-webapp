@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { Privilege } from "openchs-models";
 import MediaService from "adminApp/service/MediaService";
 import { MediaPreview } from "../../common/components/AvniMediaUpload";
+import { canEditConcept } from "../util/ConceptPermissionUtil";
 
 function NumericDetails({ data }) {
   return (
@@ -319,11 +320,14 @@ function ConceptDetails() {
   const { uuid } = useParams();
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state.app.userInfo);
+  const organisation = useSelector((state) => state.app.organisation);
   const [editAlert, setEditAlert] = useState(false);
   const [data, setData] = useState({});
   const [usage, setUsage] = useState({});
   const [addressLevelTypes, setAddressLevelTypes] = useState([]);
   const [subjectTypeOptions, setSubjectTypeOptions] = useState([]);
+  const [canEdit, setCanEdit] = useState(false);
+  const [showEditWarning, setShowEditWarning] = useState(false);
 
   async function onLoad() {
     const conceptRes = (await http.get("/web/concept/" + uuid)).data;
@@ -383,6 +387,15 @@ function ConceptDetails() {
       );
     }
 
+    const canEditResult = canEditConcept(conceptRes, userInfo, organisation);
+    const hasPrivilege = UserInfo.hasPrivilege(
+      userInfo,
+      Privilege.PrivilegeType.EditConcept,
+    );
+
+    setCanEdit(canEditResult);
+    setShowEditWarning(!canEditResult || !hasPrivilege);
+
     setData(conceptRes);
   }
 
@@ -396,11 +409,6 @@ function ConceptDetails() {
     }
   }, [editAlert, navigate, uuid]);
 
-  const hasEditPrivilege = UserInfo.hasPrivilege(
-    userInfo,
-    Privilege.PrivilegeType.EditConcept,
-  );
-
   return (
     <>
       <Box
@@ -411,7 +419,7 @@ function ConceptDetails() {
         }}
       >
         <Title title={"Concept: " + data.name} />
-        {hasEditPrivilege && (
+        {canEdit && (
           <Grid
             container
             style={{ justifyContent: "flex-end" }}
@@ -427,6 +435,30 @@ function ConceptDetails() {
               <EditIcon />
               Edit
             </Button>
+          </Grid>
+        )}
+        {showEditWarning && (
+          <Grid
+            container
+            style={{ justifyContent: "flex-end", marginBottom: "1rem" }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "#fff3cd",
+                border: "1px solid #ffeeba",
+                color: "#856404",
+                padding: "0.5rem 0.75rem",
+                borderRadius: "0.25rem",
+                fontSize: "0.875rem",
+              }}
+            >
+              {!UserInfo.hasPrivilege(
+                userInfo,
+                Privilege.PrivilegeType.EditConcept,
+              )
+                ? "You don't have the privilege to modify the concept"
+                : "This concept is shared by multiple organisations and hence cannot be edited. Create a new one if needed."}
+            </Box>
           </Grid>
         )}
         <div className="container" style={{ float: "left" }}>
