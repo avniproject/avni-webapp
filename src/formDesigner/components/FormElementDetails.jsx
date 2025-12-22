@@ -115,11 +115,11 @@ const showPicker = (pickerType, props, disableFormElement) => {
   ));
 
   return (
-    <Grid container sx={{ width: "100%" }}>
+    <Stack sx={{ width: "100%" }}>
       <AvniFormLabel
         label={picker.label}
         toolTipKey={picker.toolTipKey}
-        sx={{ mt: 1.5, mr: 1, color: "black" }}
+        sx={{ mt: 1.5, color: "black" }}
       />
       <RadioGroup
         aria-label={picker.label}
@@ -137,7 +137,7 @@ const showPicker = (pickerType, props, disableFormElement) => {
       >
         {pickerModes}
       </RadioGroup>
-    </Grid>
+    </Stack>
   );
 };
 
@@ -832,7 +832,7 @@ const FormElementDetails = ({
             <AvniFormLabel
               label={"Duration Options"}
               toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DURATION_OPTIONS"}
-              sx={{ mt: 1.5, mr: 1, color: "black" }}
+              sx={{ mt: 1.5, color: "black" }}
             />
             <StyledFormControl
               component="fieldset"
