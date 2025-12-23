@@ -26,10 +26,11 @@ const StyledSnackbarContent = styled(SnackbarContent, {
 const StyledMessage = styled("span")({
   display: "flex",
   alignItems: "center",
+  fontSize: "1rem",
 });
 
 const StyledIcon = styled("span")(({ theme }) => ({
-  fontSize: 20,
+  fontSize: 24,
   opacity: 0.9,
   marginRight: theme.spacing(1),
 }));
@@ -60,11 +61,12 @@ MySnackbarContentWrapper.propTypes = {
 export default function CustomizedSnackbar({
   defaultSnackbarStatus = true,
   message,
+  variant = "success",
   onClose = _.noop,
 }) {
   const isError =
     message === "Profile image URL is not correct or couldn't be loaded.";
-  const variant = isError ? "error" : "success";
+  variant = isError ? "error" : variant;
   return (
     <Snackbar
       anchorOrigin={{

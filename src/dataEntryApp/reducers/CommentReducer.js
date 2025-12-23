@@ -13,7 +13,8 @@ export const types = {
   SET_COMMENTS: `${prefix}SET_COMMENTS`,
   ON_NEW_COMMENT: `${prefix}ON_NEW_COMMENT`,
   SET_ACTIVE_THREAD: `${prefix}SET_ACTIVE_THREAD`,
-  SET_NEW_COMMENT_TEXT: `${prefix}SET_NEW_COMMENT`
+  SET_NEW_COMMENT_TEXT: `${prefix}SET_NEW_COMMENT`,
+  SET_COMMENT_ERROR: `${prefix}SET_COMMENT_ERROR`,
 };
 
 const initialState = {
@@ -22,111 +23,128 @@ const initialState = {
   commentThreads: [],
   comments: [],
   activeThread: undefined,
-  newCommentText: ""
+  newCommentText: "",
+  commentError: null,
 };
 
-export const setNewCommentText = newCommentText => ({
+export const setNewCommentText = (newCommentText) => ({
   type: types.SET_NEW_COMMENT_TEXT,
-  newCommentText
+  newCommentText,
 });
 
-export const setActiveThread = thread => ({
+export const setActiveThread = (thread) => ({
   type: types.SET_ACTIVE_THREAD,
-  thread
+  thread,
 });
 
-export const addNewComment = subjectUUID => ({
+export const addNewComment = (subjectUUID) => ({
   type: types.ON_NEW_COMMENT,
-  subjectUUID
+  subjectUUID,
 });
 
-export const setComments = comments => ({
+export const setComments = (comments) => ({
   type: types.SET_COMMENTS,
-  comments
+  comments,
 });
 
-export const setLoadCommentListing = loadCommentListing => ({
+export const setLoadCommentListing = (loadCommentListing) => ({
   type: types.SET_LOAD_COMMENT_LISTING,
-  loadCommentListing
+  loadCommentListing,
 });
 
-export const getCommentThreads = subjectUUID => ({
+export const getCommentThreads = (subjectUUID) => ({
   type: types.GET_COMMENT_THREADS,
-  subjectUUID
+  subjectUUID,
 });
 
-export const setCommentThreads = commentThreads => ({
+export const setCommentThreads = (commentThreads) => ({
   type: types.SET_COMMENT_THREADS,
-  commentThreads
+  commentThreads,
 });
 
-export const setLoading = loading => ({
+export const setLoading = (loading) => ({
   type: types.SET_LOADING,
-  loading
+  loading,
 });
 
 export const onNewThread = (text, subjectUUID) => ({
   type: types.ON_NEW_THREAD,
   text,
-  subjectUUID
+  subjectUUID,
 });
 
-export const onThreadReply = threadId => ({
+export const onThreadReply = (threadId) => ({
   type: types.ON_REPLY,
-  threadId
+  threadId,
 });
 
 export const onThreadResolve = () => ({
-  type: types.ON_RESOLVE
+  type: types.ON_RESOLVE,
 });
 
-export const onCommentDelete = commentId => ({
+export const onCommentDelete = (commentId) => ({
   type: types.ON_DELETE,
-  commentId
+  commentId,
 });
 
 export const onCommentEdit = (comment, newCommentText) => ({
   type: types.ON_EDIT,
   comment,
-  newCommentText
+  newCommentText,
 });
 
-export default function(state = initialState, action) {
+export const setCommentError = (errorKey) => ({
+  type: types.SET_COMMENT_ERROR,
+  errorKey,
+});
+
+export const clearCommentError = () => ({
+  type: types.SET_COMMENT_ERROR,
+  errorKey: null,
+});
+
+export default function (state = initialState, action) {
   switch (action.type) {
     case types.SET_COMMENT_THREADS: {
       return {
         ...state,
-        commentThreads: action.commentThreads
+        commentThreads: action.commentThreads,
       };
     }
     case types.SET_LOADING: {
       return {
         ...state,
-        loading: action.loading
+        loading: action.loading,
       };
     }
     case types.SET_LOAD_COMMENT_LISTING: {
       return {
         ...state,
-        loadCommentListing: action.loadCommentListing
+        loadCommentListing: action.loadCommentListing,
       };
     }
     case types.SET_COMMENTS: {
       return {
         ...state,
-        comments: action.comments
+        comments: action.comments,
       };
     }
     case types.SET_ACTIVE_THREAD: {
       return {
         ...state,
-        activeThread: action.thread
+        activeThread: action.thread,
       };
     }
     case types.SET_NEW_COMMENT_TEXT: {
       return {
         ...state,
-        newCommentText: action.newCommentText
+        newCommentText: action.newCommentText,
+      };
+    }
+    case types.SET_COMMENT_ERROR: {
+      return {
+        ...state,
+        commentError: action.errorKey,
       };
     }
     default:
@@ -134,9 +152,9 @@ export default function(state = initialState, action) {
   }
 }
 
-export const selectCommentState = state => state.dataEntry.comment;
+export const selectCommentState = (state) => state.dataEntry.comment;
 
-export const selectDisplayUsername = state => {
+export const selectDisplayUsername = (state) => {
   const { username, name } = state.app.authSession;
   return name || username;
 };

@@ -4,10 +4,12 @@ import {
   onLoadSuccess,
   saveEncounterComplete,
   saveEncounterFailed,
+  selectEncounterState,
   setEligibleEncounters,
   setEncounterFormMappings,
   setFilteredFormElements,
-  types
+  setState,
+  types,
 } from "../reducers/encounterReducer";
 import api from "../api";
 import { selectFormMappingForCancelEncounter, selectFormMappingForEncounter, selectFormMappingsForSubjectType } from "./encounterSelector";
@@ -19,11 +21,11 @@ import { mapEncounter, mapObservations, mapProfile } from "../../common/subjectM
 import { setLoad } from "../reducers/loadReducer";
 import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
-import { selectEncounterState, setState } from "dataEntryApp/reducers/encounterReducer";
 import Wizard from "dataEntryApp/state/Wizard";
 import { AbstractEncounter } from "openchs-models";
+import { getAPIErrorMessage } from "./sagaUtils";
 
-export default function*() {
+export default function* () {
   yield all(
     [
       encouterOnLoadWatcher,
@@ -39,8 +41,8 @@ export default function*() {
       editCancelEncounterWatcher,
       nextWatcher,
       previousWatcher,
-      encounterEligibilityWatcher
-    ].map(fork)
+      encounterEligibilityWatcher,
+    ].map(fork),
   );
 }
 
@@ -79,7 +81,7 @@ export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   const latestEncounter = yield call(
     api.fetchCompletedEncounters,
     subjectUuid,
-    `encounterTypeUuids=${encounterTypeUuid}&&page=0&&size=1&&sort=encounterDateTime,desc`
+    `encounterTypeUuids=${encounterTypeUuid}&&page=0&&size=1&&sort=encounterDateTime,desc`,
   );
   const state = yield select();
 
@@ -89,7 +91,7 @@ export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   encounter.encounterDateTime = new Date();
   encounter.observations =
     encounterTypeDetails.immutable && latestEncounter.content[0] ? mapObservations(latestEncounter.content[0].observations) : [];
-  encounter.encounterType = find(state.dataEntry.metadata.operationalModules.encounterTypes, eT => eT.uuid === encounterTypeUuid);
+  encounter.encounterType = find(state.dataEntry.metadata.operationalModules.encounterTypes, (eT) => eT.uuid === encounterTypeUuid);
   encounter.name = encounter.encounterType.displayName;
 
   yield setEncounterDetails(encounter, subjectProfileJson);
@@ -105,13 +107,13 @@ export function* createEncounterForScheduledWorker({ encounterUuid }) {
   const latestEncounter = yield call(
     api.fetchCompletedEncounters,
     encounterJson.subjectUUID,
-    `encounterTypeUuids=${encounterJson.encounterType.uuid}&&page=0&&size=1&&sort=encounterDateTime,desc`
+    `encounterTypeUuids=${encounterJson.encounterType.uuid}&&page=0&&size=1&&sort=encounterDateTime,desc`,
   );
   const encounter = mapEncounter(
     encounterJson,
     encounterJson.encounterType.immutable && latestEncounter.content[0]
       ? latestEncounter.content[0].observations
-      : encounterJson["observations"]
+      : encounterJson["observations"],
   );
   encounter.encounterDateTime = new Date();
   yield setEncounterDetails(encounter, subjectProfileJson);
@@ -130,15 +132,15 @@ export function* updateEncounterObsWorker({ formElement, value, childFormElement
     new ObservationsHolder(encounter.observations),
     state.validationResults,
     childFormElement,
-    questionGroupIndex
+    questionGroupIndex,
   );
   yield put(
     setState({
       ...state,
       filteredFormElements,
       encounter,
-      validationResults
-    })
+      validationResults,
+    }),
   );
 }
 
@@ -153,8 +155,8 @@ export function* addNewQuestionGroupWorker({ formElement }) {
     setState({
       ...state,
       encounter,
-      filteredFormElements
-    })
+      filteredFormElements,
+    }),
   );
 }
 
@@ -169,15 +171,15 @@ export function* removeQuestionGroupWorker({ formElement, questionGroupIndex }) 
     formElement,
     encounter.observations,
     state.validationResults,
-    questionGroupIndex
+    questionGroupIndex,
   );
   yield put(
     setState({
       ...state,
       encounter,
       filteredFormElements,
-      validationResults
-    })
+      validationResults,
+    }),
   );
 }
 
@@ -197,9 +199,13 @@ export function* saveEncounterWorker(params) {
   resource.visitSchedules = visitSchedules;
   resource.decisions = decisions;
 
-  const response = yield call(api.saveEncounter, resource);
-  if (response.success) yield put(saveEncounterComplete());
-  else yield put(saveEncounterFailed(response.errorMessage));
+  try {
+    const response = yield call(api.saveEncounter, resource);
+    if (response.success) yield put(saveEncounterComplete());
+    else yield put(saveEncounterFailed(response.errorMessage));
+  } catch (e) {
+    yield put(saveEncounterFailed(getAPIErrorMessage(e)));
+  }
 }
 
 function* editEncounterWatcher() {
@@ -223,7 +229,7 @@ export function* setEncounterDetails(encounter, subjectProfileJson, isEdit = fal
     encounter,
     false,
     isEdit,
-    encounter.encounterType.immutable
+    encounter.encounterType.immutable,
   );
 
   yield put.resolve(onLoadSuccess(encounter, encounterForm, formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty));
@@ -242,15 +248,15 @@ export function* updateCancelEncounterObsWorker({ formElement, value, childFormE
     encounter,
     new ObservationsHolder(encounter.cancelObservations),
     state.validationResults,
-    childFormElement
+    childFormElement,
   );
   yield put(
     setState({
       ...state,
       filteredFormElements,
       encounter,
-      validationResults
-    })
+      validationResults,
+    }),
   );
 }
 
@@ -280,17 +286,17 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
   encounter.individual = subject;
 
   const cancelFormMapping = yield select(
-    selectFormMappingForCancelEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
+    selectFormMappingForCancelEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid),
   );
   const cancelEncounterFormJson = yield call(api.fetchForm, cancelFormMapping.formUUID);
   const encounterCancellationForm = mapForm(cancelEncounterFormJson);
   const { formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty } = commonFormUtil.onLoad(
     encounterCancellationForm,
-    encounter
+    encounter,
   );
 
   yield put.resolve(
-    onLoadSuccess(encounter, encounterCancellationForm, formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty)
+    onLoadSuccess(encounter, encounterCancellationForm, formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty),
   );
   yield put.resolve(setSubjectProfile(subject));
 }
@@ -311,8 +317,8 @@ export function* wizardWorker(getNextState, isNext, params) {
       setState({
         ...state,
         onSummaryPage: isNext,
-        wizard: isNext ? new Wizard(1, 1, 2) : new Wizard(1)
-      })
+        wizard: isNext ? new Wizard(1, 1, 2) : new Wizard(1),
+      }),
     );
   } else {
     const obsToUpdate = params.isCancel ? "cancelObservations" : "observations";
@@ -325,7 +331,7 @@ export function* wizardWorker(getNextState, isNext, params) {
       onSummaryPage: state.onSummaryPage,
       wizard: state.wizard.clone(),
       entityValidations: params.isCancel ? [] : state.encounter.validate(),
-      staticFormElementIds: state.wizard.isFirstPage() ? keys(AbstractEncounter.fieldKeys) : []
+      staticFormElementIds: state.wizard.isFirstPage() ? keys(AbstractEncounter.fieldKeys) : [],
     });
 
     const encounter = state.encounter.cloneForEdit();
@@ -337,7 +343,7 @@ export function* wizardWorker(getNextState, isNext, params) {
       filteredFormElements,
       validationResults,
       onSummaryPage,
-      wizard
+      wizard,
     };
     yield put(setState(nextState));
   }

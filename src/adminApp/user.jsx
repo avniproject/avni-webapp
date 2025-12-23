@@ -596,7 +596,9 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName }) => {
                           ReactSelectHelper.getCurrentValues(event).map(
                             (x) => x.id,
                           );
-                        setValue(syncAttributeValuesFieldName, selectedValues);
+                        setValue(syncAttributeValuesFieldName, selectedValues, {
+                          shouldDirty: true,
+                        });
                       }}
                     />
                   ) : (

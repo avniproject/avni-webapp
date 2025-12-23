@@ -283,7 +283,7 @@ export const AvniMediaUpload = ({
       <CustomizedSnackbar
         getDefaultSnackbarStatus={setFileSizeError}
         defaultSnackbarStatus={Boolean(fileSizeError)}
-        variant="error"
+        variant={"error"}
         message={fileSizeError}
         autoHideDuration={6000}
       />

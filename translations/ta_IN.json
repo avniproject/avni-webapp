@@ -224,6 +224,7 @@
     "anotherRegistration": "மற்றொரு {{subject}}-ஐ பதிவுசெய்யவும்",
     "saveAnd": "சேமிக்கவும் மற்றும்",
     "registrationSavedMsg": "பதிவு சேமிக்கப்பட்டது",
+    "noCatchmentAssignedToThisUser": "பகுதி உங்களுக்கு ஒதுக்கப்படவில்லை.",
     "enrolmentSavedMsg": "{{programName}} பதிவு சேமிக்கப்பட்டது",
     "enrolmentExitMsg": "{{programName}} நிரலிருந்து வெளியேறுகிறது",
     "encounterSavedMsg": "{{encounterName}} என்கவுண்டர் சேமிக்கப்பட்டது",

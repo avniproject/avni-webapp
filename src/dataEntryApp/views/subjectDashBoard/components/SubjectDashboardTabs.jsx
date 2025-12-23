@@ -10,14 +10,14 @@ import { useTranslation } from "react-i18next";
 
 const StyledAppBar = styled(AppBar)({
   backgroundColor: "white",
-  boxShadow: "none"
+  boxShadow: "none",
 });
 
 const StyledTabs = styled(Tabs)({
   "& button": {
     marginTop: "20px",
-    minHeight: "0px"
-  }
+    minHeight: "0px",
+  },
 });
 
 const StyledTab = styled(Tab)({
@@ -25,18 +25,18 @@ const StyledTab = styled(Tab)({
     flexDirection: "row",
     "& svg": {
       marginRight: "6px",
-      marginTop: "3px"
-    }
-  }
+      marginTop: "3px",
+    },
+  },
 });
 
 const StyledPaper = styled(Paper)({
   margin: "-23px",
-  elevation: 2
+  elevation: 2,
 });
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3)
+  padding: theme.spacing(3),
 }));
 
 const StyledTabContent = styled(Typography)({});
@@ -61,7 +61,7 @@ function TabContent(props) {
 TabContent.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+  value: PropTypes.any.isRequired,
 };
 
 const SubjectDashboardTabs = ({
@@ -78,8 +78,9 @@ const SubjectDashboardTabs = ({
   getGroupMembers,
   groupMembers,
   voidError,
+  voidErrorType,
   clearVoidServerError,
-  unVoidErrorKey
+  unVoidErrorKey,
 }) => {
   const { t } = useTranslation();
   const {
@@ -92,11 +93,11 @@ const SubjectDashboardTabs = ({
     showGroupMembers,
     hideDOB,
     displayGeneralInfoInProfileTab,
-    showMessagesTab
+    showMessagesTab,
   } = tabsStatus;
 
   const [value, setValue] = useState(
-    tab && tab > 0 ? (showProgramTab ? tab : tab - 1) : defaultTabIndex
+    tab && tab > 0 ? (showProgramTab ? tab : tab - 1) : defaultTabIndex,
   );
 
   const handleChange = (event, newValue) => {
@@ -106,7 +107,7 @@ const SubjectDashboardTabs = ({
   function a11yProps(index) {
     return {
       id: `scrollable-auto-tab-${index}`,
-      "aria-controls": `scrollable-auto-tabpanel-${index}`
+      "aria-controls": `scrollable-auto-tabpanel-${index}`,
     };
   }
 
@@ -164,6 +165,7 @@ const SubjectDashboardTabs = ({
             profile={profile}
             voidSubject={voidSubject}
             voidError={voidError}
+            voidErrorType={voidErrorType}
             clearVoidServerError={clearVoidServerError}
             unVoidSubject={unVoidSubject}
             registrationForm={registrationForm}

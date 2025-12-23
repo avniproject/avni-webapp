@@ -1,74 +1,76 @@
-import { useState, Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import {
-  NativeSelect,
+  Alert,
   Box,
   Button,
   FormControl,
   Grid,
   InputLabel,
+  NativeSelect,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Typography
+  Typography,
 } from "@mui/material";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
+  clearRelationshipError,
   getRelationshipTypes,
-  saveRelationShip
+  saveRelationShip,
 } from "../../../reducers/relationshipReducer";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { ModelGeneral as General } from "avni-models";
 import FindRelative from "../components/FindRelative";
 import { LineBreak } from "../../../../common/components/utils";
 import { useTranslation } from "react-i18next";
-import { find, get, head, includes, isEmpty } from "lodash";
+import { find, get, head, isEmpty } from "lodash";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import {
   getGenders,
-  getOrganisationConfig
+  getOrganisationConfig,
 } from "../../../reducers/metadataReducer";
 import {
   findApplicableRelations,
   getRelationshipType,
-  validateRelative
+  validateRelative,
 } from "../../../utils/RelationshipUtil";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   margin: theme.spacing(1, 3),
   flexGrow: 1,
   boxShadow:
-    "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)",
 }));
 
 const StyledInnerDiv = styled("div")(({ theme }) => ({
   padding: theme.spacing(2, 2),
   margin: theme.spacing(1, 1),
-  height: 500
+  height: 500,
 }));
 
 const StyledMainHeading = styled(Typography)({
   fontSize: "20px",
   fontWeight: "500",
   marginLeft: 10,
-  marginBottom: 10
+  marginBottom: 10,
 });
 
 const StyledSubHeading = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
   fontSize: "12px",
   padding: theme.spacing(0.6, 0.6),
-  margin: theme.spacing(1, 1)
+  margin: theme.spacing(1, 1),
 }));
 
 const StyledScheduledDateDiv = styled("div")({
   marginBottom: 20,
-  marginTop: 10
+  marginTop: 10,
 });
 
 const StyledCancelButton = styled(Button)({
@@ -79,7 +81,7 @@ const StyledCancelButton = styled(Button)({
   padding: "4px 25px",
   fontSize: 12,
   borderRadius: 50,
-  borderColor: "orange"
+  borderColor: "orange",
 });
 
 const StyledAddButton = styled(Button)({
@@ -90,7 +92,7 @@ const StyledAddButton = styled(Button)({
   padding: "4px 25px",
   fontSize: 12,
   borderRadius: 50,
-  marginLeft: 20
+  marginLeft: 20,
 });
 
 const StyledButtonBox = styled(Box)({
@@ -101,17 +103,17 @@ const StyledButtonBox = styled(Box)({
   display: "flex",
   flexDirection: "row",
   flexWrap: "wrap",
-  justifyContent: "flex-start"
+  justifyContent: "flex-start",
 });
 
 const StyledTable = styled(Table)({
-  marginTop: "10px"
+  marginTop: "10px",
 });
 
 const StyledTableView = styled("div")({
   flexGrow: 1,
   alignItems: "center",
-  justifyContent: "center"
+  justifyContent: "center",
 });
 
 const StyledTableCell = styled(TableCell)({
@@ -119,7 +121,7 @@ const StyledTableCell = styled(TableCell)({
   fontSize: "12px",
   borderBottom: "none",
   padding: "0px 0px 0px 11px",
-  fontWeight: "500"
+  fontWeight: "500",
 });
 
 const StyledTableCellDetails = styled(TableCell)({
@@ -127,17 +129,17 @@ const StyledTableCellDetails = styled(TableCell)({
   padding: "0px 21px 0px 11px",
   fontWeight: "500",
   color: "#1010101",
-  fontSize: "14px"
+  fontSize: "14px",
 });
 
 const StyledLabelTypography = styled(Typography)({
   width: "50%",
-  color: "rgba(0, 0, 0, 0.54)"
+  color: "rgba(0, 0, 0, 0.54)",
 });
 
 const StyledErrorTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
-  marginTop: theme.spacing(1.25)
+  marginTop: theme.spacing(1.25),
 }));
 
 const AddRelative = () => {
@@ -153,36 +155,43 @@ const AddRelative = () => {
 
   // Redux selectors
   const subjectTypes = useSelector(
-    state => state.dataEntry.metadata.operationalModules.subjectTypes
+    (state) => state.dataEntry.metadata.operationalModules.subjectTypes,
   );
   const relationshipTypes = useSelector(
-    state => state.dataEntry.relations.relationshipTypes
+    (state) => state.dataEntry.relations.relationshipTypes,
   );
   const RelationsData = useSelector(
-    state => state.dataEntry.relations.relationData
+    (state) => state.dataEntry.relations.relationData,
   );
-  const subjects = useSelector(state => state.dataEntry.search.subjects);
+  const subjects = useSelector((state) => state.dataEntry.search.subjects);
   const subjectProfile = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
   const searchRequest = useSelector(
-    state => state.dataEntry.searchFilterReducer.request
+    (state) => state.dataEntry.searchFilterReducer.request,
   );
   const operationalModules = useSelector(
-    state => state.dataEntry.metadata.operationalModules
+    (state) => state.dataEntry.metadata.operationalModules,
   );
-  const genders = useSelector(state => state.dataEntry.metadata.genders);
+  const genders = useSelector((state) => state.dataEntry.metadata.genders);
   const organisationConfigs = useSelector(
-    state => state.dataEntry.metadata.organisationConfigs
+    (state) => state.dataEntry.metadata.organisationConfigs,
+  );
+  const relationshipError = useSelector(
+    (state) => state.dataEntry.relations.relationshipError,
+  );
+  const saveComplete = useSelector(
+    (state) => state.dataEntry.relations.saveComplete,
   );
 
   // Create match object for compatibility
   const match = {
     queryParams: { uuid },
-    path: location.pathname
+    path: location.pathname,
   };
 
   useEffect(() => {
+    dispatch(clearRelationshipError());
     if (uuid) {
       dispatch(getSubjectProfile(uuid));
       dispatch(getRelationshipTypes());
@@ -191,76 +200,81 @@ const AddRelative = () => {
     }
   }, [dispatch, uuid]);
 
+  useEffect(() => {
+    if (saveComplete) {
+      sessionStorage.removeItem("selectedRelativeslist");
+      dispatch(getSubjectProfile(uuid));
+      navigate(`/app/subject/subjectProfile?uuid=${uuid}`);
+    }
+  }, [saveComplete, dispatch, navigate, uuid]);
+
   const selectedRelative = head(
-    JSON.parse(sessionStorage.getItem("selectedRelativeslist"))
+    JSON.parse(sessionStorage.getItem("selectedRelativeslist")),
   );
   const [error, setError] = useState();
   const [state, setState] = useState({
     age: "",
-    name: ""
+    name: "",
   });
   const [relationData, setRelationData] = useState({
     uuid: General.randomUUID(),
     relationshipTypeUUID: "",
     individualAUUID: "",
     individualBUUID: "",
-    enterDateTime: new Date()
+    enterDateTime: new Date(),
   });
 
   const existingRelatives = get(subjectProfile, "relationships", []);
   const applicableRelations = findApplicableRelations(
     relationshipTypes,
-    selectedRelative
+    selectedRelative,
   );
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     const selectedRelationUUID = event.target.value;
     const relationshipType = getRelationshipType(
       subjectProfile,
       selectedRelationUUID,
-      relationshipTypes
+      relationshipTypes,
     );
     const name = event.target.name;
     setState({
       ...state,
-      [name]: selectedRelationUUID
+      [name]: selectedRelationUUID,
     });
     const selectedRelation = find(
       applicableRelations,
-      ar => ar.uuid === selectedRelationUUID
+      (ar) => ar.uuid === selectedRelationUUID,
     );
     const validationError = validateRelative(
       selectedRelative,
       subjectProfile,
       selectedRelation,
-      existingRelatives
+      existingRelatives,
     );
     if (validationError) {
       setError(validationError);
       return;
     } else {
       setError("");
-      true;
     }
-    const isReverseRelation = includes(
-      get(relationshipType, "individualAIsToBRelation.uuid", []),
-      selectedRelationUUID
-    );
+    if (!relationshipType) {
+      setError("relationshipTypeNotFound");
+      return;
+    }
+    const isReverseRelation =
+      get(relationshipType, "individualAIsToBRelation.uuid") ===
+      selectedRelationUUID;
     setRelationData({
       ...relationData,
       relationshipTypeUUID: relationshipType.uuid,
       individualAUUID: isReverseRelation ? selectedRelative.uuid : uuid,
-      individualBUUID: isReverseRelation ? uuid : selectedRelative.uuid
+      individualBUUID: isReverseRelation ? uuid : selectedRelative.uuid,
     });
   };
 
   const addRelatives = () => {
     dispatch(saveRelationShip(relationData));
-    sessionStorage.removeItem("selectedRelativeslist");
-    (async function fetchData() {
-      await dispatch(getSubjectProfile(uuid));
-    })();
-    navigate(`/app/subject/subjectProfile?uuid=${uuid}`);
   };
 
   const cancelRelation = () => {
@@ -278,7 +292,7 @@ const AddRelative = () => {
             direction="row"
             sx={{
               justifyContent: "space-between",
-              alignItems: "baseline"
+              alignItems: "baseline",
             }}
           >
             <StyledMainHeading component="span">
@@ -313,7 +327,7 @@ const AddRelative = () => {
                     container
                     spacing={1}
                     sx={{
-                      alignItems: "center"
+                      alignItems: "center",
                     }}
                   >
                     <Grid size={6}>
@@ -352,7 +366,7 @@ const AddRelative = () => {
                               {selectedRelative.dateOfBirth
                                 ? new Date().getFullYear() -
                                   new Date(
-                                    selectedRelative.dateOfBirth
+                                    selectedRelative.dateOfBirth,
                                   ).getFullYear() +
                                   " " +
                                   t("years")
@@ -379,7 +393,7 @@ const AddRelative = () => {
                               onChange={handleChange}
                               inputProps={{
                                 name: "age",
-                                id: "age-native-simple"
+                                id: "age-native-simple",
                               }}
                             >
                               <option value="" disabled>
@@ -407,7 +421,7 @@ const AddRelative = () => {
           )}
         </StyledInnerDiv>
         <StyledButtonBox>
-          <Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <StyledCancelButton variant="outlined" onClick={cancelRelation}>
               CANCEL
             </StyledCancelButton>
@@ -421,6 +435,11 @@ const AddRelative = () => {
             >
               ADD
             </StyledAddButton>
+            {relationshipError && (
+              <Alert severity="error" sx={{ ml: 2, py: 0 }}>
+                {t(relationshipError)}
+              </Alert>
+            )}
           </Box>
         </StyledButtonBox>
       </StyledPaper>

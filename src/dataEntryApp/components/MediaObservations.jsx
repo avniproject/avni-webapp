@@ -5,14 +5,16 @@ const MediaObservations = ({
   mediaDataList,
   currentMediaItemIndex,
   onClose,
-  showResourceCount
+  showResourceCount,
 }) => {
   useEffect(() => {
-    const LightboxContainer = document.querySelector(
-      "div.mediaObservationContainer"
+    const lightboxContainer = document.querySelector(
+      "div.mediaObservationContainer",
     );
-    LightboxContainer.firstChild.style.zIndex = 2;
-  });
+    if (lightboxContainer?.firstChild) {
+      lightboxContainer.firstChild.style.zIndex = "1200"; // appbar with 'fixed' position default z-index is 1100 so this needs to be greater than that
+    }
+  }, []);
 
   return (
     <div className={"mediaObservationContainer"}>

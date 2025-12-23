@@ -5,19 +5,19 @@ import { selectEnrolmentFormMappingForSubjectType, selectProgram, selectProgramE
 import { mapForm } from "../../common/adapters";
 import {
   onLoadSuccess,
+  saveEnrolmentFailed,
   saveProgramComplete,
-  selectProgramEnrolmentState,
   selectEnrolmentForm,
   selectIdentifierAssignments,
+  selectProgramEnrolmentState,
   setFilteredFormElements as setFilteredFormElementsEnrolment,
   setInitialState,
   setState as setProgramEnrolmentState,
   types as enrolmentTypes,
-  saveEnrolmentFailed,
 } from "../reducers/programEnrolReducer";
 import { assign, keys } from "lodash";
-import { mapProgramEnrolment } from "../../common/subjectModelMapper";
-import { mapProfile } from "common/subjectModelMapper";
+import { getAPIErrorMessage } from "./sagaUtils";
+import { mapProfile, mapProgramEnrolment } from "../../common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { selectChecklists, selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
@@ -127,7 +127,7 @@ export function* saveProgramEnrolmentWorker(params) {
       yield put(saveEnrolmentFailed(response.errorMessage));
     }
   } catch (e) {
-    console.log(e);
+    yield put(saveEnrolmentFailed(getAPIErrorMessage(e)));
   }
 }
 
@@ -145,13 +145,17 @@ export function* undoExitProgramEnrolmentWorker({ programEnrolmentUuid }) {
   programEnrolment.programExitObservations = [];
 
   let resource = programEnrolment.toResource;
-  const response = yield call(api.saveProgramEnrolment, resource);
-  if (response.success) {
-    yield put(saveProgramComplete());
-    const subject = yield select(selectSubjectProfile);
-    const programs = yield call(api.fetchPrograms, subject.uuid);
-    yield put(setPrograms(programs));
-  } else yield put(saveEnrolmentFailed(response.errorMessage));
+  try {
+    const response = yield call(api.saveProgramEnrolment, resource);
+    if (response.success) {
+      yield put(saveProgramComplete());
+      const subject = yield select(selectSubjectProfile);
+      const programs = yield call(api.fetchPrograms, subject.uuid);
+      yield put(setPrograms(programs));
+    } else yield put(saveEnrolmentFailed(response.errorMessage));
+  } catch (e) {
+    yield put(saveEnrolmentFailed(getAPIErrorMessage(e)));
+  }
 }
 
 export function* undoExitProgramEnrolmentWatcher() {

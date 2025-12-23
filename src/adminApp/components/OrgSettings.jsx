@@ -11,10 +11,8 @@ import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar
 
 export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
   const [orgSettings, setOrgSettings] = useState();
-  const [
-    showEncryptionWarningMessage,
-    setShowEncryptionWarningMessage
-  ] = useState(false);
+  const [showEncryptionWarningMessage, setShowEncryptionWarningMessage] =
+    useState(false);
   const [defaultSnackbarStatus, setDefaultSnackbarStatus] = useState(true);
 
   const dispatch = useDispatch();
@@ -23,13 +21,13 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
     dispatch(getOperationalModules());
     http
       .fetchJson("/web/organisationConfig")
-      .then(response => response.json)
+      .then((response) => response.json)
       .then(({ organisationConfig }) => setOrgSettings(organisationConfig));
   }, [dataDeletedIndicator]);
 
   const onSettingsChange = (settingsName, value) => {
     const payload = { settings: { [settingsName]: value } };
-    http.put("/organisationConfig", payload).then(response => {
+    http.put("/organisationConfig", payload).then((response) => {
       if (response.status === 200 || response.status === 201) {
         setOrgSettings(response.data.settings);
         dispatch(setOrganisationConfig(response.data.settings));
@@ -43,14 +41,14 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
     name,
     tooltip,
     disabled = false,
-    onEnabled = noop
+    onEnabled = noop,
   ) {
     return (
       <Grid>
         <AvniSwitch
           switchFirst
           checked={orgSettings[key] || false}
-          onChange={event => {
+          onChange={(event) => {
             if (event.target.checked === true) onEnabled();
             onSettingsChange(key, event.target.checked);
           }}
@@ -76,10 +74,11 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
     showHierarchicalLocation: "showHierarchicalLocation",
     donotRequirePasswordChangeOnFirstLogin:
       "donotRequirePasswordChangeOnFirstLogin",
-    enableMobileAppDbEncryption: "enableMobileAppDbEncryption"
+    enableMobileAppDbEncryption: "enableMobileAppDbEncryption",
+    copilotFormValidationApiKey: "copilotFormValidationApiKey",
   };
 
-  const getDefaultSnackbarStatus = defaultSnackbarStatus => {
+  const getDefaultSnackbarStatus = (defaultSnackbarStatus) => {
     setDefaultSnackbarStatus(defaultSnackbarStatus);
   };
 
@@ -94,61 +93,61 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
         {renderSimpleSetting(
           organisationConfigSettingKeys.draftSave,
           "Draft save",
-          "ADMIN_SAVE_DRAFT"
+          "ADMIN_SAVE_DRAFT",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.hideDateOfBirth,
           "Hide Date of Birth on DEA",
-          "ADMIN_HIDE_DOB"
+          "ADMIN_HIDE_DOB",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.enableComments,
           "Enable comments",
-          "ADMIN_ENABLE_COMMENTS"
+          "ADMIN_ENABLE_COMMENTS",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.enableMobileAppDbEncryption,
           "Enable mobile app db encryption",
           "ADMIN_ENABLE_MOBILE_APP_DB_ENCRYPTION",
           false,
-          () => setShowEncryptionWarningMessage(true)
+          () => setShowEncryptionWarningMessage(true),
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.showSummaryButton,
           "Show summary button",
-          "ADMIN_SHOW_SUMMARY_BUTTON"
+          "ADMIN_SHOW_SUMMARY_BUTTON",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.enableMessaging,
           "Enable Messaging",
-          "ENABLE_MESSAGING_BUTTON"
+          "ENABLE_MESSAGING_BUTTON",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.useKeycloakAsIDP,
           "Use Keycloak as IDP",
           "USE_KEYCLOAK_AS_IDP",
-          true
+          true,
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.useMinioForStorage,
           "Use MinIO for Storage",
           "USE_MINIO_FOR_STORAGE",
-          true
+          true,
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.skipRuleExecution,
           "Skip rule executions on upload",
-          "SKIP_RULE_EXECUTION_ON_UPLOAD"
+          "SKIP_RULE_EXECUTION_ON_UPLOAD",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.showHierarchicalLocation,
           "Show hierarchical location",
-          "SHOW_HIERARCHICAL_LOCATION"
+          "SHOW_HIERARCHICAL_LOCATION",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.donotRequirePasswordChangeOnFirstLogin,
           "Do not require password change for new user",
-          "DO_NOT_REQUIRE_PASSWORD_CHANGE_FOR_NEW_USER"
+          "DO_NOT_REQUIRE_PASSWORD_CHANGE_FOR_NEW_USER",
         )}
         <AvniTextField
           style={{ marginLeft: 8, marginTop: 10 }}
@@ -158,13 +157,29 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
           label="Inline address count"
           autoComplete="off"
           value={orgSettings.maxAddressDisplayInlineCount}
-          onChange={event =>
+          onChange={(event) =>
             onSettingsChange(
               organisationConfigSettingKeys.maxAddressDisplayInlineCount,
-              toNumber(event.target.value)
+              toNumber(event.target.value),
             )
           }
           toolTipKey={"MAX_ADDRESS_DISPLAY_INLINE_COUNT"}
+        />
+        <AvniTextField
+          style={{ marginLeft: 8, marginTop: 10 }}
+          id="copilotFormValidationApiKey"
+          type="password"
+          variant="outlined"
+          label="Dify Form Validation API Key"
+          autoComplete="off"
+          value={orgSettings.copilotFormValidationApiKey || ""}
+          onChange={(event) =>
+            onSettingsChange(
+              organisationConfigSettingKeys.copilotFormValidationApiKey,
+              event.target.value,
+            )
+          }
+          toolTipKey={"DIFY_FORM_VALIDATION_API_KEY"}
         />
         {showEncryptionWarningMessage && (
           <CustomizedSnackbar

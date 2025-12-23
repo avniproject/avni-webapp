@@ -1,24 +1,26 @@
+import { useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import { Grid, DialogContent, Typography } from "@mui/material";
+import { DialogContent, Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { first, noop } from "lodash";
 import { useNavigate } from "react-router-dom";
 import Modal from "./CommonModal";
 import {
-  removeRelationShip,
-  saveRelationShip
+  clearRelationshipError,
+  saveRelationShip,
 } from "../../../reducers/relationshipReducer";
+import MessageDialog from "../../../components/MessageDialog";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 
 const StyledDialogContent = styled(DialogContent)({
   width: 600,
-  height: "auto"
+  height: "auto",
 });
 
 const StyledGrid = styled(Grid)({
   justifyContent: "flex-end",
-  alignItems: "flex-start"
+  alignItems: "flex-start",
 });
 
 const removeButtonStyle = {
@@ -30,8 +32,8 @@ const removeButtonStyle = {
   backgroundColor: "#fff",
   "&:hover": {
     color: "#0e6eff",
-    backgroundColor: "#fff"
-  }
+    backgroundColor: "#fff",
+  },
 };
 
 const applyButtonStyle = {
@@ -40,8 +42,8 @@ const applyButtonStyle = {
   height: "30px",
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: "#f27510"
-  }
+    backgroundColor: "#f27510",
+  },
 };
 
 const cancelButtonStyle = {
@@ -52,25 +54,42 @@ const cancelButtonStyle = {
   height: "30px",
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: "#F8F9F9"
-  }
+    backgroundColor: "#F8F9F9",
+  },
 };
 
-const RemoveRelative = props => {
+const RemoveRelative = (props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const Relations = useSelector(state => state.dataEntry.relations);
-  const subjects = useSelector(state => state.dataEntry.search.subjects);
+  const Relations = useSelector((state) => state.dataEntry.relations);
+  const subjects = useSelector((state) => state.dataEntry.search.subjects);
   const searchParams = useSelector(
-    state => state.dataEntry.search.subjectSearchParams
+    (state) => state.dataEntry.search.subjectSearchParams,
   );
-  const subjectTypes = useSelector(state =>
-    first(state.dataEntry.metadata.operationalModules.subjectTypes)
+  const subjectTypes = useSelector((state) =>
+    first(state.dataEntry.metadata.operationalModules.subjectTypes),
+  );
+  const relationshipError = useSelector(
+    (state) => state.dataEntry.relations.relationshipError,
+  );
+  const saveComplete = useSelector(
+    (state) => state.dataEntry.relations.saveComplete,
   );
 
+  useEffect(() => {
+    if (saveComplete) {
+      dispatch(getSubjectProfile(props.relationAuuid));
+      navigate(`/app/subject/subjectProfile?uuid=${props.relationAuuid}`);
+    }
+  }, [saveComplete, dispatch, navigate, props.relationAuuid]);
+
   const close = () => {};
+
+  const handleCloseError = () => {
+    dispatch(clearRelationshipError());
+  };
 
   const removeClick = () => {
     const RelationData = {
@@ -78,14 +97,9 @@ const RemoveRelative = props => {
       individualBUUID: props.relationBuuid,
       relationshipTypeUUID: props.relationBTypeuuid,
       uuid: props.relationuuid,
-      voided: true
+      voided: true,
     };
     dispatch(saveRelationShip(RelationData));
-
-    setTimeout(() => {
-      dispatch(getSubjectProfile(props.relationAuuid));
-      navigate(`/app/subject/subjectProfile?uuid=${props.relationAuuid}`);
-    }, 500);
   };
 
   const searchContent = (
@@ -100,31 +114,39 @@ const RemoveRelative = props => {
   );
 
   return (
-    <Modal
-      content={searchContent}
-      handleError={noop}
-      buttonsSet={[
-        {
-          buttonType: "openButton",
-          label: "Remove",
-          sx: removeButtonStyle
-        },
-        {
-          buttonType: "applyButton",
-          label: "Remove",
-          redirectTo: `/app/subject?uuid=${props.relationAuuid}`,
-          sx: applyButtonStyle,
-          click: removeClick
-        },
-        {
-          buttonType: "cancelButton",
-          label: t("cancel"),
-          sx: cancelButtonStyle
-        }
-      ]}
-      title="Remove Relative"
-      btnHandleClose={close}
-    />
+    <>
+      <MessageDialog
+        title={t("relationshipError")}
+        message={t(relationshipError)}
+        open={!!relationshipError}
+        onOk={handleCloseError}
+      />
+      <Modal
+        content={searchContent}
+        handleError={noop}
+        buttonsSet={[
+          {
+            buttonType: "openButton",
+            label: "Remove",
+            sx: removeButtonStyle,
+          },
+          {
+            buttonType: "applyButton",
+            label: "Remove",
+            redirectTo: `/app/subject?uuid=${props.relationAuuid}`,
+            sx: applyButtonStyle,
+            click: removeClick,
+          },
+          {
+            buttonType: "cancelButton",
+            label: t("cancel"),
+            sx: cancelButtonStyle,
+          },
+        ]}
+        title="Remove Relative"
+        btnHandleClose={close}
+      />
+    </>
   );
 };
 

@@ -13,11 +13,11 @@ const StyledDialogTitle = styled("div")(({ theme }) => ({
     position: "absolute",
     right: theme.spacing(1),
     top: theme.spacing(0),
-    color: theme.palette.grey[500]
-  }
+    color: theme.palette.grey[500],
+  },
 }));
 
-const DialogTitle = props => {
+const DialogTitle = (props) => {
   const { children, onClose, ...other } = props;
   return (
     <StyledDialogTitle {...other}>
@@ -43,18 +43,18 @@ export const AudioPlayer = ({ url }) => {
   const updateSignedURL = () =>
     http
       .get(`/media/signedUrl?url=${url}`)
-      .then(signedURL => setSignedURL(signedURL.data));
+      .then((response) => setSignedURL(response.data));
 
   useEffect(() => {
     updateSignedURL();
-  }, []);
+  }, [url]);
 
   useEffect(() => {
     const refreshedMediaUrls = setInterval(updateSignedURL, 110000);
     return () => clearInterval(refreshedMediaUrls);
   }, []);
 
-  const onViewMedia = event => {
+  const onViewMedia = (event) => {
     event.preventDefault();
     setOpenModal(true);
   };
@@ -65,7 +65,10 @@ export const AudioPlayer = ({ url }) => {
         {t("View Media")}
       </Link>{" "}
       |{" "}
-      <Link to={`/app/audio?url=${signedURL}`} target="_blank">
+      <Link
+        to={`/app/audio?url=${encodeURIComponent(signedURL)}`}
+        target="_blank"
+      >
         {t("Open in New Tab")}
       </Link>
       <Dialog onClose={() => setOpenModal(false)} open={openModal}>

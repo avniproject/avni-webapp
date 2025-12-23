@@ -17,7 +17,7 @@ import {
   pickBy,
   reject,
   startCase,
-  values
+  values,
 } from "lodash";
 import { httpClient as http } from "common/utils/httpClient";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
@@ -41,7 +41,7 @@ const nonSupportedTypes = [
   "PhoneNumber",
   "GroupAffiliation",
   "Audio",
-  "File"
+  "File",
 ];
 export const CreateEditFilters = ({
   selectedFilter,
@@ -51,29 +51,32 @@ export const CreateEditFilters = ({
   operationalModules,
   settings,
   documentationFileName,
-  dashboardFilterSave
+  dashboardFilterSave,
 }) => {
   const { t } = useTranslation();
   const allTypes = values(CustomFilter.type);
   const filterTypes =
     filterType === "myDashboardFilters"
-      ? reject(allTypes, t =>
+      ? reject(allTypes, (t) =>
           [
             CustomFilter.type.Name,
             CustomFilter.type.Age,
-            CustomFilter.type.SearchAll
-          ].includes(t)
+            CustomFilter.type.SearchAll,
+          ].includes(t),
         )
       : allTypes;
-  const typeOptions = filterTypes.map(t => ({ label: startCase(t), value: t }));
+  const typeOptions = filterTypes.map((t) => ({
+    label: startCase(t),
+    value: t,
+  }));
 
-  const scopeOptions = values(CustomFilter.scope).map(s => ({
+  const scopeOptions = values(CustomFilter.scope).map((s) => ({
     label: startCase(s),
-    value: s
+    value: s,
   }));
   const widgetOptions = values(CustomFilter.widget)
-    .filter(w => w !== CustomFilter.widget.Relative)
-    .map(t => ({ label: t, value: t }));
+    .filter((w) => w !== CustomFilter.widget.Relative)
+    .map((t) => ({ label: t, value: t }));
 
   const emptyFilter = {
     titleKey: "",
@@ -84,7 +87,7 @@ export const CreateEditFilters = ({
     conceptUUID: "",
     widget: "",
     scopeParameters: {},
-    groupSubjectTypeUUID: ""
+    groupSubjectTypeUUID: "",
   };
 
   const {
@@ -97,12 +100,12 @@ export const CreateEditFilters = ({
     widget,
     type,
     conceptDataType,
-    groupSubjectTypeUUID
+    groupSubjectTypeUUID,
   } = selectedFilter || emptyFilter;
   const { programs, subjectTypes, encounterTypes } = operationalModules || {};
 
-  const mapToOptions = entity => {
-    return map(entity, item => {
+  const mapToOptions = (entity) => {
+    return map(entity, (item) => {
       const actualItem = item.that || item;
       return { label: actualItem.name, value: actualItem.uuid };
     });
@@ -117,7 +120,7 @@ export const CreateEditFilters = ({
       (scopeParameters &&
         scopeParameters[scopeKey] &&
         options.filter(({ value }) =>
-          scopeParameters[scopeKey].includes(value)
+          scopeParameters[scopeKey].includes(value),
         )) ||
       []
     );
@@ -133,7 +136,7 @@ export const CreateEditFilters = ({
 
   const [filterName, setFilterName] = useState(titleKey);
   const [selectedSubject, setSubject] = useState(
-    mapPreviousToOptions(subjectTypeUUID, subjectTypeOptions)
+    mapPreviousToOptions(subjectTypeUUID, subjectTypeOptions),
   );
   const groupSubjectTypeOptions = mapToOptions(
     filter(
@@ -142,38 +145,38 @@ export const CreateEditFilters = ({
         !!group &&
         !get(
           find(subjectTypes, ({ uuid }) => uuid === selectedSubject.value),
-          "group"
-        )
-    )
+          "group",
+        ),
+    ),
   );
   const [selectedGroupSubject, setGroupSubjectType] = useState(
-    mapPreviousToOptions(groupSubjectTypeUUID, subjectTypeOptions)
+    mapPreviousToOptions(groupSubjectTypeUUID, subjectTypeOptions),
   );
   const [selectedType, setType] = useState(
-    mapPreviousToOptions(type, typeOptions)
+    mapPreviousToOptions(type, typeOptions),
   );
   const [selectedConcept, setConcept] = useState(
     (conceptName && {
       label: conceptName,
-      value: { uuid: conceptUUID, dataType: conceptDataType }
+      value: { uuid: conceptUUID, dataType: conceptDataType },
     }) ||
-      ""
+      "",
   );
   const [selectedScope, setScope] = useState(
-    mapPreviousToOptions(scope, scopeOptions)
+    mapPreviousToOptions(scope, scopeOptions),
   );
   const [selectedEncounter, setEncounter] = useState(
-    mapPreviousParamsToOptions("encounterTypeUUIDs", encounterTypeOptions)
+    mapPreviousParamsToOptions("encounterTypeUUIDs", encounterTypeOptions),
   );
   const [selectedProgram, setProgram] = useState(
-    mapPreviousParamsToOptions("programUUIDs", programOptions)
+    mapPreviousParamsToOptions("programUUIDs", programOptions),
   );
   const [selectedWidget, setWidget] = useState(
-    mapPreviousToOptions(widget, widgetOptions)
+    mapPreviousToOptions(widget, widgetOptions),
   );
   const [messageStatus, setMessageStatus] = useState({
     message: "",
-    display: false
+    display: false,
   });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 
@@ -214,13 +217,13 @@ export const CreateEditFilters = ({
   const saveFilter = () => {
     const encType = isEmpty(selectedEncounter)
       ? []
-      : selectedEncounter.map(l => l.value);
+      : selectedEncounter.map((l) => l.value);
     const prog = isEmpty(selectedProgram)
       ? []
-      : selectedProgram.map(l => l.value);
+      : selectedProgram.map((l) => l.value);
     const scopeParams = {
       programUUIDs: prog,
-      encounterTypeUUIDs: encType
+      encounterTypeUUIDs: encType,
     };
     const newFilter = {
       titleKey: filterName,
@@ -234,7 +237,7 @@ export const CreateEditFilters = ({
       conceptDataType:
         (!isEmpty(selectedConcept) && selectedConcept.value.dataType) || null,
       widget: (!isEmpty(selectedWidget) && selectedWidget.label) || null,
-      scopeParameters: !isEmpty(selectedConcept) ? scopeParams : null
+      scopeParameters: !isEmpty(selectedConcept) ? scopeParams : null,
     };
 
     if (!isNil(dashboardFilterSave)) {
@@ -243,28 +246,28 @@ export const CreateEditFilters = ({
       const data = getNewFilterData(pickBy(newFilter, identity));
       return http
         .put("/organisationConfig", data)
-        .then(response => {
+        .then((response) => {
           if (response.status === 200 || response.status === 201) {
             setMessageStatus({
               message: "TaskAssignmentFilter updated",
-              display: true
+              display: true,
             });
             setSnackBarStatus(true);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           setMessageStatus(ErrorMessageUtil.getMessageType1(error));
           setSnackBarStatus(true);
         });
     }
   };
 
-  const getNewFilterData = newFilter => {
+  const getNewFilterData = (newFilter) => {
     const setting = settings;
     const oldFilters = setting.settings[filterType];
     const newFilters = isNil(selectedFilter)
       ? [...oldFilters, newFilter]
-      : [...oldFilters.filter(f => f.titleKey !== titleKey), newFilter];
+      : [...oldFilters.filter((f) => f.titleKey !== titleKey), newFilter];
     return {
       uuid: setting.uuid,
       worklistUpdationRule: worklistUpdationRule,
@@ -277,8 +280,8 @@ export const CreateEditFilters = ({
         searchFilters:
           filterType === "searchFilters"
             ? omitTableData(newFilters)
-            : omitTableData(setting.settings.searchFilters)
-      }
+            : omitTableData(setting.settings.searchFilters),
+      },
     };
   };
 
@@ -288,7 +291,7 @@ export const CreateEditFilters = ({
     value,
     options,
     onChange,
-    toolTipKey
+    toolTipKey,
   ) => {
     return (
       <div style={{ width: 400 }}>
@@ -309,7 +312,7 @@ export const CreateEditFilters = ({
     value,
     options,
     onChange,
-    toolTipKey
+    toolTipKey,
   ) => {
     return (
       <div style={{ width: 400 }}>
@@ -333,17 +336,17 @@ export const CreateEditFilters = ({
     const inputValue = deburr(value.trim()).toLowerCase();
     http
       .get("/search/concept?name=" + encodeURIComponent(inputValue))
-      .then(response => {
+      .then((response) => {
         const concepts = response.data;
         const filteredConcepts = concepts.filter(
-          concept => !includes(nonSupportedTypes, concept.dataType)
+          (concept) => !includes(nonSupportedTypes, concept.dataType),
         );
         const conceptOptions = map(
           filteredConcepts,
           ({ name, uuid, dataType }) => ({
             label: name,
-            value: { uuid, dataType }
-          })
+            value: { uuid, dataType },
+          }),
         );
         setSuggestions(conceptOptions);
         callback(conceptOptions);
@@ -355,14 +358,14 @@ export const CreateEditFilters = ({
     setWidget("");
   };
 
-  const onTypeChange = type => {
+  const onTypeChange = (type) => {
     setType(type);
     setConcept("");
     setScope("");
     resetState();
   };
 
-  const onScopeChange = scope => {
+  const onScopeChange = (scope) => {
     setScope(scope);
     resetState();
   };
@@ -372,20 +375,20 @@ export const CreateEditFilters = ({
       RegistrationDate,
       EnrolmentDate,
       ProgramEncounterDate,
-      EncounterDate
+      EncounterDate,
     } = CustomFilter.type;
     const widgetConceptDataTypes = [
       Concept.dataType.Date,
       Concept.dataType.DateTime,
       Concept.dataType.Time,
-      Concept.dataType.Numeric
+      Concept.dataType.Numeric,
     ];
     return (
       [
         RegistrationDate,
         EnrolmentDate,
         ProgramEncounterDate,
-        EncounterDate
+        EncounterDate,
       ].includes(selectedType.value) ||
       (selectedConcept.value &&
         widgetConceptDataTypes.includes(selectedConcept.value.dataType))
@@ -399,7 +402,7 @@ export const CreateEditFilters = ({
         sx={{
           boxShadow: 2,
           p: 1,
-          bgcolor: "background.paper"
+          bgcolor: "background.paper",
         }}
       >
         <DocumentationContainer filename={documentationFileName}>
@@ -413,7 +416,7 @@ export const CreateEditFilters = ({
                   style={{
                     fontSize: 20,
                     color: "rgba(0, 0, 0)",
-                    marginBottom: 20
+                    marginBottom: 20,
                   }}
                 >
                   {title}
@@ -425,14 +428,14 @@ export const CreateEditFilters = ({
                   label="TaskAssignmentFilter Name *"
                   autoComplete="off"
                   value={filterName}
-                  onChange={event => setFilterName(event.target.value)}
+                  onChange={(event) => setFilterName(event.target.value)}
                   style={{ width: 400 }}
                   toolTipKey={"APP_DESIGNER_FILTER_NAME"}
                 />
               </FormControl>
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {renderSelect(
@@ -440,12 +443,12 @@ export const CreateEditFilters = ({
                 "Select Subject Type",
                 selectedSubject,
                 subjectTypeOptions,
-                sub => setSubject(sub),
-                "APP_DESIGNER_FILTER_SUBJECT_TYPE"
+                (sub) => setSubject(sub),
+                "APP_DESIGNER_FILTER_SUBJECT_TYPE",
               )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {renderSelect(
@@ -453,12 +456,12 @@ export const CreateEditFilters = ({
                 "Filter Type",
                 selectedType,
                 typeOptions,
-                type => onTypeChange(type),
-                "APP_DESIGNER_FILTER_TYPE"
+                (type) => onTypeChange(type),
+                "APP_DESIGNER_FILTER_TYPE",
               )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {selectedType.value === CustomFilter.type.GroupSubject &&
@@ -467,12 +470,12 @@ export const CreateEditFilters = ({
                   "Select Group Subject Type",
                   selectedGroupSubject,
                   groupSubjectTypeOptions,
-                  sub => setGroupSubjectType(sub),
-                  "APP_DESIGNER_FILTER_GROUP_SUBJECT_TYPE"
+                  (sub) => setGroupSubjectType(sub),
+                  "APP_DESIGNER_FILTER_GROUP_SUBJECT_TYPE",
                 )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {selectedType.value === "Concept" && (
@@ -487,14 +490,14 @@ export const CreateEditFilters = ({
                     defaultOptions={suggestions}
                     value={selectedConcept}
                     placeholder={"Type to search"}
-                    onChange={value => setConcept(value)}
+                    onChange={(value) => setConcept(value)}
                     loadOptions={loadConcept}
                   />
                 </div>
               )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {selectedType.value === "Concept" &&
@@ -503,12 +506,12 @@ export const CreateEditFilters = ({
                   "Search Scope",
                   selectedScope,
                   scopeOptions,
-                  scope => onScopeChange(scope),
-                  "APP_DESIGNER_FILTER_SEARCH_SCOPE"
+                  (scope) => onScopeChange(scope),
+                  "APP_DESIGNER_FILTER_SEARCH_SCOPE",
                 )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {selectedType.value === "Concept" &&
@@ -518,12 +521,12 @@ export const CreateEditFilters = ({
                   "Select Program",
                   selectedProgram,
                   programOptions,
-                  program => setProgram(program),
-                  "APP_DESIGNER_FILTER_PROGRAM"
+                  (program) => setProgram(program),
+                  "APP_DESIGNER_FILTER_PROGRAM",
                 )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {selectedType.value === "Concept" &&
@@ -533,12 +536,12 @@ export const CreateEditFilters = ({
                   "Select Program",
                   selectedProgram,
                   programOptions,
-                  program => setProgram([program]),
-                  "APP_DESIGNER_FILTER_PROGRAM"
+                  (program) => setProgram([program]),
+                  "APP_DESIGNER_FILTER_PROGRAM",
                 )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {selectedType.value === "Concept" &&
@@ -549,12 +552,12 @@ export const CreateEditFilters = ({
                   "Select Encounter Type",
                   selectedEncounter,
                   encounterTypeOptions,
-                  enc => setEncounter(enc),
-                  "APP_DESIGNER_FILTER_ENCOUNTER_TYPE"
+                  (enc) => setEncounter(enc),
+                  "APP_DESIGNER_FILTER_ENCOUNTER_TYPE",
                 )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {widgetRequired() &&
@@ -563,18 +566,18 @@ export const CreateEditFilters = ({
                   "Select Widget Type",
                   selectedWidget,
                   widgetOptions,
-                  w => setWidget(w),
-                  "APP_DESIGNER_FILTER_WIDGET_TYPE"
+                  (w) => setWidget(w),
+                  "APP_DESIGNER_FILTER_WIDGET_TYPE",
                 )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
             </div>
             <Box
               sx={{
-                m: 1
+                m: 1,
               }}
             >
               <SaveComponent
@@ -589,9 +592,9 @@ export const CreateEditFilters = ({
         {messageStatus.display && (
           <CustomizedSnackbar
             message={messageStatus.message}
-            getDefaultSnackbarStatus={status => setSnackBarStatus(status)}
+            getDefaultSnackbarStatus={(status) => setSnackBarStatus(status)}
             defaultSnackbarStatus={snackBarStatus}
-            variant="success"
+            variant={"success"}
           />
         )}
       </Box>

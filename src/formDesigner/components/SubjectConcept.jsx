@@ -3,7 +3,7 @@ import { Grid, FormHelperText } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { get } from "lodash";
 
-export const SubjectConcept = props => {
+export const SubjectConcept = (props) => {
   const subjectTypeOptions = get(props.operationalModules, "subjectTypes", []);
   const [subjectType, setSubjectType] = useState("");
 
@@ -15,30 +15,32 @@ export const SubjectConcept = props => {
     ) {
     } else {
       const subjectType =
-        props.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID") !==
-        undefined
-          ? props.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID")
-              .value
+        props.keyValues.find(
+          (keyValue) => keyValue.key === "subjectTypeUUID",
+        ) !== undefined
+          ? props.keyValues.find(
+              (keyValue) => keyValue.key === "subjectTypeUUID",
+            ).value
           : undefined;
       setSubjectType(subjectType !== undefined ? subjectType : "");
     }
   }, [props.keyValues]);
 
-  const updateSubjectType = event => {
+  const updateSubjectType = (event) => {
     setSubjectType(event.target.value);
     props.inlineConcept
       ? props.updateKeyValues(
           props.groupIndex,
           "subjectTypeUUID",
           event.target.value,
-          props.index
+          props.index,
         )
       : props.updateKeyValues(
           {
             key: "subjectTypeUUID",
-            value: event.target.value
+            value: event.target.value,
           },
-          0
+          0,
         );
   };
 
@@ -48,21 +50,21 @@ export const SubjectConcept = props => {
       <Grid
         container
         sx={{
-          justifyContent: "flex-start"
+          justifyContent: "flex-start",
         }}
       >
         <Grid
           size={{
             xs: 12,
-            sm: 12
+            sm: 12,
           }}
         >
           <AvniSelect
-            style={{ width: "400px", height: 40, marginTop: 24 }}
+            style={{ width: "auto" }}
             onChange={updateSubjectType}
-            options={subjectTypeOptions.map(subjectType => ({
+            options={subjectTypeOptions.map((subjectType) => ({
               value: subjectType.uuid,
-              label: subjectType.name
+              label: subjectType.name,
             }))}
             value={subjectType}
             label="Subject Type"

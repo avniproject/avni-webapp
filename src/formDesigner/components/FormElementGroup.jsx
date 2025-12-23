@@ -117,7 +117,7 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   height: 40,
   minHeight: "26px",
   "& .MuiTabs-indicator": {
-    backgroundColor: "#fff",
+    backgroundColor: "#000000",
   },
 }));
 
@@ -400,7 +400,6 @@ function FormElementGroup(props) {
                   </Grid>
 
                   <Grid
-                    item
                     sx={{
                       display: "flex",
                       alignItems: "center",

@@ -11,7 +11,7 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
   const styles = {
     root: {
       position: "relative",
-      display: "inline-block"
+      display: "inline-block",
     },
     content: {
       position: "absolute",
@@ -19,8 +19,8 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
         displayPosition === "top"
           ? -48
           : displayPosition === "bottom"
-          ? 30
-          : -10,
+            ? 30
+            : -10,
       right: _.includes(["top", "bottom"], displayPosition) ? 0 : -120,
       left: _.includes(["top", "bottom"], displayPosition) ? -120 : 20,
       zIndex: 1,
@@ -30,20 +30,20 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
       backgroundColor: "#f7f7f7",
       maxWidth: _.includes(["top", "bottom"], displayPosition)
         ? "300px"
-        : "200px"
-    }
+        : "200px",
+    },
   };
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetch(`/documentation/toolTip.json`)
-      .then(res => res.json())
-      .then(data => setMessage(data[toolTipKey] || "No key found"));
+      .then((res) => res.json())
+      .then((data) => setMessage(data[toolTipKey] || "No key found"));
   }, []);
 
   const handleClick = () => {
-    setOpen(prev => !prev);
+    setOpen((prev) => !prev);
   };
 
   const handleClickAway = () => {
@@ -79,7 +79,7 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
         <div style={styles.root}>
           <Help
             onClick={handleClick}
-            style={{ fontSize: "18px", color: "#a19d9d", cursor: "pointer" }}
+            style={{ fontSize: "1.1rem", color: "#a19d9d", cursor: "pointer" }}
           />
           {open ? displayMarkup() : null}
         </div>

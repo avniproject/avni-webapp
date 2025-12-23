@@ -123,7 +123,6 @@
   "APP_DESIGNER_FORM_ELEMENT_UNIT": "Unit for the value",
   "APP_DESIGNER_FORM_ELEMENT_CODED_TYPE": "Type of form element for coded concept",
   "APP_DESIGNER_FORM_ELEMENT_VIDEO_QUALITY": "Video quality",
-  "APP_DESIGNER_FORM_ELEMENT_IMAGE_QUALITY": "Image quality",
   "APP_DESIGNER_FORM_ELEMENT_DURATION_OPTIONS": "Duration concept options",
   "APP_DESIGNER_FORM_ELEMENT_VALIDATION_REGEX": "Any validation regex that will be applied to this form element.\n\nExample **^\\[0-9\\]{10}$** is for 10 digit mobile number.",
   "APP_DESIGNER_FORM_ELEMENT_VALIDATION_DESCRIPTION_KEY": "Corresponding value from translations will be used to show error message",

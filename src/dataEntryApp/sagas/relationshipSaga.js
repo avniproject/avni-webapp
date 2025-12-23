@@ -1,8 +1,15 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import { types, setRelationshipTypes } from "../reducers/relationshipReducer";
+import {
+  removeRelationshipFailed,
+  saveRelationshipFailed,
+  saveRelationshipSuccess,
+  setRelationshipTypes,
+  types,
+} from "../reducers/relationshipReducer";
 import api from "../api";
+import { getAPIErrorMessage } from "./sagaUtils";
 
-export default function*() {
+export default function* () {
   yield all([relationshipTypeWatcher, saveRelatioshipWatcher, removeRelatioshipWatcher].map(fork));
 }
 
@@ -11,7 +18,12 @@ export function* relationshipTypeWatcher() {
 }
 
 export function* saveRelatioshipWorker({ relationData }) {
-  yield call(api.saveRelationShip, relationData);
+  try {
+    yield call(api.saveRelationShip, relationData);
+    yield put(saveRelationshipSuccess());
+  } catch (e) {
+    yield put(saveRelationshipFailed(getAPIErrorMessage(e)));
+  }
 }
 
 export function* saveRelatioshipWatcher() {
@@ -19,7 +31,11 @@ export function* saveRelatioshipWatcher() {
 }
 
 export function* removeRelatioshipWorker(RelationId) {
-  yield call(api.removeRelationShip, RelationId.relationId);
+  try {
+    yield call(api.removeRelationShip, RelationId.relationId);
+  } catch (e) {
+    yield put(removeRelationshipFailed(getAPIErrorMessage(e)));
+  }
 }
 
 export function* removeRelatioshipWatcher() {
