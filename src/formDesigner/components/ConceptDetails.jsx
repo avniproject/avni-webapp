@@ -328,6 +328,10 @@ function ConceptDetails() {
   const [subjectTypeOptions, setSubjectTypeOptions] = useState([]);
   const [canEdit, setCanEdit] = useState(false);
   const [showEditWarning, setShowEditWarning] = useState(false);
+  const hasPrivilege = UserInfo.hasPrivilege(
+    userInfo,
+    Privilege.PrivilegeType.EditConcept,
+  );
 
   async function onLoad() {
     const conceptRes = (await http.get("/web/concept/" + uuid)).data;
@@ -388,11 +392,6 @@ function ConceptDetails() {
     }
 
     const canEditResult = canEditConcept(conceptRes, userInfo, organisation);
-    const hasPrivilege = UserInfo.hasPrivilege(
-      userInfo,
-      Privilege.PrivilegeType.EditConcept,
-    );
-
     setCanEdit(canEditResult);
     setShowEditWarning(!canEditResult || !hasPrivilege);
 
@@ -452,10 +451,7 @@ function ConceptDetails() {
                 fontSize: "0.875rem",
               }}
             >
-              {!UserInfo.hasPrivilege(
-                userInfo,
-                Privilege.PrivilegeType.EditConcept,
-              )
+              {!hasPrivilege
                 ? "You don't have the privilege to modify the concept"
                 : "This concept is shared by multiple organisations and hence cannot be edited. Create a new one if needed."}
             </Box>
