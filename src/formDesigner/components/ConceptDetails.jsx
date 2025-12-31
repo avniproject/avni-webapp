@@ -439,7 +439,7 @@ function ConceptDetails() {
         {showEditWarning && (
           <Grid
             container
-            style={{ justifyContent: "flex-end", marginBottom: "1rem" }}
+            style={{ justifyContent: "flex-start", marginBottom: "1rem" }}
           >
             <Box
               sx={{
