@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import {
   DatePicker,
   DateTimePicker,
-  LocalizationProvider
+  LocalizationProvider,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import {
@@ -13,7 +13,7 @@ import {
   Radio,
   RadioGroup,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
 import { find, get, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
@@ -21,28 +21,44 @@ import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
 import {
   differenceInYears,
   differenceInMonths,
-  differenceInDays
+  differenceInDays,
 } from "date-fns";
+
+export const isDateValid = (date) => {
+  if (!date) return true;
+  const currentDate = new Date();
+  const yearDifference = Math.abs(
+    currentDate.getFullYear() - date.getFullYear(),
+  );
+  return yearDifference <= 2000;
+};
+
+export const getDateValidationError = (date) => {
+  if (!isDateValid(date)) {
+    return { messageKey: "invalidDate" };
+  }
+  return null;
+};
 
 const StyledForm = styled("div")(({ theme }) => ({
   "& > *": {
     margin: theme.spacing(1),
-    width: "20ch"
-  }
+    width: "auto",
+  },
 }));
 
 const StyledLabel = styled(Typography)({
   width: "50%",
   marginBottom: 10,
-  color: "rgba(0, 0, 0, 0.54)"
+  color: "rgba(0, 0, 0, 0.54)",
 });
 
 const StyledTextField = styled(TextField)({
-  width: "30%"
+  width: "30%",
 });
 
 const StyledRadioLabel = styled(FormControlLabel)(({ theme }) => ({
-  marginLeft: theme.spacing(2.5)
+  marginLeft: theme.spacing(2.5),
 }));
 
 export const DateTimeFormElement = ({
@@ -50,13 +66,13 @@ export const DateTimeFormElement = ({
   value,
   update,
   validationResults,
-  uuid
+  uuid,
 }) => {
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
-      formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
+      formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex,
   );
 
   return (
@@ -79,10 +95,10 @@ export const DateTimeFormElement = ({
             helperText:
               validationResult &&
               t(validationResult.messageKey, validationResult.extra),
-            variant: "outlined"
+            variant: "outlined",
           },
           actionBar: { actions: ["clear"] },
-          openPickerButton: { "aria-label": "change date", color: "primary" }
+          openPickerButton: { "aria-label": "change date", color: "primary" },
         }}
       />
     </LocalizationProvider>
@@ -90,7 +106,7 @@ export const DateTimeFormElement = ({
 };
 
 const getValue = (keyValues, key) => {
-  const keyValue = find(keyValues, keyValue => keyValue.key === key);
+  const keyValue = find(keyValues, (keyValue) => keyValue.key === key);
   return get(keyValue, "value");
 };
 
@@ -99,15 +115,20 @@ export const DateFormElement = ({
   value,
   update,
   validationResults,
-  uuid
+  uuid,
 }) => {
   const { t } = useTranslation();
   const durationValue = getValue(fe.keyValues, "durationOptions");
-  const validationResult = find(
+  let validationResult = find(
     validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
-      formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
+      formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex,
   );
+
+  const dateValidationError = getDateValidationError(value);
+  if (dateValidationError) {
+    validationResult = { ...dateValidationError, success: false };
+  }
 
   return durationValue ? (
     <DateAndDurationFormElement
@@ -136,13 +157,13 @@ export const DateFormElement = ({
             helperText:
               validationResult &&
               t(validationResult.messageKey, validationResult.extra),
-            variant: "outlined"
+            variant: "outlined",
           },
           input: {
-            disableUnderline: !fe.editable
+            disableUnderline: !fe.editable,
           },
           actionBar: { actions: ["clear"] },
-          openPickerButton: { "aria-label": "change date", color: "primary" }
+          openPickerButton: { "aria-label": "change date", color: "primary" },
         }}
       />
     </LocalizationProvider>
@@ -153,7 +174,7 @@ export const DateAndDurationFormElement = ({
   formElement: fe,
   value,
   update,
-  validationResult
+  validationResult,
 }) => {
   const { t } = useTranslation();
   const durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
@@ -163,7 +184,12 @@ export const DateAndDurationFormElement = ({
   const firstDuration = value ? String(differenceInYears(today, value)) : "";
   const [duration, setDuration] = useState(firstDuration);
 
-  const onDateChange = dateValue => {
+  const dateValidationError = getDateValidationError(date);
+  if (dateValidationError) {
+    validationResult = { ...dateValidationError, success: false };
+  }
+
+  const onDateChange = (dateValue) => {
     if (isNil(dateValue)) {
       update(null);
       setDate(null);
@@ -173,7 +199,7 @@ export const DateAndDurationFormElement = ({
       const diffFunctions = {
         years: differenceInYears,
         months: differenceInMonths,
-        days: differenceInDays
+        days: differenceInDays,
       };
       const extractDuration = String(diffFunctions[units](today, dateValue));
       setDuration(extractDuration);
@@ -181,7 +207,7 @@ export const DateAndDurationFormElement = ({
     }
   };
 
-  const onDurationChange = durationValue => {
+  const onDurationChange = (durationValue) => {
     const newDuration = durationValue.target.value;
     if (newDuration === "") {
       setDuration("");
@@ -193,11 +219,11 @@ export const DateAndDurationFormElement = ({
           new Date(date.setFullYear(date.getFullYear() - amount)),
         months: (date, amount) =>
           new Date(date.setMonth(date.getMonth() - amount)),
-        days: (date, amount) => new Date(date.setDate(date.getDate() - amount))
+        days: (date, amount) => new Date(date.setDate(date.getDate() - amount)),
       };
       const durationDate = diffFunctions[units](
         new Date(today),
-        Number(newDuration)
+        Number(newDuration),
       );
       setDate(durationDate);
       setDuration(newDuration);
@@ -205,7 +231,7 @@ export const DateAndDurationFormElement = ({
     }
   };
 
-  const onChangeUnit = unitsValue => {
+  const onChangeUnit = (unitsValue) => {
     const newUnit = unitsValue.target.value;
     setUnit(newUnit);
     if (duration !== "") {
@@ -214,11 +240,11 @@ export const DateAndDurationFormElement = ({
           new Date(date.setFullYear(date.getFullYear() - amount)),
         months: (date, amount) =>
           new Date(date.setMonth(date.getMonth() - amount)),
-        days: (date, amount) => new Date(date.setDate(date.getDate() - amount))
+        days: (date, amount) => new Date(date.setDate(date.getDate() - amount)),
       };
       const durationDate = diffFunctions[newUnit](
         new Date(today),
-        Number(duration)
+        Number(duration),
       );
       setDate(durationDate);
       update(durationDate);
@@ -250,14 +276,15 @@ export const DateAndDurationFormElement = ({
               helperText:
                 validationResult &&
                 t(validationResult.messageKey, validationResult.extra),
-              variant: "outlined"
+              variant: "outlined",
             },
             input: {
-              disableUnderline: !fe.editable
+              disableUnderline: !fe.editable,
             },
             actionBar: { actions: ["clear"] },
-            openPickerButton: { "aria-label": "change date", color: "primary" }
+            openPickerButton: { "aria-label": "change date", color: "primary" },
           }}
+          sx={{ width: "11rem" }}
         />
       </LocalizationProvider>
       <FormLabel sx={{ mt: 1 }}>OR</FormLabel>
@@ -280,7 +307,7 @@ export const DateAndDurationFormElement = ({
             onChange={onDurationChange}
             label={t(units)}
           />
-          {durationValue.map(item => (
+          {durationValue.map((item) => (
             <StyledRadioLabel
               key={item}
               value={item}
