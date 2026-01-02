@@ -19,7 +19,6 @@ import { useSelector } from "react-redux";
 import { Privilege } from "openchs-models";
 import MediaService from "adminApp/service/MediaService";
 import { MediaPreview } from "../../common/components/AvniMediaUpload";
-import { canEditConcept } from "../util/ConceptPermissionUtil";
 
 function NumericDetails({ data }) {
   return (
@@ -391,7 +390,8 @@ function ConceptDetails() {
       );
     }
 
-    const canEditResult = canEditConcept(conceptRes, userInfo, organisation);
+    const canEditResult =
+      hasPrivilege && conceptRes.organisationId === organisation.id;
     setCanEdit(canEditResult);
     setShowEditWarning(!canEditResult || !hasPrivilege);
 
