@@ -134,14 +134,14 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
       setDataTypes(sortBy(response.data));
     } else {
       const conceptData = await ConceptService.getConcept(params.uuid);
+      setConcept(conceptData);
       const canEdit =
         UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept) &&
-        concept.organisationId === organisation.id;
+        conceptData.organisationId === organisation.id;
       if (!canEdit) {
         setRedirectShow(true);
         return;
       }
-      setConcept(conceptData);
     }
 
     const opModules = await http.get("/web/operationalModules");
