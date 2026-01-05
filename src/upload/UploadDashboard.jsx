@@ -121,7 +121,10 @@ const UploadDashboard = () => {
   const [locationUploadMode, setLocationUploadMode] = useState("");
   const [encounterUploadMode, setEncounterUploadMode] = useState("");
   const [hierarchy, setHierarchy] = useState(null);
-  const [configuredHierarchies, setConfiguredHierarchies] = useState([]);
+  const [configuredLocationHierarchies, setConfiguredLocationHierarchies] =
+    useState([]);
+  const [subjectsLocationHierarchies, setSubjectsLocationHierarchies] =
+    useState({});
   const [reviewStatus, setReviewStatus] = useState(null);
 
   const getUploadTypeCode = useCallback(
@@ -171,8 +174,21 @@ const UploadDashboard = () => {
       if (option !== staticTypesWithStaticDownload.getName("metadataZip")) {
         setEntityForDownload(option);
       }
+      const optionCode = getUploadTypeCode(option);
+      if (optionCode.startsWith("Subject---")) {
+        const subjectTypeName = optionCode.split("---")[1];
+        const subjectHierarchies =
+          subjectsLocationHierarchies[subjectTypeName].availableHierarchies;
+        const hierarchyKeys = Object.keys(subjectHierarchies);
+
+        if (hierarchyKeys.length === 1) {
+          setHierarchy(hierarchyKeys[0]);
+        } else if (hierarchyKeys.length > 1) {
+          setHierarchy(null);
+        }
+      }
     },
-    [isEncounterType],
+    [isEncounterType, subjectsLocationHierarchies],
   );
 
   const handleUploadFile = useCallback(async () => {
@@ -240,6 +256,10 @@ const UploadDashboard = () => {
     await api.downloadDynamicSample(code);
   }, []);
 
+  const downloadSubjectSample = useCallback(async (code, hierarchy) => {
+    await api.downloadSubjectSample(code, hierarchy);
+  }, []);
+
   const handleDownloadSample = useCallback(async () => {
     try {
       const code = getUploadTypeCode(entityForDownload);
@@ -263,6 +283,8 @@ const UploadDashboard = () => {
           return;
         }
         await downloadEncounterSample(code, encounterUploadMode);
+      } else if (code && code.startsWith("Subject---")) {
+        await downloadSubjectSample(code, hierarchy);
       } else {
         const response = await httpClient.getData(
           `/web/importSampleDownloadable?uploadType=${code}`,
@@ -308,6 +330,20 @@ const UploadDashboard = () => {
     }
   }, [file]);
 
+  const shouldShowHierarchyForSubject = useCallback(
+    (uploadType) => {
+      const uploadTypeCode = getUploadTypeCode(uploadType);
+      if (!uploadTypeCode || !uploadTypeCode.startsWith("Subject---")) {
+        return false;
+      }
+      const subjectTypeName = uploadTypeCode.split("---")[1];
+      const subjectHierarchies =
+        subjectsLocationHierarchies[subjectTypeName].availableHierarchies;
+      return Object.keys(subjectHierarchies).length > 1;
+    },
+    [subjectsLocationHierarchies],
+  );
+
   const isSampleDownloadDisallowed = useMemo(
     () =>
       isEmpty(entityForDownload) ||
@@ -315,6 +351,7 @@ const UploadDashboard = () => {
       (uploadType === UPLOAD_TYPES.LOCATIONS &&
         locationUploadMode === LOCATION_MODES.CREATE &&
         isEmpty(hierarchy)) ||
+      (shouldShowHierarchyForSubject(uploadType) && isEmpty(hierarchy)) ||
       (isEncounterType(uploadType) && isEmpty(encounterUploadMode)),
     [
       entityForDownload,
@@ -323,6 +360,7 @@ const UploadDashboard = () => {
       hierarchy,
       isEncounterType,
       encounterUploadMode,
+      shouldShowHierarchyForSubject,
     ],
   );
 
@@ -331,7 +369,10 @@ const UploadDashboard = () => {
     api.fetchLocationHierarchies().then((locHierarchies) => {
       const firstHierarchy = get(locHierarchies, "[0].value", null);
       setHierarchy(firstHierarchy);
-      setConfiguredHierarchies(locHierarchies);
+      setConfiguredLocationHierarchies(locHierarchies);
+    });
+    api.fetchSubjectsLocationHierarchies().then((subjectHierarchies) => {
+      setSubjectsLocationHierarchies(subjectHierarchies);
     });
   }, [dispatch]);
 
@@ -438,21 +479,37 @@ const UploadDashboard = () => {
                 )}
               </Grid>
               <Grid container>
-                {uploadType === UPLOAD_TYPES.LOCATIONS &&
-                  locationUploadMode === LOCATION_MODES.CREATE &&
-                  (configuredHierarchies.length > 0 ? (
-                    <LocationHierarchy
-                      hierarchy={hierarchy}
-                      setHierarchy={setHierarchy}
-                      configuredHierarchies={configuredHierarchies}
-                    />
-                  ) : (
-                    <Box>
-                      <StyledErrorTypography>
-                        Invalid or missing Location Hierarchy.
-                      </StyledErrorTypography>
-                    </Box>
-                  ))}
+                {((uploadType === UPLOAD_TYPES.LOCATIONS &&
+                  locationUploadMode === LOCATION_MODES.CREATE) ||
+                  shouldShowHierarchyForSubject(uploadType)) &&
+                  (() => {
+                    let hierarchiesToShow = configuredLocationHierarchies;
+
+                    if (shouldShowHierarchyForSubject(uploadType)) {
+                      const uploadTypeCode = getUploadTypeCode(uploadType);
+                      const subjectTypeName = uploadTypeCode.split("---")[1];
+                      const subjectHierarchies =
+                        subjectsLocationHierarchies[subjectTypeName]
+                          .availableHierarchies;
+                      hierarchiesToShow = Object.entries(
+                        subjectHierarchies,
+                      ).map(([value, label]) => ({ value, label }));
+                    }
+
+                    return hierarchiesToShow.length > 0 ? (
+                      <LocationHierarchy
+                        hierarchy={hierarchy}
+                        setHierarchy={setHierarchy}
+                        configuredHierarchies={hierarchiesToShow}
+                      />
+                    ) : (
+                      <Box>
+                        <StyledErrorTypography>
+                          Invalid or missing Location Hierarchy.
+                        </StyledErrorTypography>
+                      </Box>
+                    );
+                  })()}
               </Grid>
             </Grid>
           </DocumentationContainer>

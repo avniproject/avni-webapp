@@ -4,7 +4,7 @@ import { get } from "lodash";
 
 export default {
   fetchUploadJobStatuses: (params = {}) => {
-    return http.fetchJson(http.withParams("/import/status", { size: 5, ...params })).then(r => r.json);
+    return http.fetchJson(http.withParams("/import/status", { size: 5, ...params })).then((r) => r.json);
   },
   bulkUpload: (type, file, autoApprove, locationUploadMode, locationHierarchy, encounterUploadMode) =>
     http
@@ -14,38 +14,47 @@ export default {
           autoApprove,
           locationUploadMode,
           locationHierarchy,
-          encounterUploadMode
+          encounterUploadMode,
         }),
-        file
+        file,
       )
       //returns [response, error]
-      .then(r => [r.text, null])
-      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+      .then((r) => [r.text, null])
+      .catch((r) => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   fetchUploadTypes: () => {
-    return http.fetchJson(http.withParams("/web/importTypes")).then(r => r.json);
+    return http.fetchJson(http.withParams("/web/importTypes")).then((r) => r.json);
   },
   fetchLocationHierarchies: () => {
     return http
       .fetchJson(http.withParams("/web/locationHierarchies"))
-      .then(response => Object.entries(response.json).map(([value, label]) => ({ value, label })))
+      .then((response) => Object.entries(response.json).map(([value, label]) => ({ value, label })))
       .catch(() => []);
+  },
+  fetchSubjectsLocationHierarchies: () => {
+    return http
+      .fetchJson(http.withParams("/web/allSubjectsLocationHierarchies"))
+      .then((response) => response.json)
+      .catch(() => ({}));
   },
   async downloadSample(type) {
     const file = await fetch(`/bulkuploads/sample/${type}.csv`);
     const content = await file.text();
     files.download(`sample-${type}.csv`, content);
   },
-  downloadDynamicSample: type => http.downloadFile(`/web/importSample?uploadType=${type}`, `sample-${type}.csv`),
+  downloadDynamicSample: (type) => http.downloadFile(`/web/importSample?uploadType=${type}`, `sample-${type}.csv`),
   downloadLocationsSample: (type, locationUploadMode, locationHierarchy) => {
     return http.downloadFile(
       `/web/importSample?uploadType=${type}&locationUploadMode=${locationUploadMode}&locationHierarchy=${locationHierarchy}`,
-      `sample-${type}.csv`
+      `sample-${type}.csv`,
     );
   },
   downloadEncounterSample: (type, encounterUploadMode) => {
     return http.downloadFile(
       `/web/importSample?uploadType=${type}&encounterUploadMode=${encodeURIComponent(encounterUploadMode)}`,
-      `sample-${type}.csv`
+      `sample-${type}.csv`,
     );
-  }
+  },
+  downloadSubjectSample: (type, locationHierarchy) => {
+    return http.downloadFile(`/web/importSample?uploadType=${type}&locationHierarchy=${locationHierarchy}`, `sample-${type}.csv`);
+  },
 };
