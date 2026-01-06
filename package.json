@@ -40,7 +40,7 @@
     "material-react-table": "2.13.0",
     "moment": "^2.30.1",
     "openchs-idi": "git+https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8",
-    "openchs-models": "1.32.54",
+    "openchs-models": "1.33.22",
     "popper.js": "^1.16.1",
     "posthog-js": "^1.260.2",
     "prismjs": "^1.17.1",
