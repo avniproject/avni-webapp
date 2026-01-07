@@ -181,10 +181,8 @@ const UploadDashboard = () => {
           subjectsLocationHierarchies[subjectTypeName].availableHierarchies;
         const hierarchyKeys = Object.keys(subjectHierarchies);
 
-        if (hierarchyKeys.length === 1) {
+        if (hierarchyKeys.length >= 1) {
           setHierarchy(hierarchyKeys[0]);
-        } else if (hierarchyKeys.length > 1) {
-          setHierarchy(null);
         }
       }
     },
