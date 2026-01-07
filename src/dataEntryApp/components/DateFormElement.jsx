@@ -209,7 +209,7 @@ export const DateAndDurationFormElement = ({
 
   const onDurationChange = (durationValue) => {
     const newDuration = durationValue.target.value;
-    if (newDuration === "") {
+    if (newDuration === "" || !/^\d+$/.test(newDuration)) {
       setDuration("");
       setDate(null);
       update(null);
@@ -301,7 +301,12 @@ export const DateAndDurationFormElement = ({
         >
           <StyledTextField
             id="standard-number"
-            type="number"
+            type="text"
+            slotProps={{
+              htmlInput: {
+                inputMode: "numeric",
+              },
+            }}
             InputLabelProps={{ shrink: true }}
             value={duration}
             onChange={onDurationChange}
