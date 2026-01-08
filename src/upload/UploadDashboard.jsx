@@ -339,7 +339,7 @@ const UploadDashboard = () => {
         subjectsLocationHierarchies[subjectTypeName].availableHierarchies;
       return Object.keys(subjectHierarchies).length > 1;
     },
-    [subjectsLocationHierarchies],
+    [subjectsLocationHierarchies, getUploadTypeCode],
   );
 
   const isSampleDownloadDisallowed = useMemo(
