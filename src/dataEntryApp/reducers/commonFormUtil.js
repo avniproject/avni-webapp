@@ -2,7 +2,7 @@ import _, { filter, find, findIndex, get, intersectionBy, isEmpty, isNil, remove
 import formElementService, {
   filterFormElements,
   filterFormElementStatusesAndConvertToValidationResults,
-  getFormElementStatuses
+  getFormElementStatuses,
 } from "dataEntryApp/services/FormElementService";
 import { Concept, ObservationsHolder, StaticFormElementGroup, ValidationResult } from "openchs-models";
 import { getFormElementsStatuses } from "dataEntryApp/services/RuleEvaluationService";
@@ -13,7 +13,7 @@ const filterFormElementsWithStatus = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
   return {
     filteredFormElements: formElementGroup.filterElements(formElementStatuses),
-    formElementStatuses
+    formElementStatuses,
   };
 };
 
@@ -40,7 +40,12 @@ const getUpdatedNextFilteredFormElements = (formElementStatuses, nextGroup, enti
 const hasQuestionGroupWithValueInElementStatus = (formElementStatuses, allFormElements) => {
   const checkFormElement = ({ uuid, value }) => {
     if (value) {
-      return _.get(_.find(allFormElements, fe => fe.uuid === uuid), "concept.datatype") === Concept.dataType.QuestionGroup;
+      return (
+        _.get(
+          _.find(allFormElements, (fe) => fe.uuid === uuid),
+          "concept.datatype",
+        ) === Concept.dataType.QuestionGroup
+      );
     }
     return false;
   };
@@ -51,27 +56,27 @@ const hasQuestionGroupWithValueInElementStatus = (formElementStatuses, allFormEl
 const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false, isImmutable = false) => {
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
-    formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
+    (formElementGroup) => filterFormElements(formElementGroup, entity).length !== 0,
   );
 
   const lastGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder").reverse(),
-    formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
+    (formElementGroup) => filterFormElements(formElementGroup, entity).length !== 0,
   );
 
   function isObsPresent(formElement) {
-    return find(entity.observations, observation => {
+    return find(entity.observations, (observation) => {
       return observation.concept.uuid === formElement.concept.uuid;
     });
   }
 
-  let formElementGroupWithoutObs = find(sortBy(form.nonVoidedFormElementGroups(), "displayOrder"), formElementGroup => {
+  let formElementGroupWithoutObs = find(sortBy(form.nonVoidedFormElementGroups(), "displayOrder"), (formElementGroup) => {
     let obsArr = [];
     const filteredFormElements = filterFormElements(formElementGroup, entity);
     if (!!filteredFormElements && filteredFormElements.length === 0) {
       return false;
     }
-    filteredFormElements.forEach(formElement => {
+    filteredFormElements.forEach((formElement) => {
       return isObsPresent(formElement) ? obsArr.push(formElement) : "";
     });
     return obsArr.length === 0;
@@ -84,18 +89,18 @@ const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false, 
       filteredFormElements: [],
       onSummaryPage: false,
       wizard: new Wizard(1),
-      isFormEmpty: true
+      isFormEmpty: true,
     };
   }
 
   const getReturnObject = (formElementGroup, entity, isSummaryPage = false) => {
-    const indexOfGroup = findIndex(form.getFormElementGroups(), feg => feg.uuid === formElementGroup.uuid) + 1;
+    const indexOfGroup = findIndex(form.getFormElementGroups(), (feg) => feg.uuid === formElementGroup.uuid) + 1;
     const filteredFormElements = fetchFilteredFormElementsAndUpdateEntityObservations(formElementGroup, entity);
     return {
       filteredFormElements: filteredFormElements,
       formElementGroup: formElementGroup,
       wizard: new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup),
-      onSummaryPage: isSummaryPage
+      onSummaryPage: isSummaryPage,
     };
   };
   const formElementGroup = isImmutable ? formElementGroupWithoutObs : firstGroupWithAtLeastOneVisibleElement;
@@ -115,27 +120,49 @@ function nextState(formElementGroup, filteredFormElements, validationResults, ob
     observations,
     entity,
     onSummaryPage,
-    wizard
+    wizard,
   };
 }
 
-const isFailedValidation = result => !result.success;
-const errors = validationResults => filter(validationResults, isFailedValidation);
+const isFailedValidation = (result) => !result.success;
+const errors = (validationResults) => filter(validationResults, isFailedValidation);
 
 const getIdValidationErrors = (filteredFormElements, obsHolder) => {
-  const isIdFieldWithoutObservation = fe => fe.getType() === Concept.dataType.Id && isNil(obsHolder.findObservation(fe.concept));
-  const createValidationResult = fe => ValidationResult.failure(fe.uuid, "ranOutOfIds");
+  const isIdFieldWithoutObservation = (fe) => fe.getType() === Concept.dataType.Id && isNil(obsHolder.findObservation(fe.concept));
+  const createValidationResult = (fe) => ValidationResult.failure(fe.uuid, "ranOutOfIds");
 
   return filter(filteredFormElements, isIdFieldWithoutObservation).map(createValidationResult);
 };
 
+export const isDateValid = (date) => {
+  if (!date) return true;
+  const currentDate = new Date();
+  return Math.abs(currentDate.getFullYear() - date.getFullYear()) <= 2000;
+};
+
+const getDateValidationErrors = (filteredFormElements, obsHolder) => {
+  const isDateFieldWithInvalidValue = (fe) => {
+    if (fe.getType() !== Concept.dataType.Date) return false;
+    const observation = obsHolder.findObservation(fe.concept);
+    if (!observation || !observation.getValue()) return false;
+
+    const date = observation.getValue();
+    if (!date) return false;
+
+    return !isDateValid(date);
+  };
+
+  const createValidationResult = (fe) => ValidationResult.failure(fe.uuid, "invalidDate");
+  return filter(filteredFormElements, isDateFieldWithInvalidValue).map(createValidationResult);
+};
+
 // Utility functions for form element validation
-const getStandaloneElements = formElements => filter(formElements, fe => !isNil(fe) && !isNil(fe.concept) && isNil(fe.group));
+const getStandaloneElements = (formElements) => filter(formElements, (fe) => !isNil(fe) && !isNil(fe.concept) && isNil(fe.group));
 
-const getQuestionGroupElements = formElements =>
-  filter(formElements, fe => !isNil(fe) && !isNil(fe.concept) && fe.concept.datatype === Concept.dataType.QuestionGroup);
+const getQuestionGroupElements = (formElements) =>
+  filter(formElements, (fe) => !isNil(fe) && !isNil(fe.concept) && fe.concept.datatype === Concept.dataType.QuestionGroup);
 
-const getChildFormElements = formElements => filter(formElements, fe => !isNil(fe) && !isNil(fe.concept) && !isNil(fe.group));
+const getChildFormElements = (formElements) => filter(formElements, (fe) => !isNil(fe) && !isNil(fe.concept) && !isNil(fe.group));
 
 /**
  * Validates a single form element
@@ -148,7 +175,7 @@ const validateElement = ({
   groupObservation = null,
   obsHolder,
   formElementStatuses,
-  validationResults
+  validationResults,
 }) => {
   if (isNil(formElement) || isNil(formElement.concept)) {
     return validationResults;
@@ -165,7 +192,7 @@ const validateElement = ({
     obsHolder.observations,
     [],
     formElementStatuses,
-    childElement
+    childElement,
   );
 
   return [...validationResults, ...results];
@@ -182,7 +209,7 @@ const validateRepeatableQuestionGroup = ({
   formElements,
   obsHolder,
   formElementStatuses,
-  validationResults
+  validationResults,
 }) => {
   let results = [...validationResults];
 
@@ -206,8 +233,8 @@ const validateRepeatableQuestionGroup = ({
     // Find child form elements for this group
     const childFormElements = filter(
       formElements,
-      ffe =>
-        !isNil(ffe) && !isNil(ffe.concept) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided && ffe.questionGroupIndex === i
+      (ffe) =>
+        !isNil(ffe) && !isNil(ffe.concept) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided && ffe.questionGroupIndex === i,
     );
 
     // Validate each child form element
@@ -216,13 +243,13 @@ const validateRepeatableQuestionGroup = ({
       groupObservation,
       obsHolder,
       formElementStatuses,
-      validationResults: results
+      validationResults: results,
     };
     for (let j = 0; j < childFormElements.length; j++) {
       const childElement = childFormElements[j];
       results = validateElement({
         ...validationParams,
-        formElement: childElement
+        formElement: childElement,
       });
     }
   }
@@ -241,14 +268,14 @@ const validateNonRepeatableQuestionGroup = ({
   formElements,
   obsHolder,
   formElementStatuses,
-  validationResults
+  validationResults,
 }) => {
   let results = [...validationResults];
 
   // Find child form elements
   const childFormElements = filter(
     formElements,
-    ffe => !isNil(ffe) && !isNil(ffe.group) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided
+    (ffe) => !isNil(ffe) && !isNil(ffe.group) && get(ffe, "group.uuid") === formElement.uuid && !ffe.voided,
   );
 
   // Validate each child form element
@@ -257,14 +284,14 @@ const validateNonRepeatableQuestionGroup = ({
     groupObservation: questionGroupWrapper,
     obsHolder,
     formElementStatuses,
-    validationResults: results
+    validationResults: results,
   };
 
   for (let i = 0; i < childFormElements.length; i++) {
     const childElement = childFormElements[i];
     results = validateElement({
       ...validationParams,
-      formElement: childElement
+      formElement: childElement,
     });
   }
 
@@ -281,7 +308,7 @@ const validateChildInRepeatableGroup = ({ childFormElement, obsHolder, formEleme
 
   const indexProcessed = some(
     results,
-    vr => vr.formIdentifier === childFormElement.uuid && vr.questionGroupIndex === childFormElement.questionGroupIndex
+    (vr) => vr.formIdentifier === childFormElement.uuid && vr.questionGroupIndex === childFormElement.questionGroupIndex,
   );
 
   // If this specific index wasn't processed, validate it
@@ -296,7 +323,7 @@ const validateChildInRepeatableGroup = ({ childFormElement, obsHolder, formEleme
         parentElement: parentFormElement,
         obsHolder,
         formElementStatuses,
-        validationResults: results
+        validationResults: results,
       });
     }
 
@@ -312,7 +339,7 @@ const validateChildInRepeatableGroup = ({ childFormElement, obsHolder, formEleme
           parentElement: parentFormElement,
           obsHolder,
           formElementStatuses,
-          validationResults: results
+          validationResults: results,
         });
       }
 
@@ -323,7 +350,7 @@ const validateChildInRepeatableGroup = ({ childFormElement, obsHolder, formEleme
         groupObservation,
         obsHolder,
         formElementStatuses,
-        validationResults: results
+        validationResults: results,
       });
     }
   }
@@ -348,18 +375,18 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
 
   // Process standalone form elements
   const standaloneElements = getStandaloneElements(filteredFormElements);
-  standaloneElements.forEach(element => {
+  standaloneElements.forEach((element) => {
     validationResults = validateElement({
       formElement: element,
       obsHolder,
       formElementStatuses,
-      validationResults
+      validationResults,
     });
   });
 
   // Process question groups
   const questionGroups = getQuestionGroupElements(filteredFormElements);
-  questionGroups.forEach(formElement => {
+  questionGroups.forEach((formElement) => {
     const obsValue = obsHolder.findObservation(formElement.concept);
 
     // If observation doesn't exist, validate the empty value
@@ -368,7 +395,7 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
         formElement,
         obsHolder,
         formElementStatuses,
-        validationResults
+        validationResults,
       });
       return;
     }
@@ -389,7 +416,7 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
         formElements: filteredFormElements,
         obsHolder,
         formElementStatuses,
-        validationResults
+        validationResults,
       });
     } else {
       validationResults = validateNonRepeatableQuestionGroup({
@@ -398,16 +425,16 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
         formElements: filteredFormElements,
         obsHolder,
         formElementStatuses,
-        validationResults
+        validationResults,
       });
     }
   });
 
   // Process remaining child elements that might not have been processed
   const childElements = getChildFormElements(filteredFormElements);
-  childElements.forEach(childFormElement => {
+  childElements.forEach((childFormElement) => {
     // Skip if already processed through parent
-    const alreadyProcessed = some(validationResults, vr => vr.formIdentifier === childFormElement.uuid);
+    const alreadyProcessed = some(validationResults, (vr) => vr.formIdentifier === childFormElement.uuid);
 
     // For repeatable question groups, also check if the specific questionGroupIndex was processed
     const isInRepeatableGroup = !isNil(childFormElement.group) && childFormElement.group.repeatable;
@@ -419,7 +446,7 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
         childFormElement,
         obsHolder,
         formElementStatuses,
-        validationResults
+        validationResults,
       });
     }
     // For non-repeatable groups or if not already processed
@@ -428,7 +455,7 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
         formElement: childFormElement,
         obsHolder,
         formElementStatuses,
-        validationResults
+        validationResults,
       });
     }
   });
@@ -444,7 +471,7 @@ const onNext = ({
   validationResults,
   wizard,
   entityValidations,
-  staticFormElementIds
+  staticFormElementIds,
 }) => {
   const obsHolder = new ObservationsHolder(observations);
 
@@ -454,6 +481,7 @@ const onNext = ({
 
   // Get validation errors
   const idValidationErrors = getIdValidationErrors(filteredFormElements, obsHolder);
+  const dateValidationErrors = getDateValidationErrors(filteredFormElements, obsHolder);
   const dataValidationErrors = getFEDataValidationErrors(filteredFormElements, obsHolder);
 
   // Filter validation errors using intersectionBy to only include those that match form elements in ruleValidationErrors
@@ -465,18 +493,19 @@ const onNext = ({
   // Combine all validation results using unionBy
   const allRuleValidationResults = unionBy(
     errors(idValidationErrors),
+    errors(dateValidationErrors),
     errors(formElementGroupValidations),
     errors(ruleValidationErrors),
     errors(filteredIdValidationErrors),
     errors(filteredDataValidationErrors),
     errors(filteredValidationResults),
     errors(filteredEntityValidations),
-    "formIdentifier"
+    "formIdentifier",
   );
 
   const anyFailedResultForCurrentFEG = () => {
     const formUUIDs = union(formElementGroup.formElementIds, staticFormElementIds);
-    return some(allRuleValidationResults, validationResult => {
+    return some(allRuleValidationResults, (validationResult) => {
       return validationResult.success === false && formUUIDs.indexOf(validationResult.formIdentifier) !== -1;
     });
   };
@@ -506,7 +535,7 @@ const onNext = ({
       formElementStatuses,
       nextGroup,
       entity,
-      nextFilteredFormElements
+      nextFilteredFormElements,
     );
     return nextState(nextGroup, updatedNextFilteredFormElements, allRuleValidationResults, obsHolder.observations, entity, false, wizard);
   }
@@ -516,8 +545,8 @@ const onPrevious = ({ formElementGroup, observations, entity, filteredFormElemen
   const previousGroup = wizard.isFirstFormPage()
     ? new StaticFormElementGroup(formElementGroup.form)
     : !onSummaryPage
-    ? formElementGroup.previous()
-    : formElementGroup;
+      ? formElementGroup.previous()
+      : formElementGroup;
 
   if (isEmpty(previousGroup)) {
     return nextState(formElementGroup, filteredFormElements, validationResults, observations, entity, false, wizard);
@@ -533,7 +562,7 @@ const onPrevious = ({ formElementGroup, observations, entity, filteredFormElemen
     obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), previousFilteredFormElements);
     obsHolder.updatePrimitiveCodedObs(previousFilteredFormElements, formElementStatuses);
     return onPrevious(
-      nextState(previousGroup, previousFilteredFormElements, validationResults, obsHolder.observations, entity, false, wizard)
+      nextState(previousGroup, previousFilteredFormElements, validationResults, obsHolder.observations, entity, false, wizard),
     );
   } else {
     return nextState(previousGroup, previousFilteredFormElements, validationResults, observations, entity, false, wizard);
@@ -541,12 +570,12 @@ const onPrevious = ({ formElementGroup, observations, entity, filteredFormElemen
 };
 
 const handleValidationResult = (newValidationResults, existingValidationResults) => {
-  const existingValidationResultClones = existingValidationResults.map(e => ValidationResult.clone(e));
+  const existingValidationResultClones = existingValidationResults.map((e) => ValidationResult.clone(e));
 
-  newValidationResults.forEach(newValidationResult => {
+  newValidationResults.forEach((newValidationResult) => {
     remove(
       existingValidationResultClones,
-      existingValidationResult => existingValidationResult.formIdentifier === newValidationResult.formIdentifier
+      (existingValidationResult) => existingValidationResult.formIdentifier === newValidationResult.formIdentifier,
     );
     if (!newValidationResult.success) {
       existingValidationResultClones.push(newValidationResult);
@@ -562,7 +591,7 @@ function postObservationsUpdate(entity, formElement, observationsHolder, obsValu
     const { filteredFormElements: filteredFormElementsLatest } = getFormElementStatuses(
       entity,
       formElement.formElementGroup,
-      observationsHolder
+      observationsHolder,
     );
     filteredFormElements = filteredFormElementsLatest;
   }
@@ -573,7 +602,7 @@ function postObservationsUpdate(entity, formElement, observationsHolder, obsValu
     observationsHolder.observations,
     existingValidationResults,
     formElementStatuses,
-    childFormElement
+    childFormElement,
   );
   return { filteredFormElements, validationResults };
 }
@@ -585,7 +614,7 @@ const updateObservations = (
   observationsHolder,
   existingValidationResults,
   childFormElement,
-  questionGroupIndex
+  questionGroupIndex,
 ) => {
   const obsValue = formElementService.updateObservations(observationsHolder, formElement, value, childFormElement, questionGroupIndex);
   const { filteredFormElements, validationResults } = postObservationsUpdate(
@@ -594,7 +623,7 @@ const updateObservations = (
     observationsHolder,
     obsValue,
     existingValidationResults,
-    childFormElement
+    childFormElement,
   );
   return { filteredFormElements, validationResults };
 };
@@ -618,10 +647,10 @@ function removeQuestionGroup(entity, formElement, observations, existingValidati
   let updatedValidationResults = existingValidationResults || [];
   if (existingValidationResults && existingValidationResults.length > 0) {
     // Create a function outside the filter loop
-    const shouldKeepValidationResult = validationResult => {
+    const shouldKeepValidationResult = (validationResult) => {
       return !(
         validationResult.questionGroupIndex === index &&
-        formElement.formElementGroup.getFormElements().some(fe => fe.uuid === validationResult.formIdentifier)
+        formElement.formElementGroup.getFormElements().some((fe) => fe.uuid === validationResult.formIdentifier)
       );
     };
 
@@ -637,12 +666,12 @@ function removeQuestionGroup(entity, formElement, observations, existingValidati
 
   return {
     filteredFormElements,
-    validationResults: updatedValidationResults
+    validationResults: updatedValidationResults,
   };
 }
 
 const getValidationResult = (validationResults, formElementIdentifier) =>
-  find(validationResults, validationResult => validationResult.formIdentifier === formElementIdentifier);
+  find(validationResults, (validationResult) => validationResult.formIdentifier === formElementIdentifier);
 
 export default {
   onLoad,
@@ -654,5 +683,7 @@ export default {
   addNewQuestionGroup,
   removeQuestionGroup,
   getFEDataValidationErrors,
-  getIdValidationErrors
+  getIdValidationErrors,
+  getDateValidationErrors,
+  isDateValid,
 };

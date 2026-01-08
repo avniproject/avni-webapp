@@ -18,20 +18,12 @@ import {
 import { find, get, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
 import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
+import { isDateValid } from "dataEntryApp/reducers/commonFormUtil";
 import {
   differenceInYears,
   differenceInMonths,
   differenceInDays,
 } from "date-fns";
-
-export const isDateValid = (date) => {
-  if (!date) return true;
-  const currentDate = new Date();
-  const yearDifference = Math.abs(
-    currentDate.getFullYear() - date.getFullYear(),
-  );
-  return yearDifference <= 2000;
-};
 
 export const getDateValidationError = (date) => {
   if (!isDateValid(date)) {
