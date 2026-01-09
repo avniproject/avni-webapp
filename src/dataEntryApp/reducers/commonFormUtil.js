@@ -134,28 +134,6 @@ const getIdValidationErrors = (filteredFormElements, obsHolder) => {
   return filter(filteredFormElements, isIdFieldWithoutObservation).map(createValidationResult);
 };
 
-export const isDateValid = (date) => {
-  if (!date) return true;
-  const currentDate = new Date();
-  return Math.abs(currentDate.getFullYear() - date.getFullYear()) <= 2000;
-};
-
-const getDateValidationErrors = (filteredFormElements, obsHolder) => {
-  const isDateFieldWithInvalidValue = (fe) => {
-    if (fe.getType() !== Concept.dataType.Date) return false;
-    const observation = obsHolder.findObservation(fe.concept);
-    if (!observation || !observation.getValue()) return false;
-
-    const date = observation.getValue();
-    if (!date) return false;
-
-    return !isDateValid(date);
-  };
-
-  const createValidationResult = (fe) => ValidationResult.failure(fe.uuid, "invalidDate");
-  return filter(filteredFormElements, isDateFieldWithInvalidValue).map(createValidationResult);
-};
-
 // Utility functions for form element validation
 const getStandaloneElements = (formElements) => filter(formElements, (fe) => !isNil(fe) && !isNil(fe.concept) && isNil(fe.group));
 
@@ -481,7 +459,6 @@ const onNext = ({
 
   // Get validation errors
   const idValidationErrors = getIdValidationErrors(filteredFormElements, obsHolder);
-  const dateValidationErrors = getDateValidationErrors(filteredFormElements, obsHolder);
   const dataValidationErrors = getFEDataValidationErrors(filteredFormElements, obsHolder);
 
   // Filter validation errors using intersectionBy to only include those that match form elements in ruleValidationErrors
@@ -493,7 +470,6 @@ const onNext = ({
   // Combine all validation results using unionBy
   const allRuleValidationResults = unionBy(
     errors(idValidationErrors),
-    errors(dateValidationErrors),
     errors(formElementGroupValidations),
     errors(ruleValidationErrors),
     errors(filteredIdValidationErrors),
@@ -684,6 +660,4 @@ export default {
   removeQuestionGroup,
   getFEDataValidationErrors,
   getIdValidationErrors,
-  getDateValidationErrors,
-  isDateValid,
 };

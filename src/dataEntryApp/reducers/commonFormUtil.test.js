@@ -1,4 +1,4 @@
-import commonFormUtil, { isDateValid } from "./commonFormUtil";
+import commonFormUtil from "./commonFormUtil";
 import { Concept, ObservationsHolder, StaticFormElementGroup } from "openchs-models";
 // Import the helper functions from EntityFactory
 import EntityFactory from "../test/EntityFactory";
@@ -1807,85 +1807,5 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
     assert.isArray(validationErrorsWithNull);
     const mandatoryError = validationErrorsWithNull.find((ve) => ve.formIdentifier === mandatoryFormElement.uuid);
     assert.isDefined(mandatoryError, "Should process valid elements and skip null ones");
-  });
-});
-
-describe("date validation", () => {
-  it("should validate dates within 2000 years as valid", function () {
-    assert.isTrue(isDateValid(new Date()));
-    assert.isTrue(isDateValid(new Date("2024-01-01")));
-    assert.isTrue(isDateValid(null));
-    assert.isTrue(isDateValid(undefined));
-  });
-
-  it("should validate dates over 2000 years as invalid", function () {
-    assert.isFalse(isDateValid(new Date("0024-01-01")));
-    const futureDate = new Date();
-    futureDate.setFullYear(futureDate.getFullYear() + 2001);
-    assert.isFalse(isDateValid(futureDate));
-  });
-
-  it("should validate boundary cases correctly", function () {
-    const currentYear = new Date().getFullYear();
-    const exactlyTwoThousandYearsAgo = new Date();
-    exactlyTwoThousandYearsAgo.setFullYear(currentYear - 2000);
-    assert.isTrue(isDateValid(exactlyTwoThousandYearsAgo));
-
-    const exactlyTwoThousandYearsFuture = new Date();
-    exactlyTwoThousandYearsFuture.setFullYear(currentYear + 2000);
-    assert.isTrue(isDateValid(exactlyTwoThousandYearsFuture));
-
-    const overTwoThousandYearsAgo = new Date();
-    overTwoThousandYearsAgo.setFullYear(currentYear - 2001);
-    assert.isFalse(isDateValid(overTwoThousandYearsAgo));
-  });
-
-  it("should return validation errors for date form elements with invalid dates", function () {
-    const dateConcept = EntityFactory.createConcept2({
-      uuid: "date-c-1",
-      dataType: Concept.dataType.Date,
-    });
-    const dateFormElement = EntityFactory.createFormElement2({
-      uuid: "date-fe-1",
-      concept: dateConcept,
-    });
-
-    const subject = EntityFactory.createSubject({});
-    const obsHolder = new ObservationsHolder(subject.observations);
-
-    // Add an invalid date observation
-    const invalidDate = new Date("0024-01-01");
-    obsHolder.addOrUpdatePrimitiveObs(dateConcept, invalidDate);
-
-    const validationErrors = commonFormUtil.getDateValidationErrors([dateFormElement], obsHolder);
-
-    assert.isArray(validationErrors);
-    assert.equal(validationErrors.length, 1);
-    assert.equal(validationErrors[0].formIdentifier, dateFormElement.uuid);
-    assert.isFalse(validationErrors[0].success);
-    assert.equal(validationErrors[0].messageKey, "invalidDate");
-  });
-
-  it("should not return validation errors for date form elements with valid dates", function () {
-    const dateConcept = EntityFactory.createConcept2({
-      uuid: "date-c-1",
-      dataType: Concept.dataType.Date,
-    });
-    const dateFormElement = EntityFactory.createFormElement2({
-      uuid: "date-fe-1",
-      concept: dateConcept,
-    });
-
-    const subject = EntityFactory.createSubject({});
-    const obsHolder = new ObservationsHolder(subject.observations);
-
-    // Add a valid date observation
-    const validDate = new Date("2024-01-01");
-    obsHolder.addOrUpdatePrimitiveObs(dateConcept, validDate);
-
-    const validationErrors = commonFormUtil.getDateValidationErrors([dateFormElement], obsHolder);
-
-    assert.isArray(validationErrors);
-    assert.equal(validationErrors.length, 0);
   });
 });

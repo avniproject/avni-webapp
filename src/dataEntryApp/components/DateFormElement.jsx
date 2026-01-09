@@ -18,19 +18,11 @@ import {
 import { find, get, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
 import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
-import { isDateValid } from "dataEntryApp/reducers/commonFormUtil";
 import {
   differenceInYears,
   differenceInMonths,
   differenceInDays,
 } from "date-fns";
-
-export const getDateValidationError = (date) => {
-  if (!isDateValid(date)) {
-    return { messageKey: "invalidDate" };
-  }
-  return null;
-};
 
 const StyledForm = styled("div")(({ theme }) => ({
   "& > *": {
@@ -117,11 +109,6 @@ export const DateFormElement = ({
       formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex,
   );
 
-  const dateValidationError = getDateValidationError(value);
-  if (dateValidationError) {
-    validationResult = { ...dateValidationError, success: false };
-  }
-
   return durationValue ? (
     <DateAndDurationFormElement
       formElement={fe}
@@ -175,11 +162,6 @@ export const DateAndDurationFormElement = ({
   const [date, setDate] = useState(value);
   const firstDuration = value ? String(differenceInYears(today, value)) : "";
   const [duration, setDuration] = useState(firstDuration);
-
-  const dateValidationError = getDateValidationError(date);
-  if (dateValidationError) {
-    validationResult = { ...dateValidationError, success: false };
-  }
 
   const onDateChange = (dateValue) => {
     if (isNil(dateValue)) {
