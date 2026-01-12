@@ -19,53 +19,53 @@ describe("question group and repeatable question groups", () => {
     const form = EntityFactory.createForm2({ uuid: "form-1" });
     const feg = EntityFactory.createFormElementGroup2({
       uuid: "feg-1",
-      form: form
+      form: form,
     });
     const qgConcept = EntityFactory.createConcept2({
       uuid: "qg-c-1",
-      dataType: Concept.dataType.QuestionGroup
+      dataType: Concept.dataType.QuestionGroup,
     });
     const textConcept = EntityFactory.createConcept2({
       uuid: "c-1",
       name: "c-1",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
     answerConcept1 = EntityFactory.createConcept2({
       uuid: "ac-1",
       name: "ac-1",
-      dataType: Concept.dataType.NA
+      dataType: Concept.dataType.NA,
     });
     answerConcept2 = EntityFactory.createConcept2({
       uuid: "ac-2",
       name: "ac-2",
-      dataType: Concept.dataType.NA
+      dataType: Concept.dataType.NA,
     });
     const singleSelectCodedConcept = EntityFactory.createConcept2({
       uuid: "ss-1",
       name: "ss-1",
       dataType: Concept.dataType.Coded,
-      answers: [answerConcept1, answerConcept2]
+      answers: [answerConcept1, answerConcept2],
     });
     qgFormElement = EntityFactory.createFormElement2({
       uuid: "qg-fe-1",
       formElementGroup: feg,
-      concept: qgConcept
+      concept: qgConcept,
     });
     textFormElement = EntityFactory.createFormElement2({
       uuid: "fe-1",
       formElementGroup: feg,
       concept: textConcept,
-      group: qgFormElement
+      group: qgFormElement,
     });
     singleCodedFormElement = EntityFactory.createFormElement2({
       uuid: "fe-2",
       formElementGroup: feg,
       concept: singleSelectCodedConcept,
-      group: qgFormElement
+      group: qgFormElement,
     });
   });
 
-  it("should create and update question group obs", function() {
+  it("should create and update question group obs", function () {
     const subject = EntityFactory.createSubject({});
     const observationsHolder = new ObservationsHolder(subject.observations);
     commonFormUtil.updateObservations(qgFormElement, "a", subject, observationsHolder, [], textFormElement, null);
@@ -75,14 +75,14 @@ describe("question group and repeatable question groups", () => {
     commonFormUtil.updateObservations(qgFormElement, answerConcept1.uuid, subject, observationsHolder, [], singleCodedFormElement, null);
     assert.equal(
       answerConcept1.uuid,
-      observationsHolder.findQuestionGroupObservation(singleCodedFormElement.concept, qgFormElement).getValue()
+      observationsHolder.findQuestionGroupObservation(singleCodedFormElement.concept, qgFormElement).getValue(),
     );
   });
 
-  it("should create and update repeatable question group obs", function() {
+  it("should create and update repeatable question group obs", function () {
     const keyValue = TestKeyValueFactory.create({
       key: "repeatable",
-      value: true
+      value: true,
     });
     qgFormElement.keyValues = [keyValue];
     const subject = EntityFactory.createSubject({});
@@ -94,29 +94,63 @@ describe("question group and repeatable question groups", () => {
     commonFormUtil.updateObservations(qgFormElement, answerConcept1.uuid, subject, observationsHolder, [], singleCodedFormElement, 0);
     assert.equal(
       answerConcept1.uuid,
-      observationsHolder.findQuestionGroupObservation(singleCodedFormElement.concept, qgFormElement, 0).getValue()
+      observationsHolder.findQuestionGroupObservation(singleCodedFormElement.concept, qgFormElement, 0).getValue(),
     );
 
     let { filteredFormElements } = commonFormUtil.addNewQuestionGroup(subject, qgFormElement, observationsHolder.observations);
-    assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0));
-    assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1));
-    assert.equal(true, _.some(filteredFormElements, x => x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 0));
-    assert.equal(true, _.some(filteredFormElements, x => x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 1));
+    assert.equal(
+      true,
+      _.some(filteredFormElements, (x) => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0),
+    );
+    assert.equal(
+      true,
+      _.some(filteredFormElements, (x) => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1),
+    );
+    assert.equal(
+      true,
+      _.some(filteredFormElements, (x) => x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 0),
+    );
+    assert.equal(
+      true,
+      _.some(filteredFormElements, (x) => x.uuid === singleCodedFormElement.uuid && x.questionGroupIndex === 1),
+    );
 
-    filteredFormElements = commonFormUtil.removeQuestionGroup(subject, qgFormElement, observationsHolder.observations, [], 1)
-      .filteredFormElements;
-    assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0));
-    assert.equal(false, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1));
+    filteredFormElements = commonFormUtil.removeQuestionGroup(
+      subject,
+      qgFormElement,
+      observationsHolder.observations,
+      [],
+      1,
+    ).filteredFormElements;
+    assert.equal(
+      true,
+      _.some(filteredFormElements, (x) => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0),
+    );
+    assert.equal(
+      false,
+      _.some(filteredFormElements, (x) => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1),
+    );
 
     commonFormUtil.addNewQuestionGroup(subject, qgFormElement, observationsHolder.observations);
     commonFormUtil.updateObservations(qgFormElement, "c", subject, observationsHolder, [], textFormElement, 1);
     assert.equal("b", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0).getValue());
     assert.equal("c", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 1).getValue());
 
-    filteredFormElements = commonFormUtil.removeQuestionGroup(subject, qgFormElement, observationsHolder.observations, [], 1)
-      .filteredFormElements;
-    assert.equal(true, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0));
-    assert.equal(false, _.some(filteredFormElements, x => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1));
+    filteredFormElements = commonFormUtil.removeQuestionGroup(
+      subject,
+      qgFormElement,
+      observationsHolder.observations,
+      [],
+      1,
+    ).filteredFormElements;
+    assert.equal(
+      true,
+      _.some(filteredFormElements, (x) => x.uuid === textFormElement.uuid && x.questionGroupIndex === 0),
+    );
+    assert.equal(
+      false,
+      _.some(filteredFormElements, (x) => x.uuid === textFormElement.uuid && x.questionGroupIndex === 1),
+    );
 
     // After removing the question group at index 1, we should only have the observation at index 0
     assert.equal("b", observationsHolder.findQuestionGroupObservation(textFormElement.concept, qgFormElement, 0).getValue());
@@ -147,19 +181,19 @@ describe("Form Navigation Tests", () => {
     formElementGroup1 = EntityFactory.createFormElementGroup2({
       uuid: "feg-nav-1",
       form: form,
-      displayOrder: 1
+      displayOrder: 1,
     });
 
     formElementGroup2 = EntityFactory.createFormElementGroup2({
       uuid: "feg-nav-2",
       form: form,
-      displayOrder: 2
+      displayOrder: 2,
     });
 
     formElementGroup3 = EntityFactory.createFormElementGroup2({
       uuid: "feg-nav-3",
       form: form,
-      displayOrder: 3
+      displayOrder: 3,
     });
 
     // Add form element groups to form
@@ -181,19 +215,19 @@ describe("Form Navigation Tests", () => {
     textConcept1 = EntityFactory.createConcept2({
       uuid: "c-nav-1",
       name: "c-nav-1",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     textConcept2 = EntityFactory.createConcept2({
       uuid: "c-nav-2",
       name: "c-nav-2",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     textConcept3 = EntityFactory.createConcept2({
       uuid: "c-nav-3",
       name: "c-nav-3",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     // Create form elements
@@ -202,7 +236,7 @@ describe("Form Navigation Tests", () => {
       formElementGroup: formElementGroup1,
       concept: textConcept1,
       displayOrder: 1,
-      mandatory: true
+      mandatory: true,
     });
 
     textFormElement2 = EntityFactory.createFormElement2({
@@ -210,7 +244,7 @@ describe("Form Navigation Tests", () => {
       formElementGroup: formElementGroup2,
       concept: textConcept2,
       displayOrder: 1,
-      mandatory: true
+      mandatory: true,
     });
 
     textFormElement3 = EntityFactory.createFormElement2({
@@ -218,7 +252,7 @@ describe("Form Navigation Tests", () => {
       formElementGroup: formElementGroup3,
       concept: textConcept3,
       displayOrder: 1,
-      mandatory: true
+      mandatory: true,
     });
 
     // Add form elements to form element groups
@@ -239,7 +273,7 @@ describe("Form Navigation Tests", () => {
     subject.observations = observationsHolder.observations;
   });
 
-  it("should load the first form element group on onLoad", function() {
+  it("should load the first form element group on onLoad", function () {
     const result = commonFormUtil.onLoad(form, subject);
 
     assert.equal(result.formElementGroup.uuid, formElementGroup1.uuid);
@@ -250,7 +284,7 @@ describe("Form Navigation Tests", () => {
     assert.isUndefined(result.isFormEmpty);
   });
 
-  it("should load a static form element group when no visible elements exist", function() {
+  it("should load a static form element group when no visible elements exist", function () {
     // Create a form with no visible elements
     const emptyForm = EntityFactory.createForm2({ uuid: "empty-form" });
     const result = commonFormUtil.onLoad(emptyForm, subject);
@@ -264,15 +298,15 @@ describe("Form Navigation Tests", () => {
     assert.isTrue(result.isFormEmpty);
   });
 
-  it("should load the next form element group for individual registration", function() {
+  it("should load the next form element group for individual registration", function () {
     // Create a form with a static first group
     const individualForm = EntityFactory.createForm2({
-      uuid: "individual-form"
+      uuid: "individual-form",
     });
     const feg = EntityFactory.createFormElementGroup2({
       uuid: "individual-feg",
       form: individualForm,
-      displayOrder: 1
+      displayOrder: 1,
     });
     individualForm.addFormElementGroup(feg);
 
@@ -283,7 +317,7 @@ describe("Form Navigation Tests", () => {
     assert.isFalse(result.onSummaryPage);
   });
 
-  it("should navigate to the next form element group with onNext", function() {
+  it("should navigate to the next form element group with onNext", function () {
     // Start with the first form element group
     const initialState = {
       formElementGroup: formElementGroup1,
@@ -292,7 +326,7 @@ describe("Form Navigation Tests", () => {
       filteredFormElements: [textFormElement1],
       validationResults: [],
       wizard: new Wizard(3, 1, 1),
-      entityValidations: []
+      entityValidations: [],
     };
 
     // Save the original wizard page
@@ -310,7 +344,7 @@ describe("Form Navigation Tests", () => {
     assert.equal(initialState.wizard.currentPage, originalPage + 1);
   });
 
-  it("should navigate to the previous form element group with onPrevious", function() {
+  it("should navigate to the previous form element group with onPrevious", function () {
     // Start with the second form element group
     const initialState = {
       formElementGroup: formElementGroup2,
@@ -319,7 +353,7 @@ describe("Form Navigation Tests", () => {
       filteredFormElements: [textFormElement2],
       validationResults: [],
       wizard: new Wizard(3, 1, 2),
-      onSummaryPage: false
+      onSummaryPage: false,
     };
 
     // Save the original wizard page
@@ -337,7 +371,7 @@ describe("Form Navigation Tests", () => {
     assert.equal(result.wizard.currentPage, originalPage - 1);
   });
 
-  it("should handle validation errors and not proceed to next group", function() {
+  it("should handle validation errors and not proceed to next group", function () {
     // Create a clean subject without observations for this test
     const emptySubject = EntityFactory.createSubject({});
     const emptyObservationsHolder = new ObservationsHolder(emptySubject.observations);
@@ -346,7 +380,7 @@ describe("Form Navigation Tests", () => {
     const validationResult = {
       success: false,
       formIdentifier: textFormElement1.uuid,
-      messageKey: "REQUIRED_FIELD"
+      messageKey: "REQUIRED_FIELD",
     };
 
     // Start with the first form element group with validation error
@@ -357,7 +391,7 @@ describe("Form Navigation Tests", () => {
       filteredFormElements: [textFormElement1],
       validationResults: [validationResult],
       wizard: new Wizard(3, 1, 1),
-      entityValidations: []
+      entityValidations: [],
     };
 
     const result = commonFormUtil.onNext(initialState);
@@ -372,7 +406,7 @@ describe("Form Navigation Tests", () => {
     assert.equal(result.validationResults.length, 1);
   });
 
-  it("should navigate to summary page after last form element group", function() {
+  it("should navigate to summary page after last form element group", function () {
     // Start with the last form element group
     const initialState = {
       formElementGroup: formElementGroup3,
@@ -382,7 +416,7 @@ describe("Form Navigation Tests", () => {
       validationResults: [],
       wizard: new Wizard(3, 1, 3),
       entityValidations: [],
-      onSummaryPage: false
+      onSummaryPage: false,
     };
 
     // Verify that formElementGroup3.next() returns null
@@ -398,7 +432,7 @@ describe("Form Navigation Tests", () => {
     assert.equal(result.wizard.currentPage, 3);
   });
 
-  it("should navigate from summary page to last form element group with onPrevious", function() {
+  it("should navigate from summary page to last form element group with onPrevious", function () {
     // Start on the summary page
     const initialState = {
       formElementGroup: formElementGroup3,
@@ -407,7 +441,7 @@ describe("Form Navigation Tests", () => {
       filteredFormElements: [textFormElement3],
       validationResults: [],
       wizard: new Wizard(3, 1, 3),
-      onSummaryPage: true
+      onSummaryPage: true,
     };
 
     const result = commonFormUtil.onPrevious(initialState);
@@ -447,7 +481,7 @@ describe("Form Element Filtering Tests", () => {
     formElementGroup = EntityFactory.createFormElementGroup2({
       uuid: "feg-filter-1",
       form: form,
-      displayOrder: 1
+      displayOrder: 1,
     });
 
     form.addFormElementGroup(formElementGroup);
@@ -456,50 +490,50 @@ describe("Form Element Filtering Tests", () => {
     textConcept = EntityFactory.createConcept2({
       uuid: "c-filter-text",
       name: "c-filter-text",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     numericConcept = EntityFactory.createConcept2({
       uuid: "c-filter-numeric",
       name: "c-filter-numeric",
-      dataType: Concept.dataType.Numeric
+      dataType: Concept.dataType.Numeric,
     });
 
     answerConcept1 = EntityFactory.createConcept2({
       uuid: "ac-filter-1",
       name: "ac-filter-1",
-      dataType: Concept.dataType.NA
+      dataType: Concept.dataType.NA,
     });
 
     answerConcept2 = EntityFactory.createConcept2({
       uuid: "ac-filter-2",
       name: "ac-filter-2",
-      dataType: Concept.dataType.NA
+      dataType: Concept.dataType.NA,
     });
 
     codedConcept = EntityFactory.createConcept2({
       uuid: "c-filter-coded",
       name: "c-filter-coded",
       dataType: Concept.dataType.Coded,
-      answers: [answerConcept1, answerConcept2]
+      answers: [answerConcept1, answerConcept2],
     });
 
     hiddenConcept = EntityFactory.createConcept2({
       uuid: "c-filter-hidden",
       name: "c-filter-hidden",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     const questionGroupConcept = EntityFactory.createConcept2({
       uuid: "c-filter-qg",
       name: "c-filter-qg",
-      dataType: Concept.dataType.QuestionGroup
+      dataType: Concept.dataType.QuestionGroup,
     });
 
     const childConcept = EntityFactory.createConcept2({
       uuid: "c-filter-child",
       name: "c-filter-child",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     // Create form elements
@@ -508,7 +542,7 @@ describe("Form Element Filtering Tests", () => {
       formElementGroup: formElementGroup,
       concept: textConcept,
       displayOrder: 1,
-      mandatory: true
+      mandatory: true,
     });
 
     numericFormElement = EntityFactory.createFormElement2({
@@ -516,7 +550,7 @@ describe("Form Element Filtering Tests", () => {
       formElementGroup: formElementGroup,
       concept: numericConcept,
       displayOrder: 2,
-      mandatory: false
+      mandatory: false,
     });
 
     codedFormElement = EntityFactory.createFormElement2({
@@ -524,7 +558,7 @@ describe("Form Element Filtering Tests", () => {
       formElementGroup: formElementGroup,
       concept: codedConcept,
       displayOrder: 3,
-      mandatory: false
+      mandatory: false,
     });
 
     hiddenFormElement = EntityFactory.createFormElement2({
@@ -532,14 +566,14 @@ describe("Form Element Filtering Tests", () => {
       formElementGroup: formElementGroup,
       concept: hiddenConcept,
       displayOrder: 4,
-      mandatory: false
+      mandatory: false,
     });
 
     questionGroupFormElement = EntityFactory.createFormElement2({
       uuid: "fe-filter-qg",
       formElementGroup: formElementGroup,
       concept: questionGroupConcept,
-      displayOrder: 5
+      displayOrder: 5,
     });
 
     childFormElement = EntityFactory.createFormElement2({
@@ -547,7 +581,7 @@ describe("Form Element Filtering Tests", () => {
       formElementGroup: formElementGroup,
       concept: childConcept,
       displayOrder: 1,
-      group: questionGroupFormElement
+      group: questionGroupFormElement,
     });
 
     // Add form elements to form element group
@@ -571,7 +605,7 @@ describe("Form Element Filtering Tests", () => {
     subject.observations = observationsHolder.observations;
   });
 
-  it("should update observations and handle validation", function() {
+  it("should update observations and handle validation", function () {
     // Start with empty validation results
     const initialValidationResults = [];
 
@@ -581,7 +615,7 @@ describe("Form Element Filtering Tests", () => {
       "updated text value",
       subject,
       observationsHolder,
-      initialValidationResults
+      initialValidationResults,
     );
 
     // Verify the function returns the expected structure
@@ -592,31 +626,31 @@ describe("Form Element Filtering Tests", () => {
     assert.isArray(result.validationResults);
   });
 
-  it("should handle validation results correctly", function() {
+  it("should handle validation results correctly", function () {
     // Create validation results
     const existingValidationResults = [
       {
         formIdentifier: textFormElement.uuid,
         success: false,
-        messageKey: "REQUIRED_FIELD"
+        messageKey: "REQUIRED_FIELD",
       },
       {
         formIdentifier: numericFormElement.uuid,
-        success: true
-      }
+        success: true,
+      },
     ];
 
     // Create new validation results
     const newValidationResults = [
       {
         formIdentifier: textFormElement.uuid,
-        success: true
+        success: true,
       },
       {
         formIdentifier: codedFormElement.uuid,
         success: false,
-        messageKey: "INVALID_CODED_VALUE"
-      }
+        messageKey: "INVALID_CODED_VALUE",
+      },
     ];
 
     // Handle the validation results
@@ -629,49 +663,49 @@ describe("Form Element Filtering Tests", () => {
     // 3. An entry for numericFormElement (existing successful validation is preserved)
 
     // Check if codedFormElement's validation is included
-    const codedValidation = updatedValidationResults.find(vr => vr.formIdentifier === codedFormElement.uuid);
+    const codedValidation = updatedValidationResults.find((vr) => vr.formIdentifier === codedFormElement.uuid);
     assert.isDefined(codedValidation, "Should include validation for codedFormElement");
     assert.equal(codedValidation.messageKey, "INVALID_CODED_VALUE");
     assert.isFalse(codedValidation.success);
 
     // Verify that the now-successful validation was removed
     assert.isFalse(
-      updatedValidationResults.some(vr => vr.formIdentifier === textFormElement.uuid),
-      "Text form element should be removed as it's now successful"
+      updatedValidationResults.some((vr) => vr.formIdentifier === textFormElement.uuid),
+      "Text form element should be removed as it's now successful",
     );
 
     // Verify that the existing successful validation is preserved
     // The function only removes validations for elements that are in newValidationResults
-    const numericValidation = updatedValidationResults.find(vr => vr.formIdentifier === numericFormElement.uuid);
+    const numericValidation = updatedValidationResults.find((vr) => vr.formIdentifier === numericFormElement.uuid);
     assert.isDefined(numericValidation, "Should preserve existing validation for numericFormElement");
     assert.isTrue(numericValidation.success);
   });
 
-  it("should preserve existing validation failures not present in new results", function() {
+  it("should preserve existing validation failures not present in new results", function () {
     // Create existing validation results with failures for multiple elements
     const existingValidationResults = [
       {
         formIdentifier: textFormElement.uuid,
         success: false,
-        messageKey: "REQUIRED_FIELD"
+        messageKey: "REQUIRED_FIELD",
       },
       {
         formIdentifier: numericFormElement.uuid,
         success: false,
-        messageKey: "INVALID_NUMERIC"
+        messageKey: "INVALID_NUMERIC",
       },
       {
         formIdentifier: hiddenFormElement.uuid,
-        success: true
-      }
+        success: true,
+      },
     ];
 
     // Create new validation results that only address some of the elements
     const newValidationResults = [
       {
         formIdentifier: textFormElement.uuid,
-        success: true // This one becomes successful
-      }
+        success: true, // This one becomes successful
+      },
       // Note: No results for numericFormElement or hiddenFormElement
     ];
 
@@ -686,34 +720,34 @@ describe("Form Element Filtering Tests", () => {
 
     // Verify that the fixed validation was removed
     assert.isFalse(
-      updatedValidationResults.some(vr => vr.formIdentifier === textFormElement.uuid),
-      "Text form element should be removed as it's now successful"
+      updatedValidationResults.some((vr) => vr.formIdentifier === textFormElement.uuid),
+      "Text form element should be removed as it's now successful",
     );
 
     // Verify that the existing failed validation is preserved
-    const numericValidation = updatedValidationResults.find(vr => vr.formIdentifier === numericFormElement.uuid);
+    const numericValidation = updatedValidationResults.find((vr) => vr.formIdentifier === numericFormElement.uuid);
     assert.isDefined(numericValidation, "Should preserve existing validation for numericFormElement");
     assert.equal(numericValidation.messageKey, "INVALID_NUMERIC");
     assert.isFalse(numericValidation.success);
 
     // Verify that the existing successful validation is preserved
-    const hiddenValidation = updatedValidationResults.find(vr => vr.formIdentifier === hiddenFormElement.uuid);
+    const hiddenValidation = updatedValidationResults.find((vr) => vr.formIdentifier === hiddenFormElement.uuid);
     assert.isDefined(hiddenValidation, "Should preserve existing validation for hiddenFormElement");
     assert.isTrue(hiddenValidation.success);
   });
 
-  it("should get validation result for a specific form element", function() {
+  it("should get validation result for a specific form element", function () {
     // Create validation results
     const validationResults = [
       {
         formIdentifier: textFormElement.uuid,
         success: false,
-        messageKey: "REQUIRED_FIELD"
+        messageKey: "REQUIRED_FIELD",
       },
       {
         formIdentifier: numericFormElement.uuid,
-        success: true
-      }
+        success: true,
+      },
     ];
 
     // Get validation result for text form element
@@ -731,14 +765,14 @@ describe("Form Element Filtering Tests", () => {
     assert.isUndefined(codedValidationResult);
   });
 
-  it("should validate form element data", function() {
+  it("should validate form element data", function () {
     // Create a form element with mandatory flag
     const mandatoryFormElement = EntityFactory.createFormElement2({
       uuid: "fe-filter-mandatory",
       formElementGroup: formElementGroup,
       concept: textConcept,
       displayOrder: 5,
-      mandatory: true
+      mandatory: true,
     });
 
     // Create an observations holder with no value for the mandatory field
@@ -749,7 +783,7 @@ describe("Form Element Filtering Tests", () => {
 
     // Verify that validation errors include the mandatory field error
     assert.isArray(validationErrors);
-    const mandatoryError = validationErrors.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+    const mandatoryError = validationErrors.find((ve) => ve.formIdentifier === mandatoryFormElement.uuid);
     assert.isDefined(mandatoryError);
     assert.isFalse(mandatoryError.success);
   });
@@ -761,15 +795,13 @@ describe("Form Element Filtering Tests", () => {
     }
 
     // Properly mock the RuleEvaluationService module
-    const getFormElementsStatusesSpy = jest
-      .spyOn(RuleEvaluationService, "getFormElementsStatuses")
-      .mockReturnValue([
-        { uuid: textFormElement.uuid, visibility: true },
-        { uuid: numericFormElement.uuid, visibility: false },
-        { uuid: codedFormElement.uuid, visibility: true },
-        { uuid: questionGroupFormElement.uuid, visibility: true },
-        { uuid: childFormElement.uuid, visibility: true }
-      ]);
+    const getFormElementsStatusesSpy = jest.spyOn(RuleEvaluationService, "getFormElementsStatuses").mockReturnValue([
+      { uuid: textFormElement.uuid, visibility: true },
+      { uuid: numericFormElement.uuid, visibility: false },
+      { uuid: codedFormElement.uuid, visibility: true },
+      { uuid: questionGroupFormElement.uuid, visibility: true },
+      { uuid: childFormElement.uuid, visibility: true },
+    ]);
 
     try {
       // Call the function being tested
@@ -785,7 +817,7 @@ describe("Form Element Filtering Tests", () => {
       assert.isArray(filteredFormElements);
 
       // Verify that the numeric form element is not included (visibility: false)
-      const hasNumericFormElement = filteredFormElements.some(fe => fe.uuid === numericFormElement.uuid);
+      const hasNumericFormElement = filteredFormElements.some((fe) => fe.uuid === numericFormElement.uuid);
       assert.isFalse(hasNumericFormElement, "Numeric form element should not be included in filtered elements");
     } finally {
       // Restore the original function
@@ -816,7 +848,7 @@ describe("Form Element Filtering Tests", () => {
     const formElementStatuses = [
       { uuid: textFormElement.uuid, visibility: true, value: "Some text" },
       { uuid: numericFormElement.uuid, visibility: true, value: 123 },
-      { uuid: questionGroupFormElement.uuid, visibility: true, value: {} }
+      { uuid: questionGroupFormElement.uuid, visibility: true, value: {} },
     ];
 
     // Call the function being tested
@@ -836,7 +868,7 @@ describe("Form Element Filtering Tests", () => {
     const formElementStatuses = [
       { uuid: textFormElement.uuid, visibility: true, value: "Some text" },
       { uuid: numericFormElement.uuid, visibility: true, value: 123 },
-      { uuid: questionGroupFormElement.uuid, visibility: true, value: null }
+      { uuid: questionGroupFormElement.uuid, visibility: true, value: null },
     ];
 
     // Call the function being tested
@@ -856,7 +888,7 @@ describe("Form Element Filtering Tests", () => {
     const nextFormElementGroup = EntityFactory.createFormElementGroup2({
       uuid: "feg-filtering-next",
       form: form,
-      displayOrder: 2
+      displayOrder: 2,
     });
     form.addFormElementGroup(nextFormElementGroup);
 
@@ -864,14 +896,14 @@ describe("Form Element Filtering Tests", () => {
     const nextTextConcept = EntityFactory.createConcept2({
       uuid: "c-filtering-next-text",
       name: "c-filtering-next-text",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     const nextTextFormElement = EntityFactory.createFormElement2({
       uuid: "fe-filtering-next-text",
       formElementGroup: nextFormElementGroup,
       concept: nextTextConcept,
-      displayOrder: 1
+      displayOrder: 1,
     });
 
     nextFormElementGroup.addFormElement(nextTextFormElement);
@@ -887,7 +919,7 @@ describe("Form Element Filtering Tests", () => {
       formElementStatuses,
       nextFormElementGroup,
       subject,
-      nextFilteredFormElements
+      nextFilteredFormElements,
     );
 
     // Verify the result
@@ -948,7 +980,7 @@ describe("Validation Tests", () => {
     formElementGroup = EntityFactory.createFormElementGroup2({
       uuid: "feg-validation-1",
       form: form,
-      displayOrder: 1
+      displayOrder: 1,
     });
 
     form.addFormElementGroup(formElementGroup);
@@ -957,37 +989,37 @@ describe("Validation Tests", () => {
     textConcept = EntityFactory.createConcept2({
       uuid: "c-validation-text",
       name: "c-validation-text",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     numericConcept = EntityFactory.createConcept2({
       uuid: "c-validation-numeric",
       name: "c-validation-numeric",
-      dataType: Concept.dataType.Numeric
+      dataType: Concept.dataType.Numeric,
     });
 
     idConcept = EntityFactory.createConcept2({
       uuid: "c-validation-id",
       name: "c-validation-id",
-      dataType: Concept.dataType.Id
+      dataType: Concept.dataType.Id,
     });
 
     mandatoryConcept = EntityFactory.createConcept2({
       uuid: "c-validation-mandatory",
       name: "c-validation-mandatory",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     questionGroupConcept = EntityFactory.createConcept2({
       uuid: "c-validation-qg",
       name: "c-validation-qg",
-      dataType: Concept.dataType.QuestionGroup
+      dataType: Concept.dataType.QuestionGroup,
     });
 
     repeatableQuestionGroupConcept = EntityFactory.createConcept2({
       uuid: "c-validation-repeatable-qg",
       name: "c-validation-repeatable-qg",
-      dataType: Concept.dataType.QuestionGroup
+      dataType: Concept.dataType.QuestionGroup,
     });
 
     // Create form elements
@@ -996,7 +1028,7 @@ describe("Validation Tests", () => {
       formElementGroup: formElementGroup,
       concept: textConcept,
       displayOrder: 1,
-      mandatory: false
+      mandatory: false,
     });
 
     numericFormElement = EntityFactory.createFormElement2({
@@ -1004,7 +1036,7 @@ describe("Validation Tests", () => {
       formElementGroup: formElementGroup,
       concept: numericConcept,
       displayOrder: 2,
-      mandatory: false
+      mandatory: false,
     });
 
     idFormElement = EntityFactory.createFormElement2({
@@ -1012,7 +1044,7 @@ describe("Validation Tests", () => {
       formElementGroup: formElementGroup,
       concept: idConcept,
       displayOrder: 3,
-      mandatory: false
+      mandatory: false,
     });
 
     mandatoryFormElement = EntityFactory.createFormElement2({
@@ -1020,7 +1052,7 @@ describe("Validation Tests", () => {
       formElementGroup: formElementGroup,
       concept: mandatoryConcept,
       displayOrder: 4,
-      mandatory: true
+      mandatory: true,
     });
 
     questionGroupFormElement = EntityFactory.createFormElement2({
@@ -1028,7 +1060,7 @@ describe("Validation Tests", () => {
       formElementGroup: formElementGroup,
       concept: questionGroupConcept,
       displayOrder: 5,
-      mandatory: false
+      mandatory: false,
     });
 
     repeatableQuestionGroupFormElement = EntityFactory.createFormElement2({
@@ -1037,7 +1069,7 @@ describe("Validation Tests", () => {
       concept: repeatableQuestionGroupConcept,
       displayOrder: 6,
       mandatory: false,
-      repeatable: true
+      repeatable: true,
     });
 
     // Create child form elements for question group
@@ -1047,7 +1079,7 @@ describe("Validation Tests", () => {
       concept: textConcept,
       displayOrder: 1,
       mandatory: true,
-      group: questionGroupFormElement
+      group: questionGroupFormElement,
     });
 
     childNumericFormElement = EntityFactory.createFormElement2({
@@ -1056,7 +1088,7 @@ describe("Validation Tests", () => {
       concept: numericConcept,
       displayOrder: 2,
       mandatory: false,
-      group: questionGroupFormElement
+      group: questionGroupFormElement,
     });
 
     // Add form elements to form element group
@@ -1130,7 +1162,7 @@ describe("Validation Tests", () => {
       assert.isArray(validationErrors);
       assert.isAtLeast(validationErrors.length, 1, "Should have at least one validation error for the mandatory field");
 
-      const mandatoryError = validationErrors.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+      const mandatoryError = validationErrors.find((ve) => ve.formIdentifier === mandatoryFormElement.uuid);
       assert.isDefined(mandatoryError, "Should have a validation error for the mandatory field");
       assert.isFalse(mandatoryError.success);
     });
@@ -1145,7 +1177,7 @@ describe("Validation Tests", () => {
 
       // Verify that there are no validation errors for the mandatory field
       assert.isArray(validationErrors);
-      const mandatoryError = validationErrors.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+      const mandatoryError = validationErrors.find((ve) => ve.formIdentifier === mandatoryFormElement.uuid);
       assert.isUndefined(mandatoryError, "Should not have a validation error for the mandatory field with an observation");
     });
 
@@ -1172,7 +1204,7 @@ describe("Validation Tests", () => {
       assert.isArray(validationErrors);
       assert.isAtLeast(validationErrors.length, 1, "Should have at least one validation error for the mandatory field");
 
-      const mandatoryError = validationErrors.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+      const mandatoryError = validationErrors.find((ve) => ve.formIdentifier === mandatoryFormElement.uuid);
       assert.isDefined(mandatoryError, "Should have a validation error for the mandatory field");
       assert.isFalse(mandatoryError.success);
     });
@@ -1207,8 +1239,8 @@ describe("Validation Tests", () => {
         {
           formIdentifier: textFormElement.uuid,
           success: false,
-          messageKey: "REQUIRED_FIELD"
-        }
+          messageKey: "REQUIRED_FIELD",
+        },
       ];
 
       // Handle the validation results
@@ -1230,16 +1262,16 @@ describe("Validation Tests", () => {
         {
           formIdentifier: textFormElement.uuid,
           success: false,
-          messageKey: "REQUIRED_FIELD"
-        }
+          messageKey: "REQUIRED_FIELD",
+        },
       ];
 
       // Create new validation results with success
       const newValidationResults = [
         {
           formIdentifier: textFormElement.uuid,
-          success: true
-        }
+          success: true,
+        },
       ];
 
       // Handle the validation results
@@ -1256,8 +1288,8 @@ describe("Validation Tests", () => {
         {
           formIdentifier: textFormElement.uuid,
           success: false,
-          messageKey: "REQUIRED_FIELD"
-        }
+          messageKey: "REQUIRED_FIELD",
+        },
       ];
 
       // Create new validation results with a different failure
@@ -1265,8 +1297,8 @@ describe("Validation Tests", () => {
         {
           formIdentifier: textFormElement.uuid,
           success: false,
-          messageKey: "INVALID_FORMAT"
-        }
+          messageKey: "INVALID_FORMAT",
+        },
       ];
 
       // Handle the validation results
@@ -1288,21 +1320,21 @@ describe("Validation Tests", () => {
         {
           formIdentifier: textFormElement.uuid,
           success: false,
-          messageKey: "REQUIRED_FIELD"
+          messageKey: "REQUIRED_FIELD",
         },
         {
           formIdentifier: numericFormElement.uuid,
           success: false,
-          messageKey: "INVALID_NUMERIC"
-        }
+          messageKey: "INVALID_NUMERIC",
+        },
       ];
 
       // Create new validation results for only one field
       const newValidationResults = [
         {
           formIdentifier: textFormElement.uuid,
-          success: true
-        }
+          success: true,
+        },
       ];
 
       // Handle the validation results
@@ -1341,13 +1373,13 @@ describe("Validation Tests", () => {
         {
           formIdentifier: textFormElement.uuid,
           success: false,
-          messageKey: "REQUIRED_FIELD"
+          messageKey: "REQUIRED_FIELD",
         },
         {
           formIdentifier: numericFormElement.uuid,
           success: false,
-          messageKey: "INVALID_NUMERIC"
-        }
+          messageKey: "INVALID_NUMERIC",
+        },
       ];
 
       // Get validation result for text form element
@@ -1366,8 +1398,8 @@ describe("Validation Tests", () => {
         {
           formIdentifier: textFormElement.uuid,
           success: false,
-          messageKey: "REQUIRED_FIELD"
-        }
+          messageKey: "REQUIRED_FIELD",
+        },
       ];
 
       // Get validation result for numeric form element
@@ -1399,7 +1431,7 @@ describe("Validation Tests", () => {
       subjectConcept = EntityFactory.createConcept2({
         uuid: "c-validation-subject",
         name: "c-validation-subject",
-        dataType: Concept.dataType.Subject
+        dataType: Concept.dataType.Subject,
       });
 
       // Create a repeatable question group for subjects
@@ -1408,11 +1440,11 @@ describe("Validation Tests", () => {
         formElementGroup: formElementGroup,
         concept: repeatableQuestionGroupConcept,
         displayOrder: 7,
-        mandatory: true
+        mandatory: true,
       });
 
       // Set as repeatable
-      rqgWithSubjectFormElement.isRepeatable = function() {
+      rqgWithSubjectFormElement.isRepeatable = function () {
         return true;
       };
 
@@ -1423,7 +1455,7 @@ describe("Validation Tests", () => {
         concept: subjectConcept,
         displayOrder: 1,
         mandatory: true,
-        group: rqgWithSubjectFormElement
+        group: rqgWithSubjectFormElement,
       });
 
       // Add form elements to form element group
@@ -1448,7 +1480,7 @@ describe("Validation Tests", () => {
       const validationResult = {
         formIdentifier: subjectFormElement.uuid,
         success: false,
-        messageKey: "emptyValidationMessage"
+        messageKey: "emptyValidationMessage",
       };
 
       // 7. Create a mock FormElementService
@@ -1456,7 +1488,7 @@ describe("Validation Tests", () => {
         validateForMandatoryFieldIsEmptyOrNullOnly: jest.fn((formElement, value, observations, validationResults) => {
           validationResults.push(validationResult);
           return validationResults;
-        })
+        }),
       };
 
       // Store the original service
@@ -1472,7 +1504,7 @@ describe("Validation Tests", () => {
         assert.isArray(validationErrors);
 
         // 11. Find the validation error for the subject form element
-        const subjectError = validationErrors.find(ve => ve.formIdentifier === subjectFormElement.uuid);
+        const subjectError = validationErrors.find((ve) => ve.formIdentifier === subjectFormElement.uuid);
 
         // 12. Verify the validation error exists
         assert.isDefined(subjectError, "Should have a validation error for the subject field");
@@ -1490,43 +1522,43 @@ describe("Validation Tests", () => {
   it("should validate that a subject form element in a repeatable question group has EmptyOrNull value", () => {
     // Create a ValidationResult for testing
     const ValidationResult = {
-      failureForEmpty: function(formIdentifier) {
+      failureForEmpty: function (formIdentifier) {
         return {
           formIdentifier: formIdentifier,
           success: false,
           messageKey: "emptyValidationMessage",
-          addQuestionGroupIndex: function(index) {
+          addQuestionGroupIndex: function (index) {
             this.questionGroupIndex = index;
-          }
+          },
         };
       },
-      successful: function(formIdentifier) {
+      successful: function (formIdentifier) {
         return {
           formIdentifier: formIdentifier,
           success: true,
-          addQuestionGroupIndex: function(index) {
+          addQuestionGroupIndex: function (index) {
             this.questionGroupIndex = index;
-          }
+          },
         };
-      }
+      },
     };
 
     // Create a FormElementService for testing
     const testFormElementService = {
-      validateIfIsMandatoryAndValueEmptyOrNull: function(formElement, value) {
+      validateIfIsMandatoryAndValueEmptyOrNull: function (formElement, value) {
         if (formElement && formElement.mandatory && (value === undefined || value === null)) {
           return ValidationResult.failureForEmpty(formElement.uuid);
         } else {
           return ValidationResult.successful(formElement.uuid);
         }
       },
-      validateForMandatoryFieldIsEmptyOrNullOnly: function(
+      validateForMandatoryFieldIsEmptyOrNullOnly: function (
         formElement,
         value,
         observations,
         validationResults,
         formElementStatuses,
-        childFormElement
+        childFormElement,
       ) {
         const isChildFormElement = childFormElement && childFormElement.groupUuid === formElement.uuid;
         const validationResult = isChildFormElement
@@ -1539,7 +1571,7 @@ describe("Validation Tests", () => {
 
         validationResults.push(validationResult);
         return validationResults;
-      }
+      },
     };
 
     // Set up the parent (question group) form element
@@ -1547,9 +1579,9 @@ describe("Validation Tests", () => {
       uuid: "parent-uuid",
       mandatory: true,
       // We can't set repeatable directly, but we can simulate it by adding a method
-      isRepeatable: function() {
+      isRepeatable: function () {
         return true;
-      }
+      },
     };
 
     // Set up the child (subject) form element
@@ -1559,8 +1591,8 @@ describe("Validation Tests", () => {
       groupUuid: "parent-uuid",
       questionGroupIndex: 0,
       concept: {
-        datatype: Concept.dataType.Subject
-      }
+        datatype: Concept.dataType.Subject,
+      },
     };
 
     // Create an empty value
@@ -1574,7 +1606,7 @@ describe("Validation Tests", () => {
       [],
       validationResults,
       [],
-      childFormElement
+      childFormElement,
     );
 
     // Verify the validation results
@@ -1602,19 +1634,19 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
     const form = EntityFactory.createForm2({ uuid: "form-qg-test" });
     const feg = EntityFactory.createFormElementGroup2({
       uuid: "feg-qg-test",
-      form
+      form,
     });
 
     // Create question group concept
     const qgConcept = EntityFactory.createConcept2({
       uuid: "qg-concept-uuid",
-      dataType: Concept.dataType.QuestionGroup
+      dataType: Concept.dataType.QuestionGroup,
     });
 
     // Create child concept (mandatory)
     const childConcept = EntityFactory.createConcept2({
       uuid: "child-concept-uuid",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     // Create question group form element (repeatable)
@@ -1622,11 +1654,11 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
       uuid: "qg-fe-uuid",
       formElementGroup: feg,
       concept: qgConcept,
-      mandatory: false
+      mandatory: false,
     });
 
     // Set as repeatable
-    qgFormElement.isRepeatable = function() {
+    qgFormElement.isRepeatable = function () {
       return true;
     };
 
@@ -1636,7 +1668,7 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
       formElementGroup: feg,
       concept: childConcept,
       group: qgFormElement,
-      mandatory: true
+      mandatory: true,
     });
 
     // Set question group index for the child
@@ -1667,7 +1699,7 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
     assert.isAtLeast(emptyValidationErrors.length, 1, "Should have at least one validation error for the mandatory child field");
 
     // Find the validation error for the child form element
-    const childError = emptyValidationErrors.find(ve => ve.formIdentifier === childFormElement.uuid);
+    const childError = emptyValidationErrors.find((ve) => ve.formIdentifier === childFormElement.uuid);
     assert.isDefined(childError, "Should have a validation error for the mandatory child field");
     assert.isFalse(childError.success, "Validation should fail for empty mandatory child field");
     // The questionGroupIndex might not be set in the validation error, so we'll skip this assertion
@@ -1679,19 +1711,19 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
     const form = EntityFactory.createForm2({ uuid: "form-non-rep-qg" });
     const feg = EntityFactory.createFormElementGroup2({
       uuid: "feg-non-rep-qg",
-      form
+      form,
     });
 
     // Create question group concept
     const qgConcept = EntityFactory.createConcept2({
       uuid: "non-rep-qg-concept",
-      dataType: Concept.dataType.QuestionGroup
+      dataType: Concept.dataType.QuestionGroup,
     });
 
     // Create child concept (mandatory)
     const childConcept = EntityFactory.createConcept2({
       uuid: "non-rep-child-concept",
-      dataType: Concept.dataType.Text
+      dataType: Concept.dataType.Text,
     });
 
     // Create question group form element (non-repeatable)
@@ -1699,7 +1731,7 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
       uuid: "non-rep-qg-fe",
       formElementGroup: feg,
       concept: qgConcept,
-      mandatory: false
+      mandatory: false,
     });
 
     // Create child form element (mandatory)
@@ -1708,7 +1740,7 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
       formElementGroup: feg,
       concept: childConcept,
       group: qgFormElement,
-      mandatory: true
+      mandatory: true,
     });
 
     // Create observations holder
@@ -1736,7 +1768,7 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
     assert.isAtLeast(emptyValidationErrors.length, 1, "Should have at least one validation error for the mandatory child field");
 
     // Find the validation error for the child form element
-    const childError = emptyValidationErrors.find(ve => ve.formIdentifier === childFormElement.uuid);
+    const childError = emptyValidationErrors.find((ve) => ve.formIdentifier === childFormElement.uuid);
     assert.isDefined(childError, "Should have a validation error for the mandatory child field");
     assert.isFalse(childError.success, "Validation should fail for empty mandatory child field");
   });
@@ -1745,7 +1777,7 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
     // Create form elements with null concepts
     const formElementWithNullConcept = EntityFactory.createFormElement2({
       uuid: "fe-null-concept",
-      mandatory: true
+      mandatory: true,
     });
     formElementWithNullConcept.concept = null;
 
@@ -1765,15 +1797,15 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
       mandatory: true,
       concept: EntityFactory.createConcept2({
         uuid: "mandatory-concept",
-        dataType: Concept.dataType.Text
-      })
+        dataType: Concept.dataType.Text,
+      }),
     });
 
     const validationErrorsWithNull = commonFormUtil.getFEDataValidationErrors([null, mandatoryFormElement], obsHolder);
 
     // Verify that null elements are skipped and only valid elements are processed
     assert.isArray(validationErrorsWithNull);
-    const mandatoryError = validationErrorsWithNull.find(ve => ve.formIdentifier === mandatoryFormElement.uuid);
+    const mandatoryError = validationErrorsWithNull.find((ve) => ve.formIdentifier === mandatoryFormElement.uuid);
     assert.isDefined(mandatoryError, "Should process valid elements and skip null ones");
   });
 });

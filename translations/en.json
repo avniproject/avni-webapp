@@ -469,6 +469,7 @@
     "somethingWentWrong": "Something went wrong. Please try again later.",
     "selectAllLabel": "Select All",
     "unselectAllLabel": "Unselect All",
-    "alreadyEnrolledInProgram": "Already enrolled in {{programName}}"
+    "alreadyEnrolledInProgram": "Already enrolled in {{programName}}",
+    "invalidDate": "Invalid Date"
   }
 }

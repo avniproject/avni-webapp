@@ -41,6 +41,7 @@ export class ConceptMapper {
     webConceptView.keyValues = conceptResponse.keyValues;
     webConceptView.answers = answers;
     webConceptView.media = conceptResponse.media;
+    webConceptView.organisationId = conceptResponse.organisationId;
     return webConceptView;
   }
 }

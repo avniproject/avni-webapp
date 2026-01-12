@@ -15,6 +15,7 @@ export class WebConcept {
   lastModifiedBy: string;
   creationDateTime: string;
   lastModifiedDateTime: string;
+  organisationId: number;
 
   static adjustOrderOfAnswers(concept: WebConcept) {
     concept.answers.forEach((answer, index) => {
@@ -79,6 +80,7 @@ export class WebConceptAnswer {
   voided: boolean;
   order: number;
   media: any[];
+  organisationId: number;
 }
 
 export class WebConceptView extends WebConcept {
@@ -99,6 +101,7 @@ export class WebConceptView extends WebConcept {
     webConceptView.creationDateTime = "";
     webConceptView.lastModifiedDateTime = "";
     webConceptView.keyValues = [];
+    webConceptView.organisationId = 0;
     webConceptView.answers = [WebConceptAnswerView.emptyAnswer()];
     return webConceptView;
   }
@@ -127,6 +130,7 @@ export class WebConceptAnswerView extends WebConceptAnswer {
     webConceptAnswerView.editable = true;
     webConceptAnswerView.voided = false;
     webConceptAnswerView.order = 0;
+    webConceptAnswerView.organisationId = 0;
     webConceptAnswerView.isAnswerHavingError = ConceptAnswerError.inError("");
     return webConceptAnswerView;
   }

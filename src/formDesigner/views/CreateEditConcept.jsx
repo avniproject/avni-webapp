@@ -40,7 +40,8 @@ import {
 import { Stack } from "@mui/material";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { ModelGeneral as General } from "avni-models";
-import { canEditConcept } from "../util/ConceptPermissionUtil";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -133,12 +134,14 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
       setDataTypes(sortBy(response.data));
     } else {
       const conceptData = await ConceptService.getConcept(params.uuid);
-      const canEdit = canEditConcept(conceptData, userInfo, organisation);
+      setConcept(conceptData);
+      const canEdit =
+        UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept) &&
+        conceptData.organisationId === organisation.id;
       if (!canEdit) {
         setRedirectShow(true);
         return;
       }
-      setConcept(conceptData);
     }
 
     const opModules = await http.get("/web/operationalModules");
