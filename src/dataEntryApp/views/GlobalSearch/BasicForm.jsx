@@ -6,7 +6,7 @@ import {
   Grid,
   FormGroup,
   FormControlLabel,
-  Checkbox
+  Checkbox,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { find } from "lodash";
@@ -14,12 +14,12 @@ import AddressLevelsByType from "../../../common/components/AddressLevelsByType"
 
 const StyledContainer = styled(Grid)({
   marginTop: "1%",
-  marginBottom: "1%"
+  marginBottom: "1%",
 });
 
 const StyledLabel = styled(Typography)({
   marginBottom: 10,
-  color: "rgba(0, 0, 0, 0.54)"
+  color: "rgba(0, 0, 0, 0.54)",
 });
 
 function BasicForm({
@@ -30,7 +30,7 @@ function BasicForm({
   selectedGender,
   enterValue,
   addressLevelIds,
-  setAddressLevelIds
+  setAddressLevelIds,
 }) {
   const { t } = useTranslation();
 
@@ -52,7 +52,7 @@ function BasicForm({
     );
   }
 
-  const isFilterConfigured = !!find(searchFilterForms, sff => sff.type);
+  const isFilterConfigured = !!find(searchFilterForms, (sff) => sff.type);
 
   return isFilterConfigured ? (
     <Fragment>
@@ -76,7 +76,7 @@ function BasicForm({
             </Grid>
           ) : (
             ""
-          )
+          ),
         )}
 
         {searchFilterForms.map((searchFilterForm, index) =>
@@ -94,17 +94,22 @@ function BasicForm({
                 style={{ width: "100%" }}
                 onChange={onChange}
                 value={enterValue.age}
+                slotProps={{
+                  htmlInput: {
+                    onWheel: (e) => e.target.blur(),
+                  },
+                }}
               />
             </Grid>
           ) : (
             ""
-          )
+          ),
         )}
 
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "SearchAll"
             ? renderSearchAll(index, searchFilterForm.titleKey)
-            : ""
+            : "",
         )}
       </StyledContainer>
       <StyledContainer container spacing={3}>
@@ -137,7 +142,7 @@ function BasicForm({
             </Grid>
           ) : (
             ""
-          )
+          ),
         )}
       </StyledContainer>
 
@@ -153,7 +158,7 @@ function BasicForm({
             </Grid>
           ) : (
             ""
-          )
+          ),
         )}
       </StyledContainer>
     </Fragment>

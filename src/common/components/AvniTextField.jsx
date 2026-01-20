@@ -3,27 +3,33 @@ import { ToolTipContainer } from "./ToolTipContainer";
 import _ from "lodash";
 
 export const AvniTextField = ({ toolTipKey, ...props }) => {
-  const copy = { ...props };
-  copy.value = _.isNil(copy.value) ? "" : copy.value;
   return (
     <ToolTipContainer toolTipKey={toolTipKey}>
       <TextField
-        {...copy}
+        {...props}
+        value={_.isNil(props.value) ? "" : props.value}
+        slotProps={{
+          ...props.slotProps,
+          htmlInput: {
+            ...props.slotProps?.htmlInput,
+            onWheel: (e) => e.target.blur(),
+          },
+        }}
         sx={{
           backgroundColor: "white",
           "& .MuiInputBase-root": {
             backgroundColor: "white",
             "&:hover": {
-              backgroundColor: "white"
-            }
+              backgroundColor: "white",
+            },
           },
           "& .MuiInputLabel-root": {
             backgroundColor: "white",
             padding: "0 4px",
             "&:hover": {
-              backgroundColor: "white"
-            }
-          }
+              backgroundColor: "white",
+            },
+          },
         }}
       />
     </ToolTipContainer>

@@ -7,7 +7,7 @@ import {
   DatePicker,
   DateTimePicker,
   TimePicker,
-  LocalizationProvider
+  LocalizationProvider,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import _ from "lodash";
@@ -15,32 +15,32 @@ import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
 
 const StyledGrid = styled(Grid)({
   marginTop: "1%",
-  marginBottom: "1%"
+  marginBottom: "1%",
 });
 
 const StyledTypography = styled(Typography)({
   marginBottom: 10,
-  color: "rgba(0, 0, 0, 0.54)"
+  color: "rgba(0, 0, 0, 0.54)",
 });
 
 const StyledTextField = styled(TextField)({
-  width: "30%"
+  width: "30%",
 });
 
 const StyledTextFieldRangeFrom = styled(TextField)({
   width: "14%",
-  marginRight: "1%"
+  marginRight: "1%",
 });
 
 const StyledTextFieldRangeTo = styled(TextField)({
   width: "14%",
-  marginLeft: "1%"
+  marginLeft: "1%",
 });
 
 function NonCodedConceptForm({
   searchFilterForms = [],
   selectedConcepts,
-  onChange
+  onChange,
 }) {
   const { t } = useTranslation();
 
@@ -50,9 +50,9 @@ function NonCodedConceptForm({
         {searchFilterForms.map((searchFilterForm, index) => {
           const selectedValue = _.head(
             selectedConcepts.filter(
-              selectedConcept =>
-                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-            )
+              (selectedConcept) =>
+                selectedConcept.conceptUUID === searchFilterForm.conceptUUID,
+            ),
           );
           return searchFilterForm.type === "Concept" &&
             searchFilterForm.conceptDataType !== "Coded" ? (
@@ -65,7 +65,7 @@ function NonCodedConceptForm({
                   id={searchFilterForm.titleKey}
                   autoComplete="off"
                   type="text"
-                  onChange={event => onChange(event, searchFilterForm)}
+                  onChange={(event) => onChange(event, searchFilterForm)}
                   value={selectedValue?.value || ""}
                 />
               </Grid>
@@ -80,7 +80,7 @@ function NonCodedConceptForm({
                       id={`date-picker-${searchFilterForm.titleKey}-min`}
                       format={dateFormat}
                       value={selectedValue?.minValue || null}
-                      onChange={event =>
+                      onChange={(event) =>
                         onChange(event, searchFilterForm, "minValue")
                       }
                       slotProps={{
@@ -88,15 +88,15 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change date",
-                          color: "primary"
-                        }
+                          color: "primary",
+                        },
                       }}
                     />
                     <DatePicker
                       id={`date-picker-${searchFilterForm.titleKey}-max`}
                       format={dateFormat}
                       value={selectedValue?.maxValue || null}
-                      onChange={event =>
+                      onChange={(event) =>
                         onChange(event, searchFilterForm, "maxValue")
                       }
                       slotProps={{
@@ -104,8 +104,8 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change date",
-                          color: "primary"
-                        }
+                          color: "primary",
+                        },
                       }}
                     />
                   </LocalizationProvider>
@@ -120,7 +120,7 @@ function NonCodedConceptForm({
                       id={`datetime-picker-${searchFilterForm.titleKey}-min`}
                       format={dateTimeFormat}
                       value={selectedValue?.minValue || null}
-                      onChange={event =>
+                      onChange={(event) =>
                         onChange(event, searchFilterForm, "minValue")
                       }
                       slotProps={{
@@ -128,15 +128,15 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change datetime",
-                          color: "primary"
-                        }
+                          color: "primary",
+                        },
                       }}
                     />
                     <DateTimePicker
                       id={`datetime-picker-${searchFilterForm.titleKey}-max`}
                       format={dateTimeFormat}
                       value={selectedValue?.maxValue || null}
-                      onChange={event =>
+                      onChange={(event) =>
                         onChange(event, searchFilterForm, "maxValue")
                       }
                       slotProps={{
@@ -144,8 +144,8 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change datetime",
-                          color: "primary"
-                        }
+                          color: "primary",
+                        },
                       }}
                     />
                   </LocalizationProvider>
@@ -160,7 +160,7 @@ function NonCodedConceptForm({
                       id={`time-picker-${searchFilterForm.titleKey}-min`}
                       format={"HH:mm"}
                       value={selectedValue?.minValue || null}
-                      onChange={event =>
+                      onChange={(event) =>
                         onChange(event, searchFilterForm, "minValue")
                       }
                       slotProps={{
@@ -168,15 +168,15 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change time",
-                          color: "primary"
-                        }
+                          color: "primary",
+                        },
                       }}
                     />
                     <TimePicker
                       id={`time-picker-${searchFilterForm.titleKey}-max`}
                       format={"HH:mm"}
                       value={selectedValue?.maxValue || null}
-                      onChange={event =>
+                      onChange={(event) =>
                         onChange(event, searchFilterForm, "maxValue")
                       }
                       slotProps={{
@@ -184,8 +184,8 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change time",
-                          color: "primary"
-                        }
+                          color: "primary",
+                        },
                       }}
                     />
                   </LocalizationProvider>
@@ -200,20 +200,30 @@ function NonCodedConceptForm({
                     autoComplete="off"
                     type="number"
                     placeholder="From"
-                    onChange={event =>
+                    onChange={(event) =>
                       onChange(event, searchFilterForm, "minValue")
                     }
                     value={selectedValue?.minValue || ""}
+                    slotProps={{
+                      htmlInput: {
+                        onWheel: (e) => e.target.blur(),
+                      },
+                    }}
                   />
                   <StyledTextFieldRangeTo
                     id={`${searchFilterForm.titleKey}-max`}
                     autoComplete="off"
                     type="number"
                     placeholder="To"
-                    onChange={event =>
+                    onChange={(event) =>
                       onChange(event, searchFilterForm, "maxValue")
                     }
                     value={selectedValue?.maxValue || ""}
+                    slotProps={{
+                      htmlInput: {
+                        onWheel: (e) => e.target.blur(),
+                      },
+                    }}
                   />
                 </Grid>
               ) : null
@@ -227,10 +237,15 @@ function NonCodedConceptForm({
                     id={searchFilterForm.titleKey}
                     autoComplete="off"
                     type="number"
-                    onChange={event =>
+                    onChange={(event) =>
                       onChange(event, searchFilterForm, "minValue")
                     }
                     value={selectedValue?.minValue || ""}
+                    slotProps={{
+                      htmlInput: {
+                        onWheel: (e) => e.target.blur(),
+                      },
+                    }}
                   />
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Date" ? (
@@ -243,7 +258,7 @@ function NonCodedConceptForm({
                       id={`date-picker-${searchFilterForm.titleKey}`}
                       format={dateFormat}
                       value={selectedValue?.minValue || null}
-                      onChange={event =>
+                      onChange={(event) =>
                         onChange(event, searchFilterForm, "minValue")
                       }
                       slotProps={{
@@ -251,8 +266,8 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change date",
-                          color: "primary"
-                        }
+                          color: "primary",
+                        },
                       }}
                     />
                   </LocalizationProvider>
@@ -267,7 +282,7 @@ function NonCodedConceptForm({
                       id={`datetime-picker-${searchFilterForm.titleKey}`}
                       format={dateTimeFormat}
                       value={selectedValue?.minValue || null}
-                      onChange={event =>
+                      onChange={(event) =>
                         onChange(event, searchFilterForm, "minValue")
                       }
                       slotProps={{
@@ -275,8 +290,8 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change datetime",
-                          color: "primary"
-                        }
+                          color: "primary",
+                        },
                       }}
                     />
                   </LocalizationProvider>
@@ -291,7 +306,7 @@ function NonCodedConceptForm({
                       id={`time-picker-${searchFilterForm.titleKey}`}
                       format={"HH:mm"}
                       value={selectedValue?.minValue || null}
-                      onChange={event =>
+                      onChange={(event) =>
                         onChange(event, searchFilterForm, "minValue")
                       }
                       slotProps={{
@@ -299,8 +314,8 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change time",
-                          color: "primary"
-                        }
+                          color: "primary",
+                        },
                       }}
                     />
                   </LocalizationProvider>

@@ -694,7 +694,12 @@ const FormElementDetails = ({
                   )
                 }
                 margin="normal"
-                inputProps={{ min: 0 }}
+                slotProps={{
+                  htmlInput: {
+                    min: 0,
+                    onWheel: (e) => e.target.blur(),
+                  },
+                }}
                 disabled={disableFormElement}
               />
               {formElementData.errorMessage?.durationLimitInSecs && (
@@ -754,7 +759,12 @@ const FormElementDetails = ({
                   )
                 }
                 margin="normal"
-                inputProps={{ min: 0 }}
+                slotProps={{
+                  htmlInput: {
+                    min: 0,
+                    onWheel: (e) => e.target.blur(),
+                  },
+                }}
                 disabled={disableFormElement}
                 sx={{ minWidth: "10rem" }}
               />
@@ -778,7 +788,12 @@ const FormElementDetails = ({
                   )
                 }
                 margin="normal"
-                inputProps={{ min: 0 }}
+                slotProps={{
+                  htmlInput: {
+                    min: 0,
+                    onWheel: (e) => e.target.blur(),
+                  },
+                }}
                 disabled={disableFormElement}
                 sx={{ minWidth: "10rem" }}
               />

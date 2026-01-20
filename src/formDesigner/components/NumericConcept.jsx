@@ -1,7 +1,7 @@
 import {
   TextField as MuiTextField,
   FormControl,
-  FormHelperText
+  FormHelperText,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
@@ -11,8 +11,8 @@ const StyledTextField = styled(MuiTextField)({
   "& .MuiInputBase-root": {
     backgroundColor: "white",
     width: "auto",
-    minWidth: "7.5rem"
-  }
+    minWidth: "7.5rem",
+  },
 });
 
 export default function NumericConcept({
@@ -20,7 +20,7 @@ export default function NumericConcept({
   numericDataTypeAttributes = {},
   inlineConcept = false,
   groupIndex,
-  index
+  index,
 }) {
   return (
     <div>
@@ -32,17 +32,22 @@ export default function NumericConcept({
             label="Low Absolute"
             placeholder="Enter Low Absolute"
             margin="normal"
-            onChange={event =>
+            onChange={(event) =>
               inlineConcept
                 ? onNumericConceptAttributeAssignment(
                     groupIndex,
                     "lowAbsolute",
                     event.target.value,
-                    index
+                    index,
                   )
                 : onNumericConceptAttributeAssignment(event)
             }
-            InputProps={{ inputProps: { min: 0 } }}
+            slotProps={{
+              htmlInput: {
+                min: 0,
+                onWheel: (e) => e.target.blur(),
+              },
+            }}
             defaultValue={numericDataTypeAttributes?.lowAbsolute}
           />
         </FormControl>
@@ -53,17 +58,22 @@ export default function NumericConcept({
             label="High Absolute"
             placeholder="Enter High Absolute"
             margin="normal"
-            onChange={event =>
+            onChange={(event) =>
               inlineConcept
                 ? onNumericConceptAttributeAssignment(
                     groupIndex,
                     "highAbsolute",
                     event.target.value,
-                    index
+                    index,
                   )
                 : onNumericConceptAttributeAssignment(event)
             }
-            InputProps={{ inputProps: { min: 0 } }}
+            slotProps={{
+              htmlInput: {
+                min: 0,
+                onWheel: (e) => e.target.blur(),
+              },
+            }}
             defaultValue={numericDataTypeAttributes?.highAbsolute}
           />
           {numericDataTypeAttributes?.error?.absoluteValidation && (
@@ -82,17 +92,22 @@ export default function NumericConcept({
             label="Low Normal"
             placeholder="Enter Low Normal"
             margin="normal"
-            onChange={event =>
+            onChange={(event) =>
               inlineConcept
                 ? onNumericConceptAttributeAssignment(
                     groupIndex,
                     "lowNormal",
                     event.target.value,
-                    index
+                    index,
                   )
                 : onNumericConceptAttributeAssignment(event)
             }
-            InputProps={{ inputProps: { min: 0 } }}
+            slotProps={{
+              htmlInput: {
+                min: 0,
+                onWheel: (e) => e.target.blur(),
+              },
+            }}
             defaultValue={numericDataTypeAttributes?.lowNormal}
           />
         </FormControl>
@@ -103,17 +118,22 @@ export default function NumericConcept({
             label="High Normal"
             placeholder="Enter High Normal"
             margin="normal"
-            onChange={event =>
+            onChange={(event) =>
               inlineConcept
                 ? onNumericConceptAttributeAssignment(
                     groupIndex,
                     "highNormal",
                     event.target.value,
-                    index
+                    index,
                   )
                 : onNumericConceptAttributeAssignment(event)
             }
-            InputProps={{ inputProps: { min: 0 } }}
+            slotProps={{
+              htmlInput: {
+                min: 0,
+                onWheel: (e) => e.target.blur(),
+              },
+            }}
             defaultValue={numericDataTypeAttributes?.highNormal}
           />
           {numericDataTypeAttributes?.error?.normalValidation && (
@@ -133,13 +153,13 @@ export default function NumericConcept({
             label="Unit"
             placeholder="Enter unit"
             margin="normal"
-            onChange={event =>
+            onChange={(event) =>
               inlineConcept
                 ? onNumericConceptAttributeAssignment(
                     groupIndex,
                     "unit",
                     event.target.value,
-                    index
+                    index,
                   )
                 : onNumericConceptAttributeAssignment(event)
             }
@@ -156,5 +176,5 @@ NumericConcept.propTypes = {
   numericDataTypeAttributes: PropTypes.object,
   inlineConcept: PropTypes.bool,
   groupIndex: PropTypes.number,
-  index: PropTypes.number
+  index: PropTypes.number,
 };

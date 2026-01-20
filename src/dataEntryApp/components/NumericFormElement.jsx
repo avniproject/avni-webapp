@@ -5,31 +5,31 @@ import { useTranslation } from "react-i18next";
 import Colors from "../Colors";
 
 const StyledContainer = styled("div")({
-  width: "50%"
+  width: "50%",
 });
 
 const StyledGridContainer = styled("div")({
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
-  width: "50%"
+  width: "50%",
 });
 
 const StyledLabel = styled(Typography)({
   width: "50%",
   marginBottom: 10,
-  color: "rgba(0, 0, 0, 0.54)"
+  color: "rgba(0, 0, 0, 0.54)",
 });
 
 const StyledGridLabel = styled(Typography)({
   color: "rgba(0, 0, 0, 0.54)",
   flex: 0.5,
   marginRight: "15px",
-  borderRight: "1px solid rgba(0, 0, 0, 0.12)"
+  borderRight: "1px solid rgba(0, 0, 0, 0.12)",
 });
 
 const StyledTextField = styled(TextField)({
-  width: "30%"
+  width: "30%",
 });
 
 export default ({
@@ -38,13 +38,13 @@ export default ({
   update,
   validationResults,
   uuid,
-  isGrid
+  isGrid,
 }) => {
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
-      formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
+      formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex,
   );
 
   const error = () => {
@@ -60,8 +60,8 @@ export default ({
   const textColor = error()
     ? Colors.ValidationError
     : fe.editable
-    ? Colors.DefaultPrimary
-    : Colors.DefaultDisabled;
+      ? Colors.DefaultPrimary
+      : Colors.DefaultDisabled;
 
   const rangeText = (lowNormal, hiNormal) => {
     let rangeText = null;
@@ -101,15 +101,20 @@ export default ({
         sx={{
           input: { color: textColor },
           "& .MuiInput-underline": {
-            textDecoration: fe.editable ? "underline" : "none"
-          }
+            textDecoration: fe.editable ? "underline" : "none",
+          },
         }}
-        onChange={e => {
+        onChange={(e) => {
           const v = e.target.value;
           isEmpty(v) ? update(null) : update(v.replace(/[^0-9.]/g, ""));
         }}
         disabled={!fe.editable}
         onBlur={() => (isNil(value) ? update(null) : update(toNumber(value)))}
+        slotProps={{
+          htmlInput: {
+            onWheel: (e) => e.target.blur(),
+          },
+        }}
       />
     </StyledGridContainer>
   ) : (
@@ -136,15 +141,20 @@ export default ({
         sx={{
           input: { color: textColor },
           "& .MuiInput-underline": {
-            textDecoration: fe.editable ? "underline" : "none"
-          }
+            textDecoration: fe.editable ? "underline" : "none",
+          },
         }}
-        onChange={e => {
+        onChange={(e) => {
           const v = e.target.value;
           isEmpty(v) ? update(null) : update(v.replace(/[^0-9.]/g, ""));
         }}
         disabled={!fe.editable}
         onBlur={() => (isNil(value) ? update(null) : update(toNumber(value)))}
+        slotProps={{
+          htmlInput: {
+            onWheel: (e) => e.target.blur(),
+          },
+        }}
       />
     </StyledContainer>
   );

@@ -3,8 +3,8 @@ import { TextField } from "@mui/material";
 
 const StyledTextField = styled(TextField)({
   "& .MuiInputBase-input": {
-    height: 20 // Adjusted from 0 to a reasonable value for usability
-  }
+    height: 20,
+  },
 });
 
 const InputField = ({ type, value, onChange, ...props }) => {
@@ -21,6 +21,12 @@ const InputField = ({ type, value, onChange, ...props }) => {
       type={type || "text"}
       value={getValue()}
       onChange={onChange}
+      slotProps={{
+        htmlInput: {
+          ...props.inputProps,
+          onWheel: (e) => e.target.blur(),
+        },
+      }}
       {...props}
     />
   );

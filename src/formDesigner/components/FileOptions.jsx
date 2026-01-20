@@ -6,12 +6,12 @@ import { filter, includes, isNil, toNumber, map } from "lodash";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
 export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
-  const fileFormatOptions = FileFormat.names.map(name => ({
+  const fileFormatOptions = FileFormat.names.map((name) => ({
     label: name,
-    value: FileFormat.getType(name)
+    value: FileFormat.getType(name),
   }));
 
-  const onChange = event => {
+  const onChange = (event) => {
     const allowedTypes = map(event, ({ value }) => value);
     handleChange(groupIndex, "allowedTypes", allowedTypes, index);
   };
@@ -33,7 +33,7 @@ export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
           isMulti
           placeholder={`Select the file types`}
           value={filter(fileFormatOptions, ({ value }) =>
-            includes(keyValues.allowedTypes, value)
+            includes(keyValues.allowedTypes, value),
           )}
           options={fileFormatOptions}
           onChange={onChange}
@@ -47,7 +47,7 @@ export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
         <TextField
           type="number"
           value={keyValues.allowedMaxSize}
-          onChange={e => {
+          onChange={(e) => {
             const value = e.target.value.replace(/[^0-9.]/g, "");
             handleChange(groupIndex, "allowedMaxSize", value, index);
           }}
@@ -56,9 +56,14 @@ export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
               groupIndex,
               "allowedMaxSize",
               toNumber(keyValues.allowedMaxSize),
-              index
+              index,
             )
           }
+          slotProps={{
+            htmlInput: {
+              onWheel: (e) => e.target.blur(),
+            },
+          }}
         />
       </FormControl>
     </Fragment>
