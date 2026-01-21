@@ -97,19 +97,28 @@ const StyledCommentButton = styled(Fab)(({ theme }) => ({
   whiteSpace: "nowrap",
 }));
 
-const StyledSaveButton = styled("button")({
+const sxEnrollButton = {
+  backgroundColor: "#f27510",
+  height: "38px",
+  zIndex: 1,
+  boxShadow: "none",
+  whiteSpace: "nowrap",
+  alignSelf: "flex-start",
+};
+
+const sxSaveButton = {
   float: "left",
   backgroundColor: "#fc9153",
   height: "30px",
-});
+};
 
-const StyledCancelButton = styled("button")({
+const sxCancelButton = {
   float: "left",
   backgroundColor: "#F8F9F9",
   color: "#fc9153",
   border: "1px solid #fc9153",
   height: "30px",
-});
+};
 
 const StyledForm = styled("form")({
   display: "flex",
@@ -309,12 +318,12 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
                       {
                         buttonType: "openButton",
                         label: t("enrolInProgram"),
-                        sx: StyledEnrollButton,
+                        sx: sxEnrollButton,
                       },
                       {
                         buttonType: "saveButton",
                         label: t("Enrol"),
-                        sx: StyledSaveButton,
+                        sx: sxSaveButton,
                         redirectTo: `/app/subject/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
                           profileDetails.subjectType.name
                         }`,
@@ -324,7 +333,7 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
                       {
                         buttonType: "cancelButton",
                         label: t("Cancel"),
-                        sx: StyledCancelButton,
+                        sx: sxCancelButton,
                       },
                     ]}
                     title={t("Enrol in program")}
