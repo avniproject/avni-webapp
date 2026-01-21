@@ -21,13 +21,13 @@ const InputField = ({ type, value, onChange, ...props }) => {
       type={type || "text"}
       value={getValue()}
       onChange={onChange}
+      {...props}
       slotProps={{
         htmlInput: {
           ...props.inputProps,
           onWheel: (e) => e.target.blur(),
         },
       }}
-      {...props}
     />
   );
 };
