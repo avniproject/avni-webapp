@@ -5,7 +5,7 @@ import {
   differenceInMonths,
   subYears,
   subMonths,
-  isValid
+  isValid,
 } from "date-fns";
 import _ from "lodash";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -33,7 +33,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
     }
   }, [dateOfBirth]);
 
-  const _onYearsChange = value => {
+  const _onYearsChange = (value) => {
     setYears(value);
     const newDate = subMonths(subYears(new Date(), value), months);
     onChange(newDate);
@@ -44,7 +44,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
       <Box
         sx={{
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
         }}
       >
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -54,7 +54,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             style={{
               width: "50%",
               marginBottom: 5,
-              color: "rgba(0, 0, 0, 0.54)"
+              color: "rgba(0, 0, 0, 0.54)",
             }}
           >
             {t("dateOfBirth")}
@@ -68,7 +68,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             format={dateFormat}
             name="dateOfBirth"
             value={_.isNil(dateOfBirth) ? null : dateOfBirth}
-            onChange={date => onChange(date)}
+            onChange={(date) => onChange(date)}
             slotProps={{
               textField: {
                 error: Boolean(!_.isEmpty(dobErrorMsg)),
@@ -76,13 +76,13 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
                 margin: "normal",
                 style: { width: "30%" },
                 InputLabelProps: { shrink: true },
-                variant: "outlined"
+                variant: "outlined",
               },
               actionBar: { actions: ["clear"] },
               openPickerButton: {
                 "aria-label": "change date",
-                color: "primary"
-              }
+                color: "primary",
+              },
             }}
           />
         </LocalizationProvider>
@@ -105,7 +105,12 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           helperText={
             _.isNil(dob) && dobErrorMsg && t("emptyValidationMessage")
           }
-          onChange={e => _onYearsChange(e.target.value)}
+          onChange={(e) => _onYearsChange(e.target.value)}
+          slotProps={{
+            htmlInput: {
+              onWheel: (e) => e.target.blur(),
+            },
+          }}
         />
       </Box>
     </Fragment>
