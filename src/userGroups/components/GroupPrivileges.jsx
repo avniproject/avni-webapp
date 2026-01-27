@@ -9,22 +9,22 @@ import { Privilege } from "openchs-models";
 import GroupPrivilegesModel from "../../common/model/GroupPrivilegesModel";
 import GroupModel from "../../common/model/GroupModel";
 
-const generatePrivilegeDependenciesAndCheckedState = function(
-  groupPrivilegeList
+const generatePrivilegeDependenciesAndCheckedState = function (
+  groupPrivilegeList,
 ) {
   const dependencies = new Map();
   const checkedState = new Map();
 
   const { PrivilegeType } = Privilege;
 
-  groupPrivilegeList.forEach(groupPrivilege => {
+  groupPrivilegeList.forEach((groupPrivilege) => {
     checkedState.set(groupPrivilege.uuid, {
-      checkedState: groupPrivilege.allow
+      checkedState: groupPrivilege.allow,
     });
     switch (groupPrivilege["privilegeTypeName"]) {
       case PrivilegeType.ViewSubject:
         dependencies.set(groupPrivilege.uuid, {
-          dependencies: []
+          dependencies: [],
         });
         break;
       case PrivilegeType.RegisterSubject:
@@ -41,8 +41,8 @@ const generatePrivilegeDependenciesAndCheckedState = function(
         dependencies.set(groupPrivilege.uuid, {
           dependencies: GroupPrivilegesModel.getSubjectTypeDependencies(
             groupPrivilegeList,
-            groupPrivilege
-          ).map(x => x.uuid)
+            groupPrivilege,
+          ).map((x) => x.uuid),
         });
         break;
       case PrivilegeType.EnrolSubject:
@@ -53,8 +53,8 @@ const generatePrivilegeDependenciesAndCheckedState = function(
         dependencies.set(groupPrivilege.uuid, {
           dependencies: GroupPrivilegesModel.getProgramDependencies(
             groupPrivilegeList,
-            groupPrivilege
-          ).map(x => x.uuid)
+            groupPrivilege,
+          ).map((x) => x.uuid),
         });
         break;
       case PrivilegeType.ScheduleVisit:
@@ -67,8 +67,8 @@ const generatePrivilegeDependenciesAndCheckedState = function(
         dependencies.set(groupPrivilege.uuid, {
           dependencies: GroupPrivilegesModel.getEncounterTypeDependencies(
             groupPrivilegeList,
-            groupPrivilege
-          ).map(x => x.uuid)
+            groupPrivilege,
+          ).map((x) => x.uuid),
         });
         break;
       case PrivilegeType.EditChecklist:
@@ -77,15 +77,15 @@ const generatePrivilegeDependenciesAndCheckedState = function(
         dependencies.set(groupPrivilege.uuid, {
           dependencies: GroupPrivilegesModel.getChecklistDependencies(
             groupPrivilegeList,
-            groupPrivilege
-          ).map(x => x.uuid)
+            groupPrivilege,
+          ).map((x) => x.uuid),
         });
         break;
       case PrivilegeType.EditUserGroup:
         dependencies.set(groupPrivilege.uuid, {
           dependencies: GroupPrivilegesModel.getEditUserGroupDependencies(
-            groupPrivilegeList
-          ).map(x => x.uuid)
+            groupPrivilegeList,
+          ).map((x) => x.uuid),
         });
         break;
       default:
@@ -98,7 +98,7 @@ const generatePrivilegeDependenciesAndCheckedState = function(
     let dependency_keys = value.dependencies;
     let current_dependencies;
     if (!(dependency_keys === undefined)) {
-      dependency_keys.forEach(dep_key => {
+      dependency_keys.forEach((dep_key) => {
         current_dependencies = dependencies.get(dep_key);
         if (!current_dependencies.dependents) {
           current_dependencies.dependents = [];
@@ -110,13 +110,13 @@ const generatePrivilegeDependenciesAndCheckedState = function(
   return [checkedState, dependencies];
 };
 
-const modifyGroupPrivilegesToIncludeGroupingTypeColumn = function(
-  groupPrivilegeList
+const modifyGroupPrivilegesToIncludeGroupingTypeColumn = function (
+  groupPrivilegeList,
 ) {
-  return groupPrivilegeList.map(gp => {
+  return groupPrivilegeList.map((gp) => {
     return {
       ...gp,
-      groupingTypeName: gp.subjectTypeName || gp.privilegeEntityType
+      groupingTypeName: gp.subjectTypeName || gp.privilegeEntityType,
     };
   });
 };
@@ -125,7 +125,7 @@ const GroupPrivileges = ({
   groupId,
   hasAllPrivileges,
   setHasAllPrivileges,
-  groupName
+  groupName,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -134,17 +134,15 @@ const GroupPrivileges = ({
 
   // Use useSelector instead of connect
   const groupPrivilegeList = useSelector(
-    state => state.userGroups.groupPrivilegeList
+    (state) => state.userGroups.groupPrivilegeList,
   );
 
   const [privilegeDependencies, setPrivilegeDependencies] = useState(null);
   const [privilegesCheckedState, setPrivilegesCheckedState] = useState(null);
-  const [allPrivilegesAllowed, setAllPrivilegesAllowed] = useState(
-    hasAllPrivileges
-  );
-  const [enhancedGroupPrivilegeList, setEnhancedGroupPrivilegeList] = useState(
-    groupPrivilegeList
-  );
+  const [allPrivilegesAllowed, setAllPrivilegesAllowed] =
+    useState(hasAllPrivileges);
+  const [enhancedGroupPrivilegeList, setEnhancedGroupPrivilegeList] =
+    useState(groupPrivilegeList);
 
   useEffect(() => {
     if (!allPrivilegesAllowed) {
@@ -155,15 +153,13 @@ const GroupPrivileges = ({
   useEffect(() => {
     if (!groupPrivilegeList) return;
 
-    const [
-      checkedState,
-      dependencies
-    ] = generatePrivilegeDependenciesAndCheckedState(groupPrivilegeList);
+    const [checkedState, dependencies] =
+      generatePrivilegeDependenciesAndCheckedState(groupPrivilegeList);
 
     setPrivilegesCheckedState(checkedState);
     setPrivilegeDependencies(dependencies);
     setEnhancedGroupPrivilegeList(
-      modifyGroupPrivilegesToIncludeGroupingTypeColumn(groupPrivilegeList)
+      modifyGroupPrivilegesToIncludeGroupingTypeColumn(groupPrivilegeList),
     );
   }, [groupPrivilegeList]);
 
@@ -178,31 +174,31 @@ const GroupPrivileges = ({
     }
 
     let privilegeUuidsToBeUpdated = deps.filter(
-      uuid => privilegesCheckedState.get(uuid).checkedState !== isAllow
+      (uuid) => privilegesCheckedState.get(uuid).checkedState !== isAllow,
     );
 
     privilegeUuidsToBeUpdated.push(rowData.uuid);
 
     let toggleCheckedStateMap = new Map();
-    privilegeUuidsToBeUpdated.forEach(index => {
+    privilegeUuidsToBeUpdated.forEach((index) => {
       toggleCheckedStateMap.set(index, {
-        checkedState: isAllow
+        checkedState: isAllow,
       });
     });
 
     setPrivilegesCheckedState(
-      new Map([...privilegesCheckedState, ...toggleCheckedStateMap])
+      new Map([...privilegesCheckedState, ...toggleCheckedStateMap]),
     );
 
     modifyGroupPrivileges(privilegeUuidsToBeUpdated, isAllow);
   };
 
   const modifyGroupPrivileges = (privilegeUuidsToBeUpdated, isAllow) => {
-    let privilegesToBeUpdated = groupPrivilegeList.filter(groupPrivilege =>
-      privilegeUuidsToBeUpdated.includes(groupPrivilege.uuid)
+    let privilegesToBeUpdated = groupPrivilegeList.filter((groupPrivilege) =>
+      privilegeUuidsToBeUpdated.includes(groupPrivilege.uuid),
     );
 
-    const request_body = privilegesToBeUpdated.map(privilege => ({
+    const request_body = privilegesToBeUpdated.map((privilege) => ({
       groupPrivilegeId: privilege.groupPrivilegeId,
       groupId: privilege.groupId,
       privilegeId: privilege.privilegeId,
@@ -212,10 +208,10 @@ const GroupPrivileges = ({
       encounterTypeId: privilege.encounterTypeId,
       checklistDetailId: privilege.checklistDetailId,
       allow: isAllow,
-      uuid: privilege.uuid
+      uuid: privilege.uuid,
     }));
 
-    api.modifyGroupPrivileges(request_body).then(response => {
+    api.modifyGroupPrivileges(request_body).then((response) => {
       const [response_data, error] = response;
       if (!response_data && error) {
         alert(error);
@@ -224,15 +220,17 @@ const GroupPrivileges = ({
     });
   };
 
-  const onToggleAllPrivileges = event => {
+  const onToggleAllPrivileges = (event) => {
     let allowOptionSelected = event.target.checked;
-    api.updateGroup(groupId, groupName, allowOptionSelected).then(response => {
-      const [response_data, error] = response;
-      if (!response_data && error) {
-        alert(error);
-      }
-      dispatch(getGroups());
-    });
+    api
+      .updateGroup(groupId, groupName, allowOptionSelected)
+      .then((response) => {
+        const [response_data, error] = response;
+        if (!response_data && error) {
+          alert(error);
+        }
+        dispatch(getGroups());
+      });
 
     if (!allowOptionSelected) {
       dispatch(getGroupPrivilegeList(groupId));
@@ -240,6 +238,11 @@ const GroupPrivileges = ({
     setAllPrivilegesAllowed(allowOptionSelected);
     setHasAllPrivileges(allowOptionSelected);
   };
+
+  const hasChecklistData = useMemo(
+    () => enhancedGroupPrivilegeList?.some((item) => item.checklistDetailName),
+    [enhancedGroupPrivilegeList],
+  );
 
   const columns = useMemo(
     () => [
@@ -249,32 +252,32 @@ const GroupPrivileges = ({
         enableGrouping: false,
         Cell: ({ row }) => (
           <Switch
-            onChange={event => onTogglePermissionClick(event, row.original)}
+            onChange={(event) => onTogglePermissionClick(event, row.original)}
             checked={
               privilegesCheckedState?.get(row.original.uuid)?.checkedState ??
               false
             }
           />
-        )
+        ),
       },
       {
         accessorKey: "groupingTypeName",
         header: "Subject / Entity Type",
-        enableGrouping: true
+        enableGrouping: true,
       },
-      { accessorKey: "subjectTypeName", header: "Subject Type" },
-      { accessorKey: "privilegeEntityType", header: "Entity Type" },
       { accessorKey: "privilegeName", header: "Privilege" },
       { accessorKey: "programName", header: "Program" },
       {
         accessorKey: "programEncounterTypeName",
         header: "Program Encounter Type",
-        muiTableBodyCellProps: { sx: { sortDirection: "asc" } }
+        muiTableBodyCellProps: { sx: { sortDirection: "asc" } },
       },
       { accessorKey: "encounterTypeName", header: "General Encounter Type" },
-      { accessorKey: "checklistDetailName", header: "Checklist Detail" }
+      ...(hasChecklistData
+        ? [{ accessorKey: "checklistDetailName", header: "Checklist Detail" }]
+        : []),
     ],
-    [privilegesCheckedState]
+    [privilegesCheckedState, hasChecklistData],
   );
 
   return (
@@ -302,13 +305,18 @@ const GroupPrivileges = ({
             enableColumnFilters={false}
             initialState={{
               grouping: ["groupingTypeName"],
-              pagination: { pageSize: 20 }
+              pagination: { pageSize: 1000 },
+            }}
+            muiPaginationProps={{
+              rowsPerPageOptions: [100, 200, 500, 1000, 2000],
+              showFirstButton: true,
+              showLastButton: true,
             }}
             muiTableHeadCellProps={{
-              sx: { zIndex: 0 }
+              sx: { zIndex: 0 },
             }}
             muiSearchTextFieldProps={{
-              sx: { float: "left" }
+              sx: { float: "left" },
             }}
           />
         </div>
