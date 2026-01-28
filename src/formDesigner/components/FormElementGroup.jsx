@@ -309,6 +309,7 @@ function FormElementGroup(props) {
               }
             >
               <StyledAccordionSummary
+                component="div"
                 aria-controls={`${panel}bh-content`}
                 id={`${panel}bh-header`}
                 {...provided.dragHandleProps}

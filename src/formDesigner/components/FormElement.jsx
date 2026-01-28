@@ -202,6 +202,7 @@ const FormElement = (props) => {
       onMouseLeave={() => setDragElement(false)}
     >
       <StyledAccordionSummary
+        component="div"
         aria-controls={`${panel}bh-content`}
         id={`${panel}bh-header`}
         {...props.dragHandleProps}
