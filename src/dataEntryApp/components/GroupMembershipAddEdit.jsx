@@ -112,7 +112,7 @@ const GroupMembershipAddEdit = () => {
   const searchSubjects = (subjectName, callback) => {
     SubjectSearchService.search({
       name: subjectName,
-      subjectTypeUUID: selectedRole.memberSubjectTypeUUID,
+      subjectType: selectedRole.memberSubjectTypeUUID,
     })
       .then((searchResults) =>
         searchResults.listOfRecords
