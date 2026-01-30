@@ -930,7 +930,7 @@ const FormElementDetails = ({
               </StyledFormControl>
             </Grid>
           )}
-          <Grid container spacing={2} sm={12} sx={{ width: "100%" }}>
+          <Grid container spacing={4} sm={12} sx={{ width: "100%" }}>
             {formElementData.concept.dataType !== "QuestionGroup" && (
               <Grid sm={4}>
                 <AvniFormControl
@@ -1009,7 +1009,7 @@ const FormElementDetails = ({
             {["Numeric", "Text", "PhoneNumber"].includes(
               formElementData.concept.dataType,
             ) && (
-              <Grid sx={{ flexBasis: "33.33%" }}>
+              <Grid sm={4}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"}
                   disabled={disableFormElement}
@@ -1061,59 +1061,64 @@ const FormElementDetails = ({
             </StyledFormControl>
           </Grid>
         )}
-        {formElementData.concept.dataType === "GroupAffiliation" && (
-          <Grid container spacing={5}>
-            <Grid sx={{ flexBasis: "50%" }}>
+      </Grid>
+      {formElementData.concept.dataType === "GroupAffiliation" && (
+        <Grid
+          container
+          spacing={5}
+          sm={12}
+          sx={{ width: "100%", justifyContent: "space-between" }}
+        >
+          <Grid sx={{ flexBasis: "45%" }}>
+            <StyledFormControl disabled={disableFormElement}>
+              <AvniFormLabel
+                label={"Group Subject Type"}
+                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE"}
+              />
+              <Select
+                name="groupSubjectType"
+                value={formElementData.keyValues.groupSubjectTypeUUID}
+                onChange={(event) =>
+                  rest.handleGroupElementKeyValueChange(
+                    groupIndex,
+                    "groupSubjectTypeUUID",
+                    event.target.value,
+                    index,
+                  )
+                }
+                required
+              >
+                {groupSubjectTypeList()}
+              </Select>
+            </StyledFormControl>
+          </Grid>
+          <Grid sx={{ flexBasis: "45%" }}>
+            {formElementData.keyValues.groupSubjectTypeUUID && (
               <StyledFormControl disabled={disableFormElement}>
                 <AvniFormLabel
-                  label={"Group Subject Type"}
-                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE"}
+                  label={"Group Role"}
+                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_ROLE"}
                 />
                 <Select
-                  name="groupSubjectType"
-                  value={formElementData.keyValues.groupSubjectTypeUUID}
+                  name="groupSubjectRole"
+                  value={formElementData.keyValues.groupSubjectRoleUUID}
                   onChange={(event) =>
                     rest.handleGroupElementKeyValueChange(
                       groupIndex,
-                      "groupSubjectTypeUUID",
+                      "groupSubjectRoleUUID",
                       event.target.value,
                       index,
                     )
                   }
                   required
                 >
-                  {groupSubjectTypeList()}
+                  {groupRoleList()}
                 </Select>
               </StyledFormControl>
-            </Grid>
-            <Grid sx={{ flexBasis: "50%" }}>
-              {formElementData.keyValues.groupSubjectTypeUUID && (
-                <StyledFormControl disabled={disableFormElement}>
-                  <AvniFormLabel
-                    label={"Group Role"}
-                    toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_ROLE"}
-                  />
-                  <Select
-                    name="groupSubjectRole"
-                    value={formElementData.keyValues.groupSubjectRoleUUID}
-                    onChange={(event) =>
-                      rest.handleGroupElementKeyValueChange(
-                        groupIndex,
-                        "groupSubjectRoleUUID",
-                        event.target.value,
-                        index,
-                      )
-                    }
-                    required
-                  >
-                    {groupRoleList()}
-                  </Select>
-                </StyledFormControl>
-              )}
-            </Grid>
+            )}
           </Grid>
-        )}
-      </Grid>
+        </Grid>
+      )}
       {formElementData.concept.dataType === "QuestionGroup" && (
         <Fragment>
           <QuestionGroup

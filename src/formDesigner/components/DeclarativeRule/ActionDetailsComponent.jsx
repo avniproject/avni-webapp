@@ -8,13 +8,13 @@ import { inlineConceptDataType } from "../../common/constants";
 import {
   Action,
   AddDecisionActionDetails,
-  VisitScheduleActionDetails
+  VisitScheduleActionDetails,
 } from "rules-config";
 import {
   getEncounterTypes,
   getForm,
   getFormType,
-  useDeclarativeRuleDispatch
+  useDeclarativeRuleDispatch,
 } from "./DeclarativeRuleContext";
 import Select from "react-select";
 
@@ -23,21 +23,20 @@ function VisitScheduleDetails({
   onActionChange,
   declarativeRuleIndex,
   index,
-  dispatch
+  dispatch,
 }) {
-  const dateFieldOptions = VisitScheduleActionDetails.getDateFieldOptions(
-    getForm()
-  );
+  const dateFieldOptions =
+    VisitScheduleActionDetails.getDateFieldOptions(getForm());
   const dateField = get(actionDetails, "dateField");
   const dateFieldUuid = get(actionDetails, "dateFieldUuid");
   const encounterTypes = getEncounterTypes();
   const selectedET = get(actionDetails, "encounterType");
   const selectedDateFieldOption = {
     label: startCase(dateField),
-    value: { dateField, dateFieldUuid, toString: () => dateField }
+    value: { dateField, dateFieldUuid, toString: () => dateField },
   };
 
-  const onEncounterTypeChange = value => {
+  const onEncounterTypeChange = (value) => {
     onActionChange("encounterType", value);
     onActionChange("encounterName", value);
   };
@@ -51,10 +50,10 @@ function VisitScheduleDetails({
           value={selectedET ? { value: selectedET, label: selectedET } : null}
           options={map(encounterTypes, ({ name }) => ({
             value: name,
-            label: name
+            label: name,
           }))}
           style={{ width: "auto" }}
-          onChange={event => onEncounterTypeChange(event.value)}
+          onChange={(event) => onEncounterTypeChange(event.value)}
         />
       </Grid>
       {!isEmpty(actionDetails.encounterType) && (
@@ -63,7 +62,7 @@ function VisitScheduleDetails({
           <Grid size={2}>
             <InputField
               value={get(actionDetails, "encounterName")}
-              onChange={event =>
+              onChange={(event) =>
                 onActionChange("encounterName", event.target.value)
               }
             />
@@ -75,10 +74,10 @@ function VisitScheduleDetails({
               value={dateField ? selectedDateFieldOption : null}
               options={dateFieldOptions}
               style={{ width: "auto" }}
-              onChange={event =>
+              onChange={(event) =>
                 dispatch({
                   type: "visitDateField",
-                  payload: { declarativeRuleIndex, index, ...event.value }
+                  payload: { declarativeRuleIndex, index, ...event.value },
                 })
               }
             />
@@ -92,7 +91,7 @@ function VisitScheduleDetails({
             <InputField
               type={"number"}
               value={get(actionDetails, "daysToSchedule")}
-              onChange={event =>
+              onChange={(event) =>
                 onActionChange("daysToSchedule", event.target.value)
               }
             />
@@ -102,7 +101,7 @@ function VisitScheduleDetails({
             <InputField
               type={"number"}
               value={get(actionDetails, "daysToOverdue")}
-              onChange={event =>
+              onChange={(event) =>
                 onActionChange("daysToOverdue", event.target.value)
               }
             />
@@ -118,7 +117,7 @@ function DecisionDetails({
   index,
   actionDetails,
   declarativeRuleIndex,
-  onActionChange
+  onActionChange,
 }) {
   const dispatch = useDeclarativeRuleDispatch();
   const selectedDecisionConcept = {
@@ -126,12 +125,12 @@ function DecisionDetails({
     value: {
       name: actionDetails.conceptName,
       uuid: actionDetails.conceptUuid,
-      dataType: actionDetails.conceptDataType
-    }
+      dataType: actionDetails.conceptDataType,
+    },
   };
-  const selectedDecisionValues = map(actionDetails.value, v => ({
+  const selectedDecisionValues = map(actionDetails.value, (v) => ({
     label: v,
-    value: { name: v }
+    value: { name: v },
   }));
   const selectedScope = get(actionDetails, "scope");
   const decisionScopes =
@@ -145,10 +144,10 @@ function DecisionDetails({
           key={index}
           placeholder={"Search decision concept"}
           value={actionDetails.conceptName ? selectedDecisionConcept : null}
-          onChange={event =>
+          onChange={(event) =>
             dispatch({
               type: "decisionConcept",
-              payload: { declarativeRuleIndex, index, ...event.value }
+              payload: { declarativeRuleIndex, index, ...event.value },
             })
           }
           nonSupportedTypes={["NA"]}
@@ -164,10 +163,10 @@ function DecisionDetails({
                 isMulti={true}
                 placeholder={"search answer"}
                 value={selectedDecisionValues}
-                onChange={labelValues =>
+                onChange={(labelValues) =>
                   dispatch({
                     type: "decisionCodedValue",
-                    payload: { declarativeRuleIndex, index, labelValues }
+                    payload: { declarativeRuleIndex, index, labelValues },
                   })
                 }
                 nonSupportedTypes={inlineConceptDataType}
@@ -175,7 +174,9 @@ function DecisionDetails({
             ) : (
               <InputField
                 value={actionDetails.value}
-                onChange={event => onActionChange("value", event.target.value)}
+                onChange={(event) =>
+                  onActionChange("value", event.target.value)
+                }
               />
             )}
           </Grid>
@@ -191,16 +192,16 @@ function DecisionDetails({
                 selectedScope
                   ? {
                       value: selectedScope,
-                      label: startCase(selectedScope)
+                      label: startCase(selectedScope),
                     }
                   : null
               }
-              options={map(decisionScopes, s => ({
+              options={map(decisionScopes, (s) => ({
                 value: s,
-                label: startCase(s)
+                label: startCase(s),
               }))}
               style={{ width: "auto" }}
-              onChange={event => onActionChange("scope", event.value)}
+              onChange={(event) => onActionChange("scope", event.value)}
             />
           </Grid>
         </Fragment>
@@ -214,7 +215,7 @@ const ActionDetailsComponent = ({
   actionDetails,
   onActionChange,
   index,
-  declarativeRuleIndex
+  declarativeRuleIndex,
 }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const actionTypes = Action.actionTypes;
@@ -222,13 +223,13 @@ const ActionDetailsComponent = ({
     zip(actionDetails.answersToSkip, actionDetails.answerUuidsToSkip),
     ([name, uuid]) => ({
       label: name,
-      value: { name, uuid, toString: () => uuid }
-    })
+      value: { name, uuid, toString: () => uuid },
+    }),
   );
-  const onAnswerToSkipChange = labelValues => {
+  const onAnswerToSkipChange = (labelValues) => {
     dispatch({
       type: "answerToSkipChange",
-      payload: { declarativeRuleIndex, index, labelValues }
+      payload: { declarativeRuleIndex, index, labelValues },
     });
   };
 
@@ -236,21 +237,20 @@ const ActionDetailsComponent = ({
     <Fragment>
       {selectedType === actionTypes.Value && (
         <Grid
-          container
-          direction={"row"}
-          spacing={1}
-          sx={{
-            alignItems: "center"
-          }}
           size={4}
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 1,
+          }}
         >
           <MiddleText text={"Is"} />
-          <Grid size={11}>
-            <InputField
-              value={get(actionDetails, "value")}
-              onChange={event => onActionChange("value", event.target.value)}
-            />
-          </Grid>
+          <InputField
+            fullWidth
+            value={get(actionDetails, "value")}
+            onChange={(event) => onActionChange("value", event.target.value)}
+          />
         </Grid>
       )}
       {selectedType === actionTypes.SkipAnswers && (
@@ -260,21 +260,21 @@ const ActionDetailsComponent = ({
             isMulti={true}
             placeholder={"Search answer"}
             value={selectedAnswersToSkipOptions}
-            onChange={labelValues => onAnswerToSkipChange(labelValues)}
+            onChange={(labelValues) => onAnswerToSkipChange(labelValues)}
             nonSupportedTypes={inlineConceptDataType}
           />
         </Grid>
       )}
       {includes(
         [actionTypes.ValidationError, actionTypes.FormValidationError],
-        selectedType
+        selectedType,
       ) && (
         <Grid
           container
           direction={"row"}
           spacing={1}
           sx={{
-            alignItems: "center"
+            alignItems: "center",
           }}
           size={8}
         >
@@ -282,7 +282,7 @@ const ActionDetailsComponent = ({
           <Grid size={11}>
             <InputField
               value={get(actionDetails, "validationError")}
-              onChange={event =>
+              onChange={(event) =>
                 onActionChange("validationError", event.target.value)
               }
             />

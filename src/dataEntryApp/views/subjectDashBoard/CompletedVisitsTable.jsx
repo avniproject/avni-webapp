@@ -27,6 +27,7 @@ const StyledLink = styled(Link)({
 const StyledGrid = styled(Grid)({
   alignItems: "center",
   alignContent: "center",
+  flexWrap: "nowrap",
 });
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -174,8 +175,8 @@ const CompletedVisitsTable = ({
         header: t("actions"),
         enableSorting: false,
         Cell: ({ row }) => (
-          <StyledGrid container spacing={10}>
-            <Grid>
+          <StyledGrid container spacing={2}>
+            <Grid size={"auto"}>
               <EditVisitLink
                 editEncounterUrl={editEncounterUrl(
                   row.original.cancelDateTime ? "Cancel" : "",
@@ -184,7 +185,7 @@ const CompletedVisitsTable = ({
                 isForProgramEncounters={isForProgramEncounters}
               />
             </Grid>
-            <Grid>
+            <Grid size={"auto"}>
               <DeleteButton onDelete={() => onDelete(row.original)} />
             </Grid>
           </StyledGrid>
