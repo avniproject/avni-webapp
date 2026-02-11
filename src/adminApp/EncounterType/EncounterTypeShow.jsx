@@ -13,7 +13,7 @@ import { Grid } from "@mui/material";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import {
   findProgramEncounterCancellationForm,
-  findProgramEncounterForm
+  findProgramEncounterForm,
 } from "../domain/formMapping";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { SystemInfo } from "../../formDesigner/components/SystemInfo";
@@ -21,14 +21,14 @@ import RuleDisplay from "../components/RuleDisplay";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import {
   getMessageRules,
-  getMessageTemplates
+  getMessageTemplates,
 } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
 const EncounterTypeShow = () => {
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
 
   const { id } = useParams();
 
@@ -42,8 +42,8 @@ const EncounterTypeShow = () => {
     MessageReducer,
     {
       rules: [],
-      templates: []
-    }
+      templates: [],
+    },
   );
 
   useEffect(() => {
@@ -59,20 +59,25 @@ const EncounterTypeShow = () => {
   useEffect(() => {
     http
       .get("/web/encounterType/" + id)
-      .then(response => response.data)
-      .then(result => {
+      .then((response) => response.data)
+      .then((result) => {
         setEncounterType(result);
 
-        http.get("/web/operationalModules").then(response => {
+        http.get("/web/operationalModules").then((response) => {
           const formMap = response.data.formMappings;
-          formMap.map(l => (l["isVoided"] = false));
+          formMap.map((l) => (l["isVoided"] = false));
 
           const encounterTypeMappings = response.data.formMappings.filter(
-            l => l.encounterTypeUUID === result.uuid
+            (l) => l.encounterTypeUUID === result.uuid,
           );
-          _.isNil(encounterTypeMappings[0].programUUID)
-            ? setEntityType("Encounter")
-            : setEntityType("ProgramEncounter");
+          if (
+            encounterTypeMappings.length === 0 ||
+            _.isNil(encounterTypeMappings[0].programUUID)
+          ) {
+            setEntityType("Encounter");
+          } else {
+            setEntityType("ProgramEncounter");
+          }
 
           setFormMappings(formMap);
           setSubjectType(response.data.subjectTypes);
@@ -87,19 +92,19 @@ const EncounterTypeShow = () => {
         sx={{
           boxShadow: 2,
           p: 3,
-          bgcolor: "background.paper"
+          bgcolor: "background.paper",
         }}
       >
         <Title title={"Encounter Type : " + encounterType.name} />
         {UserInfo.hasPrivilege(
           userInfo,
-          Privilege.PrivilegeType.EditEncounterType
+          Privilege.PrivilegeType.EditEncounterType,
         ) && (
           <Grid
             container
             style={{ justifyContent: "flex-end" }}
             size={{
-              sm: 12
+              sm: 12,
             }}
           >
             <Button
@@ -154,12 +159,12 @@ const EncounterTypeShow = () => {
               <a
                 href={`#/appdesigner/forms/${get(
                   findProgramEncounterForm(formMappings, encounterType),
-                  "formUUID"
+                  "formUUID",
                 )}`}
               >
                 {get(
                   findProgramEncounterForm(formMappings, encounterType),
-                  "formName"
+                  "formName",
                 )}
               </a>
             </span>
@@ -175,17 +180,17 @@ const EncounterTypeShow = () => {
                 href={`#/appdesigner/forms/${get(
                   findProgramEncounterCancellationForm(
                     formMappings,
-                    encounterType
+                    encounterType,
                   ),
-                  "formUUID"
+                  "formUUID",
                 )}`}
               >
                 {get(
                   findProgramEncounterCancellationForm(
                     formMappings,
-                    encounterType
+                    encounterType,
                   ),
-                  "formName"
+                  "formName",
                 )}
               </a>
             </span>

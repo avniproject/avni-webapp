@@ -14,7 +14,7 @@ import EncounterTypeErrors from "./EncounterTypeErrors";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import {
   getMessageTemplates,
-  saveMessageRules
+  saveMessageRules,
 } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { useSelector } from "react-redux";
@@ -23,11 +23,13 @@ import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const EncounterTypeCreate = () => {
   const navigate = useNavigate();
-  const organisationConfig = useSelector(state => state.app.organisationConfig);
+  const organisationConfig = useSelector(
+    (state) => state.app.organisationConfig,
+  );
 
   const [encounterType, dispatch] = useReducer(
     encounterTypeReducer,
-    encounterTypeInitialState
+    encounterTypeInitialState,
   );
   const [nameValidation, setNameValidation] = useState(false);
   const [subjectValidation, setSubjectValidation] = useState(false);
@@ -48,11 +50,11 @@ const EncounterTypeCreate = () => {
     MessageReducer,
     {
       rules: [],
-      templates: []
-    }
+      templates: [],
+    },
   );
 
-  const onRulesChange = rules => {
+  const onRulesChange = (rules) => {
     rulesDispatch({ type: "setRules", payload: rules });
   };
 
@@ -63,9 +65,9 @@ const EncounterTypeCreate = () => {
 
   useEffect(() => {
     dispatch({ type: "setLoaded" });
-    http.get("/web/operationalModules").then(response => {
+    http.get("/web/operationalModules").then((response) => {
       const formMap = response.data.formMappings;
-      formMap.map(l => (l["isVoided"] = false));
+      formMap.map((l) => (l["isVoided"] = false));
       setFormMappings(formMap);
       setFormList(response.data.forms);
       setSubjectType(response.data.subjectTypes);
@@ -79,7 +81,7 @@ const EncounterTypeCreate = () => {
     }
   }, [alert, id, navigate]);
 
-  const onSubmit = event => {
+  const onSubmit = (event) => {
     event.preventDefault();
     let hasError = false;
     if (encounterType.name.trim() === "") {
@@ -93,7 +95,7 @@ const EncounterTypeCreate = () => {
     }
     const { jsCode, validationError } = validateRule(
       encounterType.encounterEligibilityCheckDeclarativeRule,
-      holder => holder.generateEligibilityRule()
+      (holder) => holder.generateEligibilityRule(),
     );
     if (!_.isEmpty(validationError)) {
       hasError = true;
@@ -113,15 +115,15 @@ const EncounterTypeCreate = () => {
         subjectTypeUuid: subjectT.uuid,
         programEncounterFormUuid: _.get(
           encounterType,
-          "programEncounterForm.formUUID"
+          "programEncounterForm.formUUID",
         ),
         programEncounterCancelFormUuid: _.get(
           encounterType,
-          "programEncounterCancellationForm.formUUID"
+          "programEncounterCancellationForm.formUUID",
         ),
-        programUuid: _.get(programT, "uuid")
+        programUuid: _.get(programT, "uuid"),
       })
-      .then(response => {
+      .then((response) => {
         if (response.status === 200) {
           setError("");
           setMsgError("");
@@ -130,47 +132,22 @@ const EncounterTypeCreate = () => {
           return response.data;
         }
       })
-      .then(encounterType =>
-        saveMessageRules(entityType, encounterType.encounterTypeId, rules)
+      .then((encounterType) =>
+        saveMessageRules(entityType, encounterType.encounterTypeId, rules),
       )
-      .catch(error => {
+      .catch((error) => {
         error.response.data.message
           ? setError(error.response.data.message)
           : setMsgError(getDBValidationError(error));
       });
   };
 
-  function resetValue(type) {
-    dispatch({
-      type,
-      payload: null
-    });
-  }
-
   function updateProgram(program) {
     setProgramT(program);
-    const formType = _.get(encounterType, "programEncounterForm.formType");
-    const cancelFormType = _.get(
-      encounterType,
-      "programEncounterCancellationForm.formType"
-    );
-
-    if (_.isEmpty(programT)) {
-      setEntityType("ProgramEncounter");
-      if (formType === "ProgramEncounter") {
-        resetValue("programEncounterForm");
-      }
-      if (cancelFormType === "ProgramEncounterCancellation") {
-        resetValue("programEncounterCancellationForm");
-      }
-    } else {
+    if (_.isEmpty(program)) {
       setEntityType("Encounter");
-      if (formType === "Encounter") {
-        resetValue("programEncounterForm");
-      }
-      if (cancelFormType === "IndividualEncounterCancellation") {
-        resetValue("programEncounterCancellationForm");
-      }
+    } else {
+      setEntityType("ProgramEncounter");
     }
   }
 
@@ -179,7 +156,7 @@ const EncounterTypeCreate = () => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <DocumentationContainer filename={"EncounterType.md"}>
