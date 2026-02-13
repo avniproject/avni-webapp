@@ -479,9 +479,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
         const keyValues = [...safeKeyValues(prev.keyValues)];
         if (
           keyValue &&
-          (keyValue.value === undefined ||
-            keyValue.value === null ||
-            keyValue.value === "")
+          (keyValue.value === undefined || keyValue.value === null)
         ) {
           const keyIndex = keyValues.findIndex((kv) => kv.key === keyValue.key);
           if (keyIndex >= 0) {
