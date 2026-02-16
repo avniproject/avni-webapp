@@ -6,6 +6,6 @@ Several organisation-wide changes can be enabled from here.
 
 `Approval Workflow`: Enabling this will allow you to approve/reject all the forms filled by the field users. You'll need to create a [custom dashboard](#/appdesigner/dashboard) and also adjust the [privileges](#/admin/userGroups) accordingly.
 
-`Draft Save`: Enabling this feature will enable saving the registration form automatically on every press of next button. All the drafts are available on the register page.
+`Draft Save`: Enabling this feature will automatically save the form every time the Next button is pressed. For more details, refer to [the documentation](https://avni.readme.io/docs/draft-save).
 
 `Enable Messaging`: Enabling this will introduce the capability of sending messages through Whatsapp. Remember that there is more configuration required for this integration to work.
