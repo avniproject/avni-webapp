@@ -76,6 +76,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
       "donotRequirePasswordChangeOnFirstLogin",
     enableMobileAppDbEncryption: "enableMobileAppDbEncryption",
     copilotFormValidationApiKey: "copilotFormValidationApiKey",
+    guideUserToRegisterButton: "guideUserToRegisterButton",
   };
 
   const getDefaultSnackbarStatus = (defaultSnackbarStatus) => {
@@ -148,6 +149,11 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
           organisationConfigSettingKeys.donotRequirePasswordChangeOnFirstLogin,
           "Do not require password change for new user",
           "DO_NOT_REQUIRE_PASSWORD_CHANGE_FOR_NEW_USER",
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.guideUserToRegisterButton,
+          "Guide users to Register button",
+          "GUIDE_USER_TO_REGISTER_BUTTON",
         )}
         <AvniTextField
           style={{ marginLeft: 8, marginTop: 10 }}

@@ -194,6 +194,7 @@
   "APP_DESIGNER_ENCOUNTER_TYPE_IMMUTABLE": "If the encounter type is marked as immutable then data from the last encounter is copied to the next encounter. Since the encounter is immutable, the edit is not allowed on these encounters.",
   "SHOW_HIERARCHICAL_LOCATION": "Location will shown in hierarchical format",
   "DO_NOT_REQUIRE_PASSWORD_CHANGE_FOR_NEW_USER": "Do not require password change for new user on first login",
+  "GUIDE_USER_TO_REGISTER_BUTTON": "Guide users to Register button in the mobile app",
   "ENABLE_MESSAGING_BUTTON": "Enable messaging through WhatsApp. Requires a Glific account",
   "APP_DESIGNER_MESSAGE_RULE_NAME": "Name",
   "APP_DESIGNER_SELECT_MESSAGE_TEMPLATE": "Choose the message template",
