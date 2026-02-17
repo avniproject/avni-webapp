@@ -102,7 +102,7 @@ const DifyChatbot = () => {
       document.head.appendChild(styleElement);
 
       chatButton.innerHTML = `
-        <img src="/icons/ai-chat-icon.png" alt="Chat with AI" width="32" height="32" style="border-radius: 4px;" />
+        <img src="/icons/ai-chat-icon.png" alt="Chat with AI" width="32" height="32" style="border-radius: 4px; pointer-events: none; user-select: none;" />
       `.trim();
       chatButton.style.cssText = `
         position: fixed;
@@ -115,8 +115,9 @@ const DifyChatbot = () => {
         color: ${theme.palette.primary.contrastText};
         border: none;
         font-size: 24px;
-        cursor: pointer;
+        cursor: grab;
         z-index: 1201;
+        touch-action: none;
         box-shadow: ${theme.shadows[4]};
         transition: all 0.3s ease;
         display: ${isChatOpen ? "none" : "flex"};
@@ -124,18 +125,74 @@ const DifyChatbot = () => {
         justify-content: center;
       `;
 
+      // Drag state
+      let isDragging = false;
+      let hasDragged = false;
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let buttonStartX = 0;
+      let buttonStartY = 0;
+
+      const onPointerDown = (e) => {
+        isDragging = true;
+        hasDragged = false;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        const rect = chatButton.getBoundingClientRect();
+        buttonStartX = rect.left;
+        buttonStartY = rect.top;
+        chatButton.style.transition = "none";
+        chatButton.setPointerCapture(e.pointerId);
+      };
+
+      const onPointerMove = (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+          hasDragged = true;
+        }
+        if (hasDragged) {
+          const newX = Math.max(
+            0,
+            Math.min(window.innerWidth - 60, buttonStartX + dx),
+          );
+          const newY = Math.max(
+            0,
+            Math.min(window.innerHeight - 60, buttonStartY + dy),
+          );
+          chatButton.style.left = `${newX}px`;
+          chatButton.style.top = `${newY}px`;
+          chatButton.style.right = "auto";
+          chatButton.style.bottom = "auto";
+        }
+      };
+
+      const onPointerUp = (e) => {
+        isDragging = false;
+        chatButton.style.transition = "all 0.3s ease";
+        chatButton.releasePointerCapture(e.pointerId);
+        if (!hasDragged) {
+          dispatch(setChatOpen(true));
+        }
+      };
+
+      chatButton.addEventListener("pointerdown", onPointerDown);
+      chatButton.addEventListener("pointermove", onPointerMove);
+      chatButton.addEventListener("pointerup", onPointerUp);
+
       chatButton.onmouseover = () => {
-        chatButton.style.transform = "scale(1.1)";
-        chatButton.style.background = theme.palette.primary.dark;
+        if (!isDragging) {
+          chatButton.style.transform = "scale(1.1)";
+          chatButton.style.background = theme.palette.primary.dark;
+        }
       };
 
       chatButton.onmouseout = () => {
-        chatButton.style.transform = "scale(1)";
-        chatButton.style.background = theme.palette.primary.main;
-      };
-
-      chatButton.onclick = () => {
-        dispatch(setChatOpen(true));
+        if (!isDragging) {
+          chatButton.style.transform = "scale(1)";
+          chatButton.style.background = theme.palette.primary.main;
+        }
       };
 
       document.body.appendChild(chatButton);
