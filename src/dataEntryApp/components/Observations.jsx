@@ -321,6 +321,19 @@ const Observations = ({
         }}
       />
     ),
+    [Concept.dataType.Signature]: (
+      <img
+        src={signedMediaUrl}
+        alt={MediaData.MissingSignedMediaMessage}
+        align="center"
+        width={200}
+        height={200}
+        onClick={event => {
+          event.preventDefault();
+          showMediaOverlay(signedMediaUrl);
+        }}
+      />
+    ),
     [Concept.dataType.Video]: (
       <video
         preload="auto"
@@ -440,6 +453,7 @@ const Observations = ({
       case Concept.dataType.Audio:
         return <AudioPlayer url={unsignedMediaUrl} />;
       case Concept.dataType.Image:
+      case Concept.dataType.Signature:
       case Concept.dataType.Video:
         return imageVideoOptions(unsignedMediaUrl, concept);
       case Concept.dataType.File:
