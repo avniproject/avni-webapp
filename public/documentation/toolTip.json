@@ -173,7 +173,7 @@
   "ADMIN_PHONE_VERIFICATION_MSG91TEMPLATEID": "The SMS Template ID created from the Msg91 console",
   "ADMIN_PHONE_VERIFICATION_OTPLENGTH": "The length of the OTP to be sent",
   "ADMIN_APPROVAL_WORKFLOW": "Enable approval workflow",
-  "ADMIN_SAVE_DRAFT": "Enable subject draft save",
+  "ADMIN_SAVE_DRAFT": "Enable draft save",
   "ADMIN_HIDE_DOB": "Hides the DOB on subject dashboard on Data Entry App",
   "ADMIN_ENABLE_COMMENTS": "Enable the comments feature.",
   "ADMIN_ENABLE_MOBILE_APP_DB_ENCRYPTION": "Enables mobile app database encryption to ensure safety of data. Enabling this will not permit user to use fast sync and upload db feature in mobile app.",
