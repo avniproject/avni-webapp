@@ -24,7 +24,7 @@ import {
   FormDataConsumer,
   useDataProvider,
   useNotify,
-  useRedirect
+  useRedirect,
 } from "react-admin";
 import { isEmpty, find, isNil } from "lodash";
 import { None } from "../common/components/utils";
@@ -40,7 +40,7 @@ import {
   datagridStyles,
   StyledSelectInput,
   StyledSimpleShowLayout,
-  StyledShow
+  StyledShow,
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
@@ -55,7 +55,7 @@ const CustomListActions = () => {
   );
 };
 
-const LocationFilter = props => {
+const LocationFilter = (props) => {
   const { ...filteredProps } = props;
   return (
     <FilterLiveSearch
@@ -65,23 +65,23 @@ const LocationFilter = props => {
       resettable={false}
       sx={{
         "& .MuiInputBase-input": {
-          backgroundColor: "white"
+          backgroundColor: "white",
         },
         "& .RaResettableTextField-clearButton": {
-          backgroundColor: "white"
+          backgroundColor: "white",
         },
         "& .MuiInputAdornment-root": {
-          display: "none"
+          display: "none",
         },
         "& .MuiInputBase-root": {
-          paddingRight: 0
-        }
+          paddingRight: 0,
+        },
       }}
     />
   );
 };
 
-export const LocationList = props => (
+export const LocationList = (props) => (
   <StyledBox>
     <List
       {...props}
@@ -99,7 +99,7 @@ export const LocationList = props => (
   </StyledBox>
 );
 
-const SubLocationsGrid = props => {
+const SubLocationsGrid = (props) => {
   const listContext = useListContext();
   const data = listContext?.data || props.data || [];
 
@@ -126,13 +126,13 @@ const ParentLocationReferenceField = ({ addLabel = true, label, ...props }) => {
       reference="locations"
     >
       <FunctionField
-        render={record => `${record.title} (${record.typeString})`}
+        render={(record) => `${record.title} (${record.typeString})`}
       />
     </ReferenceField>
   );
 };
 
-export const LocationDetail = props => (
+export const LocationDetail = (props) => (
   <StyledShow {...props} title={<Title title={"Location"} />}>
     <StyledSimpleShowLayout>
       <TextField source="title" label="Name" />
@@ -146,8 +146,11 @@ export const LocationDetail = props => (
       >
         <SubLocationsGrid />
       </ReferenceManyField>
-      <FunctionField label="Created" render={audit => createdAudit(audit)} />
-      <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
+      <FunctionField label="Created" render={(audit) => createdAudit(audit)} />
+      <FunctionField
+        label="Modified"
+        render={(audit) => modifiedAudit(audit)}
+      />
       <TextField source="uuid" label="UUID" />
     </StyledSimpleShowLayout>
   </StyledShow>
@@ -157,7 +160,11 @@ const LocationCreateEditToolbar = ({ edit, ...props }) => (
   <Toolbar {...props}>
     {edit ? <SaveButton {...props} /> : <LocationSaveButton />}
     {edit && (
-      <DeleteButton undoable={false} redirect="list" sx={{ ml: "auto" }} />
+      <DeleteButton
+        mutationMode="pessimistic"
+        redirect="list"
+        sx={{ ml: "auto" }}
+      />
     )}
   </Toolbar>
 );
@@ -166,7 +173,7 @@ const isRequired = required("This field is required");
 
 let addressLevelTypes = [];
 
-const LocationTypeSelectInput = props => {
+const LocationTypeSelectInput = (props) => {
   const [choices, setChoices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const dataProvider = useDataProvider();
@@ -179,30 +186,30 @@ const LocationTypeSelectInput = props => {
         .getList("addressLevelType", {
           pagination: { page: 1, perPage: 25 },
           sort: { field: "id", order: "DESC" },
-          filter: {}
+          filter: {},
         })
         .then(({ data }) => {
           console.log(
             "LocationTypeSelectInput: fetched addressLevelTypes",
-            data
+            data,
           );
           const mappedChoices = Array.isArray(data)
             ? data
             : data._embedded
-            ? data._embedded.addressLevelType.map(item => ({
-                id: item.id,
-                name: item.name,
-                parentId: item.parentId
-              }))
-            : [];
+              ? data._embedded.addressLevelType.map((item) => ({
+                  id: item.id,
+                  name: item.name,
+                  parentId: item.parentId,
+                }))
+              : [];
 
           setChoices(mappedChoices);
           addressLevelTypes = mappedChoices;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(
             "LocationTypeSelectInput: error fetching addressLevelTypes",
-            error
+            error,
           );
         })
         .finally(() => {
@@ -221,13 +228,13 @@ const LocationTypeSelectInput = props => {
   );
 };
 
-const getParentIdOfLocationType = typeId => {
+const getParentIdOfLocationType = (typeId) => {
   if (isNil(typeId)) return null;
   let type = find(addressLevelTypes, { id: typeId });
   return isNil(type) ? null : type.parentId;
 };
 
-const getNameOfLocationType = typeId => {
+const getNameOfLocationType = (typeId) => {
   if (isNil(typeId)) return null;
   let type = find(addressLevelTypes, { id: typeId });
   return isNil(type) ? null : type.name;
@@ -265,19 +272,19 @@ const LocationFormInner = ({ edit }) => {
               reference="locations"
               filter={{
                 searchURI: "findAsList",
-                typeId: getParentIdOfLocationType(formData.typeId)
+                typeId: getParentIdOfLocationType(formData.typeId),
               }}
               {...rest}
             >
               <AutocompleteInput
                 validate={isRequired}
-                optionText={record =>
+                optionText={(record) =>
                   record ? `${record.titleLineage} (${record.typeString})` : ""
                 }
                 source="parentId"
-                filterToQuery={searchText => ({ title: searchText })}
+                filterToQuery={(searchText) => ({ title: searchText })}
                 debounce={500}
-                shouldRenderSuggestions={value => value && value.length >= 2}
+                shouldRenderSuggestions={(value) => value && value.length >= 2}
                 noOptionsText="Type at least 2 characters to search locations"
                 loadingText="Searching locations..."
                 sx={{ width: "30rem" }}
@@ -296,7 +303,7 @@ const LocationFormInner = ({ edit }) => {
   );
 };
 
-export const LocationForm = props => {
+export const LocationForm = (props) => {
   const notify = useNotify();
   const redirect = useRedirect();
 
@@ -309,9 +316,9 @@ export const LocationForm = props => {
           notify("Location created", { type: "info" });
           redirect("list", "locations");
         },
-        onError: error => {
+        onError: (error) => {
           notify(`Error: ${error.message}`, { type: "error" });
-        }
+        },
       }}
       {...props}
     >
@@ -320,18 +327,28 @@ export const LocationForm = props => {
   );
 };
 
-export const LocationCreate = props => (
+export const LocationCreate = (props) => (
   <Paper>
     <DocumentationContainer filename={"Location.md"}>
-      <Create {...props} redirect="show" title="Add New Location">
+      <Create
+        {...props}
+        redirect="show"
+        title="Add New Location"
+        mutationMode="pessimistic"
+      >
         <LocationForm />
       </Create>
     </DocumentationContainer>
   </Paper>
 );
 
-export const LocationEdit = props => (
-  <Edit title="Edit Location" redirect="show" {...props} undoable={false}>
+export const LocationEdit = (props) => (
+  <Edit
+    title="Edit Location"
+    redirect="show"
+    {...props}
+    mutationMode="pessimistic"
+  >
     <LocationForm edit />
   </Edit>
 );

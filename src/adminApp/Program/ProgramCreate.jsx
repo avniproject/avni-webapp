@@ -3,7 +3,7 @@ import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import Button from "@mui/material/Button";
+import { SaveComponent } from "../../common/components/SaveComponent";
 import { programInitialState } from "../Constant";
 import { programReducer } from "../Reducers";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
@@ -12,17 +12,19 @@ import EditProgramFields from "./EditProgramFields";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import {
   getMessageTemplates,
-  saveMessageRules
+  saveMessageRules,
 } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { identity } from "lodash";
 import { useSelector } from "react-redux";
-import Save from "@mui/icons-material/Save";
+
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const ProgramCreate = () => {
   const navigate = useNavigate();
-  const organisationConfig = useSelector(state => state.app.organisationConfig);
+  const organisationConfig = useSelector(
+    (state) => state.app.organisationConfig,
+  );
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [errors, setErrors] = useState(new Map());
   const [msgError, setMsgError] = useState("");
@@ -35,8 +37,8 @@ const ProgramCreate = () => {
     MessageReducer,
     {
       rules: [],
-      templates: []
-    }
+      templates: [],
+    },
   );
 
   const entityType = "ProgramEnrolment";
@@ -52,24 +54,22 @@ const ProgramCreate = () => {
     }
   }, [saved, id, navigate]);
 
-  const onRulesChange = rules => {
+  const onRulesChange = (rules) => {
     rulesDispatch({ type: "setRules", payload: rules });
   };
 
   useEffect(() => {
     dispatch({ type: "setLoaded" });
-    http.get("/web/operationalModules").then(response => {
+    http.get("/web/operationalModules").then((response) => {
       setFormList(response.data.forms);
       setSubjectTypes(response.data.subjectTypes);
     });
   }, []);
 
-  const onSubmit = event => {
-    event.preventDefault();
-
+  const onSubmit = () => {
     let [errors, jsCodeEECDR, jsCodeMEECDR] = ProgramService.validateProgram(
       program,
-      subjectType
+      subjectType,
     );
     ProgramService.updateJSRules(program, errors, jsCodeEECDR, jsCodeMEECDR);
     if (errors.size !== 0) {
@@ -77,8 +77,8 @@ const ProgramCreate = () => {
       return;
     }
 
-    ProgramService.saveProgram(program, subjectType)
-      .then(saveResponse => {
+    return ProgramService.saveProgram(program, subjectType)
+      .then((saveResponse) => {
         setErrors(saveResponse.errors);
         setSaved(saveResponse.status === 200);
         if (saveResponse.errors.size === 0) {
@@ -87,8 +87,8 @@ const ProgramCreate = () => {
         }
         return saveResponse.programId;
       })
-      .then(programId => saveMessageRules(entityType, programId, rules))
-      .catch(error => {
+      .then((programId) => saveMessageRules(entityType, programId, rules))
+      .catch((error) => {
         !error.response.data.message &&
           setMsgError(getDBValidationError(error));
       });
@@ -99,46 +99,37 @@ const ProgramCreate = () => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <DocumentationContainer filename={"Program.md"}>
         <Title title={"Create Program "} />
         <div className="container" style={{ float: "left" }}>
-          <form onSubmit={onSubmit}>
-            <EditProgramFields
-              program={program}
-              errors={errors}
-              formList={formList}
-              subjectTypes={subjectTypes}
-              dispatch={dispatch}
-              onSubjectTypeChange={setSubjectType}
-              subjectType={subjectType}
+          <EditProgramFields
+            program={program}
+            errors={errors}
+            formList={formList}
+            subjectTypes={subjectTypes}
+            dispatch={dispatch}
+            onSubjectTypeChange={setSubjectType}
+            subjectType={subjectType}
+          />
+          {organisationConfig && organisationConfig.enableMessaging ? (
+            <MessageRules
+              templateFetchError={templateFetchError}
+              rules={rules}
+              templates={templates}
+              onChange={onRulesChange}
+              entityType={entityType}
+              entityTypeId={program.programId}
+              msgError={msgError}
             />
-            {organisationConfig && organisationConfig.enableMessaging ? (
-              <MessageRules
-                templateFetchError={templateFetchError}
-                rules={rules}
-                templates={templates}
-                onChange={onRulesChange}
-                entityType={entityType}
-                entityTypeId={program.programId}
-                msgError={msgError}
-              />
-            ) : (
-              <></>
-            )}
-            <br />
-            <br />
-            <Button
-              color="primary"
-              variant="contained"
-              type="submit"
-              startIcon={<Save />}
-            >
-              Save
-            </Button>
-          </form>
+          ) : (
+            <></>
+          )}
+          <br />
+          <br />
+          <SaveComponent onSubmit={onSubmit} name="Save" />
         </div>
       </DocumentationContainer>
     </Box>

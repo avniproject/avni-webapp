@@ -12,7 +12,7 @@ import {
   SimpleForm,
   TextField,
   Toolbar,
-  useRecordContext
+  useRecordContext,
 } from "react-admin";
 import { None } from "../common/components/utils";
 import { isNil } from "lodash";
@@ -28,11 +28,11 @@ import {
   StyledBox,
   StyledSelectInput,
   StyledShow,
-  StyledSimpleShowLayout
+  StyledSimpleShowLayout,
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
-export const LocationTypeList = props => (
+export const LocationTypeList = (props) => (
   <StyledBox>
     <List
       {...props}
@@ -77,7 +77,7 @@ const ParentReferenceField = ({ showToolTip, ...props }) => {
         link="show"
         reference="addressLevelType"
       >
-        <FunctionField render={record => record.name} />
+        <FunctionField render={(record) => record.name} />
       </ReferenceField>
     </Container>
   );
@@ -93,7 +93,7 @@ const ModifiedAuditField = () => {
   return modifiedAudit(record);
 };
 
-export const LocationTypeDetail = props => (
+export const LocationTypeDetail = (props) => (
   <StyledShow {...props} title={<Title title={"Location Type"} />}>
     <StyledSimpleShowLayout>
       <TextField label="Location Type" source="name" />
@@ -109,7 +109,7 @@ export const LocationTypeDetail = props => (
 const CreateEditToolbar = ({ edit, ...props }) => (
   <Toolbar {...props}>
     <SaveButton />
-    {edit && <DeleteButton undoable="false" sx={{ ml: "auto" }} />}
+    {edit && <DeleteButton mutationMode="pessimistic" sx={{ ml: "auto" }} />}
   </Toolbar>
 );
 
@@ -154,18 +154,28 @@ const LocationTypeForm = ({ edit, ...props }) => {
   );
 };
 
-export const LocationTypeCreate = props => (
+export const LocationTypeCreate = (props) => (
   <Paper>
     <DocumentationContainer filename={"LocationType.md"}>
-      <Create {...props} redirect="show" title="Add New Location Type">
+      <Create
+        {...props}
+        redirect="show"
+        title="Add New Location Type"
+        mutationMode="pessimistic"
+      >
         <LocationTypeForm />
       </Create>
     </DocumentationContainer>
   </Paper>
 );
 
-export const LocationTypeEdit = props => (
-  <Edit {...props} title="Edit Location Type" redirect="show" undoable={false}>
+export const LocationTypeEdit = (props) => (
+  <Edit
+    {...props}
+    title="Edit Location Type"
+    redirect="show"
+    mutationMode="pessimistic"
+  >
     <LocationTypeForm edit />
   </Edit>
 );

@@ -3,7 +3,7 @@ import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
-import Button from "@mui/material/Button";
+import { SaveComponent } from "../../common/components/SaveComponent";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
 import _, { identity } from "lodash";
@@ -18,7 +18,7 @@ import {
 } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { useSelector } from "react-redux";
-import Save from "@mui/icons-material/Save";
+
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const EncounterTypeCreate = () => {
@@ -81,8 +81,7 @@ const EncounterTypeCreate = () => {
     }
   }, [alert, id, navigate]);
 
-  const onSubmit = (event) => {
-    event.preventDefault();
+  const onSubmit = () => {
     let hasError = false;
     if (encounterType.name.trim() === "") {
       setNameValidation(true);
@@ -109,7 +108,7 @@ const EncounterTypeCreate = () => {
 
     setNameValidation(false);
     setSubjectValidation(false);
-    http
+    return http
       .post("/web/encounterType", {
         ...encounterType,
         subjectTypeUuid: subjectT.uuid,
@@ -162,49 +161,40 @@ const EncounterTypeCreate = () => {
       <DocumentationContainer filename={"EncounterType.md"}>
         <Title title={"Create Encounter Type"} />
         <div className="container">
-          <form onSubmit={onSubmit}>
-            <EditEncounterTypeFields
-              encounterType={encounterType}
-              dispatch={dispatch}
-              subjectT={subjectT}
-              setSubjectT={setSubjectT}
-              subjectType={subjectType}
-              programT={programT}
-              updateProgram={updateProgram}
-              program={program}
-              formList={formList}
-              ruleValidationError={ruleValidationError}
-              formMappings={formMappings}
-              setProgram={setProgram}
-              allPrograms={allPrograms}
+          <EditEncounterTypeFields
+            encounterType={encounterType}
+            dispatch={dispatch}
+            subjectT={subjectT}
+            setSubjectT={setSubjectT}
+            subjectType={subjectType}
+            programT={programT}
+            updateProgram={updateProgram}
+            program={program}
+            formList={formList}
+            ruleValidationError={ruleValidationError}
+            formMappings={formMappings}
+            setProgram={setProgram}
+            allPrograms={allPrograms}
+          />
+          {organisationConfig && organisationConfig.enableMessaging ? (
+            <MessageRules
+              rules={rules}
+              templates={templates}
+              templateFetchError={templateFetchError}
+              onChange={onRulesChange}
+              entityType={entityType}
+              entityTypeId={encounterType.encounterTypeId}
+              msgError={msgError}
             />
-            {organisationConfig && organisationConfig.enableMessaging ? (
-              <MessageRules
-                rules={rules}
-                templates={templates}
-                templateFetchError={templateFetchError}
-                onChange={onRulesChange}
-                entityType={entityType}
-                entityTypeId={encounterType.encounterTypeId}
-                msgError={msgError}
-              />
-            ) : (
-              <></>
-            )}
-            <EncounterTypeErrors
-              nameValidation={nameValidation}
-              subjectValidation={subjectValidation}
-              error={error}
-            />
-            <Button
-              color="primary"
-              variant="contained"
-              type="submit"
-              startIcon={<Save />}
-            >
-              Save
-            </Button>
-          </form>
+          ) : (
+            <></>
+          )}
+          <EncounterTypeErrors
+            nameValidation={nameValidation}
+            subjectValidation={subjectValidation}
+            error={error}
+          />
+          <SaveComponent onSubmit={onSubmit} name="Save" />
         </div>
       </DocumentationContainer>
     </Box>

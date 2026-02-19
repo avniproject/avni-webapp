@@ -12,7 +12,7 @@ import {
   ReferenceArrayField,
   Filter,
   FunctionField,
-  useRecordContext
+  useRecordContext,
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Typography, Chip, Paper } from "@mui/material";
@@ -29,14 +29,14 @@ import {
   datagridStyles,
   StyledAutocompleteArrayInput,
   StyledSimpleShowLayout,
-  StyledShow
+  StyledShow,
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 const catchmentChangeMessage = `Please note that changing locations in the catchment will 
 delete the fast sync setup for this catchment`;
 
-const CatchmentFilter = props => (
+const CatchmentFilter = (props) => (
   <Filter {...props}>
     <StyledTextInput
       label="Search catchment"
@@ -53,20 +53,25 @@ const TitleChip = () => {
   return <Chip label={`${record.title} (${record.typeString})`} />;
 };
 
-export const CatchmentCreate = props => (
+export const CatchmentCreate = (props) => (
   <Paper>
     <DocumentationContainer filename="Catchment.md">
-      <Create redirect="show" {...props}>
+      <Create redirect="show" mutationMode="pessimistic" {...props}>
         <CatchmentForm />
       </Create>
     </DocumentationContainer>
   </Paper>
 );
 
-export const CatchmentEdit = props => {
+export const CatchmentEdit = (props) => {
   const [displayWarning, setDisplayWarning] = useState(true);
   return (
-    <Edit {...props} title="Edit Catchment" redirect="show" undoable={false}>
+    <Edit
+      {...props}
+      title="Edit Catchment"
+      redirect="show"
+      mutationMode="pessimistic"
+    >
       <CatchmentForm
         edit
         displayWarning={displayWarning}
@@ -76,7 +81,7 @@ export const CatchmentEdit = props => {
   );
 };
 
-export const CatchmentDetail = props => (
+export const CatchmentDetail = (props) => (
   <StyledShow title={<Title title="Catchment" />} {...props}>
     <StyledSimpleShowLayout>
       <TextField label="Catchment" source="name" />
@@ -89,14 +94,17 @@ export const CatchmentDetail = props => (
           <TitleChip />
         </SingleFieldList>
       </ReferenceArrayField>
-      <FunctionField label="Created" render={audit => createdAudit(audit)} />
-      <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
+      <FunctionField label="Created" render={(audit) => createdAudit(audit)} />
+      <FunctionField
+        label="Modified"
+        render={(audit) => modifiedAudit(audit)}
+      />
       <TextField source="uuid" label="UUID" />
     </StyledSimpleShowLayout>
   </StyledShow>
 );
 
-export const CatchmentList = props => (
+export const CatchmentList = (props) => (
   <StyledBox>
     <List
       {...props}
@@ -112,13 +120,13 @@ export const CatchmentList = props => (
   </StyledBox>
 );
 
-const validateCatchment = values => {
+const validateCatchment = (values) => {
   const errors = {};
   if (_.isEmpty(values.locationIds))
     errors.locationIds = ["It cannot be empty"];
   if (!values.name || !values.name.trim()) {
     errors.name = [
-      "Catchment name should contain at least one non-whitespace character"
+      "Catchment name should contain at least one non-whitespace character",
     ];
   }
   return errors;
@@ -149,7 +157,7 @@ const CatchmentFormContent = ({
   edit,
   record,
   displayWarning,
-  setDisplayWarning
+  setDisplayWarning,
 }) => {
   const { setValue } = useFormContext(); // This will now be inside form context
   const locationIds = useWatch({ name: "locationIds" });
@@ -166,10 +174,10 @@ const CatchmentFormContent = ({
     record?.fastSyncExists,
     displayWarning,
     setDisplayWarning,
-    setValue
+    setValue,
   ]);
 
-  const optionRenderer = choice => {
+  const optionRenderer = (choice) => {
     let retVal = `${choice.title} (${choice.typeString})`;
     let lineageParts = choice.titleLineage.split(", ");
     if (lineageParts.length > 1)
@@ -198,7 +206,7 @@ const CatchmentFormContent = ({
             <StyledAutocompleteArrayInput
               optionText={optionRenderer}
               translateChoice={false}
-              filterToQuery={searchText => ({ title: searchText })}
+              filterToQuery={(searchText) => ({ title: searchText })}
             />
           </ReferenceArrayInput>
         </div>

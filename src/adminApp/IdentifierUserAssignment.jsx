@@ -148,6 +148,7 @@ export const IdentifierUserAssignmentCreate = (props) => {
         <Create
           title="Add New Identifier User Assignment"
           redirect="show"
+          mutationMode="pessimistic"
           {...props}
         >
           <IdentifierUserAssignmentForm organisation={organisation} />

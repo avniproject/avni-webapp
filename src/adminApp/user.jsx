@@ -105,7 +105,12 @@ export const UserCreate = ({ user, organisation, userInfo, ...props }) => {
   return (
     <Paper>
       <DocumentationContainer filename={"User.md"}>
-        <Create transform={addSuffixToUsername} redirect="show" {...props}>
+        <Create
+          transform={addSuffixToUsername}
+          redirect="show"
+          mutationMode="pessimistic"
+          {...props}
+        >
           <UserForm
             user={user}
             nameSuffix={userInfo.usernameSuffix}

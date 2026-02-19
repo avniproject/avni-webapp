@@ -7,7 +7,7 @@ import {
   SimpleForm,
   ReferenceField,
   ReferenceInput,
-  useRecordContext
+  useRecordContext,
 } from "react-admin";
 import Chip from "@mui/material/Chip";
 import { Paper } from "@mui/material";
@@ -20,25 +20,25 @@ import {
   StyledBox,
   datagridStyles,
   StyledSimpleShowLayout,
-  StyledShow
+  StyledShow,
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 const sourceType = {
   userBasedIdentifierGenerator: {
     id: "userBasedIdentifierGenerator",
-    name: "User based identifier generator"
+    name: "User based identifier generator",
   },
   userPoolBasedIdentifierGenerator: {
     id: "userPoolBasedIdentifierGenerator",
-    name: "User pool based identifier generator"
-  }
+    name: "User pool based identifier generator",
+  },
 };
 
 const operatingScopes = Object.freeze({
   NONE: "None",
   FACILITY: "ByFacility",
-  CATCHMENT: "ByCatchment"
+  CATCHMENT: "ByCatchment",
 });
 
 const Title = ({ record }) => {
@@ -49,7 +49,7 @@ const Title = ({ record }) => {
   ) : null;
 };
 
-const ShowSourceType = props => {
+const ShowSourceType = (props) => {
   const record = useRecordContext(props);
   return (
     <>
@@ -58,7 +58,7 @@ const ShowSourceType = props => {
   );
 };
 
-export const IdentifierSourceList = props => (
+export const IdentifierSourceList = (props) => (
   <StyledBox>
     <List
       {...props}
@@ -80,7 +80,7 @@ export const IdentifierSourceList = props => (
   </StyledBox>
 );
 
-export const IdentifierSourceDetail = props => (
+export const IdentifierSourceDetail = (props) => (
   <StyledShow title={<Title />} {...props}>
     <StyledSimpleShowLayout>
       <TextField source="name" />
@@ -113,13 +113,13 @@ const IdentifierSourceForm = () => {
             source="catchmentId"
             reference="catchment"
             label="Which catchment?"
-            filterToQuery={searchText => ({ name: searchText })}
+            filterToQuery={(searchText) => ({ name: searchText })}
             onChange={(e, newVal) => {
               setValue(
                 "operatingIndividualScope",
                 isFinite(newVal)
                   ? operatingScopes.CATCHMENT
-                  : operatingScopes.NONE
+                  : operatingScopes.NONE,
               );
             }}
             {...rest}
@@ -163,9 +163,9 @@ const IdentifierSourceForm = () => {
   );
 };
 
-export const IdentifierSourceEdit = props => (
+export const IdentifierSourceEdit = (props) => (
   <Edit
-    undoable={false}
+    mutationMode="pessimistic"
     title="Edit Identifier Source"
     redirect="show"
     {...props}
@@ -174,10 +174,15 @@ export const IdentifierSourceEdit = props => (
   </Edit>
 );
 
-export const IdentifierSourceCreate = props => (
+export const IdentifierSourceCreate = (props) => (
   <Paper>
     <DocumentationContainer filename="IdentifierSource.md">
-      <Create title="Add New Identifier Source" redirect="show" {...props}>
+      <Create
+        title="Add New Identifier Source"
+        redirect="show"
+        mutationMode="pessimistic"
+        {...props}
+      >
         <IdentifierSourceForm />
       </Create>
     </DocumentationContainer>
