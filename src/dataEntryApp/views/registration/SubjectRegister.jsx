@@ -258,7 +258,13 @@ const SubjectRegister = () => {
               <LineBreak num={1} />
               <TextFormElement
                 uuid={Individual.validationKeys.LAST_NAME}
-                formElement={new StaticFormElement(t("lastName"), true, true)}
+                formElement={
+                  new StaticFormElement(
+                    t("lastName"),
+                    !subject.subjectType.lastNameOptional,
+                    true,
+                  )
+                }
                 value={subject.lastName}
                 validationResults={validationResults}
                 update={(value) => dispatch(setLastName(value))}
