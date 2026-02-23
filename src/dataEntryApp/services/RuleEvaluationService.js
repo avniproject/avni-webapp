@@ -108,6 +108,8 @@ const runFormElementStatusRule = (formElement, entity, entityName, questionGroup
       imports: getImports(),
     });
   } catch (e) {
+    console.error("Error executing form element status rule for form element:", formElement.uuid, formElement.name);
+    console.error(e);
     return null;
   }
 };
@@ -158,7 +160,10 @@ const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBund
       params: { formElementGroup, entity, services },
       imports: getImports(),
     });
-  } catch (e) {}
+  } catch (e) {
+    console.error("Error executing form element group rule for form element group:", formElementGroup.uuid, formElementGroup.name);
+    console.error(e);
+  }
 };
 
 const getRuleServiceLibraryInterfaceForSharingModules = () => {
