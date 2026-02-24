@@ -101,13 +101,14 @@ const StaticFormElementGroup = ({ name, formElements }) => {
 
   const renderFormElements = () => {
     const groupIndex = 1;
-    return formElements.map(({ dataType, name }, index) => (
+    return formElements.map(({ dataType, name, mandatory }, index) => (
       <StyledFormElementContainer key={index}>
         <StaticFormElement
           name={name}
           index={index}
           dataType={dataType}
           groupIndex={groupIndex}
+          mandatory={mandatory}
         />
       </StyledFormElementContainer>
     ));

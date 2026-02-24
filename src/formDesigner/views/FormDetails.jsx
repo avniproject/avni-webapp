@@ -111,7 +111,11 @@ const getStaticFormElements = (subjectType) => {
   }
   switch (subjectType.type) {
     case SubjectTypeType.Person:
-      return personStaticFormElements;
+      return personStaticFormElements.map((element) =>
+        element.name === "Last name"
+          ? { ...element, mandatory: !subjectType.lastNameOptional }
+          : element,
+      );
     case SubjectTypeType.Household:
       return householdStaticFormElements;
     case SubjectTypeType.User:

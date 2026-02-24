@@ -55,7 +55,13 @@ const StyledIconContainer = styled("div")(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
-const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
+const StaticFormElement = ({
+  groupIndex,
+  index,
+  dataType,
+  name,
+  mandatory = true,
+}) => {
   const panel = `panel${groupIndex}${index}`;
   const theme = useTheme();
 
@@ -103,7 +109,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name }) => {
             }}
           >
             <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
-              <StyledInputLabel name={`name${panel}`} required>
+              <StyledInputLabel name={`name${panel}`} required={mandatory}>
                 {name || ""}
               </StyledInputLabel>
             </StyledTypography>
