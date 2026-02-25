@@ -2,12 +2,11 @@ import { Fragment } from "react";
 import { Grid } from "@mui/material";
 import {
   getFormType,
-  useDeclarativeRuleDispatch
+  useDeclarativeRuleDispatch,
 } from "./DeclarativeRuleContext";
 import { flatten, get, isEmpty, map, startCase, toNumber, zip } from "lodash";
 import { RHS, Rule } from "rules-config";
 import Select from "react-select";
-import { inlineConceptDataType } from "../../common/constants";
 import ConceptSearch from "./ConceptSearch";
 import InputField from "./InputField";
 import { findOrDefault, getSelectLabelValue } from "../../util";
@@ -27,19 +26,19 @@ const RHSComponent = ({
   const { rhs, operator } = rule;
   const types = map(rule.getApplicableRHSTypes(), (v, k) => ({
     value: v,
-    label: startCase(k)
+    label: startCase(k),
   }));
   const selectedType = get(rhs, "type");
   const rhsValueType = rule.getRhsValueType();
   const selectedGenderValue = findOrDefault(
     RHS.genderOptions,
     ({ value }) => value === rhs.value,
-    null
+    null,
   );
   const selectedTypeOption = findOrDefault(
     types,
     ({ value }) => value === selectedType,
-    null
+    null,
   );
   const onRHSChange = (property, value) => {
     dispatch({
@@ -49,8 +48,8 @@ const RHSComponent = ({
         ruleIndex,
         conditionIndex,
         property,
-        value
-      }
+        value,
+      },
     });
   };
 
@@ -59,8 +58,8 @@ const RHSComponent = ({
     zip(rhs.answerConceptNames, rhs.answerConceptUuids),
     ([name, uuid]) => ({
       label: name,
-      value: { name, uuid, toString: () => uuid }
-    })
+      value: { name, uuid, toString: () => uuid },
+    }),
   );
 
   function renderValueBasedOnLHS() {
@@ -72,7 +71,7 @@ const RHSComponent = ({
             value={selectedGenderValue}
             options={RHS.genderOptions}
             style={{ width: "auto" }}
-            onChange={event => onRHSChange("value", event.value)}
+            onChange={(event) => onRHSChange("value", event.value)}
           />
         ) : rule.lhs.isAddressLevel() ? (
           <LocationSearch
@@ -88,11 +87,11 @@ const RHSComponent = ({
           <InputField
             type={rhsValueType}
             value={rhs.value}
-            onChange={event => {
+            onChange={(event) => {
               const value = event.target.value;
               onRHSChange(
                 "value",
-                rhsValueType === "number" ? toNumber(value) : value
+                rhsValueType === "number" ? toNumber(value) : value,
               );
             }}
           />
@@ -107,7 +106,7 @@ const RHSComponent = ({
         <ConceptSearch
           placeholder={"Search answer"}
           isMulti={isMulti}
-          onChange={labelValues => {
+          onChange={(labelValues) => {
             const values = isMulti ? labelValues : [labelValues];
             dispatch({
               type: "rhsAnswerConceptChange",
@@ -115,8 +114,8 @@ const RHSComponent = ({
                 declarativeRuleIndex,
                 ruleIndex,
                 conditionIndex,
-                labelValues: values
-              }
+                labelValues: values,
+              },
             });
           }}
           value={
@@ -124,7 +123,6 @@ const RHSComponent = ({
               ? selectedConceptAnswerOptions
               : flatten(selectedConceptAnswerOptions)
           }
-          nonSupportedTypes={inlineConceptDataType}
         />
       </Grid>
     );
@@ -134,7 +132,7 @@ const RHSComponent = ({
     return (
       <ConceptAndScope
         conceptValue={rhs.getConceptOptionValue()}
-        onConceptChange={value =>
+        onConceptChange={(value) =>
           dispatch({
             type: "rhsConceptChange",
             payload: {
@@ -142,16 +140,16 @@ const RHSComponent = ({
               ruleIndex,
               conditionIndex,
               ...value,
-              formType
-            }
+              formType,
+            },
           })
         }
         displayScope={!isEmpty(rhs.conceptName)}
-        getScopeValue={scopeOptions =>
+        getScopeValue={(scopeOptions) =>
           findOrDefault(scopeOptions, ({ value }) => value === rhs.scope, null)
         }
         formType={formType}
-        onScopeChange={value => onRHSChange("scope", value)}
+        onScopeChange={(value) => onRHSChange("scope", value)}
       />
     );
   }
@@ -164,7 +162,7 @@ const RHSComponent = ({
           value={selectedTypeOption}
           options={types}
           style={{ width: "auto" }}
-          onChange={event => onRHSChange("type", event.value)}
+          onChange={(event) => onRHSChange("type", event.value)}
         />
       </Grid>
       {selectedType === RHS.types.AnswerConcept && renderForAnswerConcept()}

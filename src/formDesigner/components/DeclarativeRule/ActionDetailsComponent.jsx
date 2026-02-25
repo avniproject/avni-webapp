@@ -4,7 +4,6 @@ import MiddleText from "./MiddleText";
 import InputField from "./InputField";
 import { get, includes, isEmpty, map, startCase, zip } from "lodash";
 import ConceptSearch from "./ConceptSearch";
-import { inlineConceptDataType } from "../../common/constants";
 import {
   Action,
   AddDecisionActionDetails,
@@ -169,7 +168,6 @@ function DecisionDetails({
                     payload: { declarativeRuleIndex, index, labelValues },
                   })
                 }
-                nonSupportedTypes={inlineConceptDataType}
               />
             ) : (
               <InputField
@@ -261,7 +259,6 @@ const ActionDetailsComponent = ({
             placeholder={"Search answer"}
             value={selectedAnswersToSkipOptions}
             onChange={(labelValues) => onAnswerToSkipChange(labelValues)}
-            nonSupportedTypes={inlineConceptDataType}
           />
         </Grid>
       )}
