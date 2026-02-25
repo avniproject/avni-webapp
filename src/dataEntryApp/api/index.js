@@ -172,4 +172,5 @@ export default {
   },
   getAllMessagesNotYetSentForUser: (userID) =>
     httpClient.get(`/web/message/user/${userID}/msgsNotYetSent`).then((response) => response.data),
+  saveRuleFailureLog: (ruleFailureLog) => httpClient.post("/web/ruleFailureLog", ruleFailureLog),
 };

@@ -5,6 +5,7 @@ import * as models from "avni-models";
 import { FormElementStatus } from "avni-models";
 import * as rulesConfig from "rules-config";
 import { common, motherCalculations, RuleRegistry } from "avni-health-modules";
+import api from "dataEntryApp/api";
 import { store } from "common/store/createStore";
 import { selectLegacyRules, selectLegacyRulesAllRules } from "dataEntryApp/reducers/metadataReducer";
 import { individualService } from "./IndividualService";
@@ -13,6 +14,10 @@ import moment from "moment";
 const services = {
   individualService,
 };
+
+const debouncedSaveRuleFailureLog = _.debounce((ruleFailureLog) => {
+  api.saveRuleFailureLog(ruleFailureLog).catch(() => {});
+}, 2000);
 
 const getImports = () => {
   return {
@@ -110,6 +115,15 @@ const runFormElementStatusRule = (formElement, entity, entityName, questionGroup
   } catch (e) {
     console.error("Error executing form element status rule for form element:", formElement.uuid, formElement.name);
     console.error(e);
+    debouncedSaveRuleFailureLog({
+      formId: formElement.formElementGroup?.form?.uuid,
+      ruleType: "FormElementRule",
+      entityType: entityName,
+      entityId: entity.uuid,
+      errorMessage: e.message,
+      stacktrace: e.stack,
+      source: "Web",
+    });
     return null;
   }
 };
@@ -130,26 +144,30 @@ const getDefaultFormElementStatusIfNotFoundInBundleFESs = (mapOfBundleFormElemen
   );
 };
 
+const getDefaultFormElementGroupStatuses = (formElementGroup, entity, mapOfBundleFormElementStatuses) => {
+  return formElementGroup.getFormElements().flatMap((formElement) => {
+    if (formElement.groupUuid) {
+      const size = getRepeatableObservationSize(formElement, entity);
+      return _.range(size).map((questionGroupIndex) => {
+        const formElementStatus = getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
+          uuid: formElement.uuid,
+          questionGroupIndex,
+        });
+        formElementStatus.addQuestionGroupInformation(questionGroupIndex);
+        return formElementStatus;
+      });
+    } else {
+      return getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
+        uuid: formElement.uuid,
+        questionGroupIndex: null,
+      });
+    }
+  });
+};
+
 const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBundleFormElementStatuses) => {
   if (_.isNil(formElementGroup.rule) || _.isEmpty(_.trim(formElementGroup.rule))) {
-    return formElementGroup.getFormElements().flatMap((formElement) => {
-      if (formElement.groupUuid) {
-        const size = getRepeatableObservationSize(formElement, entity);
-        return _.range(size).map((questionGroupIndex) => {
-          const formElementStatus = getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
-            uuid: formElement.uuid,
-            questionGroupIndex,
-          });
-          formElementStatus.addQuestionGroupInformation(questionGroupIndex);
-          return formElementStatus;
-        });
-      } else {
-        return getDefaultFormElementStatusIfNotFoundInBundleFESs(mapOfBundleFormElementStatuses, {
-          uuid: formElement.uuid,
-          questionGroupIndex: null,
-        });
-      }
-    });
+    return getDefaultFormElementGroupStatuses(formElementGroup, entity, mapOfBundleFormElementStatuses);
   }
   try {
     /* eslint-disable-next-line no-unused-vars */
@@ -163,6 +181,16 @@ const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBund
   } catch (e) {
     console.error("Error executing form element group rule for form element group:", formElementGroup.uuid, formElementGroup.name);
     console.error(e);
+    debouncedSaveRuleFailureLog({
+      formId: formElementGroup.form?.uuid,
+      ruleType: "FormElementGroupRule",
+      entityType: entityName,
+      entityId: entity.uuid,
+      errorMessage: e.message,
+      stacktrace: e.stack,
+      source: "Web",
+    });
+    return getDefaultFormElementGroupStatuses(formElementGroup, entity, mapOfBundleFormElementStatuses);
   }
 };
 
