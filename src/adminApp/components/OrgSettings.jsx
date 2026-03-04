@@ -152,7 +152,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.guideUserToRegisterButton,
-          "Guide users to Register button",
+          "Guide users",
           "GUIDE_USER_TO_REGISTER_BUTTON",
         )}
         <AvniTextField
