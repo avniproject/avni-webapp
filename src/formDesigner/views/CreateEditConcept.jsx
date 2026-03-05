@@ -382,67 +382,10 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     setConcept(savedConcept);
   }, []);
 
-  const processCodedConceptAnswers = useCallback(async (conceptToProcess) => {
-    const answers = [...conceptToProcess.answers];
-
-    // Process each answer to create missing concepts
-    for (let i = 0; i < answers.length; i++) {
-      const answer = answers[i];
-
-      if (answer.name && answer.name.trim() !== "") {
-        try {
-          // Check if concept exists
-          const response = await http.get(
-            `/web/concept?name=${encodeURIComponent(answer.name)}`,
-          );
-          if (response.status === 200) {
-            // Concept exists, use its UUID
-            answer.uuid = response.data.uuid;
-          }
-        } catch (error) {
-          if (error.response && error.response.status === 404) {
-            // Concept doesn't exist, create it with dataType "NA"
-            const newConceptData = {
-              name: answer.name,
-              uuid: "", // Will be generated server-side
-              dataType: "NA",
-              createdBy: "",
-              lastModifiedBy: "",
-              creationDateTime: "",
-              lastModifiedDateTime: "",
-              keyValues: [],
-            };
-
-            try {
-              const createResponse = await http.post("/concepts", [
-                newConceptData,
-              ]);
-              if (createResponse.status === 200) {
-                // Use the created concept's UUID
-                answer.uuid = createResponse.data[0]?.uuid || "";
-              }
-            } catch (createError) {
-              console.error("Error creating answer concept:", createError);
-            }
-          }
-        }
-      }
-    }
-
-    return { ...conceptToProcess, answers };
-  }, []);
-
   const afterSuccessfulValidation = useCallback(async () => {
-    let conceptToSave = concept;
-
-    // Handle coded concept with potential non-existing answers
-    if (concept.dataType === "Coded") {
-      conceptToSave = await processCodedConceptAnswers(concept);
-    }
-
     // Save the concept
     const { concept: savedConcept, error: saveError } =
-      await ConceptService.saveConcept(conceptToSave);
+      await ConceptService.saveConcept(concept);
 
     if (saveError) {
       handleSaveError(saveError);
@@ -450,7 +393,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     }
 
     handleSaveSuccess(savedConcept);
-  }, [concept, processCodedConceptAnswers, handleSaveError, handleSaveSuccess]);
+  }, [concept, handleSaveError, handleSaveSuccess]);
 
   const onNumericConceptAttributeAssignment = useCallback((event) => {
     setConcept((prev) => ({
