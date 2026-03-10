@@ -64,5 +64,11 @@ describe("ScreenWithAppBar", () => {
     it("should not match #/export when the current path is #/newExport (substring bug)", () => {
       assert.equal(getSelectedListItem(sidebarOptions, loc("#/newExport")), 1);
     });
+
+    it("should still match when the hash contains query params (e.g. ?page=0)", () => {
+      assert.equal(getSelectedListItem(sidebarOptions, loc("#/export?page=0")), 0);
+      assert.equal(getSelectedListItem(sidebarOptions, loc("#/newExport?page=0")), 1);
+      assert.equal(getSelectedListItem(sidebarOptions, loc("#/selfservicereports?page=0")), 2);
+    });
   });
 });

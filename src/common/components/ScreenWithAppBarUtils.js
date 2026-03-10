@@ -10,12 +10,19 @@ export const shouldUpdateSelectedIndexOnClick = (event) => !event.metaKey && !ev
 export const getSelectedListItem = (sidebarOptions, location = window.location) => {
   if (_.isEmpty(sidebarOptions)) return 0;
 
-  const pathname = (location.pathname || "").replace(/^\//, "");
-  const hashPath = (location.hash || "").replace(/^#\/?/, "");
+  const normalizePath = (value = "") =>
+    value
+      .replace(/^#\/?/, "")
+      .replace(/^\//, "")
+      .replace(/[?#].*$/, "")
+      .replace(/\/$/, "");
+
+  const pathname = normalizePath(location.pathname);
+  const hashPath = normalizePath(location.hash);
   const currentPath = hashPath || pathname;
 
   const matchIndex = _.findIndex(sidebarOptions, (option) => {
-    const optionPath = option.href.replace(/^#\/?/, "");
+    const optionPath = normalizePath(option.href);
     return currentPath === optionPath;
   });
 
