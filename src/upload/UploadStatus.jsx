@@ -34,8 +34,8 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  width: "100vw",
-  maxWidth: "100vw",
+  width: "100%",
+  maxWidth: "100%",
   overflowX: "auto",
   marginTop: theme.spacing(1),
   boxSizing: "border-box",
@@ -44,8 +44,6 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 const StyledFileNameCell = styled(TableCell)({
   maxWidth: 300,
   minWidth: 120,
-  overflow: "hidden",
-  textOverflow: "ellipsis",
   whiteSpace: "normal",
   wordBreak: "break-word",
   hyphens: "auto",

@@ -12,7 +12,6 @@ import { Title } from "react-admin";
 
 const Forms = (props) => {
   const [showNewFormDialog, setShowNewFormDialog] = useState(false);
-  const isChatOpen = useSelector((state) => state.app.isChatOpen);
   const openNewFormDialog = useCallback(() => setShowNewFormDialog(true), []);
   const closeNewFormDialog = useCallback(() => setShowNewFormDialog(false), []);
 
@@ -24,8 +23,8 @@ const Forms = (props) => {
         bgcolor: "background.paper",
         display: "flex",
         flexDirection: "column",
-        width: "100vw",
-        maxWidth: "100vw",
+        width: "100%",
+        maxWidth: "100%",
         minWidth: 0,
         overflowX: "auto",
         transition: "width 0.3s ease",
