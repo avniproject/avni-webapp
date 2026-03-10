@@ -33,13 +33,13 @@ const RuleSummaryComponent = ({ summary, ruleNumber, displayRuleCounts }) => {
             <li key={`rule-${idx}`} style={wrapStyles}>
               <Typography component="span" sx={wrapStyles}>
                 {ruleSummary}
-                {conjunction && (
-                  <Chip
-                    label={toUpper(conjunction)}
-                    sx={{ ml: 1, verticalAlign: "middle" }}
-                  />
-                )}
               </Typography>
+              {conjunction && (
+                <Chip
+                  label={toUpper(conjunction)}
+                  sx={{ ml: 1, verticalAlign: "middle" }}
+                />
+              )}
             </li>
           ),
         )}
