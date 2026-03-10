@@ -5,13 +5,13 @@ import {
   alphabeticalSort,
   moveDown,
   moveUp,
-  validateCodedConceptAnswers
+  validateCodedConceptAnswers,
 } from "../views/CreateEditConcept";
 
 export const formDesignerUpdateConceptElementData = (
   draftFormElement,
   propertyName,
-  value
+  value,
 ) => {
   draftFormElement["concept"][propertyName] = value;
 };
@@ -19,7 +19,7 @@ export const formDesignerUpdateConceptElementData = (
 export const formDesignerDeleteGroup = (
   draft,
   draftFormElementGroups,
-  groupIndex
+  groupIndex,
 ) => {
   let form = draft.form;
   if (draftFormElementGroups[groupIndex].newFlag === true) {
@@ -30,14 +30,14 @@ export const formDesignerDeleteGroup = (
       draftFormElementGroups[groupIndex].formElements,
       (group, index) => {
         group.voided = true;
-      }
+      },
     );
   }
   draft.createFlag = getCreateFlag(form);
   draft.detectBrowserCloseEvent = true;
 };
 
-export const getCreateFlag = form => {
+export const getCreateFlag = (form) => {
   let groupFlag = true;
   _.forEach(form.formElementGroups, (groupElement, index) => {
     if (!groupElement.voided) {
@@ -50,7 +50,7 @@ export const getCreateFlag = form => {
 export const formDesignerDeleteFormElement = (
   draft,
   draftFormElements,
-  elementIndex
+  elementIndex,
 ) => {
   const isQuestionGroupFormElement =
     draftFormElements[elementIndex].concept.dataType === "QuestionGroup";
@@ -59,16 +59,16 @@ export const formDesignerDeleteFormElement = (
     if (isQuestionGroupFormElement) {
       spliceCount += _.filter(
         draftFormElements,
-        fe =>
+        (fe) =>
           !_.isNil(fe.parentFormElementUuid) &&
-          fe.parentFormElementUuid === draftFormElements[elementIndex].uuid
+          fe.parentFormElementUuid === draftFormElements[elementIndex].uuid,
       ).length;
     }
     draftFormElements.splice(elementIndex, spliceCount);
   } else {
     draftFormElements[elementIndex].voided = true;
     if (isQuestionGroupFormElement) {
-      _.map(draftFormElements, fe => {
+      _.map(draftFormElements, (fe) => {
         if (
           !_.isNil(fe.parentFormElementUuid) &&
           fe.parentFormElementUuid === draftFormElements[elementIndex].uuid
@@ -84,7 +84,7 @@ export const formDesignerDeleteFormElement = (
 export const formDesignerAddFormElementGroup = (
   draft,
   draftFormElementGroups,
-  groupIndex
+  groupIndex,
 ) => {
   draftFormElementGroups.splice(groupIndex + 1, 0, {
     uuid: UUID.v4(),
@@ -94,7 +94,7 @@ export const formDesignerAddFormElementGroup = (
     name: "",
     display: "",
     voided: false,
-    formElements: [formDesignerGetEmptyFormElement()]
+    formElements: [formDesignerGetEmptyFormElement()],
   });
   draft.detectBrowserCloseEvent = true;
 };
@@ -102,12 +102,12 @@ export const formDesignerAddFormElementGroup = (
 export const formDesignerAddFormElement = (
   draft,
   draftFormElements,
-  elementIndex
+  elementIndex,
 ) => {
   draftFormElements.splice(
     elementIndex + 1,
     0,
-    formDesignerGetEmptyFormElement()
+    formDesignerGetEmptyFormElement(),
   );
   draft.detectBrowserCloseEvent = true;
 };
@@ -117,7 +117,7 @@ export const formDesignerHandleGroupElementChange = (
   draftFormElementGroup,
   propertyName,
   value,
-  elementIndex = -1
+  elementIndex = -1,
 ) => {
   if (elementIndex === -1) {
     draftFormElementGroup[propertyName] = value;
@@ -130,7 +130,7 @@ export const formDesignerHandleGroupElementChange = (
 export const formDesignerHandleInlineNumericAttributes = (
   draftFormElement,
   propertyName,
-  value
+  value,
 ) => {
   draftFormElement["inlineNumericDataTypeAttributes"][propertyName] = value;
 };
@@ -138,7 +138,7 @@ export const formDesignerHandleInlineNumericAttributes = (
 export const formDesignerHandleInlineCodedConceptAnswers = (
   draftFormElement,
   answerName,
-  answerIndex
+  answerIndex,
 ) => {
   draftFormElement.inlineCodedAnswers[answerIndex].name = answerName;
 };
@@ -146,23 +146,22 @@ export const formDesignerHandleInlineCodedConceptAnswers = (
 export const formDesignerOnToggleInlineConceptCodedAnswerAttribute = (
   draftFormElement,
   propertyName,
-  answerIndex
+  answerIndex,
 ) => {
-  draftFormElement.inlineCodedAnswers[answerIndex][
-    propertyName
-  ] = !draftFormElement.inlineCodedAnswers[answerIndex][propertyName];
+  draftFormElement.inlineCodedAnswers[answerIndex][propertyName] =
+    !draftFormElement.inlineCodedAnswers[answerIndex][propertyName];
 };
 
 export const formDesignerOnDeleteInlineConceptCodedAnswerDelete = (
   draftFormElement,
-  answerIndex
+  answerIndex,
 ) => {
   draftFormElement.inlineCodedAnswers.splice(answerIndex, 1);
 };
 
 export const formDesignerOnConceptAnswerMoveUp = (
   draftFormElement,
-  answerIndex
+  answerIndex,
 ) => {
   const conceptAnswers = draftFormElement.inlineCodedAnswers;
   draftFormElement.inlineCodedAnswers = moveUp(conceptAnswers, answerIndex);
@@ -170,13 +169,15 @@ export const formDesignerOnConceptAnswerMoveUp = (
 
 export const formDesignerOnConceptAnswerMoveDown = (
   draftFormElement,
-  answerIndex
+  answerIndex,
 ) => {
   const conceptAnswers = draftFormElement.inlineCodedAnswers;
   draftFormElement.inlineCodedAnswers = moveDown(conceptAnswers, answerIndex);
 };
 
-export const formDesignerOnConceptAnswerAlphabeticalSort = draftFormElement => {
+export const formDesignerOnConceptAnswerAlphabeticalSort = (
+  draftFormElement,
+) => {
   const conceptAnswers = draftFormElement.inlineCodedAnswers;
   draftFormElement.inlineCodedAnswers = alphabeticalSort(conceptAnswers);
 };
@@ -185,12 +186,14 @@ export const formDesignerHandleInlineConceptAttributes = (
   draftFormElement,
   attributeName,
   propertyName,
-  value
+  value,
 ) => {
   draftFormElement[attributeName][propertyName] = value;
 };
 
-export const formDesignerHandleInlineCodedAnswerAddition = draftFormElement => {
+export const formDesignerHandleInlineCodedAnswerAddition = (
+  draftFormElement,
+) => {
   draftFormElement.inlineCodedAnswers.push({
     name: "",
     uuid: "",
@@ -199,7 +202,7 @@ export const formDesignerHandleInlineCodedAnswerAddition = draftFormElement => {
     editable: true,
     voided: false,
     order: 0,
-    isAnswerHavingError: { isErrored: false, type: "" }
+    isAnswerHavingError: { isErrored: false, type: "" },
   });
 };
 
@@ -207,7 +210,7 @@ export const formDesignerHandleGroupElementKeyValueChange = (
   draft,
   draftFormElement,
   propertyName,
-  value
+  value,
 ) => {
   if (
     includes(
@@ -215,9 +218,9 @@ export const formDesignerHandleGroupElementKeyValueChange = (
         "IdSourceUUID",
         "unique",
         "groupSubjectTypeUUID",
-        "groupSubjectRoleUUID"
+        "groupSubjectRoleUUID",
       ],
-      propertyName
+      propertyName,
     )
   ) {
     draftFormElement.keyValues[propertyName] = value;
@@ -250,7 +253,7 @@ export const formDesignerHandleGroupElementKeyValueChange = (
     if (draftFormElement.keyValues["durationOptions"].includes(propertyName)) {
       draftFormElement.keyValues["durationOptions"].splice(
         draftFormElement.keyValues["durationOptions"].indexOf(propertyName),
-        1
+        1,
       );
     } else {
       draftFormElement.keyValues["durationOptions"].push(value);
@@ -272,9 +275,9 @@ export const formDesignerHandleExcludedAnswers = (
   draft,
   draftFormElement,
   name,
-  status
+  status,
 ) => {
-  _.forEach(draftFormElement.concept.answers, answer => {
+  _.forEach(draftFormElement.concept.answers, (answer) => {
     if (answer.name === name) {
       if (status !== false) answer["excluded"] = status;
       else delete answer.excluded;
@@ -287,7 +290,7 @@ export const formDesignerHandleExcludedAnswers = (
 export const formDesignerHandleModeForDate = (
   draftFormElement,
   propertyName,
-  value
+  value,
 ) => {
   value === "durationOptions"
     ? delete draftFormElement.keyValues["datePickerMode"]
@@ -298,7 +301,7 @@ export const formDesignerHandleModeForDate = (
 export const formDesignerHandleRegex = (
   draftFormElement,
   propertyName,
-  value
+  value,
 ) => {
   value === "no" && delete draftFormElement.validFormat;
   draftFormElement[propertyName] = value;
@@ -307,18 +310,23 @@ export const formDesignerHandleRegex = (
 export const formDesignerHandleConceptFormLibrary = (
   draftFormElement,
   value,
-  inlineConcept = false
+  inlineConcept = false,
 ) => {
   if (inlineConcept) {
     draftFormElement.showConceptLibrary = value;
-    draftFormElement.inlineConceptErrorMessage = formDesignerGetEmptyFormElement().inlineConceptErrorMessage;
-    draftFormElement.inlineNumericDataTypeAttributes = formDesignerGetEmptyFormElement().inlineNumericDataTypeAttributes;
-    draftFormElement.inlineCodedAnswers = formDesignerGetEmptyFormElement().inlineCodedAnswers;
-    draftFormElement.inlineLocationDataTypeKeyValues = formDesignerGetEmptyFormElement().inlineLocationDataTypeKeyValues;
+    draftFormElement.inlineConceptErrorMessage =
+      formDesignerGetEmptyFormElement().inlineConceptErrorMessage;
+    draftFormElement.inlineNumericDataTypeAttributes =
+      formDesignerGetEmptyFormElement().inlineNumericDataTypeAttributes;
+    draftFormElement.inlineCodedAnswers =
+      formDesignerGetEmptyFormElement().inlineCodedAnswers;
+    draftFormElement.inlineLocationDataTypeKeyValues =
+      formDesignerGetEmptyFormElement().inlineLocationDataTypeKeyValues;
     draftFormElement.inlineConceptName = "";
     draftFormElement.inlineConceptDataType = "";
     draftFormElement.concept = formDesignerGetEmptyFormElement().concept;
-    draftFormElement.errorMessage = formDesignerGetEmptyFormElement().errorMessage;
+    draftFormElement.errorMessage =
+      formDesignerGetEmptyFormElement().errorMessage;
   } else {
     draftFormElement.showConceptLibrary = value;
   }
@@ -327,14 +335,14 @@ export const formDesignerHandleConceptFormLibrary = (
 const formDesignerOnSubmitInlineConcept = (
   inlineConceptObject,
   formElement,
-  updateState
+  updateState,
 ) => {
   inlineConceptObject.answers.forEach((answer, index) => {
     answer.order = index;
   });
   http
     .post("/concepts", inlineConceptObject)
-    .then(response => {
+    .then((response) => {
       if (response.status === 200) {
         formElement["concept"].name = inlineConceptObject.name;
         formElement["concept"]["uuid"] = inlineConceptObject.uuid;
@@ -350,7 +358,7 @@ const formDesignerOnSubmitInlineConcept = (
         updateState();
       }
     })
-    .catch(error => {
+    .catch((error) => {
       let errorMessage =
         "Failed to save concept. Please try again." +
         split(replace(error.response.data, /^org\..*: /, ""), /\n|\r/, 1);
@@ -361,16 +369,15 @@ const formDesignerOnSubmitInlineConcept = (
         errorMessage =
           "A concept with this name already exists. Please use a different name.";
       }
-      formElement.inlineConceptErrorMessage[
-        "inlineConceptError"
-      ] = errorMessage;
+      formElement.inlineConceptErrorMessage["inlineConceptError"] =
+        errorMessage;
       updateState();
     });
 };
 
 export const formDesignerOnSaveInlineConcept = (
   clonedFormElement,
-  updateState
+  updateState,
 ) => {
   let absoluteValidation = false,
     normalValidation = false,
@@ -394,7 +401,7 @@ export const formDesignerOnSaveInlineConcept = (
       clonedFormElement["inlineNumericDataTypeAttributes"].unit === ""
         ? null
         : clonedFormElement["inlineNumericDataTypeAttributes"].unit,
-    answers: clonedFormElement["inlineCodedAnswers"]
+    answers: clonedFormElement["inlineCodedAnswers"],
   };
 
   if (inlineConceptObject.dataType === "Location") {
@@ -408,25 +415,26 @@ export const formDesignerOnSaveInlineConcept = (
       keyValues[0] = {
         key: "isWithinCatchment",
         value:
-          clonedFormElement["inlineLocationDataTypeKeyValues"].isWithinCatchment
+          clonedFormElement["inlineLocationDataTypeKeyValues"]
+            .isWithinCatchment,
       };
       keyValues[1] = {
         key: "lowestAddressLevelTypeUUIDs",
         value:
           clonedFormElement["inlineLocationDataTypeKeyValues"]
-            .lowestAddressLevelTypeUUIDs
+            .lowestAddressLevelTypeUUIDs,
       };
       if (
         !isEmpty(
           clonedFormElement["inlineLocationDataTypeKeyValues"]
-            .highestAddressLevelTypeUUID
+            .highestAddressLevelTypeUUID,
         )
       ) {
         keyValues[2] = {
           key: "highestAddressLevelTypeUUID",
           value:
             clonedFormElement["inlineLocationDataTypeKeyValues"]
-              .highestAddressLevelTypeUUID
+              .highestAddressLevelTypeUUID,
         };
       }
       inlineConceptObject.keyValues = keyValues;
@@ -436,7 +444,7 @@ export const formDesignerOnSaveInlineConcept = (
   if (inlineConceptObject.dataType === "Subject") {
     if (
       isEmpty(
-        clonedFormElement["inlineSubjectDataTypeKeyValues"].subjectTypeUUID
+        clonedFormElement["inlineSubjectDataTypeKeyValues"].subjectTypeUUID,
       )
     ) {
       subjectValidation = true;
@@ -445,16 +453,16 @@ export const formDesignerOnSaveInlineConcept = (
       keyValues[0] = {
         key: "subjectTypeUUID",
         value:
-          clonedFormElement["inlineSubjectDataTypeKeyValues"].subjectTypeUUID
+          clonedFormElement["inlineSubjectDataTypeKeyValues"].subjectTypeUUID,
       };
       inlineConceptObject.keyValues = keyValues;
     }
   }
 
   if (inlineConceptObject.dataType === "Encounter") {
-    const getValue = key =>
+    const getValue = (key) =>
       clonedFormElement["inlineEncounterDataTypeKeyValues"][key];
-    const isKeyEmpty = key => isEmpty(getValue(key));
+    const isKeyEmpty = (key) => isEmpty(getValue(key));
     if (isKeyEmpty("encounterTypeUUID")) {
       encounterTypeUUIDValidation = true;
     } else if (isKeyEmpty("encounterScope")) {
@@ -465,15 +473,15 @@ export const formDesignerOnSaveInlineConcept = (
       const keyValues = [];
       keyValues[0] = {
         key: "encounterTypeUUID",
-        value: getValue("encounterTypeUUID")
+        value: getValue("encounterTypeUUID"),
       };
       keyValues[1] = {
         key: "encounterScope",
-        value: getValue("encounterScope")
+        value: getValue("encounterScope"),
       };
       keyValues[2] = {
         key: "encounterIdentifier",
-        value: getValue("encounterIdentifier")
+        value: getValue("encounterIdentifier"),
       };
       inlineConceptObject.keyValues = keyValues;
     }
@@ -485,14 +493,14 @@ export const formDesignerOnSaveInlineConcept = (
       key: "verifyPhoneNumber",
       value:
         clonedFormElement["inlinePhoneNumberDataTypeKeyValues"]
-          .verifyPhoneNumber
+          .verifyPhoneNumber,
     });
     inlineConceptObject.keyValues = keyValues;
   }
 
   if (inlineConceptObject.dataType === "Numeric") {
     // Convert empty strings to null
-    const convertToNumberOrNull = value => {
+    const convertToNumberOrNull = (value) => {
       if (value === "" || value == null) return null;
       return Number(value);
     };
@@ -551,13 +559,13 @@ export const formDesignerOnSaveInlineConcept = (
         formDesignerOnSubmitInlineConcept(
           inlineConceptObject,
           clonedFormElement,
-          updateState
+          updateState,
         );
       }
       validateCodedConceptAnswers(inlineConceptObject.answers);
       if (
         inlineConceptObject.answers.some(
-          answer => answer["isAnswerHavingError"].isErrored
+          (answer) => answer["isAnswerHavingError"].isErrored,
         )
       ) {
         flagForInvalidAnswer = true;
@@ -567,10 +575,10 @@ export const formDesignerOnSaveInlineConcept = (
       if (flagForInvalidAnswer === true) {
         updateState();
       } else {
-        inlineConceptObject.answers.forEach(answer => {
+        inlineConceptObject.answers.forEach((answer) => {
           http
             .get(`/web/concept?name=${encodeURIComponent(answer.name)}`)
-            .then(response => {
+            .then((response) => {
               if (response.status === 200) {
                 answer.uuid = response.data.uuid;
                 answer.order = counter;
@@ -580,12 +588,12 @@ export const formDesignerOnSaveInlineConcept = (
                   formDesignerOnSubmitInlineConcept(
                     inlineConceptObject,
                     clonedFormElement,
-                    updateState
+                    updateState,
                   );
                 }
               }
             })
-            .catch(error => {
+            .catch((error) => {
               if (error.response.status === 404) {
                 answer.uuid = UUID.v4();
                 http
@@ -597,20 +605,20 @@ export const formDesignerOnSaveInlineConcept = (
                     highAbsolute: null,
                     lowNormal: null,
                     highNormal: null,
-                    unit: null
+                    unit: null,
                   })
-                  .then(response => {
+                  .then((response) => {
                     if (response.status === 200) {
                       console.log(
                         "Dynamic concept added through Coded",
-                        response
+                        response,
                       );
                       counter = counter + 1;
                       if (counter === length) {
                         formDesignerOnSubmitInlineConcept(
                           inlineConceptObject,
                           clonedFormElement,
-                          updateState
+                          updateState,
                         );
                       }
                     }
@@ -625,7 +633,7 @@ export const formDesignerOnSaveInlineConcept = (
       formDesignerOnSubmitInlineConcept(
         inlineConceptObject,
         clonedFormElement,
-        updateState
+        updateState,
       );
     }
   } else {
@@ -666,12 +674,12 @@ export const formDesignerUpdateDragDropOrderForFirstGroup = (
   groupSourceIndex,
   groupDestinationIndex,
   sourceElementIndex,
-  destinationElementIndex
+  destinationElementIndex,
 ) => {
   let counter = 0;
   if (groupSourceIndex !== groupDestinationIndex) {
     const sourceElement = cloneDeep(
-      draftSourceFormElementGroup.formElements[sourceElementIndex]
+      draftSourceFormElementGroup.formElements[sourceElementIndex],
     );
     sourceElement.uuid = UUID.v4();
     if (destinationElementIndex !== 0) {
@@ -683,32 +691,52 @@ export const formDesignerUpdateDragDropOrderForFirstGroup = (
               draftDestinationFormElementGroup.formElements.splice(
                 index + 1,
                 0,
-                sourceElement
+                sourceElement,
               );
             }
           }
-        }
+        },
       );
     } else {
       draftDestinationFormElementGroup.formElements.splice(
         destinationElementIndex,
         0,
-        sourceElement
+        sourceElement,
       );
     }
     draftSourceFormElementGroup.formElements[sourceElementIndex].voided = true;
+    // If the moved element is a QuestionGroup, also move its child elements
+    if (
+      sourceElement.concept &&
+      sourceElement.concept.dataType === "QuestionGroup"
+    ) {
+      const oldParentUuid =
+        draftSourceFormElementGroup.formElements[sourceElementIndex].uuid;
+      draftSourceFormElementGroup.formElements.forEach((fe) => {
+        if (
+          !_.isNil(fe.parentFormElementUuid) &&
+          fe.parentFormElementUuid === oldParentUuid
+        ) {
+          const childClone = cloneDeep(fe);
+          childClone.uuid = UUID.v4();
+          childClone.parentFormElementUuid = sourceElement.uuid;
+          draftDestinationFormElementGroup.formElements.push(childClone);
+          fe.voided = true;
+        }
+      });
+    }
   } else {
     draftSourceFormElementGroup.formElements.forEach((element, index) => {
       if (!element.voided) {
         if (counter === destinationElementIndex) {
           const sourceElement = draftSourceFormElementGroup.formElements.splice(
             sourceElementIndex,
-            1
+            1,
           )[0];
           draftSourceFormElementGroup.formElements.splice(
             index,
             0,
-            sourceElement
+            sourceElement,
           );
         }
         counter += 1;
@@ -734,7 +762,7 @@ export const formDesignerGetEmptyFormElement = () => {
     inlineConceptErrorMessage: {
       name: "",
       dataType: "",
-      inlineConceptError: ""
+      inlineConceptError: "",
     },
     inlineNumericDataTypeAttributes: {
       lowAbsolute: null,
@@ -742,7 +770,7 @@ export const formDesignerGetEmptyFormElement = () => {
       lowNormal: null,
       highNormal: null,
       unit: "",
-      error: {}
+      error: {},
     },
     inlineCodedAnswers: [
       {
@@ -753,8 +781,8 @@ export const formDesignerGetEmptyFormElement = () => {
         editable: true,
         voided: false,
         order: 0,
-        isAnswerHavingError: { isErrored: false, type: "" }
-      }
+        isAnswerHavingError: { isErrored: false, type: "" },
+      },
     ],
     showConceptLibrary: "",
     inlineConceptName: "",
@@ -763,20 +791,20 @@ export const formDesignerGetEmptyFormElement = () => {
       isWithinCatchment: true,
       lowestAddressLevelTypeUUIDs: [],
       highestAddressLevelTypeUUID: "",
-      error: {}
+      error: {},
     },
     inlineSubjectDataTypeKeyValues: {
       subjectTypeUUID: "",
-      error: {}
+      error: {},
     },
     inlineEncounterDataTypeKeyValues: {
       error: {},
       encounterTypeUUID: "",
       encounterScope: "",
-      encounterIdentifier: ""
+      encounterIdentifier: "",
     },
     inlinePhoneNumberDataTypeKeyValues: {
-      verifyPhoneNumber: false
-    }
+      verifyPhoneNumber: false,
+    },
   };
 };
