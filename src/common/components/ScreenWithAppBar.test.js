@@ -33,13 +33,36 @@ describe("ScreenWithAppBar", () => {
   });
 
   describe("getSelectedListItem", () => {
+    const sidebarOptions = [
+      { href: "#/export", name: "Longitudinal Export" },
+      { href: "#/newExport", name: "New Longitudinal Export" },
+      { href: "#/selfservicereports", name: "Self-service Reports" },
+    ];
+
+    const loc = (hash, pathname = "/") => ({ hash, pathname });
+
     it("should return 0 when sidebarOptions is empty", () => {
-      assert.equal(getSelectedListItem([]), 0);
+      assert.equal(getSelectedListItem([], loc("")), 0);
     });
 
     it("should return 0 when sidebarOptions is undefined or null", () => {
-      assert.equal(getSelectedListItem(undefined), 0);
-      assert.equal(getSelectedListItem(null), 0);
+      assert.equal(getSelectedListItem(undefined, loc("")), 0);
+      assert.equal(getSelectedListItem(null, loc("")), 0);
+    });
+
+    it("should return 0 when no option matches the current location", () => {
+      assert.equal(getSelectedListItem(sidebarOptions, loc("")), 0);
+      assert.equal(getSelectedListItem(sidebarOptions, loc("#/other")), 0);
+    });
+
+    it("should match the exact hash path and return the correct index", () => {
+      assert.equal(getSelectedListItem(sidebarOptions, loc("#/export")), 0);
+      assert.equal(getSelectedListItem(sidebarOptions, loc("#/newExport")), 1);
+      assert.equal(getSelectedListItem(sidebarOptions, loc("#/selfservicereports")), 2);
+    });
+
+    it("should not match #/export when the current path is #/newExport (substring bug)", () => {
+      assert.equal(getSelectedListItem(sidebarOptions, loc("#/newExport")), 1);
     });
   });
 });

@@ -7,11 +7,17 @@ export const getSidebarLinkTo = (href) => {
 
 export const shouldUpdateSelectedIndexOnClick = (event) => !event.metaKey && !event.ctrlKey;
 
-export const getSelectedListItem = (sidebarOptions) => {
-  return _.isEmpty(sidebarOptions)
-    ? 0
-    : _.map(sidebarOptions, (option, i) => ({
-        selected: window.location.href.includes(option.href.replace("#", "")),
-        index: i,
-      })).filter((option) => option.selected)[0]?.index || 0;
+export const getSelectedListItem = (sidebarOptions, location = window.location) => {
+  if (_.isEmpty(sidebarOptions)) return 0;
+
+  const pathname = (location.pathname || "").replace(/^\//, "");
+  const hashPath = (location.hash || "").replace(/^#\/?/, "");
+  const currentPath = hashPath || pathname;
+
+  const matchIndex = _.findIndex(sidebarOptions, (option) => {
+    const optionPath = option.href.replace(/^#\/?/, "");
+    return currentPath === optionPath;
+  });
+
+  return matchIndex >= 0 ? matchIndex : 0;
 };
