@@ -6,23 +6,41 @@ const RuleSummaryComponent = ({ summary, ruleNumber, displayRuleCounts }) => {
   if (isEmpty(summary)) return null;
 
   const { actionSummary, ruleSummary, conjunctions } = summary;
+  const wrapStyles = {
+    wordBreak: "break-word",
+    overflowWrap: "anywhere",
+    whiteSpace: "normal",
+    maxWidth: "100%",
+    display: "block",
+  };
   return (
     <Fragment>
       {displayRuleCounts && (
-        <Typography sx={{ mb: 1 }} variant={"subtitle2"}>
+        <Typography sx={{ mb: 1, ...wrapStyles }} variant={"subtitle2"}>
           {`Rule ${ruleNumber}`}
         </Typography>
       )}
-      <ul>
-        {map(actionSummary, as => (
-          <li>{as}</li>
+      <ul style={{ paddingLeft: 16, margin: 0 }}>
+        {map(actionSummary, (as, idx) => (
+          <li key={`action-${idx}`} style={wrapStyles}>
+            <Typography component="span" sx={wrapStyles}>
+              {as}
+            </Typography>
+          </li>
         ))}
-        {map(zip(ruleSummary, conjunctions), ([ruleSummary, conjunction]) => (
-          <Fragment>
-            <li>{ruleSummary}</li>
-            {conjunction && <Chip label={toUpper(conjunction)} />}
-          </Fragment>
-        ))}
+        {map(
+          zip(ruleSummary, conjunctions),
+          ([ruleSummary, conjunction], idx) => (
+            <li key={`rule-${idx}`} style={wrapStyles}>
+              <Typography component="span" sx={wrapStyles}>
+                {ruleSummary}
+              </Typography>
+              {conjunction && (
+                <Chip label={toUpper(conjunction)} sx={{ ml: 1 }} />
+              )}
+            </li>
+          ),
+        )}
       </ul>
     </Fragment>
   );

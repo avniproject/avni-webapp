@@ -1,7 +1,33 @@
+/* Global fix for text overflow in MUI components */
+/* Global fix for text overflow in MUI components */
+.MuiTypography-root,
+.MuiTableCell-root,
+.MuiChip-root,
+li {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* Prevent flex containers from expanding due to long text */
+.MuiBox-root,
+.MuiStack-root,
+.MuiGrid-root {
+  min-width: 0;
+}
+
+/* Limit table cell width and override potential nowrap styles */
+.MuiTableCell-root {
+  max-width: 300px;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen", "Ubuntu",
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen", "Ubuntu",
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -9,8 +35,8 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 h1,

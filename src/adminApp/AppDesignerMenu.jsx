@@ -9,7 +9,21 @@ export const AppDesignerMenu = () => {
   );
 
   return (
-    <Menu>
+    <Menu
+      sx={{
+        width: "100%",
+        minWidth: 0,
+        maxWidth: "100vw",
+        overflowX: "auto",
+        overflowY: "auto",
+        wordBreak: "break-word",
+        whiteSpace: "normal",
+        backgroundColor: "background.paper",
+        borderRight: "1px solid #E5E5E5",
+        boxSizing: "border-box",
+        hyphens: "auto",
+      }}
+    >
       {resources.templates && (
         <Menu.ResourceItem
           name="templates"
@@ -17,6 +31,9 @@ export const AppDesignerMenu = () => {
           sx={{
             color: "#4A4459",
             backgroundColor: "background.paper",
+            wordBreak: "break-word",
+            whiteSpace: "normal",
+            overflowWrap: "anywhere",
             "&.RaMenuItemLink-active": {
               fontWeight: "bold",
               color: "#4A4459",
@@ -28,10 +45,20 @@ export const AppDesignerMenu = () => {
           }}
         />
       )}
-
       <Submenu text="App Designer">
         {appDesignerResources.map((name) => (
-          <Menu.ResourceItem key={name} name={name} leftIcon={null} />
+          <Menu.ResourceItem
+            key={name}
+            name={name}
+            leftIcon={null}
+            sx={{
+              wordBreak: "break-word",
+              whiteSpace: "normal",
+              overflowWrap: "anywhere",
+              maxWidth: 220,
+              minWidth: 120,
+            }}
+          />
         ))}
       </Submenu>
     </Menu>

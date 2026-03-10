@@ -36,7 +36,7 @@ import UploadStatus from "./UploadStatus";
 const StyledRootGrid = styled(Grid)(({ theme, isChatOpen }) => ({
   container: true,
   spacing: theme.spacing(2),
-  minWidth: "80%",
+  minWidth: "60%",
   maxWidth: isChatOpen ? "80%" : "100%",
   transition: "max-width 0.3s ease",
 }));
@@ -49,6 +49,9 @@ const StyledUploadPaper = styled(Paper)(({ theme }) => ({
 
 const StyledStatusPaper = styled(Paper)(({ theme }) => ({
   marginTop: theme.spacing(2),
+  overflowX: "auto",
+  width: "100%",
+  boxSizing: "border-box",
 }));
 
 const StyledReviewButton = styled(Button)(({ theme }) => ({
