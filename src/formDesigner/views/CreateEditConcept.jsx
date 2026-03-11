@@ -179,10 +179,13 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     });
   }, []);
 
-  const onChangeAnswerName = useCallback((answer, index) => {
+  const onChangeAnswerName = useCallback((answer, index, conceptUuid) => {
     setConcept((prev) => {
       const answers = [...prev.answers];
       answers[index].name = answer;
+      if (conceptUuid) {
+        answers[index].uuid = conceptUuid;
+      }
       return { ...prev, answers };
     });
   }, []);
