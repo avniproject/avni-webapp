@@ -7,7 +7,7 @@ import { httpClient as http } from "common/utils/httpClient";
 const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
   width: "100%",
   minWidth: "300px",
-  marginTop: theme.spacing(1.25)
+  marginTop: theme.spacing(1.25),
 }));
 
 export default function AutoSuggestSingleSelection({
@@ -23,7 +23,7 @@ export default function AutoSuggestSingleSelection({
   showAnswer = { name: "" },
   label = "",
   placeholder = "",
-  visibility = false
+  visibility = false,
 }) {
   const ignoredDatatypesFromProps = dataTypesToIgnore || [];
   const dataTypesToIgnoreList = [...ignoredDatatypesFromProps, "NA"];
@@ -37,7 +37,7 @@ export default function AutoSuggestSingleSelection({
     setInputValue(showAnswer?.name || "");
   }, [showAnswer?.name]);
 
-  const fetchSuggestions = async value => {
+  const fetchSuggestions = async (value) => {
     if (!value || value.length < 2) {
       setSuggestions([]);
       return;
@@ -53,21 +53,21 @@ export default function AutoSuggestSingleSelection({
     try {
       const response = await http.get(`/search/concept?${queryString}`);
       const suggestions = response.data;
-      _.sortBy(suggestions, concept => concept.name);
+      _.sortBy(suggestions, (concept) => concept.name);
 
       let filteredSuggestions;
       if (showSuggestionStartsWith) {
         filteredSuggestions = suggestions.filter(
-          suggestion =>
+          (suggestion) =>
             !suggestion.voided &&
             suggestion.name.slice(0, inputLength).toLowerCase() ===
-              inputValueLower
+              inputValueLower,
         );
       } else {
         filteredSuggestions = suggestions.filter(
-          suggestion =>
+          (suggestion) =>
             !suggestion.voided &&
-            !_.includes(dataTypesToIgnoreList, suggestion.dataType)
+            !_.includes(dataTypesToIgnoreList, suggestion.dataType),
         );
       }
       setSuggestions(filteredSuggestions);
@@ -90,14 +90,16 @@ export default function AutoSuggestSingleSelection({
     } else {
       // Handle string input or object with name property
       let autoSuggestedName = "";
+      let conceptUuid = null;
       if (typeof newValue === "string") {
         autoSuggestedName = newValue;
       } else if (newValue && newValue.name) {
         autoSuggestedName = newValue.name;
+        conceptUuid = newValue.uuid;
       }
 
       if (!inlineConcept) {
-        onChangeAnswerName(autoSuggestedName, index, false);
+        onChangeAnswerName(autoSuggestedName, index, conceptUuid);
       } else {
         onChangeAnswerName(autoSuggestedName, groupIndex, elementIndex, index);
       }
@@ -124,7 +126,7 @@ export default function AutoSuggestSingleSelection({
     }
   };
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     // When user presses Enter, save the typed text as the answer
     if (
       event.key === "Enter" &&
@@ -143,7 +145,7 @@ export default function AutoSuggestSingleSelection({
   return (
     <StyledAutocomplete
       options={suggestions}
-      getOptionLabel={option => {
+      getOptionLabel={(option) => {
         if (typeof option === "string") return option;
         return option?.name || "";
       }}
@@ -163,7 +165,7 @@ export default function AutoSuggestSingleSelection({
       loading={loading}
       disabled={visibility}
       freeSolo
-      renderInput={params => (
+      renderInput={(params) => (
         <TextField
           {...params}
           label={label}

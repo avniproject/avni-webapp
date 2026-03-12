@@ -575,59 +575,11 @@ export const formDesignerOnSaveInlineConcept = (
       if (flagForInvalidAnswer === true) {
         updateState();
       } else {
-        inlineConceptObject.answers.forEach((answer) => {
-          http
-            .get(`/web/concept?name=${encodeURIComponent(answer.name)}`)
-            .then((response) => {
-              if (response.status === 200) {
-                answer.uuid = response.data.uuid;
-                answer.order = counter;
-                counter = counter + 1;
-
-                if (counter === length) {
-                  formDesignerOnSubmitInlineConcept(
-                    inlineConceptObject,
-                    clonedFormElement,
-                    updateState,
-                  );
-                }
-              }
-            })
-            .catch((error) => {
-              if (error.response.status === 404) {
-                answer.uuid = UUID.v4();
-                http
-                  .post("/concepts", {
-                    name: answer.name,
-                    uuid: answer.uuid,
-                    dataType: "NA",
-                    lowAbsolute: null,
-                    highAbsolute: null,
-                    lowNormal: null,
-                    highNormal: null,
-                    unit: null,
-                  })
-                  .then((response) => {
-                    if (response.status === 200) {
-                      console.log(
-                        "Dynamic concept added through Coded",
-                        response,
-                      );
-                      counter = counter + 1;
-                      if (counter === length) {
-                        formDesignerOnSubmitInlineConcept(
-                          inlineConceptObject,
-                          clonedFormElement,
-                          updateState,
-                        );
-                      }
-                    }
-                  });
-              } else {
-                console.log(error);
-              }
-            });
-        });
+        formDesignerOnSubmitInlineConcept(
+          inlineConceptObject,
+          clonedFormElement,
+          updateState,
+        );
       }
     } else {
       formDesignerOnSubmitInlineConcept(
