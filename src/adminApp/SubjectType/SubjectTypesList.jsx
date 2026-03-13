@@ -16,17 +16,17 @@ import { Edit, Delete } from "@mui/icons-material";
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(
     userInfo,
-    Privilege.PrivilegeType.EditSubjectType
+    Privilege.PrivilegeType.EditSubjectType,
   );
 }
 
 const SubjectTypesList = () => {
   const navigate = useNavigate();
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
   const [formMappings, setFormMappings] = useState([]);
   const [redirect, setRedirect] = useState(false);
   const tableRef = useRef(null);
-
+  const [searchTerm, setSearchTerm] = useState("");
   useFormMappings(setFormMappings);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const SubjectTypesList = () => {
           <a href={`#/appdesigner/subjectType/${row.original.id}/show`}>
             {row.original.name}
           </a>
-        )
+        ),
       },
       {
         accessorKey: "formName",
@@ -52,13 +52,13 @@ const SubjectTypesList = () => {
         Cell: ({ row }) => {
           const formName = get(
             findRegistrationForm(formMappings, row.original),
-            "formName"
+            "formName",
           );
           return hasEditPrivilege(userInfo) ? (
             <a
               href={`#/appdesigner/forms/${get(
                 findRegistrationForm(formMappings, row.original),
-                "formUUID"
+                "formUUID",
               )}`}
             >
               {formName}
@@ -66,52 +66,56 @@ const SubjectTypesList = () => {
           ) : (
             formName
           );
-        }
+        },
       },
       {
         accessorKey: "type",
-        header: "Type"
+        header: "Type",
       },
       {
         accessorKey: "organisationId",
         header: "Organization Id",
-        type: "number"
-      }
+        type: "number",
+      },
     ],
-    [formMappings, userInfo]
+    [formMappings, userInfo],
   );
 
   const fetchData = useCallback(
     ({ page, pageSize, orderBy, orderDirection }) =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         const validSortFields = ["name", "type", "organisationId"];
         let apiUrl = `/web/subjectType?size=${encodeURIComponent(
-          pageSize
+          pageSize,
         )}&page=${encodeURIComponent(page)}`;
+        if (searchTerm) {
+          apiUrl += `&name=${encodeURIComponent(searchTerm)}`;
+        }
+
         if (orderBy && validSortFields.includes(orderBy)) {
           const sortBy = orderBy === "type" ? "subjectTypeType" : orderBy;
           apiUrl += `&sort=${encodeURIComponent(sortBy)},${encodeURIComponent(
-            orderDirection
+            orderDirection,
           )}`;
         }
         http
           .get(apiUrl)
-          .then(response => response.data)
-          .then(result => {
+          .then((response) => response.data)
+          .then((result) => {
             resolve({
               data: result._embedded?.subjectType || [],
-              totalCount: result.page?.totalElements || 0
+              totalCount: result.page?.totalElements || 0,
             });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Failed to fetch subject types:", error);
             resolve({
               data: [],
-              totalCount: 0
+              totalCount: 0,
             });
           });
       }),
-    []
+    [searchTerm],
   );
 
   const actions = useMemo(
@@ -124,7 +128,7 @@ const SubjectTypesList = () => {
               onClick: (event, row) => {
                 navigate(`/appdesigner/subjectType/${row.original.id}`);
               },
-              disabled: row => row.original.voided ?? false
+              disabled: (row) => row.original.voided ?? false,
             },
             {
               icon: Delete,
@@ -136,23 +140,28 @@ const SubjectTypesList = () => {
                 if (window.confirm(voidedMessage)) {
                   http
                     .delete(`/web/subjectType/${row.original.id}`)
-                    .then(response => {
+                    .then((response) => {
                       if (response.status === 200 && tableRef.current) {
                         tableRef.current.refresh();
                       }
                     })
-                    .catch(error => {
+                    .catch((error) => {
                       console.error("Failed to delete subject type:", error);
                       alert("Failed to delete subject type. Please try again.");
                     });
                 }
               },
-              disabled: row => row.original.voided ?? false
-            }
+              disabled: (row) => row.original.voided ?? false,
+            },
           ]
         : [],
-    [navigate, userInfo, tableRef]
+    [navigate, userInfo, tableRef],
   );
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.refresh();
+    }
+  }, [searchTerm]);
 
   return (
     <Box
@@ -161,7 +170,7 @@ const SubjectTypesList = () => {
         p: 3,
         bgcolor: "background.paper",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
       }}
     >
       <Title title="Subject Types" color="primary" />
@@ -174,6 +183,20 @@ const SubjectTypesList = () => {
             />
           </Grid>
         )}
+      </Grid>
+      <Grid container sx={{ mb: 2 }}>
+        <input
+          type="text"
+          placeholder="Search by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            padding: "5px 10px",
+            width: "250px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+          }}
+        />
       </Grid>
       <AvniMaterialTable
         title=""
@@ -189,8 +212,8 @@ const SubjectTypesList = () => {
           debounceInterval: 500,
           search: false,
           rowStyle: ({ original }) => ({
-            backgroundColor: original.active ? "#fff" : "#DBDBDB"
-          })
+            backgroundColor: original.active ? "#fff" : "#DBDBDB",
+          }),
         }}
         route="/appdesigner/subjectType"
         actions={actions}
