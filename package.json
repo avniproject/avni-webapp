@@ -86,7 +86,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=http://localhost:8021 vite",
+    "start": "cross-env NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=http://localhost:8021 vite",
     "start-with-staging": "NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=https://staging.avniproject.org vite",
     "start-with-prerelease": "NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=https://prerelease.avniproject.org vite",
     "start-with-prod": "NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=https://app.avniproject.org vite",
@@ -130,6 +130,7 @@
     "@types/react-dom": "^18.0.0",
     "babel-jest": "^30.0.5",
     "chai": "^4.2.0",
+    "cross-env": "^10.1.0",
     "cypress": "^5.6.0",
     "eslint": "^9.28.0",
     "eslint-plugin-import": "^2.32.0",
