@@ -142,6 +142,12 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
                 row.original.dateOfBirth
                   ? AgeUtil.getDisplayAge(row.original.dateOfBirth, i18n)
                   : "",
+              sortingFn: (a, b) => {
+                const dobA = new Date(a.getValue());
+                const dobB = new Date(b.getValue());
+                // Sort ascending: older date => larger age
+                return dobA - dobB;
+              },
             },
           ]
         : []),
