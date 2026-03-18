@@ -11,6 +11,8 @@ export const CatchmentSelectInput = (props) => (
       "& .MuiInputBase-root": {
         backgroundColor: "white",
         minWidth: "120px",
+        display: "inline-block",
+        width: "auto",
       },
     }}
   />
