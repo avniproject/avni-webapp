@@ -459,8 +459,9 @@ const FormDetails = () => {
               draft.form.formElementGroups[groupDestinationIndex].formElements[
                 destinationElementIndex
               ];
-            sourceElement.parentFormElementUuid =
-              destinationElement.parentFormElementUuid;
+            sourceElement.parentFormElementUuid = destinationElement
+              ? destinationElement.parentFormElementUuid
+              : null;
             formDesignerUpdateDragDropOrderForFirstGroup(
               draft,
               draft.form.formElementGroups[groupSourceIndex],
