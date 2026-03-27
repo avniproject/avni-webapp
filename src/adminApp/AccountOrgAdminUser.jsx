@@ -16,7 +16,7 @@ import {
   TextField,
   required,
   useRecordContext,
-  useResourceContext
+  useResourceContext,
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
 import CardActions from "@mui/material/CardActions";
@@ -29,7 +29,7 @@ import {
   PasswordTextField,
   UserFilter,
   UserTitle,
-  validateEmail
+  validateEmail,
 } from "./UserHelper";
 import { TitleChip } from "./components/TitleChip";
 import OrganisationService from "../common/service/OrganisationService";
@@ -40,7 +40,7 @@ import {
   datagridStyles,
   StyledAutocompleteArrayInput,
   StyledShow,
-  StyledSimpleShowLayout
+  StyledSimpleShowLayout,
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
@@ -63,7 +63,7 @@ export const AccountOrgAdminUserEdit = ({ user, region, ...props }) => (
   </Edit>
 );
 
-export const AccountOrgAdminUserList = props => (
+export const AccountOrgAdminUserList = (props) => (
   <StyledBox>
     <List
       {...props}
@@ -81,12 +81,12 @@ export const AccountOrgAdminUserList = props => (
         <TextField source="phoneNumber" label="Phone Number" />
         <FunctionField
           label="Status"
-          render={user =>
+          render={(user) =>
             user.voided === true
               ? "Deleted"
               : user.disabledInCognito === true
-              ? "Disabled"
-              : "Active"
+                ? "Disabled"
+                : "Active"
           }
         />
       </Datagrid>
@@ -116,7 +116,7 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
       <TextField source="name" label="Name of the Person" />
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
-      <FunctionField label="Role" render={user => formatRoles(user.roles)} />
+      <FunctionField label="Role" render={(user) => formatRoles(user.roles)} />
       <ReferenceField
         label="Organisation"
         source="organisationId"
@@ -159,7 +159,7 @@ const UserFormFields = ({ edit = false, region }) => {
 
   useEffect(() => {
     if (organisationId) {
-      OrganisationService.getOrganisation(organisationId).then(data => {
+      OrganisationService.getOrganisation(organisationId).then((data) => {
         setNameSuffix(data?.usernameSuffix || "");
       });
     }
@@ -170,6 +170,22 @@ const UserFormFields = ({ edit = false, region }) => {
       setValue("username", `${username}@${nameSuffix}`);
     }
   }, [username, nameSuffix, setValue]);
+  const validateLoginId = (value) => {
+    if (!value) return "LoginID is required";
+    if (value.trim() !== value)
+      return "This field should not start or end with whitespaces";
+    const normalized = value.replace(/\s+/g, " ");
+    const regex = /^[a-zA-Z0-9._-]{3,20}$/;
+    if (!regex.test(normalized)) return "LoginID contains invalid characters";
+    return true;
+  };
+
+  const validateName = (value) => {
+    if (!value) return "Name is required";
+    if (value.trim() !== value)
+      return "This field should not start or end with whitespaces";
+    return true;
+  };
 
   return (
     <>
@@ -179,7 +195,7 @@ const UserFormFields = ({ edit = false, region }) => {
         perPage={1000}
         label="Accounts"
         validate={required("Please select one or more accounts")}
-        filterToQuery={searchText => ({ name: searchText })}
+        filterToQuery={(searchText) => ({ name: searchText })}
       >
         <StyledAutocompleteArrayInput />
       </ReferenceArrayInput>
@@ -198,8 +214,11 @@ const UserFormFields = ({ edit = false, region }) => {
         <>
           <StyledTextInput
             source="username"
-            validate={isRequired}
             label="Login ID (username)"
+            validate={validateLoginId}
+            onBlur={(e) =>
+              setValue("username", e.target.value.replace(/\s+/g, " "))
+            }
           />
           {nameSuffix && <span>@{nameSuffix}</span>}
           <StyledTextInput source="username" style={{ display: "none" }} />
@@ -210,8 +229,9 @@ const UserFormFields = ({ edit = false, region }) => {
       <StyledTextInput
         source="name"
         label="Name of the Person"
-        validate={isRequired}
+        validate={validateName}
         autoComplete={autoComplete}
+        onBlur={(e) => setValue("name", e.target.value.replace(/\s+/g, " "))}
       />
       <StyledTextInput
         source="email"
