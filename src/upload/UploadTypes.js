@@ -1,12 +1,12 @@
-import { map, findKey, find, get } from "lodash";
+import { map, findKey, find, get, pickBy } from "lodash";
 
 export default class {
   constructor(types = {}) {
-    this.types = types;
+    this.types = pickBy(types, (type) => !type.voided);
   }
 
   get names() {
-    return map(this.types, n => ({ name: n.name }));
+    return map(this.types, (n) => ({ name: n.name }));
   }
 
   getName(code) {
@@ -14,10 +14,14 @@ export default class {
   }
 
   getCode(name) {
-    return findKey(this.types, n => name === n.name);
+    return findKey(this.types, (n) => name === n.name);
   }
 
   isApprovalEnabled(name) {
-    return get(find(this.types, n => n.name === name), "approvalEnabled", false);
+    return get(
+      find(this.types, (n) => n.name === name),
+      "approvalEnabled",
+      false,
+    );
   }
 }
