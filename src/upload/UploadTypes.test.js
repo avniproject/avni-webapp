@@ -37,13 +37,16 @@ describe("UploadTypes", () => {
     expect(uploadTypes.isApprovalEnabled("Regular")).toBe(false);
   });
 
-  it("should return true for isApprovalEnabled when set to true", () => {
+  it("should return true for isApprovalEnabled when set to true, and false if voided", () => {
     const types = {
       "Subject---Approval": { name: "Approval Needed", approvalEnabled: true },
+      "Subject---VoidedApproval": { name: "Voided Approval", approvalEnabled: true, voided: true },
     };
 
     const uploadTypes = new UploadTypes(types);
     expect(uploadTypes.isApprovalEnabled("Approval Needed")).toBe(true);
+    // Even if approvalEnabled is true, if it is voided, it should be filtered out and return false
+    expect(uploadTypes.isApprovalEnabled("Voided Approval")).toBe(false);
   });
 
   it("should safely handle and filter out null or undefined entries", () => {
