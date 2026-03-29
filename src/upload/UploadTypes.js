@@ -2,7 +2,7 @@ import { map, findKey, find, get, pickBy } from "lodash";
 
 export default class {
   constructor(types = {}) {
-    this.types = pickBy(types, (type) => !type.voided);
+    this.types = pickBy(types, (type) => type && !type.voided);
   }
 
   get names() {

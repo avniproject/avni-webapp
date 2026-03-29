@@ -45,4 +45,19 @@ describe("UploadTypes", () => {
     const uploadTypes = new UploadTypes(types);
     expect(uploadTypes.isApprovalEnabled("Approval Needed")).toBe(true);
   });
+
+  it("should safely handle and filter out null or undefined entries", () => {
+    const types = {
+      "Encounter---Regular": { name: "Regular" },
+      "Bad---Entry": null,
+      "AlsoBad---Entry": undefined,
+    };
+
+    const uploadTypes = new UploadTypes(types);
+
+    expect(uploadTypes.names).toEqual([{ name: "Regular" }]);
+    expect(uploadTypes.getName("Bad---Entry")).toBeUndefined();
+    expect(uploadTypes.getName("AlsoBad---Entry")).toBeUndefined();
+    expect(uploadTypes.getCode(undefined)).toBeUndefined();
+  });
 });
