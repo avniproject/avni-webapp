@@ -368,14 +368,39 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     [formValidation],
   );
 
-  const handleSaveError = useCallback((saveError) => {
-    const newError = {
-      nameConflict: saveError.includes("already exists"),
-      mediaUploadFailed: !saveError.includes("already exists"),
-      message: saveError,
-    };
-    setError(newError);
-  }, []);
+  const handleSaveError = useCallback(
+    (saveError, conflictingConceptName) => {
+      if (
+        saveError.includes("already exists") &&
+        conflictingConceptName &&
+        concept.dataType === "Coded"
+      ) {
+        const answerIndex = concept.answers.findIndex(
+          (a) => !a.voided && a.name === conflictingConceptName,
+        );
+        if (answerIndex >= 0) {
+          setConcept((prev) => {
+            const answers = [...prev.answers];
+            answers[answerIndex] = {
+              ...answers[answerIndex],
+              isAnswerHavingError: ConceptAnswerError.inError("nameConflict"),
+            };
+            return { ...prev, answers };
+          });
+          setError({ isAnswerHavingError: true });
+          return;
+        }
+      }
+
+      const newError = {
+        nameConflict: saveError.includes("already exists"),
+        mediaUploadFailed: !saveError.includes("already exists"),
+        message: saveError,
+      };
+      setError(newError);
+    },
+    [concept.answers, concept.dataType],
+  );
 
   const handleSaveSuccess = useCallback((savedConcept) => {
     setConceptCreationAlert(true);
@@ -387,11 +412,14 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
 
   const afterSuccessfulValidation = useCallback(async () => {
     // Save the concept
-    const { concept: savedConcept, error: saveError } =
-      await ConceptService.saveConcept(concept);
+    const {
+      concept: savedConcept,
+      error: saveError,
+      conflictingConceptName,
+    } = await ConceptService.saveConcept(concept);
 
     if (saveError) {
-      handleSaveError(saveError);
+      handleSaveError(saveError, conflictingConceptName);
       return;
     }
 

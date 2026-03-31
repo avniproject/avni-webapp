@@ -61,8 +61,11 @@ class ConceptService {
     } catch (err) {
       // Handle conflict (409) errors more gracefully
       if (err.response && (err.response.status === 409 || err.response.status === 400)) {
+        const serverMessage = typeof err.response.data === "string" ? err.response.data : err.response.data?.message || "";
+        const nameMatch = serverMessage.match(/Concept with name '(.+?)'\s*already exists/);
         return {
           error: "A concept with this name already exists. Please use a different name.",
+          conflictingConceptName: nameMatch ? nameMatch[1] : null,
         };
       }
       // Handle other errors

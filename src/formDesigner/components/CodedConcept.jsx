@@ -101,6 +101,13 @@ export const CodedConceptAnswer = ({
         {isDuplicateAnswerValue && (
           <FormHelperText error>Duplicate answer specified</FormHelperText>
         )}
+        {get(answer, "isAnswerHavingError.isErrored") &&
+          answer.isAnswerHavingError.type === "nameConflict" && (
+            <FormHelperText error>
+              A concept with this name already exists. Please select it from the
+              suggestion list.
+            </FormHelperText>
+          )}
       </Grid>
 
       {/* Checkboxes - Horizontal */}
