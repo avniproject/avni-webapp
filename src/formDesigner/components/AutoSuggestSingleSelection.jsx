@@ -38,7 +38,7 @@ export default function AutoSuggestSingleSelection({
   }, [showAnswer?.name]);
 
   const fetchSuggestions = async (value) => {
-    if (!value || value.length < 2) {
+    if (!value) {
       setSuggestions([]);
       return;
     }
