@@ -130,6 +130,7 @@
   "APP_DESIGNER_FORM_ELEMENT_DISPLAY_ALL_GROUP_MEMBERS": "If marked true, then all the members of the group will be shown as options. Value from the rule is not respected",
   "APP_DESIGNER_FORM_ELEMENT_SEARCH_OPTIONS": "If marked true, then search bar shows up. This does not work on mobile app.",
   "APP_DESIGNER_FORM_ELEMENT_READ_ONLY": "User cannot edit the value and value is inserted using rules",
+  "APP_DESIGNER_FORM_ELEMENT_RESTRICT_GALLERY_UPLOAD": "Not applicable for Data Entry App, which supports only gallery upload.",
   "APP_DESIGNER_FORM_ELEMENT_UNIQUE": "Only unique values within a catchment will be allowed for this field",
   "APP_DESIGNER_FORM_ELEMENT_IDENTIFIER_SOURCE": "For ID type concept choose from already created identifier source",
   "APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE": "Choose from already created group subject types",

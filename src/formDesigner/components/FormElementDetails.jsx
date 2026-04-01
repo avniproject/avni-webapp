@@ -1005,6 +1005,36 @@ const FormElementDetails = ({
                   />
                 </AvniFormControl>
               )}
+              {["Image", "ImageV2", "Video", "Audio"].includes(
+                formElementData.concept.dataType,
+              ) && (
+                <AvniFormControl
+                  toolTipKey={
+                    "APP_DESIGNER_FORM_ELEMENT_RESTRICT_GALLERY_UPLOAD"
+                  }
+                  disabled={disableFormElement}
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="restrictGalleryUpload"
+                        checked={
+                          !!formElementData.keyValues.restrictGalleryUpload
+                        }
+                        onChange={(event) =>
+                          rest.handleGroupElementKeyValueChange(
+                            groupIndex,
+                            "restrictGalleryUpload",
+                            event.target.checked,
+                            index,
+                          )
+                        }
+                      />
+                    }
+                    label="Do not allow upload from gallery"
+                  />
+                </AvniFormControl>
+              )}
             </Grid>
             {["Numeric", "Text", "PhoneNumber"].includes(
               formElementData.concept.dataType,
