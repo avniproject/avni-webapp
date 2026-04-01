@@ -959,6 +959,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
         <AvniBooleanInput
           source="settings.disableAutoSync"
           label="Disable auto sync"
+          defaultValue={true}
           toolTipKey={"ADMIN_USER_SETTINGS_DISABLE_AUTO_SYNC"}
         />
         <AvniBooleanInput
