@@ -190,11 +190,19 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         requestCopy.subjectType = firstSubjectTypeUUID;
       }
 
+      let sortColumn = sorting[0]?.id || null;
+      let sortOrder = sorting[0]?.desc ? "desc" : sorting[0]?.id ? "asc" : null;
+
+      // Fix Age sorting (Age is derived from dateOfBirth)
+      if (sortColumn === "dateOfBirth") {
+        sortOrder = sortOrder === "asc" ? "desc" : "asc";
+      }
+
       const pageElement = {
         pageNumber: pagination.pageIndex,
         numberOfRecordPerPage: pagination.pageSize,
-        sortColumn: sorting[0]?.id || null,
-        sortOrder: sorting[0]?.desc ? "desc" : sorting[0]?.id ? "asc" : null,
+        sortColumn,
+        sortOrder,
       };
 
       requestCopy.pageElement = pageElement;
