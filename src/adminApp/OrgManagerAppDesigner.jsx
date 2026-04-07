@@ -202,7 +202,7 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
       />
       <Resource
         name="reportCard"
-        options={{ label: "Offline Report Card" }}
+        options={{ label: "Card" }}
         list={ReportCardList}
         create={CreateEditReportCard}
         edit={CreateEditReportCard}

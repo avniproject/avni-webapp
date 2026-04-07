@@ -17,7 +17,7 @@ function populateRecordCardFields(
   standardReportCardInputSubjectTypes,
   standardReportCardInputPrograms,
   standardReportCardInputEncounterTypes,
-  standardReportCardInputRecentDuration
+  standardReportCardInputRecentDuration,
 ) {
   reportCard.id = id;
   reportCard.iconFileS3Key = iconFileS3Key;
@@ -70,9 +70,10 @@ class WebReportCard extends ReportCard {
     const webReportCard = new WebReportCard();
     populateRecordCardFields(webReportCard, "", "", "", [], false, null, WebReportCard.MinimumNumberOfNestedCards, [], [], [], {
       value: "1",
-      unit: "days"
+      unit: "days",
     });
     webReportCard.colour = "#ffffff";
+    webReportCard.action = null;
     return webReportCard;
   }
 
@@ -90,10 +91,11 @@ class WebReportCard extends ReportCard {
       [...other.standardReportCardInputSubjectTypes],
       [...other.standardReportCardInputPrograms],
       [...other.standardReportCardInputEncounterTypes],
-      other.standardReportCardInputRecentDuration
+      other.standardReportCardInputRecentDuration,
     );
     webReportCard.standardReportCardType = other.standardReportCardType;
     webReportCard.colour = other.colour;
+    webReportCard.action = other.action;
     return webReportCard;
   }
 
@@ -111,11 +113,12 @@ class WebReportCard extends ReportCard {
       WebSubjectType.fromResources(resource.standardReportCardInputSubjectTypes),
       WebProgram.fromResources(resource.standardReportCardInputPrograms),
       WebEncounterType.fromResources(resource.standardReportCardInputEncounterTypes),
-      resource.standardReportCardInputRecentDuration
+      resource.standardReportCardInputRecentDuration,
     );
     webReportCard.colour = resource.color;
     if (!isNil(resource.standardReportCardType))
       webReportCard.standardReportCardType = WebStandardReportCardType.fromResource(resource.standardReportCardType);
+    webReportCard.action = resource.action || null;
     return webReportCard;
   }
 
@@ -140,13 +143,13 @@ class WebReportCard extends ReportCard {
     if (isStandardReportCard && this.nested) {
       errors.push({
         key: "DISALLOWED_NESTED",
-        message: "Standard Report Type Card cannot be marked as Nested"
+        message: "Standard Report Type Card cannot be marked as Nested",
       });
     }
     if (isStandardReportCard && this.count !== 1) {
       errors.push({
         key: "INVALID_NESTED_CARD_COUNT",
-        message: "Standard Report Type Card count should always be 1"
+        message: "Standard Report Type Card count should always be 1",
       });
     }
     if (
@@ -156,7 +159,7 @@ class WebReportCard extends ReportCard {
     ) {
       errors.push({
         key: "INVALID_NESTED_CARD_COUNT",
-        message: "Nested Card count cannot be less than 1 or greater than 9"
+        message: "Nested Card count cannot be less than 1 or greater than 9",
       });
     }
     if (isStandardReportCard && this.isRecentType()) {
@@ -168,7 +171,7 @@ class WebReportCard extends ReportCard {
       ) {
         errors.push({
           key: "INVALID_DURATION",
-          message: "Recent duration is mandatory and should be a positive number"
+          message: "Recent duration is mandatory and should be a positive number",
         });
       }
     }
@@ -179,7 +182,7 @@ class WebReportCard extends ReportCard {
     const { PendingApproval, Approved, Rejected, CallTasks, OpenSubjectTasks, Comments, DueChecklist } = StandardReportCardType.types;
     const { Address } = CustomFilter.type;
     const dontSupportAllFilters = [PendingApproval, Approved, Rejected, CallTasks, OpenSubjectTasks, Comments, DueChecklist].includes(
-      _.get(card, "standardReportCardType.type")
+      _.get(card, "standardReportCardType.type"),
     );
     if (dontSupportAllFilters && ![Address].includes(filter.filterConfig.type)) {
       return false;
@@ -204,10 +207,11 @@ class WebReportCard extends ReportCard {
       count: this.count,
       standardReportCardTypeId: this.standardReportCardType && this.standardReportCardType.id,
       iconFileS3Key: this.iconFileS3Key,
-      standardReportCardInputSubjectTypes: this.standardReportCardInputSubjectTypes.map(x => x.uuid),
-      standardReportCardInputPrograms: this.standardReportCardInputPrograms.map(x => x.uuid),
-      standardReportCardInputEncounterTypes: this.standardReportCardInputEncounterTypes.map(x => x.uuid),
-      standardReportCardInputRecentDuration: this.standardReportCardInputRecentDuration
+      standardReportCardInputSubjectTypes: this.standardReportCardInputSubjectTypes.map((x) => x.uuid),
+      standardReportCardInputPrograms: this.standardReportCardInputPrograms.map((x) => x.uuid),
+      standardReportCardInputEncounterTypes: this.standardReportCardInputEncounterTypes.map((x) => x.uuid),
+      standardReportCardInputRecentDuration: this.standardReportCardInputRecentDuration,
+      action: this.action,
     };
   }
 }

@@ -9,7 +9,8 @@ export const ReportCardReducerKeys = {
   standardReportCardType: "standardReportCardType",
   setData: "setData",
   cardFormMetaData: "cardFormMetaData",
-  duration: "duration"
+  duration: "duration",
+  action: "action",
 };
 
 export const ReportCardReducer = (reportCard, action) => {
@@ -50,6 +51,9 @@ export const ReportCardReducer = (reportCard, action) => {
       } else {
         reportCard.standardReportCardInputRecentDuration = null;
       }
+      break;
+    case ReportCardReducerKeys.action:
+      reportCard.action = action.payload;
       break;
     default:
       break;

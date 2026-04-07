@@ -29,7 +29,7 @@ import { PopoverColorPicker } from "../../../common/components/PopoverColorPicke
 import WebReportCard from "../../../common/model/WebReportCard";
 import DashboardService from "../../../common/service/DashboardService";
 import FormMetaDataSelect from "../../../common/components/FormMetaDataSelect";
-import { StandardReportCardType } from "openchs-models";
+import { ReportCard, StandardReportCardType } from "openchs-models";
 import { ValueTextUnitSelect } from "../../../common/components/ValueTextUnitSelect";
 import CustomizedSnackbar from "../CustomizedSnackbar";
 import { AvniMediaUpload } from "../../../common/components/AvniMediaUpload";
@@ -77,10 +77,15 @@ export const CreateEditReportCard = () => {
           count: WebReportCard.MinimumNumberOfNestedCards,
         },
       });
+      dispatch({ type: ReportCardReducerKeys.action, payload: null });
     } else {
       dispatch({
         type: ReportCardReducerKeys.standardReportCardType,
         payload: null,
+      });
+      dispatch({
+        type: ReportCardReducerKeys.action,
+        payload: ReportCard.actionTypes.ViewSubjectProfile,
       });
     }
   }, [isStandardReportCard]);
@@ -251,7 +256,7 @@ export const CreateEditReportCard = () => {
           <AvniSelect
             label="Count of Nested Cards"
             value={card.count}
-            style={{ width: "200px" }}
+            style={{ width: "15.625rem" }}
             required={!isStandardReportCard && card.nested}
             onChange={(event) =>
               dispatch({
@@ -267,6 +272,28 @@ export const CreateEditReportCard = () => {
               label: num.toString(),
             }))}
             toolTipKey={"APP_DESIGNER_CARD_COUNT"}
+          />
+        )}
+        <p />
+        {!isStandardReportCard && (
+          <AvniSelect
+            label="Action"
+            value={card.action}
+            style={{ width: "15.625rem" }}
+            onChange={(event) =>
+              dispatch({
+                type: ReportCardReducerKeys.action,
+                payload: event.target.value,
+              })
+            }
+            options={[
+              {
+                value: ReportCard.actionTypes.ViewSubjectProfile,
+                label: "View subject profile",
+              },
+              { value: ReportCard.actionTypes.DoVisit, label: "Do visit" },
+            ]}
+            toolTipKey={"APP_DESIGNER_CARD_ACTION"}
           />
         )}
         <p />
@@ -290,7 +317,7 @@ export const CreateEditReportCard = () => {
                   : null,
               });
             }}
-            style={{ width: "250px" }}
+            style={{ width: "15.625rem" }}
             required
             options={sortBy(standardReportCardTypes, ["description"]).map(
               (type) => ({
