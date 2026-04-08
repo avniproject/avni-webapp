@@ -11,6 +11,10 @@ export const ReportCardReducerKeys = {
   cardFormMetaData: "cardFormMetaData",
   duration: "duration",
   action: "action",
+  actionDetailSubjectTypeUUID: "actionDetailSubjectTypeUUID",
+  actionDetailProgramUUID: "actionDetailProgramUUID",
+  actionDetailEncounterTypeUUID: "actionDetailEncounterTypeUUID",
+  actionDetailVisitType: "actionDetailVisitType",
 };
 
 export const ReportCardReducer = (reportCard, action) => {
@@ -54,6 +58,27 @@ export const ReportCardReducer = (reportCard, action) => {
       break;
     case ReportCardReducerKeys.action:
       reportCard.action = action.payload;
+      if (action.payload !== "DoVisit") {
+        reportCard.actionDetailSubjectTypeUUID = null;
+        reportCard.actionDetailProgramUUID = null;
+        reportCard.actionDetailEncounterTypeUUID = null;
+        reportCard.actionDetailVisitType = null;
+      }
+      break;
+    case ReportCardReducerKeys.actionDetailSubjectTypeUUID:
+      reportCard.actionDetailSubjectTypeUUID = action.payload;
+      reportCard.actionDetailProgramUUID = null;
+      reportCard.actionDetailEncounterTypeUUID = null;
+      break;
+    case ReportCardReducerKeys.actionDetailProgramUUID:
+      reportCard.actionDetailProgramUUID = action.payload;
+      reportCard.actionDetailEncounterTypeUUID = null;
+      break;
+    case ReportCardReducerKeys.actionDetailEncounterTypeUUID:
+      reportCard.actionDetailEncounterTypeUUID = action.payload;
+      break;
+    case ReportCardReducerKeys.actionDetailVisitType:
+      reportCard.actionDetailVisitType = action.payload;
       break;
     default:
       break;

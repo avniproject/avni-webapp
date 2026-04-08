@@ -74,6 +74,10 @@ class WebReportCard extends ReportCard {
     });
     webReportCard.colour = "#ffffff";
     webReportCard.action = null;
+    webReportCard.actionDetailSubjectTypeUUID = null;
+    webReportCard.actionDetailProgramUUID = null;
+    webReportCard.actionDetailEncounterTypeUUID = null;
+    webReportCard.actionDetailVisitType = null;
     return webReportCard;
   }
 
@@ -96,6 +100,10 @@ class WebReportCard extends ReportCard {
     webReportCard.standardReportCardType = other.standardReportCardType;
     webReportCard.colour = other.colour;
     webReportCard.action = other.action;
+    webReportCard.actionDetailSubjectTypeUUID = other.actionDetailSubjectTypeUUID;
+    webReportCard.actionDetailProgramUUID = other.actionDetailProgramUUID;
+    webReportCard.actionDetailEncounterTypeUUID = other.actionDetailEncounterTypeUUID;
+    webReportCard.actionDetailVisitType = other.actionDetailVisitType;
     return webReportCard;
   }
 
@@ -119,6 +127,10 @@ class WebReportCard extends ReportCard {
     if (!isNil(resource.standardReportCardType))
       webReportCard.standardReportCardType = WebStandardReportCardType.fromResource(resource.standardReportCardType);
     webReportCard.action = resource.action || null;
+    webReportCard.actionDetailSubjectTypeUUID = resource.actionDetailSubjectTypeUUID || null;
+    webReportCard.actionDetailProgramUUID = resource.actionDetailProgramUUID || null;
+    webReportCard.actionDetailEncounterTypeUUID = resource.actionDetailEncounterTypeUUID || null;
+    webReportCard.actionDetailVisitType = resource.actionDetailVisitType || null;
     return webReportCard;
   }
 
@@ -175,6 +187,14 @@ class WebReportCard extends ReportCard {
         });
       }
     }
+    if (this.action === ReportCard.actionTypes.DoVisit) {
+      if (isNil(this.actionDetailEncounterTypeUUID)) {
+        errors.push({ key: "MISSING_ENCOUNTER_TYPE", message: "Encounter type is required for Do visit action" });
+      }
+      if (isNil(this.actionDetailVisitType)) {
+        errors.push({ key: "MISSING_VISIT_TYPE", message: "Visit type is required for Do visit action" });
+      }
+    }
     return errors;
   }
 
@@ -212,6 +232,10 @@ class WebReportCard extends ReportCard {
       standardReportCardInputEncounterTypes: this.standardReportCardInputEncounterTypes.map((x) => x.uuid),
       standardReportCardInputRecentDuration: this.standardReportCardInputRecentDuration,
       action: this.action,
+      actionDetailSubjectTypeUUID: this.actionDetailSubjectTypeUUID,
+      actionDetailProgramUUID: this.actionDetailProgramUUID,
+      actionDetailEncounterTypeUUID: this.actionDetailEncounterTypeUUID,
+      actionDetailVisitType: this.actionDetailVisitType,
     };
   }
 }

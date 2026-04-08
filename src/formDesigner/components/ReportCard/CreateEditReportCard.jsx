@@ -47,6 +47,9 @@ export const CreateEditReportCard = () => {
   const [isStandardReportCard, setIsStandardReportCard] = useState(false);
   const [standardReportCardTypes, setStandardReportCardTypes] = useState([]);
   const [file, setFile] = useState();
+  const [actionSubjectTypes, setActionSubjectTypes] = useState([]);
+  const [actionPrograms, setActionPrograms] = useState([]);
+  const [actionEncounterTypes, setActionEncounterTypes] = useState([]);
 
   useEffect(() => {
     DashboardService.getStandardReportCardTypes().then(
@@ -89,6 +92,51 @@ export const CreateEditReportCard = () => {
       });
     }
   }, [isStandardReportCard]);
+
+  useEffect(() => {
+    if (card.action === ReportCard.actionTypes.DoVisit) {
+      http
+        .getAllData("subjectType", "/web/subjectType")
+        .then((response) => setActionSubjectTypes(response));
+    }
+  }, [card.action]);
+
+  useEffect(() => {
+    if (
+      card.action === ReportCard.actionTypes.DoVisit &&
+      card.actionDetailSubjectTypeUUID
+    ) {
+      http
+        .getData(
+          `/web/program/v2?subjectType=${card.actionDetailSubjectTypeUUID}`,
+        )
+        .then((response) => setActionPrograms(response));
+    } else {
+      setActionPrograms([]);
+    }
+  }, [card.action, card.actionDetailSubjectTypeUUID]);
+
+  useEffect(() => {
+    if (
+      card.action === ReportCard.actionTypes.DoVisit &&
+      card.actionDetailSubjectTypeUUID
+    ) {
+      const programParam = card.actionDetailProgramUUID
+        ? `&program=${card.actionDetailProgramUUID}`
+        : "";
+      http
+        .getData(
+          `/web/encounterType/v2?subjectType=${card.actionDetailSubjectTypeUUID}${programParam}`,
+        )
+        .then((response) => setActionEncounterTypes(response));
+    } else {
+      setActionEncounterTypes([]);
+    }
+  }, [
+    card.action,
+    card.actionDetailSubjectTypeUUID,
+    card.actionDetailProgramUUID,
+  ]);
 
   useEffect(() => {
     //to handle existing recent type cards without duration configured
@@ -296,6 +344,85 @@ export const CreateEditReportCard = () => {
             toolTipKey={"APP_DESIGNER_CARD_ACTION"}
           />
         )}
+        {!isStandardReportCard &&
+          card.action === ReportCard.actionTypes.DoVisit && (
+            <>
+              <p />
+              <AvniSelect
+                label="Subject Type*"
+                value={card.actionDetailSubjectTypeUUID}
+                style={{ width: "15.625rem" }}
+                required
+                onChange={(event) =>
+                  dispatch({
+                    type: ReportCardReducerKeys.actionDetailSubjectTypeUUID,
+                    payload: event.target.value,
+                  })
+                }
+                options={actionSubjectTypes.map((st) => ({
+                  value: st.uuid,
+                  label: st.name,
+                }))}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_SUBJECT_TYPE"}
+              />
+              <p />
+              <AvniSelect
+                label="Program"
+                value={card.actionDetailProgramUUID}
+                style={{ width: "15.625rem" }}
+                isClearable
+                onChange={(event) =>
+                  dispatch({
+                    type: ReportCardReducerKeys.actionDetailProgramUUID,
+                    payload: event.target.value,
+                  })
+                }
+                options={actionPrograms.map((p) => ({
+                  value: p.uuid,
+                  label: p.name,
+                }))}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_PROGRAM"}
+              />
+              <p />
+              <AvniSelect
+                label="Encounter Type*"
+                value={card.actionDetailEncounterTypeUUID}
+                style={{ width: "15.625rem" }}
+                required
+                onChange={(event) =>
+                  dispatch({
+                    type: ReportCardReducerKeys.actionDetailEncounterTypeUUID,
+                    payload: event.target.value,
+                  })
+                }
+                options={actionEncounterTypes.map((et) => ({
+                  value: et.uuid,
+                  label: et.name,
+                }))}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_ENCOUNTER_TYPE"}
+              />
+              {getErrorByKey(error, "MISSING_ENCOUNTER_TYPE")}
+              <p />
+              <AvniSelect
+                label="Visit Type*"
+                value={card.actionDetailVisitType}
+                style={{ width: "15.625rem" }}
+                required
+                onChange={(event) =>
+                  dispatch({
+                    type: ReportCardReducerKeys.actionDetailVisitType,
+                    payload: event.target.value,
+                  })
+                }
+                options={[
+                  { value: "Scheduled", label: "Scheduled" },
+                  { value: "Unplanned", label: "Unplanned" },
+                ]}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_VISIT_TYPE"}
+              />
+              {getErrorByKey(error, "MISSING_VISIT_TYPE")}
+            </>
+          )}
         <p />
         {isStandardReportCard && (
           <AvniSelect
