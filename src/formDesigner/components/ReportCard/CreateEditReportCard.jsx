@@ -415,8 +415,14 @@ export const CreateEditReportCard = () => {
                   })
                 }
                 options={[
-                  { value: "Scheduled", label: "Scheduled" },
-                  { value: "Unplanned", label: "Unplanned" },
+                  {
+                    value: ReportCard.visitTypes.Scheduled,
+                    label: "Scheduled",
+                  },
+                  {
+                    value: ReportCard.visitTypes.Unplanned,
+                    label: "Unplanned",
+                  },
                 ]}
                 toolTipKey={"APP_DESIGNER_CARD_ACTION_VISIT_TYPE"}
               />
