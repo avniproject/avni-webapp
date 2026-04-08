@@ -150,8 +150,7 @@ export const CreateEditReportCard = () => {
     dispatch({ type: type, payload: event.target.value });
   };
 
-  const standardReportCardTypeName =
-    get(card, "standardReportCardType.name") || "";
+  const standardReportCardTypeValue = card.standardReportCardType?.name || "";
 
   return (
     <Box
@@ -299,10 +298,8 @@ export const CreateEditReportCard = () => {
         <p />
         {isStandardReportCard && (
           <AvniSelect
-            label={`Select standard card type ${
-              isStandardReportCard ? "*" : ""
-            }`}
-            value={standardReportCardTypeName}
+            label={`Select standard card type ${isStandardReportCard ? "*" : ""}`}
+            value={standardReportCardTypeValue}
             onChange={(event) => {
               dispatch({
                 type: ReportCardReducerKeys.standardReportCardType,
