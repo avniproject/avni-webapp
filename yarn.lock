@@ -4855,15 +4855,7 @@ axe-core@^4.10.0:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.10.3.tgz#04145965ac7894faddbac30861e5d8f11bfd14fc"
   integrity sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg==
 
-axios@^0.18.0:
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.1.tgz#ff3f0de2e7b5d180e757ad98000f1081b87bcea3"
-  integrity sha512-0BfJq4NSfQXd+SkFdrvFbG7addhYSBA2mQwISr46pD6E5iqkWg02RAs8vyTT/j0RTnoYmeXauBuSv1qKwR179g==
-  dependencies:
-    follow-redirects "1.5.10"
-    is-buffer "^2.0.2"
-
-axios@^1.10.0:
+axios@1.11.0:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.11.0.tgz#c2ec219e35e414c025b2095e8b8280278478fdb6"
   integrity sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==
@@ -4871,6 +4863,14 @@ axios@^1.10.0:
     follow-redirects "^1.15.6"
     form-data "^4.0.4"
     proxy-from-env "^1.1.0"
+
+axios@^0.18.0:
+  version "0.18.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.1.tgz#ff3f0de2e7b5d180e757ad98000f1081b87bcea3"
+  integrity sha512-0BfJq4NSfQXd+SkFdrvFbG7addhYSBA2mQwISr46pD6E5iqkWg02RAs8vyTT/j0RTnoYmeXauBuSv1qKwR179g==
+  dependencies:
+    follow-redirects "1.5.10"
+    is-buffer "^2.0.2"
 
 axobject-query@^4.1.0:
   version "4.1.0"
@@ -11297,10 +11297,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.33.23:
-  version "1.33.23"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.33.23.tgz#19acf7cdb26e710948b88bae232c1479cf2a5303"
-  integrity sha512-VtHFatkQlVR71LPEmhIhzxoHSBcKfQqmqNU0dz16tQts/5Y2tCS54bBZ1vYUxaZSPnAMEDhFMHEOkC2L+ZWdQA==
+openchs-models@1.33.30:
+  version "1.33.30"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.33.30.tgz#08cb078b87ac81224a557cf4c4fa04e224320df4"
+  integrity sha512-1No1YrrNH5MmIlm3pFb1cLw4vLnLtRewE2QzWKOkOpu/W2bfjo2XMu8cpoCmkIu+BGPEeHs6lu2rjvg9/bm4wg==
   dependencies:
     uuid "^9.0.1"
 
