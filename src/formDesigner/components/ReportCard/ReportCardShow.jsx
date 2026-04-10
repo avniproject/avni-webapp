@@ -122,7 +122,14 @@ function RenderCard({ reportCard }) {
       {!reportCard.isStandardReportType() && reportCard.action && (
         <>
           <p />
-          <ShowLabelValue label="Action" value={reportCard.action} />
+          <ShowLabelValue
+            label="Action"
+            value={
+              reportCard.action === ReportCard.actionTypes.DoVisit
+                ? "Do visit"
+                : "View subject profile"
+            }
+          />
         </>
       )}
       {!reportCard.isStandardReportType() &&

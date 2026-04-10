@@ -1,4 +1,5 @@
 import WebReportCard from "../../../common/model/WebReportCard";
+import { ReportCard } from "openchs-models";
 
 export const ReportCardReducerKeys = {
   name: "name",
@@ -58,7 +59,7 @@ export const ReportCardReducer = (reportCard, action) => {
       break;
     case ReportCardReducerKeys.action:
       reportCard.action = action.payload;
-      if (action.payload !== "DoVisit") {
+      if (action.payload !== ReportCard.actionTypes.DoVisit) {
         reportCard.actionDetailSubjectTypeUUID = null;
         reportCard.actionDetailProgramUUID = null;
         reportCard.actionDetailEncounterTypeUUID = null;
