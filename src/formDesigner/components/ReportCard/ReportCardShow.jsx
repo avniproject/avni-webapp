@@ -8,10 +8,10 @@ import { useSelector } from "react-redux";
 import { Privilege, ReportCard } from "openchs-models";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import _ from "lodash";
-import { BooleanStatusInShow } from "../../../common/components/BooleanStatusInShow";
 import MediaService from "../../../adminApp/service/MediaService";
 import OperationalModules from "../../../common/model/OperationalModules";
 import WebReportCard from "../../../common/model/WebReportCard";
+import CustomCardConfigService from "../../../common/service/CustomCardConfigService";
 import { useParams } from "react-router-dom";
 
 function RenderCard({ reportCard }) {
@@ -19,6 +19,12 @@ function RenderCard({ reportCard }) {
 
   const [iconPreviewUrl, setIconPreviewUrl] = useState("");
   const [operationalModules, setOperationalModules] = useState({});
+  const [customCardConfigName, setCustomCardConfigName] = useState("");
+  const cardType = ReportCard.deriveCardType(reportCard);
+  const isStandard = cardType === ReportCard.cardTypes.standard;
+  const isNested = cardType === ReportCard.cardTypes.nested;
+  const isCustomData = cardType === ReportCard.cardTypes.customData;
+  const isFullyCustom = cardType === ReportCard.cardTypes.fullyCustom;
 
   useEffect(() => {
     if (
@@ -39,6 +45,16 @@ function RenderCard({ reportCard }) {
     }
   }, [reportCard.action]);
 
+  useEffect(() => {
+    const uuid = reportCard.customCardConfig?.uuid;
+    if (uuid) {
+      CustomCardConfigService.getAll().then((configs) => {
+        const match = configs.find((c) => c.uuid === uuid);
+        if (match) setCustomCardConfigName(match.name);
+      });
+    }
+  }, [reportCard.customCardConfig?.uuid]);
+
   return (
     <div>
       <ShowLabelValue label={"Name"} value={reportCard.name} />
@@ -53,33 +69,39 @@ function RenderCard({ reportCard }) {
         </Fragment>
       )}
       <p />
-      {!reportCard.isStandardReportType() && (
-        <Fragment>
-          <BooleanStatusInShow status={reportCard.nested} label="Is nested?" />
-        </Fragment>
-      )}
+      <ShowLabelValue
+        label="Card Type"
+        value={
+          isStandard
+            ? "Standard Report Card"
+            : isNested
+              ? "Nested Report Card"
+              : isCustomData
+                ? "Custom data card"
+                : "Fully custom card"
+        }
+      />
       <p />
-      {!reportCard.isStandardReportType() && reportCard.nested && (
+      {isNested && (
         <Fragment>
           <ShowLabelValue label="Number of Cards" value={reportCard.count} />
           <p />
         </Fragment>
       )}
-      <p />
       <div>
         <FormLabel style={{ fontSize: "13px" }}>Icon</FormLabel>
         <br />
         <img src={iconPreviewUrl} alt="Icon Preview" />
       </div>
       <p />
-      {reportCard.isStandardReportType() && (
+      {isStandard && (
         <ShowLabelValue
           label="Standard Report Card Type"
           value={reportCard.standardReportCardType.description}
         />
       )}
       <p />
-      {reportCard.isStandardReportType() &&
+      {isStandard &&
         reportCard.isRecentType() &&
         !_.isNil(reportCard.standardReportCardInputRecentDuration) && (
           <ShowLabelValue
@@ -91,7 +113,7 @@ function RenderCard({ reportCard }) {
             }`}
           />
         )}
-      {reportCard.isSubjectTypeFilterSupported() && (
+      {isStandard && reportCard.isSubjectTypeFilterSupported() && (
         <>
           <br />
           <ShowLabelValue
@@ -116,10 +138,23 @@ function RenderCard({ reportCard }) {
           />
         </>
       )}
-      {!reportCard.isStandardReportType() && (
+      {(isNested || isCustomData) && (
         <RuleDisplay fieldLabel="Query" ruleText={reportCard.query} />
       )}
-      {!reportCard.isStandardReportType() && reportCard.action && (
+      {isFullyCustom && reportCard.customCardConfig && (
+        <div>
+          <FormLabel style={{ fontSize: "13px" }}>Custom Card Config</FormLabel>
+          <br />
+          <a
+            href={`#/appDesigner/customCardConfig/${
+              reportCard.customCardConfig.uuid
+            }/show`}
+          >
+            {customCardConfigName || reportCard.customCardConfig.uuid}
+          </a>
+        </div>
+      )}
+      {(isNested || isCustomData) && reportCard.action && (
         <>
           <p />
           <ShowLabelValue
@@ -132,7 +167,7 @@ function RenderCard({ reportCard }) {
           />
         </>
       )}
-      {!reportCard.isStandardReportType() &&
+      {(isNested || isCustomData) &&
         reportCard.action === ReportCard.actionTypes.DoVisit &&
         OperationalModules.isLoaded(operationalModules) && (
           <>

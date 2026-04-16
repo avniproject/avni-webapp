@@ -78,6 +78,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailProgramUUID = null;
     webReportCard.actionDetailEncounterTypeUUID = null;
     webReportCard.actionDetailVisitType = null;
+    webReportCard.customCardConfig = null;
     return webReportCard;
   }
 
@@ -104,6 +105,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailProgramUUID = other.actionDetailProgramUUID;
     webReportCard.actionDetailEncounterTypeUUID = other.actionDetailEncounterTypeUUID;
     webReportCard.actionDetailVisitType = other.actionDetailVisitType;
+    webReportCard.customCardConfig = other.customCardConfig;
     return webReportCard;
   }
 
@@ -131,6 +133,9 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailProgramUUID = resource.actionDetailProgramUUID || null;
     webReportCard.actionDetailEncounterTypeUUID = resource.actionDetailEncounterTypeUUID || null;
     webReportCard.actionDetailVisitType = resource.actionDetailVisitType || null;
+    webReportCard.customCardConfig = resource.customCardConfigUUID
+      ? { uuid: resource.customCardConfigUUID, name: resource.customCardConfigName }
+      : null;
     return webReportCard;
   }
 
@@ -138,7 +143,11 @@ class WebReportCard extends ReportCard {
     return isNil(this.id);
   }
 
-  validateCard(isStandardReportCard) {
+  validateCard(cardType) {
+    const isStandardReportCard = cardType === ReportCard.cardTypes.standard;
+    const isNestedCard = cardType === ReportCard.cardTypes.nested;
+    const isCustomDataCard = cardType === ReportCard.cardTypes.customData;
+    const isFullyCustomCard = cardType === ReportCard.cardTypes.fullyCustom;
     const errors = [];
     if (isEmpty(this.name)) {
       errors.push({ key: "EMPTY_NAME", message: "Name cannot be empty" });
@@ -149,26 +158,13 @@ class WebReportCard extends ReportCard {
     if (isStandardReportCard && isEmpty(this.standardReportCardType)) {
       errors.push({ key: "EMPTY_TYPE", message: "Standard Report Type cannot be empty" });
     }
-    if (!isStandardReportCard && isEmpty(this.query)) {
+    if ((isCustomDataCard || isNestedCard) && isEmpty(this.query)) {
       errors.push({ key: "EMPTY_QUERY", message: "Query cannot be empty" });
     }
-    if (isStandardReportCard && this.nested) {
-      errors.push({
-        key: "DISALLOWED_NESTED",
-        message: "Standard Report Type Card cannot be marked as Nested",
-      });
+    if (isFullyCustomCard && isNil(this.customCardConfig)) {
+      errors.push({ key: "MISSING_CUSTOM_CARD_CONFIG", message: "Custom card config selection is required" });
     }
-    if (isStandardReportCard && this.count !== 1) {
-      errors.push({
-        key: "INVALID_NESTED_CARD_COUNT",
-        message: "Standard Report Type Card count should always be 1",
-      });
-    }
-    if (
-      !isStandardReportCard &&
-      this.nested &&
-      (this.count < WebReportCard.MinimumNumberOfNestedCards || this.count > WebReportCard.MaximumNumberOfNestedCards)
-    ) {
+    if (isNestedCard && (this.count < WebReportCard.MinimumNumberOfNestedCards || this.count > WebReportCard.MaximumNumberOfNestedCards)) {
       errors.push({
         key: "INVALID_NESTED_CARD_COUNT",
         message: "Nested Card count cannot be less than 1 or greater than 9",
@@ -236,6 +232,7 @@ class WebReportCard extends ReportCard {
       actionDetailProgramUUID: this.actionDetailProgramUUID,
       actionDetailEncounterTypeUUID: this.actionDetailEncounterTypeUUID,
       actionDetailVisitType: this.actionDetailVisitType,
+      customCardConfigUUID: this.customCardConfig ? this.customCardConfig.uuid : null,
     };
   }
 }

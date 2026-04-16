@@ -4,7 +4,13 @@ import { httpClient as http } from "../../../common/utils/httpClient";
 import { get, isNil, sortBy } from "lodash";
 import Box from "@mui/material/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
-import { Grid } from "@mui/material";
+import {
+  Grid,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormLabel,
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AvniTextField } from "../../../common/components/AvniTextField";
@@ -15,7 +21,6 @@ import { Navigate, useParams } from "react-router-dom";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import { sampleCardQuery } from "../../common/SampleRule";
 import { AvniSelect } from "../../../common/components/AvniSelect";
-import { AvniSwitch } from "../../../common/components/AvniSwitch";
 import { MediaFolder, uploadImage } from "../../../common/utils/S3Client";
 import {
   createServerError,
@@ -28,6 +33,7 @@ import { JSEditor } from "../../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
 import WebReportCard from "../../../common/model/WebReportCard";
 import DashboardService from "../../../common/service/DashboardService";
+import CustomCardConfigService from "../../../common/service/CustomCardConfigService";
 import FormMetaDataSelect from "../../../common/components/FormMetaDataSelect";
 import { ReportCard, StandardReportCardType } from "openchs-models";
 import { ValueTextUnitSelect } from "../../../common/components/ValueTextUnitSelect";
@@ -44,8 +50,9 @@ export const CreateEditReportCard = () => {
   const [error, setError] = useState([]);
   const [id, setId] = useState();
   const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
-  const [isStandardReportCard, setIsStandardReportCard] = useState(false);
+  const [cardType, setCardType] = useState(ReportCard.cardTypes.standard);
   const [standardReportCardTypes, setStandardReportCardTypes] = useState([]);
+  const [customCardConfigs, setCustomCardConfigs] = useState([]);
   const [file, setFile] = useState();
   const [actionSubjectTypes, setActionSubjectTypes] = useState([]);
   const [actionPrograms, setActionPrograms] = useState([]);
@@ -55,23 +62,21 @@ export const CreateEditReportCard = () => {
     DashboardService.getStandardReportCardTypes().then(
       setStandardReportCardTypes,
     );
+    CustomCardConfigService.getAll().then(setCustomCardConfigs);
     if (edit) {
       DashboardService.getReportCard(params.id).then((res) => {
         dispatch({ type: ReportCardReducerKeys.setData, payload: res });
+        setCardType(ReportCard.deriveCardType(res));
       });
     } else {
       dispatch({ type: ReportCardReducerKeys.color, payload: "#ff0000" });
     }
   }, []);
 
-  useEffect(() => {
-    if (edit) {
-      setIsStandardReportCard(!isNil(card.standardReportCardType));
-    }
-  }, [isNil(card.standardReportCardType)]);
-
-  useEffect(() => {
-    if (isStandardReportCard) {
+  const onCardTypeChange = (nextType) => {
+    setCardType(nextType);
+    const { standard, nested, customData, fullyCustom } = ReportCard.cardTypes;
+    if (nextType === standard) {
       dispatch({ type: ReportCardReducerKeys.query, payload: null });
       dispatch({
         type: ReportCardReducerKeys.nested,
@@ -81,17 +86,57 @@ export const CreateEditReportCard = () => {
         },
       });
       dispatch({ type: ReportCardReducerKeys.action, payload: null });
-    } else {
+      dispatch({ type: ReportCardReducerKeys.customCardConfig, payload: null });
+    } else if (nextType === nested) {
       dispatch({
         type: ReportCardReducerKeys.standardReportCardType,
         payload: null,
       });
       dispatch({
+        type: ReportCardReducerKeys.nested,
+        payload: {
+          nested: true,
+          count: WebReportCard.MinimumNumberOfNestedCards,
+        },
+      });
+      dispatch({
         type: ReportCardReducerKeys.action,
         payload: ReportCard.actionTypes.ViewSubjectProfile,
       });
+      dispatch({ type: ReportCardReducerKeys.customCardConfig, payload: null });
+    } else if (nextType === customData) {
+      dispatch({
+        type: ReportCardReducerKeys.standardReportCardType,
+        payload: null,
+      });
+      dispatch({
+        type: ReportCardReducerKeys.nested,
+        payload: {
+          nested: false,
+          count: WebReportCard.MinimumNumberOfNestedCards,
+        },
+      });
+      dispatch({
+        type: ReportCardReducerKeys.action,
+        payload: ReportCard.actionTypes.ViewSubjectProfile,
+      });
+      dispatch({ type: ReportCardReducerKeys.customCardConfig, payload: null });
+    } else if (nextType === fullyCustom) {
+      dispatch({
+        type: ReportCardReducerKeys.standardReportCardType,
+        payload: null,
+      });
+      dispatch({ type: ReportCardReducerKeys.query, payload: null });
+      dispatch({
+        type: ReportCardReducerKeys.nested,
+        payload: {
+          nested: false,
+          count: WebReportCard.MinimumNumberOfNestedCards,
+        },
+      });
+      dispatch({ type: ReportCardReducerKeys.action, payload: null });
     }
-  }, [isStandardReportCard]);
+  };
 
   useEffect(() => {
     if (card.action === ReportCard.actionTypes.DoVisit) {
@@ -152,11 +197,18 @@ export const CreateEditReportCard = () => {
   }, [card]);
 
   const validateRequest = () => {
-    const errors = card.validateCard(isStandardReportCard);
+    const errors = card.validateCard(cardType);
     console.log(errors);
     setError(errors);
     return errors.length === 0;
   };
+
+  const isStandard = cardType === ReportCard.cardTypes.standard;
+  const isNested = cardType === ReportCard.cardTypes.nested;
+  const isCustomData = cardType === ReportCard.cardTypes.customData;
+  const isFullyCustom = cardType === ReportCard.cardTypes.fullyCustom;
+  const showQueryEditor = isNested || isCustomData;
+  const showActionFields = isNested || isCustomData;
 
   const onSave = async () => {
     if (validateRequest()) {
@@ -275,41 +327,44 @@ export const CreateEditReportCard = () => {
           uniqueName={"concept"}
         />
         <p />
-        <AvniSwitch
-          checked={isStandardReportCard}
-          onChange={(event) => setIsStandardReportCard(!isStandardReportCard)}
-          name="Is Standard Report Card?"
-          toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
-        />
-        <p />
-        {getErrorByKey(error, "EMPTY_NESTED")}
-        {!isStandardReportCard && (
-          <AvniSwitch
-            checked={!isStandardReportCard && card.nested}
-            onChange={(event) =>
-              dispatch({
-                type: ReportCardReducerKeys.nested,
-                payload: {
-                  nested: !card.nested,
-                  count: WebReportCard.MinimumNumberOfNestedCards,
-                },
-              })
-            }
-            name="Is Nested Report Card?"
-            toolTipKey={"APP_DESIGNER_CARD_IS_NESTED"}
+        <FormLabel>Card Type</FormLabel>
+        <RadioGroup
+          row
+          value={cardType}
+          onChange={(event) => onCardTypeChange(event.target.value)}
+        >
+          <FormControlLabel
+            value={ReportCard.cardTypes.standard}
+            control={<Radio />}
+            label="Standard Report Card"
           />
-        )}
+          <FormControlLabel
+            value={ReportCard.cardTypes.nested}
+            control={<Radio />}
+            label="Nested Report Card"
+          />
+          <FormControlLabel
+            value={ReportCard.cardTypes.customData}
+            control={<Radio />}
+            label="Custom data card"
+          />
+          <FormControlLabel
+            value={ReportCard.cardTypes.fullyCustom}
+            control={<Radio />}
+            label="Fully custom card"
+          />
+        </RadioGroup>
         <p />
-        {!isStandardReportCard && card.nested && (
+        {isNested && (
           <AvniSelect
             label="Count of Nested Cards"
             value={card.count}
             style={{ width: "15.625rem" }}
-            required={!isStandardReportCard && card.nested}
+            required
             onChange={(event) =>
               dispatch({
                 type: ReportCardReducerKeys.nested,
-                payload: { nested: card.nested, count: event.target.value },
+                payload: { nested: true, count: event.target.value },
               })
             }
             options={Array.from(
@@ -323,7 +378,7 @@ export const CreateEditReportCard = () => {
           />
         )}
         <p />
-        {!isStandardReportCard && (
+        {showActionFields && (
           <AvniSelect
             label="Action"
             value={card.action}
@@ -344,97 +399,94 @@ export const CreateEditReportCard = () => {
             toolTipKey={"APP_DESIGNER_CARD_ACTION"}
           />
         )}
-        {!isStandardReportCard &&
-          card.action === ReportCard.actionTypes.DoVisit && (
-            <>
-              <p />
-              <AvniSelect
-                label="Subject Type*"
-                value={card.actionDetailSubjectTypeUUID}
-                style={{ width: "15.625rem" }}
-                required
-                onChange={(event) =>
-                  dispatch({
-                    type: ReportCardReducerKeys.actionDetailSubjectTypeUUID,
-                    payload: event.target.value,
-                  })
-                }
-                options={actionSubjectTypes.map((st) => ({
-                  value: st.uuid,
-                  label: st.name,
-                }))}
-                toolTipKey={"APP_DESIGNER_CARD_ACTION_SUBJECT_TYPE"}
-              />
-              <p />
-              <AvniSelect
-                label="Program"
-                value={card.actionDetailProgramUUID}
-                style={{ width: "15.625rem" }}
-                isClearable
-                onChange={(event) =>
-                  dispatch({
-                    type: ReportCardReducerKeys.actionDetailProgramUUID,
-                    payload: event.target.value,
-                  })
-                }
-                options={actionPrograms.map((p) => ({
-                  value: p.uuid,
-                  label: p.name,
-                }))}
-                toolTipKey={"APP_DESIGNER_CARD_ACTION_PROGRAM"}
-              />
-              <p />
-              <AvniSelect
-                label="Encounter Type*"
-                value={card.actionDetailEncounterTypeUUID}
-                style={{ width: "15.625rem" }}
-                required
-                onChange={(event) =>
-                  dispatch({
-                    type: ReportCardReducerKeys.actionDetailEncounterTypeUUID,
-                    payload: event.target.value,
-                  })
-                }
-                options={actionEncounterTypes.map((et) => ({
-                  value: et.uuid,
-                  label: et.name,
-                }))}
-                toolTipKey={"APP_DESIGNER_CARD_ACTION_ENCOUNTER_TYPE"}
-              />
-              {getErrorByKey(error, "MISSING_ENCOUNTER_TYPE")}
-              <p />
-              <AvniSelect
-                label="Visit Type*"
-                value={card.actionDetailVisitType}
-                style={{ width: "15.625rem" }}
-                required
-                onChange={(event) =>
-                  dispatch({
-                    type: ReportCardReducerKeys.actionDetailVisitType,
-                    payload: event.target.value,
-                  })
-                }
-                options={[
-                  {
-                    value: ReportCard.visitTypes.Scheduled,
-                    label: "Scheduled",
-                  },
-                  {
-                    value: ReportCard.visitTypes.Unplanned,
-                    label: "Unplanned",
-                  },
-                ]}
-                toolTipKey={"APP_DESIGNER_CARD_ACTION_VISIT_TYPE"}
-              />
-              {getErrorByKey(error, "MISSING_VISIT_TYPE")}
-            </>
-          )}
+        {showActionFields && card.action === ReportCard.actionTypes.DoVisit && (
+          <>
+            <p />
+            <AvniSelect
+              label="Subject Type*"
+              value={card.actionDetailSubjectTypeUUID}
+              style={{ width: "15.625rem" }}
+              required
+              onChange={(event) =>
+                dispatch({
+                  type: ReportCardReducerKeys.actionDetailSubjectTypeUUID,
+                  payload: event.target.value,
+                })
+              }
+              options={actionSubjectTypes.map((st) => ({
+                value: st.uuid,
+                label: st.name,
+              }))}
+              toolTipKey={"APP_DESIGNER_CARD_ACTION_SUBJECT_TYPE"}
+            />
+            <p />
+            <AvniSelect
+              label="Program"
+              value={card.actionDetailProgramUUID}
+              style={{ width: "15.625rem" }}
+              isClearable
+              onChange={(event) =>
+                dispatch({
+                  type: ReportCardReducerKeys.actionDetailProgramUUID,
+                  payload: event.target.value,
+                })
+              }
+              options={actionPrograms.map((p) => ({
+                value: p.uuid,
+                label: p.name,
+              }))}
+              toolTipKey={"APP_DESIGNER_CARD_ACTION_PROGRAM"}
+            />
+            <p />
+            <AvniSelect
+              label="Encounter Type*"
+              value={card.actionDetailEncounterTypeUUID}
+              style={{ width: "15.625rem" }}
+              required
+              onChange={(event) =>
+                dispatch({
+                  type: ReportCardReducerKeys.actionDetailEncounterTypeUUID,
+                  payload: event.target.value,
+                })
+              }
+              options={actionEncounterTypes.map((et) => ({
+                value: et.uuid,
+                label: et.name,
+              }))}
+              toolTipKey={"APP_DESIGNER_CARD_ACTION_ENCOUNTER_TYPE"}
+            />
+            {getErrorByKey(error, "MISSING_ENCOUNTER_TYPE")}
+            <p />
+            <AvniSelect
+              label="Visit Type*"
+              value={card.actionDetailVisitType}
+              style={{ width: "15.625rem" }}
+              required
+              onChange={(event) =>
+                dispatch({
+                  type: ReportCardReducerKeys.actionDetailVisitType,
+                  payload: event.target.value,
+                })
+              }
+              options={[
+                {
+                  value: ReportCard.visitTypes.Scheduled,
+                  label: "Scheduled",
+                },
+                {
+                  value: ReportCard.visitTypes.Unplanned,
+                  label: "Unplanned",
+                },
+              ]}
+              toolTipKey={"APP_DESIGNER_CARD_ACTION_VISIT_TYPE"}
+            />
+            {getErrorByKey(error, "MISSING_VISIT_TYPE")}
+          </>
+        )}
         <p />
-        {isStandardReportCard && (
+        {isStandard && (
           <AvniSelect
-            label={`Select standard card type ${
-              isStandardReportCard ? "*" : ""
-            }`}
+            label={`Select standard card type`}
             value={standardReportCardTypeName}
             onChange={(event) => {
               dispatch({
@@ -461,7 +513,7 @@ export const CreateEditReportCard = () => {
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
           />
         )}
-        {isStandardReportCard && card.isRecentType() && (
+        {isStandard && card.isRecentType() && (
           <ValueTextUnitSelect
             label={`${card.standardReportCardType.description} in the last*`}
             value={get(card, "standardReportCardInputRecentDuration.value")}
@@ -511,7 +563,7 @@ export const CreateEditReportCard = () => {
             />
           </>
         )}
-        {!isStandardReportCard && (
+        {showQueryEditor && (
           <Fragment>
             <AvniFormLabel
               label={"Query"}
@@ -525,11 +577,33 @@ export const CreateEditReportCard = () => {
             />
           </Fragment>
         )}
+        {isFullyCustom && (
+          <Fragment>
+            <AvniSelect
+              label="Custom Card Config *"
+              value={card.customCardConfig?.uuid || ""}
+              style={{ width: "25rem" }}
+              required
+              onChange={(event) =>
+                dispatch({
+                  type: ReportCardReducerKeys.customCardConfig,
+                  payload: customCardConfigs.find(
+                    (x) => x.uuid === event.target.value,
+                  ),
+                })
+              }
+              options={customCardConfigs.map((c) => ({
+                value: c.uuid,
+                label: c.name,
+              }))}
+              toolTipKey={"APP_DESIGNER_CARD_CUSTOM_CARD_CONFIG"}
+            />
+            {getErrorByKey(error, "MISSING_CUSTOM_CARD_CONFIG")}
+          </Fragment>
+        )}
         {getErrorByKey(error, "EMPTY_TYPE")}
         <p />
         {getErrorByKey(error, "EMPTY_QUERY")}
-        <p />
-        {getErrorByKey(error, "DISALLOWED_NESTED")}
         <p />
         {getErrorByKey(error, "INVALID_NESTED_CARD_COUNT")}
         <br />

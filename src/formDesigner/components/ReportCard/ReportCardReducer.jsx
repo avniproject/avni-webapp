@@ -16,6 +16,7 @@ export const ReportCardReducerKeys = {
   actionDetailProgramUUID: "actionDetailProgramUUID",
   actionDetailEncounterTypeUUID: "actionDetailEncounterTypeUUID",
   actionDetailVisitType: "actionDetailVisitType",
+  customCardConfig: "customCardConfig",
 };
 
 export const ReportCardReducer = (reportCard, action) => {
@@ -80,6 +81,9 @@ export const ReportCardReducer = (reportCard, action) => {
       break;
     case ReportCardReducerKeys.actionDetailVisitType:
       reportCard.actionDetailVisitType = action.payload;
+      break;
+    case ReportCardReducerKeys.customCardConfig:
+      reportCard.customCardConfig = action.payload;
       break;
     default:
       break;
