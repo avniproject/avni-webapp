@@ -85,5 +85,6 @@ export const inlineConceptDataType = _.sortBy([
   "Audio",
   "File",
   "QuestionGroup",
-  "Encounter"
+  "Encounter",
+  "Signature"
 ]);
