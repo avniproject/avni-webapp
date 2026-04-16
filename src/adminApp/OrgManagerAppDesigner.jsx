@@ -41,9 +41,6 @@ import ReportingViews from "../formDesigner/components/ReportingViews/ReportingV
 import ReportCardList from "../formDesigner/components/ReportCard/ReportCardList";
 import ReportCardShow from "../formDesigner/components/ReportCard/ReportCardShow";
 import { CreateEditReportCard } from "../formDesigner/components/ReportCard/CreateEditReportCard";
-import CustomCardConfigList from "../formDesigner/components/CustomCardConfig/CustomCardConfigList";
-import CustomCardConfigShow from "../formDesigner/components/CustomCardConfig/CustomCardConfigShow";
-import { CreateEditCustomCardConfig } from "../formDesigner/components/CustomCardConfig/CreateEditCustomCardConfig";
 import DashboardList from "../formDesigner/components/Dashboard/DashboardList";
 import DashboardShow from "../formDesigner/components/Dashboard/DashboardShow";
 import CreateEditDashboard from "../formDesigner/components/Dashboard/CreateEditDashboard";
@@ -210,14 +207,6 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         create={CreateEditReportCard}
         edit={CreateEditReportCard}
         show={ReportCardShow}
-      />
-      <Resource
-        name="customCardConfig"
-        options={{ label: "Custom Card Config" }}
-        list={CustomCardConfigList}
-        create={CreateEditCustomCardConfig}
-        edit={CreateEditCustomCardConfig}
-        show={CustomCardConfigShow}
       />
       <Resource
         name="dashboard"

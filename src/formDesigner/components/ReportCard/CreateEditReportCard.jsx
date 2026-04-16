@@ -52,8 +52,11 @@ export const CreateEditReportCard = () => {
   const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
   const [cardType, setCardType] = useState(ReportCard.cardTypes.standard);
   const [standardReportCardTypes, setStandardReportCardTypes] = useState([]);
-  const [customCardConfigs, setCustomCardConfigs] = useState([]);
   const [file, setFile] = useState();
+  const [htmlFile, setHtmlFile] = useState();
+  const [customCardConfigUuid, setCustomCardConfigUuid] = useState(null);
+  const [customCardDataRule, setCustomCardDataRule] = useState("");
+  const [customCardHtmlFileS3Key, setCustomCardHtmlFileS3Key] = useState("");
   const [actionSubjectTypes, setActionSubjectTypes] = useState([]);
   const [actionPrograms, setActionPrograms] = useState([]);
   const [actionEncounterTypes, setActionEncounterTypes] = useState([]);
@@ -62,11 +65,19 @@ export const CreateEditReportCard = () => {
     DashboardService.getStandardReportCardTypes().then(
       setStandardReportCardTypes,
     );
-    CustomCardConfigService.getAll().then(setCustomCardConfigs);
     if (edit) {
       DashboardService.getReportCard(params.id).then((res) => {
         dispatch({ type: ReportCardReducerKeys.setData, payload: res });
         setCardType(ReportCard.deriveCardType(res));
+        if (res.customCardConfig?.uuid) {
+          setCustomCardConfigUuid(res.customCardConfig.uuid);
+          CustomCardConfigService.getByUuid(res.customCardConfig.uuid).then(
+            (config) => {
+              setCustomCardDataRule(config.dataRule || "");
+              setCustomCardHtmlFileS3Key(config.htmlFileS3Key || "");
+            },
+          );
+        }
       });
     } else {
       dispatch({ type: ReportCardReducerKeys.color, payload: "#ff0000" });
@@ -198,7 +209,12 @@ export const CreateEditReportCard = () => {
 
   const validateRequest = () => {
     const errors = card.validateCard(cardType);
-    console.log(errors);
+    if (isFullyCustom && !htmlFile && !customCardHtmlFileS3Key) {
+      errors.push({
+        key: "MISSING_HTML_FILE",
+        message: "HTML file is required",
+      });
+    }
     setError(errors);
     return errors.length === 0;
   };
@@ -211,27 +227,41 @@ export const CreateEditReportCard = () => {
   const showActionFields = isNested || isCustomData;
 
   const onSave = async () => {
-    if (validateRequest()) {
-      const [s3FileKey, error] = await uploadImage(
+    if (!validateRequest()) return;
+    try {
+      const [s3FileKey, iconError] = await uploadImage(
         card.iconFileS3Key,
         file,
         MediaFolder.ICONS,
       );
-      if (error) {
-        alert(error);
+      if (iconError) {
+        alert(iconError);
         return;
       }
       card.iconFileS3Key = s3FileKey;
 
-      DashboardService.saveReportCard(card)
-        .then((res) => {
-          if (res.status === 200) {
-            setId(res.data.id);
-          }
-        })
-        .catch((error) => {
-          setError([createServerError(error, "error while saving card")]);
-        });
+      if (isFullyCustom) {
+        const configPayload = {
+          uuid: customCardConfigUuid,
+          name: card.name,
+          dataRule: customCardDataRule || null,
+          htmlFileS3Key: customCardHtmlFileS3Key || null,
+        };
+        const configRes = await CustomCardConfigService.save(configPayload);
+        const savedConfig = configRes.data;
+        if (htmlFile) {
+          await CustomCardConfigService.uploadHtml(savedConfig.uuid, htmlFile);
+        }
+        setCustomCardConfigUuid(savedConfig.uuid);
+        card.customCardConfig = { uuid: savedConfig.uuid };
+      }
+
+      const res = await DashboardService.saveReportCard(card);
+      if (res.status === 200) {
+        setId(res.data.id);
+      }
+    } catch (e) {
+      setError([createServerError(e, "error while saving card")]);
     }
   };
 
@@ -579,26 +609,68 @@ export const CreateEditReportCard = () => {
         )}
         {isFullyCustom && (
           <Fragment>
-            <AvniSelect
-              label="Custom Card Config *"
-              value={card.customCardConfig?.uuid || ""}
-              style={{ width: "25rem" }}
-              required
-              onChange={(event) =>
-                dispatch({
-                  type: ReportCardReducerKeys.customCardConfig,
-                  payload: customCardConfigs.find(
-                    (x) => x.uuid === event.target.value,
-                  ),
-                })
-              }
-              options={customCardConfigs.map((c) => ({
-                value: c.uuid,
-                label: c.name,
-              }))}
-              toolTipKey={"APP_DESIGNER_CARD_CUSTOM_CARD_CONFIG"}
+            <AvniFormLabel
+              label="HTML File *"
+              toolTipKey={"APP_DESIGNER_CARD_HTML_FILE"}
             />
-            {getErrorByKey(error, "MISSING_CUSTOM_CARD_CONFIG")}
+            {customCardHtmlFileS3Key && !htmlFile ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    http.downloadFile(
+                      `/customCardConfigFile/${customCardHtmlFileS3Key}`,
+                      customCardHtmlFileS3Key,
+                    );
+                  }}
+                >
+                  {customCardHtmlFileS3Key}
+                </a>
+                <Button size="small" variant="outlined" component="label">
+                  Replace
+                  <input
+                    type="file"
+                    accept=".html,text/html"
+                    style={{ display: "none" }}
+                    onChange={(e) => setHtmlFile(e.target.files[0])}
+                  />
+                </Button>
+              </div>
+            ) : htmlFile ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span>{htmlFile.name}</span>
+                <Button size="small" variant="outlined" component="label">
+                  Change
+                  <input
+                    type="file"
+                    accept=".html,text/html"
+                    style={{ display: "none" }}
+                    onChange={(e) => setHtmlFile(e.target.files[0])}
+                  />
+                </Button>
+              </div>
+            ) : (
+              <Button size="small" variant="outlined" component="label">
+                Upload HTML
+                <input
+                  type="file"
+                  accept=".html,text/html"
+                  hidden
+                  onChange={(e) => setHtmlFile(e.target.files[0])}
+                />
+              </Button>
+            )}
+            {getErrorByKey(error, "MISSING_HTML_FILE")}
+            <p />
+            <AvniFormLabel
+              label={"Data Rule"}
+              toolTipKey={"APP_DESIGNER_CARD_DATA_RULE"}
+            />
+            <JSEditor
+              value={customCardDataRule}
+              onValueChange={setCustomCardDataRule}
+            />
           </Fragment>
         )}
         {getErrorByKey(error, "EMPTY_TYPE")}

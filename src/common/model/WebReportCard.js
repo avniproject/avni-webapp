@@ -161,9 +161,6 @@ class WebReportCard extends ReportCard {
     if ((isCustomDataCard || isNestedCard) && isEmpty(this.query)) {
       errors.push({ key: "EMPTY_QUERY", message: "Query cannot be empty" });
     }
-    if (isFullyCustomCard && isNil(this.customCardConfig)) {
-      errors.push({ key: "MISSING_CUSTOM_CARD_CONFIG", message: "Custom card config selection is required" });
-    }
     if (isNestedCard && (this.count < WebReportCard.MinimumNumberOfNestedCards || this.count > WebReportCard.MaximumNumberOfNestedCards)) {
       errors.push({
         key: "INVALID_NESTED_CARD_COUNT",

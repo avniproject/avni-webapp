@@ -19,7 +19,7 @@ function RenderCard({ reportCard }) {
 
   const [iconPreviewUrl, setIconPreviewUrl] = useState("");
   const [operationalModules, setOperationalModules] = useState({});
-  const [customCardConfigName, setCustomCardConfigName] = useState("");
+  const [customCardConfigDetails, setCustomCardConfigDetails] = useState(null);
   const cardType = ReportCard.deriveCardType(reportCard);
   const isStandard = cardType === ReportCard.cardTypes.standard;
   const isNested = cardType === ReportCard.cardTypes.nested;
@@ -48,10 +48,7 @@ function RenderCard({ reportCard }) {
   useEffect(() => {
     const uuid = reportCard.customCardConfig?.uuid;
     if (uuid) {
-      CustomCardConfigService.getAll().then((configs) => {
-        const match = configs.find((c) => c.uuid === uuid);
-        if (match) setCustomCardConfigName(match.name);
-      });
+      CustomCardConfigService.getByUuid(uuid).then(setCustomCardConfigDetails);
     }
   }, [reportCard.customCardConfig?.uuid]);
 
@@ -141,18 +138,32 @@ function RenderCard({ reportCard }) {
       {(isNested || isCustomData) && (
         <RuleDisplay fieldLabel="Query" ruleText={reportCard.query} />
       )}
-      {isFullyCustom && reportCard.customCardConfig && (
-        <div>
-          <FormLabel style={{ fontSize: "13px" }}>Custom Card Config</FormLabel>
+      {isFullyCustom && customCardConfigDetails && (
+        <Fragment>
+          <FormLabel style={{ fontSize: "13px" }}>HTML File</FormLabel>
           <br />
-          <a
-            href={`#/appDesigner/customCardConfig/${
-              reportCard.customCardConfig.uuid
-            }/show`}
-          >
-            {customCardConfigName || reportCard.customCardConfig.uuid}
-          </a>
-        </div>
+          {customCardConfigDetails.htmlFileS3Key ? (
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                http.downloadFile(
+                  `/customCardConfigFile/${customCardConfigDetails.htmlFileS3Key}`,
+                  customCardConfigDetails.htmlFileS3Key,
+                );
+              }}
+            >
+              {customCardConfigDetails.htmlFileS3Key}
+            </a>
+          ) : (
+            "-"
+          )}
+          <p />
+          <RuleDisplay
+            fieldLabel="Data Rule"
+            ruleText={customCardConfigDetails.dataRule}
+          />
+        </Fragment>
       )}
       {(isNested || isCustomData) && reportCard.action && (
         <>
