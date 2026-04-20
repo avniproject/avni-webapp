@@ -376,12 +376,12 @@ export const CreateEditReportCard = () => {
           <FormControlLabel
             value={ReportCard.cardTypes.customData}
             control={<Radio />}
-            label="Custom data card"
+            label="Custom Data Card"
           />
           <FormControlLabel
             value={ReportCard.cardTypes.fullyCustom}
             control={<Radio />}
-            label="Fully custom card"
+            label="Custom Design Card"
           />
         </RadioGroup>
         <p />
