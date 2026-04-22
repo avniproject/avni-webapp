@@ -68,7 +68,7 @@ class WebReportCard extends ReportCard {
 
   static createNewReportCard() {
     const webReportCard = new WebReportCard();
-    populateRecordCardFields(webReportCard, "", "", "", [], false, null, WebReportCard.MinimumNumberOfNestedCards, [], [], [], {
+    populateRecordCardFields(webReportCard, "", "", "", null, false, null, WebReportCard.MinimumNumberOfNestedCards, [], [], [], {
       value: "1",
       unit: "days",
     });
