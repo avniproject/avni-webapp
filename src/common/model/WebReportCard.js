@@ -229,7 +229,14 @@ class WebReportCard extends ReportCard {
       actionDetailProgramUUID: this.actionDetailProgramUUID,
       actionDetailEncounterTypeUUID: this.actionDetailEncounterTypeUUID,
       actionDetailVisitType: this.actionDetailVisitType,
-      customCardConfigUUID: this.customCardConfig ? this.customCardConfig.uuid : null,
+      customCardConfig: this.customCardConfig
+        ? {
+            uuid: this.customCardConfig.uuid,
+            name: this.customCardConfig.name,
+            dataRule: this.customCardConfig.dataRule,
+            htmlFileS3Key: this.customCardConfig.htmlFileS3Key,
+          }
+        : null,
     };
   }
 }

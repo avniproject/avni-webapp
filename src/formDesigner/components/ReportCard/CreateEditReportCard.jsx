@@ -1,4 +1,4 @@
-import { useState, useReducer, useEffect, Fragment } from "react";
+import { useState, useReducer, useEffect, useRef, Fragment } from "react";
 import { ReportCardReducer, ReportCardReducerKeys } from "./ReportCardReducer";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import { get, isNil, sortBy } from "lodash";
@@ -54,7 +54,7 @@ export const CreateEditReportCard = () => {
   const [standardReportCardTypes, setStandardReportCardTypes] = useState([]);
   const [file, setFile] = useState();
   const [htmlFile, setHtmlFile] = useState();
-  const [customCardConfigUuid, setCustomCardConfigUuid] = useState(null);
+  const customCardConfigUuidRef = useRef(null);
   const [customCardDataRule, setCustomCardDataRule] = useState("");
   const [customCardHtmlFileS3Key, setCustomCardHtmlFileS3Key] = useState("");
   const [actionSubjectTypes, setActionSubjectTypes] = useState([]);
@@ -70,7 +70,7 @@ export const CreateEditReportCard = () => {
         dispatch({ type: ReportCardReducerKeys.setData, payload: res });
         setCardType(ReportCard.deriveCardType(res));
         if (res.customCardConfig?.uuid) {
-          setCustomCardConfigUuid(res.customCardConfig.uuid);
+          customCardConfigUuidRef.current = res.customCardConfig.uuid;
           CustomCardConfigService.getByUuid(res.customCardConfig.uuid).then(
             (config) => {
               setCustomCardDataRule(config.dataRule || "");
@@ -207,6 +207,13 @@ export const CreateEditReportCard = () => {
     }
   }, [card]);
 
+  const isStandard = cardType === ReportCard.cardTypes.standard;
+  const isNested = cardType === ReportCard.cardTypes.nested;
+  const isCustomData = cardType === ReportCard.cardTypes.customData;
+  const isFullyCustom = cardType === ReportCard.cardTypes.fullyCustom;
+  const showQueryEditor = isNested || isCustomData;
+  const showActionFields = isNested || isCustomData;
+
   const validateRequest = () => {
     const errors = card.validateCard(cardType);
     if (isFullyCustom && !htmlFile && !customCardHtmlFileS3Key) {
@@ -218,13 +225,6 @@ export const CreateEditReportCard = () => {
     setError(errors);
     return errors.length === 0;
   };
-
-  const isStandard = cardType === ReportCard.cardTypes.standard;
-  const isNested = cardType === ReportCard.cardTypes.nested;
-  const isCustomData = cardType === ReportCard.cardTypes.customData;
-  const isFullyCustom = cardType === ReportCard.cardTypes.fullyCustom;
-  const showQueryEditor = isNested || isCustomData;
-  const showActionFields = isNested || isCustomData;
 
   const onSave = async () => {
     if (!validateRequest()) return;
@@ -241,23 +241,35 @@ export const CreateEditReportCard = () => {
       card.iconFileS3Key = s3FileKey;
 
       if (isFullyCustom) {
-        const configPayload = {
-          uuid: customCardConfigUuid,
+        let htmlFileS3Key = customCardHtmlFileS3Key;
+        if (htmlFile) {
+          if (!customCardConfigUuidRef.current) {
+            const configRes = await CustomCardConfigService.save({
+              name: card.name,
+              dataRule: customCardDataRule || null,
+            });
+            customCardConfigUuidRef.current = configRes.data.uuid;
+          }
+          const uploadRes = await CustomCardConfigService.uploadHtml(
+            customCardConfigUuidRef.current,
+            htmlFile,
+          );
+          htmlFileS3Key = uploadRes?.data || htmlFileS3Key;
+          setCustomCardHtmlFileS3Key(htmlFileS3Key);
+        }
+        card.customCardConfig = {
+          uuid: customCardConfigUuidRef.current,
           name: card.name,
           dataRule: customCardDataRule || null,
-          htmlFileS3Key: customCardHtmlFileS3Key || null,
+          htmlFileS3Key: htmlFileS3Key || null,
         };
-        const configRes = await CustomCardConfigService.save(configPayload);
-        const savedConfig = configRes.data;
-        if (htmlFile) {
-          await CustomCardConfigService.uploadHtml(savedConfig.uuid, htmlFile);
-        }
-        setCustomCardConfigUuid(savedConfig.uuid);
-        card.customCardConfig = { uuid: savedConfig.uuid };
       }
 
       const res = await DashboardService.saveReportCard(card);
       if (res.status === 200) {
+        if (isFullyCustom && res.data?.customCardConfigUUID) {
+          customCardConfigUuidRef.current = res.data.customCardConfigUUID;
+        }
         setId(res.data.id);
       }
     } catch (e) {
