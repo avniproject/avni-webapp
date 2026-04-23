@@ -213,6 +213,16 @@ function RenderCard({ reportCard }) {
               label="Visit Type"
               value={reportCard.actionDetailVisitType}
             />
+            <p />
+            <ShowLabelValue
+              label="On Action Completion"
+              value={
+                reportCard.onActionCompletion ===
+                ReportCard.onActionCompletionTypes.goToSubjectProfile
+                  ? "Subject Profile Page"
+                  : "Source Page"
+              }
+            />
           </>
         )}
     </div>

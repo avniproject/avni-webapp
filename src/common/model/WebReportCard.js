@@ -78,6 +78,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailProgramUUID = null;
     webReportCard.actionDetailEncounterTypeUUID = null;
     webReportCard.actionDetailVisitType = null;
+    webReportCard.onActionCompletion = null;
     webReportCard.customCardConfig = null;
     return webReportCard;
   }
@@ -105,6 +106,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailProgramUUID = other.actionDetailProgramUUID;
     webReportCard.actionDetailEncounterTypeUUID = other.actionDetailEncounterTypeUUID;
     webReportCard.actionDetailVisitType = other.actionDetailVisitType;
+    webReportCard.onActionCompletion = other.onActionCompletion;
     webReportCard.customCardConfig = other.customCardConfig;
     return webReportCard;
   }
@@ -133,6 +135,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailProgramUUID = resource.actionDetailProgramUUID || null;
     webReportCard.actionDetailEncounterTypeUUID = resource.actionDetailEncounterTypeUUID || null;
     webReportCard.actionDetailVisitType = resource.actionDetailVisitType || null;
+    webReportCard.onActionCompletion = resource.onActionCompletion || ReportCard.onActionCompletionTypes.goToSubjectProfile;
     webReportCard.customCardConfig = resource.customCardConfigUUID
       ? { uuid: resource.customCardConfigUUID, name: resource.customCardConfigName }
       : null;
@@ -187,6 +190,9 @@ class WebReportCard extends ReportCard {
       if (isNil(this.actionDetailVisitType)) {
         errors.push({ key: "MISSING_VISIT_TYPE", message: "Visit type is required for Do visit action" });
       }
+      if (isNil(this.onActionCompletion)) {
+        errors.push({ key: "MISSING_ON_ACTION_COMPLETION", message: "On action completion is required for Do visit action" });
+      }
     }
     return errors;
   }
@@ -229,6 +235,7 @@ class WebReportCard extends ReportCard {
       actionDetailProgramUUID: this.actionDetailProgramUUID,
       actionDetailEncounterTypeUUID: this.actionDetailEncounterTypeUUID,
       actionDetailVisitType: this.actionDetailVisitType,
+      onActionCompletion: this.onActionCompletion,
       customCardConfig: this.customCardConfig
         ? {
             uuid: this.customCardConfig.uuid,

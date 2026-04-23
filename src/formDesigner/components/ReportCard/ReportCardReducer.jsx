@@ -16,6 +16,7 @@ export const ReportCardReducerKeys = {
   actionDetailProgramUUID: "actionDetailProgramUUID",
   actionDetailEncounterTypeUUID: "actionDetailEncounterTypeUUID",
   actionDetailVisitType: "actionDetailVisitType",
+  onActionCompletion: "onActionCompletion",
   customCardConfig: "customCardConfig",
 };
 
@@ -65,6 +66,10 @@ export const ReportCardReducer = (reportCard, action) => {
         reportCard.actionDetailProgramUUID = null;
         reportCard.actionDetailEncounterTypeUUID = null;
         reportCard.actionDetailVisitType = null;
+        reportCard.onActionCompletion = null;
+      } else {
+        reportCard.onActionCompletion =
+          ReportCard.onActionCompletionTypes.goToSubjectProfile;
       }
       break;
     case ReportCardReducerKeys.actionDetailSubjectTypeUUID:
@@ -81,6 +86,9 @@ export const ReportCardReducer = (reportCard, action) => {
       break;
     case ReportCardReducerKeys.actionDetailVisitType:
       reportCard.actionDetailVisitType = action.payload;
+      break;
+    case ReportCardReducerKeys.onActionCompletion:
+      reportCard.onActionCompletion = action.payload;
       break;
     case ReportCardReducerKeys.customCardConfig:
       reportCard.customCardConfig = action.payload;

@@ -523,6 +523,31 @@ export const CreateEditReportCard = () => {
               toolTipKey={"APP_DESIGNER_CARD_ACTION_VISIT_TYPE"}
             />
             {getErrorByKey(error, "MISSING_VISIT_TYPE")}
+            <p />
+            <AvniSelect
+              label="On Action Completion*"
+              value={card.onActionCompletion}
+              style={{ width: "15.625rem" }}
+              required
+              onChange={(event) =>
+                dispatch({
+                  type: ReportCardReducerKeys.onActionCompletion,
+                  payload: event.target.value,
+                })
+              }
+              options={[
+                {
+                  value: ReportCard.onActionCompletionTypes.goToSubjectProfile,
+                  label: "Subject Profile Page",
+                },
+                {
+                  value: ReportCard.onActionCompletionTypes.goToSourceScreen,
+                  label: "Source Page",
+                },
+              ]}
+              toolTipKey={"APP_DESIGNER_CARD_ACTION_ON_ACTION_COMPLETION"}
+            />
+            {getErrorByKey(error, "MISSING_ON_ACTION_COMPLETION")}
           </>
         )}
         <p />
