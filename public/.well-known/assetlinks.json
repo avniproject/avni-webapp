@@ -1,0 +1,21 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.openchsclient",
+      "sha256_cert_fingerprints": ["E4:54:76:03:E7:7B:B3:24:8A:4A:EA:86:5F:65:54:DA:62:EB:67:DB:59:0F:9A:85:B5:E8:75:45:BC:53:14:34"]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.openchsclient.gramin",
+      "sha256_cert_fingerprints": [
+        "7C:36:F9:5F:2A:F7:F9:89:CD:63:29:81:40:27:79:01:31:FD:D4:D3:8C:02:82:F9:2A:A2:03:55:F8:03:33:31",
+        "45:3C:B1:35:3B:E7:78:34:CB:83:42:0E:AD:57:46:4F:23:4F:B0:E6:24:B9:3F:42:5F:22:C8:04:21:7E:79:12"
+      ]
+    }
+  }
+]
