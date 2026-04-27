@@ -38,6 +38,7 @@ const generatePrivilegeDependenciesAndCheckedState = function (
       case PrivilegeType.RemoveMember:
       case PrivilegeType.ApproveSubject:
       case PrivilegeType.RejectSubject:
+      case PrivilegeType.ShareSubject:
         dependencies.set(groupPrivilege.uuid, {
           dependencies: GroupPrivilegesModel.getSubjectTypeDependencies(
             groupPrivilegeList,
@@ -50,6 +51,7 @@ const generatePrivilegeDependenciesAndCheckedState = function (
       case PrivilegeType.ExitEnrolment:
       case PrivilegeType.ApproveEnrolment:
       case PrivilegeType.RejectEnrolment:
+      case PrivilegeType.ShareEnrolment:
         dependencies.set(groupPrivilege.uuid, {
           dependencies: GroupPrivilegesModel.getProgramDependencies(
             groupPrivilegeList,
@@ -64,6 +66,7 @@ const generatePrivilegeDependenciesAndCheckedState = function (
       case PrivilegeType.VoidVisit:
       case PrivilegeType.ApproveEncounter:
       case PrivilegeType.RejectEncounter:
+      case PrivilegeType.ShareEncounter:
         dependencies.set(groupPrivilege.uuid, {
           dependencies: GroupPrivilegesModel.getEncounterTypeDependencies(
             groupPrivilegeList,
