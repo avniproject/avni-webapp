@@ -4,9 +4,12 @@ class GroupModel {
   static Everyone = "Everyone";
   static Administrators = "Administrators";
   static MetabaseUsers = "Metabase Users";
+  // Reserved system group whose membership controls SQLite backend activation
+  // on the avni-client app. Managed via the standard UserGroups admin UI.
+  static SqliteMigration = "SQLite Migration";
 
   static nonRemovableGroup(name) {
-    return [this.Everyone, this.Administrators, this.MetabaseUsers].includes(name);
+    return [this.Everyone, this.Administrators, this.MetabaseUsers, this.SqliteMigration].includes(name);
   }
 
   static isEveryoneWithAllPrivileges(group) {
