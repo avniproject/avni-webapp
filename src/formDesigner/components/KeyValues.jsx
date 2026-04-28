@@ -39,7 +39,14 @@ export default function KeyValues({
   onAddNewKeyValue,
   onDeleteKeyValue,
   error,
+  errorMessage,
   readOnlyKeys = [],
+  keyLabel = "Key",
+  valueLabel = "Value",
+  addButtonLabel = "Add New Key-Value",
+  tooltipKey = "APP_DESIGNER_CONCEPT_KEY_VALUE",
+  multilineValue = false,
+  valueRows = 3,
 }) {
   return (
     <StyledBox>
@@ -48,7 +55,7 @@ export default function KeyValues({
           <Grid sx={{ marginRight: "1rem" }}>
             <StyledTextField
               id="outlined-basic"
-              label="Key"
+              label={keyLabel}
               variant="outlined"
               disabled={readOnlyKeys.includes(item && item.key)}
               value={(item && item.key) || ""}
@@ -64,10 +71,13 @@ export default function KeyValues({
           <Grid>
             <StyledTextField
               id="outlined-basic"
-              label="Value"
+              label={valueLabel}
               variant="outlined"
               disabled={readOnlyKeys.includes(item && item.key)}
-              value={item && item.value}
+              value={(item && item.value) || ""}
+              multiline={multilineValue}
+              minRows={multilineValue ? valueRows : undefined}
+              sx={multilineValue ? { minWidth: 320 } : undefined}
               onChange={(event) =>
                 onKeyValueChange(
                   { key: item && item.key, value: event.target.value },
@@ -88,13 +98,17 @@ export default function KeyValues({
           </Grid>
         </Grid>
       ))}
-      {error && <FormHelperText error>Key-Value can't be blank</FormHelperText>}
+      {error && (
+        <FormHelperText error>
+          {errorMessage || "Key-Value can't be blank"}
+        </FormHelperText>
+      )}
       <Grid container>
         <StyledButton type="button" color="primary" onClick={onAddNewKeyValue}>
-          Add New Key-Value
+          {addButtonLabel}
         </StyledButton>
         <Grid size={4}>
-          <ToolTip toolTipKey="APP_DESIGNER_CONCEPT_KEY_VALUE" />
+          <ToolTip toolTipKey={tooltipKey} />
         </Grid>
       </Grid>
     </StyledBox>

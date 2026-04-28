@@ -35,6 +35,7 @@ import WebReportCard from "../../../common/model/WebReportCard";
 import DashboardService from "../../../common/service/DashboardService";
 import CustomCardConfigService from "../../../common/service/CustomCardConfigService";
 import FormMetaDataSelect from "../../../common/components/FormMetaDataSelect";
+import KeyValues from "../KeyValues";
 import { ReportCard, StandardReportCardType } from "openchs-models";
 import { ValueTextUnitSelect } from "../../../common/components/ValueTextUnitSelect";
 import CustomizedSnackbar from "../CustomizedSnackbar";
@@ -57,6 +58,7 @@ export const CreateEditReportCard = () => {
   const customCardConfigUuidRef = useRef(null);
   const [customCardDataRule, setCustomCardDataRule] = useState("");
   const [customCardHtmlFileS3Key, setCustomCardHtmlFileS3Key] = useState("");
+  const [customCardTranslations, setCustomCardTranslations] = useState([]);
   const [actionSubjectTypes, setActionSubjectTypes] = useState([]);
   const [actionPrograms, setActionPrograms] = useState([]);
   const [actionEncounterTypes, setActionEncounterTypes] = useState([]);
@@ -75,6 +77,13 @@ export const CreateEditReportCard = () => {
             (config) => {
               setCustomCardDataRule(config.dataRule || "");
               setCustomCardHtmlFileS3Key(config.htmlFileS3Key || "");
+              const translations = config.translations || {};
+              setCustomCardTranslations(
+                Object.entries(translations).map(([key, value]) => ({
+                  key,
+                  value: value || "",
+                })),
+              );
             },
           );
         }
@@ -222,6 +231,30 @@ export const CreateEditReportCard = () => {
         message: "HTML file is required",
       });
     }
+    if (isFullyCustom) {
+      const trimmedKeys = customCardTranslations.map((row) =>
+        (row.key || "").trim(),
+      );
+      if (trimmedKeys.some((k) => k === "")) {
+        errors.push({
+          key: "EMPTY_TRANSLATION_KEY",
+          message: "Translation key cannot be blank",
+        });
+      }
+      const seen = new Set();
+      const duplicate = trimmedKeys.find((k) => {
+        if (!k) return false;
+        if (seen.has(k)) return true;
+        seen.add(k);
+        return false;
+      });
+      if (duplicate) {
+        errors.push({
+          key: "DUPLICATE_TRANSLATION_KEY",
+          message: `Translation key '${duplicate}' is duplicated`,
+        });
+      }
+    }
     setError(errors);
     return errors.length === 0;
   };
@@ -257,11 +290,17 @@ export const CreateEditReportCard = () => {
           htmlFileS3Key = uploadRes?.data || htmlFileS3Key;
           setCustomCardHtmlFileS3Key(htmlFileS3Key);
         }
+        const translations = customCardTranslations.reduce((acc, row) => {
+          const key = (row.key || "").trim();
+          if (key) acc[key] = row.value || "";
+          return acc;
+        }, {});
         card.customCardConfig = {
           uuid: customCardConfigUuidRef.current,
           name: card.name,
           dataRule: customCardDataRule || null,
           htmlFileS3Key: htmlFileS3Key || null,
+          translations,
         };
       }
 
@@ -708,6 +747,52 @@ export const CreateEditReportCard = () => {
               value={customCardDataRule}
               onValueChange={setCustomCardDataRule}
             />
+            <p />
+            <AvniFormLabel
+              label={"Translations"}
+              toolTipKey={"APP_DESIGNER_CARD_TRANSLATIONS"}
+            />
+            <KeyValues
+              keyValues={customCardTranslations}
+              keyLabel="Translation Key"
+              valueLabel="Default (English) Value"
+              addButtonLabel="Add Translation"
+              tooltipKey="APP_DESIGNER_CARD_TRANSLATIONS"
+              multilineValue
+              onKeyValueChange={(next, index) => {
+                setError(
+                  error.filter(
+                    ({ key }) =>
+                      key !== "EMPTY_TRANSLATION_KEY" &&
+                      key !== "DUPLICATE_TRANSLATION_KEY",
+                  ),
+                );
+                setCustomCardTranslations((rows) =>
+                  rows.map((row, i) =>
+                    i === index
+                      ? {
+                          ...row,
+                          key: next.key,
+                          value: next.value,
+                        }
+                      : row,
+                  ),
+                );
+              }}
+              onAddNewKeyValue={() =>
+                setCustomCardTranslations((rows) => [
+                  ...rows,
+                  { key: "", value: "" },
+                ])
+              }
+              onDeleteKeyValue={(index) =>
+                setCustomCardTranslations((rows) =>
+                  rows.filter((_, i) => i !== index),
+                )
+              }
+            />
+            {getErrorByKey(error, "EMPTY_TRANSLATION_KEY")}
+            {getErrorByKey(error, "DUPLICATE_TRANSLATION_KEY")}
           </Fragment>
         )}
         {getErrorByKey(error, "EMPTY_TYPE")}

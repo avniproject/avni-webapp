@@ -88,7 +88,7 @@ function RenderCard({ reportCard }) {
       <div>
         <FormLabel style={{ fontSize: "13px" }}>Icon</FormLabel>
         <br />
-        <img src={iconPreviewUrl} alt="Icon Preview" />
+        {iconPreviewUrl ? <img src={iconPreviewUrl} alt="Icon Preview" /> : "-"}
       </div>
       <p />
       {isStandard && (
@@ -163,6 +163,51 @@ function RenderCard({ reportCard }) {
             fieldLabel="Data Rule"
             ruleText={customCardConfigDetails.dataRule}
           />
+          <p />
+          <FormLabel style={{ fontSize: "13px" }}>Translations</FormLabel>
+          <br />
+          {customCardConfigDetails.translations &&
+          Object.keys(customCardConfigDetails.translations).length > 0 ? (
+            <table
+              style={{
+                borderCollapse: "collapse",
+                marginTop: 4,
+              }}
+            >
+              <tbody>
+                {Object.entries(customCardConfigDetails.translations).map(
+                  ([key, value]) => (
+                    <tr key={key}>
+                      <td
+                        style={{
+                          border: "1px solid #ddd",
+                          padding: "6px 10px",
+                          verticalAlign: "top",
+                          fontFamily: "monospace",
+                          fontSize: 12,
+                        }}
+                      >
+                        {key}
+                      </td>
+                      <td
+                        style={{
+                          border: "1px solid #ddd",
+                          padding: "6px 10px",
+                          whiteSpace: "pre-wrap",
+                          fontSize: 13,
+                          maxWidth: 480,
+                        }}
+                      >
+                        {value}
+                      </td>
+                    </tr>
+                  ),
+                )}
+              </tbody>
+            </table>
+          ) : (
+            "-"
+          )}
         </Fragment>
       )}
       {(isNested || isCustomData) && reportCard.action && (

@@ -242,6 +242,7 @@ class WebReportCard extends ReportCard {
             name: this.customCardConfig.name,
             dataRule: this.customCardConfig.dataRule,
             htmlFileS3Key: this.customCardConfig.htmlFileS3Key,
+            translations: this.customCardConfig.translations || {},
           }
         : null,
     };
