@@ -179,7 +179,7 @@ const UserFormFields = ({ edit = false, region }) => {
         perPage={1000}
         label="Accounts"
         validate={required("Please select one or more accounts")}
-        filterToQuery={searchText => ({ name: searchText })}
+ filterToQuery={searchText => ({ username: searchText, name: searchText })}
       >
         <StyledAutocompleteArrayInput />
       </ReferenceArrayInput>
