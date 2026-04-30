@@ -2,7 +2,7 @@ import _ from "lodash";
 import lodash from "lodash";
 import { isValid } from "date-fns";
 import * as models from "avni-models";
-import { FormElementStatus } from "avni-models";
+import { FormElementStatus, MyGroups, UserInfo } from "avni-models";
 import * as rulesConfig from "rules-config";
 import { common, motherCalculations, RuleRegistry } from "avni-health-modules";
 import api from "dataEntryApp/api";
@@ -13,6 +13,13 @@ import moment from "moment";
 
 const services = {
   individualService,
+};
+
+const getCommonParams = () => {
+  const rawUserInfo = _.get(store.getState(), "app.userInfo");
+  const user = rawUserInfo ? UserInfo.fromResource(rawUserInfo) : UserInfo.createEmptyInstance();
+  const myUserGroups = _.get(rawUserInfo, "myUserGroups", []).map((g) => MyGroups.fromResource(g));
+  return { user, myUserGroups };
 };
 
 const debouncedSaveRuleFailureLog = _.debounce((ruleFailureLog) => {
@@ -109,7 +116,7 @@ const runFormElementStatusRule = (formElement, entity, entityName, questionGroup
 
     const ruleFunc = eval(formElement.rule);
     return ruleFunc({
-      params: { formElement, entity, questionGroupIndex, services },
+      params: { formElement, entity, questionGroupIndex, services, ...getCommonParams() },
       imports: getImports(),
     });
   } catch (e) {
@@ -175,7 +182,7 @@ const runFormElementGroupRule = (formElementGroup, entity, entityName, mapOfBund
 
     const ruleFunc = eval(formElementGroup.rule);
     return ruleFunc({
-      params: { formElementGroup, entity, services },
+      params: { formElementGroup, entity, services, ...getCommonParams() },
       imports: getImports(),
     });
   } catch (e) {

@@ -21,6 +21,7 @@ export {
   IndividualRelationshipType,
   KeyValue,
   ModelGeneral,
+  MyGroups,
   Observation,
   ObservationsHolder,
   OrganisationConfig,
@@ -31,6 +32,7 @@ export {
   QuestionGroup,
   StaticFormElementGroup,
   SubjectType,
+  UserInfo,
   ValidationResult,
-  findMediaObservations
+  findMediaObservations,
 } from "openchs-models";
