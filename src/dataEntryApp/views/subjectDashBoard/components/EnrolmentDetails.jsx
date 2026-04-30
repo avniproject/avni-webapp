@@ -20,6 +20,8 @@ import { useState, Fragment } from "react";
 import Observations from "../../../components/Observations";
 import _ from "lodash";
 import { StyledTypographyError } from "../../../../adminApp/Util/Styles";
+import CustomizedSnackbar from "../../../components/CustomizedSnackbar";
+import { useEditFormRuleGuard } from "../../../services/useEditFormRuleGuard";
 
 const StyledAccordion = styled(Accordion)({
   marginBottom: "11px",
@@ -59,6 +61,8 @@ export const EnrolmentDetails = ({
   enrolmentSaveErrorKey,
 }) => {
   const [open, setOpen] = useState(false);
+  const { attemptEdit, editBlockedMessage, clearBlocked, pending } =
+    useEditFormRuleGuard();
 
   const getURLOfFormType = (formType) =>
     `/app/subject/enrol?uuid=${subjectUuid}&programName=${
@@ -66,6 +70,15 @@ export const EnrolmentDetails = ({
     }&formType=${formType}&programEnrolmentUuid=${
       programData.uuid
     }&subjectTypeName=${subjectProfile.subjectType.name}`;
+
+  const handleEditEnrolment = (formType) => {
+    attemptEdit({
+      formUuid: programEnrolmentForm?.uuid,
+      entity: programData,
+      entityType: "ProgramEnrolment",
+      navigateTo: getURLOfFormType(formType),
+    });
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -131,8 +144,27 @@ export const EnrolmentDetails = ({
     );
   };
 
+  const GuardedEditButton = ({ formType, label, id }) => (
+    <Button
+      id={id}
+      color="primary"
+      onClick={() => handleEditEnrolment(formType)}
+      disabled={pending}
+    >
+      {t(label)}
+    </Button>
+  );
+
   return (
     <StyledAccordion>
+      {editBlockedMessage && (
+        <CustomizedSnackbar
+          message={editBlockedMessage}
+          variant="error"
+          defaultSnackbarStatus={true}
+          onClose={clearBlocked}
+        />
+      )}
       <StyledAccordionSummary
         expandIcon={<StyledExpandMore />}
         id="enrolment-details"
@@ -151,16 +183,16 @@ export const EnrolmentDetails = ({
                 label="Exit"
                 id="exit-program"
               />
-              <ActionButton
-                to={getURLOfFormType("ProgramEnrolment")}
+              <GuardedEditButton
+                formType="ProgramEnrolment"
                 label="Edit"
                 id="edit-program"
               />
             </Fragment>
           ) : (
             <Fragment>
-              <ActionButton
-                to={getURLOfFormType("ProgramExit")}
+              <GuardedEditButton
+                formType="ProgramExit"
                 label="Edit Exit"
                 id="edit-exit"
               />

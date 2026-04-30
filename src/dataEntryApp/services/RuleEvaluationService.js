@@ -4,6 +4,7 @@ import { isValid } from "date-fns";
 import * as models from "avni-models";
 import { FormElementStatus, MyGroups, UserInfo } from "avni-models";
 import * as rulesConfig from "rules-config";
+import { ActionEligibilityResponse } from "rules-config";
 import { common, motherCalculations, RuleRegistry } from "avni-health-modules";
 import api from "dataEntryApp/api";
 import { store } from "common/store/createStore";
@@ -40,6 +41,32 @@ const getImports = () => {
 
 const updateMapUsingKeyPattern = () => {
   return (acc, fs) => acc.set(`${fs.uuid}-${fs.questionGroupIndex || 0}`, fs);
+};
+
+export const runEditFormRule = (form, entity, entityName) => {
+  if (_.isEmpty(_.trim(form.editFormRule))) {
+    return ActionEligibilityResponse.createAllowedResponse();
+  }
+  try {
+    const ruleFunc = eval(form.editFormRule);
+    const ruleResponse = ruleFunc({
+      params: { entity, form, services, ...getCommonParams() },
+      imports: getImports(),
+    });
+    return ActionEligibilityResponse.createRuleResponse(ruleResponse);
+  } catch (e) {
+    console.error("Error executing edit form rule for form:", form.uuid, form.name, e);
+    debouncedSaveRuleFailureLog({
+      formId: form.uuid,
+      ruleType: "EditForm",
+      entityType: entityName,
+      entityId: entity?.uuid,
+      errorMessage: e.message,
+      stacktrace: e.stack,
+      source: "Web",
+    });
+    return ActionEligibilityResponse.createAllowedResponse();
+  }
 };
 
 export const getFormElementsStatuses = (entity, formElementGroup) => {
