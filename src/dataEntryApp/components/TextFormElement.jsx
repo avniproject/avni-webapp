@@ -1,31 +1,32 @@
 import { styled } from "@mui/material/styles";
 import { TextField, Typography } from "@mui/material";
-import { find, isEmpty } from "lodash";
+import { find, isEmpty, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
 import { HelpText } from "../../common/components/HelpText";
 import { shouldForwardProp } from "@mui/system";
+import { SyncValueRadioGroup } from "./SyncValueRadioGroup";
 
 const StyledContainer = styled("div")(({ isGrid }) => ({
   display: isGrid ? "flex" : "block",
   flexDirection: isGrid ? "row" : undefined,
   alignItems: isGrid ? "center" : undefined,
-  width: isGrid ? "50%" : undefined
+  width: isGrid ? "50%" : undefined,
 }));
 
 const StyledTypography = styled(Typography, {
-  shouldForwardProp: prop =>
-    shouldForwardProp(prop) && !["hasHelpText", "isGrid"].includes(prop)
+  shouldForwardProp: (prop) =>
+    shouldForwardProp(prop) && !["hasHelpText", "isGrid"].includes(prop),
 })(({ isGrid, hasHelpText }) => ({
   width: !isGrid ? "50%" : undefined,
   marginBottom: !isGrid && !hasHelpText ? 8 : 0,
   color: "rgba(0, 0, 0, 0.54)",
   flex: isGrid ? 0.5 : undefined,
   marginRight: isGrid ? "15px" : undefined,
-  borderRight: isGrid ? "1px solid rgba(0, 0, 0, 0.12)" : undefined
+  borderRight: isGrid ? "1px solid rgba(0, 0, 0, 0.12)" : undefined,
 }));
 
 const StyledTextField = styled(TextField)({
-  width: "30%"
+  width: "30%",
 });
 
 export default ({
@@ -35,14 +36,28 @@ export default ({
   validationResults,
   uuid,
   isGrid,
-  helpText
+  helpText,
+  allowedValues,
 }) => {
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
-      formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
+      formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex,
   );
+
+  if (!isNil(allowedValues)) {
+    return (
+      <SyncValueRadioGroup
+        formElement={fe}
+        allowedValues={allowedValues}
+        value={value}
+        update={update}
+        validationResults={validationResults}
+        uuid={uuid}
+      />
+    );
+  }
 
   return (
     <StyledContainer isGrid={isGrid}>
@@ -68,18 +83,18 @@ export default ({
           t(validationResult.messageKey, validationResult.extra)
         }
         error={validationResult && !validationResult.success}
-        onChange={e => {
+        onChange={(e) => {
           const v = e.target.value;
           isEmpty(v) ? update() : update(v);
         }}
         variant={fe.editable ? "outlined" : "standard"}
         sx={{
           "& .MuiInput-underline:before": {
-            borderBottom: fe.editable ? undefined : "none"
+            borderBottom: fe.editable ? undefined : "none",
           },
           "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
-            borderBottom: fe.editable ? undefined : "none"
-          }
+            borderBottom: fe.editable ? undefined : "none",
+          },
         }}
         disabled={!fe.editable}
       />

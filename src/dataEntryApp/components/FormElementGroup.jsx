@@ -1,8 +1,11 @@
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
 import { get } from "lodash";
 
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
 import { getNonNestedFormElements } from "../services/FormElementService";
+import { findSubjectTypeSyncSettings } from "../services/UserSyncSettingsUtil";
 
 export const FormElementGroup = ({
   obsHolder,
@@ -12,8 +15,14 @@ export const FormElementGroup = ({
   filteredFormElements,
   renderChildren,
   addNewQuestionGroup,
-  removeQuestionGroup
+  removeQuestionGroup,
+  subjectType,
 }) => {
+  const userInfo = useSelector((state) => state.app.userInfo);
+  const subjectTypeSyncSettings = useMemo(
+    () => findSubjectTypeSyncSettings(userInfo, subjectType),
+    [userInfo, subjectType],
+  );
   const nonNestedFormElements = getNonNestedFormElements(filteredFormElements);
   return (
     <div>
@@ -50,6 +59,7 @@ export const FormElementGroup = ({
             updateObs={updateObs}
             addNewQuestionGroup={addNewQuestionGroup}
             removeQuestionGroup={removeQuestionGroup}
+            subjectTypeSyncSettings={subjectTypeSyncSettings}
           >
             {fe}
           </FormElement>

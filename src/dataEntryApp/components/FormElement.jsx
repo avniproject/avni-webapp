@@ -15,13 +15,14 @@ import LocationFormElement from "./LocationFormElement";
 import LandingSubjectFormElement from "./LandingSubjectFormElement";
 import QuestionGroupFormElement from "./QuestionGroupFormElement";
 import { RepeatableQuestionGroupElement } from "./RepeatableQuestionGroupElement";
+import { getAllowedSyncValuesForConcept } from "../services/UserSyncSettingsUtil";
 
 const StyledContainer = styled("div")(({ isGrid }) => ({
   ...(isGrid && {
     borderWidth: "2px",
     borderStyle: "inset",
-    padding: "5px"
-  })
+    padding: "5px",
+  }),
 }));
 
 const div = () => <div />;
@@ -47,7 +48,7 @@ const elements = {
   Subject: LandingSubjectFormElement,
   Location: LocationFormElement,
   QuestionGroup: QuestionGroupFormElement,
-  RepeatableQuestionGroup: RepeatableQuestionGroupElement
+  RepeatableQuestionGroup: RepeatableQuestionGroupElement,
 };
 
 export const FormElement = ({
@@ -63,16 +64,22 @@ export const FormElement = ({
   isGrid,
   updateObs,
   addNewQuestionGroup,
-  removeQuestionGroup
+  removeQuestionGroup,
+  subjectTypeSyncSettings,
 }) => {
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
     formElement.keyValues = [
       ...formElement.keyValues,
-      KeyValue.fromResource({ key: "editable", value: false })
+      KeyValue.fromResource({ key: "editable", value: false }),
     ];
     formElement.mandatory = false;
   }
+
+  const allowedValues = getAllowedSyncValuesForConcept(
+    subjectTypeSyncSettings,
+    formElement.concept,
+  );
 
   const props = {
     formElement,
@@ -85,7 +92,8 @@ export const FormElement = ({
     isGrid,
     updateObs,
     addNewQuestionGroup,
-    removeQuestionGroup
+    removeQuestionGroup,
+    allowedValues,
   };
   const Element = elements[type];
   return (

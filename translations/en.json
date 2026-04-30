@@ -153,6 +153,8 @@
     "unplannedVisits": "Unplanned Visits",
     "or": "OR",
     "pleaseChooseAOption": "Please choose an option",
+    "noAllowedSyncValuesForUser": "No allowed values configured for your user",
+    "syncAttributeValueNotAvailable": "Selected value is no longer available",
     "home": "Home",
     "menu": "Menu",
     "overdue": "Overdue",
