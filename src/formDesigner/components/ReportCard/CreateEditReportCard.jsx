@@ -772,7 +772,7 @@ export const CreateEditReportCard = () => {
                     i === index
                       ? {
                           ...row,
-                          key: next.key,
+                          key: (next.key || "").trim(),
                           value: next.value,
                         }
                       : row,
