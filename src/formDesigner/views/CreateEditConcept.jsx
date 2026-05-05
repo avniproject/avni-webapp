@@ -43,6 +43,8 @@ import { ModelGeneral as General } from "avni-models";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
+export const MAX_CONCEPT_NAME_LENGTH = 255;
+
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
   const answers = [...conceptAnswers];
@@ -300,6 +302,8 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     }
     if (concept.name.trim() === "") {
       error["isEmptyName"] = true;
+    } else if (concept.name.trim().length > MAX_CONCEPT_NAME_LENGTH) {
+      error["isNameTooLong"] = true;
     }
 
     const numericRangeErrors = WebConcept.validateNumericRanges(concept);
@@ -392,9 +396,12 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
         }
       }
 
+      const isNameLengthError = saveError.includes("must not exceed");
+      const isNameConflict = saveError.includes("already exists");
       const newError = {
-        nameConflict: saveError.includes("already exists"),
-        mediaUploadFailed: !saveError.includes("already exists"),
+        nameConflict: isNameConflict,
+        nameLengthExceeded: isNameLengthError,
+        mediaUploadFailed: !isNameConflict && !isNameLengthError,
         message: saveError,
       };
       setError(newError);
@@ -679,9 +686,22 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             {error.isEmptyName && (
               <FormHelperText error>*Required.</FormHelperText>
             )}
-            {!error.isEmptyName && error.nameConflict && (
-              <FormHelperText error>{error.message}</FormHelperText>
+            {!error.isEmptyName && error.isNameTooLong && (
+              <FormHelperText error>
+                {`Concept name must not exceed ${MAX_CONCEPT_NAME_LENGTH} characters.`}
+              </FormHelperText>
             )}
+            {!error.isEmptyName &&
+              !error.isNameTooLong &&
+              error.nameConflict && (
+                <FormHelperText error>{error.message}</FormHelperText>
+              )}
+            {!error.isEmptyName &&
+              !error.isNameTooLong &&
+              !error.nameConflict &&
+              error.nameLengthExceeded && (
+                <FormHelperText error>{error.message}</FormHelperText>
+              )}
           </Grid>
           <Grid xs={12}>
             {isCreatePage ? (
