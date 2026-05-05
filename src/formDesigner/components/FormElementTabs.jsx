@@ -11,7 +11,7 @@ const StyledRoot = styled("div")(({ theme }) => ({
   flexGrow: 1,
   backgroundColor: theme.palette.background.paper,
   display: "flex",
-  minHeight: "100%" // Ensure consistent height
+  minHeight: "100%", // Ensure consistent height
 }));
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
@@ -22,14 +22,14 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
     paddingRight: theme.spacing(5),
     paddingLeft: theme.spacing(2), // Consistent padding
     textAlign: "left", // Align text for better UX
-    justifyContent: "flex-start" // Align content to start
-  }
+    justifyContent: "flex-start", // Align content to start
+  },
 }));
 
 const StyledTabPanelContainer = styled("div")(({ theme }) => ({
   padding: theme.spacing(3),
   width: "100%",
-  boxSizing: "border-box" // Prevent padding from affecting width
+  boxSizing: "border-box", // Prevent padding from affecting width
 }));
 
 function TabPanel(props) {
@@ -52,23 +52,30 @@ function TabPanel(props) {
 function a11yProps(propIndex, index) {
   return {
     id: `vertical-tab-${propIndex + index}`,
-    "aria-controls": `vertical-tabpanel-${propIndex + index}`
+    "aria-controls": `vertical-tabpanel-${propIndex + index}`,
   };
 }
 
 function FormElementTabs(props) {
   const [value, setValue] = useState(0);
   const disableFormElement = props.disableFormElement;
+  const parentConceptDataType = get(props.formElementData, "concept.dataType");
+  const parentSubjectTypeUuid = get(
+    (get(props.formElementData, "concept.keyValues") || []).find(
+      ({ key }) => key === "subjectTypeUUID",
+    ),
+    "value",
+  );
 
   function handleChange(event, newValue) {
     setValue(newValue);
   }
 
-  const onSkipLogicRuleChange = event => {
+  const onSkipLogicRuleChange = (event) => {
     confirmBeforeRuleEdit(
       props.formElementData.declarativeRule,
       () => props.updateSkipLogicRule(props.groupIndex, props.index, event),
-      () => props.updateSkipLogicJSON(props.groupIndex, props.index, null)
+      () => props.updateSkipLogicJSON(props.groupIndex, props.index, null),
     );
   };
 
@@ -89,25 +96,29 @@ function FormElementTabs(props) {
       <TabPanel value={value} index={1} propsIndex={props.indexTab}>
         <RuleDesigner
           rulesJson={props.formElementData.declarativeRule}
-          onValueChange={jsonData =>
+          onValueChange={(jsonData) =>
             props.updateSkipLogicJSON(props.groupIndex, props.index, jsonData)
           }
-          updateJsCode={declarativeRuleHolder =>
+          updateJsCode={(declarativeRuleHolder) =>
             props.updateSkipLogicRule(
               props.groupIndex,
               props.index,
-              declarativeRuleHolder.generateViewFilterRule(props.entityName)
+              declarativeRuleHolder.generateViewFilterRule(props.entityName),
             )
           }
           jsCode={props.formElementData.rule}
           error={get(props.formElementData, "errorMessage.ruleError")}
           subjectType={props.subjectType}
           form={props.form}
-          getApplicableActions={state => state.getApplicableViewFilterActions()}
+          getApplicableActions={(state) =>
+            state.getApplicableViewFilterActions()
+          }
           sampleRule={sampleFormElementRule(props.entityName)}
           onJsCodeChange={onSkipLogicRuleChange}
           disableEditor={disableFormElement}
           parentConceptUuid={props.parentConceptUuid}
+          parentConceptDataType={parentConceptDataType}
+          parentSubjectTypeUuid={parentSubjectTypeUuid}
         />
       </TabPanel>
     </StyledRoot>

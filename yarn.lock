@@ -11297,10 +11297,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.33.37:
-  version "1.33.37"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.33.37.tgz#cbce2a37b4cbcbae9c2dc1589249ef2143e93686"
-  integrity sha512-FWVvB+1d/ZJ9yl8Am08VIy1F+Y8MifF1YsXRSBayRx1BeOxfL6Arct1GomAj6EP+whOfHEVki4VuinCey9kyAQ==
+openchs-models@1.33.39:
+  version "1.33.39"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.33.39.tgz#4294ed578c2f523a66756c9cd394b391dc41d025"
+  integrity sha512-wXwNmsQjd7sZoymLXKbihbH0PIibZvftCtI7r7ypViZU2DlKaykQ8QNcxTG0eO+2ULTMj+LuhwWS6QdN4fOowg==
   dependencies:
     uuid "^9.0.1"
 
@@ -12835,9 +12835,9 @@ rrweb-cssom@^0.8.0:
   resolved "https://registry.yarnpkg.com/rrweb-cssom/-/rrweb-cssom-0.8.0.tgz#3021d1b4352fbf3b614aaeed0bc0d5739abe0bc2"
   integrity sha512-guoltQEx+9aMf2gDZ0s62EcV8lsXR+0w8915TC3ITdn2YueuNjdAYh/levpU9nFaoChh9RUS5ZdQMrKfVEN9tw==
 
-"rules-config@github:avniproject/rules-config#64d53e8a5100437ac7b571647bd096786eba14da":
+"rules-config@github:avniproject/rules-config#5a2a72a19c7c72c05a27c79589feef22542d6d5e":
   version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/64d53e8a5100437ac7b571647bd096786eba14da"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/5a2a72a19c7c72c05a27c79589feef22542d6d5e"
 
 run-node@^1.0.0:
   version "1.0.0"

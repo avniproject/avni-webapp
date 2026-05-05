@@ -20,6 +20,8 @@ const DeclarativeRules = ({
   encounterTypes = [],
   form,
   parentConceptUuid,
+  parentConceptDataType,
+  parentSubjectTypeUuid,
   onOpenAiRuleModal,
   ruleType,
 }) => {
@@ -84,6 +86,8 @@ const DeclarativeRules = ({
         encounterTypes: encounterTypes,
         form: form,
         parentConceptUuid: parentConceptUuid,
+        parentConceptDataType: parentConceptDataType,
+        parentSubjectTypeUuid: parentSubjectTypeUuid,
       }}
     >
       {!isEmpty(errorMessage) && (

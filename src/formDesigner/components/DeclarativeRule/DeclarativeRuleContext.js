@@ -39,3 +39,13 @@ export const getParentConceptUuid = () => {
   const { parentConceptUuid } = useContext(DeclarativeRuleContext);
   return parentConceptUuid;
 };
+
+export const getParentConceptDataType = () => {
+  const { parentConceptDataType } = useContext(DeclarativeRuleContext);
+  return parentConceptDataType;
+};
+
+export const getParentSubjectTypeUuid = () => {
+  const { parentSubjectTypeUuid } = useContext(DeclarativeRuleContext);
+  return parentSubjectTypeUuid;
+};
