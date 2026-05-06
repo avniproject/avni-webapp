@@ -3,6 +3,7 @@ import { default as UUID } from "uuid";
 import { httpClient as http } from "common/utils/httpClient";
 import {
   alphabeticalSort,
+  MAX_CONCEPT_NAME_LENGTH,
   moveDown,
   moveUp,
   validateCodedConceptAnswers,
@@ -366,8 +367,16 @@ const formDesignerOnSubmitInlineConcept = (
         error.response &&
         (error.response.status === 409 || error.response.status === 400)
       ) {
-        errorMessage =
-          "A concept with this name already exists. Please use a different name.";
+        const serverMessage =
+          typeof error.response.data === "string"
+            ? error.response.data
+            : error.response.data?.message || "";
+        if (/Concept with name '(.+?)'\s*already exists/.test(serverMessage)) {
+          errorMessage =
+            "A concept with this name already exists. Please use a different name.";
+        } else {
+          errorMessage = serverMessage;
+        }
       }
       formElement.inlineConceptErrorMessage["inlineConceptError"] =
         errorMessage;
@@ -536,9 +545,13 @@ export const formDesignerOnSaveInlineConcept = (
     }
   }
 
+  const trimmedName = inlineConceptObject.name.trim();
+  const isNameTooLong = trimmedName.length > MAX_CONCEPT_NAME_LENGTH;
+
   if (
     inlineConceptObject.dataType !== "" &&
-    inlineConceptObject.name.trim() !== "" &&
+    trimmedName !== "" &&
+    !isNameTooLong &&
     normalValidation === false &&
     absoluteValidation === false &&
     locationValidation === false &&
@@ -589,8 +602,13 @@ export const formDesignerOnSaveInlineConcept = (
       );
     }
   } else {
-    clonedFormElement.inlineConceptErrorMessage["name"] =
-      inlineConceptObject.name.trim() === "" ? "concept name is required" : "";
+    let nameErrorMessage = "";
+    if (trimmedName === "") {
+      nameErrorMessage = "concept name is required";
+    } else if (isNameTooLong) {
+      nameErrorMessage = `concept name must not exceed ${MAX_CONCEPT_NAME_LENGTH} characters`;
+    }
+    clonedFormElement.inlineConceptErrorMessage["name"] = nameErrorMessage;
     clonedFormElement.inlineConceptErrorMessage["dataType"] =
       inlineConceptObject.dataType === "" ? "concept datatype is required" : "";
     clonedFormElement.inlineNumericDataTypeAttributes.error[
