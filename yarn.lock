@@ -12835,9 +12835,9 @@ rrweb-cssom@^0.8.0:
   resolved "https://registry.yarnpkg.com/rrweb-cssom/-/rrweb-cssom-0.8.0.tgz#3021d1b4352fbf3b614aaeed0bc0d5739abe0bc2"
   integrity sha512-guoltQEx+9aMf2gDZ0s62EcV8lsXR+0w8915TC3ITdn2YueuNjdAYh/levpU9nFaoChh9RUS5ZdQMrKfVEN9tw==
 
-"rules-config@github:avniproject/rules-config#5a2a72a19c7c72c05a27c79589feef22542d6d5e":
+"rules-config@github:avniproject/rules-config#f5f651905ac26dc98b9259245a2c3802bb59f3fe":
   version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/5a2a72a19c7c72c05a27c79589feef22542d6d5e"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/f5f651905ac26dc98b9259245a2c3802bb59f3fe"
 
 run-node@^1.0.0:
   version "1.0.0"
