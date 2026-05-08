@@ -15,7 +15,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   height: "auto",
   border: "1px solid #f1ebeb",
   position: "relative",
-  minHeight: "600px"
+  minHeight: "600px",
 }));
 
 const StyledButtonContainer = styled(Box)({
@@ -26,7 +26,7 @@ const StyledButtonContainer = styled(Box)({
   height: 80,
   width: "100%",
   padding: 25,
-  display: "flex"
+  display: "flex",
 });
 
 const StyledPrevButton = styled(FormWizardButton)({
@@ -38,7 +38,7 @@ const StyledPrevButton = styled(FormWizardButton)({
   cursor: "pointer",
   borderRadius: 50,
   padding: "4px 25px",
-  backgroundColor: "white"
+  backgroundColor: "white",
 });
 
 const StyledNextButton = styled(FormWizardButton)({
@@ -49,12 +49,12 @@ const StyledNextButton = styled(FormWizardButton)({
   width: 110,
   cursor: "pointer",
   borderRadius: 50,
-  padding: "4px 25px"
+  padding: "4px 25px",
 });
 
 const StyledErrorTypography = styled(Typography)(({ theme }) => ({
   marginLeft: 20,
-  color: theme.palette.error.main
+  color: theme.palette.error.main,
 }));
 
 const FormWizard = ({
@@ -80,7 +80,7 @@ const FormWizard = ({
   wizard,
   addNewQuestionGroup,
   removeQuestionGroup,
-  saveErrorMessageKey
+  saveErrorMessageKey,
 }) => {
   const [redirect, setRedirect] = useState(false);
   const { t } = useTranslation();
@@ -139,6 +139,7 @@ const FormWizard = ({
                 renderChildren={isFirstPage}
                 addNewQuestionGroup={addNewQuestionGroup}
                 removeQuestionGroup={removeQuestionGroup}
+                subjectType={subject?.subjectType}
               >
                 {children}
               </FormElementGroupComponent>
@@ -170,7 +171,7 @@ const FormWizard = ({
             {saved && (
               <CustomizedSnackbar
                 message={t(
-                  message || "Your details have been successfully registered."
+                  message || "Your details have been successfully registered.",
                 )}
               />
             )}

@@ -16,6 +16,8 @@ const RuleDesigner = ({
   encounterTypes,
   form,
   parentConceptUuid,
+  parentConceptDataType,
+  parentSubjectTypeUuid,
   onOpenAiRuleModal,
   ruleType,
 }) => {
@@ -33,6 +35,8 @@ const RuleDesigner = ({
           encounterTypes={encounterTypes}
           form={form}
           parentConceptUuid={parentConceptUuid}
+          parentConceptDataType={parentConceptDataType}
+          parentSubjectTypeUuid={parentSubjectTypeUuid}
           onOpenAiRuleModal={onOpenAiRuleModal}
           ruleType={ruleType}
         />

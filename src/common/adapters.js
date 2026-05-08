@@ -8,7 +8,7 @@ import {
   ModelGeneral as General,
   OrganisationConfig,
   Program,
-  SubjectType
+  SubjectType,
 } from "avni-models";
 import { get, isEmpty, isNil, map } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
@@ -16,7 +16,7 @@ import WebFormElement from "./model/WebFormElement";
 import WebFormElementGroup from "./model/WebFormElementGroup";
 import WebForm from "./model/WebForm";
 
-export const mapConceptAnswer = json => {
+export const mapConceptAnswer = (json) => {
   const conceptAnswer = new ConceptAnswer();
   conceptAnswer.uuid = json.uuid;
   conceptAnswer.answerOrder = json.order;
@@ -27,7 +27,7 @@ export const mapConceptAnswer = json => {
   return conceptAnswer;
 };
 
-export const mapConcept = json => {
+export const mapConcept = (json) => {
   const concept = Concept.fromResource(json);
   concept.answers = map(json.conceptAnswers, mapConceptAnswer);
   conceptService.addConcept(concept);
@@ -39,7 +39,7 @@ export const mapFormElement = (formElementResource, formElementGroup, questionGr
     formElementResource,
     new WebFormElement(),
     ["uuid", "name", "displayOrder", "mandatory", "type", "voided", "rule"],
-    []
+    [],
   );
   formElement.formElementGroup = formElementGroup;
   formElement.keyValues = map(formElementResource.keyValues, KeyValue.fromResource);
@@ -62,25 +62,25 @@ export const mapFormElementGroup = (json, form) => {
     "displayOrder",
     "display",
     "voided",
-    "rule"
+    "rule",
   ]);
   const questionGroupFormElements = new Map();
-  formElementGroup.formElements = map(json.applicableFormElements, feJson =>
-    mapFormElement(feJson, formElementGroup, questionGroupFormElements)
+  formElementGroup.formElements = map(json.applicableFormElements, (feJson) =>
+    mapFormElement(feJson, formElementGroup, questionGroupFormElements),
   );
   formElementGroup.form = form;
   return formElementGroup;
 };
 
-export const mapForm = json => {
-  let form = General.assignFields(json, new WebForm(), ["uuid", "name", "formType"]);
-  form.formElementGroups = map(json.formElementGroups, fegJson => mapFormElementGroup(fegJson, form));
+export const mapForm = (json) => {
+  let form = General.assignFields(json, new WebForm(), ["uuid", "name", "formType", "editFormRule"]);
+  form.formElementGroups = map(json.formElementGroups, (fegJson) => mapFormElementGroup(fegJson, form));
   return form;
 };
 
-export const mapGender = json => General.assignFields(json, new Gender(), ["uuid", "name"]);
+export const mapGender = (json) => General.assignFields(json, new Gender(), ["uuid", "name"]);
 
-export const mapEncounterType = json => {
+export const mapEncounterType = (json) => {
   const encounterType = General.assignFields(json, new EncounterType(), ["uuid", "name", "operationalEncounterTypeName"], []);
   encounterType.voided = false;
   encounterType.displayName = isEmpty(encounterType.operationalEncounterTypeName)
@@ -89,7 +89,7 @@ export const mapEncounterType = json => {
   return encounterType;
 };
 
-export const mapProgram = json => {
+export const mapProgram = (json) => {
   const program = new Program();
   program.uuid = json.uuid;
   program.name = json.name;
@@ -100,7 +100,7 @@ export const mapProgram = json => {
   return program;
 };
 
-export const mapSubjectType = json => {
+export const mapSubjectType = (json) => {
   const subjectType = new SubjectType();
   if (isNil(json)) {
     return subjectType;
@@ -123,7 +123,7 @@ export const mapSubjectType = json => {
   return subjectType;
 };
 
-export const mapOperationalModules = json => ({
+export const mapOperationalModules = (json) => ({
   formMappings: json.formMappings,
   encounterTypes: json.encounterTypes.map(mapEncounterType),
   programs: json.programs.map(mapProgram),
@@ -132,10 +132,10 @@ export const mapOperationalModules = json => ({
   forms: json.forms,
   customRegistrationLocations: json.customRegistrationLocations,
   relations: json.relations,
-  allAddressLevels: json.allAddressLevels
+  allAddressLevels: json.allAddressLevels,
 });
 
-export const mapOrganisationConfig = json => {
+export const mapOrganisationConfig = (json) => {
   let fromResource = OrganisationConfig.fromResource(get(json, "_embedded.organisationConfig.0"));
   return fromResource;
 };

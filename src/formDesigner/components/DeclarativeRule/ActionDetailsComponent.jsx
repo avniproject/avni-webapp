@@ -4,6 +4,7 @@ import MiddleText from "./MiddleText";
 import InputField from "./InputField";
 import { get, includes, isEmpty, map, startCase, zip } from "lodash";
 import ConceptSearch from "./ConceptSearch";
+import SubjectSearch from "./SubjectSearch";
 import {
   Action,
   AddDecisionActionDetails,
@@ -13,6 +14,8 @@ import {
   getEncounterTypes,
   getForm,
   getFormType,
+  getParentConceptDataType,
+  getParentSubjectTypeUuid,
   useDeclarativeRuleDispatch,
 } from "./DeclarativeRuleContext";
 import Select from "react-select";
@@ -217,8 +220,18 @@ const ActionDetailsComponent = ({
 }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const actionTypes = Action.actionTypes;
+  const parentConceptDataType = getParentConceptDataType();
+  const parentSubjectTypeUuid = getParentSubjectTypeUuid();
+  const isSubjectConcept = parentConceptDataType === "Subject";
   const selectedAnswersToSkipOptions = map(
     zip(actionDetails.answersToSkip, actionDetails.answerUuidsToSkip),
+    ([name, uuid]) => ({
+      label: name,
+      value: { name, uuid, toString: () => uuid },
+    }),
+  );
+  const selectedAnswersToShowOptions = map(
+    zip(actionDetails.answersToShow, actionDetails.answerUuidsToShow),
     ([name, uuid]) => ({
       label: name,
       value: { name, uuid, toString: () => uuid },
@@ -227,7 +240,23 @@ const ActionDetailsComponent = ({
   const onAnswerToSkipChange = (labelValues) => {
     dispatch({
       type: "answerToSkipChange",
-      payload: { declarativeRuleIndex, index, labelValues },
+      payload: {
+        declarativeRuleIndex,
+        index,
+        labelValues,
+        conceptDataType: parentConceptDataType,
+      },
+    });
+  };
+  const onAnswerToShowChange = (labelValues) => {
+    dispatch({
+      type: "answerToShowChange",
+      payload: {
+        declarativeRuleIndex,
+        index,
+        labelValues,
+        conceptDataType: parentConceptDataType,
+      },
     });
   };
 
@@ -253,13 +282,46 @@ const ActionDetailsComponent = ({
       )}
       {selectedType === actionTypes.SkipAnswers && (
         <Grid size={4}>
-          <ConceptSearch
-            key={index}
-            isMulti={true}
-            placeholder={"Search answer"}
-            value={selectedAnswersToSkipOptions}
-            onChange={(labelValues) => onAnswerToSkipChange(labelValues)}
-          />
+          {isSubjectConcept ? (
+            <SubjectSearch
+              key={index}
+              isMulti={true}
+              placeholder={"Search subject"}
+              value={selectedAnswersToSkipOptions}
+              onChange={(labelValues) => onAnswerToSkipChange(labelValues)}
+              subjectTypeUuid={parentSubjectTypeUuid}
+            />
+          ) : (
+            <ConceptSearch
+              key={index}
+              isMulti={true}
+              placeholder={"Search answer"}
+              value={selectedAnswersToSkipOptions}
+              onChange={(labelValues) => onAnswerToSkipChange(labelValues)}
+            />
+          )}
+        </Grid>
+      )}
+      {selectedType === actionTypes.ShowAnswers && (
+        <Grid size={4}>
+          {isSubjectConcept ? (
+            <SubjectSearch
+              key={index}
+              isMulti={true}
+              placeholder={"Search subject"}
+              value={selectedAnswersToShowOptions}
+              onChange={(labelValues) => onAnswerToShowChange(labelValues)}
+              subjectTypeUuid={parentSubjectTypeUuid}
+            />
+          ) : (
+            <ConceptSearch
+              key={index}
+              isMulti={true}
+              placeholder={"Search answer"}
+              value={selectedAnswersToShowOptions}
+              onChange={(labelValues) => onAnswerToShowChange(labelValues)}
+            />
+          )}
         </Grid>
       )}
       {includes(

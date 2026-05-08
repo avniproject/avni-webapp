@@ -3,6 +3,7 @@ import { TextField, Typography } from "@mui/material";
 import { find, isEmpty, isNil, toNumber } from "lodash";
 import { useTranslation } from "react-i18next";
 import Colors from "../Colors";
+import { SyncValueRadioGroup } from "./SyncValueRadioGroup";
 
 const StyledContainer = styled("div")({
   width: "50%",
@@ -39,6 +40,7 @@ export default ({
   validationResults,
   uuid,
   isGrid,
+  allowedValues,
 }) => {
   const { t } = useTranslation();
   const validationResult = find(
@@ -46,6 +48,19 @@ export default ({
     ({ formIdentifier, questionGroupIndex }) =>
       formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex,
   );
+
+  if (!isNil(allowedValues)) {
+    return (
+      <SyncValueRadioGroup
+        formElement={fe}
+        allowedValues={allowedValues}
+        value={value}
+        update={(v) => update(isNil(v) ? null : toNumber(v))}
+        validationResults={validationResults}
+        uuid={uuid}
+      />
+    );
+  }
 
   const error = () => {
     if (validationResult && !validationResult.success) {

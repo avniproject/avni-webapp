@@ -1,10 +1,13 @@
 import { Grid, FormHelperText } from "@mui/material";
 import AsyncSelect from "react-select/async";
+import Select from "react-select";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { subjectService } from "../services/SubjectService";
-import { debounce, find, first, isEmpty, xor } from "lodash";
+import api from "../api";
+import { mapIndividual } from "../../common/subjectModelMapper";
+import { debounce, filter, find, first, includes, isEmpty, xor } from "lodash";
 import { Individual } from "avni-models";
 import { Concept } from "openchs-models";
 
@@ -16,7 +19,11 @@ const SubjectFormElement = (props) => {
   const isMultiSelect = props.formElement.type === "MultiSelect";
   const isMandatory = props.formElement.mandatory;
   const fieldLabel = props.formElement.name;
+  const allowedSubjectUUIDs = props.formElement.answersToShow;
+  const excludedSubjectUUIDs = props.formElement.answersToExclude;
+  const hasAllowedList = !isEmpty(allowedSubjectUUIDs);
   const [selectedSubjects, setSelectedSubjects] = useState();
+  const [allowedOptions, setAllowedOptions] = useState();
 
   const constructSubjectLabel = (subject, isSearchFlow = false) => {
     if (isSearchFlow) {
@@ -44,6 +51,33 @@ const SubjectFormElement = (props) => {
     }
   }, [props.value]);
 
+  useEffect(() => {
+    if (!hasAllowedList) {
+      setAllowedOptions(undefined);
+      return;
+    }
+    const filteredAllowedUUIDs = filter(
+      allowedSubjectUUIDs,
+      (uuid) => !includes(excludedSubjectUUIDs, uuid),
+    );
+    if (isEmpty(filteredAllowedUUIDs)) {
+      setAllowedOptions([]);
+      return;
+    }
+    api
+      .fetchSubjectForUUIDs(filteredAllowedUUIDs.join(","))
+      .then((subjects) => {
+        const mapped = (subjects || []).map(mapIndividual);
+        mapped.forEach((s) => subjectService.addSubject(s));
+        setAllowedOptions(
+          mapped.map((s) => ({
+            label: constructSubjectLabel(s),
+            value: s,
+          })),
+        );
+      });
+  }, [hasAllowedList, allowedSubjectUUIDs, excludedSubjectUUIDs]);
+
   const validationResult = find(
     props.validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
@@ -70,6 +104,7 @@ const SubjectFormElement = (props) => {
     })
       .then((searchResults) =>
         searchResults.listOfRecords
+          .filter((subject) => !includes(excludedSubjectUUIDs, subject.uuid))
           .filter((subject) =>
             isMultiSelect && selectedSubjects
               ? selectedSubjects
@@ -110,22 +145,36 @@ const SubjectFormElement = (props) => {
       </div>
       <Grid container spacing={2} style={{ width: "100%" }}>
         <Grid size={10}>
-          <AsyncSelect
-            cacheOptions
-            loadOptions={debouncedLoadSubjects}
-            name={fieldLabel}
-            isMulti={isMultiSelect}
-            isSearchable
-            isClearable
-            defaultInputValue={selectedSubjects}
-            placeholder={t(placeholder)}
-            value={selectedSubjects}
-            defaultOptions={selectedSubjects}
-            onChange={onSelectedSubjectsChange}
-            noOptionsMessage={() => {
-              return t(noResults);
-            }}
-          />
+          {hasAllowedList ? (
+            <Select
+              options={allowedOptions || []}
+              name={fieldLabel}
+              isMulti={isMultiSelect}
+              isSearchable
+              isClearable
+              placeholder={t(placeholder)}
+              value={selectedSubjects}
+              onChange={onSelectedSubjectsChange}
+              noOptionsMessage={() => t(noResults)}
+            />
+          ) : (
+            <AsyncSelect
+              cacheOptions={(excludedSubjectUUIDs || []).join(",")}
+              loadOptions={debouncedLoadSubjects}
+              name={fieldLabel}
+              isMulti={isMultiSelect}
+              isSearchable
+              isClearable
+              defaultInputValue={selectedSubjects}
+              placeholder={t(placeholder)}
+              value={selectedSubjects}
+              defaultOptions={selectedSubjects}
+              onChange={onSelectedSubjectsChange}
+              noOptionsMessage={() => {
+                return t(noResults);
+              }}
+            />
+          )}
         </Grid>
       </Grid>
       <FormHelperText error={true}>

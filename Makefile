@@ -1,6 +1,9 @@
 clean:
 	rm -rf node_modules
 
+clean_packager_cache:
+	rm -rf node_modules/.vite
+
 check-project-versions:
 	npm search openchs-models
 	npm search avni-health-modules

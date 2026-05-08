@@ -6,56 +6,57 @@ import {
   Grid,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
 } from "@mui/material";
 import { format, isValid } from "date-fns";
 import { defaultTo, isEmpty, isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { InternalLink } from "../../../../common/components/utils";
 import {
   selectFormMappingForCancelEncounter,
-  selectFormMappingForEncounter
+  selectFormMappingForEncounter,
 } from "../../../sagas/encounterSelector";
 import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import { DeleteButton } from "../../../components/DeleteButton";
+import CustomizedSnackbar from "../../../components/CustomizedSnackbar";
+import { useEditFormRuleGuard } from "../../../services/useEditFormRuleGuard";
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(2),
   borderRight: "1px solid rgba(0,0,0,0.12)",
   "&:nth-child(4n),&:last-child": {
-    borderRight: "0px solid rgba(0,0,0,0.12)"
-  }
+    borderRight: "0px solid rgba(0,0,0,0.12)",
+  },
 }));
 
 const StyledPaper = styled(Paper)({
   textAlign: "left",
   boxShadow: "none",
   borderRadius: "0px",
-  padding: "0px"
+  padding: "0px",
 });
 
 const StyledList = styled(List)({
-  paddingBottom: "0px"
+  paddingBottom: "0px",
 });
 
 const StyledListItem = styled(ListItem)({
   paddingBottom: "0px",
-  paddingTop: "0px"
+  paddingTop: "0px",
 });
 
 const StyledListItemText = styled(ListItemText)({
   color: "#2196f3",
   fontSize: "14px",
-  textTransform: "uppercase"
+  textTransform: "uppercase",
 });
 
 const StyledListItemTextDate = styled(ListItemText)({
   color: "#555555",
-  fontSize: "15px"
+  fontSize: "15px",
 });
 
 const StyledStatusLabel = styled("label")(({ isCancelled }) => ({
@@ -64,20 +65,20 @@ const StyledStatusLabel = styled("label")(({ isCancelled }) => ({
   ...(isCancelled
     ? {
         color: "gray",
-        backgroundColor: "#DCDCDC"
+        backgroundColor: "#DCDCDC",
       }
     : {
         color: "red",
-        backgroundColor: "#ffeaea"
-      })
+        backgroundColor: "#ffeaea",
+      }),
 }));
 
 const StyledButton = styled(Button)({
   marginLeft: "8px",
-  fontSize: "14px"
+  fontSize: "14px",
 });
 
-const truncate = input => {
+const truncate = (input) => {
   if (input && input.length > 20) return input.substring(0, 20) + "...";
   else return input;
 };
@@ -86,24 +87,26 @@ const CompletedEncounter = ({ index, encounter, subjectTypeUuid }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const encounterFormMapping = useSelector(state =>
+  const encounterFormMapping = useSelector((state) =>
     selectFormMappingForEncounter(
       encounter.encounterType.uuid,
-      subjectTypeUuid
-    )(state)
+      subjectTypeUuid,
+    )(state),
   );
-  const cancelEncounterFormMapping = useSelector(state =>
+  const cancelEncounterFormMapping = useSelector((state) =>
     selectFormMappingForCancelEncounter(
       encounter.encounterType.uuid,
-      subjectTypeUuid
-    )(state)
+      subjectTypeUuid,
+    )(state),
   );
+  const { attemptEdit, editBlockedMessage, clearBlocked, pending } =
+    useEditFormRuleGuard();
 
   const encounterId = isEmpty(encounter.earliestVisitDateTime)
     ? encounter.encounterType.name.replaceAll(" ", "-")
     : encounter.name.replaceAll(" ", "-");
   const statusMap = {
-    cancelled: t("Cancelled")
+    cancelled: t("Cancelled"),
   };
   let status;
   let visitUrl;
@@ -123,7 +126,7 @@ const CompletedEncounter = ({ index, encounter, subjectTypeUuid }) => {
       key={index}
       size={{
         xs: 6,
-        sm: 3
+        sm: 3,
       }}
     >
       <StyledPaper>
@@ -133,20 +136,20 @@ const CompletedEncounter = ({ index, encounter, subjectTypeUuid }) => {
               <Link to={visitUrl}>
                 <StyledListItemText
                   title={t(
-                    defaultTo(encounter.name, encounter.encounterType.name)
+                    defaultTo(encounter.name, encounter.encounterType.name),
                   )}
                   primary={truncate(
-                    t(defaultTo(encounter.name, encounter.encounterType.name))
+                    t(defaultTo(encounter.name, encounter.encounterType.name)),
                   )}
                 />
               </Link>
             ) : (
               <StyledListItemText
                 title={t(
-                  defaultTo(encounter.name, encounter.encounterType.name)
+                  defaultTo(encounter.name, encounter.encounterType.name),
                 )}
                 primary={truncate(
-                  t(defaultTo(encounter.name, encounter.encounterType.name))
+                  t(defaultTo(encounter.name, encounter.encounterType.name)),
                 )}
               />
             )}
@@ -158,9 +161,9 @@ const CompletedEncounter = ({ index, encounter, subjectTypeUuid }) => {
                 isValid(new Date(encounter.encounterDateTime))
                   ? format(new Date(encounter.encounterDateTime), "dd-MM-yyyy")
                   : encounter.cancelDateTime &&
-                    isValid(new Date(encounter.cancelDateTime))
-                  ? format(new Date(encounter.cancelDateTime), "dd-MM-yyyy")
-                  : "-"
+                      isValid(new Date(encounter.cancelDateTime))
+                    ? format(new Date(encounter.cancelDateTime), "dd-MM-yyyy")
+                    : "-"
               }
             />
           </StyledListItem>
@@ -177,22 +180,48 @@ const CompletedEncounter = ({ index, encounter, subjectTypeUuid }) => {
         {encounter.encounterDateTime &&
         encounter.uuid &&
         !isEmpty(encounterFormMapping) ? (
-          <InternalLink
+          <StyledButton
             id={`edit-visit-${encounterId}`}
-            to={`/app/subject/editEncounter?uuid=${encounter.uuid}`}
+            color="primary"
+            disabled={pending}
+            onClick={() =>
+              attemptEdit({
+                formUuid: encounterFormMapping.formUUID,
+                entity: encounter,
+                entityType: "Encounter",
+                navigateTo: `/app/subject/editEncounter?uuid=${encounter.uuid}`,
+              })
+            }
           >
-            <StyledButton color="primary">{t("edit visit")}</StyledButton>
-          </InternalLink>
+            {t("edit visit")}
+          </StyledButton>
         ) : encounter.cancelDateTime &&
           encounter.uuid &&
           !isEmpty(cancelEncounterFormMapping) ? (
-          <InternalLink
+          <StyledButton
             id={`edit-cancel-visit-${encounterId}`}
-            to={`/app/subject/editCancelEncounter?uuid=${encounter.uuid}`}
+            color="primary"
+            disabled={pending}
+            onClick={() =>
+              attemptEdit({
+                formUuid: cancelEncounterFormMapping.formUUID,
+                entity: encounter,
+                entityType: "Encounter",
+                navigateTo: `/app/subject/editCancelEncounter?uuid=${encounter.uuid}`,
+              })
+            }
           >
-            <StyledButton color="primary">{t("edit visit")}</StyledButton>
-          </InternalLink>
+            {t("edit visit")}
+          </StyledButton>
         ) : null}
+        {editBlockedMessage && (
+          <CustomizedSnackbar
+            message={editBlockedMessage}
+            variant="error"
+            defaultSnackbarStatus={true}
+            onClose={clearBlocked}
+          />
+        )}
         <DeleteButton onDelete={() => setVoidConfirmation(true)} />
         <ConfirmDialog
           title={t("GeneralEncounterVoidAlertTitle")}

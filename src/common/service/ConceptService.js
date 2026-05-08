@@ -59,16 +59,19 @@ class ConceptService {
       const response = await http.post("/concepts", concept);
       return { concept: ConceptMapper.mapFromResponse(response.data) };
     } catch (err) {
-      // Handle conflict (409) errors more gracefully
       if (err.response && (err.response.status === 409 || err.response.status === 400)) {
         const serverMessage = typeof err.response.data === "string" ? err.response.data : err.response.data?.message || "";
         const nameMatch = serverMessage.match(/Concept with name '(.+?)'\s*already exists/);
+        if (nameMatch) {
+          return {
+            error: "A concept with this name already exists. Please use a different name.",
+            conflictingConceptName: nameMatch[1],
+          };
+        }
         return {
-          error: "A concept with this name already exists. Please use a different name.",
-          conflictingConceptName: nameMatch ? nameMatch[1] : null,
+          error: serverMessage || "Failed to save concept. Please try again.",
         };
       }
-      // Handle other errors
       return {
         error: err.message || "Failed to save concept. Please try again.",
       };

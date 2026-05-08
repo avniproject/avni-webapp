@@ -16,6 +16,8 @@ import { getEncounterForm } from "../../reducers/programSubjectDashboardReducer"
 import Observations from "dataEntryApp/components/Observations";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { DeleteButton } from "../../components/DeleteButton";
+import CustomizedSnackbar from "../../components/CustomizedSnackbar";
+import { useEditFormRuleGuard } from "../../services/useEditFormRuleGuard";
 import { formatDate } from "../../../common/utils/General";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
@@ -45,6 +47,8 @@ const EditVisitLink = ({
   isForProgramEncounters,
 }) => {
   const { t } = useTranslation();
+  const { attemptEdit, editBlockedMessage, clearBlocked, pending } =
+    useEditFormRuleGuard();
 
   const encounterFormMapping = useSelector((state) =>
     selectFormMappingForEncounter(
@@ -63,16 +67,40 @@ const EditVisitLink = ({
       )(state),
   );
 
-  const isFormAvailable = isForProgramEncounters
+  const formMapping = isForProgramEncounters
     ? programEncounterFormMapping
     : encounterFormMapping;
 
-  return isFormAvailable ? (
-    <StyledLink to={`${editEncounterUrl}?uuid=${encounter.uuid}`}>
-      {t("edit visit")}
-    </StyledLink>
-  ) : (
-    "-"
+  if (!formMapping) return "-";
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    attemptEdit({
+      formUuid: formMapping.formUUID,
+      entity: encounter,
+      entityType: isForProgramEncounters ? "ProgramEncounter" : "Encounter",
+      navigateTo: `${editEncounterUrl}?uuid=${encounter.uuid}`,
+    });
+  };
+
+  return (
+    <>
+      <StyledLink
+        to={`${editEncounterUrl}?uuid=${encounter.uuid}`}
+        onClick={handleClick}
+        style={pending ? { pointerEvents: "none", opacity: 0.5 } : undefined}
+      >
+        {t("edit visit")}
+      </StyledLink>
+      {editBlockedMessage && (
+        <CustomizedSnackbar
+          message={editBlockedMessage}
+          variant="error"
+          defaultSnackbarStatus={true}
+          onClose={clearBlocked}
+        />
+      )}
+    </>
   );
 };
 

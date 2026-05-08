@@ -259,9 +259,9 @@ export const AvniMediaUpload = ({
             },
           }}
         >
-          {allowUpload && <Grid item>{renderUploadButton()}</Grid>}
+          {allowUpload && <Grid>{renderUploadButton()}</Grid>}
           {mediaPreview && mediaType && (
-            <Grid item>
+            <Grid>
               <ToolTipContainer toolTipKey={toolTipKey} toolTipText={label}>
                 <MediaPreview
                   mediaUrl={mediaPreview}
@@ -273,7 +273,7 @@ export const AvniMediaUpload = ({
               </ToolTipContainer>
             </Grid>
           )}
-          <Grid item>
+          <Grid>
             <Typography sx={{ opacity: 0.5, whiteSpace: "nowrap" }}>
               {label}
             </Typography>

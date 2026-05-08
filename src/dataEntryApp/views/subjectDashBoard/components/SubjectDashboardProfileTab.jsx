@@ -23,6 +23,9 @@ import GridCardView from "../../../components/GridCardView";
 import _, { isEmpty, sortBy } from "lodash";
 import GroupMembershipCardView from "../../../components/GroupMembershipCardView";
 import MessageDialog from "../../../components/MessageDialog";
+import CustomizedSnackbar from "../../../components/CustomizedSnackbar";
+import { useEditFormRuleGuard } from "../../../services/useEditFormRuleGuard";
+import { selectRegistrationFormMappingForSubjectType } from "../../../sagas/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchSubjectSummary,
@@ -116,6 +119,20 @@ const SubjectDashboardProfileTab = ({
   const [membersChanged, setMembersChanged] = useState(false);
   const subjectSummary = useSelector(selectSubjectSummary);
   const isFetchingSummary = useSelector(selectFetchingRulesResponse);
+  const registrationFormMapping = useSelector(
+    selectRegistrationFormMappingForSubjectType(profile?.subjectType?.name),
+  );
+  const { attemptEdit, editBlockedMessage, clearBlocked, pending } =
+    useEditFormRuleGuard();
+
+  const handleEditProfile = () => {
+    attemptEdit({
+      formUuid: registrationFormMapping?.formUUID,
+      entity: profile,
+      entityType: "Individual",
+      navigateTo: `/app/editSubject?uuid=${profile.uuid}&type=${profile.subjectType.name}`,
+    });
+  };
 
   useEffect(() => {
     dispatch(fetchSubjectSummary(profile.uuid));
@@ -191,14 +208,13 @@ const SubjectDashboardProfileTab = ({
             >
               {t("void")}
             </StyledButton>
-            <StyledButton color="primary" id="edit-profile">
-              <InternalLink
-                to={`/app/editSubject?uuid=${profile.uuid}&type=${
-                  profile.subjectType.name
-                }`}
-              >
-                {t("edit")}
-              </InternalLink>
+            <StyledButton
+              color="primary"
+              id="edit-profile"
+              onClick={handleEditProfile}
+              disabled={pending}
+            >
+              {t("edit")}
             </StyledButton>
           </Grid>
         </StyledAccordionDetails>
@@ -340,6 +356,14 @@ const SubjectDashboardProfileTab = ({
 
   return (
     <Fragment>
+      {editBlockedMessage && (
+        <CustomizedSnackbar
+          message={editBlockedMessage}
+          variant="error"
+          defaultSnackbarStatus={true}
+          onClose={clearBlocked}
+        />
+      )}
       {profile && profile.voided ? (
         <StyledPaper>
           <SubjectVoided
