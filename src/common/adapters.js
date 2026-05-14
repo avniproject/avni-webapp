@@ -120,6 +120,10 @@ export const mapSubjectType = (json) => {
   subjectType.household = json.household;
   subjectType.iconFileS3Key = json.iconFileS3Key;
   subjectType.nameHelpText = json.nameHelpText;
+  subjectType.syncRegistrationConcept1 = json.syncRegistrationConcept1;
+  subjectType.syncRegistrationConcept2 = json.syncRegistrationConcept2;
+  subjectType.syncRegistrationConcept1Usable = json.syncRegistrationConcept1Usable;
+  subjectType.syncRegistrationConcept2Usable = json.syncRegistrationConcept2Usable;
   return subjectType;
 };
 

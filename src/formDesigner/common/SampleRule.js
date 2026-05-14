@@ -1,4 +1,4 @@
-export const sampleFormElementRule = entityName => {
+export const sampleFormElementRule = (entityName) => {
   return `//SAMPLE RULE EXAMPLE
 'use strict';
 ({params, imports}) => {
@@ -126,7 +126,7 @@ export const sampleEncounterEligibilityCheckRule = () => {
 };`;
 };
 
-const decisionType = entityName => {
+const decisionType = (entityName) => {
   switch (entityName) {
     case "individual":
       return "registrationDecisions";
@@ -139,7 +139,7 @@ const decisionType = entityName => {
       return "";
   }
 };
-export const sampleDecisionRule = entityName => {
+export const sampleDecisionRule = (entityName) => {
   return `//SAMPLE RULE EXAMPLE
   "use strict";
 ({params, imports}) => {
@@ -160,7 +160,23 @@ export const sampleEditFormRule = () => {
 };`;
 };
 
-export const sampleVisitScheduleRule = entityName => {
+export const sampleShareRule = () => {
+  return `//SAMPLE SHARE RULE
+"use strict";
+({params, imports}) => {
+    const {entity, form, services, myUserGroups, user} = params;
+    // 'data' is injected into the Share HTML template; both fields are optional.
+    // Translation keys configured below must also be added to the Share Translations table.
+    return {
+        data: {
+            // greeting: imports.i18n.t("shareRule.greeting")
+        },
+        text: ""
+    };
+};`;
+};
+
+export const sampleVisitScheduleRule = (entityName) => {
   return `//SAMPLE RULE EXAMPLE
 "use strict";
 ({ params, imports }) => {
@@ -173,7 +189,7 @@ export const sampleVisitScheduleRule = entityName => {
 };`;
 };
 
-export const sampleTaskScheduleRule = entityName => {
+export const sampleTaskScheduleRule = (entityName) => {
   return `//SAMPLE TASK SCHEDULE RULE EXAMPLE
 "use strict";
 ({ params, imports }) => {
@@ -186,7 +202,7 @@ export const sampleTaskScheduleRule = entityName => {
 };`;
 };
 
-export const sampleValidationRule = entityName => {
+export const sampleValidationRule = (entityName) => {
   return `//SAMPLE RULE EXAMPLE
 'use strict';
 ({params, imports}) => {
@@ -230,7 +246,7 @@ export const sampleWorkListUpdationRule = () => {
 };`;
 };
 
-export const sampleCardQuery = isNested => {
+export const sampleCardQuery = (isNested) => {
   if (isNested) {
     return `// Documentation - https://docs.mongodb.com/realm-legacy/docs/javascript/latest/index.html#queries
 'use strict';
