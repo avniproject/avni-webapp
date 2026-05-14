@@ -6,6 +6,8 @@ import {
   Typography,
   Grid,
   Box,
+  Button,
+  Stack,
 } from "@mui/material";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import PropTypes from "prop-types";
@@ -13,6 +15,7 @@ import {
   sampleChecklistRule,
   sampleDecisionRule,
   sampleEditFormRule,
+  sampleShareRule,
   sampleTaskScheduleRule,
   sampleValidationRule,
   sampleVisitScheduleRule,
@@ -22,6 +25,9 @@ import RuleDesigner from "./DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../util";
 import { get } from "lodash";
 import { JSEditor } from "../../common/components/JSEditor";
+import KeyValues from "./KeyValues";
+import FormShareTemplateService from "../../common/service/FormShareTemplateService";
+import { httpClient as http } from "../../common/utils/httpClient";
 
 const RulePanel = ({ title, details }) => {
   const [expanded, setExpanded] = useState(false);
@@ -277,9 +283,180 @@ const FormLevelRules = ({
           }
         />
       )}
+      <RulePanel
+        title={"Share Rule"}
+        details={
+          <Fragment>
+            <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+              Returns {"{data?, text?}"}. `data` is injected into the Share HTML
+              Template (PDF format). `text` is used as-is for WhatsApp / text
+              share. Both fields are optional. Register translation keys in the
+              table below.
+            </Typography>
+            <JSEditor
+              value={form.shareRule || sampleShareRule()}
+              onValueChange={(x) => props.onRuleUpdate("shareRule", x)}
+              disabled={disabled}
+            />
+          </Fragment>
+        }
+      />
+      <RulePanel
+        title={"Share HTML Template"}
+        details={
+          <ShareHtmlTemplateUploader
+            form={form}
+            onChange={(s3Key) =>
+              props.onRuleUpdate("shareTemplateS3Key", s3Key)
+            }
+            disabled={disabled}
+          />
+        }
+      />
+      <RulePanel
+        title={"Share Translations"}
+        details={
+          <Fragment>
+            <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+              Keys here are exported with the languages bundle. Per-language
+              values are filled in via the Translations menu; this table holds
+              English defaults only.
+            </Typography>
+            <KeyValues
+              keyValues={shareTranslationsToRows(form.shareTranslations)}
+              keyLabel="Translation Key"
+              valueLabel="Default (English) Value"
+              addButtonLabel="Add Translation"
+              tooltipKey="APP_DESIGNER_CARD_TRANSLATIONS"
+              multilineValue
+              onKeyValueChange={(next, index) => {
+                const rows = shareTranslationsToRows(form.shareTranslations);
+                rows[index] = {
+                  key: (next.key || "").trim(),
+                  value: next.value,
+                };
+                props.onRuleUpdate(
+                  "shareTranslations",
+                  rowsToShareTranslations(rows),
+                );
+              }}
+              onAddNewKeyValue={() => {
+                const rows = shareTranslationsToRows(form.shareTranslations);
+                rows.push({ key: "", value: "" });
+                props.onRuleUpdate(
+                  "shareTranslations",
+                  rowsToShareTranslations(rows),
+                );
+              }}
+              onDeleteKeyValue={(index) => {
+                const rows = shareTranslationsToRows(form.shareTranslations);
+                rows.splice(index, 1);
+                props.onRuleUpdate(
+                  "shareTranslations",
+                  rowsToShareTranslations(rows),
+                );
+              }}
+            />
+          </Fragment>
+        }
+      />
     </div>
   );
 };
+
+const ShareHtmlTemplateUploader = ({ form, onChange, disabled }) => {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+  const s3Key = form.shareTemplateS3Key;
+  const hasTemplate = !!s3Key;
+  const onFile = async (file) => {
+    if (!file) return;
+    if (!form.uuid) {
+      setError("Save the form once before uploading a share template.");
+      return;
+    }
+    setUploading(true);
+    setError(null);
+    try {
+      const res = await FormShareTemplateService.upload(form.uuid, file);
+      onChange(res?.data || null);
+    } catch (e) {
+      setError(e?.response?.data || e?.message || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+  const onDownload = () => {
+    if (!s3Key) return;
+    http.downloadFile(FormShareTemplateService.fileUrl(s3Key), s3Key);
+  };
+  return (
+    <Fragment>
+      <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+        HTML used to render Share as PDF. Use {"{{key}}"} placeholders that
+        resolve from the `data` object returned by the Share Rule.
+      </Typography>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Button
+          size="small"
+          variant="outlined"
+          component="label"
+          disabled={disabled || uploading}
+        >
+          {uploading
+            ? "Uploading..."
+            : hasTemplate
+              ? "Replace HTML"
+              : "Upload HTML"}
+          <input
+            type="file"
+            accept=".html,text/html"
+            hidden
+            onChange={(e) => onFile(e.target.files[0])}
+          />
+        </Button>
+        {hasTemplate && (
+          <Button size="small" variant="text" onClick={onDownload}>
+            Download current
+          </Button>
+        )}
+        {hasTemplate && (
+          <Button
+            size="small"
+            color="error"
+            variant="text"
+            onClick={() => onChange(null)}
+            disabled={disabled}
+          >
+            Clear
+          </Button>
+        )}
+        <Typography variant="caption" color="text.secondary">
+          {hasTemplate ? s3Key : "No template uploaded"}
+        </Typography>
+      </Stack>
+      {error && (
+        <Typography
+          variant="caption"
+          color="error"
+          sx={{ mt: 1 }}
+          component="div"
+        >
+          {String(error)}
+        </Typography>
+      )}
+    </Fragment>
+  );
+};
+
+const shareTranslationsToRows = (translations) =>
+  Object.entries(translations || {}).map(([key, value]) => ({ key, value }));
+
+const rowsToShareTranslations = (rows) =>
+  rows.reduce((acc, row) => {
+    if (row && row.key) acc[row.key] = row.value || "";
+    return acc;
+  }, {});
 
 FormLevelRules.propTypes = {
   form: PropTypes.object.isRequired,
