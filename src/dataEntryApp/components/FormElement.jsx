@@ -65,6 +65,7 @@ export const FormElement = ({
   updateObs,
   addNewQuestionGroup,
   removeQuestionGroup,
+  subjectType,
   subjectTypeSyncSettings,
 }) => {
   const type = formElement.getType();
@@ -77,6 +78,7 @@ export const FormElement = ({
   }
 
   const allowedValues = getAllowedSyncValuesForConcept(
+    subjectType,
     subjectTypeSyncSettings,
     formElement.concept,
   );
