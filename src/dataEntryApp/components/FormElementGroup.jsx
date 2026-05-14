@@ -59,6 +59,7 @@ export const FormElementGroup = ({
             updateObs={updateObs}
             addNewQuestionGroup={addNewQuestionGroup}
             removeQuestionGroup={removeQuestionGroup}
+            subjectType={subjectType}
             subjectTypeSyncSettings={subjectTypeSyncSettings}
           >
             {fe}

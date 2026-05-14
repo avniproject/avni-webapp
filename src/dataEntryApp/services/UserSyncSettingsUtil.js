@@ -9,13 +9,16 @@ export const findSubjectTypeSyncSettings = (userInfo, subjectType) => {
   );
 };
 
-export const getAllowedSyncValuesForConcept = (subjectTypeSyncSettings, concept) => {
-  if (!subjectTypeSyncSettings || !concept || !concept.uuid) return null;
-  if (concept.uuid === subjectTypeSyncSettings.syncConcept1) {
-    return subjectTypeSyncSettings.syncConcept1Values || EMPTY_VALUES;
-  }
-  if (concept.uuid === subjectTypeSyncSettings.syncConcept2) {
-    return subjectTypeSyncSettings.syncConcept2Values || EMPTY_VALUES;
-  }
-  return null;
+export const getAllowedSyncValuesForConcept = (subjectType, subjectTypeSyncSettings, concept) => {
+  if (!subjectType || !concept || !concept.uuid) return null;
+
+  const isSync1 = subjectType.syncRegistrationConcept1Usable !== false && concept.uuid === subjectType.syncRegistrationConcept1;
+  const isSync2 = subjectType.syncRegistrationConcept2Usable !== false && concept.uuid === subjectType.syncRegistrationConcept2;
+
+  if (!isSync1 && !isSync2) return null;
+
+  if (!subjectTypeSyncSettings) return EMPTY_VALUES;
+
+  const values = isSync1 ? subjectTypeSyncSettings.syncConcept1Values : subjectTypeSyncSettings.syncConcept2Values;
+  return values || EMPTY_VALUES;
 };
