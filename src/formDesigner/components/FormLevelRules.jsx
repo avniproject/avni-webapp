@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -23,22 +23,25 @@ import {
 import { ConceptSelect } from "common/components/ConceptSelect";
 import RuleDesigner from "./DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../util";
-import { get } from "lodash";
+import { get, isEqual } from "lodash";
 import { JSEditor } from "../../common/components/JSEditor";
 import KeyValues from "./KeyValues";
 import FormShareTemplateService from "../../common/service/FormShareTemplateService";
 import { httpClient as http } from "../../common/utils/httpClient";
 
-const RulePanel = ({ title, details }) => {
+const RulePanel = ({ title, details, nested = false }) => {
   const [expanded, setExpanded] = useState(false);
   const onToggleExpand = () => setExpanded(!expanded);
 
   return (
-    <Accordion expanded={expanded}>
+    <Accordion
+      expanded={expanded}
+      sx={nested ? { "&.Mui-expanded": { margin: 0 } } : undefined}
+    >
       <AccordionSummary
         aria-controls="panel1a-content"
         id="panel1a-header"
-        style={{ marginTop: "3%" }}
+        sx={{ marginTop: nested ? 0 : "3%" }}
       >
         <Grid
           container
@@ -284,78 +287,59 @@ const FormLevelRules = ({
         />
       )}
       <RulePanel
-        title={"Share Rule"}
+        title={"Share Rule Config"}
         details={
           <Fragment>
-            <Typography variant="caption" component="div" sx={{ mb: 1 }}>
-              Returns {"{data?, text?}"}. `data` is injected into the Share HTML
-              Template (PDF format). `text` is used as-is for WhatsApp / text
-              share. Both fields are optional. Register translation keys in the
-              table below.
-            </Typography>
-            <JSEditor
-              value={form.shareRule || sampleShareRule()}
-              onValueChange={(x) => props.onRuleUpdate("shareRule", x)}
-              disabled={disabled}
+            <RulePanel
+              nested
+              title={"Share Rule"}
+              details={
+                <Fragment>
+                  <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                    Returns {"{data?, text?}"}. `data` is injected into the
+                    Share HTML Template (PDF format). `text` is used as-is for
+                    WhatsApp / text share. Both fields are optional. Register
+                    translation keys in the Share Translations sub-panel.
+                  </Typography>
+                  <JSEditor
+                    value={form.shareRule || sampleShareRule()}
+                    onValueChange={(x) => props.onRuleUpdate("shareRule", x)}
+                    disabled={disabled}
+                  />
+                </Fragment>
+              }
             />
-          </Fragment>
-        }
-      />
-      <RulePanel
-        title={"Share HTML Template"}
-        details={
-          <ShareHtmlTemplateUploader
-            form={form}
-            onChange={(s3Key) =>
-              props.onRuleUpdate("shareTemplateS3Key", s3Key)
-            }
-            disabled={disabled}
-          />
-        }
-      />
-      <RulePanel
-        title={"Share Translations"}
-        details={
-          <Fragment>
-            <Typography variant="caption" component="div" sx={{ mb: 1 }}>
-              Keys here are exported with the languages bundle. Per-language
-              values are filled in via the Translations menu; this table holds
-              English defaults only.
-            </Typography>
-            <KeyValues
-              keyValues={shareTranslationsToRows(form.shareTranslations)}
-              keyLabel="Translation Key"
-              valueLabel="Default (English) Value"
-              addButtonLabel="Add Translation"
-              tooltipKey="APP_DESIGNER_CARD_TRANSLATIONS"
-              multilineValue
-              onKeyValueChange={(next, index) => {
-                const rows = shareTranslationsToRows(form.shareTranslations);
-                rows[index] = {
-                  key: (next.key || "").trim(),
-                  value: next.value,
-                };
-                props.onRuleUpdate(
-                  "shareTranslations",
-                  rowsToShareTranslations(rows),
-                );
-              }}
-              onAddNewKeyValue={() => {
-                const rows = shareTranslationsToRows(form.shareTranslations);
-                rows.push({ key: "", value: "" });
-                props.onRuleUpdate(
-                  "shareTranslations",
-                  rowsToShareTranslations(rows),
-                );
-              }}
-              onDeleteKeyValue={(index) => {
-                const rows = shareTranslationsToRows(form.shareTranslations);
-                rows.splice(index, 1);
-                props.onRuleUpdate(
-                  "shareTranslations",
-                  rowsToShareTranslations(rows),
-                );
-              }}
+            <RulePanel
+              nested
+              title={"Share HTML Template"}
+              details={
+                <ShareHtmlTemplateUploader
+                  form={form}
+                  onChange={(s3Key) =>
+                    props.onRuleUpdate("shareTemplateS3Key", s3Key)
+                  }
+                  disabled={disabled}
+                />
+              }
+            />
+            <RulePanel
+              nested
+              title={"Share Translations"}
+              details={
+                <Fragment>
+                  <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                    Keys here are exported with the languages bundle.
+                    Per-language values are filled in via the Translations menu;
+                    this table holds English defaults only.
+                  </Typography>
+                  <ShareTranslationsEditor
+                    value={form.shareTranslations}
+                    onChange={(next) =>
+                      props.onRuleUpdate("shareTranslations", next)
+                    }
+                  />
+                </Fragment>
+              }
             />
           </Fragment>
         }
@@ -457,6 +441,47 @@ const rowsToShareTranslations = (rows) =>
     if (row && row.key) acc[row.key] = row.value || "";
     return acc;
   }, {});
+
+const ShareTranslationsEditor = ({ value, onChange }) => {
+  const [rows, setRows] = useState(() => shareTranslationsToRows(value));
+
+  useEffect(() => {
+    if (!isEqual(rowsToShareTranslations(rows), value || {})) {
+      const hasDraftRow = rows.some((r) => !r || !r.key);
+      if (!hasDraftRow) setRows(shareTranslationsToRows(value));
+    }
+  }, [value]);
+
+  const commit = (nextRows) => {
+    setRows(nextRows);
+    onChange(rowsToShareTranslations(nextRows));
+  };
+
+  return (
+    <KeyValues
+      keyValues={rows}
+      keyLabel="Translation Key"
+      valueLabel="Default (English) Value"
+      addButtonLabel="Add Translation"
+      tooltipKey="APP_DESIGNER_CARD_TRANSLATIONS"
+      multilineValue
+      onKeyValueChange={(next, index) => {
+        const nextRows = [...rows];
+        nextRows[index] = {
+          key: (next.key || "").trim(),
+          value: next.value,
+        };
+        commit(nextRows);
+      }}
+      onAddNewKeyValue={() => commit([...rows, { key: "", value: "" }])}
+      onDeleteKeyValue={(index) => {
+        const nextRows = [...rows];
+        nextRows.splice(index, 1);
+        commit(nextRows);
+      }}
+    />
+  );
+};
 
 FormLevelRules.propTypes = {
   form: PropTypes.object.isRequired,
