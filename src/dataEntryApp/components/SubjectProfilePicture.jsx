@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
-import { isEmpty, toLower } from "lodash";
+import { isEmpty } from "lodash";
 import { useSelector } from "react-redux";
 import { selectEnrolSubjectTypeFromName } from "../sagas/enrolmentSelectors";
 import MediaService from "../../adminApp/service/MediaService";
 import { Box, Dialog } from "@mui/material";
 import CustomizedSnackbar from "./CustomizedSnackbar";
+import {
+  isProfilePictureEnabled,
+  resolveDefaultIconUrl,
+  resolveSubjectType,
+} from "./SubjectProfilePictureUtil";
 
 const SubjectProfilePicture = ({
   allowEnlargementOnClick,
@@ -13,21 +18,27 @@ const SubjectProfilePicture = ({
   subjectType,
   subjectTypeName,
   size,
-  style
+  style,
 }) => {
-  if (subjectType == null) {
-    subjectType = useSelector(selectEnrolSubjectTypeFromName(subjectTypeName));
-  }
-  const defaultIconUrl = `/icons/${toLower(subjectType.type)}.png`;
-  const isProfilePictureAllowed = subjectType.allowProfilePicture;
+  // Always call useSelector unconditionally to satisfy the Rules of Hooks.
+  // Some call sites (e.g. SubjectSearchTable) pass subjectType={null} and rely
+  // on the store lookup; others pass a hydrated SubjectType where the lookup
+  // is effectively a no-op fallback.
+  const subjectTypeFromStore = useSelector(
+    selectEnrolSubjectTypeFromName(subjectTypeName),
+  );
+  const resolvedSubjectType = resolveSubjectType(
+    subjectType,
+    subjectTypeFromStore,
+  );
+  const defaultIconUrl = resolveDefaultIconUrl(resolvedSubjectType);
   const isSubjectProfileIconSetup =
-    isProfilePictureAllowed && !isEmpty(profilePicture);
+    isProfilePictureEnabled(resolvedSubjectType) && !isEmpty(profilePicture);
   const label = isSubjectProfileIconSetup ? firstName : subjectTypeName;
   const [signedURL, setSignedURL] = useState();
   const [modalState, setModalState] = useState(false);
-  const [errorLoadingProfileImage, setErrorLoadingProfileImage] = useState(
-    false
-  );
+  const [errorLoadingProfileImage, setErrorLoadingProfileImage] =
+    useState(false);
 
   const handleShowDialog = () => {
     allowEnlargementOnClick && setModalState(!modalState);
@@ -36,15 +47,15 @@ const SubjectProfilePicture = ({
   useEffect(() => {
     let urlToUse = isSubjectProfileIconSetup
       ? profilePicture
-      : subjectType.iconFileS3Key;
+      : resolvedSubjectType && resolvedSubjectType.iconFileS3Key;
     if (!isEmpty(urlToUse)) {
       MediaService.getMedia(urlToUse)
-        .then(res => setSignedURL(res))
+        .then((res) => setSignedURL(res))
         .catch(() => setErrorLoadingProfileImage(true));
     }
-  }, [isSubjectProfileIconSetup, subjectType]);
+  }, [isSubjectProfileIconSetup, resolvedSubjectType]);
 
-  const renderIcon = url => {
+  const renderIcon = (url) => {
     return (
       <Box sx={{ display: "inline-block" }}>
         <CustomizedSnackbar
@@ -60,7 +71,7 @@ const SubjectProfilePicture = ({
             borderRadius: "50%",
             objectFit: "cover",
             cursor: allowEnlargementOnClick ? "pointer" : "default",
-            ...style
+            ...style,
           }}
           onClick={handleShowDialog}
           src={url}
@@ -79,7 +90,7 @@ const SubjectProfilePicture = ({
                 width: 300,
                 borderRadius: "50%",
                 objectFit: "cover",
-                ...style
+                ...style,
               }}
               onClick={handleShowDialog}
               src={url}

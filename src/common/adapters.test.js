@@ -1,4 +1,12 @@
-import { mapConcept, mapConceptAnswer, mapForm, mapFormElement, mapFormElementGroup, mapOperationalModules } from "./adapters";
+import {
+  mapConcept,
+  mapConceptAnswer,
+  mapForm,
+  mapFormElement,
+  mapFormElementGroup,
+  mapOperationalModules,
+  mapSubjectType,
+} from "./adapters";
 import { assert } from "chai";
 import { Concept, ConceptAnswer, EncounterType, Program, SubjectType } from "avni-models";
 import WebFormElementGroup from "./model/WebFormElementGroup";
@@ -41,19 +49,19 @@ describe("adapters", () => {
     assert.equal(feg.formElements.length, 3);
   });
 
-  it("should map form element group with question groups", function() {
+  it("should map form element group with question groups", function () {
     const form = {};
     const feg = { name: "a", form: form, applicableFormElements: [] };
     const questionGroup = { name: "qg", uuid: "uuid-1", concept: {} };
     feg.applicableFormElements.push({
       name: "1",
       group: questionGroup,
-      concept: {}
+      concept: {},
     });
     feg.applicableFormElements.push({
       name: "2",
       group: questionGroup,
-      concept: {}
+      concept: {},
     });
     const mapped = mapFormElementGroup(feg);
     assert.equal(mapped.formElements.length, 2);
@@ -97,7 +105,7 @@ describe("adapters", () => {
       formMappings: [{}],
       encounterTypes: [{ uuid: "abc" }],
       programs: [{ uuid: "xyz" }],
-      subjectTypes: [{ uuid: "123" }]
+      subjectTypes: [{ uuid: "123" }],
     };
     const operationalModules = mapOperationalModules(json);
 
@@ -115,6 +123,48 @@ describe("adapters", () => {
     assert.equal(operationalModules.encounterTypes[0].uuid, "abc");
     assert.equal(operationalModules.programs[0].uuid, "xyz");
     assert.equal(operationalModules.subjectTypes[0].uuid, "123");
+  });
+
+  describe("mapSubjectType", () => {
+    it("returns an empty SubjectType when the json is null (avni-webapp#1542)", () => {
+      // Relationship payloads frequently arrive with individualB.subjectType
+      // undefined; the mapper produces this empty shell rather than throwing,
+      // so consumers must defend against missing `.type`.
+      const subjectType = mapSubjectType(null);
+      assert.equal(subjectType.constructor, SubjectType);
+      assert.isUndefined(subjectType.type);
+      assert.isUndefined(subjectType.name);
+      assert.isUndefined(subjectType.allowProfilePicture);
+    });
+
+    it("returns an empty SubjectType when the json is undefined", () => {
+      const subjectType = mapSubjectType(undefined);
+      assert.equal(subjectType.constructor, SubjectType);
+      assert.isUndefined(subjectType.type);
+    });
+
+    it("preserves the type field from the payload", () => {
+      const subjectType = mapSubjectType({
+        uuid: "uuid-1",
+        name: "Mother",
+        type: "Person",
+        allowProfilePicture: true,
+      });
+      assert.equal(subjectType.uuid, "uuid-1");
+      assert.equal(subjectType.name, "Mother");
+      assert.equal(subjectType.type, "Person");
+      assert.isTrue(subjectType.allowProfilePicture);
+    });
+
+    it("prefers operationalSubjectTypeName over name when both are present", () => {
+      const subjectType = mapSubjectType({
+        uuid: "uuid-2",
+        name: "Person",
+        operationalSubjectTypeName: "Beneficiary",
+        type: "Person",
+      });
+      assert.equal(subjectType.name, "Beneficiary");
+    });
   });
 });
 
@@ -134,9 +184,9 @@ const sampleConcept = {
         lowAbsolute: null,
         highNormal: null,
         lowNormal: null,
-        name: "General"
+        name: "General",
       },
-      abnormal: false
+      abnormal: false,
     },
     {
       unique: false,
@@ -149,9 +199,9 @@ const sampleConcept = {
         lowAbsolute: null,
         highNormal: null,
         lowNormal: null,
-        name: "ST"
+        name: "ST",
       },
-      abnormal: false
+      abnormal: false,
     },
     {
       unique: false,
@@ -164,17 +214,17 @@ const sampleConcept = {
         lowAbsolute: null,
         highNormal: null,
         lowNormal: null,
-        name: "SC"
+        name: "SC",
       },
-      abnormal: false
-    }
+      abnormal: false,
+    },
   ],
   voided: false,
   highAbsolute: null,
   lowAbsolute: null,
   highNormal: null,
   lowNormal: null,
-  name: "Caste Category"
+  name: "Caste Category",
 };
 
 const sampleFormElementGroup = {
@@ -192,14 +242,14 @@ const sampleFormElementGroup = {
         lowAbsolute: null,
         highNormal: null,
         lowNormal: null,
-        name: "Standard upto which schooling completed"
+        name: "Standard upto which schooling completed",
       },
       voided: false,
       displayOrder: 5,
       keyValues: [],
       validFormat: null,
       name: "Standard upto which schooling completed",
-      type: "SingleSelect"
+      type: "SingleSelect",
     },
     {
       mandatory: true,
@@ -213,14 +263,14 @@ const sampleFormElementGroup = {
         lowAbsolute: null,
         highNormal: null,
         lowNormal: null,
-        name: "Caste (Free Text)"
+        name: "Caste (Free Text)",
       },
       voided: false,
       displayOrder: 2.5,
       keyValues: [],
       validFormat: null,
       name: "Caste",
-      type: "SingleSelect"
+      type: "SingleSelect",
     },
     {
       mandatory: false,
@@ -240,9 +290,9 @@ const sampleFormElementGroup = {
               lowAbsolute: null,
               highNormal: null,
               lowNormal: null,
-              name: "General"
+              name: "General",
             },
-            abnormal: false
+            abnormal: false,
           },
           {
             unique: false,
@@ -255,9 +305,9 @@ const sampleFormElementGroup = {
               lowAbsolute: null,
               highNormal: null,
               lowNormal: null,
-              name: "ST"
+              name: "ST",
             },
-            abnormal: false
+            abnormal: false,
           },
           {
             unique: false,
@@ -270,9 +320,9 @@ const sampleFormElementGroup = {
               lowAbsolute: null,
               highNormal: null,
               lowNormal: null,
-              name: "SC"
+              name: "SC",
             },
-            abnormal: false
+            abnormal: false,
           },
           {
             unique: false,
@@ -285,29 +335,29 @@ const sampleFormElementGroup = {
               lowAbsolute: null,
               highNormal: null,
               lowNormal: null,
-              name: "OBC"
+              name: "OBC",
             },
-            abnormal: false
-          }
+            abnormal: false,
+          },
         ],
         voided: false,
         highAbsolute: null,
         lowAbsolute: null,
         highNormal: null,
         lowNormal: null,
-        name: "Caste Category"
+        name: "Caste Category",
       },
       voided: false,
       displayOrder: 3,
       keyValues: [],
       validFormat: null,
       name: "Caste category",
-      type: "SingleSelect"
-    }
+      type: "SingleSelect",
+    },
   ],
   voided: false,
   displayOrder: 2,
-  name: "Individual details"
+  name: "Individual details",
 };
 
 const sampleFormElement = {
@@ -322,14 +372,14 @@ const sampleFormElement = {
     lowAbsolute: null,
     highNormal: null,
     lowNormal: null,
-    name: "Standard upto which schooling completed"
+    name: "Standard upto which schooling completed",
   },
   voided: false,
   displayOrder: 5,
   keyValues: [],
   validFormat: null,
   name: "Standard upto which schooling completed",
-  type: "SingleSelect"
+  type: "SingleSelect",
 };
 
 const sampleForm = {
@@ -353,14 +403,14 @@ const sampleForm = {
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Standard upto which schooling completed"
+            name: "Standard upto which schooling completed",
           },
           voided: false,
           displayOrder: 5,
           keyValues: [],
           validFormat: null,
           name: "Standard upto which schooling completed",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -374,14 +424,14 @@ const sampleForm = {
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Caste (Free Text)"
+            name: "Caste (Free Text)",
           },
           voided: false,
           displayOrder: 2.5,
           keyValues: [],
           validFormat: null,
           name: "Caste",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: false,
@@ -401,9 +451,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "General"
+                  name: "General",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -416,9 +466,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "ST"
+                  name: "ST",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -431,9 +481,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "SC"
+                  name: "SC",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -446,24 +496,24 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "OBC"
+                  name: "OBC",
                 },
-                abnormal: false
-              }
+                abnormal: false,
+              },
             ],
             voided: false,
             highAbsolute: null,
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Caste Category"
+            name: "Caste Category",
           },
           voided: false,
           displayOrder: 3,
           keyValues: [],
           validFormat: null,
           name: "Caste category",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: false,
@@ -477,17 +527,17 @@ const sampleForm = {
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Aadhaar ID"
+            name: "Aadhaar ID",
           },
           voided: false,
           displayOrder: 12,
           keyValues: [],
           validFormat: {
             regex: "^[0-9]{12}$",
-            descriptionKey: "Required12Digits"
+            descriptionKey: "Required12Digits",
           },
           name: "Aadhaar Number",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -507,9 +557,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Female marriage"
+                  name: "Female marriage",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -522,9 +572,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Out migrant"
+                  name: "Out migrant",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -537,9 +587,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "In migrant"
+                  name: "In migrant",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -552,9 +602,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Resident"
+                  name: "Resident",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -567,24 +617,24 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Dead"
+                  name: "Dead",
                 },
-                abnormal: false
-              }
+                abnormal: false,
+              },
             ],
             voided: false,
             highAbsolute: null,
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Status of the individual"
+            name: "Status of the individual",
           },
           voided: false,
           displayOrder: 11,
           keyValues: [],
           validFormat: null,
           name: "Status of the individual",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -604,9 +654,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Other"
+                  name: "Other",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -619,9 +669,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Sister"
+                  name: "Sister",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -634,9 +684,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Daughter"
+                  name: "Daughter",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -649,9 +699,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Brother"
+                  name: "Brother",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -664,9 +714,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Son"
+                  name: "Son",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -679,9 +729,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Grandmother"
+                  name: "Grandmother",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -694,9 +744,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Grandfather"
+                  name: "Grandfather",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -709,9 +759,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Wife"
+                  name: "Wife",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -724,9 +774,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Daughter-in-law"
+                  name: "Daughter-in-law",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -739,9 +789,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Sister in law"
+                  name: "Sister in law",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -754,9 +804,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Self"
+                  name: "Self",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -769,9 +819,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Husband"
+                  name: "Husband",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -784,24 +834,24 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Brother in law"
+                  name: "Brother in law",
                 },
-                abnormal: false
-              }
+                abnormal: false,
+              },
             ],
             voided: false,
             highAbsolute: null,
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Relation to head of the family"
+            name: "Relation to head of the family",
           },
           voided: false,
           displayOrder: 1,
           keyValues: [],
           validFormat: null,
           name: "Relation with head of the family",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -815,14 +865,14 @@ const sampleForm = {
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Disability"
+            name: "Disability",
           },
           voided: false,
           displayOrder: 10,
           keyValues: [],
           validFormat: null,
           name: "Disability",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -842,9 +892,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "No"
+                  name: "No",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -857,24 +907,24 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Yes"
+                  name: "Yes",
                 },
-                abnormal: false
-              }
+                abnormal: false,
+              },
             ],
             voided: false,
             highAbsolute: null,
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Whether sterilized"
+            name: "Whether sterilized",
           },
           voided: false,
           displayOrder: 9,
           keyValues: [],
           validFormat: null,
           name: "Whether sterilized",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -894,9 +944,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Skilled manual"
+                  name: "Skilled manual",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -909,9 +959,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Contractor"
+                  name: "Contractor",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -924,9 +974,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Housewife"
+                  name: "Housewife",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -939,9 +989,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Daily wage labourer"
+                  name: "Daily wage labourer",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -954,9 +1004,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Health worker"
+                  name: "Health worker",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -969,9 +1019,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Labourer"
+                  name: "Labourer",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -984,9 +1034,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Agricultural labourer"
+                  name: "Agricultural labourer",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -999,9 +1049,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Student"
+                  name: "Student",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1014,9 +1064,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Priest"
+                  name: "Priest",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1029,9 +1079,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Skilled worker"
+                  name: "Skilled worker",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1044,9 +1094,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Government Job"
+                  name: "Government Job",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1059,9 +1109,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Shopkeeper"
+                  name: "Shopkeeper",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1074,9 +1124,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Other"
+                  name: "Other",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1089,9 +1139,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Farmer"
+                  name: "Farmer",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1104,9 +1154,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Private Job"
+                  name: "Private Job",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1119,9 +1169,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Petty business"
+                  name: "Petty business",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1134,9 +1184,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Unemployed"
+                  name: "Unemployed",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1149,9 +1199,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Professional/Technical"
+                  name: "Professional/Technical",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1164,24 +1214,24 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Political leader"
+                  name: "Political leader",
                 },
-                abnormal: false
-              }
+                abnormal: false,
+              },
             ],
             voided: false,
             highAbsolute: null,
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Occupation"
+            name: "Occupation",
           },
           voided: false,
           displayOrder: 6,
           keyValues: [],
           validFormat: null,
           name: "Occupation",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -1201,9 +1251,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Unmarried"
+                  name: "Unmarried",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1216,9 +1266,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Currently married"
+                  name: "Currently married",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1231,9 +1281,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Other"
+                  name: "Other",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1246,9 +1296,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Widow(er)"
+                  name: "Widow(er)",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1261,9 +1311,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Remarried"
+                  name: "Remarried",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1276,9 +1326,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Separated"
+                  name: "Separated",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1291,24 +1341,24 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Divorced"
+                  name: "Divorced",
                 },
-                abnormal: false
-              }
+                abnormal: false,
+              },
             ],
             voided: false,
             highAbsolute: null,
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Marital status"
+            name: "Marital status",
           },
           voided: false,
           displayOrder: 7,
           keyValues: [],
           validFormat: null,
           name: "Marital status",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: false,
@@ -1322,14 +1372,14 @@ const sampleForm = {
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Contact Number"
+            name: "Contact Number",
           },
           voided: false,
           displayOrder: 13,
           keyValues: [],
           validFormat: null,
           name: "Contact Number",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -1349,9 +1399,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Antyodaya"
+                  name: "Antyodaya",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1364,9 +1414,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "APL"
+                  name: "APL",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1379,9 +1429,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "BPL"
+                  name: "BPL",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1394,24 +1444,24 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "No"
+                  name: "No",
                 },
-                abnormal: false
-              }
+                abnormal: false,
+              },
             ],
             voided: false,
             highAbsolute: null,
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Ration Card"
+            name: "Ration Card",
           },
           voided: false,
           displayOrder: 4,
           keyValues: [],
           validFormat: null,
           name: "Ration card",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -1431,9 +1481,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Other"
+                  name: "Other",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1446,9 +1496,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Sikh"
+                  name: "Sikh",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1461,9 +1511,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Christian"
+                  name: "Christian",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1476,9 +1526,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Jain"
+                  name: "Jain",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1491,9 +1541,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Muslim"
+                  name: "Muslim",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1506,24 +1556,24 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Hindu"
+                  name: "Hindu",
                 },
-                abnormal: false
-              }
+                abnormal: false,
+              },
             ],
             voided: false,
             highAbsolute: null,
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Religion"
+            name: "Religion",
           },
           voided: false,
           displayOrder: 2,
           keyValues: [],
           validFormat: null,
           name: "Religion",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -1543,9 +1593,9 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "No"
+                  name: "No",
                 },
-                abnormal: false
+                abnormal: false,
               },
               {
                 unique: false,
@@ -1558,24 +1608,24 @@ const sampleForm = {
                   lowAbsolute: null,
                   highNormal: null,
                   lowNormal: null,
-                  name: "Yes"
+                  name: "Yes",
                 },
-                abnormal: false
-              }
+                abnormal: false,
+              },
             ],
             voided: false,
             highAbsolute: null,
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Whether any disability"
+            name: "Whether any disability",
           },
           voided: false,
           displayOrder: 9.5,
           keyValues: [],
           validFormat: null,
           name: "Whether any disability",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: false,
@@ -1589,19 +1639,19 @@ const sampleForm = {
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Date of marriage"
+            name: "Date of marriage",
           },
           voided: false,
           displayOrder: 8,
           keyValues: [],
           validFormat: null,
           name: "Date of marriage",
-          type: "SingleSelect"
-        }
+          type: "SingleSelect",
+        },
       ],
       voided: false,
       displayOrder: 2,
-      name: "Individual details"
+      name: "Individual details",
     },
     {
       uuid: "0ef62f9b-e52e-4fd9-be85-4c3f08c9a973",
@@ -1618,14 +1668,14 @@ const sampleForm = {
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Household number"
+            name: "Household number",
           },
           voided: false,
           displayOrder: 1,
           keyValues: [],
           validFormat: null,
           name: "Household Number",
-          type: "SingleSelect"
+          type: "SingleSelect",
         },
         {
           mandatory: true,
@@ -1639,21 +1689,21 @@ const sampleForm = {
             lowAbsolute: null,
             highNormal: null,
             lowNormal: null,
-            name: "Number of household members (eating together)"
+            name: "Number of household members (eating together)",
           },
           voided: false,
           displayOrder: 2,
           keyValues: [],
           validFormat: null,
           name: "Number of household members (eating together)",
-          type: "SingleSelect"
-        }
+          type: "SingleSelect",
+        },
       ],
       voided: false,
       displayOrder: 1,
-      name: "Household Details"
-    }
-  ]
+      name: "Household Details",
+    },
+  ],
 };
 
 const sampleOperationalModules = {
@@ -1665,7 +1715,7 @@ const sampleOperationalModules = {
       programId: null,
       subjectTypeId: 2,
       formId: 66,
-      formUuid: "8d1f4548-e327-4416-be33-46b027cc4b59"
+      formUuid: "8d1f4548-e327-4416-be33-46b027cc4b59",
     },
     {
       id: 128,
@@ -1674,7 +1724,7 @@ const sampleOperationalModules = {
       programId: 7,
       subjectTypeId: 2,
       formId: 67,
-      formUuid: "b768992d-2d6b-48e3-830a-e3029fb08f8e"
+      formUuid: "b768992d-2d6b-48e3-830a-e3029fb08f8e",
     },
     {
       id: 129,
@@ -1683,7 +1733,7 @@ const sampleOperationalModules = {
       programId: 7,
       subjectTypeId: 2,
       formId: 71,
-      formUuid: "ac7158bb-1ca9-4a75-b003-f10816830fb0"
+      formUuid: "ac7158bb-1ca9-4a75-b003-f10816830fb0",
     },
     {
       id: 130,
@@ -1692,7 +1742,7 @@ const sampleOperationalModules = {
       programId: 7,
       subjectTypeId: 2,
       formId: 68,
-      formUuid: "8cd7f4c4-dc56-4e64-89d3-7327900f51f1"
+      formUuid: "8cd7f4c4-dc56-4e64-89d3-7327900f51f1",
     },
     {
       id: 131,
@@ -1701,7 +1751,7 @@ const sampleOperationalModules = {
       programId: 7,
       subjectTypeId: 2,
       formId: 69,
-      formUuid: "63a064fa-8efe-4ad4-978c-4b973f90afe5"
+      formUuid: "63a064fa-8efe-4ad4-978c-4b973f90afe5",
     },
     {
       id: 132,
@@ -1710,7 +1760,7 @@ const sampleOperationalModules = {
       programId: 7,
       subjectTypeId: 2,
       formId: 69,
-      formUuid: "63a064fa-8efe-4ad4-978c-4b973f90afe5"
+      formUuid: "63a064fa-8efe-4ad4-978c-4b973f90afe5",
     },
     {
       id: 133,
@@ -1719,7 +1769,7 @@ const sampleOperationalModules = {
       programId: 7,
       subjectTypeId: 2,
       formId: 70,
-      formUuid: "45b4fd50-0b2d-4aba-8a88-a746d917c1fe"
+      formUuid: "45b4fd50-0b2d-4aba-8a88-a746d917c1fe",
     },
     {
       id: 134,
@@ -1728,46 +1778,46 @@ const sampleOperationalModules = {
       programId: 7,
       subjectTypeId: 2,
       formId: 72,
-      formUuid: "4f4539ab-3fe7-44cc-850f-92deac61b767"
-    }
+      formUuid: "4f4539ab-3fe7-44cc-850f-92deac61b767",
+    },
   ],
   encounterTypes: [
     {
       name: "Record issues",
       id: 48,
       uuid: "92f1696f-6a7e-4256-a2bf-9780888bbe80",
-      operationalEncounterTypeName: "Record issues"
+      operationalEncounterTypeName: "Record issues",
     },
     {
       name: "Record JCB details",
       id: 49,
       uuid: "a8ed0b01-4acc-41c6-8a51-c8c16f2cade7",
-      operationalEncounterTypeName: "Record JCB details"
+      operationalEncounterTypeName: "Record JCB details",
     },
     {
       name: "Record poclain details",
       id: 50,
       uuid: "b7c306d7-b252-4562-8f6e-321643955117",
-      operationalEncounterTypeName: "Record poclain details"
+      operationalEncounterTypeName: "Record poclain details",
     },
     {
       name: "Record beneficiary data",
       id: 51,
       uuid: "f6a89f2f-4aec-44c1-a33e-305f50855e96",
-      operationalEncounterTypeName: "Record beneficiary data"
+      operationalEncounterTypeName: "Record beneficiary data",
     },
     {
       name: "Endline survey",
       id: 52,
       uuid: "647522f5-a872-44c0-aa51-e82c47a006ee",
-      operationalEncounterTypeName: "Endline survey"
+      operationalEncounterTypeName: "Endline survey",
     },
     {
       name: "Baseline survey",
       id: 53,
       uuid: "7082bfff-59a4-4c2b-ad28-ca4abe7480c8",
-      operationalEncounterTypeName: "Baseline survey"
-    }
+      operationalEncounterTypeName: "Baseline survey",
+    },
   ],
   programs: [
     {
@@ -1776,15 +1826,15 @@ const sampleOperationalModules = {
       uuid: "082180d6-c4ef-4695-a137-f14c3b651736",
       colour: "deepskyblue",
       operationalProgramName: "GDGS 2019",
-      programSubjectLabel: "GDGS 2019"
-    }
+      programSubjectLabel: "GDGS 2019",
+    },
   ],
   subjectTypes: [
     {
       name: "Waterbody",
       id: 2,
       uuid: "8a9b0ef8-325b-4f75-8453-daeaf59df29d",
-      operationalSubjectTypeName: "Waterbody"
-    }
-  ]
+      operationalSubjectTypeName: "Waterbody",
+    },
+  ],
 };
