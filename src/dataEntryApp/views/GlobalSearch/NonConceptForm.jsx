@@ -21,6 +21,8 @@ function NonConceptForm({
   searchFilterForms = [],
   selectedDate,
   onDateChange,
+  dateOfBirth,
+  onDateOfBirthChange,
 }) {
   const { t } = useTranslation();
 
@@ -28,11 +30,33 @@ function NonConceptForm({
     <Fragment key={searchFilterForms.uuid}>
       <StyledGrid container spacing={3}>
         {searchFilterForms.map((searchFilterForm, index) =>
-          (searchFilterForm.type === "RegistrationDate" ||
-            searchFilterForm.type === "EnrolmentDate" ||
-            searchFilterForm.type === "ProgramEncounterDate" ||
-            searchFilterForm.type === "EncounterDate") &&
-          searchFilterForm.widget === "Default" ? (
+          searchFilterForm.type === "DateOfBirth" ? (
+            <Grid key={index} size={12}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <StyledTypography variant="body1" sx={{ mb: 1 }}>
+                  {t(searchFilterForm.titleKey)}
+                </StyledTypography>
+                <DatePicker
+                  id="date-of-birth-picker"
+                  format={dateFormat}
+                  value={dateOfBirth || null}
+                  onChange={(d) => onDateOfBirthChange(d)}
+                  slotProps={{
+                    textField: { variant: "outlined" },
+                    actionBar: { actions: ["clear"] },
+                    openPickerButton: {
+                      "aria-label": "change date of birth",
+                      color: "primary",
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+            </Grid>
+          ) : (searchFilterForm.type === "RegistrationDate" ||
+              searchFilterForm.type === "EnrolmentDate" ||
+              searchFilterForm.type === "ProgramEncounterDate" ||
+              searchFilterForm.type === "EncounterDate") &&
+            searchFilterForm.widget === "Default" ? (
             <Grid key={index} size={12}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <StyledTypography variant="body1" sx={{ mb: 1 }}>

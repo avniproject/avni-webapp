@@ -62,6 +62,7 @@ export const CreateEditFilters = ({
             CustomFilter.type.Name,
             CustomFilter.type.Age,
             CustomFilter.type.SearchAll,
+            CustomFilter.type.DateOfBirth,
           ].includes(t),
         )
       : allTypes;
@@ -376,6 +377,7 @@ export const CreateEditFilters = ({
       EnrolmentDate,
       ProgramEncounterDate,
       EncounterDate,
+      DateOfBirth,
     } = CustomFilter.type;
     const widgetConceptDataTypes = [
       Concept.dataType.Date,
@@ -389,11 +391,17 @@ export const CreateEditFilters = ({
         EnrolmentDate,
         ProgramEncounterDate,
         EncounterDate,
+        DateOfBirth,
       ].includes(selectedType.value) ||
       (selectedConcept.value &&
         widgetConceptDataTypes.includes(selectedConcept.value.dataType))
     );
   };
+
+  const widgetOptionsForSelectedType =
+    selectedType && selectedType.value === CustomFilter.type.DateOfBirth
+      ? widgetOptions.filter((w) => w.value === CustomFilter.widget.Default)
+      : widgetOptions;
 
   return (
     <div>
@@ -565,7 +573,7 @@ export const CreateEditFilters = ({
                   "Widget Type",
                   "Select Widget Type",
                   selectedWidget,
-                  widgetOptions,
+                  widgetOptionsForSelectedType,
                   (w) => setWidget(w),
                   "APP_DESIGNER_FILTER_WIDGET_TYPE",
                 )}
