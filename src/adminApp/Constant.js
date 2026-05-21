@@ -5,13 +5,13 @@ export const programInitialState = {
   enrolmentSummaryRule: "",
   enrolmentEligibilityCheckRule: "",
   manualEnrolmentEligibilityCheckRule: "",
-  loaded: false
+  loaded: false,
 };
 
 export const encounterTypeInitialState = {
   name: "",
   encounterEligibilityCheckRule: "",
-  loaded: false
+  loaded: false,
 };
 
 export const subjectTypeInitialState = {
@@ -24,6 +24,8 @@ export const subjectTypeInitialState = {
   lastNameOptional: false,
   settings: {
     displayRegistrationDetails: true,
-    displayPlannedEncounters: true
-  }
+    displayPlannedEncounters: true,
+  },
+  attendanceEnabled: false,
+  attendanceTypes: [],
 };

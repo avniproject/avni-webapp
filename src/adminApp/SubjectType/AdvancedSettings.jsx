@@ -5,7 +5,7 @@ import {
   Accordion,
   AccordionDetails,
   Box,
-  Input
+  Input,
 } from "@mui/material";
 import { AddressLevelSetting } from "./AddressLevelSetting";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
@@ -17,17 +17,18 @@ import { forEach, get, includes, isEmpty } from "lodash";
 import { OptionSelect } from "./OptionSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { SubjectTypeType } from "./Types";
+import AttendanceSettings from "./AttendanceSettings";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
-  marginRight: theme.spacing(2)
+  marginRight: theme.spacing(2),
 }));
 
 const CustomAccordion = styled(Accordion)(({ theme }) => ({
   border: "1px solid rgba(0,0,0,.125)",
   borderRadius: theme.shape.borderRadius,
   boxShadow: "none",
-  maxWidth: "75%"
+  maxWidth: "75%",
 }));
 CustomAccordion.muiName = "Accordion";
 
@@ -35,14 +36,14 @@ const CustomAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
   marginTop: 10,
   marginBottom: 10,
   padding: theme.spacing(2),
-  display: "block"
+  display: "block",
 }));
 CustomAccordionDetails.muiName = "AccordionDetails";
 
 const StyledSettingsContainer = styled("div")({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "space-between"
+  justifyContent: "space-between",
 });
 
 const StyledInput = styled(Input)({
@@ -50,20 +51,20 @@ const StyledInput = styled(Input)({
   "& .MuiInputBase-input": {
     // Ensure empty string instead of null
     '&[value="null"]': {
-      content: '""'
-    }
-  }
+      content: '""',
+    },
+  },
 });
 
 const StyledSyncSettingsBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(3),
   marginBottom: theme.spacing(2),
   padding: theme.spacing(2),
-  border: "1px solid #e1e1e1"
+  border: "1px solid #e1e1e1",
 }));
 
 const StyledSyncSettingsTypography = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(1)
+  marginBottom: theme.spacing(1),
 }));
 
 const syncAttributeDataTypes = ["Numeric", "Coded", "Text"];
@@ -72,7 +73,7 @@ export const AdvancedSettings = ({
   dispatch,
   locationTypes,
   formMappings,
-  isEdit
+  isEdit,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [syncAttributes, setSyncAttributes] = useState([]);
@@ -88,9 +89,9 @@ export const AdvancedSettings = ({
     if (
       includes(
         syncAttributes
-          .filter(concept => concept.isDecisionConcept)
-          .map(concept => concept.value),
-        value
+          .filter((concept) => concept.isDecisionConcept)
+          .map((concept) => concept.value),
+        value,
       )
     ) {
       window.confirm(decisionConceptSyncAttributeAlert);
@@ -104,11 +105,11 @@ export const AdvancedSettings = ({
 
   useEffect(() => {
     if (formUuid) {
-      http.get(`/forms/export?formUUID=${formUuid}`).then(response => {
+      http.get(`/forms/export?formUUID=${formUuid}`).then((response) => {
         const form = response.data;
         const syncAttributes = [];
-        forEach(form.formElementGroups, feg => {
-          forEach(feg.formElements, fe => {
+        forEach(form.formElementGroups, (feg) => {
+          forEach(feg.formElements, (fe) => {
             const concept = fe.concept;
             if (
               !feg.voided &&
@@ -120,12 +121,12 @@ export const AdvancedSettings = ({
             }
           });
         });
-        forEach(form.decisionConcepts, concept => {
+        forEach(form.decisionConcepts, (concept) => {
           if (includes(syncAttributeDataTypes, concept.dataType)) {
             syncAttributes.push({
               label: concept.name,
               value: concept.uuid,
-              isDecisionConcept: true
+              isDecisionConcept: true,
             });
           }
         });
@@ -139,7 +140,7 @@ export const AdvancedSettings = ({
       <CustomAccordion
         square
         expanded={expanded}
-        onChange={() => setExpanded(expanded => !expanded)}
+        onChange={() => setExpanded((expanded) => !expanded)}
       >
         <CustomisedAccordionSummary>
           <Typography>Advanced settings</Typography>
@@ -148,7 +149,7 @@ export const AdvancedSettings = ({
           <StyledSettingsContainer>
             <AddressLevelSetting
               levelUUIDs={subjectType.locationTypeUUIDs}
-              setLevelUUIDs={uuids =>
+              setLevelUUIDs={(uuids) =>
                 dispatch({ type: "locationTypes", payload: uuids })
               }
               locationTypes={locationTypes}
@@ -156,10 +157,10 @@ export const AdvancedSettings = ({
             <AvniSwitch
               switchFirst
               checked={!!subjectType.allowEmptyLocation}
-              onChange={event =>
+              onChange={(event) =>
                 dispatch({
                   type: "allowEmptyLocation",
-                  payload: event.target.checked
+                  payload: event.target.checked,
                 })
               }
               name="Allow Empty Location"
@@ -168,7 +169,7 @@ export const AdvancedSettings = ({
             <AvniSwitch
               switchFirst
               checked={!!subjectType.uniqueName}
-              onChange={event =>
+              onChange={(event) =>
                 dispatch({ type: "uniqueName", payload: event.target.checked })
               }
               name="Unique Name"
@@ -177,10 +178,10 @@ export const AdvancedSettings = ({
             <AvniSwitch
               switchFirst
               checked={!!subjectType.allowProfilePicture}
-              onChange={event =>
+              onChange={(event) =>
                 dispatch({
                   type: "allowProfilePicture",
-                  payload: event.target.checked
+                  payload: event.target.checked,
                 })
               }
               name="Allow Profile Picture"
@@ -211,10 +212,10 @@ export const AdvancedSettings = ({
                 <p />
                 <AvniSwitch
                   checked={!!subjectType.allowMiddleName}
-                  onChange={event =>
+                  onChange={(event) =>
                     dispatch({
                       type: "allowMiddleName",
-                      payload: event.target.checked
+                      payload: event.target.checked,
                     })
                   }
                   name="Allow middle name"
@@ -247,10 +248,10 @@ export const AdvancedSettings = ({
                 <p />
                 <AvniSwitch
                   checked={!!subjectType.lastNameOptional}
-                  onChange={event =>
+                  onChange={(event) =>
                     dispatch({
                       type: "lastNameOptional",
-                      payload: event.target.checked
+                      payload: event.target.checked,
                     })
                   }
                   name="Last Name Optional"
@@ -279,7 +280,7 @@ export const AdvancedSettings = ({
               multiline
               id={"nameHelpText"}
               value={get(subjectType, `nameHelpText`, "")}
-              onChange={event =>
+              onChange={(event) =>
                 dispatch({ type: "nameHelpText", payload: event.target.value })
               }
             />
@@ -287,13 +288,13 @@ export const AdvancedSettings = ({
               <div>
                 <AvniSwitch
                   checked={!!subjectType.settings.displayRegistrationDetails}
-                  onChange={event =>
+                  onChange={(event) =>
                     dispatch({
                       type: "settings",
                       payload: {
                         setting: "displayRegistrationDetails",
-                        value: event.target.checked
-                      }
+                        value: event.target.checked,
+                      },
                     })
                   }
                   name="Display Registration Details"
@@ -303,13 +304,13 @@ export const AdvancedSettings = ({
                 />
                 <AvniSwitch
                   checked={!!subjectType.settings.displayPlannedEncounters}
-                  onChange={event =>
+                  onChange={(event) =>
                     dispatch({
                       type: "settings",
                       payload: {
                         setting: "displayPlannedEncounters",
-                        value: event.target.checked
-                      }
+                        value: event.target.checked,
+                      },
                     })
                   }
                   name="Display Planned Encounters"
@@ -330,10 +331,10 @@ export const AdvancedSettings = ({
                   <AvniSwitch
                     switchFirst
                     checked={!!subjectType.shouldSyncByLocation}
-                    onChange={event =>
+                    onChange={(event) =>
                       changeSyncAttribute(
                         "shouldSyncByLocation",
-                        event.target.checked
+                        event.target.checked,
                       )
                     }
                     name="Sync by location"
@@ -342,10 +343,10 @@ export const AdvancedSettings = ({
                   <AvniSwitch
                     switchFirst
                     checked={!!subjectType.directlyAssignable}
-                    onChange={event =>
+                    onChange={(event) =>
                       changeSyncAttribute(
                         "directlyAssignable",
-                        event.target.checked
+                        event.target.checked,
                       )
                     }
                     name="Sync by direct assignment"
@@ -357,7 +358,7 @@ export const AdvancedSettings = ({
                     label={"Sync Registration Concept 1"}
                     options={syncAttributes}
                     value={subjectType.syncRegistrationConcept1}
-                    onChange={value =>
+                    onChange={(value) =>
                       onSyncConceptChange("syncRegistrationConcept1", value)
                     }
                   />
@@ -365,13 +366,14 @@ export const AdvancedSettings = ({
                     label={"Sync Registration Concept 2"}
                     options={syncAttributes}
                     value={subjectType.syncRegistrationConcept2}
-                    onChange={value =>
+                    onChange={(value) =>
                       onSyncConceptChange("syncRegistrationConcept2", value)
                     }
                   />
                 </>
               )}
             </StyledSyncSettingsBox>
+            <AttendanceSettings subjectType={subjectType} dispatch={dispatch} />
           </StyledSettingsContainer>
         </CustomAccordionDetails>
       </CustomAccordion>

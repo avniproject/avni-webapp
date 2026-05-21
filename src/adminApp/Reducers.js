@@ -28,7 +28,7 @@ export function programReducer(program, action) {
         manualEnrolmentEligibilityCheckDeclarativeRule: action.payload.manualEnrolmentEligibilityCheckDeclarativeRule,
         active: action.payload.active,
         loaded: true,
-        programId: action.payload.programId
+        programId: action.payload.programId,
       };
     case "":
       return program;
@@ -57,7 +57,7 @@ export function encounterTypeReducer(encounterType, action) {
       return {
         ...encounterType,
         loaded: true,
-        ...action.payload
+        ...action.payload,
       };
     case "setImmutable":
       return { ...encounterType, immutable: action.payload };
@@ -77,7 +77,7 @@ export function subjectTypeReducer(subjectType, action) {
         ...subjectType,
         group: action.payload.group,
         household: action.payload.household,
-        groupRoles: action.payload.groupRoles
+        groupRoles: action.payload.groupRoles,
       };
     case "groupRole":
       return { ...subjectType, groupRoles: action.payload };
@@ -96,7 +96,7 @@ export function subjectTypeReducer(subjectType, action) {
         groupRoleUUID,
         role,
         minimumNumberOfMembers,
-        maximumNumberOfMembers
+        maximumNumberOfMembers,
       }));
       return { ...subjectType, groupRoles: roles, memberSubjectType: action.payload };
     }
@@ -104,9 +104,11 @@ export function subjectTypeReducer(subjectType, action) {
       return {
         ...subjectType,
         ...action.payload,
+        attendanceEnabled: action.payload.attendanceEnabled ?? false,
+        attendanceTypes: action.payload.attendanceTypes || [],
         memberSubjectType: Types.isHousehold(action.payload.type)
           ? map(action.payload.groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
-          : ""
+          : "",
       };
     }
     case "subjectSummaryRule":
@@ -128,16 +130,16 @@ export function subjectTypeReducer(subjectType, action) {
         ...subjectType,
         validFirstNameFormat: {
           ...subjectType.validFirstNameFormat,
-          regex: _getNullOrValue(action.payload)
-        }
+          regex: _getNullOrValue(action.payload),
+        },
       };
     case "validFirstNameDescriptionKey":
       return {
         ...subjectType,
         validFirstNameFormat: {
           ...subjectType.validFirstNameFormat,
-          descriptionKey: _getNullOrValue(action.payload)
-        }
+          descriptionKey: _getNullOrValue(action.payload),
+        },
       };
     case "allowMiddleName":
       return { ...subjectType, allowMiddleName: action.payload };
@@ -148,54 +150,75 @@ export function subjectTypeReducer(subjectType, action) {
         ...subjectType,
         validMiddleNameFormat: {
           ...subjectType.validMiddleNameFormat,
-          regex: _getNullOrValue(action.payload)
-        }
+          regex: _getNullOrValue(action.payload),
+        },
       };
     case "validMiddleNameDescriptionKey":
       return {
         ...subjectType,
         validMiddleNameFormat: {
           ...subjectType.validMiddleNameFormat,
-          descriptionKey: _getNullOrValue(action.payload)
-        }
+          descriptionKey: _getNullOrValue(action.payload),
+        },
       };
     case "validLastNameRegex":
       return {
         ...subjectType,
         validLastNameFormat: {
           ...subjectType.validLastNameFormat,
-          regex: _getNullOrValue(action.payload)
-        }
+          regex: _getNullOrValue(action.payload),
+        },
       };
     case "validLastNameDescriptionKey":
       return {
         ...subjectType,
         validLastNameFormat: {
           ...subjectType.validLastNameFormat,
-          descriptionKey: _getNullOrValue(action.payload)
-        }
+          descriptionKey: _getNullOrValue(action.payload),
+        },
       };
     case "syncAttribute": {
       const { name, value } = action.payload;
       return {
         ...subjectType,
-        [name]: value
+        [name]: value,
       };
     }
     case "nameHelpText":
       return {
         ...subjectType,
-        nameHelpText: action.payload
+        nameHelpText: action.payload,
       };
     case "settings": {
       return {
         ...subjectType,
-        settings: { ...subjectType.settings, [action.payload.setting]: action.payload.value }
+        settings: { ...subjectType.settings, [action.payload.setting]: action.payload.value },
       };
     }
+    case "attendanceEnabled":
+      return { ...subjectType, attendanceEnabled: action.payload };
+    case "attendanceTypes":
+      return { ...subjectType, attendanceTypes: action.payload };
+    case "addAttendanceType":
+      return {
+        ...subjectType,
+        attendanceTypes: [...(subjectType.attendanceTypes || []), action.payload],
+      };
+    case "updateAttendanceType":
+      return {
+        ...subjectType,
+        attendanceTypes: (subjectType.attendanceTypes || []).map((type) => (type.uuid === action.payload.uuid ? action.payload : type)),
+      };
+    case "removeAttendanceType":
+      return {
+        ...subjectType,
+        attendanceTypes: (subjectType.attendanceTypes || []).map((type) =>
+          type.uuid === action.payload ? { ...type, voided: true } : type,
+        ),
+      };
     default:
       return subjectType;
   }
 }
 
-const _getNullOrValue = value => (isEmpty(value) ? null : value);
+const _getNullOrValue = (value) => (isEmpty(value) ? null : value);
