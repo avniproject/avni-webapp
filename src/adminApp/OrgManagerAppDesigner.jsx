@@ -52,6 +52,8 @@ import ApplicationMenuEdit from "./ApplicationMenu/ApplicationMenuEdit";
 import ApplicationMenuShow from "./ApplicationMenu/ApplicationMenuShow";
 import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
+import CalendarsList from "./Calendar/CalendarsList";
+import CalendarGridView from "./Calendar/CalendarGridView";
 import { UserMessagingConfig } from "../formDesigner/components/UserMessagingConfig";
 import { StorageManagementConfig } from "../formDesigner/components/StorageManagement/StorageManagementConfig";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
@@ -254,12 +256,23 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         options={{ label: "Rule Failures" }}
         list={RuleFailureTelemetryList}
       />
+      {UserInfo.hasPrivilege(
+        userInfo,
+        Privilege.PrivilegeType.ManageCalendars,
+      ) && (
+        <Resource
+          name="calendar"
+          options={{ label: "Calendars" }}
+          list={CalendarsList}
+        />
+      )}
       <CustomRoutes>
         <Route path="/concept/:uuid/show" element={<ConceptDetails />} />
         <Route path="/concept/:uuid/edit" element={<CreateEditConcept />} />
         <Route path="/filters" element={<CreateEditFiltersHOC />} />
         <Route path="/forms/:id/settings" element={<FormSettings />} />
         <Route path="/forms/:uuid" element={<FormDetails />} />
+        <Route path="/calendar/:uuid/grid" element={<CalendarGridView />} />
       </CustomRoutes>
     </Admin>
   );
