@@ -31,9 +31,7 @@ const generatePrivilegeDependenciesAndCheckedState = function (
       case PrivilegeType.EditSubject:
       case PrivilegeType.VoidSubject:
       case PrivilegeType.ViewEnrolmentDetails:
-      case PrivilegeType.ViewVisit:
       case PrivilegeType.ViewChecklist:
-      case PrivilegeType.AddMember:
       case PrivilegeType.EditMember:
       case PrivilegeType.RemoveMember:
       case PrivilegeType.ApproveSubject:
@@ -41,6 +39,22 @@ const generatePrivilegeDependenciesAndCheckedState = function (
       case PrivilegeType.ShareSubject:
         dependencies.set(groupPrivilege.uuid, {
           dependencies: GroupPrivilegesModel.getSubjectTypeDependencies(
+            groupPrivilegeList,
+            groupPrivilege,
+          ).map((x) => x.uuid),
+        });
+        break;
+      case PrivilegeType.AddMember:
+        dependencies.set(groupPrivilege.uuid, {
+          dependencies: GroupPrivilegesModel.getAddMemberDependencies(
+            groupPrivilegeList,
+            groupPrivilege,
+          ).map((x) => x.uuid),
+        });
+        break;
+      case PrivilegeType.ViewVisit:
+        dependencies.set(groupPrivilege.uuid, {
+          dependencies: GroupPrivilegesModel.getViewVisitDependencies(
             groupPrivilegeList,
             groupPrivilege,
           ).map((x) => x.uuid),
@@ -168,13 +182,12 @@ const GroupPrivileges = ({
 
   const onTogglePermissionClick = (event, rowData) => {
     let isAllow = event.target.checked;
-    let deps;
-
-    if (isAllow) {
-      deps = privilegeDependencies.get(rowData.uuid).dependencies || [];
-    } else {
-      deps = privilegeDependencies.get(rowData.uuid).dependents || [];
-    }
+    const edgeKey = isAllow ? "dependencies" : "dependents";
+    const deps = GroupPrivilegesModel.collectTransitive(
+      privilegeDependencies,
+      rowData.uuid,
+      edgeKey,
+    );
 
     let privilegeUuidsToBeUpdated = deps.filter(
       (uuid) => privilegesCheckedState.get(uuid).checkedState !== isAllow,
