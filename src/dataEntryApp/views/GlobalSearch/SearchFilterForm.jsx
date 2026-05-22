@@ -28,6 +28,7 @@ import { types } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import SubjectTypeOptions from "./SubjectTypeOptions";
+import commonApi from "../../../common/service";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
@@ -113,6 +114,26 @@ export const SearchForm = ({
     .map(String);
 
   const [addressLevelIds, setAddressLevelIds] = useState(addressIds || []);
+
+  const [subjectTypesWithKind, setSubjectTypesWithKind] = useState([]);
+  useEffect(() => {
+    commonApi
+      .fetchSubjectTypes()
+      .then((data) => setSubjectTypesWithKind(data || []))
+      .catch(() => setSubjectTypesWithKind([]));
+  }, []);
+
+  const selectedSubjectTypeObject = _.find(
+    subjectTypesWithKind,
+    (st) => st.uuid === selectedSubjectTypeUUID,
+  );
+  const selectedSubjectTypeKind =
+    selectedSubjectTypeObject && selectedSubjectTypeObject.type;
+  const isNonPersonSubject =
+    !!selectedSubjectTypeKind && selectedSubjectTypeKind !== "Person";
+  const visibleSearchFilters = isNonPersonSubject
+    ? selectedSearchFilter.filter((sf) => sf.type !== "DateOfBirth")
+    : selectedSearchFilter;
 
   const [dateOfBirth, setDateOfBirth] = useState(
     searchRequest.dateOfBirth ? new Date(searchRequest.dateOfBirth) : null,
@@ -273,7 +294,7 @@ export const SearchForm = ({
       name: enterValue.name,
       age: { minValue: enterValue.age, maxValue: null },
       dateOfBirth:
-        dateOfBirth && isValid(new Date(dateOfBirth))
+        !isNonPersonSubject && dateOfBirth && isValid(new Date(dateOfBirth))
           ? format(new Date(dateOfBirth), "yyyy-MM-dd")
           : null,
       includeVoided,
@@ -341,7 +362,7 @@ export const SearchForm = ({
 
           <Grid size={{ xs: 12 }}>
             <NonConceptForm
-              searchFilterForms={selectedSearchFilter}
+              searchFilterForms={visibleSearchFilters}
               selectedDate={selectedDate}
               onDateChange={searchFilterDates}
               dateOfBirth={dateOfBirth}
