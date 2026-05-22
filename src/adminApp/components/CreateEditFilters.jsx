@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl, Box } from "@mui/material";
 import Select from "react-select";
 import { omitTableData } from "../CustomFilters";
+import commonApi from "../../common/service";
 import {
   deburr,
   filter,
@@ -55,7 +56,7 @@ export const CreateEditFilters = ({
 }) => {
   const { t } = useTranslation();
   const allTypes = values(CustomFilter.type);
-  const filterTypes =
+  const baseFilterTypes =
     filterType === "myDashboardFilters"
       ? reject(allTypes, (t) =>
           [
@@ -66,7 +67,7 @@ export const CreateEditFilters = ({
           ].includes(t),
         )
       : allTypes;
-  const typeOptions = filterTypes.map((t) => ({
+  const baseTypeOptions = baseFilterTypes.map((t) => ({
     label: startCase(t),
     value: t,
   }));
@@ -154,7 +155,7 @@ export const CreateEditFilters = ({
     mapPreviousToOptions(groupSubjectTypeUUID, subjectTypeOptions),
   );
   const [selectedType, setType] = useState(
-    mapPreviousToOptions(type, typeOptions),
+    mapPreviousToOptions(type, baseTypeOptions),
   );
   const [selectedConcept, setConcept] = useState(
     (conceptName && {
@@ -359,6 +360,37 @@ export const CreateEditFilters = ({
     setWidget("");
   };
 
+  const [subjectTypesWithKind, setSubjectTypesWithKind] = useState([]);
+  useEffect(() => {
+    commonApi
+      .fetchSubjectTypes()
+      .then((data) => setSubjectTypesWithKind(data || []))
+      .catch(() => setSubjectTypesWithKind([]));
+  }, []);
+
+  const isNonPersonSubjectType = (sub) => {
+    if (!sub || !sub.value || isEmpty(subjectTypesWithKind)) return false;
+    const st = find(subjectTypesWithKind, (s) => s.uuid === sub.value);
+    const stType = st && st.type;
+    return !!stType && stType !== "Person";
+  };
+
+  const typeOptions = isNonPersonSubjectType(selectedSubject)
+    ? baseTypeOptions.filter((o) => o.value !== CustomFilter.type.DateOfBirth)
+    : baseTypeOptions;
+
+  const onSubjectChange = (sub) => {
+    setSubject(sub);
+    if (
+      isNonPersonSubjectType(sub) &&
+      selectedType &&
+      selectedType.value === CustomFilter.type.DateOfBirth
+    ) {
+      setType("");
+      resetState();
+    }
+  };
+
   const onTypeChange = (type) => {
     setType(type);
     setConcept("");
@@ -451,7 +483,7 @@ export const CreateEditFilters = ({
                 "Select Subject Type",
                 selectedSubject,
                 subjectTypeOptions,
-                (sub) => setSubject(sub),
+                (sub) => onSubjectChange(sub),
                 "APP_DESIGNER_FILTER_SUBJECT_TYPE",
               )}
               <Box
