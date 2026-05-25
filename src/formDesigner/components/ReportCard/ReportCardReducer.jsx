@@ -16,6 +16,7 @@ export const ReportCardReducerKeys = {
   actionDetailProgramUUID: "actionDetailProgramUUID",
   actionDetailEncounterTypeUUID: "actionDetailEncounterTypeUUID",
   actionDetailVisitType: "actionDetailVisitType",
+  actionDetailAttendanceTypeUUID: "actionDetailAttendanceTypeUUID",
   onActionCompletion: "onActionCompletion",
   customCardConfig: "customCardConfig",
 };
@@ -61,21 +62,45 @@ export const ReportCardReducer = (reportCard, action) => {
       break;
     case ReportCardReducerKeys.action:
       reportCard.action = action.payload;
-      if (action.payload !== ReportCard.actionTypes.DoVisit) {
+      if (action.payload === ReportCard.actionTypes.DoVisit) {
+        // Switched to DoVisit — clear MarkAttendance-only detail; subject
+        // type carries over so the cascading pickers don't restart from
+        // scratch.
+        reportCard.actionDetailAttendanceTypeUUID = null;
+        reportCard.onActionCompletion =
+          ReportCard.onActionCompletionTypes.goToSubjectProfile;
+      } else if (action.payload === ReportCard.actionTypes.MarkAttendance) {
+        // Switched to MarkAttendance — clear DoVisit-only detail; subject
+        // type carries over (may not be valid in the MarkAttendance picker
+        // if it isn't Group + attendanceEnabled, the dropdown will then
+        // show blank and force a re-pick).
+        reportCard.actionDetailProgramUUID = null;
+        reportCard.actionDetailEncounterTypeUUID = null;
+        reportCard.actionDetailVisitType = null;
+        reportCard.onActionCompletion =
+          ReportCard.onActionCompletionTypes.goToSourceScreen;
+      } else {
+        // ViewSubjectProfile or unset — clear every action-detail key so no
+        // stale value survives the round-trip.
         reportCard.actionDetailSubjectTypeUUID = null;
         reportCard.actionDetailProgramUUID = null;
         reportCard.actionDetailEncounterTypeUUID = null;
         reportCard.actionDetailVisitType = null;
+        reportCard.actionDetailAttendanceTypeUUID = null;
         reportCard.onActionCompletion = null;
-      } else {
-        reportCard.onActionCompletion =
-          ReportCard.onActionCompletionTypes.goToSubjectProfile;
       }
       break;
     case ReportCardReducerKeys.actionDetailSubjectTypeUUID:
       reportCard.actionDetailSubjectTypeUUID = action.payload;
       reportCard.actionDetailProgramUUID = null;
       reportCard.actionDetailEncounterTypeUUID = null;
+      // Changing the subject type must reset the cascading attendance-type
+      // picker — the previously chosen attendance type belongs to the old
+      // subject type and would fail server-side validation.
+      reportCard.actionDetailAttendanceTypeUUID = null;
+      break;
+    case ReportCardReducerKeys.actionDetailAttendanceTypeUUID:
+      reportCard.actionDetailAttendanceTypeUUID = action.payload;
       break;
     case ReportCardReducerKeys.actionDetailProgramUUID:
       reportCard.actionDetailProgramUUID = action.payload;

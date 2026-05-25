@@ -78,6 +78,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailProgramUUID = null;
     webReportCard.actionDetailEncounterTypeUUID = null;
     webReportCard.actionDetailVisitType = null;
+    webReportCard.actionDetailAttendanceTypeUUID = null;
     webReportCard.onActionCompletion = null;
     webReportCard.customCardConfig = null;
     return webReportCard;
@@ -106,6 +107,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailProgramUUID = other.actionDetailProgramUUID;
     webReportCard.actionDetailEncounterTypeUUID = other.actionDetailEncounterTypeUUID;
     webReportCard.actionDetailVisitType = other.actionDetailVisitType;
+    webReportCard.actionDetailAttendanceTypeUUID = other.actionDetailAttendanceTypeUUID;
     webReportCard.onActionCompletion = other.onActionCompletion;
     webReportCard.customCardConfig = other.customCardConfig;
     return webReportCard;
@@ -135,6 +137,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailProgramUUID = resource.actionDetailProgramUUID || null;
     webReportCard.actionDetailEncounterTypeUUID = resource.actionDetailEncounterTypeUUID || null;
     webReportCard.actionDetailVisitType = resource.actionDetailVisitType || null;
+    webReportCard.actionDetailAttendanceTypeUUID = resource.actionDetailAttendanceTypeUUID || null;
     webReportCard.onActionCompletion = resource.onActionCompletion || ReportCard.onActionCompletionTypes.goToSubjectProfile;
     webReportCard.customCardConfig = resource.customCardConfigUUID
       ? { uuid: resource.customCardConfigUUID, name: resource.customCardConfigName }
@@ -194,6 +197,17 @@ class WebReportCard extends ReportCard {
         errors.push({ key: "MISSING_ON_ACTION_COMPLETION", message: "On action completion is required for Do visit action" });
       }
     }
+    if (this.action === ReportCard.actionTypes.MarkAttendance) {
+      if (isNil(this.actionDetailSubjectTypeUUID)) {
+        errors.push({ key: "MISSING_GROUP_SUBJECT_TYPE", message: "Group subject type is required for Mark attendance action" });
+      }
+      if (isNil(this.actionDetailAttendanceTypeUUID)) {
+        errors.push({ key: "MISSING_ATTENDANCE_TYPE", message: "Attendance type is required for Mark attendance action" });
+      }
+      if (isNil(this.onActionCompletion)) {
+        errors.push({ key: "MISSING_ON_ACTION_COMPLETION", message: "On action completion is required for Mark attendance action" });
+      }
+    }
     return errors;
   }
 
@@ -235,6 +249,7 @@ class WebReportCard extends ReportCard {
       actionDetailProgramUUID: this.actionDetailProgramUUID,
       actionDetailEncounterTypeUUID: this.actionDetailEncounterTypeUUID,
       actionDetailVisitType: this.actionDetailVisitType,
+      actionDetailAttendanceTypeUUID: this.actionDetailAttendanceTypeUUID,
       onActionCompletion: this.onActionCompletion,
       customCardConfig: this.customCardConfig
         ? {

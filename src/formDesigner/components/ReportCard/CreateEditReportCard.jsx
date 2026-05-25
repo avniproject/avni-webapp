@@ -62,6 +62,7 @@ export const CreateEditReportCard = () => {
   const [actionSubjectTypes, setActionSubjectTypes] = useState([]);
   const [actionPrograms, setActionPrograms] = useState([]);
   const [actionEncounterTypes, setActionEncounterTypes] = useState([]);
+  const [actionAttendanceTypes, setActionAttendanceTypes] = useState([]);
 
   useEffect(() => {
     DashboardService.getStandardReportCardTypes().then(
@@ -159,12 +160,32 @@ export const CreateEditReportCard = () => {
   };
 
   useEffect(() => {
-    if (card.action === ReportCard.actionTypes.DoVisit) {
+    if (
+      card.action === ReportCard.actionTypes.DoVisit ||
+      card.action === ReportCard.actionTypes.MarkAttendance
+    ) {
       http
         .getAllData("subjectType", "/web/subjectType")
         .then((response) => setActionSubjectTypes(response));
     }
   }, [card.action]);
+
+  useEffect(() => {
+    if (
+      card.action === ReportCard.actionTypes.MarkAttendance &&
+      card.actionDetailSubjectTypeUUID
+    ) {
+      http
+        .getData(
+          `/web/attendanceType?subjectTypeUUID=${encodeURIComponent(
+            card.actionDetailSubjectTypeUUID,
+          )}`,
+        )
+        .then((response) => setActionAttendanceTypes(response || []));
+    } else {
+      setActionAttendanceTypes([]);
+    }
+  }, [card.action, card.actionDetailSubjectTypeUUID]);
 
   useEffect(() => {
     if (
@@ -476,6 +497,10 @@ export const CreateEditReportCard = () => {
                 label: "View subject profile",
               },
               { value: ReportCard.actionTypes.DoVisit, label: "Do visit" },
+              {
+                value: ReportCard.actionTypes.MarkAttendance,
+                label: "Mark attendance",
+              },
             ]}
             toolTipKey={"APP_DESIGNER_CARD_ACTION"}
           />
@@ -589,6 +614,88 @@ export const CreateEditReportCard = () => {
             {getErrorByKey(error, "MISSING_ON_ACTION_COMPLETION")}
           </>
         )}
+        {showActionFields &&
+          card.action === ReportCard.actionTypes.MarkAttendance && (
+            <>
+              <p />
+              <AvniSelect
+                label="Group Subject Type*"
+                value={card.actionDetailSubjectTypeUUID}
+                style={{ width: "15.625rem" }}
+                required
+                onChange={(event) =>
+                  onChange(
+                    ReportCardReducerKeys.actionDetailSubjectTypeUUID,
+                    event,
+                    "MISSING_GROUP_SUBJECT_TYPE",
+                  )
+                }
+                options={actionSubjectTypes
+                  .filter(
+                    (st) => st.group === true && st.attendanceEnabled === true,
+                  )
+                  .map((st) => ({ value: st.uuid, label: st.name }))}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_SUBJECT_TYPE"}
+              />
+              {getErrorByKey(error, "MISSING_GROUP_SUBJECT_TYPE")}
+              <p />
+              <AvniSelect
+                label="Attendance Type*"
+                value={card.actionDetailAttendanceTypeUUID}
+                style={{ width: "15.625rem" }}
+                required
+                onChange={(event) =>
+                  onChange(
+                    ReportCardReducerKeys.actionDetailAttendanceTypeUUID,
+                    event,
+                    "MISSING_ATTENDANCE_TYPE",
+                  )
+                }
+                options={actionAttendanceTypes.map((at) => ({
+                  value: at.uuid,
+                  label: at.name,
+                }))}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_ATTENDANCE_TYPE"}
+              />
+              {card.actionDetailSubjectTypeUUID &&
+                actionAttendanceTypes.length === 0 && (
+                  <FormLabel
+                    style={{ marginTop: 4, fontSize: 12, color: "#666" }}
+                  >
+                    No attendance types are configured on this subject type yet.
+                    Add one under App Designer → Subject Types → Attendance.
+                  </FormLabel>
+                )}
+              {getErrorByKey(error, "MISSING_ATTENDANCE_TYPE")}
+              <p />
+              <AvniSelect
+                label="On Action Completion*"
+                value={card.onActionCompletion}
+                style={{ width: "15.625rem" }}
+                required
+                onChange={(event) =>
+                  onChange(
+                    ReportCardReducerKeys.onActionCompletion,
+                    event,
+                    "MISSING_ON_ACTION_COMPLETION",
+                  )
+                }
+                options={[
+                  {
+                    value:
+                      ReportCard.onActionCompletionTypes.goToSubjectProfile,
+                    label: "Subject Profile Page",
+                  },
+                  {
+                    value: ReportCard.onActionCompletionTypes.goToSourceScreen,
+                    label: "Source Page",
+                  },
+                ]}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_ON_ACTION_COMPLETION"}
+              />
+              {getErrorByKey(error, "MISSING_ON_ACTION_COMPLETION")}
+            </>
+          )}
         <p />
         {isStandard && (
           <AvniSelect
