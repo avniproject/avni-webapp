@@ -45,10 +45,24 @@ const CalendarsList = () => {
 
   const fetchData = useCallback(
     () =>
-      CalendarService.list().then((rows) => {
+      CalendarService.list().then(async (rows) => {
         setAllCalendars(rows);
         const visible = rows.filter((r) => !r.voided);
-        return { data: visible, totalCount: visible.length };
+        const year = new Date().getFullYear();
+        // TODO: move this aggregation server-side — include
+        // markerCountThisYear in /web/calendar and drop the N+1 fan-out.
+        const counts = await Promise.all(
+          visible.map((c) =>
+            CalendarService.listMarkers(c.uuid, year)
+              .then((m) => m.length)
+              .catch(() => null),
+          ),
+        );
+        const enriched = visible.map((r, i) => ({
+          ...r,
+          markerCountThisYear: counts[i],
+        }));
+        return { data: enriched, totalCount: enriched.length };
       }),
     [],
   );

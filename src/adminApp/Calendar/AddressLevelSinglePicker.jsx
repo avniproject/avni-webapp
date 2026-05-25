@@ -7,7 +7,7 @@ import { locationNameRenderer } from "../../dataEntryApp/utils/LocationUtil";
 
 const toOption = (location) => ({
   label: location.title,
-  value: location.id,
+  value: location.uuid,
   optionLabel: locationNameRenderer(location),
   raw: location,
 });
@@ -24,18 +24,16 @@ const AddressLevelSinglePicker = ({ value, onChange, label }) => {
   }, []);
 
   useEffect(() => {
-    if (value && (!selected || selected.value !== value)) {
+    if (value && selected?.value !== value) {
       httpClient
-        .get(`/locations/search/findAllById?ids=${value}`)
+        .get(`/locations/web?uuid=${encodeURIComponent(value)}`)
         .then((resp) => {
-          const list = resp.data;
-          const first = Array.isArray(list) ? list[0] : null;
-          if (first) setSelected(toOption(first));
+          if (resp.data) setSelected(toOption(resp.data));
         });
     } else if (!value && selected) {
       setSelected(null);
     }
-  }, [value, selected]);
+  }, [value]);
 
   useEffect(() => {
     fetchLocations("", setDefaultOptions);

@@ -59,7 +59,6 @@ const CalendarFormDialog = ({
   const isEdit = Boolean(calendar?.uuid);
   const [name, setName] = useState("");
   const [scope, setScope] = useState(SCOPE_GLOBAL);
-  const [addressLevelId, setAddressLevelId] = useState(null);
   const [addressLevelUUID, setAddressLevelUUID] = useState(null);
   const [patternMap, setPatternMap] = useState(
     patternToOccurrenceMap(Calendar.defaultWorkingPattern),
@@ -80,7 +79,6 @@ const CalendarFormDialog = ({
         ? SCOPE_PER_LOCATION
         : SCOPE_GLOBAL;
       setScope(initialScope);
-      setAddressLevelId(calendar.addressLevelId || null);
       setAddressLevelUUID(calendar.addressLevelUUID || null);
       setPatternMap(
         patternToOccurrenceMap(parsePattern(calendar.workingPattern)),
@@ -88,7 +86,6 @@ const CalendarFormDialog = ({
     } else {
       setName("");
       setScope(lockedMode || SCOPE_GLOBAL);
-      setAddressLevelId(null);
       setAddressLevelUUID(null);
       setPatternMap(patternToOccurrenceMap(Calendar.defaultWorkingPattern));
     }
@@ -97,7 +94,7 @@ const CalendarFormDialog = ({
   const handleSubmit = () => {
     const nextErrors = {};
     if (!name.trim()) nextErrors.name = "Name is required";
-    if (scope === SCOPE_PER_LOCATION && !addressLevelId)
+    if (scope === SCOPE_PER_LOCATION && !addressLevelUUID)
       nextErrors.addressLevel = "Location is required for per-location scope";
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
@@ -106,7 +103,6 @@ const CalendarFormDialog = ({
       uuid: calendar?.uuid,
       name: name.trim(),
       workingPattern: occurrenceMapToPattern(patternMap),
-      addressLevelId: scope === SCOPE_PER_LOCATION ? addressLevelId : null,
       addressLevelUUID: scope === SCOPE_PER_LOCATION ? addressLevelUUID : null,
       voided: false,
     };
@@ -195,11 +191,8 @@ const CalendarFormDialog = ({
           <Box sx={{ mb: 2 }}>
             <AddressLevelSinglePicker
               label="Location"
-              value={addressLevelId}
-              onChange={(id, raw) => {
-                setAddressLevelId(id);
-                setAddressLevelUUID(raw?.uuid || null);
-              }}
+              value={addressLevelUUID}
+              onChange={(uuid) => setAddressLevelUUID(uuid || null)}
             />
             {errors.addressLevel && (
               <FormLabel error sx={{ mt: 0.5, fontSize: 12 }}>
