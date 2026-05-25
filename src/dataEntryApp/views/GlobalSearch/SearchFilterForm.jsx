@@ -10,11 +10,11 @@ import {
   FormControl,
   Button,
   Grid,
-  Stack
+  Stack,
 } from "@mui/material";
 import {
   getGenders,
-  getOrganisationConfig
+  getOrganisationConfig,
 } from "../../reducers/metadataReducer";
 import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
@@ -28,18 +28,19 @@ import { types } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import SubjectTypeOptions from "./SubjectTypeOptions";
+import commonApi from "../../../common/service";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   margin: theme.spacing(1, 3),
   flexGrow: 1,
-  backgroundColor: "white"
+  backgroundColor: "white",
 }));
 
 const StyledTypography = styled(Typography)({ fontSize: 20 });
 
 const StyledButtons = styled("div")(({ theme }) => ({
-  "& > *": { margin: theme.spacing(1) }
+  "& > *": { margin: theme.spacing(1) },
 }));
 
 const initialStates = {
@@ -48,8 +49,8 @@ const initialStates = {
     RegistrationDate: { minValue: null, maxValue: null },
     EnrolmentDate: { minValue: null, maxValue: null },
     ProgramEncounterDate: { minValue: null, maxValue: null },
-    EncounterDate: { minValue: null, maxValue: null }
-  }
+    EncounterDate: { minValue: null, maxValue: null },
+  },
 };
 
 export const SearchForm = ({
@@ -59,7 +60,7 @@ export const SearchForm = ({
   searchRequest,
   searchTo,
   cancelTo,
-  onSearch
+  onSearch,
 }) => {
   const { t } = useTranslation();
   const searchProps = _.isFunction(onSearch)
@@ -77,51 +78,76 @@ export const SearchForm = ({
     encounterDate,
     programEncounterDate,
     programEnrolmentDate,
-    searchAll
+    searchAll,
   } = searchRequest;
 
   const [selectedSubjectTypeUUID, setSelectedSubjectTypeUUID] = useState(
-    subjectType || _.get(operationalModules.subjectTypes[0], "uuid")
+    subjectType || _.get(operationalModules.subjectTypes[0], "uuid"),
   );
 
-  const initialSubjectTypeSearchFilter = organisationConfigs?.organisationConfig?.searchFilters?.filter(
-    sf => sf.subjectTypeUUID === selectedSubjectTypeUUID
-  );
+  const initialSubjectTypeSearchFilter =
+    organisationConfigs?.organisationConfig?.searchFilters?.filter(
+      (sf) => sf.subjectTypeUUID === selectedSubjectTypeUUID,
+    );
   const [selectedSearchFilter, setSelectedSearchFilter] = useState(
-    initialSubjectTypeSearchFilter || []
+    initialSubjectTypeSearchFilter || [],
   );
 
   const [enterValue, setEnterValue] = useState({
     name: name || "",
     age: (age && age.minValue) || "",
-    searchAll: searchAll || ""
+    searchAll: searchAll || "",
   });
-  const searchFilterValue = e =>
+  const searchFilterValue = (e) =>
     setEnterValue({ ...enterValue, [e.target.name]: e.target.value });
 
   let g = {};
-  _.forEach(gender, x => _.assign(g, { [x]: true }));
+  _.forEach(gender, (x) => _.assign(g, { [x]: true }));
   const [selectedGender, setSelectedGender] = useState(g);
-  const onGenderChange = e =>
+  const onGenderChange = (e) =>
     setSelectedGender({
       ...selectedGender,
-      [e.target.name]: e.target.checked
+      [e.target.name]: e.target.checked,
     });
   const selectedGenderSort = Object.keys(selectedGender)
-    .filter(k => selectedGender[k])
+    .filter((k) => selectedGender[k])
     .map(String);
 
   const [addressLevelIds, setAddressLevelIds] = useState(addressIds || []);
 
-  const setPrev = d => ({
+  const [subjectTypesWithKind, setSubjectTypesWithKind] = useState([]);
+  useEffect(() => {
+    commonApi
+      .fetchSubjectTypes()
+      .then((data) => setSubjectTypesWithKind(data || []))
+      .catch(() => setSubjectTypesWithKind([]));
+  }, []);
+
+  const selectedSubjectTypeObject = _.find(
+    subjectTypesWithKind,
+    (st) => st.uuid === selectedSubjectTypeUUID,
+  );
+  const selectedSubjectTypeKind =
+    selectedSubjectTypeObject && selectedSubjectTypeObject.type;
+  const isNonPersonSubject =
+    !!selectedSubjectTypeKind && selectedSubjectTypeKind !== "Person";
+  const visibleSearchFilters = isNonPersonSubject
+    ? selectedSearchFilter.filter((sf) => sf.type !== "DateOfBirth")
+    : selectedSearchFilter;
+
+  const [dateOfBirth, setDateOfBirth] = useState(
+    searchRequest.dateOfBirth ? new Date(searchRequest.dateOfBirth) : null,
+  );
+
+  const setPrev = (d) => ({
     minValue: d?.minValue || null,
-    maxValue: d?.maxValue || null
+    maxValue: d?.maxValue || null,
   });
   const [selectedDate, setSelectedDate] = useState({
     RegistrationDate: setPrev(registrationDate),
     EnrolmentDate: setPrev(programEnrolmentDate),
     ProgramEncounterDate: setPrev(programEncounterDate),
-    EncounterDate: setPrev(encounterDate)
+    EncounterDate: setPrev(encounterDate),
   });
   const searchFilterDates = (min, max, type) =>
     setSelectedDate({
@@ -134,14 +160,14 @@ export const SearchForm = ({
         maxValue:
           max && isValid(new Date(max))
             ? format(new Date(max), "yyyy-MM-dd")
-            : null
-      }
+            : null,
+      },
     });
 
-  const getInitialConceptList = filters =>
+  const getInitialConceptList = (filters) =>
     filters
-      .filter(f => f.type === "Concept" && f.conceptDataType !== null)
-      .map(c => {
+      .filter((f) => f.type === "Concept" && f.conceptDataType !== null)
+      .map((c) => {
         const def = {
           Date: { ...c, minValue: null, maxValue: null },
           DateTime: { ...c, minValue: null, maxValue: null },
@@ -149,7 +175,7 @@ export const SearchForm = ({
           Numeric: { ...c, minValue: null, maxValue: null },
           Coded: { ...c, values: [] },
           Text: { ...c, value: "" },
-          Id: { ...c, value: "" }
+          Id: { ...c, value: "" },
         };
         return def[c.conceptDataType];
       });
@@ -159,21 +185,21 @@ export const SearchForm = ({
   // Update selected concepts when search filter changes
   useEffect(() => {
     const initialConceptList = getInitialConceptList(selectedSearchFilter);
-    const allConceptRelated = _.map(initialConceptList, itm =>
-      _.merge(itm, _.find(concept, { uuid: itm.conceptUUID }))
+    const allConceptRelated = _.map(initialConceptList, (itm) =>
+      _.merge(itm, _.find(concept, { uuid: itm.conceptUUID })),
     );
     setSelectedConcept(allConceptRelated);
   }, [selectedSearchFilter, concept]);
 
   const [checked, setChecked] = useState({
     includeVoided: searchRequest.includeVoided || false,
-    includeDisplayCount: searchRequest.includeDisplayCount || false
+    includeDisplayCount: searchRequest.includeDisplayCount || false,
   });
-  const onChecked = (key, val) => setChecked(c => ({ ...c, [key]: val }));
+  const onChecked = (key, val) => setChecked((c) => ({ ...c, [key]: val }));
   const { includeVoided, includeDisplayCount } = checked;
 
-  const getSelectedConceptApi = list =>
-    list.filter(c => {
+  const getSelectedConceptApi = (list) =>
+    list.filter((c) => {
       switch (c.conceptDataType) {
         case null:
           return false;
@@ -193,8 +219,8 @@ export const SearchForm = ({
       }
     });
 
-  const getConceptRequests = list =>
-    getSelectedConceptApi(list).map(r => {
+  const getConceptRequests = (list) =>
+    getSelectedConceptApi(list).map((r) => {
       if (["Date", "DateTime", "Time"].includes(r.conceptDataType)) {
         return {
           uuid: r.conceptUUID,
@@ -208,7 +234,7 @@ export const SearchForm = ({
               : null,
           searchScope: r.scope,
           dataType: r.conceptDataType,
-          widget: r.widget
+          widget: r.widget,
         };
       }
       if (r.conceptDataType === "Coded") {
@@ -217,7 +243,7 @@ export const SearchForm = ({
           searchScope: r.scope,
           dataType: r.conceptDataType,
           widget: r.widget,
-          values: r.values
+          values: r.values,
         };
       }
       if (["Text", "Id"].includes(r.conceptDataType)) {
@@ -226,7 +252,7 @@ export const SearchForm = ({
           searchScope: r.scope,
           dataType: r.conceptDataType,
           widget: r.widget,
-          value: r.value
+          value: r.value,
         };
       }
       if (r.conceptDataType === "Numeric") {
@@ -236,7 +262,7 @@ export const SearchForm = ({
           maxValue: r.maxValue,
           searchScope: r.scope,
           dataType: r.conceptDataType,
-          widget: r.widget
+          widget: r.widget,
         };
       }
       return null;
@@ -249,13 +275,14 @@ export const SearchForm = ({
     setSelectedGender({});
     setAddressLevelIds([]);
     setSelectedDate(initialStates.entityDate);
+    setDateOfBirth(null);
     setChecked({ includeVoided: false, includeDisplayCount: false });
   };
 
-  const onSubjectTypeChange = uuid => {
+  const onSubjectTypeChange = (uuid) => {
     setSelectedSubjectTypeUUID(uuid);
     const sf = organisationConfigs?.organisationConfig?.searchFilters?.filter(
-      s => s.subjectTypeUUID === uuid
+      (s) => s.subjectTypeUUID === uuid,
     );
     setSelectedSearchFilter(sf || []);
     resetFilters();
@@ -266,6 +293,10 @@ export const SearchForm = ({
       subjectType: selectedSubjectTypeUUID,
       name: enterValue.name,
       age: { minValue: enterValue.age, maxValue: null },
+      dateOfBirth:
+        !isNonPersonSubject && dateOfBirth && isValid(new Date(dateOfBirth))
+          ? format(new Date(dateOfBirth), "yyyy-MM-dd")
+          : null,
       includeVoided,
       includeDisplayCount,
       addressIds: addressLevelIds,
@@ -273,21 +304,21 @@ export const SearchForm = ({
       gender: selectedGenderSort,
       registrationDate: {
         minValue: selectedDate.RegistrationDate.minValue,
-        maxValue: selectedDate.RegistrationDate.maxValue
+        maxValue: selectedDate.RegistrationDate.maxValue,
       },
       encounterDate: {
         minValue: selectedDate.EncounterDate.minValue,
-        maxValue: selectedDate.EncounterDate.maxValue
+        maxValue: selectedDate.EncounterDate.maxValue,
       },
       programEncounterDate: {
         minValue: selectedDate.ProgramEncounterDate.minValue,
-        maxValue: selectedDate.ProgramEncounterDate.maxValue
+        maxValue: selectedDate.ProgramEncounterDate.maxValue,
       },
       programEnrolmentDate: {
         minValue: selectedDate.EnrolmentDate.minValue,
-        maxValue: selectedDate.EnrolmentDate.maxValue
+        maxValue: selectedDate.EnrolmentDate.maxValue,
       },
-      searchAll: enterValue.searchAll
+      searchAll: enterValue.searchAll,
     };
 
     if (_.isFunction(onSearch)) onSearch(req);
@@ -315,6 +346,7 @@ export const SearchForm = ({
               selectedGender={selectedGender}
               addressLevelIds={addressLevelIds}
               setAddressLevelIds={setAddressLevelIds}
+              dateOfBirth={dateOfBirth}
             />
           </Grid>
 
@@ -330,9 +362,11 @@ export const SearchForm = ({
 
           <Grid size={{ xs: 12 }}>
             <NonConceptForm
-              searchFilterForms={selectedSearchFilter}
+              searchFilterForms={visibleSearchFilters}
               selectedDate={selectedDate}
               onDateChange={searchFilterDates}
+              dateOfBirth={dateOfBirth}
+              onDateOfBirthChange={setDateOfBirth}
             />
           </Grid>
 
@@ -352,14 +386,14 @@ export const SearchForm = ({
               <CheckBoxSearchComponent
                 label="Include Voided"
                 checked={includeVoided}
-                onChange={e => onChecked("includeVoided", e.target.checked)}
+                onChange={(e) => onChecked("includeVoided", e.target.checked)}
               />
             </Grid>
             <Grid>
               <CheckBoxSearchComponent
                 label="Display Count"
                 checked={includeDisplayCount}
-                onChange={e =>
+                onChange={(e) =>
                   onChecked("includeDisplayCount", e.target.checked)
                 }
               />
@@ -388,31 +422,31 @@ export const SearchForm = ({
   );
 };
 
-const searchFilterConcept = function(
+const searchFilterConcept = function (
   event,
   searchFilterForm,
   fieldName,
-  setSelectedConcept
+  setSelectedConcept,
 ) {
-  setSelectedConcept(previousSelectedConcepts =>
-    previousSelectedConcepts.map(concept => {
+  setSelectedConcept((previousSelectedConcepts) =>
+    previousSelectedConcepts.map((concept) => {
       if (concept.conceptDataType === null) {
       } else {
         if (["Date", "DateTime", "Time"].includes(concept.conceptDataType)) {
           if (concept.conceptUUID === searchFilterForm.conceptUUID) {
             return {
               ...concept,
-              [fieldName]: event
+              [fieldName]: event,
             };
           } else {
             return {
-              ...concept
+              ...concept,
             };
           }
         } else if (concept.conceptDataType === "Coded") {
           if (concept.conceptUUID === searchFilterForm.conceptUUID) {
             const selectedCodedValue = {};
-            concept.values.forEach(element => {
+            concept.values.forEach((element) => {
               selectedCodedValue[element] = true;
             });
             selectedCodedValue[event.target.name] = event.target.checked;
@@ -420,12 +454,12 @@ const searchFilterConcept = function(
             return {
               ...concept,
               values: Object.keys(selectedCodedValue).filter(
-                selectedId => selectedCodedValue[selectedId]
-              )
+                (selectedId) => selectedCodedValue[selectedId],
+              ),
             };
           } else {
             return {
-              ...concept
+              ...concept,
             };
           }
         } else if (["Text", "Id"].includes(concept.conceptDataType)) {
@@ -433,11 +467,11 @@ const searchFilterConcept = function(
             const selectedText = event.target.value;
             return {
               ...concept,
-              value: selectedText
+              value: selectedText,
             };
           } else {
             return {
-              ...concept
+              ...concept,
             };
           }
         } else if (concept.conceptDataType === "Numeric") {
@@ -445,17 +479,17 @@ const searchFilterConcept = function(
             const selectedNumeric = event.target.value;
             return {
               ...concept,
-              [fieldName]: selectedNumeric
+              [fieldName]: selectedNumeric,
             };
           } else {
             return {
-              ...concept
+              ...concept,
             };
           }
         }
       }
       return null;
-    })
+    }),
   );
 };
 
@@ -463,7 +497,7 @@ export const SearchFilterForm = ({
   operationalModules,
   genders,
   organisationConfigs,
-  searchRequest
+  searchRequest,
 }) => {
   const location = useLocation();
 
@@ -492,14 +526,14 @@ export const SearchFilterForm = ({
 function SearchFilterFormContainer() {
   const dispatch = useDispatch();
   const operationalModules = useSelector(
-    state => state.dataEntry.metadata.operationalModules
+    (state) => state.dataEntry.metadata.operationalModules,
   );
-  const genders = useSelector(state => state.dataEntry.metadata.genders);
+  const genders = useSelector((state) => state.dataEntry.metadata.genders);
   const organisationConfigs = useSelector(
-    state => state.dataEntry.metadata.organisationConfigs
+    (state) => state.dataEntry.metadata.organisationConfigs,
   );
   const searchRequest = useSelector(
-    state => state.dataEntry.searchFilterReducer.request
+    (state) => state.dataEntry.searchFilterReducer.request,
   );
 
   useEffect(() => {

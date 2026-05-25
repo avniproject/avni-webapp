@@ -31,6 +31,7 @@ function BasicForm({
   enterValue,
   addressLevelIds,
   setAddressLevelIds,
+  dateOfBirth,
 }) {
   const { t } = useTranslation();
 
@@ -100,6 +101,15 @@ function BasicForm({
                   },
                 }}
               />
+              {dateOfBirth && enterValue.age ? (
+                <Typography
+                  variant="caption"
+                  color="textSecondary"
+                  sx={{ display: "block", mt: 0.5 }}
+                >
+                  {t("dateOfBirthTakesPrecedence")}
+                </Typography>
+              ) : null}
             </Grid>
           ) : (
             ""

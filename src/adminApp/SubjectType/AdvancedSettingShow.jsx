@@ -16,16 +16,16 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
     if (subjectType.syncRegistrationConcept1) {
       http
         .get(`/web/concept/${subjectType.syncRegistrationConcept1}`)
-        .then(res => setConcept1Name(_.get(res, "data.name")));
+        .then((res) => setConcept1Name(_.get(res, "data.name")));
     }
     if (subjectType.syncRegistrationConcept2) {
       http
         .get(`/web/concept/${subjectType.syncRegistrationConcept2}`)
-        .then(res => setConcept2Name(_.get(res, "data.name")));
+        .then((res) => setConcept2Name(_.get(res, "data.name")));
     }
   }, [
     subjectType.syncRegistrationConcept2,
-    subjectType.syncRegistrationConcept1
+    subjectType.syncRegistrationConcept1,
   ]);
 
   const addressLevelNames = _(locationTypes)
@@ -118,6 +118,24 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
         concept1Name={concept1Name}
         concept2Name={concept2Name}
       />
+      {subjectType.type === SubjectTypeType.Group && (
+        <>
+          <BooleanStatusInShow
+            status={subjectType.attendanceEnabled}
+            label={"Attendance Enabled"}
+          />
+          {subjectType.attendanceEnabled &&
+            !isEmpty(subjectType.attendanceTypes) && (
+              <ShowLabelValue
+                label={"Attendance Types"}
+                value={subjectType.attendanceTypes
+                  .filter((type) => !type.voided)
+                  .map((type) => type.name)
+                  .join(", ")}
+              />
+            )}
+        </>
+      )}
     </div>
   );
 };

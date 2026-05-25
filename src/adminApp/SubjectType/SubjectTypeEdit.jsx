@@ -19,18 +19,21 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import {
   getMessageRules,
   getMessageTemplates,
-  saveMessageRules
+  saveMessageRules,
 } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
+import { SubjectTypeType } from "./Types";
 
 const SubjectTypeEdit = () => {
-  const organisationConfig = useSelector(state => state.app.organisationConfig);
+  const organisationConfig = useSelector(
+    (state) => state.app.organisationConfig,
+  );
   const { id } = useParams();
   const navigate = useNavigate();
   const [subjectType, dispatch] = useReducer(
     subjectTypeReducer,
-    subjectTypeInitialState
+    subjectTypeInitialState,
   );
   const [nameValidation, setNameValidation] = useState(false);
   const [groupValidationError, setGroupValidationError] = useState(false);
@@ -41,9 +44,8 @@ const SubjectTypeEdit = () => {
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [formList, setFormList] = useState([]);
   const [formMappings, setFormMappings] = useState([]);
-  const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] = useState(
-    false
-  );
+  const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] =
+    useState(false);
   const [subjectTypes, setSubjectTypes] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
   const [file, setFile] = useState();
@@ -52,8 +54,8 @@ const SubjectTypeEdit = () => {
     MessageReducer,
     {
       rules: [],
-      templates: []
-    }
+      templates: [],
+    },
   );
   const entityType = "Subject";
 
@@ -79,7 +81,7 @@ const SubjectTypeEdit = () => {
     }
   }, [deleteAlert, navigate]);
 
-  const onRulesChange = rules => {
+  const onRulesChange = (rules) => {
     rulesDispatch({ type: "setRules", payload: rules });
   };
 
@@ -90,13 +92,13 @@ const SubjectTypeEdit = () => {
   };
 
   useFormMappings(consumeFormMappingResult);
-  useLocationType(types => setLocationsTypes(types));
+  useLocationType((types) => setLocationsTypes(types));
 
   useEffect(() => {
     http
       .get("/web/subjectType/" + id)
-      .then(response => response.data)
-      .then(result => {
+      .then((response) => response.data)
+      .then((result) => {
         setSubjectTypeData(result);
         dispatch({ type: "setData", payload: result });
       });
@@ -111,12 +113,31 @@ const SubjectTypeEdit = () => {
       return;
     }
 
+    const isGroup = subjectType.type === SubjectTypeType.Group;
+    if (isGroup && subjectType.attendanceEnabled) {
+      const incompleteTypes = _.filter(
+        subjectType.attendanceTypes || [],
+        (type) =>
+          !type.voided &&
+          (!type.config?.sessionOutcomeReasonConcept ||
+            !type.config?.absenceReasonConcept),
+      );
+      if (incompleteTypes.length > 0) {
+        setError(
+          `The following attendance types must be configured: ${incompleteTypes
+            .map((t) => t.name)
+            .join(", ")}`,
+        );
+        return;
+      }
+    }
+
     setNameValidation(false);
     if (!groupValidationError) {
       const [s3FileKey, error] = await uploadImage(
         subjectType.iconFileS3Key,
         file,
-        MediaFolder.ICONS
+        MediaFolder.ICONS,
       );
       if (error) {
         alert(error);
@@ -138,24 +159,28 @@ const SubjectTypeEdit = () => {
             groupRoles: subjectType.groupRoles,
             registrationFormUuid: _.get(
               subjectType,
-              "registrationForm.formUUID"
+              "registrationForm.formUUID",
             ),
             type: subjectType.type,
             subjectSummaryRule: subjectType.subjectSummaryRule,
             locationTypeUUIDs: subjectType.locationTypeUUIDs,
-            iconFileS3Key: removeFile ? null : s3FileKey
+            iconFileS3Key: removeFile ? null : s3FileKey,
+            ...(isGroup && {
+              attendanceEnabled: subjectType.attendanceEnabled,
+              attendanceTypes: subjectType.attendanceTypes,
+            }),
           })
-          .then(response => {
+          .then((response) => {
             if (response.status === 200) {
               setError("");
               setMsgError("");
             }
           })
           .then(() =>
-            saveMessageRules(entityType, subjectType.subjectTypeId, rules)
+            saveMessageRules(entityType, subjectType.subjectTypeId, rules),
           )
           .then(() => setRedirectShow(true))
-          .catch(error => {
+          .catch((error) => {
             error.response.data.message
               ? setError(error.response.data.message)
               : setMsgError(getDBValidationError(error));
@@ -167,7 +192,7 @@ const SubjectTypeEdit = () => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete subject type?")) {
-      http.delete("/web/subjectType/" + id).then(response => {
+      http.delete("/web/subjectType/" + id).then((response) => {
         if (response.status === 200) {
           setDeleteAlert(true);
         }
@@ -189,7 +214,7 @@ const SubjectTypeEdit = () => {
   const disableDelete = _.find(
     subjectTypes,
     ({ group, memberSubjectUUIDs }) =>
-      group && _.includes(memberSubjectUUIDs.split(","), subjectType.uuid)
+      group && _.includes(memberSubjectUUIDs.split(","), subjectType.uuid),
   );
 
   return (
@@ -197,7 +222,7 @@ const SubjectTypeEdit = () => {
       sx={{
         boxShadow: 2,
         p: 3,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <Title title={"Edit subject type"} />
@@ -258,7 +283,7 @@ const SubjectTypeEdit = () => {
           <Button
             sx={{
               backgroundColor: disableDelete ? "lightgray" : "#f44336",
-              color: "white"
+              color: "white",
             }}
             startIcon={<Delete />}
             onClick={onDelete}
