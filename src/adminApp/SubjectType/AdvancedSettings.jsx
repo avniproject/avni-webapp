@@ -279,7 +279,7 @@ export const AdvancedSettings = ({
             <StyledInput
               multiline
               id={"nameHelpText"}
-              value={get(subjectType, `nameHelpText`, "")}
+              value={get(subjectType, `nameHelpText`) || ""}
               onChange={(event) =>
                 dispatch({ type: "nameHelpText", payload: event.target.value })
               }

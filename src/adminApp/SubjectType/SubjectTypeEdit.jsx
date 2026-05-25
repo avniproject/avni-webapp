@@ -214,7 +214,9 @@ const SubjectTypeEdit = () => {
   const disableDelete = _.find(
     subjectTypes,
     ({ group, memberSubjectUUIDs }) =>
-      group && _.includes(memberSubjectUUIDs.split(","), subjectType.uuid),
+      group &&
+      memberSubjectUUIDs &&
+      _.includes(memberSubjectUUIDs.split(","), subjectType.uuid),
   );
 
   return (

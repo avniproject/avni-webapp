@@ -313,7 +313,7 @@ const EditAttendanceTypeModal = ({
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
-          Save
+          Done
         </Button>
       </DialogActions>
     </Dialog>
