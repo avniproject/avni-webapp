@@ -19,6 +19,63 @@ const MEDIA_TYPES = {
   VIDEO: "Video",
 };
 
+const INCOMPATIBLE_COLOR_SPACE_MESSAGE =
+  "This image uses CMYK color mode, which the mobile app cannot display. Re-save it as RGB / sRGB and upload again.";
+
+const readHeaderBytes = (file, byteCount) =>
+  file
+    .slice(0, Math.min(byteCount, file.size))
+    .arrayBuffer()
+    .then((buf) => new DataView(buf));
+
+const isJpegCmyk = (view) => {
+  if (view.byteLength < 4) return false;
+  if (view.getUint16(0) !== 0xffd8) return false;
+  let offset = 2;
+  while (offset < view.byteLength - 1) {
+    if (view.getUint8(offset) !== 0xff) return false;
+    let marker = view.getUint8(offset + 1);
+    offset += 2;
+    while (marker === 0xff && offset < view.byteLength) {
+      marker = view.getUint8(offset);
+      offset += 1;
+    }
+    if (marker === 0xd8 || marker === 0xd9 || marker === 0xda) return false;
+    if (offset + 2 > view.byteLength) return false;
+    const segmentLength = view.getUint16(offset);
+    const isStartOfFrame =
+      marker >= 0xc0 &&
+      marker <= 0xcf &&
+      marker !== 0xc4 &&
+      marker !== 0xc8 &&
+      marker !== 0xcc;
+    if (isStartOfFrame) {
+      const componentCountOffset = offset + 2 + 1 + 2 + 2;
+      if (componentCountOffset >= view.byteLength) return false;
+      return view.getUint8(componentCountOffset) === 4;
+    }
+    offset += segmentLength;
+  }
+  return false;
+};
+
+const detectIncompatibleColorSpace = async (file) => {
+  try {
+    const lower = toLower(file.name || "");
+    const type = toLower(file.type || "");
+    const isJpeg =
+      type.includes("jpeg") ||
+      type.includes("jpg") ||
+      lower.endsWith(".jpg") ||
+      lower.endsWith(".jpeg");
+    if (!isJpeg) return false;
+    const view = await readHeaderBytes(file, 65536);
+    return isJpegCmyk(view);
+  } catch {
+    return false;
+  }
+};
+
 export const MediaPreview = ({
   mediaUrl,
   mediaType,
@@ -145,6 +202,7 @@ export const AvniMediaUpload = ({
   const [file, setFile] = useState();
   const [mediaPreview, setMediaPreview] = useState();
   const [fileSizeError, setFileSizeError] = useState("");
+  const isImage = toLower(mediaType) === toLower(MEDIA_TYPES.IMAGE);
 
   useEffect(() => {
     if (!file) {
@@ -187,24 +245,28 @@ export const AvniMediaUpload = ({
       ) / 10;
     return `File size ${friendlySelectedFileSize} ${unit} exceeds the maximum allowed size of ${friendlyMaxFileSize} ${unit}.`;
   };
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
-    if (selectedFile) {
-      if (maxFileSize && selectedFile.size > maxFileSize) {
-        setFileSizeError(
-          constructErrorMessage(mediaType, selectedFile.size, maxFileSize),
-        );
-        setFile(undefined);
-        // Reset file input value so selecting the same invalid file again triggers onChange
-        event.target.value = "";
-        return;
-      } else {
-        setFileSizeError("");
-      }
-      setFile(selectedFile);
-      if (onSelect) {
-        onSelect(selectedFile);
-      }
+    if (!selectedFile) return;
+    const inputElement = event.target;
+    if (maxFileSize && selectedFile.size > maxFileSize) {
+      setFileSizeError(
+        constructErrorMessage(mediaType, selectedFile.size, maxFileSize),
+      );
+      setFile(undefined);
+      inputElement.value = "";
+      return;
+    }
+    if (isImage && (await detectIncompatibleColorSpace(selectedFile))) {
+      setFileSizeError(INCOMPATIBLE_COLOR_SPACE_MESSAGE);
+      setFile(undefined);
+      inputElement.value = "";
+      return;
+    }
+    setFileSizeError("");
+    setFile(selectedFile);
+    if (onSelect) {
+      onSelect(selectedFile);
     }
   };
 
