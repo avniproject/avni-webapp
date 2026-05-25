@@ -27,6 +27,9 @@ import { Title } from "react-admin";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { LocationModes } from "./LocationModes";
 import EncounterModes, { ENCOUNTER_MODES } from "./EncounterModes";
+import ProgramEnrolmentModes, {
+  PROGRAM_ENROLMENT_MODES,
+} from "./ProgramEnrolmentModes";
 import { LocationHierarchy } from "./LocationHierarchy";
 import MetadataDiff from "./MetadataDiff";
 import CompareMetadataService from "../adminApp/service/CompareMetadataService";
@@ -97,6 +100,8 @@ const ENCOUNTER_PREFIXES = {
   PROGRAM_ENCOUNTER: "ProgramEncounter---",
 };
 
+const PROGRAM_ENROLMENT_PREFIX = "ProgramEnrolment---";
+
 class ReviewStatus {
   constructor(loading, response, error) {
     this.loading = loading;
@@ -120,6 +125,8 @@ const UploadDashboard = () => {
   const [autoApprove, setAutoApprove] = useState(false);
   const [locationUploadMode, setLocationUploadMode] = useState("");
   const [encounterUploadMode, setEncounterUploadMode] = useState("");
+  const [programEnrolmentUploadMode, setProgramEnrolmentUploadMode] =
+    useState("");
   const [hierarchy, setHierarchy] = useState(null);
   const [configuredLocationHierarchies, setConfiguredLocationHierarchies] =
     useState([]);
@@ -142,6 +149,17 @@ const UploadDashboard = () => {
         internalUploadType &&
         (internalUploadType.startsWith(ENCOUNTER_PREFIXES.ENCOUNTER) ||
           internalUploadType.startsWith(ENCOUNTER_PREFIXES.PROGRAM_ENCOUNTER))
+      );
+    },
+    [getUploadTypeCode],
+  );
+
+  const isProgramEnrolmentType = useCallback(
+    (type) => {
+      const internalUploadType = getUploadTypeCode(type);
+      return (
+        internalUploadType &&
+        internalUploadType.startsWith(PROGRAM_ENROLMENT_PREFIX)
       );
     },
     [getUploadTypeCode],
@@ -170,6 +188,9 @@ const UploadDashboard = () => {
       setEncounterUploadMode(
         isEncounterType(option) ? ENCOUNTER_MODES.SCHEDULE : "",
       );
+      setProgramEnrolmentUploadMode(
+        isProgramEnrolmentType(option) ? PROGRAM_ENROLMENT_MODES.UPLOAD : "",
+      );
       setUploadType(option);
       if (option !== staticTypesWithStaticDownload.getName("metadataZip")) {
         setEntityForDownload(option);
@@ -186,7 +207,7 @@ const UploadDashboard = () => {
         }
       }
     },
-    [isEncounterType, subjectsLocationHierarchies],
+    [isEncounterType, isProgramEnrolmentType, subjectsLocationHierarchies],
   );
 
   const handleUploadFile = useCallback(async () => {
@@ -196,6 +217,9 @@ const UploadDashboard = () => {
       const encounterUploadModeValue = isEncounterType(uploadType)
         ? encounterUploadMode
         : "";
+      const programEnrolmentUploadModeValue = isProgramEnrolmentType(uploadType)
+        ? programEnrolmentUploadMode
+        : "";
       const [ok, error] = await api.bulkUpload(
         getUploadTypeCode(uploadType),
         file,
@@ -203,6 +227,7 @@ const UploadDashboard = () => {
         locationUploadModeValue,
         hierarchy || 0,
         encounterUploadModeValue,
+        programEnrolmentUploadModeValue,
       );
       if (!ok && error) {
         if (error === "Double extension file detected") {
@@ -222,6 +247,7 @@ const UploadDashboard = () => {
       setEntityForDownload("");
       setLocationUploadMode("");
       setEncounterUploadMode("");
+      setProgramEnrolmentUploadMode("");
       setHierarchy(null);
       setTimeout(() => dispatch(getStatuses(0)), 1000);
     } catch (err) {
@@ -236,6 +262,8 @@ const UploadDashboard = () => {
     getUploadTypeCode,
     dispatch,
     encounterUploadMode,
+    programEnrolmentUploadMode,
+    isProgramEnrolmentType,
   ]);
 
   const downloadStaticSample = useCallback(async (code) => {
@@ -248,6 +276,10 @@ const UploadDashboard = () => {
 
   const downloadEncounterSample = useCallback(async (code, mode) => {
     await api.downloadEncounterSample(code, mode);
+  }, []);
+
+  const downloadProgramEnrolmentSample = useCallback(async (code, mode) => {
+    await api.downloadProgramEnrolmentSample(code, mode);
   }, []);
 
   const downloadDynamicSample = useCallback(async (code) => {
@@ -281,6 +313,12 @@ const UploadDashboard = () => {
           return;
         }
         await downloadEncounterSample(code, encounterUploadMode);
+      } else if (isProgramEnrolmentType(entityForDownload)) {
+        if (isEmpty(programEnrolmentUploadMode)) {
+          alert("Please select an enrolment mode.");
+          return;
+        }
+        await downloadProgramEnrolmentSample(code, programEnrolmentUploadMode);
       } else if (code && code.startsWith("Subject---")) {
         await downloadSubjectSample(code, hierarchy);
       } else {
@@ -297,12 +335,15 @@ const UploadDashboard = () => {
     entityForDownload,
     locationUploadMode,
     encounterUploadMode,
+    programEnrolmentUploadMode,
     hierarchy,
     getUploadTypeCode,
     isEncounterType,
+    isProgramEnrolmentType,
     downloadStaticSample,
     downloadLocationSample,
     downloadEncounterSample,
+    downloadProgramEnrolmentSample,
     downloadDynamicSample,
   ]);
 
@@ -350,14 +391,18 @@ const UploadDashboard = () => {
         locationUploadMode === LOCATION_MODES.CREATE &&
         isEmpty(hierarchy)) ||
       (shouldShowHierarchyForSubject(uploadType) && isEmpty(hierarchy)) ||
-      (isEncounterType(uploadType) && isEmpty(encounterUploadMode)),
+      (isEncounterType(uploadType) && isEmpty(encounterUploadMode)) ||
+      (isProgramEnrolmentType(uploadType) &&
+        isEmpty(programEnrolmentUploadMode)),
     [
       entityForDownload,
       uploadType,
       locationUploadMode,
       hierarchy,
       isEncounterType,
+      isProgramEnrolmentType,
       encounterUploadMode,
+      programEnrolmentUploadMode,
       shouldShowHierarchyForSubject,
     ],
   );
@@ -473,6 +518,12 @@ const UploadDashboard = () => {
                   <EncounterModes
                     mode={encounterUploadMode}
                     setMode={setEncounterUploadMode}
+                  />
+                )}
+                {isProgramEnrolmentType(uploadType) && (
+                  <ProgramEnrolmentModes
+                    mode={programEnrolmentUploadMode}
+                    setMode={setProgramEnrolmentUploadMode}
                   />
                 )}
               </Grid>

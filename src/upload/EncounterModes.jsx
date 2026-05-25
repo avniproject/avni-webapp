@@ -6,20 +6,21 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 
 export const ENCOUNTER_MODES = {
   SCHEDULE: "schedule_a_visit",
-  UPLOAD: "upload_visit_details"
+  UPLOAD: "upload_visit_details",
+  CANCEL: "upload_cancelled_visits",
 };
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
-  marginTop: theme.spacing(2)
+  marginTop: theme.spacing(2),
 }));
 
 const EncounterModes = ({ mode = ENCOUNTER_MODES.SCHEDULE, setMode }) => {
-  const handleChange = event => {
+  const handleChange = (event) => {
     setMode(event.target.value);
   };
 
@@ -33,18 +34,29 @@ const EncounterModes = ({ mode = ENCOUNTER_MODES.SCHEDULE, setMode }) => {
         value={mode}
         onChange={handleChange}
       >
-        <Tooltip title="Schedule a new visit" placement="bottom-start" arrow>
+        <Tooltip title="Schedule new visits" placement="bottom-start" arrow>
           <FormControlLabel
             value={ENCOUNTER_MODES.SCHEDULE}
             control={<Radio color="primary" />}
-            label="Schedule a visit"
+            label="Schedule visits"
           />
         </Tooltip>
         <Tooltip title="Upload visit details" placement="bottom-start" arrow>
           <FormControlLabel
             value={ENCOUNTER_MODES.UPLOAD}
             control={<Radio color="primary" />}
-            label="Upload visit details"
+            label="Upload visits"
+          />
+        </Tooltip>
+        <Tooltip
+          title="Upload visits that were cancelled (terminal state)"
+          placement="bottom-start"
+          arrow
+        >
+          <FormControlLabel
+            value={ENCOUNTER_MODES.CANCEL}
+            control={<Radio color="primary" />}
+            label="Upload cancelled visits"
           />
         </Tooltip>
       </RadioGroup>
@@ -54,7 +66,7 @@ const EncounterModes = ({ mode = ENCOUNTER_MODES.SCHEDULE, setMode }) => {
 
 EncounterModes.propTypes = {
   mode: PropTypes.string,
-  setMode: PropTypes.func.isRequired
+  setMode: PropTypes.func.isRequired,
 };
 
 export default EncounterModes;

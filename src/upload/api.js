@@ -6,7 +6,7 @@ export default {
   fetchUploadJobStatuses: (params = {}) => {
     return http.fetchJson(http.withParams("/import/status", { size: 5, ...params })).then((r) => r.json);
   },
-  bulkUpload: (type, file, autoApprove, locationUploadMode, locationHierarchy, encounterUploadMode) =>
+  bulkUpload: (type, file, autoApprove, locationUploadMode, locationHierarchy, encounterUploadMode, programEnrolmentUploadMode) =>
     http
       .uploadFile(
         http.withParams("/import/new", {
@@ -15,6 +15,7 @@ export default {
           locationUploadMode,
           locationHierarchy,
           encounterUploadMode,
+          programEnrolmentUploadMode,
         }),
         file,
       )
@@ -51,7 +52,13 @@ export default {
   downloadEncounterSample: (type, encounterUploadMode) => {
     return http.downloadFile(
       `/web/importSample?uploadType=${type}&encounterUploadMode=${encodeURIComponent(encounterUploadMode)}`,
-      `sample-${type}.csv`,
+      `sample-${type}-${encounterUploadMode}.csv`,
+    );
+  },
+  downloadProgramEnrolmentSample: (type, programEnrolmentUploadMode) => {
+    return http.downloadFile(
+      `/web/importSample?uploadType=${type}&programEnrolmentUploadMode=${encodeURIComponent(programEnrolmentUploadMode)}`,
+      `sample-${type}-${programEnrolmentUploadMode}.csv`,
     );
   },
   downloadSubjectSample: (type, locationHierarchy) => {
