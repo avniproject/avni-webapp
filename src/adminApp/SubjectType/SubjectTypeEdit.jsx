@@ -3,7 +3,7 @@ import { httpClient as http } from "common/utils/httpClient";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Box, Button, FormLabel, Grid } from "@mui/material";
-import { Title } from "react-admin";
+import { Title, useNotify } from "react-admin";
 import { Visibility, Delete } from "@mui/icons-material";
 import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
@@ -24,6 +24,10 @@ import {
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 import { SubjectTypeType } from "./Types";
+import {
+  isAttendanceConfigIncompleteError,
+  buildAttendanceConfigIncompleteMessage,
+} from "./attendanceConfigErrors";
 
 const SubjectTypeEdit = () => {
   const organisationConfig = useSelector(
@@ -31,6 +35,7 @@ const SubjectTypeEdit = () => {
   );
   const { id } = useParams();
   const navigate = useNavigate();
+  const notify = useNotify();
   const [subjectType, dispatch] = useReducer(
     subjectTypeReducer,
     subjectTypeInitialState,
@@ -181,6 +186,14 @@ const SubjectTypeEdit = () => {
           )
           .then(() => setRedirectShow(true))
           .catch((error) => {
+            if (isAttendanceConfigIncompleteError(error)) {
+              notify(buildAttendanceConfigIncompleteMessage(error), {
+                type: "error",
+                multiLine: true,
+                autoHideDuration: 8000,
+              });
+              return;
+            }
             error.response.data.message
               ? setError(error.response.data.message)
               : setMsgError(getDBValidationError(error));

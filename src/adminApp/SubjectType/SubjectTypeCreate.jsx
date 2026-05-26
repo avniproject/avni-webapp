@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { Box, FormLabel } from "@mui/material";
-import { Title } from "react-admin";
+import { Title, useNotify } from "react-admin";
 import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
 import { validateGroup } from "./GroupHandlers";
@@ -21,9 +21,14 @@ import MessageRules from "../../formDesigner/components/MessageRule/MessageRules
 import { useSelector } from "react-redux";
 import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 import { SaveComponent } from "../../common/components/SaveComponent";
+import {
+  isAttendanceConfigIncompleteError,
+  buildAttendanceConfigIncompleteMessage,
+} from "./attendanceConfigErrors";
 
 const SubjectTypeCreate = () => {
   const navigate = useNavigate();
+  const notify = useNotify();
   const organisationConfig = useSelector(
     (state) => state.app.organisationConfig,
   );
@@ -120,6 +125,14 @@ const SubjectTypeCreate = () => {
           )
           .catch((error) => {
             setSuccessAlert(false);
+            if (isAttendanceConfigIncompleteError(error)) {
+              notify(buildAttendanceConfigIncompleteMessage(error), {
+                type: "error",
+                multiLine: true,
+                autoHideDuration: 8000,
+              });
+              return;
+            }
             error.response.data.message
               ? setError(error.response.data.message)
               : setMsgError(getDBValidationError(error));
