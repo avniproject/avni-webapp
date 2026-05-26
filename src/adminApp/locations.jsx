@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AutocompleteInput,
   Datagrid,
@@ -26,14 +26,22 @@ import {
   useNotify,
   useRedirect,
 } from "react-admin";
-import { isEmpty, find, isNil } from "lodash";
+import { debounce, isEmpty, find, isNil } from "lodash";
 import { None } from "../common/components/utils";
 import { AvniReferenceInput } from "./components/AvniReferenceInput";
 import LocationSaveButton from "./components/LocationSaveButton";
 import { Title } from "./components/Title";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
-import { Paper } from "@mui/material";
+import CascadingAncestorFilter from "./components/CascadingAncestorFilter";
+import {
+  Box,
+  FormControl,
+  MenuItem,
+  Paper,
+  Select,
+  Typography,
+} from "@mui/material";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 import {
   StyledBox,
@@ -55,29 +63,143 @@ const CustomListActions = () => {
   );
 };
 
-const LocationFilter = (props) => {
-  const { ...filteredProps } = props;
+const FILTER_DEBOUNCE_MS = 500;
+
+const TypeFilter = ({ onChangeFilter }) => {
+  const { filterValues } = useListContext();
+  const [choices, setChoices] = useState([]);
+  const dataProvider = useDataProvider();
+
+  useEffect(() => {
+    dataProvider
+      .getList("addressLevelType", {
+        pagination: { page: 1, perPage: 100 },
+        sort: { field: "level", order: "DESC" },
+        filter: {},
+      })
+      .then(({ data }) => {
+        const raw = Array.isArray(data)
+          ? data
+          : data?._embedded?.addressLevelType || [];
+        setChoices(raw.map((t) => ({ id: t.id, name: t.name })));
+      })
+      .catch(() => setChoices([]));
+  }, [dataProvider]);
+
+  const [localValue, setLocalValue] = useState(() =>
+    filterValues.typeId == null || filterValues.typeId === ""
+      ? ""
+      : Number(filterValues.typeId),
+  );
+
+  useEffect(() => {
+    const fromContext =
+      filterValues.typeId == null || filterValues.typeId === ""
+        ? ""
+        : Number(filterValues.typeId);
+    setLocalValue(fromContext);
+  }, [filterValues.typeId]);
+
+  const onChange = (event) => {
+    const value = event.target.value;
+    setLocalValue(value);
+    onChangeFilter(
+      "typeId",
+      value === "" || value == null ? null : Number(value),
+    );
+  };
+
   return (
-    <FilterLiveSearch
-      {...filteredProps}
-      source="title"
-      label="Search location"
-      resettable={false}
+    <Box>
+      <Typography variant="caption" color="text.secondary">
+        Type
+      </Typography>
+      <FormControl fullWidth size="small">
+        <Select
+          value={localValue}
+          onChange={onChange}
+          displayEmpty
+          sx={{ backgroundColor: "white" }}
+        >
+          <MenuItem value="">
+            <em>All types</em>
+          </MenuItem>
+          {choices.map((c) => (
+            <MenuItem key={c.id} value={c.id}>
+              {c.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </Box>
+  );
+};
+
+const LocationFilter = () => {
+  const { filterValues, setFilters, displayedFilters } = useListContext();
+
+  const debouncedSetFilters = useMemo(
+    () =>
+      debounce(
+        (next, displayed) => setFilters(next, displayed),
+        FILTER_DEBOUNCE_MS,
+      ),
+    [setFilters],
+  );
+
+  useEffect(() => () => debouncedSetFilters.cancel(), [debouncedSetFilters]);
+
+  const updateFilter = (key, value) => {
+    const next = { ...filterValues };
+    if (value == null || value === "") {
+      delete next[key];
+    } else {
+      next[key] = value;
+    }
+    debouncedSetFilters(next, displayedFilters);
+  };
+
+  const onAncestorChange = (location) => {
+    updateFilter("ancestorId", location?.id ?? null);
+  };
+
+  return (
+    <Box
       sx={{
-        "& .MuiInputBase-input": {
-          backgroundColor: "white",
-        },
-        "& .RaResettableTextField-clearButton": {
-          backgroundColor: "white",
-        },
-        "& .MuiInputAdornment-root": {
-          display: "none",
-        },
-        "& .MuiInputBase-root": {
-          paddingRight: 0,
-        },
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        p: 1,
+        width: 320,
       }}
-    />
+    >
+      <FilterLiveSearch
+        source="title"
+        label="Search location"
+        resettable={false}
+        sx={{
+          "& .MuiInputBase-input": {
+            backgroundColor: "white",
+          },
+          "& .RaResettableTextField-clearButton": {
+            backgroundColor: "white",
+          },
+          "& .MuiInputAdornment-root": {
+            display: "none",
+          },
+          "& .MuiInputBase-root": {
+            paddingRight: 0,
+          },
+        }}
+      />
+      <Box>
+        <Typography variant="caption" color="text.secondary">
+          Under location
+        </Typography>
+        <CascadingAncestorFilter onChange={onAncestorChange} />
+      </Box>
+      <TypeFilter onChangeFilter={updateFilter} />
+    </Box>
   );
 };
 
@@ -87,6 +209,7 @@ export const LocationList = (props) => (
       {...props}
       sort={{ field: "title", order: "ASC" }}
       filters={<LocationFilter />}
+      filter={{ searchURI: "find" }}
       actions={<CustomListActions />}
       pagination={<PrettyPagination />}
     >
