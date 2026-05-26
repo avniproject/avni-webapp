@@ -493,9 +493,30 @@ const Observations = ({
   };
 
   const isNotAssociatedWithForm = isNil(form);
-  const orderedObs = isNotAssociatedWithForm
-    ? observations
-    : form.orderObservationsPerFEG(observations);
+  let orderedObs;
+  if (isNotAssociatedWithForm) {
+    orderedObs = observations;
+  } else {
+    const fegOrderedObs = form.orderObservationsPerFEG(observations);
+    const fegObsConceptUuids = new Set(
+      _.flatMap(fegOrderedObs, (group) =>
+        (group.sortedObservationsArray || []).map((obs) => obs.concept.uuid),
+      ),
+    );
+    const extraObs = observations.filter(
+      (obs) => !fegObsConceptUuids.has(obs.concept.uuid),
+    );
+    orderedObs = isEmpty(extraObs)
+      ? fegOrderedObs
+      : [
+          ...fegOrderedObs,
+          {
+            uuid: "decisions",
+            feg: { name: "Decisions" },
+            sortedObservationsArray: extraObs,
+          },
+        ];
+  }
   const mediaObservations = initMediaObservations(observations);
 
   useEffect(() => {
