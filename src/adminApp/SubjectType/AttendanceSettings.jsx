@@ -82,7 +82,10 @@ const AttendanceSettings = ({ subjectType, dispatch }) => {
   }
 
   const { attendanceEnabled = false, attendanceTypes = [] } = subjectType;
-  const activeTypes = attendanceTypes.filter((t) => !t.voided);
+  const activeTypes = attendanceTypes
+    .filter((t) => !t.voided)
+    .slice()
+    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   const incompleteTypes = activeTypes.filter(isIncomplete);
 
   const handleToggleAttendance = (checked) => {

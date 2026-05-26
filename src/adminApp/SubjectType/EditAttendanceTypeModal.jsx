@@ -201,6 +201,8 @@ const EditAttendanceTypeModal = ({
           }
           placeholder="Search and select a coded concept"
           isClearable
+          menuPortalTarget={document.body}
+          styles={{ menuPortal: (base) => ({ ...base, zIndex: 1400 }) }}
         />
         {errors[fieldKey] && (
           <Typography variant="caption" color="error">
@@ -313,7 +315,7 @@ const EditAttendanceTypeModal = ({
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
-          Save
+          Done
         </Button>
       </DialogActions>
     </Dialog>
