@@ -9,7 +9,7 @@ import {
   getLegacyRulesBundle,
   getOperationalModules,
   selectLegacyRulesBundleLoaded,
-  selectLegacyRulesLoaded
+  selectLegacyRulesLoaded,
 } from "dataEntryApp/reducers/metadataReducer";
 import { getOrgConfigInfo } from "i18nTranslations/TranslationReducers";
 import Loading from "./components/Loading";
@@ -26,6 +26,9 @@ import Encounter from "./views/subjectDashBoard/components/Encounter";
 import CancelEncounter from "./views/subjectDashBoard/components/CancelEncounter";
 import AppBar from "dataEntryApp/components/AppBar";
 import GroupMembershipAddEdit from "./components/GroupMembershipAddEdit";
+import AttendanceSheetView from "./views/attendance/AttendanceSheetView";
+import AttendanceMarkView from "./views/attendance/AttendanceMarkView";
+import AttendanceDidntHappenView from "./views/attendance/AttendanceDidntHappenView";
 import { Grid } from "@mui/material";
 import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
@@ -34,11 +37,11 @@ import NewsDetails from "./views/subjectDashBoard/components/news/NewsDetails";
 import Player from "./views/audio/Player";
 
 const StyledRoot = styled("div")({
-  flexGrow: 1
+  flexGrow: 1,
 });
 
 const StyledGrid = styled(Grid)({
-  justifyContent: "center"
+  justifyContent: "center",
 });
 
 const DataEntry = () => {
@@ -46,9 +49,9 @@ const DataEntry = () => {
   const dispatch = useDispatch();
 
   const operationalModules = useSelector(
-    state => state.dataEntry.metadata.operationalModules
+    (state) => state.dataEntry.metadata.operationalModules,
   );
-  const orgConfig = useSelector(state => state.translationsReducer.orgConfig);
+  const orgConfig = useSelector((state) => state.translationsReducer.orgConfig);
   const legacyRulesBundleLoaded = useSelector(selectLegacyRulesBundleLoaded);
   const legacyRulesLoaded = useSelector(selectLegacyRulesLoaded);
 
@@ -136,6 +139,18 @@ const DataEntry = () => {
                 <Route
                   path="/subject/editCancelEncounter"
                   element={<CancelEncounter />}
+                />
+                <Route
+                  path="/subject/attendance"
+                  element={<AttendanceSheetView />}
+                />
+                <Route
+                  path="/subject/attendanceMark"
+                  element={<AttendanceMarkView />}
+                />
+                <Route
+                  path="/subject/attendanceDidntHappen"
+                  element={<AttendanceDidntHappenView />}
                 />
                 <Route path="/news" element={<NewsList />} />
                 <Route path="/news/:id/details" element={<NewsDetails />} />

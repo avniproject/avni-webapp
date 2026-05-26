@@ -6,28 +6,28 @@ import { defaultTo } from "lodash";
 
 const StyledBreadcrumbs = styled(MUIBreadcrumb)({
   margin: "12px 24px",
-  fontSize: "12px"
+  fontSize: "12px",
 });
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   fontSize: "12px",
-  color: theme.palette.text.primary
+  color: theme.palette.text.primary,
 }));
 
 const Breadcrumbs = ({ path }) => {
   const { t } = useTranslation();
 
   const subjectProfile = useSelector(
-    state => state.dataEntry.subjectProfile.subjectProfile
+    (state) => state.dataEntry.subjectProfile.subjectProfile,
   );
   const viewVisit = useSelector(
-    state => state.dataEntry.viewVisitReducer.encounter
+    (state) => state.dataEntry.viewVisitReducer.encounter,
   );
   const programEncounter = useSelector(
-    state => state.dataEntry.programEncounterReducer.programEncounter
+    (state) => state.dataEntry.programEncounterReducer.programEncounter,
   );
   const encounter = useSelector(
-    state => state.dataEntry.encounterReducer.encounter
+    (state) => state.dataEntry.encounterReducer.encounter,
   );
 
   const parts = path.split(/\/+/g).filter(Boolean);
@@ -61,14 +61,17 @@ const Breadcrumbs = ({ path }) => {
     EDIT_SUBJECT: "editSubject",
     SEARCH: "searchFilter",
     REGISTER: "register",
-    EDIT_GROUP_MEMBERSHIP: "editGroupMembership"
+    EDIT_GROUP_MEMBERSHIP: "editGroupMembership",
+    ATTENDANCE: "attendance",
+    ATTENDANCE_MARK: "attendanceMark",
+    ATTENDANCE_DIDNT_HAPPEN: "attendanceDidntHappen",
   };
   const currentPage = parts[parts.length - 1];
   const isSubjectEdit = currentPage === urlPartLabels.EDIT_SUBJECT;
   const clickableParts = isSubjectEdit
     ? parts
     : parts.slice(0, parts.length - 1);
-  const urlMapper = part => {
+  const urlMapper = (part) => {
     switch (part) {
       case urlPartLabels.APP: {
         return { breadcrumb: t("home"), url: "#/app" };
@@ -77,26 +80,26 @@ const Breadcrumbs = ({ path }) => {
         if (subjectName && subjectUuid) {
           return {
             breadcrumb: subjectName,
-            url: "#/app/subject?uuid=" + subjectUuid
+            url: "#/app/subject?uuid=" + subjectUuid,
           };
         } else {
           return {
             breadcrumb: t("Dashboard"),
-            url: "#/app"
+            url: "#/app",
           };
         }
       }
       case urlPartLabels.SUBJECT_PROFILE: {
         return {
           breadcrumb: t(urlPartLabels.SUBJECT_PROFILE),
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.VIEW_VISIT: {
         if (viewVisitName) {
           return {
             breadcrumb: `${t(viewVisitName)}`,
-            url: "#/app"
+            url: "#/app",
           };
         } else {
           return { breadcrumb: `${t("ViewVisit")}`, url: "#/app" };
@@ -109,7 +112,7 @@ const Breadcrumbs = ({ path }) => {
         if (viewVisitName) {
           return {
             breadcrumb: `${t(viewVisitName)}`,
-            url: "#/app"
+            url: "#/app",
           };
         } else {
           return { breadcrumb: "View Visit", url: "#/app" };
@@ -121,31 +124,31 @@ const Breadcrumbs = ({ path }) => {
       case urlPartLabels.EDIT_CANCEL_PROGRAM_ENCOUNTER: {
         return {
           breadcrumb: `${t("Edit Cancel Program Encounter")} : ${t(
-            programEncounterName
+            programEncounterName,
           )}`,
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.CANCEL_PROGRAM_ENCOUNTER: {
         return {
           breadcrumb: `${t("Cancel Program Encounter")} : ${t(
-            programEncounterName
+            programEncounterName,
           )}`,
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.PROGRAM_ENCOUNTER: {
         return {
           breadcrumb: `${t("Program Encounter")} : ${t(programEncounterName)}`,
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.EDIT_PROGRAM_ENCOUNTER: {
         return {
           breadcrumb: `${t("Edit Program Encounter")} : ${t(
-            programEncounterName
+            programEncounterName,
           )}`,
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.NEW_PROGRAM_VISIT: {
@@ -154,37 +157,37 @@ const Breadcrumbs = ({ path }) => {
       case urlPartLabels.NEW_GENERAL_VISIT: {
         return {
           breadcrumb: `${t("newGeneralVisit")} : ${t(encounterName)}`,
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.ENCOUNTER: {
         return {
           breadcrumb: `${t("Encounter")} : ${t(encounterName)}`,
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.EDIT_ENCOUNTER: {
         return {
           breadcrumb: `${t("Edit Encounter")} : ${t(encounterName)}`,
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.CANCEL_ENCOUNTER: {
         return {
           breadcrumb: `${t("Cancel Encounter")} : ${t(encounterName)}`,
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.EDIT_CANCEL_ENCOUNTER: {
         return {
           breadcrumb: `${t("Edit Cancel Encounter")} : ${t(encounterName)}`,
-          url: "#/app"
+          url: "#/app",
         };
       }
       case urlPartLabels.EDIT_SUBJECT: {
         return {
           breadcrumb: subjectName,
-          url: "#/app/subject?uuid=" + subjectUuid
+          url: "#/app/subject?uuid=" + subjectUuid,
         };
       }
       case urlPartLabels.SEARCH: {
@@ -196,8 +199,17 @@ const Breadcrumbs = ({ path }) => {
       case urlPartLabels.EDIT_GROUP_MEMBERSHIP: {
         return {
           breadcrumb: t(urlPartLabels.EDIT_GROUP_MEMBERSHIP),
-          url: "#/app"
+          url: "#/app",
         };
+      }
+      case urlPartLabels.ATTENDANCE: {
+        return { breadcrumb: "Attendance", url: "#/app" };
+      }
+      case urlPartLabels.ATTENDANCE_MARK: {
+        return { breadcrumb: "Mark attendance", url: "#/app" };
+      }
+      case urlPartLabels.ATTENDANCE_DIDNT_HAPPEN: {
+        return { breadcrumb: "Didn't happen", url: "#/app" };
       }
       default:
         return { breadcrumb: part, url: "#/app" };

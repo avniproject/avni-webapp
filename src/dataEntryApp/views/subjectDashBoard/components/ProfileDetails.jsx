@@ -88,6 +88,15 @@ const StyledEnrollButton = styled(Fab)({
   alignSelf: "flex-start",
 });
 
+const StyledAttendanceButton = styled(Fab)({
+  backgroundColor: "#f27510",
+  height: "38px",
+  zIndex: 1,
+  boxShadow: "none",
+  whiteSpace: "nowrap",
+  alignSelf: "flex-start",
+});
+
 const StyledCommentButton = styled(Fab)(({ theme }) => ({
   margin: theme.spacing(1),
   backgroundColor: "#f27510",
@@ -309,6 +318,25 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
                   </StyledCommentButton>
                 )}
               </Grid>
+              {!profileDetails.voided &&
+                profileDetails.subjectType.isGroup() &&
+                profileDetails.subjectType.attendanceEnabled && (
+                  <Grid>
+                    <Link
+                      to={`/app/subject/attendance?uuid=${subjectUuid}`}
+                      style={{ textDecoration: "none" }}
+                    >
+                      <StyledAttendanceButton
+                        id="attendance"
+                        variant="extended"
+                        color="primary"
+                        aria-label="attendance"
+                      >
+                        Attendance
+                      </StyledAttendanceButton>
+                    </Link>
+                  </Grid>
+                )}
               <Grid>
                 {allowEnrolment ? (
                   <Modal

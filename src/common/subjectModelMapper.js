@@ -16,7 +16,7 @@ import {
   Program,
   ProgramEncounter,
   ProgramEnrolment,
-  QuestionGroup
+  QuestionGroup,
 } from "avni-models";
 import _, { isNil, map } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
@@ -25,7 +25,7 @@ import { addressLevelService } from "../dataEntryApp/services/AddressLevelServic
 import { mapSubjectType } from "./adapters";
 import { RepeatableQuestionGroup } from "openchs-models";
 
-export const mapIndividual = individualDetails => {
+export const mapIndividual = (individualDetails) => {
   const individual = General.assignFields(individualDetails, new Individual(), Individual.directCopyFields, Individual.dateFields);
   individual.name = Individual.getFullName(individual);
   const gender = new Gender();
@@ -47,13 +47,13 @@ export const mapIndividual = individualDetails => {
 
 export function mapObservations(observations) {
   if (observations)
-    return observations.map(observation => {
+    return observations.map((observation) => {
       return mapObservation(observation);
     });
 }
 
 function getAnswers(answersJson) {
-  return map(answersJson, answerJson => {
+  return map(answersJson, (answerJson) => {
     const conceptAnswer = new ConceptAnswer();
     conceptAnswer.answerOrder = answerJson.order;
     conceptAnswer.abnormal = answerJson.abnormal;
@@ -64,7 +64,7 @@ function getAnswers(answersJson) {
   });
 }
 
-export const mapConcept = conceptJson => {
+export const mapConcept = (conceptJson) => {
   const concept = General.assignFields(conceptJson, new Concept(), ["uuid", "name", "lowAbsolute", "lowNormal"]);
   concept.datatype = conceptJson["dataType"];
   concept.hiNormal = conceptJson["highNormal"];
@@ -84,7 +84,7 @@ export function mapObservation(observationJson) {
     const concept = mapConcept(observationJson.concept);
 
     observationJson.subjects &&
-      observationJson.subjects.forEach(subject => {
+      observationJson.subjects.forEach((subject) => {
         subjectService.addSubject(subject);
       });
     observationJson.location && addressLevelService.addAddressLevel(observationJson.location);
@@ -92,7 +92,7 @@ export function mapObservation(observationJson) {
     if (concept.isQuestionGroup()) {
       if (looksLikeRepeatableQuestionGroupValue(observationJson.value)) {
         //RepeatableQuestionGroup
-        const repeatableQuestionGroupObservations = _.map(observationJson.value, qgObs => new QuestionGroup(mapObservations(qgObs)));
+        const repeatableQuestionGroupObservations = _.map(observationJson.value, (qgObs) => new QuestionGroup(mapObservations(qgObs)));
         value = new RepeatableQuestionGroup(repeatableQuestionGroupObservations);
       } else {
         //QuestionGroup
@@ -108,7 +108,7 @@ export function mapObservation(observationJson) {
   }
 }
 
-export const mapProfile = subjectProfile => {
+export const mapProfile = (subjectProfile) => {
   if (subjectProfile) {
     let individual = mapIndividual(subjectProfile);
     individual.observations = mapObservations(subjectProfile["observations"]);
@@ -133,32 +133,32 @@ export function mapProgramEnrolment(json, subject) {
   programEnrolment.voided = false;
   if (subject) programEnrolment.individual = subject;
   if (!isNil(json.programEncounters)) {
-    programEnrolment.encounters = map(json.programEncounters, programEncounter => mapProgramEncounter(programEncounter));
+    programEnrolment.encounters = map(json.programEncounters, (programEncounter) => mapProgramEncounter(programEncounter));
   }
   return programEnrolment;
 }
 
-export const mapRelationships = relationshipList => {
+export const mapRelationships = (relationshipList) => {
   if (relationshipList) {
-    return relationshipList.map(relationship => {
+    return relationshipList.map((relationship) => {
       return mapRelations(relationship);
     });
   }
 };
 
-export const mapRelations = relationShipJson => {
+export const mapRelations = (relationShipJson) => {
   const individualRelationship = General.assignFields(relationShipJson, new IndividualRelationship(), [
     "uuid",
     "id",
     "exitDateTime",
-    "enterDateTime"
+    "enterDateTime",
   ]);
   individualRelationship.relationship = mapIndividualRelationshipType(relationShipJson["relationshipType"]);
   individualRelationship.individualB = mapIndividual(relationShipJson["individualB"]);
   return individualRelationship;
 };
 
-export const mapIndividualRelationshipType = relationShipType => {
+export const mapIndividualRelationshipType = (relationShipType) => {
   if (relationShipType) {
     const individualRelationShipType = General.assignFields(relationShipType, new IndividualRelationshipType(), ["uuid"]);
     individualRelationShipType.individualAIsToBRelation = mapIndividualRelation(relationShipType["individualAIsToBRelation"]);
@@ -167,21 +167,21 @@ export const mapIndividualRelationshipType = relationShipType => {
   }
 };
 
-export const mapIndividualRelation = individualRelation => {
+export const mapIndividualRelation = (individualRelation) => {
   if (individualRelation) {
     return General.assignFields(individualRelation, new IndividualRelation(), ["name"]);
   }
 };
 
-export const mapMemberships = memberships => {
+export const mapMemberships = (memberships) => {
   if (memberships) {
-    return memberships.map(membership => {
+    return memberships.map((membership) => {
       let groupSubject = GroupSubject.createEmptyInstance(membership.uuid);
       groupSubject.groupSubject.uuid = membership["groupSubjectUUID"];
       groupSubject.groupSubject.name = membership["groupSubjectName"];
       groupSubject.groupRole = mapGroupRole({
         uuid: membership["groupRoleUUID"],
-        role: membership["groupRoleName"]
+        role: membership["groupRoleName"],
       });
       groupSubject.groupSubject.subjectType = membership["groupSubjectSubjectType"];
       return groupSubject;
@@ -189,42 +189,43 @@ export const mapMemberships = memberships => {
   }
 };
 
-export const mapGroupRole = groupRoleData => {
+export const mapGroupRole = (groupRoleData) => {
   if (groupRoleData) {
     let groupRole = General.assignFields(groupRoleData, new GroupRole(), [
       "uuid",
       "role",
       "maximumNumberOfMembers",
-      "minimumNumberOfMembers"
+      "minimumNumberOfMembers",
     ]);
     groupRole.memberSubjectTypeUUID = groupRoleData.memberSubjectTypeUUID;
     return groupRole;
   }
 };
 
-export const mapRoles = groupRoles => {
+export const mapRoles = (groupRoles) => {
   if (groupRoles) {
-    return groupRoles.map(groupRole => {
+    return groupRoles.map((groupRole) => {
       return mapGroupRole(groupRole);
     });
   }
 };
 
-export const mapGroupMembers = groupSubjects => {
+export const mapGroupMembers = (groupSubjects) => {
   if (groupSubjects) {
-    return groupSubjects.map(groupSubject => {
+    return groupSubjects.map((groupSubject) => {
       let mappedGroupSubject = new GroupSubject();
       mappedGroupSubject.uuid = groupSubject.uuid;
       mappedGroupSubject.memberSubject = mapIndividual(groupSubject.member);
       mappedGroupSubject.groupRole = mapGroupRole(groupSubject.role);
       mappedGroupSubject.encounterMetadata = groupSubject.encounterMetadata;
+      mappedGroupSubject.voided = groupSubject.voided;
       return mappedGroupSubject;
     });
   }
 };
 
 // program Tab subject Dashboard
-export const mapProgram = subjectProgram => {
+export const mapProgram = (subjectProgram) => {
   if (subjectProgram) {
     let programIndividual = General.assignFields(subjectProgram, new Individual(), ["uuid"]);
     programIndividual.enrolments = mapEnrolments(subjectProgram.enrolments);
@@ -232,14 +233,14 @@ export const mapProgram = subjectProgram => {
     return programIndividual;
   }
 };
-export const mapEnrolments = enrolmentList => {
+export const mapEnrolments = (enrolmentList) => {
   if (enrolmentList)
-    return enrolmentList.map(enrolment => {
+    return enrolmentList.map((enrolment) => {
       let programEnrolment = General.assignFields(
         enrolment,
         new ProgramEnrolment(),
         ["uuid"],
-        ["programExitDateTime", "enrolmentDateTime"]
+        ["programExitDateTime", "enrolmentDateTime"],
       );
       programEnrolment.observations = mapObservations(enrolment["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolment["programEncounters"]);
@@ -252,40 +253,40 @@ export const mapEnrolments = enrolmentList => {
 };
 
 //To get list Program Encounters
-export const mapProgramEncounters = programEncountersList => {
+export const mapProgramEncounters = (programEncountersList) => {
   if (programEncountersList)
-    return programEncountersList.map(programEncounters => {
+    return programEncountersList.map((programEncounters) => {
       const programEncounter = General.assignFields(
         programEncounters,
         new ProgramEncounter(),
         ["uuid", "name"],
-        ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"]
+        ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"],
       );
       programEncounter.encounterType = mapEncounterType(programEncounters["encounterType"]);
       return programEncounter;
     });
 };
 
-export const mapOperationalProgram = enrolment => {
+export const mapOperationalProgram = (enrolment) => {
   const operationalProgram = General.assignFields(enrolment, new Program(), ["operationalProgramName"]);
   operationalProgram.name = enrolment.programName;
   operationalProgram.uuid = enrolment.programUuid;
   return operationalProgram;
 };
 
-export const mapEncounterType = encounterType => {
+export const mapEncounterType = (encounterType) => {
   return General.assignFields(encounterType, new EncounterType(), ["name", "uuid"]);
 };
 
 // general tab subject Dashboard
-export const mapGeneral = subjectGeneral => {
+export const mapGeneral = (subjectGeneral) => {
   if (subjectGeneral && subjectGeneral.encounters) {
-    return subjectGeneral.encounters.map(encounters => {
+    return subjectGeneral.encounters.map((encounters) => {
       let generalEncounter = General.assignFields(
         encounters,
         new Encounter(),
         ["uuid", "name"],
-        ["encounterDateTime", "earliestVisitDateTime", "maxVisitDateTime", "cancelDateTime"]
+        ["encounterDateTime", "earliestVisitDateTime", "maxVisitDateTime", "cancelDateTime"],
       );
       generalEncounter.encounterType = mapEncounterType(encounters.encounterType);
       return generalEncounter;
@@ -300,7 +301,7 @@ export const mapProgramEncounter = (programEncounter, observations = programEnco
       programEncounter,
       new ProgramEncounter(),
       ["uuid", "name"],
-      ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"]
+      ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"],
     );
     programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
     programEncounterObj.observations = mapObservations(observations);
@@ -317,7 +318,7 @@ export const mapEncounter = (encounterDetails, observations = encounterDetails["
       encounterDetails,
       new Encounter(),
       ["uuid", "name"],
-      ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime", "cancelDateTime"]
+      ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime", "cancelDateTime"],
     );
     encounter.encounterType = mapEncounterType(encounterDetails.encounterType);
     encounter.observations = mapObservations(observations);

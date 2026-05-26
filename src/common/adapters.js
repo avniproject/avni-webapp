@@ -118,6 +118,7 @@ export const mapSubjectType = (json) => {
   subjectType.allowProfilePicture = json.allowProfilePicture;
   subjectType.group = json.group;
   subjectType.household = json.household;
+  subjectType.attendanceEnabled = json.attendanceEnabled;
   subjectType.iconFileS3Key = json.iconFileS3Key;
   subjectType.nameHelpText = json.nameHelpText;
   subjectType.syncRegistrationConcept1 = json.syncRegistrationConcept1;
