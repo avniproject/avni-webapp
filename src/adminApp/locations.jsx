@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AutocompleteInput,
   Datagrid,
@@ -138,25 +138,34 @@ const TypeFilter = ({ onChangeFilter }) => {
 const LocationFilter = () => {
   const { filterValues, setFilters, displayedFilters } = useListContext();
 
-  const debouncedSetFilters = useMemo(
+  // Keep the latest filterValues in a ref so the debounced flush merges against
+  // values that may have changed (e.g. FilterLiveSearch's title update) during
+  // the debounce window, rather than the snapshot taken at call time.
+  const filterValuesRef = useRef(filterValues);
+  useEffect(() => {
+    filterValuesRef.current = filterValues;
+  }, [filterValues]);
+
+  const debouncedFlush = useMemo(
     () =>
-      debounce(
-        (next, displayed) => setFilters(next, displayed),
-        FILTER_DEBOUNCE_MS,
-      ),
+      debounce((mutate, displayed) => {
+        const next = { ...filterValuesRef.current };
+        mutate(next);
+        setFilters(next, displayed);
+      }, FILTER_DEBOUNCE_MS),
     [setFilters],
   );
 
-  useEffect(() => () => debouncedSetFilters.cancel(), [debouncedSetFilters]);
+  useEffect(() => () => debouncedFlush.cancel(), [debouncedFlush]);
 
   const updateFilter = (key, value) => {
-    const next = { ...filterValues };
-    if (value == null || value === "") {
-      delete next[key];
-    } else {
-      next[key] = value;
-    }
-    debouncedSetFilters(next, displayedFilters);
+    debouncedFlush((next) => {
+      if (value == null || value === "") {
+        delete next[key];
+      } else {
+        next[key] = value;
+      }
+    }, displayedFilters);
   };
 
   const onAncestorChange = (location) => {
