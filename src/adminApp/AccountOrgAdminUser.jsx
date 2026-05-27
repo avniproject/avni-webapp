@@ -199,10 +199,13 @@ const UserFormFields = ({ edit = false, region }) => {
       ) : (
         <>
           <StyledTextInput
-            source="username"
-            validate={validateUserName}
-            label="Login ID (username)"
-            parse={(value) => (value ? value.replace(/\s+/g, " ") : value)}
+            source="name"
+            label="Name of the Person"
+            validate={validateDisplayName}
+            parse={(value) =>
+              value ? value.trim().replace(/\s+/g, " ") : value
+            }
+            autoComplete={autoComplete}
           />
         </>
       )}

@@ -87,7 +87,7 @@ export const doesNotStartOrEndWithWhitespaces = regex(
 
 export const validateUserName = [
   isRequired,
-  doesNotStartOrEndWithWhitespaces, // Reemplazamos doesNotHaveWhitespaces por esta
+  doesNotHaveWhitespaces, // Reverted to strict validation for AWS Cognito compatibility
   minLength(4, "Username too small, enter at least 4 characters."),
 ];
 
