@@ -4,14 +4,12 @@ export const CatchmentSelectInput = (props) => (
   <AutocompleteInput
     {...props}
     optionText="name"
+    inputText={(option) => option?.name || ""}
     filterToQuery={(searchText) => ({ name: searchText })}
-    resettable="true"
+    resettable={true}
     sx={{
-      display: "inline-block",
-      width: "auto",
       "& .MuiInputBase-root": {
         backgroundColor: "white",
-        width: "auto",
         minWidth: "120px",
       },
     }}
