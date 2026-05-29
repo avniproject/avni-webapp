@@ -52,7 +52,7 @@ const AttendanceMarkView = () => {
   const [existingSession, setExistingSession] = useState(null);
   const [calendar, setCalendar] = useState(undefined);
   const [markers, setMarkers] = useState([]);
-  const [roster, setRoster] = useState([]); // [{subjectUUID, name, status, reasonConceptUUID}]
+  const [roster, setRoster] = useState([]); // [{subjectUUID, name, status, reasonConceptUUIDs}]
   const [notes, setNotes] = useState("");
   const [sessionReasonConceptUUID, setSessionReasonConceptUUID] =
     useState(null);
@@ -234,7 +234,9 @@ const AttendanceMarkView = () => {
           return {
             ...m,
             status: rec?.status || "Present",
-            reasonConceptUUID: rec?.reasonConceptUUID || null,
+            reasonConceptUUIDs:
+              rec?.reasonConceptUUIDs ||
+              (rec?.reasonConceptUUID ? [rec.reasonConceptUUID] : []),
           };
         }),
       );
@@ -243,7 +245,7 @@ const AttendanceMarkView = () => {
         members.map((m) => ({
           ...m,
           status: "Present",
-          reasonConceptUUID: null,
+          reasonConceptUUIDs: [],
         })),
       );
     }
@@ -267,19 +269,19 @@ const AttendanceMarkView = () => {
           ? {
               ...r,
               status: r.status === "Present" ? "Absent" : "Present",
-              // Clear reason if flipping back to Present.
-              reasonConceptUUID:
-                r.status === "Present" ? r.reasonConceptUUID : null,
+              // Clear reasons if flipping back to Present.
+              reasonConceptUUIDs:
+                r.status === "Present" ? r.reasonConceptUUIDs : [],
             }
           : r,
       ),
     );
   }, []);
 
-  const onSetReason = useCallback((subjectUUID, reasonConceptUUID) => {
+  const onSetReason = useCallback((subjectUUID, reasonConceptUUIDs) => {
     setRoster((prev) =>
       prev.map((r) =>
-        r.subjectUUID === subjectUUID ? { ...r, reasonConceptUUID } : r,
+        r.subjectUUID === subjectUUID ? { ...r, reasonConceptUUIDs } : r,
       ),
     );
   }, []);
@@ -345,7 +347,7 @@ const AttendanceMarkView = () => {
       roster: roster.map((r) => ({
         subjectUUID: r.subjectUUID,
         status: r.status,
-        reasonConceptUUID: r.status === "Absent" ? r.reasonConceptUUID : null,
+        reasonConceptUUIDs: r.status === "Absent" ? r.reasonConceptUUIDs : [],
       })),
     };
     const op = isEdit
@@ -412,7 +414,7 @@ const AttendanceMarkView = () => {
   const summary = roster.reduce(
     (acc, r) => {
       if (r.status === "Absent") {
-        if (r.reasonConceptUUID) acc.withReason += 1;
+        if (r.reasonConceptUUIDs?.length) acc.withReason += 1;
         else acc.withoutReason += 1;
       }
       return acc;

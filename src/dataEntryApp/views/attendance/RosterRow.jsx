@@ -1,7 +1,9 @@
 import {
   Box,
+  Checkbox,
   Chip,
   FormControl,
+  ListItemText,
   MenuItem,
   Select,
   Switch,
@@ -18,7 +20,8 @@ const RosterRow = ({
   readOnly,
 }) => {
   const isAbsent = row.status === "Absent";
-  const isBlankReason = isAbsent && !row.reasonConceptUUID;
+  const selectedReasons = row.reasonConceptUUIDs || [];
+  const isBlankReason = isAbsent && selectedReasons.length === 0;
   const showFollowUpWarning =
     !readOnly && isBlankReason && !!followUpEncounterTypeUuid;
 
@@ -54,23 +57,42 @@ const RosterRow = ({
       {isAbsent && (
         <Box sx={{ mt: 1, ml: 0 }}>
           <Typography variant="caption" color="text.secondary">
-            {"Reason for absence"}
+            {"Reasons for absence"}
           </Typography>
           <FormControl fullWidth size="small" sx={{ mt: 0.5 }}>
             <Select
-              value={row.reasonConceptUUID || ""}
+              multiple
+              value={selectedReasons}
               displayEmpty
-              onChange={(e) =>
-                onSetReason(row.subjectUUID, e.target.value || null)
-              }
+              onChange={(e) => onSetReason(row.subjectUUID, e.target.value)}
               disabled={readOnly}
+              renderValue={(selected) =>
+                selected.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary">
+                    {"Select reasons (optional)"}
+                  </Typography>
+                ) : (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {selected.map((uuid) => {
+                      const answer = (reasonAnswers || []).find(
+                        (a) => a.uuid === uuid,
+                      );
+                      return (
+                        <Chip
+                          key={uuid}
+                          size="small"
+                          label={answer?.name || uuid}
+                        />
+                      );
+                    })}
+                  </Box>
+                )
+              }
             >
-              <MenuItem value="">
-                <em>{"Select a reason (optional)"}</em>
-              </MenuItem>
               {(reasonAnswers || []).map((a) => (
                 <MenuItem key={a.uuid} value={a.uuid}>
-                  {a.name}
+                  <Checkbox checked={selectedReasons.includes(a.uuid)} />
+                  <ListItemText primary={a.name} />
                 </MenuItem>
               ))}
             </Select>
@@ -80,8 +102,8 @@ const RosterRow = ({
               variant="caption"
               sx={{ color: "warning.dark", display: "block", mt: 0.5 }}
             >
-              ⚠ No reason selected — a follow-up encounter will be auto-created
-              on save.
+              ⚠ No reasons selected — a follow-up encounter will be
+              auto-created on save.
             </Typography>
           )}
         </Box>
