@@ -16,8 +16,9 @@ import { httpClient as http } from "../../common/utils/httpClient";
 import { forEach, get, includes, isEmpty } from "lodash";
 import { OptionSelect } from "./OptionSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
-import { SubjectTypeType } from "./Types";
+import Types, { SubjectTypeType } from "./Types";
 import AttendanceSettings from "./AttendanceSettings";
+import { RemovalReasonConceptPicker } from "./RemovalReasonConceptPicker";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
@@ -318,6 +319,12 @@ export const AdvancedSettings = ({
                     "APP_DESIGNER_SUBJECT_TYPE_DISPLAY_PLANNED_ENCOUNTERS"
                   }
                 />
+                {Types.isGroup(subjectType.type) && (
+                  <RemovalReasonConceptPicker
+                    subjectType={subjectType}
+                    dispatch={dispatch}
+                  />
+                )}
               </div>
             )}
             <StyledSyncSettingsBox component="div">
