@@ -9,7 +9,7 @@ import { Privilege } from "openchs-models";
 import GroupPrivilegesModel from "../../common/model/GroupPrivilegesModel";
 import GroupModel from "../../common/model/GroupModel";
 
-const generatePrivilegeDependenciesAndCheckedState = function (
+export const generatePrivilegeDependenciesAndCheckedState = function (
   groupPrivilegeList,
 ) {
   const dependencies = new Map();
@@ -30,6 +30,7 @@ const generatePrivilegeDependenciesAndCheckedState = function (
       case PrivilegeType.RegisterSubject:
       case PrivilegeType.EditSubject:
       case PrivilegeType.VoidSubject:
+      case PrivilegeType.AssignSubject:
       case PrivilegeType.ViewEnrolmentDetails:
       case PrivilegeType.ViewChecklist:
       case PrivilegeType.EditMember:
