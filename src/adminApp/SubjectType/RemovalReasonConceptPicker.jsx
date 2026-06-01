@@ -57,7 +57,7 @@ export const RemovalReasonConceptPicker = ({ subjectType, dispatch }) => {
         const concept = response.data || {};
         setConceptName(concept.name || "");
         const answers = (concept.conceptAnswers || []).filter(
-          (ca) => !ca.voided && (!ca.concept || !ca.concept.voided),
+          (ca) => !ca.voided && ca.answerConcept && !ca.answerConcept.voided,
         );
         setAnswerCount(answers.length);
       })
@@ -75,7 +75,7 @@ export const RemovalReasonConceptPicker = ({ subjectType, dispatch }) => {
   const onChange = (option) => {
     dispatch({
       type: "settings",
-      payload: { setting: SETTING_KEY, value: option?.value || undefined },
+      payload: { setting: SETTING_KEY, value: option?.value || null },
     });
   };
 
