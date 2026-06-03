@@ -61,7 +61,7 @@ const Row = ({
     </Typography>
   ) : isHeld ? (
     <Typography variant="body2" sx={{ color: "success.main" }}>
-      ✓ {`Held — ${info.presentCount ?? "?"} of ${info.totalCount ?? "?"}`}
+      ✓ {`${info.presentCount ?? "?"} of ${info.totalCount ?? "?"} present`}
     </Typography>
   ) : isDidntHappen ? (
     <Typography variant="body2" color="text.disabled">

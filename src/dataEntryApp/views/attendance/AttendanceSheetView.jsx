@@ -16,7 +16,13 @@ import { loadSubjectDashboard } from "../../reducers/subjectDashboardReducer";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import AttendanceService from "../../services/AttendanceService";
 import { buildDayStatusMap, DAY_TYPES } from "./utils/dayResolver";
-import { lastNDaysIncludingToday, todayIso, parseISO } from "./utils/dates";
+import {
+  lastNDaysIncludingToday,
+  todayIso,
+  parseISO,
+  isFutureIso,
+  prettyDate,
+} from "./utils/dates";
 import { debounce } from "lodash";
 import HorizontalDateStrip from "./HorizontalDateStrip";
 import DayStatusBanner from "./DayStatusBanner";
@@ -481,6 +487,7 @@ const AttendanceSheetView = () => {
             onChange={(e) => {
               const iso = e.target.value;
               if (!iso) return;
+              if (isFutureIso(iso)) return;
               setSelectedDate(iso);
               setMarkAnywayAcknowledgedDate(null);
               if (!stripDates.includes(iso)) {
@@ -488,6 +495,7 @@ const AttendanceSheetView = () => {
               }
             }}
             InputLabelProps={{ shrink: true }}
+            inputProps={{ max: todayIso() }}
             sx={{ width: 170 }}
           />
         </Box>
@@ -510,6 +518,11 @@ const AttendanceSheetView = () => {
               : onMarkAnyway
           }
         />
+        {selectedDate && selectedDate < todayIso() && (
+          <Alert severity="info" sx={{ mx: 2, my: 1 }}>
+            {`Marking retroactively for ${prettyDate(selectedDate)}`}
+          </Alert>
+        )}
         <AttendanceTypePicker
           attendanceTypes={attendanceTypes}
           sessionByType={sessionByType}

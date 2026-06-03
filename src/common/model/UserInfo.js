@@ -8,15 +8,23 @@ class UserInfo {
 
   static createEmpty() {
     return {
-      privileges: []
+      privileges: [],
     };
   }
 
   static hasPrivilege(userInfo, privilegeType) {
-    return (
-      userInfo.hasAllPrivileges ||
-      _.some(userInfo.privileges, x => x.privilegeType === privilegeType)
-    );
+    return userInfo.hasAllPrivileges || _.some(userInfo.privileges, (x) => x.privilegeType === privilegeType);
+  }
+
+  // Mirrors the avni-client privilegeService check that scopes a privilege
+  // (e.g. EditSubject) to a specific subjectType UUID. Falls back to the
+  // unrestricted check when the user has all privileges. Returns false on
+  // empty/missing userInfo or subjectTypeUuid so callers can use it as a
+  // straight conditional in render guards.
+  static hasPrivilegeForSubjectType(userInfo, privilegeType, subjectTypeUuid) {
+    if (!userInfo || !subjectTypeUuid) return false;
+    if (userInfo.hasAllPrivileges) return true;
+    return _.some(userInfo.privileges, (x) => x.privilegeType === privilegeType && x.subjectType && x.subjectType.uuid === subjectTypeUuid);
   }
 
   static hasMultiplePrivileges(userInfo, privilegeTypes = []) {
@@ -24,10 +32,10 @@ class UserInfo {
       userInfo.hasAllPrivileges ||
       _.intersectionBy(
         userInfo.privileges,
-        privilegeTypes.map(x => {
+        privilegeTypes.map((x) => {
           return { privilegeType: x };
         }),
-        "privilegeType"
+        "privilegeType",
       ).length === privilegeTypes.length
     );
   }
