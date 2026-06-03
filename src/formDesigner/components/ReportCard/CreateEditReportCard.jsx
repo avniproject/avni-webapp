@@ -31,6 +31,7 @@ import {
 } from "../../common/ErrorUtil";
 import { JSEditor } from "../../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
+import { AVNI_REPORT_CARD_COLOURS } from "../../../common/constants";
 import WebReportCard from "../../../common/model/WebReportCard";
 import DashboardService from "../../../common/service/DashboardService";
 import CustomCardConfigService from "../../../common/service/CustomCardConfigService";
@@ -412,6 +413,7 @@ export const CreateEditReportCard = () => {
           id="colour"
           label="Colour"
           color={card.colour}
+          paletteColors={AVNI_REPORT_CARD_COLOURS}
           onChange={(color) =>
             dispatch({ type: ReportCardReducerKeys.color, payload: color })
           }

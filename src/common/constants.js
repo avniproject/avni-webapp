@@ -19,6 +19,21 @@ export const isTestEnv = getCurrentMode() === "test" || getEnvVar("NODE_ENV") ==
 export const AWS_REGION = "ap-south-1";
 export const SESSION_IDLE_MINUTES = 20;
 
+// Avni recommended Report Card colour palette — pale backgrounds tested to work
+// well together on the dashboard. Order matches the design reference.
+export const AVNI_REPORT_CARD_COLOURS = Object.freeze([
+  "#E7F3F8",
+  "#EBF8E7",
+  "#F8F7E7",
+  "#E7F8F6",
+  "#F8EFE7",
+  "#EBE7F8",
+  "#F8E7F1",
+  "#F3F3F4",
+  "#E6EEFA",
+  "#EBFCFE",
+]);
+
 export const LOCALES = Object.freeze({
   ENGLISH: "en",
   HINDI: "hi_IN",
