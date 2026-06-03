@@ -245,6 +245,7 @@ export const MediaUploader = ({
     ? getFileMimeType(formElement)
     : `${mediaType}/*`;
   const isMultiSelect = formElement.isMultiSelect();
+  const isEditable = formElement.editable;
 
   useEffect(() => {
     addObsResultsToPreview(localObsValue, setPreview);
@@ -325,7 +326,10 @@ export const MediaUploader = ({
           mediaType
         ]
       )}
-      <StyledDeleteButton onClick={() => onDelete(fileName)}>
+      <StyledDeleteButton
+        onClick={() => onDelete(fileName)}
+        disabled={!isEditable}
+      >
         <Close />
       </StyledDeleteButton>
     </StyledBox>
@@ -377,7 +381,12 @@ export const MediaUploader = ({
             <StyledTypography variant="body1">{label}</StyledTypography>
           </Grid>
           <Grid>
-            <Button variant="outlined" color="primary" component="label">
+            <Button
+              variant="outlined"
+              color="primary"
+              component="label"
+              disabled={!isEditable}
+            >
               <StyledIcon as={Icon} color="primary" />
               {`Upload ${mediaType}`}
               <StyledInput
@@ -387,6 +396,7 @@ export const MediaUploader = ({
                 multiple={isMultiSelect}
                 onChange={onMediaSelect}
                 onClick={(event) => (event.target.value = null)}
+                disabled={!isEditable}
               />
             </Button>
           </Grid>
