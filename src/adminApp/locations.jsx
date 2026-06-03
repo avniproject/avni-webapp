@@ -146,12 +146,31 @@ const LocationFilter = () => {
     filterValuesRef.current = filterValues;
   }, [filterValues]);
 
+  const displayedFiltersRef = useRef(displayedFilters);
+  useEffect(() => {
+    displayedFiltersRef.current = displayedFilters;
+  }, [displayedFilters]);
+
+  // Accumulate every key changed within the debounce window into a single patch.
+  // lodash.debounce keeps only the last call's arguments, so passing a per-key
+  // mutate function dropped all but the most recent change — clearing one filter
+  // while another changed (or clearing several at once) left stale filters behind.
+  const pendingPatchRef = useRef({});
+
   const debouncedFlush = useMemo(
     () =>
-      debounce((mutate, displayed) => {
+      debounce(() => {
+        const patch = pendingPatchRef.current;
+        pendingPatchRef.current = {};
         const next = { ...filterValuesRef.current };
-        mutate(next);
-        setFilters(next, displayed);
+        Object.entries(patch).forEach(([key, value]) => {
+          if (value == null || value === "") {
+            delete next[key];
+          } else {
+            next[key] = value;
+          }
+        });
+        setFilters(next, displayedFiltersRef.current);
       }, FILTER_DEBOUNCE_MS),
     [setFilters],
   );
@@ -159,13 +178,8 @@ const LocationFilter = () => {
   useEffect(() => () => debouncedFlush.cancel(), [debouncedFlush]);
 
   const updateFilter = (key, value) => {
-    debouncedFlush((next) => {
-      if (value == null || value === "") {
-        delete next[key];
-      } else {
-        next[key] = value;
-      }
-    }, displayedFilters);
+    pendingPatchRef.current[key] = value == null || value === "" ? null : value;
+    debouncedFlush();
   };
 
   const onAncestorChange = (location) => {
