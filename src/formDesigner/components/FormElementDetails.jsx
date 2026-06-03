@@ -171,6 +171,24 @@ export const multiSelectFormElementConceptDataTypes = [
   "Encounter",
 ];
 
+// Datatypes whose client form-element honours the `editable=false` read-only keyValue
+// (Image/Video via MediaFormElement; Audio/File via Audio/FileFormElement). ImageV2/Subject etc.
+// are intentionally excluded — their components don't render read-only.
+const READ_ONLY_DATA_TYPES = [
+  "Numeric",
+  "Text",
+  "Date",
+  "DateTime",
+  "Time",
+  "Coded",
+  "Image",
+  "Video",
+  "Audio",
+  "File",
+];
+const RESTRICT_GALLERY_DATA_TYPES = ["Image", "ImageV2", "Video", "Audio"];
+const UNIQUE_DATA_TYPES = ["Numeric", "Text", "PhoneNumber"];
+
 const FormElementDetails = ({
   disableFormElement,
   identifierSources,
@@ -930,9 +948,9 @@ const FormElementDetails = ({
               </StyledFormControl>
             </Grid>
           )}
-          <Grid container spacing={4} sm={12} sx={{ width: "100%" }}>
+          <Grid container spacing={4} sx={{ width: "100%" }}>
             {formElementData.concept.dataType !== "QuestionGroup" && (
-              <Grid sm={4}>
+              <Grid size={4}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}
                   disabled={disableFormElement}
@@ -971,15 +989,10 @@ const FormElementDetails = ({
                 }}
               />
             )}
-            <Grid sm={4}>
-              {[
-                "Numeric",
-                "Text",
-                "Date",
-                "DateTime",
-                "Time",
-                "Coded",
-              ].includes(formElementData.concept.dataType) && (
+            {READ_ONLY_DATA_TYPES.includes(
+              formElementData.concept.dataType,
+            ) && (
+              <Grid size={4}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"}
                   disabled={disableFormElement}
@@ -1004,10 +1017,12 @@ const FormElementDetails = ({
                     label="Read Only"
                   />
                 </AvniFormControl>
-              )}
-              {["Image", "ImageV2", "Video", "Audio"].includes(
-                formElementData.concept.dataType,
-              ) && (
+              </Grid>
+            )}
+            {RESTRICT_GALLERY_DATA_TYPES.includes(
+              formElementData.concept.dataType,
+            ) && (
+              <Grid size={4}>
                 <AvniFormControl
                   toolTipKey={
                     "APP_DESIGNER_FORM_ELEMENT_RESTRICT_GALLERY_UPLOAD"
@@ -1034,12 +1049,10 @@ const FormElementDetails = ({
                     label="Do not allow upload from gallery"
                   />
                 </AvniFormControl>
-              )}
-            </Grid>
-            {["Numeric", "Text", "PhoneNumber"].includes(
-              formElementData.concept.dataType,
-            ) && (
-              <Grid sm={4}>
+              </Grid>
+            )}
+            {UNIQUE_DATA_TYPES.includes(formElementData.concept.dataType) && (
+              <Grid size={4}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"}
                   disabled={disableFormElement}
