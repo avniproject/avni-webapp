@@ -237,6 +237,7 @@ const AttendanceMarkView = () => {
             reasonConceptUUIDs:
               rec?.reasonConceptUUIDs ||
               (rec?.reasonConceptUUID ? [rec.reasonConceptUUID] : []),
+            needsFollowUp: !!rec?.needsFollowUp,
           };
         }),
       );
@@ -246,6 +247,7 @@ const AttendanceMarkView = () => {
           ...m,
           status: "Present",
           reasonConceptUUIDs: [],
+          needsFollowUp: false,
         })),
       );
     }
@@ -269,9 +271,10 @@ const AttendanceMarkView = () => {
           ? {
               ...r,
               status: r.status === "Present" ? "Absent" : "Present",
-              // Clear reasons if flipping back to Present.
+              // Clear reasons + needsFollowUp when flipping back to Present.
               reasonConceptUUIDs:
                 r.status === "Present" ? r.reasonConceptUUIDs : [],
+              needsFollowUp: r.status === "Present" ? r.needsFollowUp : false,
             }
           : r,
       ),
@@ -282,6 +285,16 @@ const AttendanceMarkView = () => {
     setRoster((prev) =>
       prev.map((r) =>
         r.subjectUUID === subjectUUID ? { ...r, reasonConceptUUIDs } : r,
+      ),
+    );
+  }, []);
+
+  const onToggleNeedsFollowUp = useCallback((subjectUUID) => {
+    setRoster((prev) =>
+      prev.map((r) =>
+        r.subjectUUID === subjectUUID
+          ? { ...r, needsFollowUp: !r.needsFollowUp }
+          : r,
       ),
     );
   }, []);
@@ -348,6 +361,7 @@ const AttendanceMarkView = () => {
         subjectUUID: r.subjectUUID,
         status: r.status,
         reasonConceptUUIDs: r.status === "Absent" ? r.reasonConceptUUIDs : [],
+        needsFollowUp: r.status === "Absent" ? !!r.needsFollowUp : false,
       })),
     };
     const op = isEdit
@@ -473,6 +487,7 @@ const AttendanceMarkView = () => {
             }
             onTogglePresence={onTogglePresence}
             onSetReason={onSetReason}
+            onToggleNeedsFollowUp={onToggleNeedsFollowUp}
           />
         ))}
         <Box sx={{ p: 2 }}>

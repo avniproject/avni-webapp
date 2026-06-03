@@ -3,6 +3,7 @@ import {
   Checkbox,
   Chip,
   FormControl,
+  FormControlLabel,
   ListItemText,
   MenuItem,
   Select,
@@ -17,13 +18,12 @@ const RosterRow = ({
   followUpEncounterTypeUuid,
   onTogglePresence,
   onSetReason,
+  onToggleNeedsFollowUp,
   readOnly,
 }) => {
   const isAbsent = row.status === "Absent";
   const selectedReasons = row.reasonConceptUUIDs || [];
-  const isBlankReason = isAbsent && selectedReasons.length === 0;
-  const showFollowUpWarning =
-    !readOnly && isBlankReason && !!followUpEncounterTypeUuid;
+  const showNeedsFollowUp = isAbsent && !!followUpEncounterTypeUuid;
 
   return (
     <Box
@@ -97,14 +97,19 @@ const RosterRow = ({
               ))}
             </Select>
           </FormControl>
-          {showFollowUpWarning && (
-            <Typography
-              variant="caption"
-              sx={{ color: "warning.dark", display: "block", mt: 0.5 }}
-            >
-              ⚠ No reasons selected — a follow-up encounter will be
-              auto-created on save.
-            </Typography>
+          {showNeedsFollowUp && (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={!!row.needsFollowUp}
+                  onChange={() => onToggleNeedsFollowUp(row.subjectUUID)}
+                  disabled={readOnly}
+                  size="small"
+                />
+              }
+              label="Needs follow-up"
+              sx={{ mt: 0.5, ml: -1 }}
+            />
           )}
         </Box>
       )}
