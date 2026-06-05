@@ -6,11 +6,16 @@ import { httpClient as http } from "../../common/utils/httpClient";
 import { ConceptSyncAttributesShow } from "./ConceptSyncAttributeShow";
 import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
 import { TextFormatFieldInShow } from "../../common/components/TextFormatFieldInShow";
-import { SubjectTypeType } from "./Types";
+import Types, { SubjectTypeType } from "./Types";
 
 export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
   const [concept1Name, setConcept1Name] = useState("");
   const [concept2Name, setConcept2Name] = useState("");
+  const [removalReasonConceptName, setRemovalReasonConceptName] = useState("");
+  const removalReasonConceptUuid = _.get(
+    subjectType,
+    "settings.removalReasonConceptUuid",
+  );
 
   useEffect(() => {
     if (subjectType.syncRegistrationConcept1) {
@@ -27,6 +32,25 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
     subjectType.syncRegistrationConcept2,
     subjectType.syncRegistrationConcept1,
   ]);
+
+  useEffect(() => {
+    if (!removalReasonConceptUuid) {
+      setRemovalReasonConceptName("");
+      return;
+    }
+    let cancelled = false;
+    http
+      .get(`/web/concept/${removalReasonConceptUuid}`)
+      .then((res) => {
+        if (!cancelled) setRemovalReasonConceptName(_.get(res, "data.name"));
+      })
+      .catch(() => {
+        if (!cancelled) setRemovalReasonConceptName("");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [removalReasonConceptUuid]);
 
   const addressLevelNames = _(locationTypes)
     .filter(({ uuid }) => _.includes(subjectType.locationTypeUUIDs, uuid))
@@ -118,6 +142,15 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
         concept1Name={concept1Name}
         concept2Name={concept2Name}
       />
+      {Types.isGroup(subjectType.type) && removalReasonConceptName && (
+        <>
+          <ShowLabelValue
+            label={"Removal reason concept"}
+            value={removalReasonConceptName}
+          />
+          <p />
+        </>
+      )}
       {subjectType.type === SubjectTypeType.Group && (
         <>
           <BooleanStatusInShow

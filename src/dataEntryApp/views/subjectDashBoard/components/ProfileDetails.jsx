@@ -28,7 +28,8 @@ import { get, isNil, isEmpty } from "lodash";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
 import SubjectProfilePicture from "../../../components/SubjectProfilePicture";
-import { AgeUtil } from "openchs-models";
+import { AgeUtil, Privilege } from "openchs-models";
+import UserInfo from "../../../../common/model/UserInfo";
 
 const StyledTableView = styled("div")(({ theme }) => ({
   flexGrow: 1,
@@ -205,6 +206,12 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
 
   const orgConfig = useSelector(selectOrganisationConfig);
   const enableComment = get(orgConfig, "settings.enableComments", false);
+  const userInfo = useSelector((state) => state.app.userInfo);
+  const hasEditSubjectPrivilege = UserInfo.hasPrivilegeForSubjectType(
+    userInfo,
+    Privilege.PrivilegeType.EditSubject,
+    profileDetails?.subjectType?.uuid,
+  );
 
   const handleChange = (event) => {
     setSelectedProgram(event.target.value);
@@ -320,7 +327,8 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
               </Grid>
               {!profileDetails.voided &&
                 profileDetails.subjectType.isGroup() &&
-                profileDetails.subjectType.attendanceEnabled && (
+                profileDetails.subjectType.attendanceEnabled &&
+                hasEditSubjectPrivilege && (
                   <Grid>
                     <Link
                       to={`/app/subject/attendance?uuid=${subjectUuid}`}

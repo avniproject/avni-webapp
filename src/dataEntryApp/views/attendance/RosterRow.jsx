@@ -1,7 +1,10 @@
 import {
   Box,
+  Checkbox,
   Chip,
   FormControl,
+  FormControlLabel,
+  ListItemText,
   MenuItem,
   Select,
   Switch,
@@ -15,12 +18,12 @@ const RosterRow = ({
   followUpEncounterTypeUuid,
   onTogglePresence,
   onSetReason,
+  onToggleNeedsFollowUp,
   readOnly,
 }) => {
   const isAbsent = row.status === "Absent";
-  const isBlankReason = isAbsent && !row.reasonConceptUUID;
-  const showFollowUpWarning =
-    !readOnly && isBlankReason && !!followUpEncounterTypeUuid;
+  const selectedReasons = row.reasonConceptUUIDs || [];
+  const showNeedsFollowUp = isAbsent && !!followUpEncounterTypeUuid;
 
   return (
     <Box
@@ -54,35 +57,59 @@ const RosterRow = ({
       {isAbsent && (
         <Box sx={{ mt: 1, ml: 0 }}>
           <Typography variant="caption" color="text.secondary">
-            {"Reason for absence"}
+            {"Reasons for absence"}
           </Typography>
           <FormControl fullWidth size="small" sx={{ mt: 0.5 }}>
             <Select
-              value={row.reasonConceptUUID || ""}
+              multiple
+              value={selectedReasons}
               displayEmpty
-              onChange={(e) =>
-                onSetReason(row.subjectUUID, e.target.value || null)
-              }
+              onChange={(e) => onSetReason(row.subjectUUID, e.target.value)}
               disabled={readOnly}
+              renderValue={(selected) =>
+                selected.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary">
+                    {"Select reasons (optional)"}
+                  </Typography>
+                ) : (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {selected.map((uuid) => {
+                      const answer = (reasonAnswers || []).find(
+                        (a) => a.uuid === uuid,
+                      );
+                      return (
+                        <Chip
+                          key={uuid}
+                          size="small"
+                          label={answer?.name || uuid}
+                        />
+                      );
+                    })}
+                  </Box>
+                )
+              }
             >
-              <MenuItem value="">
-                <em>{"Select a reason (optional)"}</em>
-              </MenuItem>
               {(reasonAnswers || []).map((a) => (
                 <MenuItem key={a.uuid} value={a.uuid}>
-                  {a.name}
+                  <Checkbox checked={selectedReasons.includes(a.uuid)} />
+                  <ListItemText primary={a.name} />
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          {showFollowUpWarning && (
-            <Typography
-              variant="caption"
-              sx={{ color: "warning.dark", display: "block", mt: 0.5 }}
-            >
-              ⚠ No reason selected — a follow-up encounter will be auto-created
-              on save.
-            </Typography>
+          {showNeedsFollowUp && (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={!!row.needsFollowUp}
+                  onChange={() => onToggleNeedsFollowUp(row.subjectUUID)}
+                  disabled={readOnly}
+                  size="small"
+                />
+              }
+              label="Needs follow-up"
+              sx={{ mt: 0.5, ml: -1 }}
+            />
           )}
         </Box>
       )}
