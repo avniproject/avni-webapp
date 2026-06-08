@@ -209,6 +209,10 @@ const DifyChatbot = () => {
     };
   }, [isChatOpen, theme, aiConfig, dispatch]);
 
+  if (!aiConfig?.enabled) {
+    return null;
+  }
+
   // Build chatbot URL with user context
   const buildChatUrl = () => {
     const token = aiConfig?.token;
