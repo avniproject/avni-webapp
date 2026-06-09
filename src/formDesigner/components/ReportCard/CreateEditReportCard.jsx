@@ -19,7 +19,10 @@ import { Title } from "react-admin";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Navigate, useParams } from "react-router-dom";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
-import { sampleCardQuery } from "../../common/SampleRule";
+import {
+  sampleCardQuery,
+  sampleCustomCardDataRule,
+} from "../../common/SampleRule";
 import { AvniSelect } from "../../../common/components/AvniSelect";
 import { MediaFolder, uploadImage } from "../../../common/utils/S3Client";
 import {
@@ -95,9 +98,31 @@ export const CreateEditReportCard = () => {
     }
   }, []);
 
+  const resetCustomCardState = () => {
+    setCustomCardDataRule("");
+    setCustomCardHtmlFileS3Key("");
+    setHtmlFile(undefined);
+    setCustomCardTranslations([]);
+    customCardConfigUuidRef.current = null;
+    setError((errors) =>
+      errors.filter(
+        ({ key }) =>
+          key !== "MISSING_HTML_FILE" &&
+          key !== "EMPTY_TRANSLATION_KEY" &&
+          key !== "DUPLICATE_TRANSLATION_KEY",
+      ),
+    );
+  };
+
   const onCardTypeChange = (nextType) => {
     setCardType(nextType);
     const { standard, nested, customData, fullyCustom } = ReportCard.cardTypes;
+    // Custom Design (fully custom) state lives outside the reducer; clear it
+    // whenever we leave that type so a stale data rule / HTML file / config
+    // doesn't survive into another card type or a later switch back.
+    if (nextType !== fullyCustom) {
+      resetCustomCardState();
+    }
     if (nextType === standard) {
       dispatch({ type: ReportCardReducerKeys.query, payload: null });
       dispatch({
@@ -853,7 +878,7 @@ export const CreateEditReportCard = () => {
               toolTipKey={"APP_DESIGNER_CARD_DATA_RULE"}
             />
             <JSEditor
-              value={customCardDataRule}
+              value={customCardDataRule || sampleCustomCardDataRule()}
               onValueChange={setCustomCardDataRule}
             />
             <p />

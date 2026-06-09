@@ -324,3 +324,16 @@ export const sampleUserCreationMessageRule = () => {
   }
 };`;
 };
+
+export const sampleCustomCardDataRule = () => {
+  return `// Returns the data used to render the Custom Design card's HTML template.
+// Keys in the returned object map to placeholders referenced in the HTML.
+'use strict';
+({params, imports}) => {
+    // const individuals = params.db.objects('Individual').filtered("voided == false");
+    return {
+        // title: 'My Card',
+        // count: individuals.length
+    };
+};`;
+};

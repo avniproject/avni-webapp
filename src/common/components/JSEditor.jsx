@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import * as esprima from "esprima";
 import { styled } from "@mui/material/styles";
 
-export const EditorContainer = styled("div")(({ theme }) => ({
+export const EditorContainer = styled("div")(() => ({
   padding: "1px",
   backgroundColor: "#fff",
   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
@@ -52,7 +52,10 @@ export const JSEditor = ({
 
   useEffect(() => {
     try {
-      const ast = esprima.parseScript(value, { tolerant: true, range: true });
+      const ast = esprima.parseScript(value || "", {
+        tolerant: true,
+        range: true,
+      });
       setError({ success: true, data: ast });
     } catch (err) {
       setError({ success: false, error: `Error: ${err.message}` });
