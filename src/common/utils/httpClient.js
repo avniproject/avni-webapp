@@ -1,5 +1,5 @@
 import _, { isEmpty } from "lodash";
-import { fetchUtils } from "react-admin";
+import { fetchUtils, HttpError } from "react-admin";
 import { stringify } from "query-string";
 import axios from "axios";
 import files from "./files";
@@ -12,6 +12,24 @@ import CurrentUserService from "../service/CurrentUserService";
 function getCsrfToken() {
   // eslint-disable-next-line no-useless-escape
   return document.cookie.replace(/(?:(?:^|.*;\s*)XSRF-TOKEN\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+}
+
+function fetchJsonPreservingErrorBody(url, options = {}) {
+  const requestHeaders = fetchUtils.createHeadersFromOptions(options);
+  return fetch(url, { ...options, headers: requestHeaders }).then((response) =>
+    response.text().then((body) => {
+      let json;
+      try {
+        json = JSON.parse(body);
+      } catch {
+        // body is not JSON (e.g. a plain-text server error message); keep the raw text
+      }
+      if (response.status < 200 || response.status >= 300) {
+        return Promise.reject(new HttpError((json && json.message) || body || response.statusText, response.status, json || body));
+      }
+      return { status: response.status, headers: response.headers, body, json };
+    }),
+  );
 }
 
 class HttpClient {
@@ -59,7 +77,7 @@ class HttpClient {
 
   saveAuthTokenForAnalyticsApp() {
     if (this.idp?.idpType === IdpDetails.cognito) {
-      fetchAuthSession().then(session => {
+      fetchAuthSession().then((session) => {
         const authToken = session.tokens?.idToken?.toString();
         if (authToken) {
           localStorage.setItem(IdpDetails.AuthTokenName, authToken);
@@ -110,7 +128,7 @@ class HttpClient {
     if (skipOrgUUIDHeader) {
       options.headers.delete("ORGANISATION-UUID");
     }
-    return fetchUtils.fetchJson(url, options).catch(error => {
+    return fetchJsonPreservingErrorBody(url, options).catch((error) => {
       if (error.status === 401 && this.idp.idpType === IdpDetails.keycloak) {
         this.idp.clearAccessToken();
       }
@@ -120,8 +138,8 @@ class HttpClient {
 
   async downloadFile(url, filename) {
     return await this.get(url, {
-      responseType: "blob"
-    }).then(response => {
+      responseType: "blob",
+    }).then((response) => {
       files.download(filename, response.data);
     });
   }
@@ -161,21 +179,21 @@ class HttpClient {
   }
 
   getData(...args) {
-    return this.get(...args).then(response => response.data);
+    return this.get(...args).then((response) => response.data);
   }
 
   getPageData(embeddedResourceCollectionName, ...args) {
-    return this.getData(args).then(responseBodyJson => {
+    return this.getData(args).then((responseBodyJson) => {
       return {
         data: responseBodyJson._embedded ? responseBodyJson._embedded[embeddedResourceCollectionName] : [],
         page: responseBodyJson.page.number,
-        totalCount: responseBodyJson.page.totalElements
+        totalCount: responseBodyJson.page.totalElements,
       };
     });
   }
 
   getAllData(embeddedResourceCollectionName, ...args) {
-    return this.getData(args).then(response => {
+    return this.getData(args).then((response) => {
       return response._embedded ? response._embedded[embeddedResourceCollectionName] : [];
     });
   }
@@ -183,8 +201,8 @@ class HttpClient {
   postUrlEncoded(url, request) {
     const options = {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     };
     const encoded = querystring.stringify(request);
     return axios.post(url, encoded, options);
