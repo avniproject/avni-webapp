@@ -77,6 +77,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
     enableMobileAppDbEncryption: "enableMobileAppDbEncryption",
     copilotFormValidationApiKey: "copilotFormValidationApiKey",
     guideUserToRegisterButton: "guideUserToRegisterButton",
+    enableSqliteSnapshotGeneration: "enableSqliteSnapshotGeneration",
   };
 
   const getDefaultSnackbarStatus = (defaultSnackbarStatus) => {
@@ -154,6 +155,11 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
           organisationConfigSettingKeys.guideUserToRegisterButton,
           "Guide users",
           "GUIDE_USER_TO_REGISTER_BUTTON",
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.enableSqliteSnapshotGeneration,
+          "Enable SQLite snapshot generation",
+          "ENABLE_SQLITE_SNAPSHOT_GENERATION",
         )}
         <AvniTextField
           style={{ marginLeft: 8, marginTop: 10 }}
