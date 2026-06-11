@@ -5,7 +5,7 @@ import {
   useState,
   useRef,
   useCallback,
-  useMemo
+  useMemo,
 } from "react";
 import { styled } from "@mui/material/styles";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
@@ -18,11 +18,11 @@ import {
   getFilterPayload,
   getMetadataOptions,
   initialState,
-  SubjectAssignmentReducer
+  SubjectAssignmentReducer,
 } from "../reducers/SubjectAssignmentReducer";
 import { getColumns } from "./SubjectAssignmentColumns";
 import { fetchSubjectData } from "./SubjectAssignmentData";
-import { Grid, FormControlLabel, Radio, Stack } from "@mui/material";
+import { FormControlLabel, Radio } from "@mui/material";
 import SubjectAssignmentFilter from "./SubjectAssignmentFilter";
 import { refreshTable } from "../util/util";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
@@ -33,15 +33,16 @@ const StyledRootDiv = styled("div")({
   height: "85vh",
   backgroundColor: "#FFF",
   display: "flex",
-  overflow: "hidden"
+  overflow: "hidden",
 });
 
 const StyledTableContainer = styled("div")({
   flex: "1 1 72%",
   display: "flex",
   flexDirection: "column",
+  minHeight: 0,
   overflow: "hidden",
-  marginRight: "16px"
+  marginRight: "16px",
 });
 
 const StyledFilterContainer = styled("div")({
@@ -49,32 +50,33 @@ const StyledFilterContainer = styled("div")({
   display: "flex",
   flexDirection: "column",
   height: "100%",
-  position: "relative"
+  position: "relative",
 });
 
-const StyledMaterialReactTable = styled(MaterialReactTable)({
-  flex: 1,
-  "& .MuiTableHeadCell-root": {
-    zIndex: 2
-  },
-  "& .MuiTableContainer-root": {
-    maxHeight: "100%",
-    minHeight: "100%",
-    overflowY: "auto",
-    position: "relative"
-  },
-  "& .MuiPaper-root": {
-    elevation: 0,
-    height: "100%",
+const tablePaperProps = {
+  elevation: 0,
+  sx: {
+    flex: 1,
+    minHeight: 0,
     display: "flex",
-    flexDirection: "column"
-  }
-});
+    flexDirection: "column",
+  },
+};
+
+const tableContainerProps = {
+  sx: {
+    flex: 1,
+    minHeight: 0,
+    "& .MuiTableHeadCell-root": {
+      zIndex: 2,
+    },
+  },
+};
 
 const SubjectAssignment = () => {
   const [state, updateState] = useReducer(
     SubjectAssignmentReducer,
-    initialState
+    initialState,
   );
   const dispatch = (type, payload) => updateState({ type, payload });
   const {
@@ -84,7 +86,7 @@ const SubjectAssignment = () => {
     userGroupOptions,
     syncAttribute1,
     syncAttribute2,
-    userOptionsWithIds
+    userOptionsWithIds,
   } = getMetadataOptions(state.metadata, state.filterCriteria);
   const tableRef = useRef(null);
   const [data, setData] = useState([]);
@@ -97,11 +99,11 @@ const SubjectAssignment = () => {
     pagination,
     setPagination,
     totalRecords: rowCount,
-    isLoading
+    isLoading,
   });
 
   useEffect(() => {
-    api.getSubjectAssignmentMetadata().then(metadata => {
+    api.getSubjectAssignmentMetadata().then((metadata) => {
       console.log("Metadata fetched:", metadata);
       dispatch("setMetadata", metadata);
     });
@@ -116,7 +118,7 @@ const SubjectAssignment = () => {
       "loadData called with filterCriteria:",
       state.filterCriteria,
       "pagination:",
-      pagination
+      pagination,
     );
     setIsLoading(true);
     try {
@@ -124,7 +126,7 @@ const SubjectAssignment = () => {
         page: pagination.pageIndex,
         pageSize: pagination.pageSize,
         orderBy: sorting[0]?.id,
-        order: sorting[0]?.desc ? "desc" : "asc"
+        order: sorting[0]?.desc ? "desc" : "asc",
       };
       const response = await fetchSubjectData(query, state.filterCriteria);
       const normalizedData = Array.isArray(response)
@@ -145,7 +147,7 @@ const SubjectAssignment = () => {
     pagination.pageSize,
     sorting,
     state.filterCriteria,
-    state.loaded
+    state.loaded,
   ]);
 
   useEffect(() => {
@@ -185,7 +187,7 @@ const SubjectAssignment = () => {
         label={name}
         key={actionId}
       />
-    )
+    ),
   );
 
   const onActionDone = async () => {
@@ -193,7 +195,7 @@ const SubjectAssignment = () => {
       "onActionDone called, filterCriteria:",
       state.filterCriteria,
       "assignmentCriteria:",
-      state.assignmentCriteria
+      state.assignmentCriteria,
     );
     updateState({ type: "onSave", payload: { saveStart: true } });
     updateState({ type: "hideAction" });
@@ -202,11 +204,11 @@ const SubjectAssignment = () => {
       (v, k) =>
         includes(["userId", "actionId"], k)
           ? getAssignmentValue(k, state.assignmentCriteria)
-          : v
+          : v,
     );
     const [error] = await api.postUpdateUserAssignmentToSubject({
       ...assignmentCriteriaValues,
-      taskFilterCriteria: getFilterPayload(state.filterCriteria)
+      taskFilterCriteria: getFilterPayload(state.filterCriteria),
     });
     if (error) {
       console.error("onActionDone error:", error);
@@ -217,7 +219,7 @@ const SubjectAssignment = () => {
   };
 
   useImperativeHandle(tableRef, () => ({
-    refresh: loadData
+    refresh: loadData,
   }));
 
   const renderData = () => {
@@ -230,7 +232,7 @@ const SubjectAssignment = () => {
     return (
       <StyledRootDiv>
         <StyledTableContainer>
-          <StyledMaterialReactTable
+          <MaterialReactTable
             columns={columns}
             data={data}
             manualPagination
@@ -239,12 +241,15 @@ const SubjectAssignment = () => {
             enableGlobalFilter={false}
             enableColumnFilters={false}
             enableSorting
+            enableStickyHeader
+            muiTablePaperProps={tablePaperProps}
+            muiTableContainerProps={tableContainerProps}
             rowCount={rowCount}
             state={{ pagination, sorting, isLoading }}
             onPaginationChange={setPagination}
             onSortingChange={setSorting}
             initialState={{
-              pagination: { pageSize: 10 }
+              pagination: { pageSize: 10 },
             }}
             renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
             renderTopToolbar={({ table }) => (
@@ -253,9 +258,9 @@ const SubjectAssignment = () => {
                 assignmentCriteria={state.assignmentCriteria}
                 showSelect1000={false}
                 data={data}
-                selectedRows={table.getSelectedRowModel().rows.map(row => ({
+                selectedRows={table.getSelectedRowModel().rows.map((row) => ({
                   id: row.original.id,
-                  type: row.original.type
+                  type: row.original.type,
                 }))}
               />
             )}
