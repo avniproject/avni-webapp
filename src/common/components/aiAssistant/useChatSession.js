@@ -122,6 +122,17 @@ export const useChatSession = () => {
   // Bounds the search window for collapseLatestAssistantMessage.
   const lastUserActionRef = useRef(0);
 
+  // Append one message and advance the user-action watermark. Used by
+  // every send / resolve / upload path so a subsequent HITL card can't
+  // retroactively collapse a pre-watermark assistant message.
+  const appendUserActionMessage = useCallback((msg) => {
+    setMessages((prev) => {
+      const next = [...prev, msg];
+      lastUserActionRef.current = next.length;
+      return next;
+    });
+  }, []);
+
   // ── SSE wiring ────────────────────────────────────────────────────────────
 
   const handleEvent = useCallback((type, data) => {
@@ -242,11 +253,7 @@ export const useChatSession = () => {
       if (!sessionId || !text.trim()) return;
       try {
         await aiApi.sendMessage(sessionId, text);
-        setMessages((prev) => {
-          const next = [...prev, { role: "user", content: text, ts: new Date().toISOString() }];
-          lastUserActionRef.current = next.length;
-          return next;
-        });
+        appendUserActionMessage({ role: "user", content: text, ts: new Date().toISOString() });
       } catch (err) {
         setError({
           code: "E_SEND",
@@ -255,7 +262,7 @@ export const useChatSession = () => {
         });
       }
     },
-    [sessionId],
+    [sessionId, appendUserActionMessage],
   );
 
   const resolveChanges = useCallback(
@@ -263,12 +270,7 @@ export const useChatSession = () => {
       if (!sessionId || !pendingChanges) return false;
       try {
         await aiApi.resolve(sessionId, pendingChanges.interrupt_id, resolutions);
-        const summary = buildDecisionsSummary(pendingChanges.changes, resolutions);
-        setMessages((prev) => {
-          const next = [...prev, summary];
-          lastUserActionRef.current = next.length;
-          return next;
-        });
+        appendUserActionMessage(buildDecisionsSummary(pendingChanges.changes, resolutions));
         setPendingChanges(null);
         return true;
       } catch (err) {
@@ -280,7 +282,7 @@ export const useChatSession = () => {
         return false;
       }
     },
-    [sessionId, pendingChanges],
+    [sessionId, pendingChanges, appendUserActionMessage],
   );
 
   const uploadFiles = useCallback(
@@ -288,17 +290,10 @@ export const useChatSession = () => {
       if (!sessionId || !files?.length) return;
       try {
         await aiApi.uploadFiles(sessionId, files);
-        setMessages((prev) => {
-          const next = [
-            ...prev,
-            {
-              role: "system",
-              content: `Uploaded ${files.length} file(s): ${[...files].map((f) => f.name).join(", ")}`,
-              ts: new Date().toISOString(),
-            },
-          ];
-          lastUserActionRef.current = next.length;
-          return next;
+        appendUserActionMessage({
+          role: "system",
+          content: `Uploaded ${files.length} file(s): ${[...files].map((f) => f.name).join(", ")}`,
+          ts: new Date().toISOString(),
         });
       } catch (err) {
         setError({
@@ -308,7 +303,7 @@ export const useChatSession = () => {
         });
       }
     },
-    [sessionId],
+    [sessionId, appendUserActionMessage],
   );
 
   const uploadToAvni = useCallback(async () => {
