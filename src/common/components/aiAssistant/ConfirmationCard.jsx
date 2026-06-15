@@ -31,6 +31,14 @@ const ConfirmationCard = ({ pendingChanges, onResolve }) => {
     }));
   };
 
+  const setAllDecisions = (decision) => {
+    const next = {};
+    for (const c of pendingChanges.changes) {
+      next[c.change_id] = { decision, value: "" };
+    }
+    setDecisions(next);
+  };
+
   const allDecided = pendingChanges.changes.every(
     (c) => decisions[c.change_id],
   );
@@ -56,22 +64,50 @@ const ConfirmationCard = ({ pendingChanges, onResolve }) => {
         background: "linear-gradient(180deg, #f5f8fc 0%, #eaf1f8 100%)",
         display: "flex",
         flexDirection: "column",
-        // Take all remaining space inside the panel (panel parent uses
-        // flex column + overflow:hidden). minHeight:0 lets the internal
-        // scroller actually shrink instead of overflowing the panel and
-        // pushing the chat composer off-screen.
+        // flex:1 + minHeight:0 lets the inner scroller shrink instead of
+        // pushing the chat composer below the viewport.
         flex: 1,
         minHeight: 0,
-        // A thin accent at the top hints at "needs attention" without the
-        // alarming yellow body that competes with the chat content below.
         borderTop: "3px solid",
         borderColor: "primary.main",
       }}
     >
-      <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-        {totalCount} change(s) need your confirmation
-        {decidedCount > 0 && ` — ${decidedCount}/${totalCount} decided`}
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          mb: 1,
+          flexWrap: "wrap",
+        }}
+      >
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, flex: 1 }}>
+          {totalCount} change(s) need your confirmation
+          {decidedCount > 0 && ` — ${decidedCount}/${totalCount} decided`}
+        </Typography>
+        {totalCount > 1 && (
+          <Box sx={{ display: "flex", gap: 0.75 }}>
+            <Button
+              size="small"
+              variant="outlined"
+              color="success"
+              onClick={() => setAllDecisions(DECISIONS.YES)}
+              sx={{ borderRadius: 1.5, fontWeight: 600, py: 0.25 }}
+            >
+              Yes to all
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              color="error"
+              onClick={() => setAllDecisions(DECISIONS.NO)}
+              sx={{ borderRadius: 1.5, fontWeight: 600, py: 0.25 }}
+            >
+              No to all
+            </Button>
+          </Box>
+        )}
+      </Box>
       <Box
         sx={{
           flex: 1,
@@ -79,7 +115,6 @@ const ConfirmationCard = ({ pendingChanges, onResolve }) => {
           overflowY: "auto",
           pr: 1,
           mb: 1.5,
-          // Make the scrollbar visible so users know there's more below.
           "&::-webkit-scrollbar": { width: 8 },
           "&::-webkit-scrollbar-thumb": {
             backgroundColor: "rgba(0,0,0,0.25)",
