@@ -1,0 +1,204 @@
+import { useEffect, useRef, useState } from "react";
+import {
+  Box,
+  TextField,
+  IconButton,
+  CircularProgress,
+  Chip,
+} from "@mui/material";
+import { Send, AutoAwesome, Person } from "@mui/icons-material";
+import ReactMarkdown from "react-markdown";
+
+/**
+ * Scrolling message list + a one-line composer.
+ *
+ * Props:
+ *  - messages: [{role, content, ts}]
+ *  - toolCalls: [{tool, args, call_id, result?}]
+ *  - status: "idle" | "connecting" | "connected" | "closed" | "error"
+ *  - onSend: (text) => Promise
+ *  - disabled: boolean
+ */
+const ChatPanel = ({ messages, toolCalls, status, onSend, disabled }) => {
+  const [draft, setDraft] = useState("");
+  const scrollerRef = useRef(null);
+
+  // Auto-scroll to bottom on every new message.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, toolCalls]);
+
+  const submit = async () => {
+    const text = draft.trim();
+    if (!text || disabled) return;
+    setDraft("");
+    await onSend(text);
+  };
+
+  const onKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      submit();
+    }
+  };
+
+  return (
+    <Box
+      sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
+    >
+      <Box
+        ref={scrollerRef}
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          px: 2.5,
+          py: 2,
+          backgroundColor: "#f7f8fa",
+          "&::-webkit-scrollbar": { width: 8 },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0,0,0,0.18)",
+            borderRadius: 4,
+          },
+        }}
+      >
+        {messages
+          .filter((msg) => !msg.replacedByCard)
+          .map((msg, i) => (
+            <MessageRow key={i} msg={msg} />
+          ))}
+        {toolCalls
+          .filter((tc) => !tc.result)
+          .map((tc) => (
+            <ToolCallRow key={tc.call_id} tc={tc} />
+          ))}
+      </Box>
+
+      <Box
+        sx={{
+          borderTop: "1px solid",
+          borderColor: "divider",
+          p: 1.75,
+          backgroundColor: "background.paper",
+          display: "flex",
+          alignItems: "flex-end",
+          gap: 1.25,
+        }}
+      >
+        <TextField
+          fullWidth
+          multiline
+          maxRows={4}
+          size="small"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2.5,
+              backgroundColor: "#f7f8fa",
+              transition: "background-color 0.2s",
+              "&.Mui-focused": { backgroundColor: "background.paper" },
+            },
+          }}
+          placeholder={
+            status === "idle"
+              ? "Starting…"
+              : status === "connecting"
+                ? "Connecting…"
+                : status === "error"
+                  ? "Couldn't reach the assistant — click ↻ to retry"
+                  : status === "closed"
+                    ? "Session ended — click ↻ to start again"
+                    : "Ask the assistant…"
+          }
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={onKeyDown}
+          disabled={disabled}
+        />
+        <IconButton
+          color="primary"
+          onClick={submit}
+          disabled={disabled || !draft.trim()}
+        >
+          <Send />
+        </IconButton>
+      </Box>
+    </Box>
+  );
+};
+
+const MessageRow = ({ msg }) => {
+  const isAssistant = msg.role === "assistant";
+  const isSystem = msg.role === "system";
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 1,
+        mb: 1.5,
+        flexDirection: isAssistant ? "row" : "row-reverse",
+      }}
+    >
+      <Box
+        sx={{
+          width: 28,
+          height: 28,
+          flexShrink: 0,
+          borderRadius: "50%",
+          backgroundColor: isAssistant
+            ? "primary.main"
+            : isSystem
+              ? "grey.500"
+              : "secondary.main",
+          color: "common.white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {isAssistant ? (
+          <AutoAwesome sx={{ fontSize: 16 }} />
+        ) : (
+          <Person sx={{ fontSize: 16 }} />
+        )}
+      </Box>
+      <Box
+        sx={{
+          maxWidth: "85%",
+          backgroundColor: isAssistant
+            ? "#fff"
+            : isSystem
+              ? "grey.100"
+              : "primary.light",
+          color:
+            isAssistant || isSystem ? "text.primary" : "primary.contrastText",
+          borderRadius: 2.5,
+          px: 1.75,
+          py: 1.25,
+          boxShadow:
+            "0 1px 3px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04)",
+          fontSize: 14,
+          lineHeight: 1.55,
+          "& p": { my: 0.5 },
+          "& code": { fontSize: 12 },
+        }}
+      >
+        <ReactMarkdown>{msg.content}</ReactMarkdown>
+      </Box>
+    </Box>
+  );
+};
+
+const ToolCallRow = ({ tc }) => (
+  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1, pl: 4 }}>
+    <CircularProgress size={12} />
+    <Chip
+      size="small"
+      variant="outlined"
+      label={`${tc.tool}(…)`}
+      sx={{ fontFamily: "monospace", fontSize: 12 }}
+    />
+  </Box>
+);
+
+export default ChatPanel;
