@@ -29,7 +29,6 @@ import {
   Alert,
 } from "@mui/material";
 import {
-  AutoFixHigh,
   Close,
   Fullscreen,
   FullscreenExit,
@@ -68,19 +67,18 @@ const AvniAutopilotChatbot = () => {
     uploadFiles,
     uploadToAvni,
     downloadBundleUrl,
+    uploadErrorLogUrl,
     resetSession,
   } = useChatSession();
 
-  // Boot the session on first open.
+  // Boot or re-verify on every open while idle. start() handles the
+  // stale-sessionStorage case via aiApi.sessionAlive.
   useEffect(() => {
-    if (isOpen && !sessionId && status === "idle") {
+    if (isOpen && status === "idle") {
       start();
     }
-  }, [isOpen, sessionId, status, start]);
+  }, [isOpen, status, start]);
 
-  // Only show the button when the user is logged in. (Operators can extend
-  // this gate to a privilege check later — for now, any authenticated user
-  // can see it; the backend rejects on /web/userInfo failure anyway.)
   if (!userInfo) return null;
 
   const close = () => {
@@ -95,9 +93,8 @@ const AvniAutopilotChatbot = () => {
 
   return (
     <>
-      {/* Floating launcher — occupies the bottom-right slot vacated by
-          the temporarily-hidden DifyChatbot. Reuses the sparkles icon from
-          the legacy chatbot so existing users recognise the entry point. */}
+      {/* Reuses the legacy DifyChatbot sparkles icon so existing users
+          recognise it. Pulse pauses on hover to avoid fighting the lift. */}
       {!isOpen && (
         <Tooltip title="Avni Autopilot — AI bundle assistant" placement="left">
           <Fab
@@ -117,12 +114,28 @@ const AvniAutopilotChatbot = () => {
                 "0 8px 20px rgba(21, 101, 192, 0.45), 0 0 0 4px rgba(66, 165, 245, 0.18)",
               transition:
                 "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
+              "@keyframes autopilotPulse": {
+                "0%": {
+                  boxShadow:
+                    "0 0 0 0 rgba(66, 165, 245, 0.55), 0 8px 20px rgba(21, 101, 192, 0.45)",
+                },
+                "70%": {
+                  boxShadow:
+                    "0 0 0 14px rgba(66, 165, 245, 0), 0 8px 20px rgba(21, 101, 192, 0.45)",
+                },
+                "100%": {
+                  boxShadow:
+                    "0 0 0 0 rgba(66, 165, 245, 0), 0 8px 20px rgba(21, 101, 192, 0.45)",
+                },
+              },
+              animation: "autopilotPulse 2.4s ease-out infinite",
               "&:hover": {
                 background:
                   "linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1e88e5 100%)",
                 transform: "translateY(-2px) scale(1.04)",
                 boxShadow:
                   "0 12px 28px rgba(21, 101, 192, 0.55), 0 0 0 6px rgba(66, 165, 245, 0.22)",
+                animation: "none",
               },
               "&:active": { transform: "translateY(0) scale(1)" },
             }}
@@ -158,10 +171,8 @@ const AvniAutopilotChatbot = () => {
             zIndex: 1200,
             display: "flex",
             flexDirection: "column",
-            // Prevent any single child (long ConfirmationCard, multi-line
-            // BundleSummary warnings list, big error alert) from pushing the
-            // chat composer below the viewport. Children handle their own
-            // internal scroll.
+            // Children handle their own internal scroll — keeps the chat
+            // composer pinned to the bottom regardless of card size.
             overflow: "hidden",
             borderRadius: isMaximised ? 0 : `${PANEL_RADIUS}px`,
             border: isMaximised ? "none" : "1px solid",
@@ -184,8 +195,19 @@ const AvniAutopilotChatbot = () => {
               color: "primary.contrastText",
             }}
           >
-            <AutoFixHigh fontSize="small" />
-            <Typography variant="subtitle1" sx={{ flex: 1 }}>
+            <Box
+              component="img"
+              src="/icons/ai-chat-icon.png"
+              alt=""
+              sx={{
+                width: 24,
+                height: 24,
+                pointerEvents: "none",
+                userSelect: "none",
+                filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.25))",
+              }}
+            />
+            <Typography variant="subtitle1" sx={{ flex: 1, fontWeight: 600 }}>
               Avni Autopilot
               {orgName && (
                 <Typography
@@ -240,9 +262,8 @@ const AvniAutopilotChatbot = () => {
             </Alert>
           )}
 
-          {/* Top blocks: dropzone is hidden during HITL and after a successful
-              bundle build so the active card (confirmation / summary) gets
-              the whole panel. The user can always reset to upload again. */}
+          {/* Dropzone yields the panel to the active card during HITL /
+              bundle-ready so the card has the room it needs. */}
           {!pendingChanges && !bundle && (
             <UploadDropzone
               onFiles={uploadFiles}
@@ -260,6 +281,7 @@ const AvniAutopilotChatbot = () => {
               bundle={bundle}
               uploadResult={uploadResult}
               downloadBundleUrl={downloadBundleUrl}
+              uploadErrorLogUrl={uploadErrorLogUrl}
               onUploadToAvni={uploadToAvni}
             />
           )}
