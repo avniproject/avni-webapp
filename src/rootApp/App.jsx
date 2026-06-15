@@ -6,11 +6,16 @@ import { getUserInfo } from "./ducks";
 import IdpDetails from "./security/IdpDetails";
 import { httpClient } from "../common/utils/httpClient";
 import Footer from "../common/components/Footer";
-import DifyChatbot from "../common/components/DifyChatbot";
+// DifyChatbot temporarily hidden — see App.jsx render block.
+// import DifyChatbot from "../common/components/DifyChatbot";
+import AvniAutopilotChatbot from "../common/components/aiAssistant/AvniAutopilotChatbot";
 
 const App = () => {
   const dispatch = useDispatch();
   const isChatOpen = useSelector((state) => state.app.isChatOpen);
+  const isAvniAutopilotOpen = useSelector(
+    (state) => state.app.isAvniAutopilotOpen,
+  );
 
   const appInitialised = useSelector(
     (state) => state.app?.appInitialised || false,
@@ -56,7 +61,14 @@ const App = () => {
           flex: 1,
           display: "flex",
           transition: "margin-right 0.3s ease",
-          marginRight: isChatOpen ? "400px" : "0",
+          // When either assistant docks on the right, reserve the panel
+          // width. The autopilot's maximised mode covers the page anyway, so
+          // its docked width (480px) is what's reserved here.
+          marginRight: isChatOpen
+            ? "400px"
+            : isAvniAutopilotOpen
+              ? "480px"
+              : "0",
         }}
       >
         <Box sx={{ flex: 1 }}>
@@ -64,7 +76,10 @@ const App = () => {
         </Box>
       </Box>
       <Footer />
-      <DifyChatbot />
+      {/* DifyChatbot hidden temporarily while Avni Autopilot is the primary
+          AI assistant entry point. Re-enable by uncommenting. */}
+      {/* <DifyChatbot /> */}
+      <AvniAutopilotChatbot />
     </Box>
   );
 };
