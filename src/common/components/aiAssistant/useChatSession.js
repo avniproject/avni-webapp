@@ -42,18 +42,47 @@ const storeSessionId = (sid) => {
  * Mark the most recent assistant message as superseded by a structured
  * card (HITL confirmation or bundle-ready). The renderer skips messages
  * carrying `replacedByCard: true` so the same information isn't shown
- * twice. Returns the list unchanged when no assistant message is present.
+ * twice.
+ *
+ * The collapse only considers messages at or after `boundaryIndex` — the
+ * watermark set whenever the user takes a chat action (send / resolve /
+ * upload). Without this, a second HITL round would walk past the user's
+ * synthetic "Applied …" message and hide the agent's earlier "Got it!"
+ * acknowledgement from round 1.
+ *
+ * Bails out if the latest message in range isn't an assistant message —
+ * that means the user has acted since the last agent turn, so nothing
+ * is a duplicate of the incoming card.
  */
-const collapseLastAssistantMessage = (messages) => {
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i].role === "assistant") {
-      if (messages[i].replacedByCard) return messages;
-      const next = messages.slice();
-      next[i] = { ...messages[i], replacedByCard: true };
-      return next;
-    }
+const collapseLatestAssistantMessage = (messages, boundaryIndex) => {
+  for (let i = messages.length - 1; i >= boundaryIndex; i--) {
+    if (messages[i].role !== "assistant") return messages;
+    if (messages[i].replacedByCard) return messages;
+    const next = messages.slice();
+    next[i] = { ...messages[i], replacedByCard: true };
+    return next;
   }
   return messages;
+};
+
+/** One-line summary of the user's decisions, shown in chat after Apply. */
+const DECISION_LABELS = { yes: "Yes", no: "No", edit: "Edit" };
+
+const buildDecisionsSummary = (changes, resolutions) => {
+  const byId = new Map(resolutions.map((r) => [r.change_id, r]));
+  const parts = changes.map((c, i) => {
+    const r = byId.get(c.change_id);
+    const label = DECISION_LABELS[r?.decision] || r?.decision || "?";
+    if (r?.decision === "edit" && r.value) {
+      return `#${i + 1} ${label} → "${r.value}"`;
+    }
+    return `#${i + 1} ${label}`;
+  });
+  return {
+    role: "user",
+    content: `Applied ${changes.length} decision${changes.length === 1 ? "" : "s"}: ${parts.join(" · ")}`,
+    ts: new Date().toISOString(),
+  };
 };
 
 /** Try to extract FastAPI's `detail` object from an error response body. */
@@ -98,6 +127,11 @@ export const useChatSession = () => {
   const [error, setError] = useState(null);
 
   const eventSourceRef = useRef(null);
+  // Index after the last user-driven message (send / resolve / upload).
+  // HITL_PENDING / BUNDLE_READY only collapse the agent narration that
+  // arrived after this watermark — never a message the user has already
+  // seen and acted on.
+  const lastUserActionRef = useRef(0);
 
   // ── SSE wiring ────────────────────────────────────────────────────────────
 
@@ -116,16 +150,11 @@ export const useChatSession = () => {
         return;
       case EVENT_TYPES.HITL_PENDING:
         setPendingChanges(data);
-        // Suppress the agent's prose enumeration of the same changes —
-        // the structured card now owns that information. Only the most
-        // recent assistant message is collapsed (the one the model just
-        // emitted to introduce the interrupt).
-        setMessages((prev) => collapseLastAssistantMessage(prev));
+        setMessages((prev) => collapseLatestAssistantMessage(prev, lastUserActionRef.current));
         return;
       case EVENT_TYPES.BUNDLE_READY:
         setBundle(data);
-        // Same idea: the success card replaces the agent's text wrap-up.
-        setMessages((prev) => collapseLastAssistantMessage(prev));
+        setMessages((prev) => collapseLatestAssistantMessage(prev, lastUserActionRef.current));
         return;
       case EVENT_TYPES.UPLOAD_DONE:
         setUploadResult(data);
@@ -154,10 +183,17 @@ export const useChatSession = () => {
       const es = aiApi.openEventStream(sid);
       eventSourceRef.current = es;
 
-      es.onopen = () => setStatus("connected");
+      es.onopen = () => {
+        setStatus("connected");
+        // Clear the transient "stream interrupted; retrying…" banner once
+        // the browser's auto-reconnect succeeds. Without this it lingers
+        // even though the connection has healed.
+        setError((prev) => (prev?.code === "E_SSE" ? null : prev));
+      };
       es.onerror = () => {
         // Browser will auto-retry; surface a transient error banner but
-        // don't close the session — it may come back.
+        // don't close the session — it may come back. Cleared by `onopen`
+        // on successful reconnect.
         setError({
           code: "E_SSE",
           message: "stream interrupted; retrying…",
@@ -213,7 +249,11 @@ export const useChatSession = () => {
       if (!sessionId || !text.trim()) return;
       try {
         await aiApi.sendMessage(sessionId, text);
-        setMessages((prev) => [...prev, { role: "user", content: text, ts: new Date().toISOString() }]);
+        setMessages((prev) => {
+          const next = [...prev, { role: "user", content: text, ts: new Date().toISOString() }];
+          lastUserActionRef.current = next.length;
+          return next;
+        });
       } catch (err) {
         setError({
           code: "E_SEND",
@@ -230,6 +270,12 @@ export const useChatSession = () => {
       if (!sessionId || !pendingChanges) return false;
       try {
         await aiApi.resolve(sessionId, pendingChanges.interrupt_id, resolutions);
+        const summary = buildDecisionsSummary(pendingChanges.changes, resolutions);
+        setMessages((prev) => {
+          const next = [...prev, summary];
+          lastUserActionRef.current = next.length;
+          return next;
+        });
         setPendingChanges(null);
         return true;
       } catch (err) {
@@ -249,14 +295,18 @@ export const useChatSession = () => {
       if (!sessionId || !files?.length) return;
       try {
         await aiApi.uploadFiles(sessionId, files);
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "system",
-            content: `Uploaded ${files.length} file(s): ${[...files].map((f) => f.name).join(", ")}`,
-            ts: new Date().toISOString(),
-          },
-        ]);
+        setMessages((prev) => {
+          const next = [
+            ...prev,
+            {
+              role: "system",
+              content: `Uploaded ${files.length} file(s): ${[...files].map((f) => f.name).join(", ")}`,
+              ts: new Date().toISOString(),
+            },
+          ];
+          lastUserActionRef.current = next.length;
+          return next;
+        });
       } catch (err) {
         setError({
           code: "E_UPLOAD",
@@ -313,6 +363,7 @@ export const useChatSession = () => {
     setUploadResult(null);
     setError(null);
     setStatus("idle");
+    lastUserActionRef.current = 0;
   }, [sessionId]);
 
   // Clean up the EventSource on unmount.
