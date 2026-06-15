@@ -53,7 +53,7 @@ const ConfirmationCard = ({ pendingChanges, onResolve }) => {
     <Box
       sx={{
         p: 2,
-        background: "linear-gradient(180deg, #fff8e1 0%, #fff3c4 100%)",
+        background: "linear-gradient(180deg, #f5f8fc 0%, #eaf1f8 100%)",
         display: "flex",
         flexDirection: "column",
         // Take all remaining space inside the panel (panel parent uses
@@ -62,8 +62,10 @@ const ConfirmationCard = ({ pendingChanges, onResolve }) => {
         // pushing the chat composer off-screen.
         flex: 1,
         minHeight: 0,
-        borderTop: "1px solid",
-        borderColor: "warning.main",
+        // A thin accent at the top hints at "needs attention" without the
+        // alarming yellow body that competes with the chat content below.
+        borderTop: "3px solid",
+        borderColor: "primary.main",
       }}
     >
       <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
