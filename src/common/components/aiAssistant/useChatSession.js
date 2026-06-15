@@ -39,20 +39,11 @@ const storeSessionId = (sid) => {
 };
 
 /**
- * Mark the most recent assistant message as superseded by a structured
- * card (HITL confirmation or bundle-ready). The renderer skips messages
- * carrying `replacedByCard: true` so the same information isn't shown
- * twice.
- *
- * The collapse only considers messages at or after `boundaryIndex` — the
- * watermark set whenever the user takes a chat action (send / resolve /
- * upload). Without this, a second HITL round would walk past the user's
- * synthetic "Applied …" message and hide the agent's earlier "Got it!"
- * acknowledgement from round 1.
- *
- * Bails out if the latest message in range isn't an assistant message —
- * that means the user has acted since the last agent turn, so nothing
- * is a duplicate of the incoming card.
+ * Mark the most recent assistant message as superseded by an incoming card.
+ * Only considers messages at/after `boundaryIndex` — a prior-round message
+ * the user has already seen and acted on must not be retroactively hidden.
+ * Bails on the first non-assistant message (any user action since the last
+ * agent turn means nothing here is a duplicate of the new card).
  */
 const collapseLatestAssistantMessage = (messages, boundaryIndex) => {
   for (let i = messages.length - 1; i >= boundaryIndex; i--) {
@@ -127,10 +118,8 @@ export const useChatSession = () => {
   const [error, setError] = useState(null);
 
   const eventSourceRef = useRef(null);
-  // Index after the last user-driven message (send / resolve / upload).
-  // HITL_PENDING / BUNDLE_READY only collapse the agent narration that
-  // arrived after this watermark — never a message the user has already
-  // seen and acted on.
+  // Watermark = messages.length after the last send / resolve / upload.
+  // Bounds the search window for collapseLatestAssistantMessage.
   const lastUserActionRef = useRef(0);
 
   // ── SSE wiring ────────────────────────────────────────────────────────────
@@ -218,15 +207,19 @@ export const useChatSession = () => {
   // ── Public API ────────────────────────────────────────────────────────────
 
   const start = useCallback(async () => {
-    // Read the canonical session id from sessionStorage instead of the
-    // React state closure. `resetSession` updates sessionStorage
-    // synchronously but the React state setter may not have flushed by
-    // the time `fullReset()` chains start() — without this we'd try to
-    // reconnect to the just-deleted session id and fire E_SSE noise.
+    // Read from sessionStorage rather than React state: resetSession
+    // updates storage synchronously but the state setter may not have
+    // flushed by the time fullReset chains start(), otherwise we'd
+    // reconnect to the just-deleted id.
     const current = readStoredSessionId();
     if (current) {
-      connectStream(current);
-      return;
+      const alive = await aiApi.sessionAlive(current);
+      if (alive) {
+        connectStream(current);
+        return;
+      }
+      storeSessionId(null);
+      setSessionId(null);
     }
     try {
       const { session_id, org_name } = await aiApi.createSession();
@@ -392,6 +385,7 @@ export const useChatSession = () => {
     uploadFiles,
     uploadToAvni,
     downloadBundleUrl: sessionId ? aiApi.bundleUrl(sessionId) : null,
+    uploadErrorLogUrl: sessionId ? aiApi.uploadErrorLogUrl(sessionId) : null,
     resetSession,
   };
 };

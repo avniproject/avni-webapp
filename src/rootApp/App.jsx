@@ -6,7 +6,6 @@ import { getUserInfo } from "./ducks";
 import IdpDetails from "./security/IdpDetails";
 import { httpClient } from "../common/utils/httpClient";
 import Footer from "../common/components/Footer";
-// DifyChatbot temporarily hidden — see App.jsx render block.
 // import DifyChatbot from "../common/components/DifyChatbot";
 import AvniAutopilotChatbot from "../common/components/aiAssistant/AvniAutopilotChatbot";
 
@@ -76,8 +75,7 @@ const App = () => {
         </Box>
       </Box>
       <Footer />
-      {/* DifyChatbot hidden temporarily while Avni Autopilot is the primary
-          AI assistant entry point. Re-enable by uncommenting. */}
+      {/* DifyChatbot temporarily superseded by AvniAutopilot. */}
       {/* <DifyChatbot /> */}
       <AvniAutopilotChatbot />
     </Box>

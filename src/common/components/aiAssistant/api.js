@@ -52,6 +52,19 @@ export const aiApi = {
     }).catch(() => {});
   },
 
+  /** Cheap liveness check; false on 404 / network error. */
+  sessionAlive: async (sessionId) => {
+    try {
+      const response = await fetch(`${getBaseUrl()}/sessions/${sessionId}`, {
+        method: "GET",
+        credentials: "include",
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  },
+
   uploadFiles: async (sessionId, files) => {
     const fd = new FormData();
     for (const f of files) fd.append("files", f);
@@ -89,6 +102,8 @@ export const aiApi = {
   },
 
   bundleUrl: (sessionId) => `${getBaseUrl()}/sessions/${sessionId}/bundle`,
+
+  uploadErrorLogUrl: (sessionId) => `${getBaseUrl()}/sessions/${sessionId}/upload-error-log`,
 
   /**
    * Open the SSE stream. Returns an `EventSource` — caller attaches typed
