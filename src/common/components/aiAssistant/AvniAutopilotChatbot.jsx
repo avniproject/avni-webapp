@@ -27,6 +27,7 @@ import {
   Tooltip,
   Divider,
   Alert,
+  Button,
 } from "@mui/material";
 import {
   Close,
@@ -162,9 +163,10 @@ const AvniAutopilotChatbot = () => {
           sx={{
             position: "fixed",
             top: HEADER_HEIGHT + 8,
-            right: isMaximised ? 0 : 8,
-            width: isMaximised ? "100vw" : PANEL_WIDTH,
-            height: `calc(100vh - ${HEADER_HEIGHT + (isMaximised ? 0 : 16)}px)`,
+            right: 8,
+            left: isMaximised ? 8 : "auto",
+            width: isMaximised ? "auto" : PANEL_WIDTH,
+            height: `calc(100vh - ${HEADER_HEIGHT + 16}px)`,
             backgroundColor: "background.paper",
             boxShadow:
               "0 12px 32px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.08)",
@@ -174,11 +176,11 @@ const AvniAutopilotChatbot = () => {
             // Children handle their own internal scroll — keeps the chat
             // composer pinned to the bottom regardless of card size.
             overflow: "hidden",
-            borderRadius: isMaximised ? 0 : `${PANEL_RADIUS}px`,
-            border: isMaximised ? "none" : "1px solid",
+            borderRadius: `${PANEL_RADIUS}px`,
+            border: "1px solid",
             borderColor: "divider",
             transition:
-              "width 0.25s ease, right 0.25s ease, border-radius 0.25s ease",
+              "width 0.25s ease, left 0.25s ease, border-radius 0.25s ease",
           }}
         >
           {/* Header */}
@@ -270,10 +272,32 @@ const AvniAutopilotChatbot = () => {
               disabled={status !== "connected"}
             />
           )}
+          {pendingChanges &&
+            pendingChanges.changes.length >= 8 &&
+            !isMaximised && (
+              <Alert
+                severity="info"
+                sx={{ mx: 1.5, mt: 1, alignItems: "center" }}
+                action={
+                  <Button
+                    size="small"
+                    startIcon={<Fullscreen />}
+                    onClick={() => setIsMaximised(true)}
+                    sx={{ whiteSpace: "nowrap" }}
+                  >
+                    Maximise
+                  </Button>
+                }
+              >
+                {pendingChanges.changes.length} changes to review — maximise for
+                easier handling.
+              </Alert>
+            )}
           {pendingChanges && (
             <ConfirmationCard
               pendingChanges={pendingChanges}
               onResolve={resolveChanges}
+              isMaximised={isMaximised}
             />
           )}
           {bundle && !pendingChanges && (
