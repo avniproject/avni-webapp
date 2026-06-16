@@ -1,22 +1,15 @@
 /**
  * Floating-button entry point for the Avni Autopilot AI assistant.
  *
- * Mirrors the DifyChatbot pattern: a fixed-position button at the
- * bottom-right that, when clicked, slides in a side panel hosting the
- * native React chat surface (ChatPanel, UploadDropzone, ConfirmationCard,
- * BundleSummary).
- *
- * Unlike DifyChatbot, the panel supports a maximise toggle so users can
- * either keep the assistant docked on the right (400px) or expand it to
- * fill the viewport while a longer generation is in flight.
- *
- * Sibling to DifyChatbot — both are mounted in `rootApp/App.jsx`.
+ * A draggable floating button (defaults to bottom-right, position
+ * persisted to localStorage) opens a side panel that supports a
+ * maximise toggle for longer generations.
  *
  * Backend: specs/AVNI_WEBAPP_INTEGRATION_SDD.md (`avni-ai-web` FastAPI
  * service). URL is read from `window.ENV.AI_ASSISTANT_URL`.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
@@ -45,6 +38,27 @@ import { useChatSession } from "./useChatSession";
 const PANEL_WIDTH = 480;
 const HEADER_HEIGHT = 64;
 const PANEL_RADIUS = 12;
+const FAB_SIZE = 60;
+const FAB_POSITION_STORAGE_KEY = "avni-autopilot-fab-position";
+const DRAG_THRESHOLD_PX = 5;
+
+const loadStoredFabPosition = () => {
+  try {
+    const raw = window.localStorage.getItem(FAB_POSITION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.x !== "number" || typeof parsed?.y !== "number")
+      return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+const clampFabPosition = ({ x, y }) => ({
+  x: Math.max(0, Math.min(window.innerWidth - FAB_SIZE, x)),
+  y: Math.max(0, Math.min(window.innerHeight - FAB_SIZE, y)),
+});
 
 const AvniAutopilotChatbot = () => {
   const dispatch = useDispatch();
@@ -52,6 +66,87 @@ const AvniAutopilotChatbot = () => {
   const userInfo = useSelector((state) => state.app?.userInfo);
 
   const [isMaximised, setIsMaximised] = useState(false);
+  const [fabPosition, setFabPosition] = useState(() => loadStoredFabPosition());
+  const dragStateRef = useRef({
+    isDragging: false,
+    hasDragged: false,
+    startX: 0,
+    startY: 0,
+    originX: 0,
+    originY: 0,
+  });
+
+  // Re-clamp on viewport resize so a previously-saved position can't
+  // strand the FAB off-screen after the window shrinks.
+  useEffect(() => {
+    const handleResize = () => {
+      setFabPosition((current) => (current ? clampFabPosition(current) : null));
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const persistFabPosition = (position) => {
+    try {
+      window.localStorage.setItem(
+        FAB_POSITION_STORAGE_KEY,
+        JSON.stringify(position),
+      );
+    } catch {
+      // Private mode / disabled storage — position won't persist.
+    }
+  };
+
+  const handleFabPointerDown = (event) => {
+    // Only react to the primary button so right-click context menus
+    // and middle-click scroll-anchors still behave as expected.
+    if (event.button !== 0) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    dragStateRef.current = {
+      isDragging: true,
+      hasDragged: false,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: rect.left,
+      originY: rect.top,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleFabPointerMove = (event) => {
+    const state = dragStateRef.current;
+    if (!state.isDragging) return;
+    const dx = event.clientX - state.startX;
+    const dy = event.clientY - state.startY;
+    if (
+      !state.hasDragged &&
+      (Math.abs(dx) > DRAG_THRESHOLD_PX || Math.abs(dy) > DRAG_THRESHOLD_PX)
+    ) {
+      state.hasDragged = true;
+    }
+    if (state.hasDragged) {
+      setFabPosition(
+        clampFabPosition({ x: state.originX + dx, y: state.originY + dy }),
+      );
+    }
+  };
+
+  const handleFabPointerUp = (event) => {
+    const state = dragStateRef.current;
+    if (!state.isDragging) return;
+    state.isDragging = false;
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    if (state.hasDragged) {
+      setFabPosition((current) => {
+        if (current) persistFabPosition(current);
+        return current;
+      });
+    } else {
+      dispatch(setAvniAutopilotOpen(true));
+    }
+  };
   const {
     sessionId,
     orgName,
@@ -94,20 +189,27 @@ const AvniAutopilotChatbot = () => {
 
   return (
     <>
-      {/* Reuses the legacy DifyChatbot sparkles icon so existing users
-          recognise it. Pulse pauses on hover to avoid fighting the lift. */}
       {!isOpen && (
-        <Tooltip title="Avni Autopilot — AI bundle assistant" placement="left">
+        <Tooltip
+          title="Avni Autopilot — drag to move, click to open"
+          placement="left"
+        >
           <Fab
             aria-label="Open Avni Autopilot"
-            onClick={() => dispatch(setAvniAutopilotOpen(true))}
+            onPointerDown={handleFabPointerDown}
+            onPointerMove={handleFabPointerMove}
+            onPointerUp={handleFabPointerUp}
+            onPointerCancel={handleFabPointerUp}
             sx={{
               position: "fixed",
-              bottom: 20,
-              right: 20,
+              ...(fabPosition
+                ? { top: fabPosition.y, left: fabPosition.x }
+                : { bottom: 20, right: 20 }),
+              touchAction: "none",
+              cursor: "grab",
               zIndex: 1201,
-              width: 60,
-              height: 60,
+              width: FAB_SIZE,
+              height: FAB_SIZE,
               background:
                 "linear-gradient(135deg, #1565c0 0%, #1976d2 50%, #42a5f5 100%)",
               color: "#fff",
@@ -138,7 +240,10 @@ const AvniAutopilotChatbot = () => {
                   "0 12px 28px rgba(21, 101, 192, 0.55), 0 0 0 6px rgba(66, 165, 245, 0.22)",
                 animation: "none",
               },
-              "&:active": { transform: "translateY(0) scale(1)" },
+              "&:active": {
+                transform: "translateY(0) scale(1)",
+                cursor: "grabbing",
+              },
             }}
           >
             <Box
@@ -157,7 +262,6 @@ const AvniAutopilotChatbot = () => {
         </Tooltip>
       )}
 
-      {/* Slide-in panel */}
       <Slide direction="left" in={isOpen} mountOnEnter unmountOnExit>
         <Box
           sx={{
@@ -183,7 +287,6 @@ const AvniAutopilotChatbot = () => {
               "width 0.25s ease, left 0.25s ease, border-radius 0.25s ease",
           }}
         >
-          {/* Header */}
           <Box
             sx={{
               px: 2,
@@ -312,7 +415,6 @@ const AvniAutopilotChatbot = () => {
 
           <Divider />
 
-          {/* Chat — owns whatever vertical space is left */}
           <ChatPanel
             messages={messages}
             toolCalls={toolCalls}
