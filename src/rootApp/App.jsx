@@ -11,7 +11,6 @@ import AvniAutopilotChatbot from "../common/components/aiAssistant/AvniAutopilot
 
 const App = () => {
   const dispatch = useDispatch();
-  const isChatOpen = useSelector((state) => state.app.isChatOpen);
   const isAvniAutopilotOpen = useSelector(
     (state) => state.app.isAvniAutopilotOpen,
   );
@@ -60,14 +59,9 @@ const App = () => {
           flex: 1,
           display: "flex",
           transition: "margin-right 0.3s ease",
-          // When either assistant docks on the right, reserve the panel
-          // width. The autopilot's maximised mode covers the page anyway, so
-          // its docked width (480px) is what's reserved here.
-          marginRight: isChatOpen
-            ? "400px"
-            : isAvniAutopilotOpen
-              ? "480px"
-              : "0",
+          // Reserve the docked-panel width when the autopilot is open.
+          // Maximised mode covers the page anyway, so 480px is enough.
+          marginRight: isAvniAutopilotOpen ? "480px" : "0",
         }}
       >
         <Box sx={{ flex: 1 }}>
