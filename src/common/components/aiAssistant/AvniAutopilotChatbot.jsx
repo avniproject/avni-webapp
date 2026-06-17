@@ -12,15 +12,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  Box,
-  Fab,
-  Slide,
-  IconButton,
-  Typography,
-  Tooltip,
-  Divider,
   Alert,
-  Button,
+  Box,
+  Divider,
+  Fab,
+  IconButton,
+  Slide,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import {
   Close,
@@ -31,8 +30,6 @@ import {
 import { setAvniAutopilotOpen } from "../../../rootApp/ducks";
 import ChatPanel from "./ChatPanel";
 import UploadDropzone from "./UploadDropzone";
-import ConfirmationCard from "./ConfirmationCard";
-import BundleSummary from "./BundleSummary";
 import { useChatSession } from "./useChatSession";
 
 const PANEL_WIDTH = 480;
@@ -148,14 +145,10 @@ const AvniAutopilotChatbot = () => {
     }
   };
   const {
-    sessionId,
     orgName,
     status,
     messages,
     toolCalls,
-    pendingChanges,
-    bundle,
-    uploadResult,
     error,
     start,
     send,
@@ -166,6 +159,13 @@ const AvniAutopilotChatbot = () => {
     uploadErrorLogUrl,
     resetSession,
   } = useChatSession();
+
+  // Hide the upload dropzone once the conversation has produced any
+  // card (HITL pause or bundle ready) — at that point the assistant
+  // owns the next interaction and the dropzone would be noise.
+  const hasInteractiveCard = messages.some(
+    (m) => m.type === "hitl" || m.type === "bundle",
+  );
 
   // Boot or re-verify on every open while idle. start() handles the
   // stale-sessionStorage case via aiApi.sessionAlive.
@@ -367,49 +367,13 @@ const AvniAutopilotChatbot = () => {
             </Alert>
           )}
 
-          {/* Dropzone yields the panel to the active card during HITL /
-              bundle-ready so the card has the room it needs. */}
-          {!pendingChanges && !bundle && (
+          {/* Dropzone yields the panel once the conversation has any
+              card (HITL / bundle / upload) — the assistant takes over
+              from there. */}
+          {!hasInteractiveCard && (
             <UploadDropzone
               onFiles={uploadFiles}
               disabled={status !== "connected"}
-            />
-          )}
-          {pendingChanges &&
-            pendingChanges.changes.length >= 8 &&
-            !isMaximised && (
-              <Alert
-                severity="info"
-                sx={{ mx: 1.5, mt: 1, alignItems: "center" }}
-                action={
-                  <Button
-                    size="small"
-                    startIcon={<Fullscreen />}
-                    onClick={() => setIsMaximised(true)}
-                    sx={{ whiteSpace: "nowrap" }}
-                  >
-                    Maximise
-                  </Button>
-                }
-              >
-                {pendingChanges.changes.length} changes to review — maximise for
-                easier handling.
-              </Alert>
-            )}
-          {pendingChanges && (
-            <ConfirmationCard
-              pendingChanges={pendingChanges}
-              onResolve={resolveChanges}
-              isMaximised={isMaximised}
-            />
-          )}
-          {bundle && !pendingChanges && (
-            <BundleSummary
-              bundle={bundle}
-              uploadResult={uploadResult}
-              downloadBundleUrl={downloadBundleUrl}
-              uploadErrorLogUrl={uploadErrorLogUrl}
-              onUploadToAvni={uploadToAvni}
             />
           )}
 
@@ -420,6 +384,10 @@ const AvniAutopilotChatbot = () => {
             toolCalls={toolCalls}
             status={status}
             onSend={send}
+            onResolveChanges={resolveChanges}
+            onUploadToAvni={uploadToAvni}
+            downloadBundleUrl={downloadBundleUrl}
+            uploadErrorLogUrl={uploadErrorLogUrl}
             disabled={status !== "connected"}
           />
         </Box>
