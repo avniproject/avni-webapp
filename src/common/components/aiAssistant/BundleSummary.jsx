@@ -9,31 +9,22 @@ import {
   CircularProgress,
   Link,
 } from "@mui/material";
-import {
-  CloudUpload,
-  Download,
-  CheckCircle,
-  Description,
-} from "@mui/icons-material";
-import { httpClient as http } from "common/utils/httpClient";
+import { CloudUpload, Download, CheckCircle } from "@mui/icons-material";
 
-// httpClient.downloadFile (not a bare fetch) so the IDP-managed auth +
-// ORGANISATION-UUID headers go along — without them avni-server 500s.
-const downloadImportErrorFile = async (jobUuid) => {
-  await http.downloadFile(
-    `/import/errorfile?jobUuid=${encodeURIComponent(jobUuid)}`,
-    `import-errors-${jobUuid}.csv`,
-  );
-};
+const IMPORT_STATUS_PATH = "#/admin/upload";
 
 /**
  * Post-`bundle.ready` view — counts + Upload to org / Download.
  *
  * Props:
- *  - bundle: { path, summary: {subject_types, programs, encounter_types, main_forms, concepts, ...} }
+ *  - bundle: { path, summary: {programs, encounter_types, main_forms, ...} }
  *  - uploadResult: { job_id, status: "ok"|"failed", details? } | null
  *  - downloadBundleUrl: string
  *  - onUploadToAvni: () => Promise
+ *
+ * Counts shown to the user: programs, visit types, forms only. Subjects,
+ * cancellation forms, concepts, and form_mappings are kept out of view —
+ * they are either internal plumbing or noisy for non-Avni audiences.
  */
 const BundleSummary = ({
   bundle,
@@ -43,39 +34,12 @@ const BundleSummary = ({
   onUploadToAvni,
 }) => {
   const [uploading, setUploading] = useState(false);
-  const [errorFileDownloading, setErrorFileDownloading] = useState(false);
-  const [errorFileMsg, setErrorFileMsg] = useState(null);
   const summary = bundle.summary || {};
 
-  const onDownloadErrorFile = async () => {
-    if (!uploadResult?.job_id) return;
-    setErrorFileDownloading(true);
-    setErrorFileMsg(null);
-    try {
-      await downloadImportErrorFile(uploadResult.job_id);
-    } catch (err) {
-      const status = err?.response?.status || err?.status;
-      let msg;
-      if (status === 404) {
-        msg = "No error file — the import completed without any skipped rows.";
-      } else if (status === 500 || status === 503) {
-        msg = "The import may still be processing — try again in a moment.";
-      } else {
-        msg = `Couldn't fetch the error file (${status || err.message}).`;
-      }
-      setErrorFileMsg(msg);
-    } finally {
-      setErrorFileDownloading(false);
-    }
-  };
-
   const counts = [
-    ["Subject types", summary.subject_types],
     ["Programs", summary.programs],
-    ["Encounter types", summary.encounter_types],
+    ["Visit types", summary.encounter_types],
     ["Forms", summary.main_forms],
-    ["Cancellation forms", summary.cancellation_forms],
-    ["Concepts", summary.concepts],
   ].filter(([, v]) => typeof v === "number");
 
   const upload = async () => {
@@ -96,7 +60,7 @@ const BundleSummary = ({
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.25 }}>
         <CheckCircle color="success" />
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-          Bundle ready
+          Your app is ready
         </Typography>
       </Box>
 
@@ -125,37 +89,18 @@ const BundleSummary = ({
           severity="success"
           sx={{ mb: 1.25, borderRadius: 2 }}
           action={
-            uploadResult.job_id ? (
-              <Button
-                size="small"
-                color="inherit"
-                startIcon={
-                  errorFileDownloading ? (
-                    <CircularProgress size={14} />
-                  ) : (
-                    <Description fontSize="small" />
-                  )
-                }
-                onClick={onDownloadErrorFile}
-                disabled={errorFileDownloading}
-                sx={{ fontWeight: 600 }}
-              >
-                Error file
-              </Button>
-            ) : null
+            <Link
+              component="a"
+              href={IMPORT_STATUS_PATH}
+              color="inherit"
+              underline="always"
+              sx={{ fontWeight: 600 }}
+            >
+              View import status
+            </Link>
           }
         >
-          Uploaded to {summary.org || "your org"}. Job ID:{" "}
-          <code>{uploadResult.job_id}</code>
-        </Alert>
-      )}
-      {errorFileMsg && (
-        <Alert
-          severity="info"
-          sx={{ mb: 1.25, borderRadius: 2 }}
-          onClose={() => setErrorFileMsg(null)}
-        >
-          {errorFileMsg}
+          All set! Log in to the Avni mobile app and start using it.
         </Alert>
       )}
       {uploadResult?.status === "failed" && (

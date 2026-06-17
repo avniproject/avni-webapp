@@ -189,14 +189,33 @@ const MessageRow = ({ msg }) => {
   );
 };
 
+// Friendly progress label per tool — keep in sync with the CLI's
+// `_tool_label` in src/chat/repl.py (avni-ai). Unknown tools fall back to
+// the technical name so a newly-added tool degrades visibly instead of
+// disappearing.
+const TOOL_LABELS = {
+  generate_bundle: "Building your app…",
+  edit_bundle_from_spec: "Updating your app…",
+  resume_bundle: "Continuing where we left off…",
+  list_bundle_fields: "Listing your app's fields…",
+};
+
+const labelForTool = (tc) => {
+  if (tc.tool === "edit_bundle_fields") {
+    const n = (tc.args && tc.args.operations && tc.args.operations.length) || 0;
+    return n ? `Editing ${n} field(s)…` : "Editing your app's fields…";
+  }
+  return TOOL_LABELS[tc.tool] || `${tc.tool}(…)`;
+};
+
 const ToolCallRow = ({ tc }) => (
   <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1, pl: 4 }}>
     <CircularProgress size={12} />
     <Chip
       size="small"
       variant="outlined"
-      label={`${tc.tool}(…)`}
-      sx={{ fontFamily: "monospace", fontSize: 12 }}
+      label={labelForTool(tc)}
+      sx={{ fontSize: 12 }}
     />
   </Box>
 );
