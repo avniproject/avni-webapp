@@ -2,17 +2,27 @@
  * React hook owning the avni-ai-web session lifecycle.
  *
  * Responsibilities:
- *  - Allocate a session on first user trigger (lazy — we don't burn a
- *    session id until the user opens the assistant).
+ *  - Allocate a session on first user trigger (lazy — sessions aren't
+ *    spent until the user opens the assistant).
  *  - Connect / reconnect the SSE EventSource; track every event by type.
- *  - Surface the running list of agent messages, pending HITL changes,
- *    bundle state, and the most recent error.
- *  - Expose stable callbacks: send, resolve, uploadFiles, uploadToAvni,
- *    downloadBundle, resetSession.
+ *  - Maintain the ordered conversation in `messages`. Per
+ *    specs/INLINE_AUTOPILOT_CARDS_SDD.md, every interactive card
+ *    (HITL pause, bundle ready, upload result) is a typed entry in this
+ *    array, not a sidecar piece of state. That makes scrollback the
+ *    authoritative record of the session and keeps cards in their
+ *    chronological slot.
+ *  - Expose stable callbacks: send, resolveChanges, uploadFiles,
+ *    uploadToAvni, resetSession.
  *
  * The session id is mirrored to `sessionStorage` so a tab refresh resumes
  * the same backend session (SDD §5.3). The reaper on the backend drops
  * sessions after 30 min idle.
+ *
+ * Message shapes (specs/INLINE_AUTOPILOT_CARDS_SDD.md §3.1):
+ *   { type: "text",   role, content, ts }
+ *   { type: "hitl",   interrupt_id, changes, resolved, ts }
+ *   { type: "bundle", path, summary, uploaded, ts }
+ *   { type: "upload", job_id, status, details?, error_log_available?, ts }
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -38,23 +48,7 @@ const storeSessionId = (sid) => {
   }
 };
 
-/**
- * Mark the most recent assistant message as superseded by an incoming card.
- * Only considers messages at/after `boundaryIndex` — a prior-round message
- * the user has already seen and acted on must not be retroactively hidden.
- * Bails on the first non-assistant message (any user action since the last
- * agent turn means nothing here is a duplicate of the new card).
- */
-const collapseLatestAssistantMessage = (messages, boundaryIndex) => {
-  for (let i = messages.length - 1; i >= boundaryIndex; i--) {
-    if (messages[i].role !== "assistant") return messages;
-    if (messages[i].replacedByCard) return messages;
-    const next = messages.slice();
-    next[i] = { ...messages[i], replacedByCard: true };
-    return next;
-  }
-  return messages;
-};
+const nowTs = () => new Date().toISOString();
 
 /** One-line summary of the user's decisions, shown in chat after Apply. */
 const DECISION_LABELS = { yes: "Yes", no: "No", edit: "Edit" };
@@ -70,10 +64,31 @@ const buildDecisionsSummary = (changes, resolutions) => {
     return `#${i + 1} ${label}`;
   });
   return {
+    type: "text",
     role: "user",
     content: `Applied ${changes.length} decision${changes.length === 1 ? "" : "s"}: ${parts.join(" · ")}`,
-    ts: new Date().toISOString(),
+    ts: nowTs(),
   };
+};
+
+/** Flip `resolved: true` on the hitl message with the matching interrupt_id. */
+const markHitlResolved = (messages, interruptId) =>
+  messages.map((m) => (m.type === "hitl" && m.interrupt_id === interruptId ? { ...m, resolved: true } : m));
+
+/**
+ * Flip `uploaded: true` on the most recent bundle message. Called on a
+ * successful upload.done so the inline BundleSummary's Upload button
+ * disables itself; failed uploads leave it alone so the user can retry.
+ */
+const markLatestBundleUploaded = (messages) => {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].type === "bundle") {
+      const next = messages.slice();
+      next[i] = { ...messages[i], uploaded: true };
+      return next;
+    }
+  }
+  return messages;
 };
 
 /** Try to extract FastAPI's `detail` object from an error response body. */
@@ -91,18 +106,16 @@ const safeParseDetail = (body) => {
  *   sessionId: string | null,
  *   orgName: string,
  *   status: "idle"|"connecting"|"connected"|"closed"|"error",
- *   messages: Array<{role: string, content: string, ts: string}>,
+ *   messages: Array<Object>,
  *   toolCalls: Array<{tool: string, args: Object, call_id: string}>,
- *   pendingChanges: {interrupt_id: string, changes: Array} | null,
- *   bundle: {path: string, summary: Object} | null,
- *   uploadResult: {job_id: string, status: string, details?: string} | null,
  *   error: {code: string, message: string, recoverable: boolean} | null,
  *   start: () => Promise<void>,
  *   send: (text: string) => Promise<void>,
- *   resolveChanges: (resolutions: Array) => Promise<boolean>,
+ *   resolveChanges: (interruptId: string, resolutions: Array) => Promise<boolean>,
  *   uploadFiles: (files: File[]) => Promise<void>,
  *   uploadToAvni: () => Promise<void>,
  *   downloadBundleUrl: string | null,
+ *   uploadErrorLogUrl: string | null,
  *   resetSession: () => Promise<void>,
  * }}
  */
@@ -112,34 +125,25 @@ export const useChatSession = () => {
   const [status, setStatus] = useState("idle");
   const [messages, setMessages] = useState([]);
   const [toolCalls, setToolCalls] = useState([]);
-  const [pendingChanges, setPendingChanges] = useState(null);
-  const [bundle, setBundle] = useState(null);
-  const [uploadResult, setUploadResult] = useState(null);
   const [error, setError] = useState(null);
 
   const eventSourceRef = useRef(null);
-  // Watermark = messages.length after the last send / resolve / upload.
-  // Bounds the search window for collapseLatestAssistantMessage.
-  const lastUserActionRef = useRef(0);
-
-  // Append one message and advance the user-action watermark. Used by
-  // every send / resolve / upload path so a subsequent HITL card can't
-  // retroactively collapse a pre-watermark assistant message.
-  const appendUserActionMessage = useCallback((msg) => {
-    setMessages((prev) => {
-      const next = [...prev, msg];
-      lastUserActionRef.current = next.length;
-      return next;
-    });
-  }, []);
+  // Flag set when an interactive card (HITL / bundle) lands. The model's
+  // very next agent.message restates what the card already shows, so it
+  // gets stamped suppressed at append time and ChatPanel filters it out.
+  // One-shot: cleared the moment a message is stamped.
+  const suppressNextAssistantRef = useRef(false);
 
   // ── SSE wiring ────────────────────────────────────────────────────────────
 
   const handleEvent = useCallback((type, data) => {
     switch (type) {
-      case EVENT_TYPES.AGENT_MESSAGE:
-        setMessages((prev) => [...prev, { ...data }]);
+      case EVENT_TYPES.AGENT_MESSAGE: {
+        const suppressed = suppressNextAssistantRef.current;
+        suppressNextAssistantRef.current = false;
+        setMessages((prev) => [...prev, { type: "text", ...data, suppressed }]);
         return;
+      }
       case EVENT_TYPES.TOOL_CALL:
         setToolCalls((prev) => [...prev, { ...data }]);
         return;
@@ -149,15 +153,46 @@ export const useChatSession = () => {
         setToolCalls((prev) => prev.map((tc) => (tc.call_id === data.call_id ? { ...tc, result: data } : tc)));
         return;
       case EVENT_TYPES.HITL_PENDING:
-        setPendingChanges(data);
-        setMessages((prev) => collapseLatestAssistantMessage(prev, lastUserActionRef.current));
+        suppressNextAssistantRef.current = true;
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "hitl",
+            interrupt_id: data.interrupt_id,
+            changes: data.changes,
+            resolved: false,
+            ts: nowTs(),
+          },
+        ]);
         return;
       case EVENT_TYPES.BUNDLE_READY:
-        setBundle(data);
-        setMessages((prev) => collapseLatestAssistantMessage(prev, lastUserActionRef.current));
+        suppressNextAssistantRef.current = true;
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "bundle",
+            path: data.path,
+            summary: data.summary,
+            uploaded: false,
+            ts: nowTs(),
+          },
+        ]);
         return;
       case EVENT_TYPES.UPLOAD_DONE:
-        setUploadResult(data);
+        setMessages((prev) => {
+          const withUpload = [
+            ...prev,
+            {
+              type: "upload",
+              job_id: data.job_id || "",
+              status: data.status,
+              details: data.details,
+              error_log_available: data.error_log_available,
+              ts: nowTs(),
+            },
+          ];
+          return data.status === "ok" ? markLatestBundleUploaded(withUpload) : withUpload;
+        });
         return;
       case EVENT_TYPES.ERROR:
         setError(data);
@@ -253,7 +288,7 @@ export const useChatSession = () => {
       if (!sessionId || !text.trim()) return;
       try {
         await aiApi.sendMessage(sessionId, text);
-        appendUserActionMessage({ role: "user", content: text, ts: new Date().toISOString() });
+        setMessages((prev) => [...prev, { type: "text", role: "user", content: text, ts: nowTs() }]);
       } catch (err) {
         setError({
           code: "E_SEND",
@@ -262,16 +297,20 @@ export const useChatSession = () => {
         });
       }
     },
-    [sessionId, appendUserActionMessage],
+    [sessionId],
   );
 
   const resolveChanges = useCallback(
-    async (resolutions) => {
-      if (!sessionId || !pendingChanges) return false;
+    async (interruptId, resolutions) => {
+      if (!sessionId || !interruptId) return false;
       try {
-        await aiApi.resolve(sessionId, pendingChanges.interrupt_id, resolutions);
-        appendUserActionMessage(buildDecisionsSummary(pendingChanges.changes, resolutions));
-        setPendingChanges(null);
+        await aiApi.resolve(sessionId, interruptId, resolutions);
+        setMessages((prev) => {
+          const target = prev.find((m) => m.type === "hitl" && m.interrupt_id === interruptId);
+          const summary = target ? buildDecisionsSummary(target.changes, resolutions) : null;
+          const flagged = markHitlResolved(prev, interruptId);
+          return summary ? [...flagged, summary] : flagged;
+        });
         return true;
       } catch (err) {
         setError({
@@ -282,7 +321,7 @@ export const useChatSession = () => {
         return false;
       }
     },
-    [sessionId, pendingChanges, appendUserActionMessage],
+    [sessionId],
   );
 
   const uploadFiles = useCallback(
@@ -290,11 +329,15 @@ export const useChatSession = () => {
       if (!sessionId || !files?.length) return;
       try {
         await aiApi.uploadFiles(sessionId, files);
-        appendUserActionMessage({
-          role: "system",
-          content: `Uploaded ${files.length} file(s): ${[...files].map((f) => f.name).join(", ")}`,
-          ts: new Date().toISOString(),
-        });
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "text",
+            role: "system",
+            content: `Uploaded ${files.length} file(s): ${[...files].map((f) => f.name).join(", ")}`,
+            ts: nowTs(),
+          },
+        ]);
       } catch (err) {
         setError({
           code: "E_UPLOAD",
@@ -303,22 +346,21 @@ export const useChatSession = () => {
         });
       }
     },
-    [sessionId, appendUserActionMessage],
+    [sessionId],
   );
 
   const uploadToAvni = useCallback(async () => {
     if (!sessionId) return;
     try {
-      const result = await aiApi.uploadToAvni(sessionId);
-      setUploadResult(result);
+      await aiApi.uploadToAvni(sessionId);
     } catch (err) {
-      // 404 here means either the session was reaped/lost (E_NO_SESSION)
-      // or no bundle was captured on it (E_NO_BUNDLE). The former needs a
-      // fresh session — see SDD §8.2 (in-memory sessions don't survive
-      // backend restarts). Surface a clear instruction so users don't
-      // get stuck staring at a generic 404.
+      // The backend publishes an `upload.done` SSE event for any relay
+      // failure it reaches avni-server with (E_RELAY) — the failed-upload
+      // card surfaces those inline. Session-level errors (E_NO_SESSION,
+      // E_NO_BUNDLE, 401) skip that event and need the error banner.
       const detail = err.body ? safeParseDetail(err.body) : null;
       const code = detail?.code || "E_AVNI_UPLOAD";
+      if (code === "E_RELAY") return;
       let message = err.message;
       if (code === "E_NO_SESSION") {
         message = "Session expired or the backend restarted. Click ↻ in the header to start a new session, then regenerate the bundle.";
@@ -346,12 +388,9 @@ export const useChatSession = () => {
     setOrgName("");
     setMessages([]);
     setToolCalls([]);
-    setPendingChanges(null);
-    setBundle(null);
-    setUploadResult(null);
     setError(null);
     setStatus("idle");
-    lastUserActionRef.current = 0;
+    suppressNextAssistantRef.current = false;
   }, [sessionId]);
 
   // Clean up the EventSource on unmount.
@@ -370,9 +409,6 @@ export const useChatSession = () => {
     status,
     messages,
     toolCalls,
-    pendingChanges,
-    bundle,
-    uploadResult,
     error,
     start,
     send,

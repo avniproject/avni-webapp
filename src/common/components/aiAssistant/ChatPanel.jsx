@@ -8,18 +8,39 @@ import {
 } from "@mui/material";
 import { Send, AutoAwesome, Person } from "@mui/icons-material";
 import ReactMarkdown from "react-markdown";
+import ConfirmationCard from "./ConfirmationCard";
+import BundleSummary from "./BundleSummary";
+import UploadResultCard from "./UploadResultCard";
 
 /**
- * Scrolling message list + a one-line composer.
+ * Scrolling message list + one-line composer. Per
+ * specs/INLINE_AUTOPILOT_CARDS_SDD.md the message list is the single
+ * ordered record of the conversation — text bubbles and interactive
+ * cards (`hitl`, `bundle`, `upload`) share the same array and render
+ * in chronological order.
  *
  * Props:
- *  - messages: [{role, content, ts}]
+ *  - messages: typed entries (see useChatSession.js)
  *  - toolCalls: [{tool, args, call_id, result?}]
  *  - status: "idle" | "connecting" | "connected" | "closed" | "error"
  *  - onSend: (text) => Promise
+ *  - onResolveChanges: (interruptId, resolutions) => Promise<boolean>
+ *  - onUploadToAvni: () => Promise
+ *  - downloadBundleUrl: string | null
+ *  - uploadErrorLogUrl: string | null
  *  - disabled: boolean
  */
-const ChatPanel = ({ messages, toolCalls, status, onSend, disabled }) => {
+const ChatPanel = ({
+  messages,
+  toolCalls,
+  status,
+  onSend,
+  onResolveChanges,
+  onUploadToAvni,
+  downloadBundleUrl,
+  uploadErrorLogUrl,
+  disabled,
+}) => {
   const [draft, setDraft] = useState("");
   const scrollerRef = useRef(null);
 
@@ -62,11 +83,40 @@ const ChatPanel = ({ messages, toolCalls, status, onSend, disabled }) => {
           },
         }}
       >
-        {messages
-          .filter((msg) => !msg.replacedByCard)
-          .map((msg, i) => (
-            <MessageRow key={i} msg={msg} />
-          ))}
+        {messages.map((msg, i) => {
+          if (msg.suppressed) return null;
+          switch (msg.type) {
+            case "hitl":
+              return (
+                <ConfirmationCard
+                  key={i}
+                  msg={msg}
+                  resolved={msg.resolved}
+                  onResolve={onResolveChanges}
+                />
+              );
+            case "bundle":
+              return (
+                <BundleSummary
+                  key={i}
+                  msg={msg}
+                  downloadBundleUrl={downloadBundleUrl}
+                  onUploadToAvni={onUploadToAvni}
+                />
+              );
+            case "upload":
+              return (
+                <UploadResultCard
+                  key={i}
+                  msg={msg}
+                  uploadErrorLogUrl={uploadErrorLogUrl}
+                />
+              );
+            case "text":
+            default:
+              return <MessageRow key={i} msg={msg} />;
+          }
+        })}
         {toolCalls
           .filter((tc) => !tc.result)
           .map((tc) => (
