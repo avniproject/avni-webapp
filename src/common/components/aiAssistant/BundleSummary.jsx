@@ -1,46 +1,49 @@
 import { useState } from "react";
 import {
+  Alert,
+  AlertTitle,
   Box,
   Typography,
   Button,
   Stack,
   Chip,
-  Alert,
   CircularProgress,
-  Link,
 } from "@mui/material";
 import { CloudUpload, Download, CheckCircle } from "@mui/icons-material";
 
-const IMPORT_STATUS_PATH = "#/admin/upload";
-
 /**
- * Post-`bundle.ready` view — counts + Upload to org / Download.
+ * Inline message rendering one `bundle.ready` event: summary counts +
+ * Upload-to-org + Download. Per specs/INLINE_AUTOPILOT_CARDS_SDD.md §5.2
+ * the success / failure alerts that previously lived here move out to
+ * `UploadResultCard` so each upload outcome has its own message in chat.
  *
  * Props:
- *  - bundle: { path, summary: {programs, encounter_types, main_forms, ...} }
- *  - uploadResult: { job_id, status: "ok"|"failed", details? } | null
+ *  - msg: { type: "bundle", path, summary: {programs, encounter_types, main_forms, ...}, uploaded: boolean }
  *  - downloadBundleUrl: string
  *  - onUploadToAvni: () => Promise
  *
- * Counts shown to the user: programs, visit types, forms only. Subjects,
- * cancellation forms, concepts, and form_mappings are kept out of view —
- * they are either internal plumbing or noisy for non-Avni audiences.
+ * Counts shown: programs, visit types, forms only. Subjects, cancellation
+ * forms, concepts, and form_mappings are kept out of view as either
+ * internal plumbing or noisy for non-Avni audiences.
  */
-const BundleSummary = ({
-  bundle,
-  uploadResult,
-  downloadBundleUrl,
-  uploadErrorLogUrl,
-  onUploadToAvni,
-}) => {
+const BundleSummary = ({ msg, downloadBundleUrl, onUploadToAvni }) => {
   const [uploading, setUploading] = useState(false);
-  const summary = bundle.summary || {};
+  const summary = msg.summary || {};
 
   const counts = [
     ["Programs", summary.programs],
     ["Visit types", summary.encounter_types],
     ["Forms", summary.main_forms],
   ].filter(([, v]) => typeof v === "number");
+
+  // Surfaces caveats the agent's narration used to carry — now hidden by
+  // the post-card message suppression in `useChatSession.js`. Pull them
+  // straight from the bundle.ready payload so users still see them.
+  const warnings = [
+    ...(summary.parse_warnings || []),
+    ...(summary.enrich_warnings || []),
+  ];
+  const errors = summary.errors || [];
 
   const upload = async () => {
     setUploading(true);
@@ -52,9 +55,11 @@ const BundleSummary = ({
     <Box
       sx={{
         p: 2,
+        mb: 1.5,
         background: "linear-gradient(180deg, #e8f5e9 0%, #d6efd9 100%)",
-        borderTop: "1px solid",
+        border: "1px solid",
         borderColor: "success.main",
+        borderRadius: 2,
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.25 }}>
@@ -84,45 +89,33 @@ const BundleSummary = ({
         ))}
       </Stack>
 
-      {uploadResult?.status === "ok" && (
-        <Alert
-          severity="success"
-          sx={{ mb: 1.25, borderRadius: 2 }}
-          action={
-            <Link
-              component="a"
-              href={IMPORT_STATUS_PATH}
-              color="inherit"
-              underline="always"
-              sx={{ fontWeight: 600 }}
-            >
-              View import status
-            </Link>
-          }
-        >
-          All set! Log in to the Avni mobile app and start using it.
+      {errors.length > 0 && (
+        <Alert severity="error" sx={{ mb: 1.25, borderRadius: 2 }}>
+          <AlertTitle sx={{ fontWeight: 600 }}>
+            {errors.length} error{errors.length === 1 ? "" : "s"}
+          </AlertTitle>
+          <Box component="ul" sx={{ pl: 2, m: 0 }}>
+            {errors.map((e, i) => (
+              <li key={i}>
+                <Typography variant="body2">{e}</Typography>
+              </li>
+            ))}
+          </Box>
         </Alert>
       )}
-      {uploadResult?.status === "failed" && (
-        <Alert
-          severity="error"
-          sx={{ mb: 1.25, borderRadius: 2 }}
-          action={
-            uploadResult.error_log_available && uploadErrorLogUrl ? (
-              <Link
-                component="a"
-                href={uploadErrorLogUrl}
-                download
-                color="inherit"
-                underline="always"
-                sx={{ fontWeight: 600 }}
-              >
-                Download log
-              </Link>
-            ) : null
-          }
-        >
-          Upload failed: {uploadResult.details || "unknown error"}
+
+      {warnings.length > 0 && (
+        <Alert severity="warning" sx={{ mb: 1.25, borderRadius: 2 }}>
+          <AlertTitle sx={{ fontWeight: 600 }}>
+            {warnings.length} warning{warnings.length === 1 ? "" : "s"}
+          </AlertTitle>
+          <Box component="ul" sx={{ pl: 2, m: 0 }}>
+            {warnings.map((w, i) => (
+              <li key={i}>
+                <Typography variant="body2">{w}</Typography>
+              </li>
+            ))}
+          </Box>
         </Alert>
       )}
 
@@ -134,7 +127,7 @@ const BundleSummary = ({
             uploading ? <CircularProgress size={16} /> : <CloudUpload />
           }
           onClick={upload}
-          disabled={uploading || uploadResult?.status === "ok"}
+          disabled={uploading || msg.uploaded}
           fullWidth
           sx={{
             py: 1.1,
@@ -144,7 +137,7 @@ const BundleSummary = ({
             boxShadow: 2,
           }}
         >
-          {uploadResult?.status === "ok" ? "Uploaded" : "Upload to org"}
+          {msg.uploaded ? "Uploaded" : "Upload to org"}
         </Button>
         <Button
           variant="outlined"
