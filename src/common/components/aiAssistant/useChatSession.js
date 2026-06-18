@@ -26,7 +26,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { aiApi } from "./api";
+import { useAiApi } from "./api";
 import { EVENT_TYPES } from "./types";
 
 const SESSION_STORAGE_KEY = "avni-autopilot-session-id";
@@ -120,6 +120,10 @@ const safeParseDetail = (body) => {
  * }}
  */
 export const useChatSession = () => {
+  // Bound to state.app.genericConfig.avniAi.mcpServerUrl from Redux. `null`
+  // until avni-server's config arrives; every callback below guards on it.
+  const aiApi = useAiApi();
+
   const [sessionId, setSessionId] = useState(readStoredSessionId);
   const [orgName, setOrgName] = useState("");
   const [status, setStatus] = useState("idle");
@@ -211,6 +215,7 @@ export const useChatSession = () => {
 
   const connectStream = useCallback(
     (sid) => {
+      if (!aiApi) return;
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
@@ -247,12 +252,13 @@ export const useChatSession = () => {
         });
       });
     },
-    [handleEvent],
+    [handleEvent, aiApi],
   );
 
   // ── Public API ────────────────────────────────────────────────────────────
 
   const start = useCallback(async () => {
+    if (!aiApi) return;
     // Read from sessionStorage rather than React state: resetSession
     // updates storage synchronously but the state setter may not have
     // flushed by the time fullReset chains start(), otherwise we'd
@@ -281,11 +287,11 @@ export const useChatSession = () => {
       });
       setStatus("error");
     }
-  }, [connectStream]);
+  }, [connectStream, aiApi]);
 
   const send = useCallback(
     async (text) => {
-      if (!sessionId || !text.trim()) return;
+      if (!aiApi || !sessionId || !text.trim()) return;
       try {
         await aiApi.sendMessage(sessionId, text);
         setMessages((prev) => [...prev, { type: "text", role: "user", content: text, ts: nowTs() }]);
@@ -297,12 +303,12 @@ export const useChatSession = () => {
         });
       }
     },
-    [sessionId],
+    [sessionId, aiApi],
   );
 
   const resolveChanges = useCallback(
     async (interruptId, resolutions) => {
-      if (!sessionId || !interruptId) return false;
+      if (!aiApi || !sessionId || !interruptId) return false;
       try {
         await aiApi.resolve(sessionId, interruptId, resolutions);
         setMessages((prev) => {
@@ -321,12 +327,12 @@ export const useChatSession = () => {
         return false;
       }
     },
-    [sessionId],
+    [sessionId, aiApi],
   );
 
   const uploadFiles = useCallback(
     async (files) => {
-      if (!sessionId || !files?.length) return;
+      if (!aiApi || !sessionId || !files?.length) return;
       try {
         await aiApi.uploadFiles(sessionId, files);
         setMessages((prev) => [
@@ -346,11 +352,11 @@ export const useChatSession = () => {
         });
       }
     },
-    [sessionId],
+    [sessionId, aiApi],
   );
 
   const uploadToAvni = useCallback(async () => {
-    if (!sessionId) return;
+    if (!aiApi || !sessionId) return;
     try {
       await aiApi.uploadToAvni(sessionId);
     } catch (err) {
@@ -373,14 +379,14 @@ export const useChatSession = () => {
         recoverable: err.status !== 401,
       });
     }
-  }, [sessionId]);
+  }, [sessionId, aiApi]);
 
   const resetSession = useCallback(async () => {
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
-    if (sessionId) {
+    if (aiApi && sessionId) {
       await aiApi.deleteSession(sessionId);
     }
     storeSessionId(null);
@@ -391,7 +397,7 @@ export const useChatSession = () => {
     setError(null);
     setStatus("idle");
     suppressNextAssistantRef.current = false;
-  }, [sessionId]);
+  }, [sessionId, aiApi]);
 
   // Clean up the EventSource on unmount.
   useEffect(() => {
@@ -415,8 +421,8 @@ export const useChatSession = () => {
     resolveChanges,
     uploadFiles,
     uploadToAvni,
-    downloadBundleUrl: sessionId ? aiApi.bundleUrl(sessionId) : null,
-    uploadErrorLogUrl: sessionId ? aiApi.uploadErrorLogUrl(sessionId) : null,
+    downloadBundleUrl: aiApi && sessionId ? aiApi.bundleUrl(sessionId) : null,
+    uploadErrorLogUrl: aiApi && sessionId ? aiApi.uploadErrorLogUrl(sessionId) : null,
     resetSession,
   };
 };
