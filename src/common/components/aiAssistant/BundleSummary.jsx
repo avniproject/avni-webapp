@@ -36,13 +36,12 @@ const BundleSummary = ({ msg, downloadBundleUrl, onUploadToAvni }) => {
     ["Forms", summary.main_forms],
   ].filter(([, v]) => typeof v === "number");
 
-  // Surfaces caveats the agent's narration used to carry — now hidden by
-  // the post-card message suppression in `useChatSession.js`. Pull them
-  // straight from the bundle.ready payload so users still see them.
-  const warnings = [
-    ...(summary.parse_warnings || []),
-    ...(summary.enrich_warnings || []),
-  ];
+  // Errors stay visible in the card — they block the bundle from working
+  // correctly. Warnings (parse_warnings / enrich_warnings) used to render
+  // here too but are noisy during demos / showcase recordings, so they're
+  // intentionally suppressed in the UI; the backend logs the full list at
+  // INFO level and they remain on the `bundle.ready` SSE payload for any
+  // tooling that wants to consume them.
   const errors = summary.errors || [];
 
   const upload = async () => {
@@ -98,21 +97,6 @@ const BundleSummary = ({ msg, downloadBundleUrl, onUploadToAvni }) => {
             {errors.map((e, i) => (
               <li key={i}>
                 <Typography variant="body2">{e}</Typography>
-              </li>
-            ))}
-          </Box>
-        </Alert>
-      )}
-
-      {warnings.length > 0 && (
-        <Alert severity="warning" sx={{ mb: 1.25, borderRadius: 2 }}>
-          <AlertTitle sx={{ fontWeight: 600 }}>
-            {warnings.length} warning{warnings.length === 1 ? "" : "s"}
-          </AlertTitle>
-          <Box component="ul" sx={{ pl: 2, m: 0 }}>
-            {warnings.map((w, i) => (
-              <li key={i}>
-                <Typography variant="body2">{w}</Typography>
               </li>
             ))}
           </Box>
