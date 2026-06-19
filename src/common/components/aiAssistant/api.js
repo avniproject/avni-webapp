@@ -123,11 +123,28 @@ export const createAiApi = (baseUrl) => ({
 });
 
 /**
- * React hook returning an autopilot client bound to the URL from Redux.
+ * Optional dev override: when set, takes precedence over Redux. Use to point
+ * a local webapp at a local autopilot while staying authenticated against a
+ * staging avni-server. Set in DevTools and reload:
+ *   localStorage.setItem("AI_ASSISTANT_URL_OVERRIDE", "http://localhost:8023")
+ * Clear with `localStorage.removeItem("AI_ASSISTANT_URL_OVERRIDE")`.
+ */
+const _readLocalOverride = () => {
+  try {
+    return typeof window !== "undefined" ? window.localStorage.getItem("AI_ASSISTANT_URL_OVERRIDE") : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * React hook returning an autopilot client bound to the URL from Redux,
+ * with an optional localStorage override for local dev.
  * Memoized on `baseUrl` so callbacks downstream stay stable across renders.
- * Returns `null` until avni-server config arrives.
+ * Returns `null` until either source produces a URL.
  */
 export const useAiApi = () => {
-  const baseUrl = useSelector((state) => state.app?.genericConfig?.avniAi?.mcpServerUrl);
+  const reduxBaseUrl = useSelector((state) => state.app?.genericConfig?.avniAi?.mcpServerUrl);
+  const baseUrl = _readLocalOverride() || reduxBaseUrl;
   return useMemo(() => (baseUrl ? createAiApi(baseUrl) : null), [baseUrl]);
 };
