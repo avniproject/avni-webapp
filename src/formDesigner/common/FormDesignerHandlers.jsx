@@ -27,12 +27,9 @@ export const formDesignerDeleteGroup = (
     draftFormElementGroups.splice(groupIndex, 1);
   } else {
     draftFormElementGroups[groupIndex].voided = true;
-    _.forEach(
-      draftFormElementGroups[groupIndex].formElements,
-      (group, index) => {
-        group.voided = true;
-      },
-    );
+    _.forEach(draftFormElementGroups[groupIndex].formElements, (group) => {
+      group.voided = true;
+    });
   }
   draft.createFlag = getCreateFlag(form);
   draft.detectBrowserCloseEvent = true;
@@ -40,7 +37,7 @@ export const formDesignerDeleteGroup = (
 
 export const getCreateFlag = (form) => {
   let groupFlag = true;
-  _.forEach(form.formElementGroups, (groupElement, index) => {
+  _.forEach(form.formElementGroups, (groupElement) => {
     if (!groupElement.voided) {
       groupFlag = false;
     }
@@ -566,7 +563,6 @@ export const formDesignerOnSaveInlineConcept = (
 
     if (inlineConceptObject.dataType === "Coded") {
       const length = inlineConceptObject.answers.length;
-      let counter = 0;
       let flagForInvalidAnswer = false;
       if (length === 0) {
         formDesignerOnSubmitInlineConcept(
@@ -655,7 +651,7 @@ export const formDesignerUpdateDragDropOrderForFirstGroup = (
     if (destinationElementIndex !== 0) {
       draftDestinationFormElementGroup.formElements.forEach(
         (element, index) => {
-          if (!element.voided) {
+          if (!element.voided && _.isNil(element.parentFormElementUuid)) {
             counter += 1;
             if (counter === destinationElementIndex) {
               draftDestinationFormElementGroup.formElements.splice(
@@ -697,7 +693,7 @@ export const formDesignerUpdateDragDropOrderForFirstGroup = (
     }
   } else {
     draftSourceFormElementGroup.formElements.forEach((element, index) => {
-      if (!element.voided) {
+      if (!element.voided && _.isNil(element.parentFormElementUuid)) {
         if (counter === destinationElementIndex) {
           const sourceElement = draftSourceFormElementGroup.formElements.splice(
             sourceElementIndex,

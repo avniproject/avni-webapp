@@ -53,6 +53,10 @@ import UserInfo from "../../common/model/UserInfo";
 import { Concept } from "openchs-models";
 import { SubjectTypeType } from "../../adminApp/SubjectType/Types";
 import { multiSelectFormElementConceptDataTypes } from "../components/FormElementDetails";
+import {
+  QUESTION_GROUP_CHILD_DRAGGABLE_ID_PREFIX,
+  QUESTION_GROUP_CHILDREN_DROPPABLE_TYPE_PREFIX,
+} from "../components/QuestionGroup";
 
 export const isNumeric = (concept) => concept.dataType === "Numeric";
 
@@ -451,17 +455,6 @@ const FormDetails = () => {
       setState(
         produce((draft) => {
           if (groupOrElement === 1) {
-            const sourceElement =
-              draft.form.formElementGroups[groupSourceIndex].formElements[
-                sourceElementIndex
-              ];
-            const destinationElement =
-              draft.form.formElementGroups[groupDestinationIndex].formElements[
-                destinationElementIndex
-              ];
-            sourceElement.parentFormElementUuid = destinationElement
-              ? destinationElement.parentFormElementUuid
-              : null;
             formDesignerUpdateDragDropOrderForFirstGroup(
               draft,
               draft.form.formElementGroups[groupSourceIndex],
@@ -488,6 +481,54 @@ const FormDetails = () => {
             });
             draft.detectBrowserCloseEvent = true;
           }
+        }),
+      );
+    },
+    [],
+  );
+
+  const onUpdateQuestionGroupChildrenOrder = useCallback(
+    (childFormElementUuid, destinationChildIndex) => {
+      setState(
+        produce((draft) => {
+          const formElementGroup = draft.form.formElementGroups.find(
+            (group) =>
+              !group.voided &&
+              group.formElements.some(
+                (formElement) =>
+                  formElement.uuid === childFormElementUuid &&
+                  !formElement.voided,
+              ),
+          );
+          if (!formElementGroup) return;
+          const formElements = formElementGroup.formElements;
+          const movedChild = formElements.find(
+            (formElement) => formElement.uuid === childFormElementUuid,
+          );
+          const parentFormElementUuid = movedChild.parentFormElementUuid;
+          if (_.isNil(parentFormElementUuid)) return;
+          const childPositions = [];
+          formElements.forEach((formElement, index) => {
+            if (
+              formElement.parentFormElementUuid === parentFormElementUuid &&
+              !formElement.voided
+            ) {
+              childPositions.push(index);
+            }
+          });
+          const children = childPositions.map(
+            (position) => formElements[position],
+          );
+          const sourceChildIndex = children.findIndex(
+            (child) => child.uuid === childFormElementUuid,
+          );
+          if (sourceChildIndex === -1) return;
+          children.splice(sourceChildIndex, 1);
+          children.splice(destinationChildIndex, 0, movedChild);
+          childPositions.forEach((position, childIndex) => {
+            formElements[position] = children[childIndex];
+          });
+          draft.detectBrowserCloseEvent = true;
         }),
       );
     },
@@ -1150,7 +1191,18 @@ const FormDetails = () => {
       ) {
         return;
       }
-      if (result.type === "task") {
+      if (
+        result.type.startsWith(QUESTION_GROUP_CHILDREN_DROPPABLE_TYPE_PREFIX)
+      ) {
+        const childFormElementUuid = result.draggableId.replace(
+          QUESTION_GROUP_CHILD_DRAGGABLE_ID_PREFIX,
+          "",
+        );
+        onUpdateQuestionGroupChildrenOrder(
+          childFormElementUuid,
+          destination.index,
+        );
+      } else if (result.type === "task") {
         const sourceGroupUuid = result.source.droppableId.replace("Group", "");
         const destGroupUuid = result.destination.droppableId.replace(
           "Group",
@@ -1192,7 +1244,11 @@ const FormDetails = () => {
         );
       }
     },
-    [state.form.formElementGroups, onUpdateDragDropOrder],
+    [
+      state.form.formElementGroups,
+      onUpdateDragDropOrder,
+      onUpdateQuestionGroupChildrenOrder,
+    ],
   );
 
   const onRuleUpdate = useCallback((name, value) => {
