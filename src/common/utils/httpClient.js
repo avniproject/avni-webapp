@@ -14,6 +14,29 @@ function getCsrfToken() {
   return document.cookie.replace(/(?:(?:^|.*;\s*)XSRF-TOKEN\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 }
 
+function serverErrorMessage(json, body, statusText) {
+  if (json && typeof json === "object") {
+    const structured = json.message || json.errorMessage || json.error;
+    if (typeof structured === "string" && structured) return structured;
+    if (Array.isArray(json.errors)) {
+      const fieldErrors = json.errors
+        .map((error) => error && error.message)
+        .filter(Boolean)
+        .join(", ");
+      if (fieldErrors) return fieldErrors;
+    }
+  }
+  if (typeof body === "string" && body.trim()) {
+    // avni-server returns a full Java stack trace as the body when avni.exception.in.response=true;
+    // surface the exception message and drop the trace rather than showing the whole thing.
+    const exceptionMessage = body.match(/[\w.$]+(?:Exception|Error):\s*(.+?)(?:\s+at\s|\n|$)/);
+    if (exceptionMessage && exceptionMessage[1].trim()) return exceptionMessage[1].trim();
+    const looksLikeStackTrace = /(?:\n|\t)\s*at\s/.test(body) || (body.includes(" at ") && /Exception|Error/.test(body));
+    if (!looksLikeStackTrace) return body.trim();
+  }
+  return statusText;
+}
+
 function fetchJsonPreservingErrorBody(url, options = {}) {
   const requestHeaders = fetchUtils.createHeadersFromOptions(options);
   return fetch(url, { ...options, headers: requestHeaders }).then((response) =>
@@ -25,7 +48,7 @@ function fetchJsonPreservingErrorBody(url, options = {}) {
         // body is not JSON (e.g. a plain-text server error message); keep the raw text
       }
       if (response.status < 200 || response.status >= 300) {
-        return Promise.reject(new HttpError((json && json.message) || body || response.statusText, response.status, json || body));
+        return Promise.reject(new HttpError(serverErrorMessage(json, body, response.statusText), response.status, json || body));
       }
       return { status: response.status, headers: response.headers, body, json };
     }),

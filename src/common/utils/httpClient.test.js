@@ -73,6 +73,43 @@ describe("httpClient", () => {
       }
     });
 
+    it("uses errorMessage / error when the JSON body has no message field", async () => {
+      stubFetch({ status: 400, body: JSON.stringify({ errorMessage: "Concept already exists" }) });
+      try {
+        await httpClient.fetchJson("/web/concept", { method: "POST", body: "{}" });
+        assert.fail("expected fetchJson to reject");
+      } catch (error) {
+        assert.equal(error.message, "Concept already exists");
+        assert.deepEqual(error.body, { errorMessage: "Concept already exists" });
+      }
+    });
+
+    it("joins field validation errors from a {errors:[...]} body", async () => {
+      stubFetch({ status: 400, body: JSON.stringify({ errors: [{ field: "name", message: "must not be empty" }] }) });
+      try {
+        await httpClient.fetchJson("/web/subjectType", { method: "POST", body: "{}" });
+        assert.fail("expected fetchJson to reject");
+      } catch (error) {
+        assert.equal(error.message, "must not be empty");
+      }
+    });
+
+    it("surfaces the exception message but not the full stack trace for a plain-text trace body", async () => {
+      const stackTrace =
+        "org.avni.server.util.BadRequestError: Concept already exists\n" +
+        "\tat org.avni.server.web.ConceptController.save(ConceptController.java:42)\n" +
+        "\tat org.avni.server.web.ConceptController.handle(ConceptController.java:17)";
+      stubFetch({ status: 400, body: stackTrace });
+      try {
+        await httpClient.fetchJson("/web/concept", { method: "POST", body: "{}" });
+        assert.fail("expected fetchJson to reject");
+      } catch (error) {
+        assert.equal(error.message, "Concept already exists");
+        // raw body is still preserved for downstream consumers (e.g. getAPIErrorMessage)
+        assert.equal(error.body, stackTrace);
+      }
+    });
+
     it("resolves with parsed json on success", async () => {
       stubFetch({ status: 200, body: JSON.stringify({ uuid: "abc" }) });
       const response = await httpClient.fetchJson("/web/individual/abc");
