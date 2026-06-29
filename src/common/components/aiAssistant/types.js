@@ -48,6 +48,11 @@
  *
  * @typedef {Object} SessionClosedEvent
  * @property {string} reason
+ *
+ * @typedef {Object} SessionLoadingEvent
+ * @property {string} message
+ *
+ * @typedef {Object} SessionReadyEvent
  */
 
 export const EVENT_TYPES = {
@@ -59,6 +64,8 @@ export const EVENT_TYPES = {
   UPLOAD_DONE: "upload.done",
   ERROR: "error",
   SESSION_CLOSED: "session.closed",
+  SESSION_LOADING: "session.loading",
+  SESSION_READY: "session.ready",
 };
 
 /** Decisions a user can make on a single pending change. */

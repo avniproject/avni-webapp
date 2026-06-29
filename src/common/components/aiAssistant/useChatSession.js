@@ -130,6 +130,7 @@ export const useChatSession = () => {
   const [messages, setMessages] = useState([]);
   const [toolCalls, setToolCalls] = useState([]);
   const [error, setError] = useState(null);
+  const [checkingSetup, setCheckingSetup] = useState(false);
 
   const eventSourceRef = useRef(null);
   // Flag set when an interactive card (HITL / bundle) lands. The model's
@@ -205,6 +206,12 @@ export const useChatSession = () => {
       case EVENT_TYPES.SESSION_CLOSED:
         setStatus("closed");
         storeSessionId(null);
+        return;
+      case EVENT_TYPES.SESSION_LOADING:
+        setCheckingSetup(true);
+        return;
+      case EVENT_TYPES.SESSION_READY:
+        setCheckingSetup(false);
         return;
       default:
         // Unknown event type — log and ignore so a future backend addition
@@ -396,6 +403,7 @@ export const useChatSession = () => {
     setToolCalls([]);
     setError(null);
     setStatus("idle");
+    setCheckingSetup(false);
     suppressNextAssistantRef.current = false;
   }, [sessionId, aiApi]);
 
@@ -416,6 +424,7 @@ export const useChatSession = () => {
     messages,
     toolCalls,
     error,
+    checkingSetup,
     start,
     send,
     resolveChanges,
