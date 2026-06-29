@@ -171,9 +171,6 @@ const CompletedVisitsTable = ({
   const [totalRecords, setTotalRecords] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [sorting, setSorting] = useState([
-    { id: "encounterDateTime", desc: true },
-  ]);
 
   const columns = useMemo(
     () => [
@@ -201,7 +198,6 @@ const CompletedVisitsTable = ({
       {
         id: "actions",
         header: t("actions"),
-        enableSorting: false,
         Cell: ({ row }) => (
           <StyledGrid container spacing={2}>
             <Grid size={"auto"}>
@@ -229,11 +225,6 @@ const CompletedVisitsTable = ({
       const params = { ...filterParams };
       params.page = pagination.pageIndex;
       params.size = pagination.pageSize;
-      if (sorting[0]?.id) {
-        params.sort = `${sorting[0].id},${sorting[0].desc ? "desc" : "asc"}`;
-      } else {
-        params.sort = null;
-      }
       const filterQueryString = new URLSearchParams(params).toString();
       const result = await http
         .get(`${apiUrl}?${filterQueryString}`)
@@ -248,7 +239,7 @@ const CompletedVisitsTable = ({
     } finally {
       setIsLoading(false);
     }
-  }, [apiUrl, filterParams, pagination, sorting]);
+  }, [apiUrl, filterParams, pagination]);
 
   useEffect(() => {
     loadData();
@@ -266,11 +257,10 @@ const CompletedVisitsTable = ({
       columns={columns}
       data={data}
       manualPagination
-      manualSorting
+      enableSorting={false}
       onPaginationChange={setPagination}
-      onSortingChange={setSorting}
       rowCount={totalRecords}
-      state={{ isLoading, pagination, sorting }}
+      state={{ isLoading, pagination }}
       enableGlobalFilter={false}
       enableColumnFilters={false}
       enableTopToolbar={false}
@@ -289,9 +279,6 @@ const CompletedVisitsTable = ({
         </IconButton>
       )}
       renderBottomToolbar={() => <MRTPagination {...paginationProps} />}
-      initialState={{
-        sorting: [{ id: "encounterDateTime", desc: true }],
-      }}
     />
   );
 };
