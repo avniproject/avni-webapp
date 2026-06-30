@@ -29,8 +29,24 @@ export const parsePayload = (payloadText) => {
   }
 };
 
+const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+
+// The on-device consumer expects a model payload shaped as
+// { engine: <non-empty string>, input: {...}, output: {...} }. Validating here
+// stops a malformed payload from saving cleanly and only failing on the device.
+export const validatePayloadShape = (payload) => {
+  const missing = [];
+  if (typeof payload.engine !== "string" || payload.engine.trim() === "") {
+    missing.push("engine (a non-empty string)");
+  }
+  if (!isObject(payload.input)) missing.push("input (an object)");
+  if (!isObject(payload.output)) missing.push("output (an object)");
+  if (missing.length === 0) return null;
+  return `Payload is missing: ${missing.join(", ")}.`;
+};
+
 export const validateContent = (
-  { name, sha256, payloadText, needsKey },
+  { name, category, sha256, payloadText, needsKey },
   { editing = false, hasFile = false, hasKey = false, originalSha256 = null } = {},
 ) => {
   const errors = [];
@@ -43,9 +59,14 @@ export const validateContent = (
       message: "SHA-256 must be 64 lowercase hex characters",
     });
   }
-  const [, payloadError] = parsePayload(payloadText);
+  const [payload, payloadError] = parsePayload(payloadText);
   if (payloadError) {
     errors.push({ key: "INVALID_PAYLOAD", message: payloadError });
+  } else if (category === Category.edgeModel) {
+    const shapeError = validatePayloadShape(payload);
+    if (shapeError) {
+      errors.push({ key: "INVALID_PAYLOAD_SHAPE", message: shapeError });
+    }
   }
 
   const trimmedSha = typeof sha256 === "string" ? sha256.trim() : sha256;
@@ -99,10 +120,10 @@ export class SaveStepError extends Error {
 // so a record can never sync to devices ahead of the blob/key it points to.
 // If a dependency write fails, the record is not created/updated; the blob is
 // content-addressed by sha, so retrying a partially completed save is safe.
-export const performSave = async ({ request, sha256, file, key, service }) => {
+export const performSave = async ({ request, sha256, file, key, service, onUploadProgress }) => {
   if (file) {
     try {
-      await service.uploadBlob(file, sha256);
+      await service.uploadBlob(file, sha256, onUploadProgress);
     } catch (error) {
       throw new SaveStepError("upload the encrypted blob", error);
     }
@@ -130,7 +151,8 @@ const DownloadableContentService = {
 
   delete: (uuid) => http.delete(`${ENDPOINT}/${uuid}`),
 
-  uploadBlob: (file, sha256) => http.post("/web/uploadMedia", uploadFormData(file, sha256)),
+  uploadBlob: (file, sha256, onUploadProgress) =>
+    http.post("/web/uploadMedia", uploadFormData(file, sha256), onUploadProgress ? { onUploadProgress } : undefined),
 
   saveModelKey: (sha256, key) => http.post("/web/modelKey", { sha256: sha256.trim(), key }),
 };

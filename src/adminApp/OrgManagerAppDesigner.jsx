@@ -285,14 +285,24 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         <Route path="/forms/:id/settings" element={<FormSettings />} />
         <Route path="/forms/:uuid" element={<FormDetails />} />
         <Route path="/calendar/:uuid/grid" element={<CalendarGridView />} />
-        <Route
-          path="/downloadableContent/create"
-          element={<CreateEditDownloadableContent />}
-        />
-        <Route
-          path="/downloadableContent/:uuid"
-          element={<CreateEditDownloadableContent />}
-        />
+        {UserInfo.hasPrivilege(
+          userInfo,
+          Privilege.PrivilegeType.EditOrganisationConfiguration,
+        ) && (
+          <Route
+            path="/downloadableContent/create"
+            element={<CreateEditDownloadableContent />}
+          />
+        )}
+        {UserInfo.hasPrivilege(
+          userInfo,
+          Privilege.PrivilegeType.EditOrganisationConfiguration,
+        ) && (
+          <Route
+            path="/downloadableContent/:uuid"
+            element={<CreateEditDownloadableContent />}
+          />
+        )}
       </CustomRoutes>
     </Admin>
   );

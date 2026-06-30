@@ -124,6 +124,59 @@ describe("validateContent", () => {
   });
 });
 
+describe("validateContent edgeModel payload shape", () => {
+  const validShape = JSON.stringify({ engine: "onnx", input: {}, output: {} });
+
+  it("passes for a well-shaped edgeModel payload", () => {
+    expect(validateContent({ name: "model", category: Category.edgeModel, sha256: SHA, payloadText: validShape })).toEqual([]);
+  });
+
+  it("flags a valid-JSON-object payload missing engine/input/output for edgeModel", () => {
+    const keys = validateContent({
+      name: "model",
+      category: Category.edgeModel,
+      sha256: SHA,
+      payloadText: "{}",
+    }).map((e) => e.key);
+    expect(keys).toContain("INVALID_PAYLOAD_SHAPE");
+  });
+
+  it("flags an empty engine string", () => {
+    const keys = validateContent({
+      name: "model",
+      category: Category.edgeModel,
+      sha256: SHA,
+      payloadText: JSON.stringify({ engine: "  ", input: {}, output: {} }),
+    }).map((e) => e.key);
+    expect(keys).toContain("INVALID_PAYLOAD_SHAPE");
+  });
+
+  it("flags non-object input/output", () => {
+    const keys = validateContent({
+      name: "model",
+      category: Category.edgeModel,
+      sha256: SHA,
+      payloadText: JSON.stringify({ engine: "onnx", input: "x", output: [] }),
+    }).map((e) => e.key);
+    expect(keys).toContain("INVALID_PAYLOAD_SHAPE");
+  });
+
+  it("does not run shape validation when the payload is not valid JSON", () => {
+    const keys = validateContent({
+      name: "model",
+      category: Category.edgeModel,
+      sha256: SHA,
+      payloadText: "{bad}",
+    }).map((e) => e.key);
+    expect(keys).toContain("INVALID_PAYLOAD");
+    expect(keys).not.toContain("INVALID_PAYLOAD_SHAPE");
+  });
+
+  it("does not require the shape when category is not edgeModel", () => {
+    expect(validateContent({ name: "model", category: "other", sha256: SHA, payloadText: "{}" })).toEqual([]);
+  });
+});
+
 describe("buildContentRequest", () => {
   it("derives contentKey and never includes a key field", () => {
     const request = buildContentRequest({
@@ -200,6 +253,24 @@ describe("uploadBlob", () => {
     expect(formData.get("parentFolder")).toBe("models");
     const uploaded = formData.get("file");
     expect(uploaded.name).toBe(`${SHA}.bin`);
+  });
+
+  it("forwards an onUploadProgress callback as axios config", async () => {
+    const file = new File(["ciphertext"], "model.bin", {
+      type: "application/octet-stream",
+    });
+    const onUploadProgress = jest.fn();
+    await DownloadableContentService.uploadBlob(file, SHA, onUploadProgress);
+    const config = post.mock.calls[0][2];
+    expect(config).toEqual({ onUploadProgress });
+  });
+
+  it("omits the config arg when no progress callback is given", async () => {
+    const file = new File(["ciphertext"], "model.bin", {
+      type: "application/octet-stream",
+    });
+    await DownloadableContentService.uploadBlob(file, SHA);
+    expect(post.mock.calls[0][2]).toBeUndefined();
   });
 });
 

@@ -8,6 +8,7 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
+  LinearProgress,
 } from "@mui/material";
 import { Title } from "react-admin";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -34,6 +35,25 @@ const emptyState = {
   payloadText: "",
 };
 
+// The thrown SaveStepError names the failing step; its cause carries the HTTP
+// status / server message, which is what makes a failed blob upload diagnosable
+// (413 too large, 403, missing MODEL backend, etc).
+const buildSaveErrorMessage = (error) => {
+  const base = error.message || "Save failed";
+  const cause = error.cause;
+  if (!cause) return base;
+  const status = cause.response?.status;
+  const data = cause.response?.data;
+  const detail =
+    (typeof data === "string" ? data : data?.message || data?.error) ||
+    cause.message;
+  const shortDetail = typeof detail === "string" ? detail.slice(0, 200) : "";
+  const parts = [base];
+  if (status) parts.push(`(HTTP ${status})`);
+  if (shortDetail) parts.push(`- ${shortDetail}`);
+  return parts.join(" ");
+};
+
 const CreateEditDownloadableContent = () => {
   const params = useParams();
   const navigate = useNavigate();
@@ -46,6 +66,7 @@ const CreateEditDownloadableContent = () => {
   const [errors, setErrors] = useState([]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(null);
 
   useEffect(() => {
     if (!editing) return;
@@ -81,6 +102,7 @@ const CreateEditDownloadableContent = () => {
 
     setSaving(true);
     setSaveError(null);
+    setUploadProgress(null);
     try {
       await performSave({
         request,
@@ -88,12 +110,20 @@ const CreateEditDownloadableContent = () => {
         file,
         key: aesKey,
         service: DownloadableContentService,
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            setUploadProgress(
+              Math.round((progressEvent.loaded / progressEvent.total) * 100),
+            );
+          }
+        },
       });
       navigate(LIST_ROUTE);
     } catch (error) {
-      setSaveError(error.message || "Save failed");
+      setSaveError(buildSaveErrorMessage(error));
     } finally {
       setSaving(false);
+      setUploadProgress(null);
     }
   };
 
@@ -149,6 +179,7 @@ const CreateEditDownloadableContent = () => {
             }
           />
           {getErrorByKey(errors, "INVALID_PAYLOAD")}
+          {getErrorByKey(errors, "INVALID_PAYLOAD_SHAPE")}
         </Grid>
         <Grid>
           <FormControlLabel
@@ -202,6 +233,14 @@ const CreateEditDownloadableContent = () => {
           >
             Cancel
           </Button>
+          {saving && uploadProgress != null && (
+            <Box sx={{ mt: 1, maxWidth: 300 }}>
+              <Typography variant="caption" display="block">
+                Uploading blob… {uploadProgress}%
+              </Typography>
+              <LinearProgress variant="determinate" value={uploadProgress} />
+            </Box>
+          )}
         </Grid>
       </Grid>
       {saveError && (
