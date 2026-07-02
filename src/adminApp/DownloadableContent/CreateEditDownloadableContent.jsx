@@ -109,6 +109,7 @@ const CreateEditDownloadableContent = () => {
         sha256: content.sha256,
         file,
         key: aesKey,
+        needsKey: content.needsKey,
         service: DownloadableContentService,
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
@@ -186,7 +187,10 @@ const CreateEditDownloadableContent = () => {
             control={
               <Checkbox
                 checked={content.needsKey}
-                onChange={(e) => update({ needsKey: e.target.checked })}
+                onChange={(e) => {
+                  update({ needsKey: e.target.checked });
+                  if (!e.target.checked) setAesKey("");
+                }}
               />
             }
             label="Needs decryption key"
@@ -216,6 +220,7 @@ const CreateEditDownloadableContent = () => {
             autoComplete="new-password"
             onChange={(e) => setAesKey(e.target.value)}
             placeholder={editing ? "Enter to replace stored key" : ""}
+            disabled={!content.needsKey}
             fullWidth
           />
           <Typography variant="caption" color="textSecondary">

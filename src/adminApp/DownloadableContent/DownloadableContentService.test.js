@@ -373,6 +373,7 @@ describe("performSave orchestration", () => {
       sha256: SHA_B,
       file: makeFile(),
       key: "secret",
+      needsKey: true,
       service,
     });
     expect(calls).toEqual(["uploadBlob", "saveModelKey", "save"]);
@@ -393,7 +394,9 @@ describe("performSave orchestration", () => {
     const calls = [];
     const service = trackingService(calls);
     service.saveModelKey.mockRejectedValueOnce(new Error("boom"));
-    await expect(performSave({ request, sha256: SHA_B, file: makeFile(), key: "secret", service })).rejects.toBeInstanceOf(SaveStepError);
+    await expect(performSave({ request, sha256: SHA_B, file: makeFile(), key: "secret", needsKey: true, service })).rejects.toBeInstanceOf(
+      SaveStepError,
+    );
     expect(service.save).not.toHaveBeenCalled();
   });
 
@@ -404,6 +407,15 @@ describe("performSave orchestration", () => {
     await performSave({ request, sha256: SHA_B, file: null, key: "", service });
     expect(service.saveModelKey).not.toHaveBeenCalled();
     expect(service.uploadBlob).not.toHaveBeenCalled();
+    expect(calls).toEqual(["save"]);
+  });
+
+  it("does NOT write the key when needsKey is false, even if a key value is present", async () => {
+    const request = makeRequest();
+    const calls = [];
+    const service = trackingService(calls);
+    await performSave({ request, sha256: SHA_B, file: null, key: "leftover-key", needsKey: false, service });
+    expect(service.saveModelKey).not.toHaveBeenCalled();
     expect(calls).toEqual(["save"]);
   });
 

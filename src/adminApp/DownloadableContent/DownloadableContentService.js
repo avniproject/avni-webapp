@@ -120,7 +120,7 @@ export class SaveStepError extends Error {
 // so a record can never sync to devices ahead of the blob/key it points to.
 // If a dependency write fails, the record is not created/updated; the blob is
 // content-addressed by sha, so retrying a partially completed save is safe.
-export const performSave = async ({ request, sha256, file, key, service, onUploadProgress }) => {
+export const performSave = async ({ request, sha256, file, key, needsKey, service, onUploadProgress }) => {
   if (file) {
     try {
       await service.uploadBlob(file, sha256, onUploadProgress);
@@ -128,7 +128,7 @@ export const performSave = async ({ request, sha256, file, key, service, onUploa
       throw new SaveStepError("upload the encrypted blob", error);
     }
   }
-  if (key != null && key.trim() !== "") {
+  if (needsKey && key != null && key.trim() !== "") {
     try {
       await service.saveModelKey(sha256, key);
     } catch (error) {
