@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import moment from "moment";
 import {
   loadSubjectDashboard,
   getGroupMembers,
@@ -25,6 +26,20 @@ import RosterRow from "./RosterRow";
 import FollowUpConfirmationDialog from "./FollowUpConfirmationDialog";
 import { buildDayStatusMap, isHolidayLike } from "./utils/dayResolver";
 import { prettyDate, parseISO } from "./utils/dates";
+
+// A student appears on a sheet only within their class-membership window
+// [membershipStartDate (→ registrationDate fallback), membershipEndDate], inclusive,
+// compared as YYYY-MM-DD calendar dates.
+const isEligibleOn = (gs, scheduledDate) => {
+  const start = gs.membershipStartDate || gs.memberSubject?.registrationDate;
+  if (start && moment(start).format("YYYY-MM-DD") > scheduledDate) return false;
+  if (
+    gs.membershipEndDate &&
+    moment(gs.membershipEndDate).format("YYYY-MM-DD") < scheduledDate
+  )
+    return false;
+  return true;
+};
 
 const AttendanceMarkView = () => {
   const dispatch = useDispatch();
@@ -217,7 +232,10 @@ const AttendanceMarkView = () => {
     if (!Array.isArray(groupMembers)) return;
     if (isEdit && !existingSession) return;
     const members = groupMembers
-      .filter((gs) => !gs.voided && gs.memberSubject)
+      .filter(
+        (gs) =>
+          !gs.voided && gs.memberSubject && isEligibleOn(gs, scheduledDate),
+      )
       .map((gs) => ({
         subjectUUID: gs.memberSubject.uuid,
         name: gs.memberSubject.name || gs.memberSubject.nameString || "",
@@ -255,7 +273,7 @@ const AttendanceMarkView = () => {
       );
     }
     rosterInitialised.current = true;
-  }, [groupMembers, isEdit, existingSession]);
+  }, [groupMembers, isEdit, existingSession, scheduledDate]);
 
   const dayType = useMemo(() => {
     if (!calendar || !scheduledDate) return null;
