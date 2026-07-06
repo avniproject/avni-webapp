@@ -138,6 +138,7 @@ const AttendanceMarkView = () => {
               .map((a) => ({
                 uuid: a.answerConcept.uuid,
                 name: a.answerConcept.name,
+                datatype: a.answerConcept.dataType,
               })),
           ),
         )
@@ -237,6 +238,7 @@ const AttendanceMarkView = () => {
             reasonConceptUUIDs:
               rec?.reasonConceptUUIDs ||
               (rec?.reasonConceptUUID ? [rec.reasonConceptUUID] : []),
+            otherReasonText: rec?.otherReasonText || "",
             needsFollowUp: !!rec?.needsFollowUp,
           };
         }),
@@ -247,6 +249,7 @@ const AttendanceMarkView = () => {
           ...m,
           status: "Present",
           reasonConceptUUIDs: [],
+          otherReasonText: "",
           needsFollowUp: false,
         })),
       );
@@ -264,6 +267,21 @@ const AttendanceMarkView = () => {
   const reasonMissing = !sessionReasonConceptUUID;
   const saveDisabled = saving || (holidayMode && reasonMissing);
 
+  // UUIDs of reason answers configured as free-text "Other" (Text datatype).
+  const textReasonUUIDs = useMemo(
+    () =>
+      new Set(
+        (absenceReasonAnswers || [])
+          .filter((a) => a.datatype === "Text")
+          .map((a) => a.uuid),
+      ),
+    [absenceReasonAnswers],
+  );
+  const hasTextReason = useCallback(
+    (uuids) => (uuids || []).some((u) => textReasonUUIDs.has(u)),
+    [textReasonUUIDs],
+  );
+
   const onTogglePresence = useCallback((subjectUUID) => {
     setRoster((prev) =>
       prev.map((r) =>
@@ -271,9 +289,10 @@ const AttendanceMarkView = () => {
           ? {
               ...r,
               status: r.status === "Present" ? "Absent" : "Present",
-              // Clear reasons + needsFollowUp when flipping back to Present.
+              // Clear reasons + free text + needsFollowUp when flipping back to Present.
               reasonConceptUUIDs:
                 r.status === "Present" ? r.reasonConceptUUIDs : [],
+              otherReasonText: r.status === "Present" ? r.otherReasonText : "",
               needsFollowUp: r.status === "Present" ? r.needsFollowUp : false,
             }
           : r,
@@ -281,10 +300,30 @@ const AttendanceMarkView = () => {
     );
   }, []);
 
-  const onSetReason = useCallback((subjectUUID, reasonConceptUUIDs) => {
+  const onSetReason = useCallback(
+    (subjectUUID, reasonConceptUUIDs) => {
+      setRoster((prev) =>
+        prev.map((r) =>
+          r.subjectUUID === subjectUUID
+            ? {
+                ...r,
+                reasonConceptUUIDs,
+                // "Other" free text only lives while a Text reason is selected.
+                otherReasonText: hasTextReason(reasonConceptUUIDs)
+                  ? r.otherReasonText
+                  : "",
+              }
+            : r,
+        ),
+      );
+    },
+    [hasTextReason],
+  );
+
+  const onSetOtherReason = useCallback((subjectUUID, text) => {
     setRoster((prev) =>
       prev.map((r) =>
-        r.subjectUUID === subjectUUID ? { ...r, reasonConceptUUIDs } : r,
+        r.subjectUUID === subjectUUID ? { ...r, otherReasonText: text } : r,
       ),
     );
   }, []);
@@ -361,6 +400,8 @@ const AttendanceMarkView = () => {
         subjectUUID: r.subjectUUID,
         status: r.status,
         reasonConceptUUIDs: r.status === "Absent" ? r.reasonConceptUUIDs : [],
+        otherReasonText:
+          r.status === "Absent" ? r.otherReasonText || null : null,
         needsFollowUp: r.status === "Absent" ? !!r.needsFollowUp : false,
       })),
     };
@@ -487,6 +528,7 @@ const AttendanceMarkView = () => {
             }
             onTogglePresence={onTogglePresence}
             onSetReason={onSetReason}
+            onSetOtherReason={onSetOtherReason}
             onToggleNeedsFollowUp={onToggleNeedsFollowUp}
           />
         ))}
