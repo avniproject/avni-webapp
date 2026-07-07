@@ -117,11 +117,9 @@ const ChatPanel = ({
               return <MessageRow key={i} msg={msg} />;
           }
         })}
-        {toolCalls
-          .filter((tc) => !tc.result)
-          .map((tc) => (
-            <ToolCallRow key={tc.call_id} tc={tc} />
-          ))}
+        {toolCalls.map((tc) => (
+          <ToolCallRow key={tc.call_id} tc={tc} />
+        ))}
       </Box>
 
       <Box
@@ -248,12 +246,21 @@ const TOOL_LABELS = {
   edit_bundle_from_spec: "Updating your app…",
   resume_bundle: "Continuing where we left off…",
   list_bundle_fields: "Listing your app's fields…",
+  answer_avni_question: "Finding the answer…",
 };
 
 const labelForTool = (tc) => {
   if (tc.tool === "edit_bundle_fields") {
     const n = (tc.args && tc.args.operations && tc.args.operations.length) || 0;
     return n ? `Editing ${n} field(s)…` : "Editing your app's fields…";
+  }
+  if (tc.tool === "suggest_form_rule") {
+    const form = tc.args && tc.args.form_name;
+    return form ? `Writing a rule for "${form}"…` : "Writing a form rule…";
+  }
+  if (tc.tool === "suggest_form_element_rule") {
+    const field = tc.args && tc.args.field_name;
+    return field ? `Writing a rule for "${field}"…` : "Writing a field rule…";
   }
   return TOOL_LABELS[tc.tool] || `${tc.tool}(…)`;
 };

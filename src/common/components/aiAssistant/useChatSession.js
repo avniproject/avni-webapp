@@ -146,19 +146,27 @@ export const useChatSession = () => {
       case EVENT_TYPES.AGENT_MESSAGE: {
         const suppressed = suppressNextAssistantRef.current;
         suppressNextAssistantRef.current = false;
+        // The narration for any completed tool calls has arrived — drop
+        // them so their progress rows stop showing.
+        setToolCalls((prev) => prev.filter((tc) => !tc.result));
         setMessages((prev) => [...prev, { type: "text", ...data, suppressed }]);
         return;
       }
       case EVENT_TYPES.TOOL_CALL:
-        setToolCalls((prev) => [...prev, { ...data }]);
+        // A new call supersedes completed ones from the same turn (tool
+        // chains without narration in between).
+        setToolCalls((prev) => [...prev.filter((tc) => !tc.result), { ...data }]);
         return;
       case EVENT_TYPES.TOOL_RESULT:
-        // Mark the corresponding tool_call as completed; the model's own
-        // follow-up agent.message will narrate the result for the user.
+        // Mark the corresponding tool_call as completed. Its progress row
+        // stays visible until the agent's follow-up message (or an inline
+        // card) lands — for fast tools the model is still composing the
+        // user-facing answer well after the tool returns.
         setToolCalls((prev) => prev.map((tc) => (tc.call_id === data.call_id ? { ...tc, result: data } : tc)));
         return;
       case EVENT_TYPES.HITL_PENDING:
         suppressNextAssistantRef.current = true;
+        setToolCalls((prev) => prev.filter((tc) => !tc.result));
         setMessages((prev) => [
           ...prev,
           {
@@ -172,6 +180,7 @@ export const useChatSession = () => {
         return;
       case EVENT_TYPES.BUNDLE_READY:
         suppressNextAssistantRef.current = true;
+        setToolCalls((prev) => prev.filter((tc) => !tc.result));
         setMessages((prev) => [
           ...prev,
           {
@@ -201,6 +210,9 @@ export const useChatSession = () => {
         return;
       case EVENT_TYPES.ERROR:
         setError(data);
+        // A failed or cancelled turn produces no narration — drop completed
+        // tool calls so their progress rows don't spin forever.
+        setToolCalls((prev) => prev.filter((tc) => !tc.result));
         if (!data.recoverable) setStatus("error");
         return;
       case EVENT_TYPES.SESSION_CLOSED:
