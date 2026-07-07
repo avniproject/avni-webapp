@@ -16,6 +16,7 @@ const RosterRow = ({
   row,
   index,
   reasonAnswers,
+  otherReasonConceptUUID,
   followUpEncounterTypeUuid,
   onTogglePresence,
   onSetReason,
@@ -26,10 +27,10 @@ const RosterRow = ({
   const isAbsent = row.status === "Absent";
   const selectedReasons = row.reasonConceptUUIDs || [];
   const showNeedsFollowUp = isAbsent && !!followUpEncounterTypeUuid;
-  // Show the free-text box when a selected reason is a Text ("Other") answer.
-  const showOtherReason = (reasonAnswers || []).some(
-    (a) => a.datatype === "Text" && selectedReasons.includes(a.uuid),
-  );
+  // Show the free-text box when the configured "Other" answer is the selected reason.
+  const showOtherReason =
+    !!otherReasonConceptUUID &&
+    selectedReasons.includes(otherReasonConceptUUID);
 
   return (
     <Box

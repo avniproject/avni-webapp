@@ -153,7 +153,6 @@ const AttendanceMarkView = () => {
               .map((a) => ({
                 uuid: a.answerConcept.uuid,
                 name: a.answerConcept.name,
-                datatype: a.answerConcept.dataType,
               })),
           ),
         )
@@ -285,19 +284,15 @@ const AttendanceMarkView = () => {
   const reasonMissing = !sessionReasonConceptUUID;
   const saveDisabled = saving || (holidayMode && reasonMissing);
 
-  // UUIDs of reason answers configured as free-text "Other" (Text datatype).
-  const textReasonUUIDs = useMemo(
-    () =>
-      new Set(
-        (absenceReasonAnswers || [])
-          .filter((a) => a.datatype === "Text")
-          .map((a) => a.uuid),
-      ),
-    [absenceReasonAnswers],
-  );
-  const hasTextReason = useCallback(
-    (uuids) => (uuids || []).some((u) => textReasonUUIDs.has(u)),
-    [textReasonUUIDs],
+  // The "Other → fill it in" answer is declared in the attendance type config
+  // (otherReasonConcept); the free-text box shows only while it is the selected reason.
+  const otherReasonConceptUUID =
+    attendanceType?.config?.otherReasonConcept || null;
+  const hasOtherReason = useCallback(
+    (uuids) =>
+      !!otherReasonConceptUUID &&
+      (uuids || []).includes(otherReasonConceptUUID),
+    [otherReasonConceptUUID],
   );
 
   const onTogglePresence = useCallback((subjectUUID) => {
@@ -326,8 +321,8 @@ const AttendanceMarkView = () => {
             ? {
                 ...r,
                 reasonConceptUUIDs,
-                // "Other" free text only lives while a Text reason is selected.
-                otherReasonText: hasTextReason(reasonConceptUUIDs)
+                // "Other" free text only lives while the configured Other reason is selected.
+                otherReasonText: hasOtherReason(reasonConceptUUIDs)
                   ? r.otherReasonText
                   : "",
               }
@@ -335,7 +330,7 @@ const AttendanceMarkView = () => {
         ),
       );
     },
-    [hasTextReason],
+    [hasOtherReason],
   );
 
   const onSetOtherReason = useCallback((subjectUUID, text) => {
@@ -541,6 +536,7 @@ const AttendanceMarkView = () => {
             row={row}
             index={index}
             reasonAnswers={absenceReasonAnswers}
+            otherReasonConceptUUID={otherReasonConceptUUID}
             followUpEncounterTypeUuid={
               attendanceType.config?.followUpEncounterType
             }
