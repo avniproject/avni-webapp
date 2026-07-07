@@ -16,18 +16,35 @@
  * the live Redux state. Use `createAiApi(baseUrl)` directly only outside
  * React (e.g., in scripts or tests).
  *
- * Auth: the user's bearer token is forwarded on `POST /sessions` only.
- * After that the backend keys lookups by `session_id` in the URL path.
+ * Auth: the user's bearer token is forwarded on `POST /sessions` (session
+ * creation) and `POST /upload-to-avni` (the backend relays it to
+ * avni-server's /import/new, so it must be current — the token captured at
+ * session creation may have expired during a long chat). All other
+ * endpoints key lookups by `session_id` in the URL path.
  */
 
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import IdpDetails from "../../../rootApp/security/IdpDetails";
+import httpClient from "../../utils/httpClient";
 
-const authHeader = () => {
-  const token = localStorage.getItem(IdpDetails.AuthTokenName);
+const freshAuthHeader = async () => {
   // avni-server expects the bearer token on the `AUTH-TOKEN` header (see
   // CognitoWebClient.jsx / KeycloakWebClient.jsx). Not `Authorization`.
+  // Ask the IDP client for the token (it refreshes an expired one before
+  // handing it out) rather than reading localStorage, which can hold a
+  // stale value when the assistant is the only activity in the tab.
+  try {
+    if (httpClient.idp) {
+      const headers = new Headers();
+      await httpClient.idp.updateRequestWithSession({ headers });
+      const token = headers.get("AUTH-TOKEN");
+      if (token) return { "AUTH-TOKEN": token };
+    }
+  } catch {
+    /* fall through to the stored token */
+  }
+  const token = localStorage.getItem(IdpDetails.AuthTokenName);
   return token ? { "AUTH-TOKEN": token } : {};
 };
 
@@ -46,7 +63,7 @@ export const createAiApi = (baseUrl) => ({
   createSession: async () => {
     const response = await fetch(`${baseUrl}/sessions`, {
       method: "POST",
-      headers: authHeader(),
+      headers: await freshAuthHeader(),
       credentials: "include",
     });
     return jsonOrThrow(response);
@@ -104,7 +121,11 @@ export const createAiApi = (baseUrl) => ({
   },
 
   uploadToAvni: async (sessionId) => {
-    const response = await fetch(`${baseUrl}/sessions/${sessionId}/upload-to-avni`, { method: "POST", credentials: "include" });
+    const response = await fetch(`${baseUrl}/sessions/${sessionId}/upload-to-avni`, {
+      method: "POST",
+      headers: await freshAuthHeader(),
+      credentials: "include",
+    });
     return jsonOrThrow(response);
   },
 
