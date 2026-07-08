@@ -48,6 +48,18 @@ const freshAuthHeader = async () => {
   return token ? { "AUTH-TOKEN": token } : {};
 };
 
+const fetchSessionState = async (baseUrl, sessionId) => {
+  try {
+    const response = await fetch(`${baseUrl}/sessions/${sessionId}`, {
+      method: "GET",
+      credentials: "include",
+    });
+    return response.ok ? "alive" : "dead";
+  } catch {
+    return "unknown";
+  }
+};
+
 const jsonOrThrow = async (response) => {
   if (!response.ok) {
     const body = await response.text().catch(() => "");
@@ -77,17 +89,14 @@ export const createAiApi = (baseUrl) => ({
   },
 
   /** Cheap liveness check; false on 404 / network error. */
-  sessionAlive: async (sessionId) => {
-    try {
-      const response = await fetch(`${baseUrl}/sessions/${sessionId}`, {
-        method: "GET",
-        credentials: "include",
-      });
-      return response.ok;
-    } catch {
-      return false;
-    }
-  },
+  sessionAlive: async (sessionId) => (await fetchSessionState(baseUrl, sessionId)) === "alive",
+
+  /**
+   * Like sessionAlive but distinguishes a definitively-gone session
+   * ("dead": backend reachable and answered non-200) from a network
+   * failure ("unknown") — callers must not discard a session over a blip.
+   */
+  sessionState: (sessionId) => fetchSessionState(baseUrl, sessionId),
 
   uploadFiles: async (sessionId, files) => {
     const fd = new FormData();

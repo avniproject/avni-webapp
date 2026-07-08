@@ -50,6 +50,10 @@ const storeSessionId = (sid) => {
 
 const nowTs = () => new Date().toISOString();
 
+/** Shown in chat when a dead session is replaced automatically. */
+const SESSION_EXPIRED_NOTICE =
+  "This session expired, so a fresh one has been started. The messages above are kept for reference, but the assistant no longer remembers them.";
+
 /** One-line summary of the user's decisions, shown in chat after Apply. */
 const DECISION_LABELS = { yes: "Yes", no: "No", edit: "Edit" };
 
@@ -216,8 +220,27 @@ export const useChatSession = () => {
         if (!data.recoverable) setStatus("error");
         return;
       case EVENT_TYPES.SESSION_CLOSED:
-        setStatus("closed");
+        // The backend session is gone (idle reap or server restart) and
+        // cannot be resumed. Recover automatically: keep the transcript for
+        // reference, disable dangling confirmation cards (their interrupt
+        // ids died with the session), and flip back to "idle" — the
+        // chatbot's open+idle effect then creates a fresh session
+        // immediately while the panel is open, or on next open otherwise.
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+          eventSourceRef.current = null;
+        }
         storeSessionId(null);
+        setSessionId(null);
+        setToolCalls([]);
+        setMessages((prev) => {
+          if (!prev.length) return prev;
+          const flagged = prev.map((m) => (m.type === "hitl" && !m.resolved ? { ...m, resolved: true } : m));
+          const last = flagged[flagged.length - 1];
+          if (last.type === "text" && last.content === SESSION_EXPIRED_NOTICE) return flagged;
+          return [...flagged, { type: "text", role: "system", content: SESSION_EXPIRED_NOTICE, ts: nowTs() }];
+        });
+        setStatus("idle");
         return;
       case EVENT_TYPES.SESSION_LOADING:
         setCheckingSetup(true);
@@ -257,6 +280,16 @@ export const useChatSession = () => {
           code: "E_SSE",
           message: "stream interrupted; retrying…",
           recoverable: true,
+        });
+        // A backend restart leaves the browser retrying a session id that
+        // no longer exists — the banner would spin forever. Probe: only a
+        // definitive "dead" (backend reachable, session gone) triggers the
+        // session-expired recovery; on a network blip keep retrying.
+        aiApi.sessionState(sid).then((state) => {
+          if (state === "dead" && eventSourceRef.current === es) {
+            setError(null);
+            handleEvent(EVENT_TYPES.SESSION_CLOSED, {});
+          }
         });
       };
 
