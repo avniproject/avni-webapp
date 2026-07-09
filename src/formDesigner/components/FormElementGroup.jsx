@@ -221,6 +221,8 @@ function FormElementGroup(props) {
         updateConceptElementData: props.updateConceptElementData,
         handleGroupElementKeyValueChange:
           props.handleGroupElementKeyValueChange,
+        handleGroupElementKeyValueDelete:
+          props.handleGroupElementKeyValueDelete,
         handleExcludedAnswers: props.handleExcludedAnswers,
         updateSkipLogicRule: props.updateSkipLogicRule,
         updateSkipLogicJSON: props.updateSkipLogicJSON,

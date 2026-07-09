@@ -33,6 +33,7 @@ import {
   formDesignerHandleExcludedAnswers,
   formDesignerHandleGroupElementChange,
   formDesignerHandleGroupElementKeyValueChange,
+  formDesignerHandleGroupElementKeyValueDelete,
   formDesignerHandleInlineCodedAnswerAddition,
   formDesignerHandleInlineCodedConceptAnswers,
   formDesignerHandleInlineConceptAttributes,
@@ -556,6 +557,7 @@ const FormDetails = () => {
           onUpdateDragDropOrder,
           handleGroupElementChange,
           handleGroupElementKeyValueChange,
+          handleGroupElementKeyValueDelete,
           handleExcludedAnswers,
           updateSkipLogicRule,
           updateSkipLogicJSON,
@@ -636,6 +638,21 @@ const FormDetails = () => {
             draft.form.formElementGroups[index].formElements[elementIndex],
             propertyName,
             value,
+          ),
+        ),
+      );
+    },
+    [],
+  );
+
+  const handleGroupElementKeyValueDelete = useCallback(
+    (index, key, elementIndex) => {
+      setState(
+        produce((draft) =>
+          formDesignerHandleGroupElementKeyValueDelete(
+            draft,
+            draft.form.formElementGroups[index].formElements[elementIndex],
+            key,
           ),
         ),
       );

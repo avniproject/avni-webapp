@@ -30,6 +30,11 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { pickers } from "../../common/constants";
 import { FileOptions } from "./FileOptions";
 import SubjectFormElementKeyValues from "./SubjectFormElementKeyValues";
+import KeyValues from "./KeyValues";
+import {
+  keyValueObjectToRows,
+  EXCLUDED_FE_KEYVALUE_KEYS,
+} from "../common/FormElementKeyValues";
 import QuestionGroup from "./QuestionGroup";
 import DocumentationSearch from "../../documentation/components/DocumentationSearch";
 import { ColourStyle } from "./ColourStyle";
@@ -1268,6 +1273,53 @@ const FormElementDetails = ({
           </Grid>
         </Fragment>
       )}
+      <AvniFormLabel
+        label={"Advanced Settings"}
+        toolTipKey={"APP_DESIGNER_CONCEPT_KEY_VALUE"}
+      />
+      <KeyValues
+        keyValues={keyValueObjectToRows(
+          formElementData.keyValues,
+          EXCLUDED_FE_KEYVALUE_KEYS,
+        )}
+        onKeyValueChange={(kv, kvIndex) => {
+          const rows = keyValueObjectToRows(
+            formElementData.keyValues,
+            EXCLUDED_FE_KEYVALUE_KEYS,
+          );
+          const oldKey = rows[kvIndex] && rows[kvIndex].key;
+          if (oldKey && oldKey !== kv.key) {
+            rest.handleGroupElementKeyValueDelete(groupIndex, oldKey, index);
+          }
+          if (kv.key) {
+            rest.handleGroupElementKeyValueChange(
+              groupIndex,
+              kv.key,
+              kv.value,
+              index,
+            );
+          }
+        }}
+        onAddNewKeyValue={() =>
+          rest.handleGroupElementKeyValueChange(groupIndex, "", "", index)
+        }
+        onDeleteKeyValue={(kvIndex) => {
+          const rows = keyValueObjectToRows(
+            formElementData.keyValues,
+            EXCLUDED_FE_KEYVALUE_KEYS,
+          );
+          if (rows[kvIndex] && rows[kvIndex].key) {
+            rest.handleGroupElementKeyValueDelete(
+              groupIndex,
+              rows[kvIndex].key,
+              index,
+            );
+          }
+        }}
+        keyLabel="Key"
+        valueLabel="Value"
+        addButtonLabel="Add key-value"
+      />
     </Fragment>
   );
 };
