@@ -60,6 +60,7 @@ export default function ConceptMediaList({ media = [], onChange }) {
             ref={provided.innerRef}
             {...provided.droppableProps}
             spacing={1}
+            sx={{ maxHeight: 420, overflowY: "auto", pr: 1 }}
           >
             {media.map((item, index) => {
               const draggableId = String(item.localKey || item.url || index);
