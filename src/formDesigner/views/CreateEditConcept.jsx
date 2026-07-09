@@ -717,28 +717,42 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             </Grid>
           )}
           <Grid xs={12}>
-            <AvniMediaUpload
-              key="media-upload"
-              uniqueName="concept-media-upload"
-              height={20}
-              width={20}
-              accept="image/*,video/*"
-              allowUpload={true}
-              onSelect={onAddMedia}
-              label={`Add media (image max ${
-                Math.round(
-                  (WebConceptView.MaxImageFileSize / 1024 + Number.EPSILON) *
-                    10,
-                ) / 10
-              } KB, video max ${
-                Math.round(
-                  (WebConceptView.MaxVideoFileSize / 1024 / 1024 +
-                    Number.EPSILON) *
-                    10,
-                ) / 10
-              } MB)`}
-              maxFileSize={WebConceptView.MaxVideoFileSize}
-            />
+            <Stack direction="row" spacing={2}>
+              <AvniMediaUpload
+                key={`concept-image-upload-${(concept.media || []).length}`}
+                uniqueName="concept-image-upload"
+                height={20}
+                width={20}
+                accept="image/*"
+                allowUpload={true}
+                onSelect={onAddMedia}
+                label={`Add image (max ${
+                  Math.round(
+                    (WebConceptView.MaxImageFileSize / 1024 + Number.EPSILON) *
+                      10,
+                  ) / 10
+                } KB)`}
+                maxFileSize={WebConceptView.MaxImageFileSize}
+              />
+              <AvniMediaUpload
+                key={`concept-video-upload-${(concept.media || []).length}`}
+                uniqueName="concept-video-upload"
+                height={20}
+                width={20}
+                accept="video/*"
+                mediaType="Video"
+                allowUpload={true}
+                onSelect={onAddMedia}
+                label={`Add video (max ${
+                  Math.round(
+                    (WebConceptView.MaxVideoFileSize / 1024 / 1024 +
+                      Number.EPSILON) *
+                      10,
+                  ) / 10
+                } MB)`}
+                maxFileSize={WebConceptView.MaxVideoFileSize}
+              />
+            </Stack>
             <Box sx={{ mt: 1 }}>
               <ConceptMediaList
                 media={concept.media || []}
