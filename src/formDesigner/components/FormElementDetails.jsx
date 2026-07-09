@@ -1288,7 +1288,7 @@ const FormElementDetails = ({
             EXCLUDED_FE_KEYVALUE_KEYS,
           );
           const oldKey = rows[kvIndex] && rows[kvIndex].key;
-          if (oldKey && oldKey !== kv.key) {
+          if (oldKey !== undefined && oldKey !== kv.key) {
             rest.handleGroupElementKeyValueDelete(groupIndex, oldKey, index);
           }
           if (kv.key) {
