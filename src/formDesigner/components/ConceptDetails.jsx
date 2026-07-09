@@ -555,19 +555,22 @@ function ConceptDetails() {
           </div>
 
           <p />
-          {data.media &&
-            data.media.map((m) => (
-              <div>
-                <FormLabel style={{ fontSize: "13px" }}>{m.type}</FormLabel>
-                <br />
-                <MediaPreview
-                  mediaUrl={m.url}
-                  mediaType={m.type}
-                  width={80}
-                  height={80}
-                />
-              </div>
-            ))}
+          {data.media && data.media.length > 0 && (
+            <Box sx={{ maxHeight: 420, overflowY: "auto", pr: 1 }}>
+              {data.media.map((m, index) => (
+                <div key={index}>
+                  <FormLabel style={{ fontSize: "13px" }}>{m.type}</FormLabel>
+                  <br />
+                  <MediaPreview
+                    mediaUrl={m.url}
+                    mediaType={m.type}
+                    width={80}
+                    height={80}
+                  />
+                </div>
+              ))}
+            </Box>
+          )}
 
           <BooleanStatusInShow status={data.active} label={"Active"} />
 
