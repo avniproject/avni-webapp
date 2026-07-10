@@ -1,4 +1,5 @@
 import { styled } from "@mui/material/styles";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   Checkbox,
   FormControlLabel,
@@ -6,8 +7,16 @@ import {
   Grid,
   FormHelperText,
   Box,
+  Pagination,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
-import { Delete, ArrowDropUp, ArrowDropDown } from "@mui/icons-material";
+import {
+  Delete,
+  ArrowDropUp,
+  ArrowDropDown,
+  Search,
+} from "@mui/icons-material";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import PropTypes from "prop-types";
 import { get, isEmpty, size } from "lodash";
@@ -247,11 +256,67 @@ export const CodedConceptAnswer = ({
   );
 };
 
+const ANSWERS_PER_PAGE = 50;
+
 export default function CodedConcept(props) {
+  const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState("");
+
+  const visibleAnswers = useMemo(
+    () =>
+      props.answers
+        .map((answer, index) => ({ answer, index }))
+        .filter(({ answer }) => !answer.voided),
+    [props.answers],
+  );
+
+  const filteredAnswers = useMemo(() => {
+    const term = filter.trim().toLowerCase();
+    if (!term) return visibleAnswers;
+    return visibleAnswers.filter(({ answer }) =>
+      (answer.name || "").toLowerCase().includes(term),
+    );
+  }, [visibleAnswers, filter]);
+
+  const nonVoidedCount = visibleAnswers.length;
+  const pageCount = Math.max(
+    1,
+    Math.ceil(filteredAnswers.length / ANSWERS_PER_PAGE),
+  );
+
+  // When a new answer is added the list grows; clear any filter and jump to the
+  // last page so the newly added (empty-named) answer is actually visible.
+  const prevCountRef = useRef(nonVoidedCount);
+  useEffect(() => {
+    if (nonVoidedCount > prevCountRef.current) {
+      setFilter("");
+      setPage(Math.max(1, Math.ceil(nonVoidedCount / ANSWERS_PER_PAGE)));
+    }
+    prevCountRef.current = nonVoidedCount;
+  }, [nonVoidedCount]);
+
+  // Keep the current page within range after deletes or filtering.
+  useEffect(() => {
+    if (page > pageCount) setPage(pageCount);
+  }, [page, pageCount]);
+
+  const pageAnswers = filteredAnswers.slice(
+    (page - 1) * ANSWERS_PER_PAGE,
+    page * ANSWERS_PER_PAGE,
+  );
+
   return (
     <Box sx={{ mt: 2 }}>
-      {/* Sort Button - Separate from answers */}
-      <Box sx={{ mb: 2 }}>
+      {/* Toolbar: sort, filter and a count */}
+      <Box
+        sx={{
+          mb: 2,
+          display: "flex",
+          gap: 2,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
         <StyledButton
           type="button"
           color="primary"
@@ -260,31 +325,63 @@ export default function CodedConcept(props) {
         >
           Sort alphabetically
         </StyledButton>
+        <TextField
+          size="small"
+          variant="outlined"
+          placeholder="Filter answers by name"
+          value={filter}
+          onChange={(e) => {
+            setFilter(e.target.value);
+            setPage(1);
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search fontSize="small" color="action" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ width: 320, backgroundColor: "background.paper" }}
+        />
+        <Box sx={{ ml: "auto", color: "text.secondary" }}>
+          {filteredAnswers.length} answer
+          {filteredAnswers.length === 1 ? "" : "s"}
+          {filter.trim() ? ` (filtered from ${nonVoidedCount})` : ""}
+        </Box>
       </Box>
 
-      {/* Answers List */}
+      {/* Answers List (paginated) */}
       <Box sx={{ mb: 2 }}>
-        {props.answers.map((answer, index) => {
-          return (
-            !answer.voided && (
-              <CodedConceptAnswer
-                key={answer.uuid}
-                answer={answer}
-                index={index}
-                onDeleteAnswer={props.onDeleteAnswer}
-                onAddAnswer={props.onAddAnswer}
-                onChangeAnswerName={props.onChangeAnswerName}
-                onToggleAnswerField={props.onToggleAnswerField}
-                onMoveUp={props.onMoveUp}
-                onMoveDown={props.onMoveDown}
-                totalAnswers={size(props.answers)}
-                onSelectAnswerMedia={props.onSelectAnswerMedia}
-                onRemoveAnswerMedia={props.onRemoveAnswerMedia}
-              />
-            )
-          );
-        })}
+        {pageAnswers.map(({ answer, index }) => (
+          <CodedConceptAnswer
+            key={answer.uuid}
+            answer={answer}
+            index={index}
+            onDeleteAnswer={props.onDeleteAnswer}
+            onAddAnswer={props.onAddAnswer}
+            onChangeAnswerName={props.onChangeAnswerName}
+            onToggleAnswerField={props.onToggleAnswerField}
+            onMoveUp={props.onMoveUp}
+            onMoveDown={props.onMoveDown}
+            totalAnswers={size(props.answers)}
+            onSelectAnswerMedia={props.onSelectAnswerMedia}
+            onRemoveAnswerMedia={props.onRemoveAnswerMedia}
+          />
+        ))}
       </Box>
+
+      {pageCount > 1 && (
+        <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
+          <Pagination
+            count={pageCount}
+            page={page}
+            onChange={(e, value) => setPage(value)}
+            color="primary"
+            siblingCount={1}
+            boundaryCount={1}
+          />
+        </Box>
+      )}
 
       {/* Add New Answer Button */}
       <Box>

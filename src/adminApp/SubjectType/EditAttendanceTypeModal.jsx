@@ -46,6 +46,9 @@ const emptyConfig = {
   sessionOutcomeReasonConceptName: "",
   absenceReasonConcept: null,
   absenceReasonConceptName: "",
+  // The designated "Other → fill it in" answer (one of the Absence Reason concept's
+  // answers). No display-name key: the modal shows the name from the loaded answer list.
+  otherReasonConcept: null,
   followUpEncounterType: null,
   shareRule: "",
   autoShareOnSave: false,
@@ -68,6 +71,11 @@ const EditAttendanceTypeModal = ({
   const [formData, setFormData] = useState(blankForm);
   const [errors, setErrors] = useState({});
   const [encounterTypes, setEncounterTypes] = useState([]);
+  // Answers of the selected Absence Reason concept — the option set for the Other reason picker.
+  const [absenceAnswers, setAbsenceAnswers] = useState([]);
+  // UI-only: whether the Other reason picker is shown. "Enabled" is persisted purely as the
+  // presence of config.otherReasonConcept.
+  const [allowOtherReason, setAllowOtherReason] = useState(false);
 
   const memberSubjectTypeUuid =
     subjectType?.groupRoles?.[0]?.memberSubjectTypeUUID;
@@ -86,8 +94,56 @@ const EditAttendanceTypeModal = ({
         config: { ...emptyConfig },
       });
     }
+    setAllowOtherReason(!!attendanceType?.config?.otherReasonConcept);
     setErrors({});
   }, [open, attendanceType?.uuid]);
+
+  // Load the Absence Reason concept's answers to populate the Other reason picker.
+  useEffect(() => {
+    const uuid = formData.config.absenceReasonConcept;
+    if (!open || !uuid) {
+      setAbsenceAnswers([]);
+      return;
+    }
+    let cancelled = false;
+    httpClient
+      .get(`/web/concept/${uuid}`)
+      .then((res) => {
+        if (cancelled) return;
+        const answers = (res.data?.conceptAnswers || [])
+          .filter(
+            (a) => !a.voided && a.answerConcept && !a.answerConcept.voided,
+          )
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+          .map((a) => ({
+            uuid: a.answerConcept.uuid,
+            name: a.answerConcept.name,
+          }));
+        setAbsenceAnswers(answers);
+      })
+      .catch(() => {
+        if (!cancelled) setAbsenceAnswers([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, formData.config.absenceReasonConcept]);
+
+  // If the configured Other reason is no longer among the answers (Absence Reason concept
+  // changed), clear it so a stale selection can't be saved.
+  useEffect(() => {
+    const other = formData.config.otherReasonConcept;
+    if (
+      other &&
+      absenceAnswers.length &&
+      !absenceAnswers.some((a) => a.uuid === other)
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        config: { ...prev.config, otherReasonConcept: null },
+      }));
+    }
+  }, [absenceAnswers]);
 
   useEffect(() => {
     if (!open || !memberSubjectTypeUuid) return;
@@ -150,6 +206,10 @@ const EditAttendanceTypeModal = ({
     }
     if (!formData.config.absenceReasonConcept) {
       newErrors.absenceReasonConcept = "Absence Reason concept is required";
+    }
+    if (allowOtherReason && !formData.config.otherReasonConcept) {
+      newErrors.otherReasonConcept =
+        "Select an Other reason answer, or turn off Allow other reason";
     }
     setErrors(newErrors);
     return isEmpty(newErrors);
@@ -267,6 +327,54 @@ const EditAttendanceTypeModal = ({
           "Session Outcome Reason Concept",
         )}
         {renderConceptPicker("absenceReasonConcept", "Absence Reason Concept")}
+
+        <StyledFormControl>
+          <AvniSwitch
+            checked={allowOtherReason}
+            onChange={(e) => {
+              const on = e.target.checked;
+              setAllowOtherReason(on);
+              if (!on) updateConfig({ otherReasonConcept: null });
+            }}
+            name="Allow other reason"
+            disabled={!formData.config.absenceReasonConcept}
+          />
+        </StyledFormControl>
+
+        {allowOtherReason && (
+          <StyledFormControl error={!!errors.otherReasonConcept}>
+            <StyledFormLabel>Other Reason *</StyledFormLabel>
+            <Select
+              value={formData.config.otherReasonConcept || ""}
+              onChange={(e) =>
+                updateConfig({ otherReasonConcept: e.target.value || null })
+              }
+              displayEmpty
+              fullWidth
+              error={!!errors.otherReasonConcept}
+            >
+              <MenuItem value="">
+                <em>Select one of the Absence Reason concept&apos;s answers</em>
+              </MenuItem>
+              {absenceAnswers.map((a) => (
+                <MenuItem key={a.uuid} value={a.uuid}>
+                  {a.name}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.otherReasonConcept && (
+              <Typography variant="caption" color="error">
+                {errors.otherReasonConcept}
+              </Typography>
+            )}
+            {!absenceAnswers.length && (
+              <Typography variant="caption" color="textSecondary">
+                The selected Absence Reason concept has no answers to choose
+                from.
+              </Typography>
+            )}
+          </StyledFormControl>
+        )}
 
         <StyledFormControl>
           <InputLabel>Follow-up Encounter Type</InputLabel>

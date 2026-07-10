@@ -56,6 +56,8 @@ import CalendarsList from "./Calendar/CalendarsList";
 import CalendarGridView from "./Calendar/CalendarGridView";
 import { UserMessagingConfig } from "../formDesigner/components/UserMessagingConfig";
 import { StorageManagementConfig } from "../formDesigner/components/StorageManagement/StorageManagementConfig";
+import DownloadableContentList from "./DownloadableContent/DownloadableContentList";
+import CreateEditDownloadableContent from "./DownloadableContent/CreateEditDownloadableContent";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
 import { TemplateOrganisations } from "../formDesigner/components/TemplateOrganisations/TemplateOrganisations";
@@ -251,6 +253,16 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
           list={StorageManagementConfig}
         />
       )}
+      {UserInfo.hasPrivilege(
+        userInfo,
+        Privilege.PrivilegeType.EditOrganisationConfiguration,
+      ) && (
+        <Resource
+          name="downloadableContent"
+          options={{ label: "Downloadable Content" }}
+          list={DownloadableContentList}
+        />
+      )}
       <Resource
         name="ruleFailures"
         options={{ label: "Rule Failures" }}
@@ -273,6 +285,24 @@ const OrgManagerAppDesigner = ({ organisation, user, userInfo }) => {
         <Route path="/forms/:id/settings" element={<FormSettings />} />
         <Route path="/forms/:uuid" element={<FormDetails />} />
         <Route path="/calendar/:uuid/grid" element={<CalendarGridView />} />
+        {UserInfo.hasPrivilege(
+          userInfo,
+          Privilege.PrivilegeType.EditOrganisationConfiguration,
+        ) && (
+          <Route
+            path="/downloadableContent/create"
+            element={<CreateEditDownloadableContent />}
+          />
+        )}
+        {UserInfo.hasPrivilege(
+          userInfo,
+          Privilege.PrivilegeType.EditOrganisationConfiguration,
+        ) && (
+          <Route
+            path="/downloadableContent/:uuid"
+            element={<CreateEditDownloadableContent />}
+          />
+        )}
       </CustomRoutes>
     </Admin>
   );

@@ -20,6 +20,7 @@ export const types = {
   LOGOUT: "app/LOGOUT",
   INIT_GENERIC_CONFIG: "app/INIT_GENERIC_CONFIG",
   SET_CHAT_OPEN: "app/SET_CHAT_OPEN",
+  SET_AVNI_AUTOPILOT_OPEN: "app/SET_AVNI_AUTOPILOT_OPEN",
   SET_IS_NEW_IMPLEMENTATION: "app/SET_IS_NEW_IMPLEMENTATION",
 };
 
@@ -82,6 +83,11 @@ export const setChatOpen = (isChatOpen) => ({
   payload: isChatOpen,
 });
 
+export const setAvniAutopilotOpen = (isAvniAutopilotOpen) => ({
+  type: types.SET_AVNI_AUTOPILOT_OPEN,
+  payload: isAvniAutopilotOpen,
+});
+
 export const setIsNewImplementation = (isNewImplementation) => ({
   type: types.SET_IS_NEW_IMPLEMENTATION,
   payload: isNewImplementation,
@@ -111,6 +117,9 @@ const initialState = {
     const hasSeenChatbot = localStorage.getItem("avni-chatbot-seen");
     return !hasSeenChatbot; // Open if user hasn't seen it before
   })(),
+  // Avni Autopilot — defaults closed; user opens via the dedicated launcher
+  // (different from the dify bot, which auto-opens for first-time users).
+  isAvniAutopilotOpen: false,
   isNewImplementation: false,
 };
 
@@ -196,6 +205,12 @@ export default function (state = initialState, action) {
       return {
         ...state,
         isChatOpen: action.payload,
+      };
+    }
+    case types.SET_AVNI_AUTOPILOT_OPEN: {
+      return {
+        ...state,
+        isAvniAutopilotOpen: action.payload,
       };
     }
     case types.SET_IS_NEW_IMPLEMENTATION: {

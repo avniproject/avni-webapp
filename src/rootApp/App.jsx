@@ -6,11 +6,14 @@ import { getUserInfo } from "./ducks";
 import IdpDetails from "./security/IdpDetails";
 import { httpClient } from "../common/utils/httpClient";
 import Footer from "../common/components/Footer";
-import DifyChatbot from "../common/components/DifyChatbot";
+// import DifyChatbot from "../common/components/DifyChatbot";
+import AvniAutopilotChatbot from "../common/components/aiAssistant/AvniAutopilotChatbot";
 
 const App = () => {
   const dispatch = useDispatch();
-  const isChatOpen = useSelector((state) => state.app.isChatOpen);
+  const isAvniAutopilotOpen = useSelector(
+    (state) => state.app.isAvniAutopilotOpen,
+  );
 
   const appInitialised = useSelector(
     (state) => state.app?.appInitialised || false,
@@ -56,7 +59,9 @@ const App = () => {
           flex: 1,
           display: "flex",
           transition: "margin-right 0.3s ease",
-          marginRight: isChatOpen ? "400px" : "0",
+          // Reserve the docked-panel width when the autopilot is open.
+          // Maximised mode covers the page anyway, so 480px is enough.
+          marginRight: isAvniAutopilotOpen ? "480px" : "0",
         }}
       >
         <Box sx={{ flex: 1 }}>
@@ -64,7 +69,9 @@ const App = () => {
         </Box>
       </Box>
       <Footer />
-      <DifyChatbot />
+      {/* DifyChatbot temporarily superseded by AvniAutopilot. */}
+      {/* <DifyChatbot /> */}
+      <AvniAutopilotChatbot />
     </Box>
   );
 };

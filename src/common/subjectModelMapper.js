@@ -218,6 +218,8 @@ export const mapGroupMembers = (groupSubjects) => {
       mappedGroupSubject.memberSubject = mapIndividual(groupSubject.member);
       mappedGroupSubject.groupRole = mapGroupRole(groupSubject.role);
       mappedGroupSubject.encounterMetadata = groupSubject.encounterMetadata;
+      mappedGroupSubject.membershipStartDate = groupSubject.membershipStartDate;
+      mappedGroupSubject.membershipEndDate = groupSubject.membershipEndDate;
       mappedGroupSubject.voided = groupSubject.voided;
       return mappedGroupSubject;
     });

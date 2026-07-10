@@ -15,7 +15,7 @@ import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import KeyValues from "../components/KeyValues";
-import { filter, isEmpty, sortBy, toLower, trim } from "lodash";
+import { filter, sortBy, toLower, trim } from "lodash";
 import {
   findKeyValue,
   getKeyValue,
@@ -30,6 +30,7 @@ import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
 import { EncounterConcept } from "../components/EncounterConcept";
 import { ImageV2Concept } from "../components/ImageV2Concept";
 import { AvniMediaUpload } from "../../common/components/AvniMediaUpload";
+import ConceptMediaList from "../components/ConceptMediaList";
 import ConceptService from "../../common/service/ConceptService";
 import {
   ConceptAnswerError,
@@ -192,18 +193,16 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     });
   }, []);
 
-  const handleImageDelete = useCallback(() => {
+  const onAddMedia = useCallback((mediaFile) => {
+    const type = toLower(mediaFile.type || "").startsWith("video")
+      ? "Video"
+      : "Image";
     setConcept((prev) => ({
       ...prev,
-      media: prev.media ? prev.media.filter((m) => m.type !== "Image") : [],
-      unsavedImage: null,
-    }));
-  }, []);
-  const handleVideoDelete = useCallback(() => {
-    setConcept((prev) => ({
-      ...prev,
-      media: prev.media ? prev.media.filter((m) => m.type !== "Video") : [],
-      unsavedVideo: null,
+      media: [
+        ...(prev.media || []),
+        { file: mediaFile, type, localKey: crypto.randomUUID() },
+      ],
     }));
   }, []);
 
@@ -504,21 +503,6 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     }));
   }, []);
 
-  const handleImageSelect = useCallback((mediaFile) => {
-    setConcept((prev) => ({
-      ...prev,
-      media: prev.media ? prev.media.filter((m) => m.type !== "Image") : [],
-      unsavedImage: mediaFile,
-    }));
-  }, []);
-  const handleVideoSelect = useCallback((mediaFile) => {
-    setConcept((prev) => ({
-      ...prev,
-      media: prev.media ? prev.media.filter((m) => m.type !== "Video") : [],
-      unsavedVideo: mediaFile,
-    }));
-  }, []);
-
   const onDeleteConcept = useCallback(() => {
     if (window.confirm("Do you really want to delete the concept?")) {
       http.delete(`/concept/${concept.uuid}`).then((response) => {
@@ -648,17 +632,6 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     : "Concept updated successfully.";
   const appBarTitle = isCreatePage ? "Create Concept" : "Edit Concept";
 
-  const currentImageUrl =
-    !isEmpty(concept.media) &&
-    !isEmpty(concept.media.filter((m) => m.type === "Image"))
-      ? concept.media.filter((m) => m.type === "Image")[0].url
-      : null;
-  const currentVideoUrl =
-    !isEmpty(concept.media) &&
-    !isEmpty(concept.media.filter((m) => m.type === "Video"))
-      ? concept.media.filter((m) => m.type === "Video")[0].url
-      : null;
-
   return (
     <Box sx={{ boxShadow: 2, p: 3, bgcolor: "background.paper" }}>
       <DocumentationContainer filename={"Concept.md"}>
@@ -744,53 +717,48 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             </Grid>
           )}
           <Grid xs={12}>
-            <AvniMediaUpload
-              key="image-upload"
-              uniqueName="concept-image-upload"
-              height={20}
-              width={20}
-              accept="image/*"
-              onSelect={handleImageSelect}
-              label={`Image (max ${
-                Math.round(
-                  (WebConceptView.MaxImageFileSize / 1024 + Number.EPSILON) *
-                    10,
-                ) / 10
-              } KB)`}
-              maxFileSize={WebConceptView.MaxImageFileSize}
-              oldImgUrl={currentImageUrl}
-              localMediaUrl={
-                concept.unsavedImage
-                  ? URL.createObjectURL(concept.unsavedImage)
-                  : null
-              }
-              onDelete={handleImageDelete}
-            />
-            <Box />
-            <AvniMediaUpload
-              key="video-upload"
-              uniqueName="concept-video-upload"
-              height={20}
-              width={20}
-              accept="video/*"
-              onSelect={handleVideoSelect}
-              mediaType={"Video"}
-              label={`Video (max ${
-                Math.round(
-                  (WebConceptView.MaxVideoFileSize / 1024 / 1024 +
-                    Number.EPSILON) *
-                    10,
-                ) / 10
-              } MB)`}
-              maxFileSize={WebConceptView.MaxVideoFileSize}
-              oldImgUrl={currentVideoUrl}
-              localMediaUrl={
-                concept.unsavedVideo
-                  ? URL.createObjectURL(concept.unsavedVideo)
-                  : null
-              }
-              onDelete={handleVideoDelete}
-            />
+            <Stack direction="row" spacing={2}>
+              <AvniMediaUpload
+                key={`concept-image-upload-${(concept.media || []).length}`}
+                uniqueName="concept-image-upload"
+                height={20}
+                width={20}
+                accept="image/*"
+                allowUpload={true}
+                onSelect={onAddMedia}
+                label={`Add image (max ${
+                  Math.round(
+                    (WebConceptView.MaxImageFileSize / 1024 + Number.EPSILON) *
+                      10,
+                  ) / 10
+                } KB)`}
+                maxFileSize={WebConceptView.MaxImageFileSize}
+              />
+              <AvniMediaUpload
+                key={`concept-video-upload-${(concept.media || []).length}`}
+                uniqueName="concept-video-upload"
+                height={20}
+                width={20}
+                accept="video/*"
+                mediaType="Video"
+                allowUpload={true}
+                onSelect={onAddMedia}
+                label={`Add video (max ${
+                  Math.round(
+                    (WebConceptView.MaxVideoFileSize / 1024 / 1024 +
+                      Number.EPSILON) *
+                      10,
+                  ) / 10
+                } MB)`}
+                maxFileSize={WebConceptView.MaxVideoFileSize}
+              />
+            </Stack>
+            <Box sx={{ mt: 1 }}>
+              <ConceptMediaList
+                media={concept.media || []}
+                onChange={(next) => setConcept({ ...concept, media: next })}
+              />
+            </Box>
             {error && error.mediaUploadFailed && (
               <FormControl error sx={{ mt: 0.5 }}>
                 <FormHelperText error>{error.message}</FormHelperText>

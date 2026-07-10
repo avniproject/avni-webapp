@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import moment from "moment";
 import {
   loadSubjectDashboard,
   getGroupMembers,
@@ -25,6 +26,20 @@ import RosterRow from "./RosterRow";
 import FollowUpConfirmationDialog from "./FollowUpConfirmationDialog";
 import { buildDayStatusMap, isHolidayLike } from "./utils/dayResolver";
 import { prettyDate, parseISO } from "./utils/dates";
+
+// A student appears on a sheet only within their class-membership window
+// [membershipStartDate (→ registrationDate fallback), membershipEndDate], inclusive,
+// compared as YYYY-MM-DD calendar dates.
+const isEligibleOn = (gs, scheduledDate) => {
+  const start = gs.membershipStartDate || gs.memberSubject?.registrationDate;
+  if (start && moment(start).format("YYYY-MM-DD") > scheduledDate) return false;
+  if (
+    gs.membershipEndDate &&
+    moment(gs.membershipEndDate).format("YYYY-MM-DD") < scheduledDate
+  )
+    return false;
+  return true;
+};
 
 const AttendanceMarkView = () => {
   const dispatch = useDispatch();
@@ -216,7 +231,10 @@ const AttendanceMarkView = () => {
     if (!Array.isArray(groupMembers)) return;
     if (isEdit && !existingSession) return;
     const members = groupMembers
-      .filter((gs) => !gs.voided && gs.memberSubject)
+      .filter(
+        (gs) =>
+          !gs.voided && gs.memberSubject && isEligibleOn(gs, scheduledDate),
+      )
       .map((gs) => ({
         subjectUUID: gs.memberSubject.uuid,
         name: gs.memberSubject.name || gs.memberSubject.nameString || "",
@@ -237,6 +255,7 @@ const AttendanceMarkView = () => {
             reasonConceptUUIDs:
               rec?.reasonConceptUUIDs ||
               (rec?.reasonConceptUUID ? [rec.reasonConceptUUID] : []),
+            otherReasonText: rec?.otherReasonText || "",
             needsFollowUp: !!rec?.needsFollowUp,
           };
         }),
@@ -247,12 +266,13 @@ const AttendanceMarkView = () => {
           ...m,
           status: "Present",
           reasonConceptUUIDs: [],
+          otherReasonText: "",
           needsFollowUp: false,
         })),
       );
     }
     rosterInitialised.current = true;
-  }, [groupMembers, isEdit, existingSession]);
+  }, [groupMembers, isEdit, existingSession, scheduledDate]);
 
   const dayType = useMemo(() => {
     if (!calendar || !scheduledDate) return null;
@@ -264,6 +284,17 @@ const AttendanceMarkView = () => {
   const reasonMissing = !sessionReasonConceptUUID;
   const saveDisabled = saving || (holidayMode && reasonMissing);
 
+  // The "Other → fill it in" answer is declared in the attendance type config
+  // (otherReasonConcept); the free-text box shows only while it is the selected reason.
+  const otherReasonConceptUUID =
+    attendanceType?.config?.otherReasonConcept || null;
+  const hasOtherReason = useCallback(
+    (uuids) =>
+      !!otherReasonConceptUUID &&
+      (uuids || []).includes(otherReasonConceptUUID),
+    [otherReasonConceptUUID],
+  );
+
   const onTogglePresence = useCallback((subjectUUID) => {
     setRoster((prev) =>
       prev.map((r) =>
@@ -271,9 +302,10 @@ const AttendanceMarkView = () => {
           ? {
               ...r,
               status: r.status === "Present" ? "Absent" : "Present",
-              // Clear reasons + needsFollowUp when flipping back to Present.
+              // Clear reasons + free text + needsFollowUp when flipping back to Present.
               reasonConceptUUIDs:
                 r.status === "Present" ? r.reasonConceptUUIDs : [],
+              otherReasonText: r.status === "Present" ? r.otherReasonText : "",
               needsFollowUp: r.status === "Present" ? r.needsFollowUp : false,
             }
           : r,
@@ -281,10 +313,30 @@ const AttendanceMarkView = () => {
     );
   }, []);
 
-  const onSetReason = useCallback((subjectUUID, reasonConceptUUIDs) => {
+  const onSetReason = useCallback(
+    (subjectUUID, reasonConceptUUIDs) => {
+      setRoster((prev) =>
+        prev.map((r) =>
+          r.subjectUUID === subjectUUID
+            ? {
+                ...r,
+                reasonConceptUUIDs,
+                // "Other" free text only lives while the configured Other reason is selected.
+                otherReasonText: hasOtherReason(reasonConceptUUIDs)
+                  ? r.otherReasonText
+                  : "",
+              }
+            : r,
+        ),
+      );
+    },
+    [hasOtherReason],
+  );
+
+  const onSetOtherReason = useCallback((subjectUUID, text) => {
     setRoster((prev) =>
       prev.map((r) =>
-        r.subjectUUID === subjectUUID ? { ...r, reasonConceptUUIDs } : r,
+        r.subjectUUID === subjectUUID ? { ...r, otherReasonText: text } : r,
       ),
     );
   }, []);
@@ -361,6 +413,8 @@ const AttendanceMarkView = () => {
         subjectUUID: r.subjectUUID,
         status: r.status,
         reasonConceptUUIDs: r.status === "Absent" ? r.reasonConceptUUIDs : [],
+        otherReasonText:
+          r.status === "Absent" ? r.otherReasonText || null : null,
         needsFollowUp: r.status === "Absent" ? !!r.needsFollowUp : false,
       })),
     };
@@ -482,11 +536,13 @@ const AttendanceMarkView = () => {
             row={row}
             index={index}
             reasonAnswers={absenceReasonAnswers}
+            otherReasonConceptUUID={otherReasonConceptUUID}
             followUpEncounterTypeUuid={
               attendanceType.config?.followUpEncounterType
             }
             onTogglePresence={onTogglePresence}
             onSetReason={onSetReason}
+            onSetOtherReason={onSetOtherReason}
             onToggleNeedsFollowUp={onToggleNeedsFollowUp}
           />
         ))}

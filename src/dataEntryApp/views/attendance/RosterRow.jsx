@@ -8,6 +8,7 @@ import {
   MenuItem,
   Select,
   Switch,
+  TextField,
   Typography,
 } from "@mui/material";
 
@@ -15,15 +16,21 @@ const RosterRow = ({
   row,
   index,
   reasonAnswers,
+  otherReasonConceptUUID,
   followUpEncounterTypeUuid,
   onTogglePresence,
   onSetReason,
+  onSetOtherReason,
   onToggleNeedsFollowUp,
   readOnly,
 }) => {
   const isAbsent = row.status === "Absent";
   const selectedReasons = row.reasonConceptUUIDs || [];
   const showNeedsFollowUp = isAbsent && !!followUpEncounterTypeUuid;
+  // Show the free-text box when the configured "Other" answer is the selected reason.
+  const showOtherReason =
+    !!otherReasonConceptUUID &&
+    selectedReasons.includes(otherReasonConceptUUID);
 
   return (
     <Box
@@ -97,6 +104,19 @@ const RosterRow = ({
               ))}
             </Select>
           </FormControl>
+          {showOtherReason && (
+            <TextField
+              fullWidth
+              size="small"
+              sx={{ mt: 1 }}
+              placeholder="Specify other reason"
+              value={row.otherReasonText || ""}
+              onChange={(e) =>
+                onSetOtherReason(row.subjectUUID, e.target.value)
+              }
+              disabled={readOnly}
+            />
+          )}
           {showNeedsFollowUp && (
             <FormControlLabel
               control={

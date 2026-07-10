@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
+import SearchIcon from "@mui/icons-material/Search";
+import Pagination from "@mui/material/Pagination";
+import InputAdornment from "@mui/material/InputAdornment";
 import { httpClient as http } from "common/utils/httpClient";
 import { useParams, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
@@ -67,71 +70,152 @@ function NumericDetails({ data }) {
   );
 }
 
+const CODED_ANSWERS_PER_PAGE = 50;
+
 function CodedConceptDetails({ conceptAnswers }) {
+  const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState("");
+
+  const orderedAnswers = useMemo(
+    () =>
+      orderBy(
+        (conceptAnswers || []).filter((a) => a && !a.voided),
+        "order",
+      ),
+    [conceptAnswers],
+  );
+
+  const filteredAnswers = useMemo(() => {
+    const term = filter.trim().toLowerCase();
+    if (!term) return orderedAnswers;
+    return orderedAnswers.filter((a) =>
+      (a.answerConcept?.name || "").toLowerCase().includes(term),
+    );
+  }, [orderedAnswers, filter]);
+
+  if (conceptAnswers === undefined) {
+    return (
+      <div>
+        <FormLabel style={{ fontSize: "13px" }}>Answers</FormLabel>
+        <br />
+        <RemoveIcon />
+      </div>
+    );
+  }
+
+  const pageCount = Math.max(
+    1,
+    Math.ceil(filteredAnswers.length / CODED_ANSWERS_PER_PAGE),
+  );
+  const currentPage = Math.min(page, pageCount);
+  const pageAnswers = filteredAnswers.slice(
+    (currentPage - 1) * CODED_ANSWERS_PER_PAGE,
+    currentPage * CODED_ANSWERS_PER_PAGE,
+  );
+
   return (
     <div>
       <FormLabel style={{ fontSize: "13px" }}>Answers</FormLabel>
       <br />
-      {conceptAnswers &&
-        orderBy(conceptAnswers, "order").map((answer, index) => {
-          const answerConcept = answer.answerConcept;
-          return (
-            !answer.voided && (
-              <div key={index} style={{ width: "100%" }}>
-                <Grid
-                  container
-                  direction="row"
-                  spacing={2}
-                  style={{ width: "100%" }}
-                  sx={{
-                    alignItems: "center",
-                  }}
-                >
+      <Box
+        sx={{
+          my: 1,
+          display: "flex",
+          gap: 2,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <TextField
+          size="small"
+          variant="outlined"
+          placeholder="Filter answers by name"
+          value={filter}
+          onChange={(e) => {
+            setFilter(e.target.value);
+            setPage(1);
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" color="action" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ width: 320, backgroundColor: "background.paper" }}
+        />
+        <Box sx={{ color: "text.secondary" }}>
+          {filteredAnswers.length} answer
+          {filteredAnswers.length === 1 ? "" : "s"}
+          {filter.trim() ? ` (filtered from ${orderedAnswers.length})` : ""}
+        </Box>
+      </Box>
+      {pageAnswers.map((answer, index) => {
+        const answerConcept = answer.answerConcept;
+        return (
+          <div key={answer.uuid || index} style={{ width: "100%" }}>
+            <Grid
+              container
+              direction="row"
+              spacing={2}
+              style={{ width: "100%" }}
+              sx={{
+                alignItems: "center",
+              }}
+            >
+              <Grid>
+                <TextField
+                  id="name"
+                  value={answerConcept.name}
+                  style={{ width: "300px" }}
+                  margin="normal"
+                  disabled={true}
+                />
+              </Grid>
+              <Grid>
+                <FormControlLabel
+                  control={
+                    <Checkbox checked={!!answer.abnormal} name="abnormal" />
+                  }
+                  label="abnormal"
+                  style={{ marginLeft: "5px" }}
+                  disabled={true}
+                />
+              </Grid>
+              <Grid>
+                <FormControlLabel
+                  control={<Checkbox checked={!!answer.unique} name="unique" />}
+                  label="unique"
+                  disabled={true}
+                />
+              </Grid>
+              {answerConcept.media &&
+                answerConcept.media.map((m) => (
                   <Grid>
-                    <TextField
-                      id="name"
-                      value={answerConcept.name}
-                      style={{ width: "300px" }}
-                      margin="normal"
-                      disabled={true}
+                    <MediaPreview
+                      mediaUrl={m.url}
+                      mediaType={m.type}
+                      width={40}
+                      height={40}
                     />
                   </Grid>
-                  <Grid>
-                    <FormControlLabel
-                      control={
-                        <Checkbox checked={!!answer.abnormal} name="abnormal" />
-                      }
-                      label="abnormal"
-                      style={{ marginLeft: "5px" }}
-                      disabled={true}
-                    />
-                  </Grid>
-                  <Grid>
-                    <FormControlLabel
-                      control={
-                        <Checkbox checked={!!answer.unique} name="unique" />
-                      }
-                      label="unique"
-                      disabled={true}
-                    />
-                  </Grid>
-                  {answerConcept.media &&
-                    answerConcept.media.map((m) => (
-                      <Grid>
-                        <MediaPreview
-                          mediaUrl={m.url}
-                          mediaType={m.type}
-                          width={40}
-                          height={40}
-                        />
-                      </Grid>
-                    ))}
-                </Grid>
-              </div>
-            )
-          );
-        })}
-      {conceptAnswers === undefined && <RemoveIcon />}
+                ))}
+            </Grid>
+          </div>
+        );
+      })}
+      {pageCount > 1 && (
+        <Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
+          <Pagination
+            count={pageCount}
+            page={currentPage}
+            onChange={(e, value) => setPage(value)}
+            color="primary"
+            siblingCount={1}
+            boundaryCount={1}
+          />
+        </Box>
+      )}
     </div>
   );
 }
@@ -471,19 +555,22 @@ function ConceptDetails() {
           </div>
 
           <p />
-          {data.media &&
-            data.media.map((m) => (
-              <div>
-                <FormLabel style={{ fontSize: "13px" }}>{m.type}</FormLabel>
-                <br />
-                <MediaPreview
-                  mediaUrl={m.url}
-                  mediaType={m.type}
-                  width={80}
-                  height={80}
-                />
-              </div>
-            ))}
+          {data.media && data.media.length > 0 && (
+            <Box sx={{ maxHeight: 420, overflowY: "auto", pr: 1 }}>
+              {data.media.map((m, index) => (
+                <div key={index}>
+                  <FormLabel style={{ fontSize: "13px" }}>{m.type}</FormLabel>
+                  <br />
+                  <MediaPreview
+                    mediaUrl={m.url}
+                    mediaType={m.type}
+                    width={80}
+                    height={80}
+                  />
+                </div>
+              ))}
+            </Box>
+          )}
 
           <BooleanStatusInShow status={data.active} label={"Active"} />
 
