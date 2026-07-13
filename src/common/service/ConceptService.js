@@ -16,13 +16,22 @@ class ConceptService {
 
   static async saveConcept(concept) {
     let s3FileKey, error;
-    const conceptUpload = (file, type) =>
-      type === "Video" ? uploadVideo(null, file, MediaFolder.METADATA) : uploadImage(null, file, MediaFolder.METADATA);
-    const preparedConceptMedia = await WebConcept.prepareMediaForSave(concept.media || [], conceptUpload);
-    if (preparedConceptMedia.error) {
-      return { error: preparedConceptMedia.error };
+    if (concept.unsavedImage) {
+      [s3FileKey, error] = await uploadImage(null, concept.unsavedImage, MediaFolder.METADATA);
+      if (error) {
+        return { error };
+      }
+      if (isNil(concept.media)) concept.media = [];
+      concept.media.push({ url: s3FileKey, type: "Image" });
     }
-    concept.media = preparedConceptMedia.media;
+    if (concept.unsavedVideo) {
+      [s3FileKey, error] = await uploadVideo(null, concept.unsavedVideo, MediaFolder.METADATA);
+      if (error) {
+        return { error };
+      }
+      if (isNil(concept.media)) concept.media = [];
+      concept.media.push({ url: s3FileKey, type: "Video" });
+    }
 
     if (concept.dataType === "Coded") {
       WebConcept.adjustOrderOfAnswers(concept);
