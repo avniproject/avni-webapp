@@ -269,15 +269,6 @@ export const formDesignerHandleGroupElementKeyValueChange = (
   draft.detectBrowserCloseEvent = true;
 };
 
-export const formDesignerHandleGroupElementKeyValueDelete = (
-  draft,
-  draftFormElement,
-  key,
-) => {
-  delete draftFormElement.keyValues[key];
-  draft.detectBrowserCloseEvent = true;
-};
-
 export const formDesignerHandleExcludedAnswers = (
   draft,
   draftFormElement,
