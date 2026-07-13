@@ -6,9 +6,6 @@ module.exports = {
     "\\.(jpg|jpeg|png|gif|svg)$": "<rootDir>/__mocks__/fileMock.js",
     // Mock problematic ES modules
     "^react-hotkeys-hook$": "<rootDir>/__mocks__/react-hotkeys-hook.js",
-    "^react-markdown$": "<rootDir>/__mocks__/react-markdown.js",
-    "^rehype-raw$": "<rootDir>/__mocks__/rehype-plugin.js",
-    "^rehype-sanitize$": "<rootDir>/__mocks__/rehype-plugin.js",
     // Map specific directory patterns - order matters!
     "^dataEntryApp/(.*)$": "<rootDir>/src/dataEntryApp/$1",
     "^common/(.*)$": "<rootDir>/src/common/$1",

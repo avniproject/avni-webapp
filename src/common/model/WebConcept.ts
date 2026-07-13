@@ -23,42 +23,6 @@ export class WebConcept {
     });
   }
 
-  static moveMedia(media: any[], fromIndex: number, toIndex: number): any[] {
-    if (
-      fromIndex < 0 ||
-      toIndex < 0 ||
-      fromIndex >= media.length ||
-      toIndex >= media.length
-    ) {
-      return media;
-    }
-    const next = [...media];
-    const [moved] = next.splice(fromIndex, 1);
-    next.splice(toIndex, 0, moved);
-    return next;
-  }
-
-  static removeMediaAt(media: any[], index: number): any[] {
-    return media.filter((_, i) => i !== index);
-  }
-
-  static async prepareMediaForSave(
-    media: any[],
-    upload: (file: File, type: string) => Promise<[string, any]>,
-  ): Promise<{ media?: any[]; error?: any }> {
-    const result: any[] = [];
-    for (const item of media || []) {
-      if (item.file && !item.url) {
-        const [key, error] = await upload(item.file, item.type);
-        if (error) return { error };
-        result.push({ url: key, type: item.type });
-      } else {
-        result.push({ url: item.url, type: item.type });
-      }
-    }
-    return { media: result };
-  }
-
   static validateNumericRanges(concept: WebConcept) {
     const error: {
       absoluteValidation?: boolean;
