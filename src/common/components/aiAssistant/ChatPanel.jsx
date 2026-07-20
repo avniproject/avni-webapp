@@ -29,6 +29,7 @@ import UploadResultCard from "./UploadResultCard";
  *  - downloadBundleUrl: string | null
  *  - uploadErrorLogUrl: string | null
  *  - disabled: boolean
+ *  - isProductionOrg: boolean — blocks the bundle Upload-to-org action
  */
 const ChatPanel = ({
   messages,
@@ -40,6 +41,7 @@ const ChatPanel = ({
   downloadBundleUrl,
   uploadErrorLogUrl,
   disabled,
+  isProductionOrg,
 }) => {
   const [draft, setDraft] = useState("");
   const scrollerRef = useRef(null);
@@ -102,6 +104,7 @@ const ChatPanel = ({
                   msg={msg}
                   downloadBundleUrl={downloadBundleUrl}
                   onUploadToAvni={onUploadToAvni}
+                  isProductionOrg={isProductionOrg}
                 />
               );
             case "upload":
