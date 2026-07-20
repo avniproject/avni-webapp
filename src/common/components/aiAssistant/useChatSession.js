@@ -26,10 +26,8 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAiApi } from "./api";
+import { SESSION_STORAGE_KEY, useAiApi } from "./api";
 import { EVENT_TYPES } from "./types";
-
-const SESSION_STORAGE_KEY = "avni-autopilot-session-id";
 
 const readStoredSessionId = () => {
   try {
