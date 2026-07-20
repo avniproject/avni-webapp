@@ -1,4 +1,4 @@
-import { call, put, take, takeLatest } from "redux-saga/effects";
+import { call, put, select, take, takeLatest } from "redux-saga/effects";
 import {
   getUserInfo,
   sendInitComplete,
@@ -15,6 +15,10 @@ import { initReactI18next } from "react-i18next";
 import { get, isEmpty } from "lodash";
 import * as Auth from "aws-amplify/auth";
 import { authProvider } from "adminApp/react-admin-config/authProvider";
+import {
+  createAiApi,
+  SESSION_STORAGE_KEY as AI_SESSION_STORAGE_KEY,
+} from "../common/components/aiAssistant/api";
 
 const api = {
   fetchUserInfo: () =>
@@ -112,6 +116,7 @@ function* setAdminOrgsWorker() {
 
 function* logoutWorker() {
   try {
+    yield call(invalidateAiAssistantSession);
     yield call(api.logout);
     // Preserve version key to prevent false migration messages after logout
     const versionKey = localStorage.getItem("avni_app_version");
@@ -129,6 +134,33 @@ function* logoutWorker() {
   } catch (e) {
     console.error("Logout failed:", e);
     window.location.href = "/";
+  }
+}
+
+/**
+ * Tear down the Avni Autopilot AI session on logout. Deletes it server-side
+ * (drops the stored auth token and workdir immediately rather than waiting
+ * on the idle reaper) and clears the sessionStorage id so a subsequent
+ * login in the same tab starts a fresh session instead of resuming the
+ * previous user's — resuming it would replay their org's chat history and
+ * bundle, and reuse their auth token on `/upload-to-avni`.
+ *
+ * Best-effort: a failed delete must not block logout, so failures are
+ * swallowed after the storage key is cleared.
+ */
+function* invalidateAiAssistantSession() {
+  const sessionId = sessionStorage.getItem(AI_SESSION_STORAGE_KEY);
+  sessionStorage.removeItem(AI_SESSION_STORAGE_KEY);
+  if (!sessionId) return;
+  try {
+    const baseUrl = yield select(
+      (state) => state.app?.genericConfig?.avniAi?.mcpServerUrl,
+    );
+    if (baseUrl) {
+      yield call(createAiApi(baseUrl).deleteSession, sessionId);
+    }
+  } catch (e) {
+    console.error("Failed to invalidate AI assistant session on logout:", e);
   }
 }
 

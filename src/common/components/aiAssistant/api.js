@@ -28,6 +28,12 @@ import { useSelector } from "react-redux";
 import IdpDetails from "../../../rootApp/security/IdpDetails";
 import httpClient from "../../utils/httpClient";
 
+// sessionStorage key holding the active autopilot session id (mirrored by
+// useChatSession so a tab refresh resumes the same backend session).
+// Exported here — a non-hook module — so non-React callers (the logout
+// saga) can read/clear it without importing the hooks file.
+export const SESSION_STORAGE_KEY = "avni-autopilot-session-id";
+
 const freshAuthHeader = async () => {
   // avni-server expects the bearer token on the `AUTH-TOKEN` header (see
   // CognitoWebClient.jsx / KeycloakWebClient.jsx). Not `Authorization`.
