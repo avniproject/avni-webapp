@@ -1,7 +1,7 @@
 import { useState, useEffect, Fragment, useMemo, useCallback } from "react";
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { find, get, map, includes, sortBy, join, size, isEmpty } from "lodash";
+import { find, get, map, includes, sortBy, join, size } from "lodash";
 import { Concept } from "openchs-models";
 import { useSelector } from "react-redux";
 import api from "../api";
@@ -17,6 +17,7 @@ import {
   mapIndividual,
 } from "../../common/subjectModelMapper";
 import { subjectService } from "../services/SubjectService";
+import { getAnswerRuleFilter } from "../services/FormElementService";
 import Checkbox from "./Checkbox";
 
 const StyledGridContainer = styled(Grid)({
@@ -47,7 +48,7 @@ const AttendanceFormElement = ({
     get(state, "dataEntry.subjectProfile.subjectProfile.uuid"),
   );
   const [memberSubjects, setMemberSubjects] = useState([]);
-  const { mandatory, name, answersToShow, answersToExclude } = formElement;
+  const { mandatory, name, answersToShow } = formElement;
   const [isSelectAll, setSelectAll] = useState(false);
   const { t } = useTranslation();
   const validationResult = find(
@@ -76,15 +77,11 @@ const AttendanceFormElement = ({
             groupSubject.member.subjectType.uuid === subjectTypeUUID,
         );
         const mappedGroupSubjects = mapGroupMembers(groupSubjectsMatchingRole);
-        const hasAllowedList = !isEmpty(answersToShow);
+        const { isAllowed } = getAnswerRuleFilter(formElement);
         fetchedSubjects = map(
           mappedGroupSubjects,
           ({ memberSubject }) => memberSubject,
-        ).filter(
-          (memberSubject) =>
-            (!hasAllowedList || includes(answersToShow, memberSubject.uuid)) &&
-            !includes(answersToExclude, memberSubject.uuid),
-        );
+        ).filter((memberSubject) => isAllowed(memberSubject.uuid));
       } else {
         const subjects = await api.fetchSubjectForUUIDs(
           join(answersToShow, ","),

@@ -1,13 +1,14 @@
 import { Grid, FormHelperText } from "@mui/material";
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { subjectService } from "../services/SubjectService";
 import api from "../api";
 import { mapIndividual } from "../../common/subjectModelMapper";
-import { debounce, filter, find, first, includes, isEmpty, xor } from "lodash";
+import { getAnswerRuleFilter } from "../services/FormElementService";
+import { debounce, find, first, isEmpty, xor } from "lodash";
 import { Individual } from "avni-models";
 import { Concept } from "openchs-models";
 
@@ -19,9 +20,10 @@ const SubjectFormElement = (props) => {
   const isMultiSelect = props.formElement.type === "MultiSelect";
   const isMandatory = props.formElement.mandatory;
   const fieldLabel = props.formElement.name;
-  const allowedSubjectUUIDs = props.formElement.answersToShow;
-  const excludedSubjectUUIDs = props.formElement.answersToExclude;
-  const hasAllowedList = !isEmpty(allowedSubjectUUIDs);
+  const { hasAllowedList, isAllowed, allowedUUIDs } = useMemo(
+    () => getAnswerRuleFilter(props.formElement),
+    [props.formElement.answersToShow, props.formElement.answersToExclude],
+  );
   const [selectedSubjects, setSelectedSubjects] = useState();
   const [allowedOptions, setAllowedOptions] = useState();
 
@@ -56,27 +58,21 @@ const SubjectFormElement = (props) => {
       setAllowedOptions(undefined);
       return;
     }
-    const filteredAllowedUUIDs = filter(
-      allowedSubjectUUIDs,
-      (uuid) => !includes(excludedSubjectUUIDs, uuid),
-    );
-    if (isEmpty(filteredAllowedUUIDs)) {
+    if (isEmpty(allowedUUIDs)) {
       setAllowedOptions([]);
       return;
     }
-    api
-      .fetchSubjectForUUIDs(filteredAllowedUUIDs.join(","))
-      .then((subjects) => {
-        const mapped = (subjects || []).map(mapIndividual);
-        mapped.forEach((s) => subjectService.addSubject(s));
-        setAllowedOptions(
-          mapped.map((s) => ({
-            label: constructSubjectLabel(s),
-            value: s,
-          })),
-        );
-      });
-  }, [hasAllowedList, allowedSubjectUUIDs, excludedSubjectUUIDs]);
+    api.fetchSubjectForUUIDs(allowedUUIDs.join(",")).then((subjects) => {
+      const mapped = (subjects || []).map(mapIndividual);
+      mapped.forEach((s) => subjectService.addSubject(s));
+      setAllowedOptions(
+        mapped.map((s) => ({
+          label: constructSubjectLabel(s),
+          value: s,
+        })),
+      );
+    });
+  }, [hasAllowedList, allowedUUIDs]);
 
   const validationResult = find(
     props.validationResults,
@@ -104,7 +100,7 @@ const SubjectFormElement = (props) => {
     })
       .then((searchResults) =>
         searchResults.listOfRecords
-          .filter((subject) => !includes(excludedSubjectUUIDs, subject.uuid))
+          .filter((subject) => isAllowed(subject.uuid))
           .filter((subject) =>
             isMultiSelect && selectedSubjects
               ? selectedSubjects
@@ -159,7 +155,9 @@ const SubjectFormElement = (props) => {
             />
           ) : (
             <AsyncSelect
-              cacheOptions={(excludedSubjectUUIDs || []).join(",")}
+              cacheOptions={(props.formElement.answersToExclude || []).join(
+                ",",
+              )}
               loadOptions={debouncedLoadSubjects}
               name={fieldLabel}
               isMulti={isMultiSelect}

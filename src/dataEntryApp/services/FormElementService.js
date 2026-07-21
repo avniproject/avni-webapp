@@ -1,5 +1,5 @@
 import { Concept, ValidationResult, StaticFormElementGroup } from "avni-models";
-import { differenceWith, find, filter, flatMap, head, isEmpty, isNil, map, remove, some } from "lodash";
+import { differenceWith, find, filter, flatMap, head, includes, isEmpty, isNil, map, remove, some } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
@@ -216,3 +216,14 @@ export function getNonNestedFormElements(formElements) {
   });
   return nested;
 }
+
+export const getAnswerRuleFilter = (formElement) => {
+  const answersToShow = formElement.answersToShow;
+  const answersToExclude = formElement.answersToExclude;
+  const hasAllowedList = !isEmpty(answersToShow);
+  return {
+    hasAllowedList,
+    isAllowed: (uuid) => (!hasAllowedList || includes(answersToShow, uuid)) && !includes(answersToExclude, uuid),
+    allowedUUIDs: hasAllowedList ? filter(answersToShow, (uuid) => !includes(answersToExclude, uuid)) : null,
+  };
+};
