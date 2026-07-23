@@ -22,20 +22,20 @@ import { CloudUpload, Download, CheckCircle } from "@mui/icons-material";
  *  - msg: { type: "bundle", path, summary: {programs, encounter_types, main_forms, ...}, uploaded: boolean }
  *  - downloadBundleUrl: string
  *  - onUploadToAvni: () => Promise
- *  - isProductionOrg: boolean — blocks upload to a live Production org
+ *  - isUploadRestrictedOrg: boolean — blocks upload to a live Production/UAT org
  *
  * Counts shown: programs, visit types, forms only. Subjects, cancellation
  * forms, concepts, and form_mappings are kept out of view as either
  * internal plumbing or noisy for non-Avni audiences.
  */
-const PRODUCTION_UPLOAD_BLOCKED_MESSAGE =
-  "Uploading to a Production organisation is disabled. Download the bundle and import it through a review process instead.";
+const RESTRICTED_UPLOAD_BLOCKED_MESSAGE =
+  "Uploading to a Production or UAT organisation is disabled. Download the bundle and import it through a review process instead.";
 
 const BundleSummary = ({
   msg,
   downloadBundleUrl,
   onUploadToAvni,
-  isProductionOrg,
+  isUploadRestrictedOrg,
 }) => {
   const [uploading, setUploading] = useState(false);
   const summary = msg.summary || {};
@@ -117,7 +117,7 @@ const BundleSummary = ({
         {/* Tooltip needs a non-disabled wrapper to receive hover events, so
             the reason stays discoverable while the button itself is disabled. */}
         <Tooltip
-          title={isProductionOrg ? PRODUCTION_UPLOAD_BLOCKED_MESSAGE : ""}
+          title={isUploadRestrictedOrg ? RESTRICTED_UPLOAD_BLOCKED_MESSAGE : ""}
           sx={{ flex: 1 }}
         >
           <Box sx={{ flex: 1 }}>
@@ -128,7 +128,7 @@ const BundleSummary = ({
                 uploading ? <CircularProgress size={16} /> : <CloudUpload />
               }
               onClick={upload}
-              disabled={uploading || msg.uploaded || isProductionOrg}
+              disabled={uploading || msg.uploaded || isUploadRestrictedOrg}
               fullWidth
               sx={{
                 py: 1.1,

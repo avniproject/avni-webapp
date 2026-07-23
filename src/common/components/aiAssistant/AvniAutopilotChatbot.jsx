@@ -28,7 +28,10 @@ import {
   RestartAlt,
 } from "@mui/icons-material";
 import { setAvniAutopilotOpen } from "../../../rootApp/ducks";
-import { isProduction } from "../../../adminApp/domain/OrganisationCategory";
+import {
+  isProduction,
+  isUAT,
+} from "../../../adminApp/domain/OrganisationCategory";
 import ChatPanel from "./ChatPanel";
 import UploadDropzone from "./UploadDropzone";
 import { useChatSession } from "./useChatSession";
@@ -63,12 +66,12 @@ const AvniAutopilotChatbot = () => {
   const isOpen = useSelector((state) => state.app?.isAvniAutopilotOpen);
   const userInfo = useSelector((state) => state.app?.userInfo);
   // Uploading a generated bundle overwrites the org's live config, so it is
-  // blocked for Production orgs — mirrors the guard on deleting an org's data
-  // (adminApp/OrganisationDetail). The category tracks the acting org, so a
-  // superadmin switched into a Production org is covered too.
-  const isProductionOrg = useSelector((state) =>
-    isProduction(state.app?.organisation),
-  );
+  // blocked for Production and UAT orgs — mirrors the guard on deleting an
+  // org's data (adminApp/OrganisationDetail).
+  const isUploadRestrictedOrg = useSelector((state) => {
+    const organisation = state.app?.organisation;
+    return isProduction(organisation) || isUAT(organisation);
+  });
 
   const [isMaximised, setIsMaximised] = useState(false);
   const [fabPosition, setFabPosition] = useState(() => loadStoredFabPosition());
@@ -397,7 +400,7 @@ const AvniAutopilotChatbot = () => {
             downloadBundleUrl={downloadBundleUrl}
             uploadErrorLogUrl={uploadErrorLogUrl}
             disabled={status !== "connected"}
-            isProductionOrg={isProductionOrg}
+            isUploadRestrictedOrg={isUploadRestrictedOrg}
           />
         </Box>
       </Slide>
