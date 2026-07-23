@@ -179,6 +179,7 @@
   "ADMIN_APPROVAL_WORKFLOW": "Enable approval workflow",
   "ADMIN_SAVE_DRAFT": "Enable draft save",
   "ADMIN_HIDE_DOB": "Hides the DOB on subject dashboard on Data Entry App",
+  "ADMIN_HIDE_VISIT_DATE": "Hides the auto-populated Visit Date field on general and program encounter forms in the mobile app. The visit date is still captured and saved.",
   "ADMIN_ENABLE_COMMENTS": "Enable the comments feature.",
   "ADMIN_ENABLE_MOBILE_APP_DB_ENCRYPTION": "Enables mobile app database encryption to ensure safety of data. Enabling this will not permit user to use fast sync and upload db feature in mobile app.",
   "ADMIN_ENABLE_CANNED_REPORTS": "Enable canned reporting app.",

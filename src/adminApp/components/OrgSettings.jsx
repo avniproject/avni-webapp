@@ -64,6 +64,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
     approvalWorkflow: "enableApprovalWorkflow",
     draftSave: "saveDrafts",
     hideDateOfBirth: "hideDateOfBirth",
+    hideVisitDate: "hideVisitDate",
     enableComments: "enableComments",
     showSummaryButton: "showSummaryButton",
     useKeycloakAsIDP: "useKeycloakAsIDP",
@@ -100,6 +101,11 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
           organisationConfigSettingKeys.hideDateOfBirth,
           "Hide Date of Birth on DEA",
           "ADMIN_HIDE_DOB",
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.hideVisitDate,
+          "Hide Visit Date",
+          "ADMIN_HIDE_VISIT_DATE",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.enableComments,
