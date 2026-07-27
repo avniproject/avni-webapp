@@ -161,6 +161,8 @@ const AvniAutopilotChatbot = () => {
     messages,
     toolCalls,
     error,
+    dismissError,
+    awaitingReply,
     start,
     send,
     resolveChanges,
@@ -372,7 +374,7 @@ const AvniAutopilotChatbot = () => {
           {error && (
             <Alert
               severity={error.recoverable ? "warning" : "error"}
-              onClose={error.recoverable ? () => {} : undefined}
+              onClose={error.recoverable ? dismissError : undefined}
             >
               {error.message}
             </Alert>
@@ -401,6 +403,7 @@ const AvniAutopilotChatbot = () => {
             uploadErrorLogUrl={uploadErrorLogUrl}
             disabled={status !== "connected"}
             isUploadRestrictedOrg={isUploadRestrictedOrg}
+            awaitingReply={awaitingReply}
           />
         </Box>
       </Slide>

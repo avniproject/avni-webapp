@@ -30,6 +30,7 @@ import UploadResultCard from "./UploadResultCard";
  *  - uploadErrorLogUrl: string | null
  *  - disabled: boolean
  *  - isUploadRestrictedOrg: boolean — blocks the bundle Upload-to-org action
+ *  - awaitingReply: boolean — shows the "Thinking…" row until the first agent event
  */
 const ChatPanel = ({
   messages,
@@ -42,6 +43,7 @@ const ChatPanel = ({
   uploadErrorLogUrl,
   disabled,
   isUploadRestrictedOrg,
+  awaitingReply,
 }) => {
   const [draft, setDraft] = useState("");
   const scrollerRef = useRef(null);
@@ -50,7 +52,7 @@ const ChatPanel = ({
   useEffect(() => {
     const el = scrollerRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, toolCalls]);
+  }, [messages, toolCalls, awaitingReply]);
 
   const submit = async () => {
     const text = draft.trim();
@@ -123,6 +125,7 @@ const ChatPanel = ({
         {toolCalls.map((tc) => (
           <ToolCallRow key={tc.call_id} tc={tc} />
         ))}
+        {awaitingReply && toolCalls.length === 0 && <ThinkingRow />}
       </Box>
 
       <Box
@@ -275,6 +278,18 @@ const ToolCallRow = ({ tc }) => (
       size="small"
       variant="outlined"
       label={labelForTool(tc)}
+      sx={{ fontSize: 12 }}
+    />
+  </Box>
+);
+
+const ThinkingRow = () => (
+  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1, pl: 4 }}>
+    <CircularProgress size={12} />
+    <Chip
+      size="small"
+      variant="outlined"
+      label="Thinking…"
       sx={{ fontSize: 12 }}
     />
   </Box>
