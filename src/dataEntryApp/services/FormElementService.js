@@ -223,7 +223,7 @@ export const getAnswerRuleFilter = (formElement) => {
   const hasAllowedList = !isEmpty(answersToShow);
   return {
     hasAllowedList,
-    isAllowed: (uuid) => (!hasAllowedList || includes(answersToShow, uuid)) && !includes(answersToExclude, uuid),
+    isAllowed: (uuid) => formElement.isApplicableSubjectUUID(uuid),
     allowedUUIDs: hasAllowedList ? filter(answersToShow, (uuid) => !includes(answersToExclude, uuid)) : null,
   };
 };

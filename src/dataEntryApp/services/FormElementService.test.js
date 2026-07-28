@@ -16,10 +16,13 @@ it("should get getNonNestedFormElements", function () {
 });
 
 describe("getAnswerRuleFilter", () => {
-  const formElementWith = (answersToShow, answersToExclude) => ({
-    answersToShow,
-    answersToExclude,
-  });
+  // Real FormElement instances: isAllowed delegates to FormElement.isApplicableSubjectUUID
+  const formElementWith = (answersToShow, answersToExclude) => {
+    const formElement = EntityFactory.createFormElement2({ name: "subject-fe" });
+    formElement.answersToShow = answersToShow;
+    formElement.answersToExclude = answersToExclude;
+    return formElement;
+  };
 
   it("keeps everything when there is no allow-list and nothing excluded", () => {
     const { hasAllowedList, isAllowed, allowedUUIDs } = getAnswerRuleFilter(formElementWith(undefined, undefined));
