@@ -8,6 +8,7 @@ import {
   Stack,
   Chip,
   CircularProgress,
+  Tooltip,
 } from "@mui/material";
 import { CloudUpload, Download, CheckCircle } from "@mui/icons-material";
 
@@ -21,12 +22,21 @@ import { CloudUpload, Download, CheckCircle } from "@mui/icons-material";
  *  - msg: { type: "bundle", path, summary: {programs, encounter_types, main_forms, ...}, uploaded: boolean }
  *  - downloadBundleUrl: string
  *  - onUploadToAvni: () => Promise
+ *  - isUploadRestrictedOrg: boolean — blocks upload to a live Production/UAT org
  *
  * Counts shown: programs, visit types, forms only. Subjects, cancellation
  * forms, concepts, and form_mappings are kept out of view as either
  * internal plumbing or noisy for non-Avni audiences.
  */
-const BundleSummary = ({ msg, downloadBundleUrl, onUploadToAvni }) => {
+const RESTRICTED_UPLOAD_BLOCKED_MESSAGE =
+  "Uploading to a Production or UAT organisation is disabled. Download the bundle and import it through a review process instead.";
+
+const BundleSummary = ({
+  msg,
+  downloadBundleUrl,
+  onUploadToAvni,
+  isUploadRestrictedOrg,
+}) => {
   const [uploading, setUploading] = useState(false);
   const summary = msg.summary || {};
 
@@ -104,25 +114,34 @@ const BundleSummary = ({ msg, downloadBundleUrl, onUploadToAvni }) => {
       )}
 
       <Stack direction="row" spacing={2} sx={{ mt: 0.5 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={
-            uploading ? <CircularProgress size={16} /> : <CloudUpload />
-          }
-          onClick={upload}
-          disabled={uploading || msg.uploaded}
-          fullWidth
-          sx={{
-            py: 1.1,
-            borderRadius: 2,
-            fontWeight: 600,
-            letterSpacing: 0.3,
-            boxShadow: 2,
-          }}
+        {/* Tooltip needs a non-disabled wrapper to receive hover events, so
+            the reason stays discoverable while the button itself is disabled. */}
+        <Tooltip
+          title={isUploadRestrictedOrg ? RESTRICTED_UPLOAD_BLOCKED_MESSAGE : ""}
+          sx={{ flex: 1 }}
         >
-          {msg.uploaded ? "Uploaded" : "Upload to org"}
-        </Button>
+          <Box sx={{ flex: 1 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={
+                uploading ? <CircularProgress size={16} /> : <CloudUpload />
+              }
+              onClick={upload}
+              disabled={uploading || msg.uploaded || isUploadRestrictedOrg}
+              fullWidth
+              sx={{
+                py: 1.1,
+                borderRadius: 2,
+                fontWeight: 600,
+                letterSpacing: 0.3,
+                boxShadow: 2,
+              }}
+            >
+              {msg.uploaded ? "Uploaded" : "Upload to org"}
+            </Button>
+          </Box>
+        </Tooltip>
         <Button
           variant="outlined"
           startIcon={<Download />}

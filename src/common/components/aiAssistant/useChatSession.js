@@ -26,10 +26,8 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAiApi } from "./api";
+import { SESSION_STORAGE_KEY, useAiApi } from "./api";
 import { EVENT_TYPES } from "./types";
-
-const SESSION_STORAGE_KEY = "avni-autopilot-session-id";
 
 const readStoredSessionId = () => {
   try {
@@ -113,6 +111,7 @@ const safeParseDetail = (body) => {
  *   messages: Array<Object>,
  *   toolCalls: Array<{tool: string, args: Object, call_id: string}>,
  *   error: {code: string, message: string, recoverable: boolean} | null,
+ *   dismissError: () => void,
  *   start: () => Promise<void>,
  *   send: (text: string) => Promise<void>,
  *   resolveChanges: (interruptId: string, resolutions: Array) => Promise<boolean>,
@@ -135,6 +134,8 @@ export const useChatSession = () => {
   const [toolCalls, setToolCalls] = useState([]);
   const [error, setError] = useState(null);
   const [checkingSetup, setCheckingSetup] = useState(false);
+  // User turn posted, no agent event yet — drives ChatPanel's "Thinking…" row.
+  const [awaitingReply, setAwaitingReply] = useState(false);
 
   const eventSourceRef = useRef(null);
   // Flag set when an interactive card (HITL / bundle) lands. The model's
@@ -146,6 +147,9 @@ export const useChatSession = () => {
   // ── SSE wiring ────────────────────────────────────────────────────────────
 
   const handleEvent = useCallback((type, data) => {
+    if (type !== EVENT_TYPES.SESSION_LOADING && type !== EVENT_TYPES.SESSION_READY) {
+      setAwaitingReply(false);
+    }
     switch (type) {
       case EVENT_TYPES.AGENT_MESSAGE: {
         const suppressed = suppressNextAssistantRef.current;
@@ -347,6 +351,7 @@ export const useChatSession = () => {
       try {
         await aiApi.sendMessage(sessionId, text);
         setMessages((prev) => [...prev, { type: "text", role: "user", content: text, ts: nowTs() }]);
+        setAwaitingReply(true);
       } catch (err) {
         setError({
           code: "E_SEND",
@@ -369,6 +374,7 @@ export const useChatSession = () => {
           const flagged = markHitlResolved(prev, interruptId);
           return summary ? [...flagged, summary] : flagged;
         });
+        setAwaitingReply(true);
         return true;
       } catch (err) {
         setError({
@@ -433,6 +439,8 @@ export const useChatSession = () => {
     }
   }, [sessionId, aiApi]);
 
+  const dismissError = useCallback(() => setError(null), []);
+
   const resetSession = useCallback(async () => {
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
@@ -449,6 +457,7 @@ export const useChatSession = () => {
     setError(null);
     setStatus("idle");
     setCheckingSetup(false);
+    setAwaitingReply(false);
     suppressNextAssistantRef.current = false;
   }, [sessionId, aiApi]);
 
@@ -469,7 +478,9 @@ export const useChatSession = () => {
     messages,
     toolCalls,
     error,
+    dismissError,
     checkingSetup,
+    awaitingReply,
     start,
     send,
     resolveChanges,

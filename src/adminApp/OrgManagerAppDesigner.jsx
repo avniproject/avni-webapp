@@ -61,7 +61,7 @@ import CreateEditDownloadableContent from "./DownloadableContent/CreateEditDownl
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import CreateEditFiltersHOC from "./components/CreateEditFiltersHOC";
 import { TemplateOrganisations } from "../formDesigner/components/TemplateOrganisations/TemplateOrganisations";
-import { isProduction, isUAT } from "./OrganisationDetail";
+import { isProduction, isUAT } from "./domain/OrganisationCategory";
 import { useSelector } from "react-redux";
 
 export const showTemplatesCheck = (organisation, genericConfig) =>
