@@ -12,7 +12,7 @@ import {
 import { Title } from "react-admin";
 import { DeleteData } from "./components/DeleteData";
 import { OrgSettings } from "./components/OrgSettings";
-import OrganisationCategory from "./domain/OrganisationCategory";
+import { isProduction } from "./domain/OrganisationCategory";
 import OrganisationService from "../common/service/OrganisationService";
 import _ from "lodash";
 
@@ -29,15 +29,6 @@ const StyledButton = styled(Button)({
 const StyledSnackbarContent = styled(SnackbarContent)({
   backgroundColor: "red",
 });
-
-export function isProduction(organisation) {
-  return (
-    organisation.organisationCategoryName === OrganisationCategory.Production
-  );
-}
-export function isUAT(organisation) {
-  return organisation.organisationCategoryName === OrganisationCategory.UAT;
-}
 
 export const OrganisationDetail = ({
   organisation: { name, id },

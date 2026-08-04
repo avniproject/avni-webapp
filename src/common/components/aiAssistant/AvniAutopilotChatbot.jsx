@@ -28,6 +28,10 @@ import {
   RestartAlt,
 } from "@mui/icons-material";
 import { setAvniAutopilotOpen } from "../../../rootApp/ducks";
+import {
+  isProduction,
+  isUAT,
+} from "../../../adminApp/domain/OrganisationCategory";
 import ChatPanel from "./ChatPanel";
 import UploadDropzone from "./UploadDropzone";
 import { useChatSession } from "./useChatSession";
@@ -61,6 +65,13 @@ const AvniAutopilotChatbot = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.app?.isAvniAutopilotOpen);
   const userInfo = useSelector((state) => state.app?.userInfo);
+  // Uploading a generated bundle overwrites the org's live config, so it is
+  // blocked for Production and UAT orgs — mirrors the guard on deleting an
+  // org's data (adminApp/OrganisationDetail).
+  const isUploadRestrictedOrg = useSelector((state) => {
+    const organisation = state.app?.organisation;
+    return isProduction(organisation) || isUAT(organisation);
+  });
 
   const [isMaximised, setIsMaximised] = useState(false);
   const [fabPosition, setFabPosition] = useState(() => loadStoredFabPosition());
@@ -150,6 +161,8 @@ const AvniAutopilotChatbot = () => {
     messages,
     toolCalls,
     error,
+    dismissError,
+    awaitingReply,
     start,
     send,
     resolveChanges,
@@ -361,7 +374,7 @@ const AvniAutopilotChatbot = () => {
           {error && (
             <Alert
               severity={error.recoverable ? "warning" : "error"}
-              onClose={error.recoverable ? () => {} : undefined}
+              onClose={error.recoverable ? dismissError : undefined}
             >
               {error.message}
             </Alert>
@@ -389,6 +402,8 @@ const AvniAutopilotChatbot = () => {
             downloadBundleUrl={downloadBundleUrl}
             uploadErrorLogUrl={uploadErrorLogUrl}
             disabled={status !== "connected"}
+            isUploadRestrictedOrg={isUploadRestrictedOrg}
+            awaitingReply={awaitingReply}
           />
         </Box>
       </Slide>

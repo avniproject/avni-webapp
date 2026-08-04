@@ -1209,6 +1209,33 @@ describe("Validation Tests", () => {
       assert.isFalse(mandatoryError.success);
     });
 
+    it("should not return validation errors for a filled mandatory child of a non-repeatable question group", () => {
+      const obsHolder = new ObservationsHolder([]);
+      commonFormUtil.updateObservations(questionGroupFormElement, "Some value", subject, obsHolder, [], childTextFormElement, null);
+
+      const validationErrors = commonFormUtil.getFEDataValidationErrors(
+        [questionGroupFormElement, childTextFormElement, childNumericFormElement],
+        obsHolder,
+      );
+
+      const childError = validationErrors.find((ve) => ve.formIdentifier === childTextFormElement.uuid);
+      assert.isUndefined(childError, "Should not have a validation error for the filled mandatory child");
+    });
+
+    it("should return validation errors for an empty mandatory child of a non-repeatable question group", () => {
+      const obsHolder = new ObservationsHolder([]);
+      commonFormUtil.updateObservations(questionGroupFormElement, 10, subject, obsHolder, [], childNumericFormElement, null);
+
+      const validationErrors = commonFormUtil.getFEDataValidationErrors(
+        [questionGroupFormElement, childTextFormElement, childNumericFormElement],
+        obsHolder,
+      );
+
+      const childError = validationErrors.find((ve) => ve.formIdentifier === childTextFormElement.uuid);
+      assert.isDefined(childError, "Should have a validation error for the unfilled mandatory child");
+      assert.isFalse(childError.success);
+    });
+
     it("should handle empty or null filteredFormElements", () => {
       // Create an observations holder
       const obsHolder = new ObservationsHolder([]);
@@ -1807,5 +1834,108 @@ describe("Additional validation tests for getFEDataValidationErrors", () => {
     assert.isArray(validationErrorsWithNull);
     const mandatoryError = validationErrorsWithNull.find((ve) => ve.formIdentifier === mandatoryFormElement.uuid);
     assert.isDefined(mandatoryError, "Should process valid elements and skip null ones");
+  });
+});
+
+describe("Navigation past a non-repeatable question group", () => {
+  let form;
+  let formElementGroup1;
+  let formElementGroup2;
+  let questionGroupFormElement;
+  let childTextFormElement;
+  let subject;
+
+  beforeEach(() => {
+    form = EntityFactory.createForm2({ uuid: "form-qg-nav" });
+
+    formElementGroup1 = EntityFactory.createFormElementGroup2({
+      form: form,
+      displayOrder: 1,
+    });
+    formElementGroup2 = EntityFactory.createFormElementGroup2({
+      form: form,
+      displayOrder: 2,
+    });
+    formElementGroup1.uuid = "feg-qg-nav-1";
+    formElementGroup2.uuid = "feg-qg-nav-2";
+    form.addFormElementGroup(formElementGroup1);
+    form.addFormElementGroup(formElementGroup2);
+
+    formElementGroup1.next = () => formElementGroup2;
+    formElementGroup2.next = () => null;
+
+    const questionGroupConcept = EntityFactory.createConcept2({
+      uuid: "c-qg-nav",
+      name: "c-qg-nav",
+      dataType: Concept.dataType.QuestionGroup,
+    });
+    const childConcept = EntityFactory.createConcept2({
+      uuid: "c-qg-nav-child",
+      name: "c-qg-nav-child",
+      dataType: Concept.dataType.Text,
+    });
+    const nextPageConcept = EntityFactory.createConcept2({
+      uuid: "c-qg-nav-next",
+      name: "c-qg-nav-next",
+      dataType: Concept.dataType.Text,
+    });
+
+    questionGroupFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-qg-nav",
+      formElementGroup: formElementGroup1,
+      concept: questionGroupConcept,
+      displayOrder: 1,
+      mandatory: false,
+    });
+    childTextFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-qg-nav-child",
+      formElementGroup: formElementGroup1,
+      concept: childConcept,
+      displayOrder: 2,
+      mandatory: true,
+      group: questionGroupFormElement,
+    });
+    const nextPageFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-qg-nav-next",
+      formElementGroup: formElementGroup2,
+      concept: nextPageConcept,
+      displayOrder: 1,
+      mandatory: false,
+    });
+
+    formElementGroup1.addFormElement(questionGroupFormElement);
+    formElementGroup1.addFormElement(childTextFormElement);
+    formElementGroup2.addFormElement(nextPageFormElement);
+
+    subject = EntityFactory.createSubject({});
+  });
+
+  const onNextFromFirstPage = () => {
+    const { filteredFormElements } = commonFormUtil.onLoad(form, subject);
+    return commonFormUtil.onNext({
+      formElementGroup: formElementGroup1,
+      observations: subject.observations,
+      entity: subject,
+      filteredFormElements,
+      validationResults: [],
+      wizard: new Wizard(2, 1, 1),
+      entityValidations: [],
+    });
+  };
+
+  it("should advance when the mandatory child of a non-repeatable question group is filled", function () {
+    const observationsHolder = new ObservationsHolder(subject.observations);
+    commonFormUtil.updateObservations(questionGroupFormElement, "some value", subject, observationsHolder, [], childTextFormElement, null);
+    subject.observations = observationsHolder.observations;
+
+    const result = onNextFromFirstPage();
+
+    assert.strictEqual(result.formElementGroup, formElementGroup2, "Should advance to the next form element group");
+  });
+
+  it("should not advance when the mandatory child of a non-repeatable question group is empty", function () {
+    const result = onNextFromFirstPage();
+
+    assert.strictEqual(result.formElementGroup, formElementGroup1, "Should stay on the page with the unfilled mandatory child");
   });
 });

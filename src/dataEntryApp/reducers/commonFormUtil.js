@@ -336,6 +336,26 @@ const validateChildInRepeatableGroup = ({ childFormElement, obsHolder, formEleme
   return results;
 };
 
+const validateChildInNonRepeatableGroup = ({ childFormElement, obsHolder, formElementStatuses, validationResults }) => {
+  const parentFormElement = childFormElement.group;
+  const obsValue = obsHolder.findObservation(parentFormElement.concept);
+  const questionGroupWrapper = isNil(obsValue) ? null : obsValue.getValueWrapper();
+
+  return validateElement({
+    formElement: childFormElement,
+    parentElement: parentFormElement,
+    groupObservation: questionGroupWrapper,
+    obsHolder,
+    formElementStatuses,
+    validationResults,
+  });
+};
+
+const isChildOfNonRepeatableQuestionGroup = (childFormElement) =>
+  !isNil(childFormElement.group) &&
+  get(childFormElement, "group.concept.datatype") === Concept.dataType.QuestionGroup &&
+  !childFormElement.group.repeatable;
+
 /**
  * Validates form elements and returns validation results
  * @param {Array} filteredFormElements - Form elements to validate
@@ -426,9 +446,14 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
         formElementStatuses,
         validationResults,
       });
-    }
-    // For non-repeatable groups or if not already processed
-    else if (!alreadyProcessed) {
+    } else if (!alreadyProcessed && isChildOfNonRepeatableQuestionGroup(childFormElement)) {
+      validationResults = validateChildInNonRepeatableGroup({
+        childFormElement,
+        obsHolder,
+        formElementStatuses,
+        validationResults,
+      });
+    } else if (!alreadyProcessed) {
       validationResults = validateElement({
         formElement: childFormElement,
         obsHolder,

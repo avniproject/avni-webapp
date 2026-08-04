@@ -10,21 +10,22 @@ import {
   FormGroup,
   FormHelperText,
   Grid,
-  Link
+  Link,
 } from "@mui/material";
 import {
   mapGroupMembers,
-  mapIndividual
+  mapIndividual,
 } from "../../common/subjectModelMapper";
 import { subjectService } from "../services/SubjectService";
+import { getAnswerRuleFilter } from "../services/FormElementService";
 import Checkbox from "./Checkbox";
 
 const StyledGridContainer = styled(Grid)({
-  height: "100%"
+  height: "100%",
 });
 
 const StyledSelectAllGrid = styled(Grid)({
-  justifyContent: "flex-end"
+  justifyContent: "flex-end",
 });
 
 const StyledMemberGrid = styled(Grid)(({ index }) => ({
@@ -32,7 +33,7 @@ const StyledMemberGrid = styled(Grid)(({ index }) => ({
   paddingLeft: 10,
   paddingRight: 15,
   alignItems: "center",
-  justifyContent: "center"
+  justifyContent: "center",
 }));
 
 const AttendanceFormElement = ({
@@ -41,12 +42,12 @@ const AttendanceFormElement = ({
   validationResults,
   uuid,
   value = [],
-  displayAllGroupMembers
+  displayAllGroupMembers,
 }) => {
-  const subjectUUID = useSelector(state =>
-    get(state, "dataEntry.subjectProfile.subjectProfile.uuid")
+  const subjectUUID = useSelector((state) =>
+    get(state, "dataEntry.subjectProfile.subjectProfile.uuid"),
   );
-  const [memberSubjects, setMemberSubjects] = useState([]);
+  const [fetchedMembers, setFetchedMembers] = useState([]);
   const { mandatory, name, answersToShow } = formElement;
   const [isSelectAll, setSelectAll] = useState(false);
   const { t } = useTranslation();
@@ -54,63 +55,79 @@ const AttendanceFormElement = ({
     validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
       formIdentifier === uuid &&
-      questionGroupIndex === formElement.questionGroupIndex
+      questionGroupIndex === formElement.questionGroupIndex,
   );
   const label = `${t(name)} ${mandatory ? "*" : ""}`;
-  const memberUUIDs = useMemo(() => memberSubjects.map(({ uuid }) => uuid), [
-    memberSubjects
-  ]);
+  const subjectTypeUUID = useMemo(
+    () => formElement.concept.recordValueByKey(Concept.keys.subjectTypeUUID),
+    [formElement.concept],
+  );
+  const answersToShowKey = join(answersToShow, ",");
+  const { isAllowed } = useMemo(
+    () => getAnswerRuleFilter(formElement),
+    [formElement],
+  );
+  const memberSubjects = useMemo(() => {
+    const applicable = displayAllGroupMembers
+      ? fetchedMembers.filter((memberSubject) => isAllowed(memberSubject.uuid))
+      : fetchedMembers;
+    const validSubjects = applicable.filter((s) => s && s.nameString);
+    return sortBy(validSubjects, (s) => s.nameString);
+  }, [fetchedMembers, isAllowed, displayAllGroupMembers]);
+  const memberUUIDs = useMemo(
+    () => memberSubjects.map(({ uuid }) => uuid),
+    [memberSubjects],
+  );
   const selectLabel = isSelectAll ? t("unselectAllLabel") : t("selectAllLabel");
 
   useEffect(() => {
+    let cancelled = false;
     const fetchMembers = async () => {
       let fetchedSubjects = [];
       if (displayAllGroupMembers) {
-        const subjectTypeUUID = formElement.concept.recordValueByKey(
-          Concept.keys.subjectTypeUUID
-        );
         const groupSubjects = await api.fetchGroupMembers(subjectUUID);
         const groupSubjectsMatchingRole = groupSubjects.filter(
-          groupSubject =>
-            groupSubject.member.subjectType.uuid === subjectTypeUUID
+          (groupSubject) =>
+            groupSubject.member.subjectType.uuid === subjectTypeUUID,
         );
         const mappedGroupSubjects = mapGroupMembers(groupSubjectsMatchingRole);
         fetchedSubjects = map(
           mappedGroupSubjects,
-          ({ memberSubject }) => memberSubject
+          ({ memberSubject }) => memberSubject,
         );
       } else {
-        const subjects = await api.fetchSubjectForUUIDs(
-          join(answersToShow, ",")
-        );
+        const subjects = await api.fetchSubjectForUUIDs(answersToShowKey);
         fetchedSubjects = map(subjects, mapIndividual);
       }
       subjectService.addSubjects(fetchedSubjects);
       return fetchedSubjects;
     };
 
-    fetchMembers().then(fetchedSubjects => {
-      const validSubjects = fetchedSubjects.filter(s => s && s.nameString);
-      setMemberSubjects(sortBy(validSubjects, s => s.nameString));
+    fetchMembers().then((fetchedSubjects) => {
+      if (!cancelled) setFetchedMembers(fetchedSubjects);
     });
-  }, [displayAllGroupMembers, subjectUUID, formElement]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [displayAllGroupMembers, subjectUUID, subjectTypeUUID, answersToShowKey]);
 
   useEffect(() => {
     setSelectAll(size(memberUUIDs) === size(value));
   }, [memberUUIDs, value]);
 
   const onsSwitchChange = useCallback(
-    event => {
+    (event) => {
       const uuid = event.target.value;
       update(uuid);
     },
-    [update]
+    [update],
   );
 
   const toggleSelectAll = useCallback(() => {
-    setSelectAll(prev => {
+    setSelectAll((prev) => {
       const newSelectAll = !prev;
-      memberUUIDs.forEach(memberUUID => {
+      memberUUIDs.forEach((memberUUID) => {
         if (
           (newSelectAll && !includes(value, memberUUID)) ||
           (!newSelectAll && includes(value, memberUUID))
@@ -134,7 +151,7 @@ const AttendanceFormElement = ({
             <Link
               underline="hover"
               href="#"
-              onClick={e => {
+              onClick={(e) => {
                 e.preventDefault();
                 toggleSelectAll();
               }}
