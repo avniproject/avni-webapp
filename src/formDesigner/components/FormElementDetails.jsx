@@ -950,7 +950,7 @@ const FormElementDetails = ({
           )}
           <Grid container spacing={4} sx={{ width: "100%" }}>
             {formElementData.concept.dataType !== "QuestionGroup" && (
-              <Grid size={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}
                   disabled={disableFormElement}
@@ -977,22 +977,24 @@ const FormElementDetails = ({
               </Grid>
             )}
             {formElementData.concept.dataType === "Subject" && (
-              <SubjectFormElementKeyValues
-                {...{
-                  disableFormElement,
-                  identifierSources,
-                  groupSubjectTypes,
-                  formElementData,
-                  groupIndex,
-                  index,
-                  ...rest,
-                }}
-              />
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <SubjectFormElementKeyValues
+                  {...{
+                    disableFormElement,
+                    identifierSources,
+                    groupSubjectTypes,
+                    formElementData,
+                    groupIndex,
+                    index,
+                    ...rest,
+                  }}
+                />
+              </Grid>
             )}
             {READ_ONLY_DATA_TYPES.includes(
               formElementData.concept.dataType,
             ) && (
-              <Grid size={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"}
                   disabled={disableFormElement}
@@ -1022,7 +1024,7 @@ const FormElementDetails = ({
             {RESTRICT_GALLERY_DATA_TYPES.includes(
               formElementData.concept.dataType,
             ) && (
-              <Grid size={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <AvniFormControl
                   toolTipKey={
                     "APP_DESIGNER_FORM_ELEMENT_RESTRICT_GALLERY_UPLOAD"
@@ -1052,7 +1054,7 @@ const FormElementDetails = ({
               </Grid>
             )}
             {UNIQUE_DATA_TYPES.includes(formElementData.concept.dataType) && (
-              <Grid size={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"}
                   disabled={disableFormElement}
