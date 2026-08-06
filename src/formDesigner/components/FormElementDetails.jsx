@@ -1051,6 +1051,32 @@ const FormElementDetails = ({
                 </AvniFormControl>
               </Grid>
             )}
+            {formElementData.concept.dataType === "Image" && (
+              <Grid size={4}>
+                <AvniFormControl
+                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GUIDED_CAMERA"}
+                  disabled={disableFormElement}
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="guidedCamera"
+                        checked={!!formElementData.keyValues.guidedCamera}
+                        onChange={(event) =>
+                          rest.handleGroupElementKeyValueChange(
+                            groupIndex,
+                            "guidedCamera",
+                            event.target.checked,
+                            index,
+                          )
+                        }
+                      />
+                    }
+                    label="Guided camera"
+                  />
+                </AvniFormControl>
+              </Grid>
+            )}
             {UNIQUE_DATA_TYPES.includes(formElementData.concept.dataType) && (
               <Grid size={4}>
                 <AvniFormControl
