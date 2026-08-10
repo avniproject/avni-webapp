@@ -131,6 +131,7 @@
   "APP_DESIGNER_FORM_ELEMENT_SEARCH_OPTIONS": "If marked true, then search bar shows up. This does not work on mobile app.",
   "APP_DESIGNER_FORM_ELEMENT_READ_ONLY": "User cannot edit the value and value is inserted using rules",
   "APP_DESIGNER_FORM_ELEMENT_RESTRICT_GALLERY_UPLOAD": "Not applicable for Data Entry App, which supports only gallery upload.",
+  "APP_DESIGNER_FORM_ELEMENT_GUIDED_CAMERA": "Opens an in-app camera with flash forced on for controlled image capture, bypassing the device gallery and system camera. Requires a device with a flash. Applies to the Android app and Image fields only.",
   "APP_DESIGNER_FORM_ELEMENT_UNIQUE": "Only unique values within a catchment will be allowed for this field",
   "APP_DESIGNER_FORM_ELEMENT_IDENTIFIER_SOURCE": "For ID type concept choose from already created identifier source",
   "APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE": "Choose from already created group subject types",

@@ -950,7 +950,7 @@ const FormElementDetails = ({
           )}
           <Grid container spacing={4} sx={{ width: "100%" }}>
             {formElementData.concept.dataType !== "QuestionGroup" && (
-              <Grid size={4}>
+              <Grid size="auto">
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}
                   disabled={disableFormElement}
@@ -992,7 +992,7 @@ const FormElementDetails = ({
             {READ_ONLY_DATA_TYPES.includes(
               formElementData.concept.dataType,
             ) && (
-              <Grid size={4}>
+              <Grid size="auto">
                 <AvniFormControl
                   toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"}
                   disabled={disableFormElement}
@@ -1022,7 +1022,7 @@ const FormElementDetails = ({
             {RESTRICT_GALLERY_DATA_TYPES.includes(
               formElementData.concept.dataType,
             ) && (
-              <Grid size={4}>
+              <Grid size="auto">
                 <AvniFormControl
                   toolTipKey={
                     "APP_DESIGNER_FORM_ELEMENT_RESTRICT_GALLERY_UPLOAD"
@@ -1047,6 +1047,32 @@ const FormElementDetails = ({
                       />
                     }
                     label="Do not allow upload from gallery"
+                  />
+                </AvniFormControl>
+              </Grid>
+            )}
+            {formElementData.concept.dataType === "Image" && (
+              <Grid size="auto">
+                <AvniFormControl
+                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GUIDED_CAMERA"}
+                  disabled={disableFormElement}
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="guidedCamera"
+                        checked={!!formElementData.keyValues.guidedCamera}
+                        onChange={(event) =>
+                          rest.handleGroupElementKeyValueChange(
+                            groupIndex,
+                            "guidedCamera",
+                            event.target.checked,
+                            index,
+                          )
+                        }
+                      />
+                    }
+                    label="Guided camera"
                   />
                 </AvniFormControl>
               </Grid>
