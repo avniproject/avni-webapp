@@ -30,7 +30,7 @@ export const FormTypeEntities = {
   Task: new FormTypeInfo("Task", "Task", "task"),
 
   getFormTypeInfo(formType) {
-    return _.find(allEntityForms, entityFormInfo => entityFormInfo.formType === formType);
+    return _.find(allEntityForms, (entityFormInfo) => entityFormInfo.formType === formType);
   },
 
   getAllFormTypeInfo() {
@@ -47,14 +47,14 @@ export const FormTypeEntities = {
 
   isForSubjectEncounter(formTypeInfo) {
     return formTypeInfo === FormTypeEntities.Encounter || formTypeInfo === FormTypeEntities.IndividualEncounterCancellation;
-  }
+  },
 };
 
 export const encounterFormTypes = [
   FormTypeEntities.Encounter,
   FormTypeEntities.ProgramEncounter,
   FormTypeEntities.ProgramEncounterCancellation,
-  FormTypeEntities.IndividualEncounterCancellation
+  FormTypeEntities.IndividualEncounterCancellation,
 ];
 
 export const programFormTypes = [
@@ -62,7 +62,7 @@ export const programFormTypes = [
   FormTypeEntities.ProgramExit,
   FormTypeEntities.ProgramEnrolment,
   FormTypeEntities.ProgramEncounterCancellation,
-  FormTypeEntities.ManualProgramEnrolmentEligibility
+  FormTypeEntities.ManualProgramEnrolmentEligibility,
 ];
 
 export const inlineConceptDataType = _.sortBy([
@@ -85,5 +85,6 @@ export const inlineConceptDataType = _.sortBy([
   "Audio",
   "File",
   "QuestionGroup",
-  "Encounter"
+  "Encounter",
+  "QR",
 ]);
