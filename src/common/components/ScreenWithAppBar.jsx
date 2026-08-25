@@ -7,13 +7,18 @@ import {
   List,
   IconButton,
   ListItemIcon,
-  ListItemText
+  ListItemText,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import _ from "lodash";
 import ListItemButton from "@mui/material/ListItemButton";
 import { fontSize } from "@mui/system";
+import {
+  getSidebarLinkTo,
+  shouldUpdateSelectedIndexOnClick,
+  getSelectedListItem,
+} from "./ScreenWithAppBarUtils";
 
 const drawerWidth = 240;
 
@@ -22,7 +27,7 @@ const StyledContainer = styled("div")({
   display: "flex",
   flexDirection: "column",
   width: "100%",
-  boxSizing: "border-box"
+  boxSizing: "border-box",
 });
 
 const StyledAppBar = styled("main")(({ theme, open }) => {
@@ -38,14 +43,14 @@ const StyledAppBar = styled("main")(({ theme, open }) => {
       easing: theme.transitions.easing.sharp,
       duration: open
         ? theme.transitions.duration.enteringScreen
-        : theme.transitions.duration.leavingScreen
+        : theme.transitions.duration.leavingScreen,
     }),
     [theme.breakpoints.up("sm")]: {
       marginLeft: open ? drawerWidth + 10 : minimizedWidthSm + 10,
       width: open
         ? `calc(100% - ${drawerWidth}px)`
-        : `calc(100% - ${minimizedWidthSm}px)`
-    }
+        : `calc(100% - ${minimizedWidthSm}px)`,
+    },
   };
 });
 
@@ -60,13 +65,13 @@ const StyledDrawer = styled(Drawer)(({ theme, open }) => ({
       easing: theme.transitions.easing.sharp,
       duration: open
         ? theme.transitions.duration.enteringScreen
-        : theme.transitions.duration.leavingScreen
+        : theme.transitions.duration.leavingScreen,
     }),
     overflowX: "hidden",
     [theme.breakpoints.up("sm")]: {
-      width: open ? drawerWidth : parseInt(theme.spacing(9)) + 1
-    }
-  }
+      width: open ? drawerWidth : parseInt(theme.spacing(9)) + 1,
+    },
+  },
 }));
 
 const StyledToolbar = styled("div")(({ theme }) => ({
@@ -74,7 +79,7 @@ const StyledToolbar = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: "0 8px",
-  ...theme.mixins.toolbar
+  ...theme.mixins.toolbar,
 }));
 
 const applyListIcon = (open, icon, listTextName) => {
@@ -97,7 +102,6 @@ const applyLeftMenu = (
   handleListItemClick,
   children,
   sidebarOptions,
-  navigate
 ) => {
   return (
     <>
@@ -107,16 +111,16 @@ const applyLeftMenu = (
         </StyledToolbar>
         <List>
           {_.map(sidebarOptions, (option, index) => {
-            const path = option.href.startsWith("#")
-              ? option.href.replace("#", "")
-              : option.href;
             return (
               <ListItemButton
                 key={option.name}
+                component={Link}
+                to={getSidebarLinkTo(option.href)}
                 selected={selectedIndex === index}
-                onClick={() => {
-                  handleListItemClick(null, index);
-                  navigate(`${path}?page=0`);
+                onClick={(e) => {
+                  if (shouldUpdateSelectedIndexOnClick(e)) {
+                    handleListItemClick(null, index);
+                  }
                 }}
               >
                 {applyListIcon(open, <option.Icon />, option.name)}
@@ -132,25 +136,15 @@ const applyLeftMenu = (
   );
 };
 
-const getSelectedListItem = sidebarOptions => {
-  return _.isEmpty(sidebarOptions)
-    ? 0
-    : _.map(sidebarOptions, (option, i) => ({
-        selected: window.location.href.includes(option.href.replace("#", "")),
-        index: i
-      })).filter(option => option.selected)[0]?.index || 0;
-};
-
 const ScreenWithAppBar = ({
   appbarTitle,
   enableLeftMenuButton = false,
   children,
-  sidebarOptions
+  sidebarOptions,
 }) => {
-  const navigate = useNavigate();
   const [open, setOpen] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(
-    getSelectedListItem(sidebarOptions)
+    getSelectedListItem(sidebarOptions),
   );
 
   function handleListItemClick(event, index) {
@@ -167,7 +161,7 @@ const ScreenWithAppBar = ({
         title={appbarTitle}
         handleDrawer={handleDrawer}
         enableLeftMenuButton={enableLeftMenuButton}
-        sx={{ zIndex: theme => theme.zIndex.appBar }}
+        sx={{ zIndex: (theme) => theme.zIndex.appBar }}
       />
       {enableLeftMenuButton &&
         applyLeftMenu(
@@ -177,7 +171,6 @@ const ScreenWithAppBar = ({
           handleListItemClick,
           children,
           sidebarOptions,
-          navigate
         )}
       {!enableLeftMenuButton && <Body>{children}</Body>}
     </StyledContainer>
@@ -186,7 +179,7 @@ const ScreenWithAppBar = ({
 
 ScreenWithAppBar.propTypes = {
   appbarTitle: PropTypes.string.isRequired,
-  enableLeftMenuButton: PropTypes.bool
+  enableLeftMenuButton: PropTypes.bool,
 };
 
 export default ScreenWithAppBar;
