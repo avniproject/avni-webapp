@@ -167,9 +167,6 @@ export const ApplyTemplateDialog = ({
             clearInterval(newIntervalId);
             setIsSubmitting(false);
             localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
-            if (applyTemplateJob.status === "COMPLETED" && onApplySuccess) {
-              onApplySuccess();
-            }
           }
         })
         .catch((error) => {
@@ -223,6 +220,13 @@ export const ApplyTemplateDialog = ({
 
   const handleClose = () => {
     if (isSubmitting && !isTerminalStatus(applyStatus)) return;
+    onClose();
+  };
+
+  const handleConfirm = () => {
+    if (applyStatus === "COMPLETED" && onApplySuccess) {
+      onApplySuccess();
+    }
     onClose();
   };
 
@@ -319,7 +323,7 @@ export const ApplyTemplateDialog = ({
             }}
           >
             <Button
-              onClick={handleClose}
+              onClick={handleConfirm}
               disabled={!isTerminalStatus(applyStatus)}
               variant="contained"
               sx={{ minWidth: BUTTON_CONFIG.minWidth }}
