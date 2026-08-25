@@ -6,7 +6,16 @@ export default class {
   }
 
   get names() {
-    return map(this.types, n => ({ name: n.name }));
+    return map(this.types, (typeDef, code) => ({
+      name: typeDef.name,
+      voided: Boolean(typeDef.voided || typeDef.isVoided),
+      code,
+    })).filter(({ name, voided, code }) => {
+      if (voided) return false;
+      const safeName = String(name || "");
+      const safeCode = String(code || "");
+      return !/\bvoided\b/i.test(safeName) && !/\bvoided\b/i.test(safeCode);
+    });
   }
 
   getName(code) {
@@ -14,10 +23,14 @@ export default class {
   }
 
   getCode(name) {
-    return findKey(this.types, n => name === n.name);
+    return findKey(this.types, (n) => name === n.name);
   }
 
   isApprovalEnabled(name) {
-    return get(find(this.types, n => n.name === name), "approvalEnabled", false);
+    return get(
+      find(this.types, (n) => n.name === name),
+      "approvalEnabled",
+      false,
+    );
   }
 }
