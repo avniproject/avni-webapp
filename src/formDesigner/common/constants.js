@@ -28,9 +28,13 @@ export const FormTypeEntities = {
   ChecklistItem: new FormTypeInfo("ChecklistItem", "Check list item", "checklistItem"),
   Location: new FormTypeInfo("Location", "Location"),
   Task: new FormTypeInfo("Task", "Task", "task"),
+  // Both write to the approval decision rather than to the record being judged, so rules on these forms
+  // see entityApprovalStatus - the same relationship Task has to task.
+  Approval: new FormTypeInfo("Approval", "Approval", "entityApprovalStatus"),
+  Rejection: new FormTypeInfo("Rejection", "Rejection", "entityApprovalStatus"),
 
   getFormTypeInfo(formType) {
-    return _.find(allEntityForms, entityFormInfo => entityFormInfo.formType === formType);
+    return _.find(allEntityForms, (entityFormInfo) => entityFormInfo.formType === formType);
   },
 
   getAllFormTypeInfo() {
@@ -47,14 +51,20 @@ export const FormTypeEntities = {
 
   isForSubjectEncounter(formTypeInfo) {
     return formTypeInfo === FormTypeEntities.Encounter || formTypeInfo === FormTypeEntities.IndividualEncounterCancellation;
-  }
+  },
+
+  // Approval and Rejection are the only types shown at the moment a decision is made, and the only ones
+  // that can be attached to all four subject type / programme / visit type shapes.
+  isApprovalDecisionForm(formTypeInfo) {
+    return formTypeInfo === FormTypeEntities.Approval || formTypeInfo === FormTypeEntities.Rejection;
+  },
 };
 
 export const encounterFormTypes = [
   FormTypeEntities.Encounter,
   FormTypeEntities.ProgramEncounter,
   FormTypeEntities.ProgramEncounterCancellation,
-  FormTypeEntities.IndividualEncounterCancellation
+  FormTypeEntities.IndividualEncounterCancellation,
 ];
 
 export const programFormTypes = [
@@ -62,7 +72,7 @@ export const programFormTypes = [
   FormTypeEntities.ProgramExit,
   FormTypeEntities.ProgramEnrolment,
   FormTypeEntities.ProgramEncounterCancellation,
-  FormTypeEntities.ManualProgramEnrolmentEligibility
+  FormTypeEntities.ManualProgramEnrolmentEligibility,
 ];
 
 export const inlineConceptDataType = _.sortBy([
@@ -85,5 +95,5 @@ export const inlineConceptDataType = _.sortBy([
   "Audio",
   "File",
   "QuestionGroup",
-  "Encounter"
+  "Encounter",
 ]);

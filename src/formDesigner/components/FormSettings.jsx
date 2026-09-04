@@ -7,7 +7,7 @@ import {
   Grid,
   IconButton,
   MenuItem,
-  FormHelperText
+  FormHelperText,
 } from "@mui/material";
 import { httpClient as http } from "common/utils/httpClient";
 import CustomizedSnackbar from "./CustomizedSnackbar";
@@ -17,8 +17,9 @@ import { default as UUID } from "uuid";
 import {
   FormTypeEntities,
   encounterFormTypes,
-  programFormTypes
+  programFormTypes,
 } from "../common/constants";
+import { formMappingUniqueKey } from "../common/FormMappingKey";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { SaveComponent } from "../../common/components/SaveComponent";
@@ -43,7 +44,7 @@ const FormSettings = () => {
     dirtyFlag: false,
     showUpdateAlert: false,
     defaultSnackbarStatus: true,
-    errorMsg: ""
+    errorMsg: "",
   });
 
   const addSubjectTypeErrorIfMissing = (errorsList, formMap, index) => {
@@ -52,7 +53,7 @@ const FormSettings = () => {
       formMap,
       "subjectTypeUuid",
       index,
-      "subject type"
+      "subject type",
     );
   };
 
@@ -66,7 +67,7 @@ const FormSettings = () => {
       formMap,
       "encounterTypeUuid",
       index,
-      "encounter type"
+      "encounter type",
     );
   };
 
@@ -75,22 +76,21 @@ const FormSettings = () => {
     formMap,
     fieldKey,
     index,
-    fieldName
+    fieldName,
   ) => {
     if (formMap[fieldKey] === "") {
-      errorsList.unselectedData[
-        fieldKey + index
-      ] = `Please select ${fieldName}.`;
+      errorsList.unselectedData[fieldKey + index] =
+        `Please select ${fieldName}.`;
     }
   };
 
   const validateForm = () => {
-    if (_.every(state.formMappings, fm => fm.voided)) {
+    if (_.every(state.formMappings, (fm) => fm.voided)) {
       return true;
     }
     const errorsList = {
       existingMapping: {},
-      unselectedData: {}
+      unselectedData: {},
     };
     const formMappings = state.formMappings;
     const existingMappings = [];
@@ -100,7 +100,7 @@ const FormSettings = () => {
 
     if (state.formTypeInfo !== FormTypeEntities.ChecklistItem) {
       let count = 0;
-      _.forEach(formMappings, formMap => {
+      _.forEach(formMappings, (formMap) => {
         if (!formMap.voided) count += 1;
       });
       if (count === 0)
@@ -108,34 +108,37 @@ const FormSettings = () => {
     }
 
     _.forEach(formMappings, (formMap, index) => {
-      let uniqueString;
       const formTypeInfo = state.formTypeInfo;
       if (!formMap.voided) {
+        // The key lives in FormMappingKey so it can be tested; a form type with no branch there returns
+        // undefined, which makes the second mapping of that type look like a duplicate of the first.
+        const uniqueString = formMappingUniqueKey(formTypeInfo, formMap);
+
         if (formTypeInfo === FormTypeEntities.IndividualProfile) {
-          uniqueString = formMap.subjectTypeUuid;
           addSubjectTypeErrorIfMissing(errorsList, formMap, index);
         }
 
         if (FormTypeEntities.isForProgramEncounter(formTypeInfo)) {
-          uniqueString =
-            formMap.subjectTypeUuid +
-            formMap.programUuid +
-            formMap.encounterTypeUuid;
           addSubjectTypeErrorIfMissing(errorsList, formMap, index);
           addProgramErrorIfMissing(errorsList, formMap, index);
           addEncounterTypeErrorIfMissing(errorsList, formMap, index);
         }
 
         if (FormTypeEntities.isForProgramEnrolment(formTypeInfo)) {
-          uniqueString = formMap.subjectTypeUuid + formMap.programUuid;
           addSubjectTypeErrorIfMissing(errorsList, formMap, index);
           addProgramErrorIfMissing(errorsList, formMap, index);
         }
 
         if (FormTypeEntities.isForSubjectEncounter(formTypeInfo)) {
-          uniqueString = formMap.subjectTypeUuid + formMap.encounterTypeUuid;
           addSubjectTypeErrorIfMissing(errorsList, formMap, index);
           addEncounterTypeErrorIfMissing(errorsList, formMap, index);
+        }
+
+        // Approval and Rejection attach to all four shapes, so only the subject type is required. The
+        // programme and the visit type are legitimately absent on the subject-only shape, and demanding
+        // them would make three of the four shapes unsaveable.
+        if (FormTypeEntities.isApprovalDecisionForm(formTypeInfo)) {
+          addSubjectTypeErrorIfMissing(errorsList, formMap, index);
         }
         if (existingMappings.includes(uniqueString)) {
           errorsList["existingMapping"][index] = "Same mapping already exists";
@@ -151,12 +154,12 @@ const FormSettings = () => {
       delete errorsList.existingMapping;
     }
 
-    setState(prev => ({ ...prev, errors: errorsList }));
+    setState((prev) => ({ ...prev, errors: errorsList }));
     return Object.keys(errorsList).length === 0;
   };
 
-  const getDefaultSnackbarStatus = defaultSnackbarStatus => {
-    setState(prev => ({ ...prev, defaultSnackbarStatus }));
+  const getDefaultSnackbarStatus = (defaultSnackbarStatus) => {
+    setState((prev) => ({ ...prev, defaultSnackbarStatus }));
   };
 
   const onFormSubmit = async () => {
@@ -171,32 +174,32 @@ const FormSettings = () => {
           const response = await http.put(`/web/forms/${state.uuid}/metadata`, {
             name: state.name,
             formType: state.formTypeInfo.formType,
-            formMappings: state.formMappings
+            formMappings: state.formMappings,
           });
-          const formMappings = state.formMappings.map(formMap => ({
+          const formMappings = state.formMappings.map((formMap) => ({
             ...formMap,
-            newFlag: false
+            newFlag: false,
           }));
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             showUpdateAlert: true,
             defaultSnackbarStatus: true,
             formMappings,
-            errorMsg: ""
+            errorMsg: "",
           }));
         } catch (error) {
           if (error.response.status === 404) {
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               showUpdateAlert: true,
               defaultSnackbarStatus: true,
-              errorMsg: ""
+              errorMsg: "",
             }));
           } else {
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               errorMsg: error.response.data,
-              showUpdateAlert: false
+              showUpdateAlert: false,
             }));
           }
         }
@@ -208,20 +211,20 @@ const FormSettings = () => {
     const fetchData = async () => {
       try {
         const formResponse = await http.get(`/forms/export?formUUID=${id}`);
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           name: formResponse.data.name,
           formTypeInfo: FormTypeEntities.getFormTypeInfo(
-            formResponse.data.formType
+            formResponse.data.formType,
           ),
-          uuid: formResponse.data.uuid
+          uuid: formResponse.data.uuid,
         }));
 
         const modulesResponse = await http.get("/web/operationalModules");
         const data = { ...modulesResponse.data };
         const formMappings = data.formMappings
-          .filter(formMapping => formMapping.formUUID === id)
-          .map(formMapping => ({
+          .filter((formMapping) => formMapping.formUUID === id)
+          .map((formMapping) => ({
             uuid: formMapping.uuid,
             programUuid: formMapping.programUUID,
             subjectTypeUuid: formMapping.subjectTypeUUID,
@@ -230,13 +233,13 @@ const FormSettings = () => {
             enableApproval: formMapping.enableApproval,
             voided: false,
             newFlag: false,
-            updatedFlag: false
+            updatedFlag: false,
           }));
         delete data["formMappings"];
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           formMappings,
-          data
+          data,
         }));
       } catch (error) {
         console.error(error);
@@ -245,32 +248,32 @@ const FormSettings = () => {
     fetchData();
   }, [id]);
 
-  const onChangeField = event => {
+  const onChangeField = (event) => {
     if (
       event.target.name === "formType" &&
       event.target.value !== state.formTypeInfo
     ) {
-      const formMappings = state.formMappings.map(formMap => ({
+      const formMappings = state.formMappings.map((formMap) => ({
         ...formMap,
-        voided: true
+        voided: true,
       }));
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         formTypeInfo: event.target.value,
         formMappings,
         warningFlag: true,
-        dirtyFlag: true
+        dirtyFlag: true,
       }));
     } else {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         [event.target.name]: event.target.value,
-        dirtyFlag: true
+        dirtyFlag: true,
       }));
     }
   };
 
-  const programNameElement = index => (
+  const programNameElement = (index) => (
     <FormControl fullWidth margin="dense">
       <AvniFormLabel
         label="Program Name"
@@ -279,11 +282,11 @@ const FormSettings = () => {
       <Select
         name="programUuid"
         value={state.formMappings[index].programUuid || ""}
-        onChange={event =>
+        onChange={(event) =>
           handleMappingChange(index, "programUuid", event.target.value)
         }
       >
-        {state.data.programs?.map(program => (
+        {state.data.programs?.map((program) => (
           <MenuItem key={program.uuid} value={program.uuid}>
             {program.operationalProgramName}
           </MenuItem>
@@ -297,14 +300,14 @@ const FormSettings = () => {
     const formMappings = [...state.formMappings];
     if (formMappings[index][property] !== value) {
       if (!formMappings[index]["newFlag"]) {
-        setState(prev => ({ ...prev, warningFlag: true }));
+        setState((prev) => ({ ...prev, warningFlag: true }));
       }
       formMappings[index][property] = value;
-      setState(prev => ({ ...prev, formMappings, dirtyFlag: true }));
+      setState((prev) => ({ ...prev, formMappings, dirtyFlag: true }));
     }
   };
 
-  const taskTypeElement = index => (
+  const taskTypeElement = (index) => (
     <FormControl fullWidth margin="dense">
       <AvniFormLabel
         label="Task Name"
@@ -313,11 +316,11 @@ const FormSettings = () => {
       <Select
         name="taskUuid"
         value={state.formMappings[index].taskTypeUuid || ""}
-        onChange={event =>
+        onChange={(event) =>
           handleMappingChange(index, "taskTypeUuid", event.target.value)
         }
       >
-        {state.data["taskTypes"]?.map(taskType => (
+        {state.data["taskTypes"]?.map((taskType) => (
           <MenuItem key={taskType.uuid} value={taskType.uuid}>
             {taskType.name}
           </MenuItem>
@@ -327,7 +330,7 @@ const FormSettings = () => {
     </FormControl>
   );
 
-  const subjectTypeElement = index => (
+  const subjectTypeElement = (index) => (
     <FormControl fullWidth margin="dense">
       <AvniFormLabel
         label="Subject Type"
@@ -336,11 +339,11 @@ const FormSettings = () => {
       <Select
         name="subjectTypeUuid"
         value={state.formMappings[index].subjectTypeUuid || ""}
-        onChange={event =>
+        onChange={(event) =>
           handleMappingChange(index, "subjectTypeUuid", event.target.value)
         }
       >
-        {state.data.subjectTypes?.map(subjectType => (
+        {state.data.subjectTypes?.map((subjectType) => (
           <MenuItem key={subjectType.uuid} value={subjectType.uuid}>
             {subjectType.operationalSubjectTypeName}
           </MenuItem>
@@ -351,13 +354,13 @@ const FormSettings = () => {
   );
 
   const formTypes = () =>
-    FormTypeEntities.getAllFormTypeInfo().map(formTypeInfo => (
+    FormTypeEntities.getAllFormTypeInfo().map((formTypeInfo) => (
       <MenuItem key={formTypeInfo} value={formTypeInfo}>
         {formTypeInfo.display}
       </MenuItem>
     ));
 
-  const encounterTypesElement = index => (
+  const encounterTypesElement = (index) => (
     <FormControl fullWidth margin="dense">
       <AvniFormLabel
         label="Encounter Type"
@@ -366,11 +369,11 @@ const FormSettings = () => {
       <Select
         name="encounterTypeUuid"
         value={state.formMappings[index].encounterTypeUuid || ""}
-        onChange={event =>
+        onChange={(event) =>
           handleMappingChange(index, "encounterTypeUuid", event.target.value)
         }
       >
-        {state.data.encounterTypes?.map(encounterType => (
+        {state.data.encounterTypes?.map((encounterType) => (
           <MenuItem key={encounterType.uuid} value={encounterType.uuid}>
             {encounterType.name}
           </MenuItem>
@@ -387,24 +390,24 @@ const FormSettings = () => {
       </FormHelperText>
     );
 
-  const removeMapping = index => {
+  const removeMapping = (index) => {
     const formMappings = [...state.formMappings];
     if (formMappings[index].newFlag) {
       formMappings.splice(index, 1);
-      setState(prev => ({ ...prev, formMappings }));
+      setState((prev) => ({ ...prev, formMappings }));
     } else {
       formMappings[index]["voided"] = true;
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         formMappings,
         dirtyFlag: true,
-        warningFlag: true
+        warningFlag: true,
       }));
     }
   };
 
   const addMapping = (program, encounter) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       dirtyFlag: true,
       formMappings: [
@@ -416,9 +419,9 @@ const FormSettings = () => {
           subjectTypeUuid: "",
           programUuid: program ? "" : null,
           encounterTypeUuid: encounter ? "" : null,
-          newFlag: true
-        }
-      ]
+          newFlag: true,
+        },
+      ],
     }));
   };
 
@@ -497,11 +500,11 @@ const FormSettings = () => {
                         <Grid size={{ xs: 12, sm: 3 }} sx={{ mt: 5 }}>
                           <AvniSwitch
                             checked={state.formMappings[index].enableApproval}
-                            onChange={event =>
+                            onChange={(event) =>
                               handleMappingChange(
                                 index,
                                 "enableApproval",
-                                event.target.checked
+                                event.target.checked,
                               )
                             }
                             name="Enable Approval"
@@ -528,7 +531,7 @@ const FormSettings = () => {
                       </FormControl>
                     )}
                   </div>
-                )
+                ),
             )}
         </form>
         {notChecklistItemBased && (
