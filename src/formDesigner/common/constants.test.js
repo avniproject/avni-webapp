@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import _ from "lodash";
-import { FormTypeEntities } from "./constants";
+import { FormTypeEntities, encounterFormTypes, programFormTypes } from "./constants";
 
 /**
  * avniproject/avni-webapp#1805 - an administrator can choose Approval and Rejection when creating a form.
@@ -59,5 +59,39 @@ describe("FormTypeEntities - Approval and Rejection", () => {
     assert.isFalse(FormTypeEntities.isForProgramEnrolment(FormTypeEntities.Approval));
     assert.isFalse(FormTypeEntities.isForSubjectEncounter(FormTypeEntities.Approval));
     assert.isTrue(FormTypeEntities.isForProgramEncounter(FormTypeEntities.ProgramEncounter));
+  });
+});
+
+/**
+ * avniproject/avni-webapp#1805 AC #1 - Form Settings offers subject type, programme and encounter type
+ * pickers for Approval and Rejection, so all four mapping shapes can be produced.
+ *
+ * FormSettings derives its two render gates from these lists. While the new types were absent from both,
+ * only the subject type picker rendered, so the subject-only shape was the single mapping an
+ * administrator could build - and avni-server refuses that one whenever approval is switched on for a
+ * visit or programme form rather than the registration form. The only mapping the screen could produce
+ * was the one that could never be valid, which is what avniproject/avni-webapp#1807 reported.
+ */
+describe("form type lists driving the mapping pickers", () => {
+  it("includes Approval and Rejection in both, since they attach to all four shapes", () => {
+    [FormTypeEntities.Approval, FormTypeEntities.Rejection].forEach((formTypeInfo) => {
+      assert.isTrue(_.includes(encounterFormTypes, formTypeInfo), `${formTypeInfo.formType} must offer the visit type picker`);
+      assert.isTrue(_.includes(programFormTypes, formTypeInfo), `${formTypeInfo.formType} must offer the programme picker`);
+    });
+  });
+
+  /**
+   * AC #9 - the settings screens of existing form types are unchanged.
+   */
+  it("leaves the existing membership exactly as it was", () => {
+    assert.isTrue(_.includes(encounterFormTypes, FormTypeEntities.Encounter));
+    assert.isTrue(_.includes(encounterFormTypes, FormTypeEntities.ProgramEncounter));
+    assert.isFalse(_.includes(encounterFormTypes, FormTypeEntities.IndividualProfile));
+    assert.isFalse(_.includes(encounterFormTypes, FormTypeEntities.ProgramEnrolment));
+
+    assert.isTrue(_.includes(programFormTypes, FormTypeEntities.ProgramEnrolment));
+    assert.isTrue(_.includes(programFormTypes, FormTypeEntities.ProgramExit));
+    assert.isFalse(_.includes(programFormTypes, FormTypeEntities.Encounter));
+    assert.isFalse(_.includes(programFormTypes, FormTypeEntities.IndividualProfile));
   });
 });

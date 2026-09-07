@@ -60,11 +60,21 @@ export const FormTypeEntities = {
   },
 };
 
+// These two decide which mapping pickers FormSettings renders. Approval and Rejection appear in both
+// because they attach to all four subject type / programme / visit type shapes, so an administrator has
+// to be able to choose a programme or a visit type for them.
+//
+// While they were absent, both flags were false and only the subject type picker rendered - leaving the
+// subject-only shape as the single mapping that could be built. avni-server refuses that one whenever
+// approval is switched on for a visit or programme form rather than the registration form, so the only
+// mapping the screen could produce was the one that could never be valid (avniproject/avni-webapp#1807).
 export const encounterFormTypes = [
   FormTypeEntities.Encounter,
   FormTypeEntities.ProgramEncounter,
   FormTypeEntities.ProgramEncounterCancellation,
   FormTypeEntities.IndividualEncounterCancellation,
+  FormTypeEntities.Approval,
+  FormTypeEntities.Rejection,
 ];
 
 export const programFormTypes = [
@@ -73,6 +83,8 @@ export const programFormTypes = [
   FormTypeEntities.ProgramEnrolment,
   FormTypeEntities.ProgramEncounterCancellation,
   FormTypeEntities.ManualProgramEnrolmentEligibility,
+  FormTypeEntities.Approval,
+  FormTypeEntities.Rejection,
 ];
 
 export const inlineConceptDataType = _.sortBy([
