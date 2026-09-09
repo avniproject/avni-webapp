@@ -171,12 +171,23 @@ const FormSettings = () => {
         (state.warningFlag && window.confirm(voidedMessage))
       ) {
         try {
+          // The switch is hidden for Approval and Rejection, so anything still set on those mappings is
+          // a leftover from before it was hidden, or from the type having been changed. Sending false
+          // clears it rather than letting a meaningless true sit in form_mapping forever.
+          const mappingsToSave = FormTypeEntities.isApprovalDecisionForm(
+            state.formTypeInfo,
+          )
+            ? state.formMappings.map((formMap) => ({
+                ...formMap,
+                enableApproval: false,
+              }))
+            : state.formMappings;
           const response = await http.put(`/web/forms/${state.uuid}/metadata`, {
             name: state.name,
             formType: state.formTypeInfo.formType,
-            formMappings: state.formMappings,
+            formMappings: mappingsToSave,
           });
-          const formMappings = state.formMappings.map((formMap) => ({
+          const formMappings = mappingsToSave.map((formMap) => ({
             ...formMap,
             newFlag: false,
           }));
@@ -430,6 +441,14 @@ const FormSettings = () => {
   const notChecklistItemBased =
     FormTypeEntities.ChecklistItem !== state.formTypeInfo;
   const isTaskFormType = FormTypeEntities.Task === state.formTypeInfo;
+  // Enable Approval switches on the approval workflow for the record a form collects. An Approval or
+  // Rejection form collects the approver's answers about a record that is already in that workflow, so
+  // the switch has nothing to turn on there - avni-server only ever reads enable_approval from the
+  // mapping of the form being judged. Offering it on these two types invited an administrator to set a
+  // flag that does nothing, and to read its being off as "approval is not configured".
+  const isApprovalDecisionFormType = FormTypeEntities.isApprovalDecisionForm(
+    state.formTypeInfo,
+  );
 
   return (
     <Box sx={{ boxShadow: 2, p: 3, bgcolor: "background.paper" }}>
@@ -496,7 +515,7 @@ const FormSettings = () => {
                           {encounterTypesElement(index)}
                         </Grid>
                       )}
-                      {!isTaskFormType && (
+                      {!isTaskFormType && !isApprovalDecisionFormType && (
                         <Grid size={{ xs: 12, sm: 3 }} sx={{ mt: 5 }}>
                           <AvniSwitch
                             checked={state.formMappings[index].enableApproval}

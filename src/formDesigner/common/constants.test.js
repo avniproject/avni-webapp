@@ -51,6 +51,16 @@ describe("FormTypeEntities - Approval and Rejection", () => {
   });
 
   /**
+   * FormSettings asks this before it has loaded the form, so it is called with null on first render. It
+   * decides whether the Enable Approval switch is drawn; throwing here would take the whole screen down
+   * before an administrator could open any form's settings.
+   */
+  it("answers for a form type that has not loaded yet", () => {
+    assert.isFalse(FormTypeEntities.isApprovalDecisionForm(null));
+    assert.isFalse(FormTypeEntities.isApprovalDecisionForm(undefined));
+  });
+
+  /**
    * AC #9 - existing form types' settings screens are unchanged. The helpers that drive those screens must
    * not start claiming the new types.
    */
