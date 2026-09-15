@@ -472,16 +472,6 @@ const FormSettings = () => {
       <Title title={state.name} />
       <div>
         <form>
-          {state.errorMsg && (
-            <FormControl fullWidth margin="dense">
-              <li style={{ color: "red" }}>
-                {serverErrorMessage(state.errorMsg)}
-              </li>
-              <CopyToClipboard text={state.errorMsg}>
-                <button>Copy to clipboard</button>
-              </CopyToClipboard>
-            </FormControl>
-          )}
           <AvniFormLabel
             label="Form name"
             style={{ fontSize: "12px" }}
@@ -569,6 +559,16 @@ const FormSettings = () => {
                   </div>
                 ),
             )}
+          {state.errorMsg && (
+            <FormControl fullWidth margin="dense">
+              <li style={{ color: "red" }}>
+                {serverErrorMessage(state.errorMsg)}
+              </li>
+              <CopyToClipboard text={state.errorMsg}>
+                <button>Copy to clipboard</button>
+              </CopyToClipboard>
+            </FormControl>
+          )}
         </form>
         {notChecklistItemBased && (
           <Button
