@@ -141,14 +141,6 @@ describe("FormMappingNarrowing", () => {
   });
 
   /**
-   * A form type that defines a relationship must not be narrowed by it.
-   *
-   * Narrowing every form type alike made the first mapping of each defining type impossible to create: the
-   * ProgramEnrolment form is what makes a programme belong to a subject type, so deriving its options from
-   * existing ProgramEnrolment mappings left 4938 subject type and programme pairs across 315 organisations
-   * with nothing to pick. These are the cases that were missing when that shipped.
-   */
-  /**
    * Dropping choices that would duplicate another row on the same form.
    *
    * Note the shape: formMappingUniqueKey reads a FormSettings row - subjectTypeUuid, programUuid,
@@ -237,6 +229,14 @@ describe("FormMappingNarrowing", () => {
     });
   });
 
+  /**
+   * A form type that defines a relationship must not be narrowed by it.
+   *
+   * Narrowing every form type alike made the first mapping of each defining type impossible to create: the
+   * ProgramEnrolment form is what makes a programme belong to a subject type, so deriving its options from
+   * existing ProgramEnrolment mappings left 4938 subject type and programme pairs across 315 organisations
+   * with nothing to pick. These are the cases that were missing when that shipped.
+   */
   describe("form types that define a relationship", () => {
     it("offers every programme on the form that decides which programmes a subject type enrols in", () => {
       const options = programOptions(programs, formMappings, AWC_CENTER, FormTypeEntities.ProgramEnrolment);
