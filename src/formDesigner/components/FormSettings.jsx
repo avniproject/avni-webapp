@@ -333,7 +333,9 @@ const FormSettings = () => {
         >
           {programs.map((program) => (
             <MenuItem key={program.uuid} value={program.uuid}>
-              {program.operationalProgramName}
+              {/* Same fallback programLabel uses. Without it a programme with no operational name renders
+                  as a blank row here and then appears by name once selected. */}
+              {program.operationalProgramName || program.name}
             </MenuItem>
           ))}
         </Select>

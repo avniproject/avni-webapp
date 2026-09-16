@@ -98,8 +98,22 @@ describe("FormMappingNarrowing", () => {
     });
 
     it("keeps general and programme visit types apart", () => {
-      const general = encounterTypeOptions(encounterTypes, formMappings, AWC_CENTER, undefined).map((e) => e.uuid);
-      const inProgramme = encounterTypeOptions(encounterTypes, formMappings, STUDENT, ANGANWADI).map((e) => e.uuid);
+      // Named form types, not omitted arguments. Leaving formTypeInfo off made definesEncounterTypes
+      // falsy by accident, so this exercised no real form type at all while appearing to cover both.
+      const general = encounterTypeOptions(
+        encounterTypes,
+        formMappings,
+        AWC_CENTER,
+        undefined,
+        FormTypeEntities.IndividualEncounterCancellation,
+      ).map((e) => e.uuid);
+      const inProgramme = encounterTypeOptions(
+        encounterTypes,
+        formMappings,
+        STUDENT,
+        ANGANWADI,
+        FormTypeEntities.ProgramEncounterCancellation,
+      ).map((e) => e.uuid);
 
       assert.deepEqual(["et-in-out"], general);
       assert.deepEqual(["et-visit"], inProgramme);
@@ -113,13 +127,17 @@ describe("FormMappingNarrowing", () => {
   /**
    * The mappings come from findAllOperational, which has already excluded voided rows, and the contract
    * omits the flag when false. A helper filtering on it would drop every mapping it was handed.
+   *
+   * Asserting on a mapping with no voided key proves nothing - a defensive `!m.voided` reads undefined as
+   * falsy and passes anyway. The flag has to be present and true for this to be able to fail.
    */
-  it("counts a mapping that carries no voided flag", () => {
+  it("does not filter the organisation-wide mappings on voided", () => {
+    const flaggedVoided = [{ formType: "ProgramEnrolment", subjectTypeUUID: STUDENT, programUUID: ANGANWADI, voided: true }];
+
     assert.deepEqual(
       [ANGANWADI],
-      programsForSubjectType(programs, [{ formType: "ProgramEnrolment", subjectTypeUUID: STUDENT, programUUID: ANGANWADI }], STUDENT).map(
-        (p) => p.uuid,
-      ),
+      programsForSubjectType(programs, flaggedVoided, STUDENT).map((p) => p.uuid),
+      "findAllOperational has already excluded voided rows, so filtering again would be wrong",
     );
   });
 

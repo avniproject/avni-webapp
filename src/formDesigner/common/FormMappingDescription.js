@@ -1,5 +1,3 @@
-import { FormTypeEntities } from "./constants";
-
 /**
  * What a decision form's mapping row actually attaches to, said in a sentence.
  *
@@ -17,7 +15,9 @@ import { FormTypeEntities } from "./constants";
  * is explaining what approval must be switched on for. Here the row is the decision form itself, so the
  * sentence says what it will be used to decide on.
  */
+import { FormTypeEntities } from "./constants";
 
+/** Resolves a uuid to the first of the given name fields that is set, or null when it cannot be named. */
 const nameFrom = (list, uuid, nameKeys) => {
   if (!uuid) return null;
   const match = (list || []).find((candidate) => candidate.uuid === uuid);

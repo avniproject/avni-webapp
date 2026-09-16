@@ -16,9 +16,13 @@ import { formMappingUniqueKey } from "./FormMappingKey";
  * calling those endpoints avoids a request per mapping row, since /web/operationalModules already sends the
  * organisation's whole mapping list.
  *
- * Nothing filters on voided. The list arrives from FormMappingRepository#findAllOperational, which is
- * already "isVoided = false", and the contract marks the field NON_DEFAULT so an unvoided mapping carries
- * no voided key at all - a defensive check against it would match nothing rather than nothing extra.
+ * The organisation-wide mappings are never filtered on voided. They arrive from
+ * FormMappingRepository#findAllOperational, which is already "isVoided = false", and the contract marks
+ * the field NON_DEFAULT so an unvoided mapping carries no voided key at all - a defensive check against it
+ * would match nothing rather than nothing extra.
+ *
+ * withoutCombinationsAlreadyUsed below is the exception, and reads a different list: the rows of the form
+ * being edited, which do carry the flag and where a removed row must give its combination back.
  */
 
 /** Shown in place of a name when a mapping points at reference data that has since been voided. */
@@ -143,8 +147,9 @@ const isFullySpecified = (formTypeInfo, row) => {
 export function withoutCombinationsAlreadyUsed(options, field, formMappings, index, formTypeInfo) {
   const rows = formMappings || [];
   const row = rows[index];
-  // Always an array: the callers map straight over the result, and the reference lists are undefined until
-  // operationalModules has loaded.
+  // No row means nothing to compare against, so the list passes through untouched - coerced, because the
+  // callers map straight over the result and the reference lists are undefined until operationalModules
+  // has loaded.
   if (!row) return options || [];
 
   const takenKeys = new Set(
@@ -165,10 +170,14 @@ export function withoutCombinationsAlreadyUsed(options, field, formMappings, ind
 /**
  * The label for a saved value, resolved against the organisation's full list rather than the narrowed one.
  *
- * FormSettings renders the selected value through Select#renderValue instead of relying on a matching
- * MenuItem, so a mapping already holding a value the narrowed list no longer offers keeps showing it and is
- * sent back unchanged on save. Blanking those rows would rewrite live configuration in 39 organisations
- * the moment somebody opened the screen for an unrelated reason.
+ * FormSettings renders the Program and Encounter Type values through Select#renderValue instead of relying
+ * on a matching MenuItem, so a mapping already holding a value the narrowed list no longer offers keeps
+ * showing it and is sent back unchanged on save. Blanking those rows would rewrite live configuration in 39
+ * organisations the moment somebody opened the screen for an unrelated reason.
+ *
+ * The Subject Type dropdown has no such treatment, so a mapping whose subject type has been voided renders
+ * an empty box beside a Program field reading "No longer available". The value is still saved unchanged -
+ * this is what is displayed, not what is kept.
  *
  * Reference data that has itself been voided is absent from both lists - findAllOperational excludes it -
  * so those fall back to a placeholder. They render as an empty box today, which says less.
