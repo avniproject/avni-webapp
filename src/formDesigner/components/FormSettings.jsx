@@ -20,6 +20,13 @@ import {
   programFormTypes,
 } from "../common/constants";
 import { formMappingUniqueKey } from "../common/FormMappingKey";
+import {
+  encounterTypeLabel,
+  encounterTypeOptions,
+  programLabel,
+  programsForSubjectType,
+} from "../common/FormMappingNarrowing";
+import { describeDecisionMapping } from "../common/FormMappingDescription";
 import Box from "@mui/material/Box";
 import { Title } from "react-admin";
 import { SaveComponent } from "../../common/components/SaveComponent";
@@ -263,7 +270,9 @@ const FormSettings = () => {
             newFlag: false,
             updatedFlag: false,
           }));
-        delete data["formMappings"];
+        // The organisation's whole mapping list stays on state.data. It is what says which programmes a
+        // subject type enrols in and which visit types belong to each, so it is what narrows the dropdowns
+        // below. state.formMappings remains this form's own rows.
         setState((prev) => ({
           ...prev,
           formMappings,
@@ -301,28 +310,42 @@ const FormSettings = () => {
     }
   };
 
-  const programNameElement = (index) => (
-    <FormControl fullWidth margin="dense">
-      <AvniFormLabel
-        label="Program Name"
-        toolTipKey="APP_DESIGNER_FORM_MAPPING_PROGRAM_NAME"
-      />
-      <Select
-        name="programUuid"
-        value={state.formMappings[index].programUuid || ""}
-        onChange={(event) =>
-          handleMappingChange(index, "programUuid", event.target.value)
-        }
-      >
-        {state.data.programs?.map((program) => (
-          <MenuItem key={program.uuid} value={program.uuid}>
-            {program.operationalProgramName}
-          </MenuItem>
-        ))}
-      </Select>
-      {renderError("programUuid", index)}
-    </FormControl>
-  );
+  const programNameElement = (index) => {
+    const subjectTypeUuid = state.formMappings[index].subjectTypeUuid;
+    const programs = programsForSubjectType(
+      state.data.programs,
+      state.data.formMappings,
+      subjectTypeUuid,
+    );
+    return (
+      <FormControl fullWidth margin="dense">
+        <AvniFormLabel
+          label="Program Name"
+          toolTipKey="APP_DESIGNER_FORM_MAPPING_PROGRAM_NAME"
+        />
+        <Select
+          name="programUuid"
+          value={state.formMappings[index].programUuid || ""}
+          disabled={!subjectTypeUuid}
+          // The saved value is drawn from the organisation's full list rather than from a matching
+          // MenuItem, so a mapping already holding a programme the narrowed list no longer offers keeps
+          // showing it and is sent back unchanged. Without this such a row renders as an empty box and a
+          // save made for an unrelated reason rewrites it.
+          renderValue={(uuid) => programLabel(state.data.programs, uuid)}
+          onChange={(event) =>
+            handleMappingChange(index, "programUuid", event.target.value)
+          }
+        >
+          {programs.map((program) => (
+            <MenuItem key={program.uuid} value={program.uuid}>
+              {program.operationalProgramName}
+            </MenuItem>
+          ))}
+        </Select>
+        {renderError("programUuid", index)}
+      </FormControl>
+    );
+  };
 
   const handleMappingChange = (index, property, value) => {
     const formMappings = [...state.formMappings];
@@ -331,6 +354,20 @@ const FormSettings = () => {
         setState((prev) => ({ ...prev, warningFlag: true }));
       }
       formMappings[index][property] = value;
+      // A programme belongs to one subject type and a visit type to one programme, so changing either
+      // invalidates what sits below it and the row is cleared downward. Only a deliberate change does
+      // this - opening the screen leaves every saved value alone, including the ones already outside the
+      // narrowed lists. An absent field stays absent rather than becoming empty: form types that never
+      // carry a programme hold null there, and that is not the same as unanswered.
+      if (property === "subjectTypeUuid") {
+        if (formMappings[index].programUuid)
+          formMappings[index].programUuid = "";
+        if (formMappings[index].encounterTypeUuid)
+          formMappings[index].encounterTypeUuid = "";
+      }
+      if (property === "programUuid" && formMappings[index].encounterTypeUuid) {
+        formMappings[index].encounterTypeUuid = "";
+      }
       setState((prev) => ({ ...prev, formMappings, dirtyFlag: true }));
     }
   };
@@ -388,28 +425,57 @@ const FormSettings = () => {
       </MenuItem>
     ));
 
-  const encounterTypesElement = (index) => (
-    <FormControl fullWidth margin="dense">
-      <AvniFormLabel
-        label="Encounter Type"
-        toolTipKey="APP_DESIGNER_FORM_MAPPING_ENCOUNTER_TYPE"
-      />
-      <Select
-        name="encounterTypeUuid"
-        value={state.formMappings[index].encounterTypeUuid || ""}
-        onChange={(event) =>
-          handleMappingChange(index, "encounterTypeUuid", event.target.value)
-        }
-      >
-        {state.data.encounterTypes?.map((encounterType) => (
-          <MenuItem key={encounterType.uuid} value={encounterType.uuid}>
-            {encounterType.name}
-          </MenuItem>
-        ))}
-      </Select>
-      {renderError("encounterTypeUuid", index)}
-    </FormControl>
-  );
+  const encounterTypesElement = (index) => {
+    const { subjectTypeUuid, programUuid } = state.formMappings[index];
+    // A programme on the row switches this from the subject's own visit types to that programme's. The two
+    // are different sets, and offering both is what allowed a programme's visit type onto a mapping
+    // outside that programme.
+    const encounterTypes = encounterTypeOptions(
+      state.data.encounterTypes,
+      state.data.formMappings,
+      subjectTypeUuid,
+      programUuid,
+    );
+    return (
+      <FormControl fullWidth margin="dense">
+        <AvniFormLabel
+          label="Encounter Type"
+          toolTipKey="APP_DESIGNER_FORM_MAPPING_ENCOUNTER_TYPE"
+        />
+        <Select
+          name="encounterTypeUuid"
+          value={state.formMappings[index].encounterTypeUuid || ""}
+          disabled={!subjectTypeUuid}
+          renderValue={(uuid) =>
+            encounterTypeLabel(state.data.encounterTypes, uuid)
+          }
+          onChange={(event) =>
+            handleMappingChange(index, "encounterTypeUuid", event.target.value)
+          }
+        >
+          {encounterTypes.map((encounterType) => (
+            <MenuItem key={encounterType.uuid} value={encounterType.uuid}>
+              {encounterType.name}
+            </MenuItem>
+          ))}
+        </Select>
+        {renderError("encounterTypeUuid", index)}
+      </FormControl>
+    );
+  };
+
+  // Approval and Rejection attach to all four subject type / programme / visit type shapes, and a filled-in
+  // row reads as covering all of them when it names one. The sentence says which, in the same words the
+  // server uses when it rejects a mapping, so the screen and the error message agree.
+  const renderDecisionTarget = (mapping) => {
+    const target = describeDecisionMapping(
+      state.formTypeInfo,
+      mapping,
+      state.data,
+    );
+    if (!target) return null;
+    return <FormHelperText sx={{ mt: -1, mb: 1 }}>{target}</FormHelperText>;
+  };
 
   const renderError = (propertyName, index) =>
     state.errors.unselectedData?.[propertyName + index] && (
@@ -549,6 +615,7 @@ const FormSettings = () => {
                         </IconButton>
                       </Grid>
                     </Grid>
+                    {renderDecisionTarget(mapping)}
                     {state.errors.existingMapping?.[index] && (
                       <FormControl fullWidth margin="dense">
                         <FormHelperText error>
