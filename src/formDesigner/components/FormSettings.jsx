@@ -24,7 +24,7 @@ import {
   encounterTypeLabel,
   encounterTypeOptions,
   programLabel,
-  programsForSubjectType,
+  programOptions,
 } from "../common/FormMappingNarrowing";
 import { describeDecisionMapping } from "../common/FormMappingDescription";
 import Box from "@mui/material/Box";
@@ -312,10 +312,11 @@ const FormSettings = () => {
 
   const programNameElement = (index) => {
     const subjectTypeUuid = state.formMappings[index].subjectTypeUuid;
-    const programs = programsForSubjectType(
+    const programs = programOptions(
       state.data.programs,
       state.data.formMappings,
       subjectTypeUuid,
+      state.formTypeInfo,
     );
     return (
       <FormControl fullWidth margin="dense">
@@ -435,6 +436,7 @@ const FormSettings = () => {
       state.data.formMappings,
       subjectTypeUuid,
       programUuid,
+      state.formTypeInfo,
     );
     return (
       <FormControl fullWidth margin="dense">

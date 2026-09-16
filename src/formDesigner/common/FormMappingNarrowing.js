@@ -61,11 +61,41 @@ export function programEncounterTypesForProgram(encounterTypes, formMappings, su
 }
 
 /**
- * What the Encounter Type dropdown holds. Choosing a programme switches the row from the subject's own
- * visit types to that programme's, because the two are different sets and offering both is what let a
- * programme's visit type be attached to a mapping outside that programme.
+ * A form type that DEFINES a relationship cannot have its own list narrowed by that relationship.
+ *
+ * The ProgramEnrolment form is what makes a programme belong to a subject type. Deriving its Program list
+ * from existing ProgramEnrolment mappings means the first one can never be created and no new programme can
+ * ever be added to a subject type - 4938 subject type and programme pairs across 315 organisations become
+ * unreachable. The same circularity applies to the Encounter form, which defines a subject's own visit
+ * types, and to the ProgramEncounter form, which defines a programme's.
+ *
+ * Only form types that CONSUME a relationship are narrowed by it. A programme encounter cancellation is
+ * narrowed by ProgramEncounter mappings, a programme exit by ProgramEnrolment ones, and a decision form by
+ * all of them - none of which it defines.
  */
-export function encounterTypeOptions(encounterTypes, formMappings, subjectTypeUuid, programUuid) {
+const definesProgrammesForSubjectType = (formTypeInfo) => formTypeInfo === FormTypeEntities.ProgramEnrolment;
+
+const definesEncounterTypes = (formTypeInfo) =>
+  formTypeInfo === FormTypeEntities.Encounter || formTypeInfo === FormTypeEntities.ProgramEncounter;
+
+/**
+ * What the Program dropdown holds. Empty until a subject type is chosen whatever the form type, because
+ * that part is what stops an unrelated pairing being the path of least resistance.
+ */
+export function programOptions(programs, formMappings, subjectTypeUuid, formTypeInfo) {
+  if (!subjectTypeUuid) return [];
+  if (definesProgrammesForSubjectType(formTypeInfo)) return programs || [];
+  return programsForSubjectType(programs, formMappings, subjectTypeUuid);
+}
+
+/**
+ * What the Encounter Type dropdown holds. For a form type that consumes visit types, choosing a programme
+ * switches the row from the subject's own to that programme's, because the two are different sets and
+ * offering both is what let a programme's visit type be attached to a mapping outside that programme.
+ */
+export function encounterTypeOptions(encounterTypes, formMappings, subjectTypeUuid, programUuid, formTypeInfo) {
+  if (!subjectTypeUuid) return [];
+  if (definesEncounterTypes(formTypeInfo)) return encounterTypes || [];
   return programUuid
     ? programEncounterTypesForProgram(encounterTypes, formMappings, subjectTypeUuid, programUuid)
     : generalEncounterTypesForSubjectType(encounterTypes, formMappings, subjectTypeUuid);

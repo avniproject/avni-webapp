@@ -1,4 +1,5 @@
 import { assert } from "chai";
+import { FormTypeEntities } from "./constants";
 import {
   NO_LONGER_AVAILABLE,
   encounterTypeLabel,
@@ -6,6 +7,7 @@ import {
   generalEncounterTypesForSubjectType,
   programEncounterTypesForProgram,
   programLabel,
+  programOptions,
   programsForSubjectType,
 } from "./FormMappingNarrowing";
 
@@ -134,6 +136,57 @@ describe("FormMappingNarrowing", () => {
     it("shows nothing for an empty value rather than the placeholder", () => {
       assert.equal("", programLabel(programs, ""));
       assert.equal("", encounterTypeLabel(encounterTypes, undefined));
+    });
+  });
+
+  /**
+   * A form type that defines a relationship must not be narrowed by it.
+   *
+   * Narrowing every form type alike made the first mapping of each defining type impossible to create: the
+   * ProgramEnrolment form is what makes a programme belong to a subject type, so deriving its options from
+   * existing ProgramEnrolment mappings left 4938 subject type and programme pairs across 315 organisations
+   * with nothing to pick. These are the cases that were missing when that shipped.
+   */
+  describe("form types that define a relationship", () => {
+    it("offers every programme on the form that decides which programmes a subject type enrols in", () => {
+      const options = programOptions(programs, formMappings, AWC_CENTER, FormTypeEntities.ProgramEnrolment);
+
+      assert.deepEqual(
+        [ANGANWADI, "p-karigar"],
+        options.map((p) => p.uuid),
+        "an unmapped programme must still be selectable",
+      );
+    });
+
+    it("offers every visit type on the form that decides a subject's own visits", () => {
+      const options = encounterTypeOptions(encounterTypes, formMappings, STUDENT, undefined, FormTypeEntities.Encounter);
+
+      assert.equal(3, options.length);
+    });
+
+    it("offers every visit type on the form that decides a programme's visits", () => {
+      const options = encounterTypeOptions(encounterTypes, formMappings, AWC_CENTER, ANGANWADI, FormTypeEntities.ProgramEncounter);
+
+      assert.equal(3, options.length);
+    });
+
+    it("still offers nothing until a subject type is chosen", () => {
+      assert.deepEqual([], programOptions(programs, formMappings, "", FormTypeEntities.ProgramEnrolment));
+      assert.deepEqual([], encounterTypeOptions(encounterTypes, formMappings, "", undefined, FormTypeEntities.Encounter));
+    });
+
+    it("keeps narrowing the form types that only consume the relationship", () => {
+      assert.deepEqual([], programOptions(programs, formMappings, AWC_CENTER, FormTypeEntities.ProgramExit));
+      assert.deepEqual(
+        [ANGANWADI],
+        programOptions(programs, formMappings, STUDENT, FormTypeEntities.Approval).map((p) => p.uuid),
+      );
+      assert.deepEqual(
+        ["et-visit"],
+        encounterTypeOptions(encounterTypes, formMappings, STUDENT, ANGANWADI, FormTypeEntities.ProgramEncounterCancellation).map(
+          (e) => e.uuid,
+        ),
+      );
     });
   });
 });
