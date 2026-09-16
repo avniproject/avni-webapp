@@ -212,6 +212,57 @@ describe("FormMappingNarrowing", () => {
       assert.equal(2, options.length, "neither programme completes the subject-only combination");
     });
 
+    /**
+     * A half-filled sibling must not claim anything. Keys concatenate without a separator, so row 0 at
+     * (AWC Center, "") and an empty row 1 both key as "st-awc" - which took AWC Center out of row 1's
+     * dropdown after nothing more than adding two mappings and setting the first subject type.
+     */
+    it("ignores a sibling row that is not filled in yet", () => {
+      const subjectTypes = [{ uuid: AWC_CENTER }, { uuid: STUDENT }];
+      const rows = [row(AWC_CENTER, null, ""), row("", null, "")];
+
+      const options = withoutCombinationsAlreadyUsed(subjectTypes, "subjectTypeUuid", rows, 1, FormTypeEntities.Encounter);
+
+      assert.deepEqual(
+        [AWC_CENTER, STUDENT],
+        options.map((s) => s.uuid),
+        "row 0 has no visit type, so it has claimed nothing",
+      );
+    });
+
+    it("blocks once that sibling row is complete", () => {
+      const subjectTypes = [{ uuid: AWC_CENTER }, { uuid: STUDENT }];
+      const rows = [row(AWC_CENTER, null, "et-in-out"), row("", null, "et-in-out")];
+
+      const options = withoutCombinationsAlreadyUsed(subjectTypes, "subjectTypeUuid", rows, 1, FormTypeEntities.Encounter);
+
+      assert.deepEqual(
+        [STUDENT],
+        options.map((s) => s.uuid),
+      );
+    });
+
+    it("ignores a half-filled sibling on a programme enrolment form too", () => {
+      const rows = [row(STUDENT, "", null), row(STUDENT, "", null)];
+
+      const options = withoutCombinationsAlreadyUsed(programs, "programUuid", rows, 1, FormTypeEntities.ProgramEnrolment);
+
+      assert.equal(2, options.length, "row 0 has no programme, so neither is taken");
+    });
+
+    /** A decision form is valid subject-only, so two subject-only rows really are duplicates. */
+    it("still treats two subject-only decision rows as the same combination", () => {
+      const subjectTypes = [{ uuid: AWC_CENTER }, { uuid: STUDENT }];
+      const rows = [row(AWC_CENTER, null, null), row("", null, null)];
+
+      const options = withoutCombinationsAlreadyUsed(subjectTypes, "subjectTypeUuid", rows, 1, FormTypeEntities.Approval);
+
+      assert.deepEqual(
+        [STUDENT],
+        options.map((s) => s.uuid),
+      );
+    });
+
     it("leaves the list alone when the row does not exist", () => {
       assert.deepEqual(programs, withoutCombinationsAlreadyUsed(programs, "programUuid", [], 0, FormTypeEntities.Approval));
     });

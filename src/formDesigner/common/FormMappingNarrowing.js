@@ -119,6 +119,27 @@ export function encounterTypeOptions(encounterTypes, formMappings, subjectTypeUu
  *
  * Voided rows are ignored: a mapping the administrator has removed must give its combination back.
  */
+/**
+ * A row only claims a combination once it holds every field its form type needs.
+ *
+ * formMappingUniqueKey concatenates whatever is filled in, with no separator, so a half-filled row
+ * produces the same key as the empty row being edited: on an Encounter form, row 0 at (AWC Center, "")
+ * keys as "st-awc", and so does a fresh row 1 - which removed AWC Center from row 1's dropdown until row
+ * 0 had a visit type. validateForm refuses incomplete rows at save, so the collision was unreachable
+ * until this check moved into the dropdown.
+ *
+ * The requirements mirror validateForm's. A registration form needs only the subject type, and a decision
+ * form is legitimate in all four shapes - so two subject-only decision rows genuinely are duplicates and
+ * must still collide.
+ */
+const isFullySpecified = (formTypeInfo, row) => {
+  if (!row.subjectTypeUuid) return false;
+  if (FormTypeEntities.isForProgramEncounter(formTypeInfo)) return !!row.programUuid && !!row.encounterTypeUuid;
+  if (FormTypeEntities.isForProgramEnrolment(formTypeInfo)) return !!row.programUuid;
+  if (FormTypeEntities.isForSubjectEncounter(formTypeInfo)) return !!row.encounterTypeUuid;
+  return true;
+};
+
 export function withoutCombinationsAlreadyUsed(options, field, formMappings, index, formTypeInfo) {
   const rows = formMappings || [];
   const row = rows[index];
@@ -128,7 +149,7 @@ export function withoutCombinationsAlreadyUsed(options, field, formMappings, ind
 
   const takenKeys = new Set(
     rows
-      .filter((other, otherIndex) => otherIndex !== index && !other.voided)
+      .filter((other, otherIndex) => otherIndex !== index && !other.voided && isFullySpecified(formTypeInfo, other))
       .map((other) => formMappingUniqueKey(formTypeInfo, other))
       .filter(Boolean),
   );
