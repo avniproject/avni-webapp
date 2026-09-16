@@ -14,7 +14,7 @@ import {
   Alert,
 } from "@mui/material";
 import { format } from "date-fns";
-import { extractServerErrorMessage } from "./utils/errorMessage";
+import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 
 // Server's BadRequestError message for the partial-unique conflict is shaped
 // like "A marker already exists for <calendar> on <date>." — we match on that

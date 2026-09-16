@@ -11,7 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 import { Calendar } from "openchs-models";
-import { extractServerErrorMessage } from "./utils/errorMessage";
+import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 
 const CalendarMarkerPopover = ({
   open,

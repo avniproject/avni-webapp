@@ -34,24 +34,9 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
-
-// The server sends the exception's toString plus its stack trace. Showing it raw put the
-// "org.avni.server...Exception: " prefix in front of the sentence and a 100-character cut then
-// truncated the sentence itself mid-word, so the approver-facing reason never reached the screen.
-// Same treatment as FormDesignerHandlers gives a concept save failure. The untouched text stays
-// available behind Copy to clipboard.
-const serverErrorMessage = (errorMsg) => {
-  const text = _.isString(errorMsg)
-    ? errorMsg
-    : _.get(errorMsg, "message") ||
-      _.get(errorMsg, "error") ||
-      _.toString(errorMsg);
-  return _.split(
-    _.replace(text, /^[\w.$]+(Exception|Error): /, ""),
-    /\n|\r/,
-    1,
-  )[0];
-};
+// This screen keeps the untouched response body so Copy to clipboard can offer it, so it wants the
+// body-taking form rather than the one that reaches into an axios error.
+import { messageFromServerErrorBody } from "../../common/utils/serverErrorMessage";
 
 const FormSettings = () => {
   const { id } = useParams();
@@ -658,7 +643,10 @@ const FormSettings = () => {
           {state.errorMsg && (
             <FormControl fullWidth margin="dense">
               <li style={{ color: "red" }}>
-                {serverErrorMessage(state.errorMsg)}
+                {messageFromServerErrorBody(
+                  state.errorMsg,
+                  "Could not save the form.",
+                )}
               </li>
               <CopyToClipboard text={state.errorMsg}>
                 <button>Copy to clipboard</button>

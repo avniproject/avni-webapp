@@ -16,10 +16,7 @@ import { FormTypeEntities } from "../common/constants";
 import { default as UUID } from "uuid";
 import _ from "lodash";
 import UserInfo from "../../common/model/UserInfo";
-// Not calendar-specific despite where it sits: it cuts a Java stack trace body down to its message line,
-// which is what avni-server returns while avni.exception.in.response is on. Worth relocating to
-// common/utils, which would mean moving four Calendar imports with it.
-import { extractServerErrorMessage } from "../../adminApp/Calendar/utils/errorMessage";
+import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 
 const NewFormModal = ({ name = "", uuid = "", isCloneForm = false }) => {
   const userInfo = useSelector((state) => state.app.userInfo);

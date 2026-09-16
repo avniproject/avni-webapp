@@ -29,7 +29,7 @@ import CalendarService from "./CalendarService";
 import CalendarMonthGrid from "./CalendarMonthGrid";
 import CalendarMarkerPopover from "./CalendarMarkerPopover";
 import AddMarkerDialog from "./AddMarkerDialog";
-import { extractServerErrorMessage } from "./utils/errorMessage";
+import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 
 const HIGHLIGHT_DURATION_MS = 2500;
 const CURRENT_YEAR = new Date().getFullYear();
