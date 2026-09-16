@@ -9,6 +9,7 @@ import {
   programLabel,
   programOptions,
   programsForSubjectType,
+  withoutCombinationsAlreadyUsed,
 } from "./FormMappingNarrowing";
 
 /**
@@ -147,6 +148,95 @@ describe("FormMappingNarrowing", () => {
    * existing ProgramEnrolment mappings left 4938 subject type and programme pairs across 315 organisations
    * with nothing to pick. These are the cases that were missing when that shipped.
    */
+  /**
+   * Dropping choices that would duplicate another row on the same form.
+   *
+   * Note the shape: formMappingUniqueKey reads a FormSettings row - subjectTypeUuid, programUuid,
+   * encounterTypeUuid - not the contract shape the organisation-wide mappings above use. The two sit next
+   * to each other in this file and mixing them silently matches nothing.
+   */
+  describe("combinations already used on this form", () => {
+    const row = (subjectTypeUuid, programUuid, encounterTypeUuid) => ({
+      subjectTypeUuid,
+      programUuid,
+      encounterTypeUuid,
+    });
+
+    it("drops a programme already paired with this subject type on another row", () => {
+      const rows = [row(STUDENT, ANGANWADI, null), row(STUDENT, "", null)];
+
+      const options = withoutCombinationsAlreadyUsed(programs, "programUuid", rows, 1, FormTypeEntities.ProgramEnrolment);
+
+      assert.deepEqual(
+        ["p-karigar"],
+        options.map((p) => p.uuid),
+        "Anganwadi is taken by the first row",
+      );
+    });
+
+    /** Excluding a row's own value would blank the field the moment another row matched. */
+    it("keeps the value this row already holds", () => {
+      const rows = [row(STUDENT, ANGANWADI, null), row(STUDENT, ANGANWADI, null)];
+
+      const options = withoutCombinationsAlreadyUsed(programs, "programUuid", rows, 1, FormTypeEntities.ProgramEnrolment);
+
+      assert.include(
+        options.map((p) => p.uuid),
+        ANGANWADI,
+        "a row must never hide what it is already set to",
+      );
+    });
+
+    it("gives a combination back when the row holding it is voided", () => {
+      const taken = { ...row(STUDENT, ANGANWADI, null), voided: true };
+      const rows = [taken, row(STUDENT, "", null)];
+
+      const options = withoutCombinationsAlreadyUsed(programs, "programUuid", rows, 1, FormTypeEntities.ProgramEnrolment);
+
+      assert.include(
+        options.map((p) => p.uuid),
+        ANGANWADI,
+      );
+    });
+
+    it("drops a subject type already used on a registration form, where the subject type is the whole key", () => {
+      const subjectTypes = [{ uuid: STUDENT }, { uuid: AWC_CENTER }];
+      const rows = [row(STUDENT, null, null), row("", null, null)];
+
+      const options = withoutCombinationsAlreadyUsed(subjectTypes, "subjectTypeUuid", rows, 1, FormTypeEntities.IndividualProfile);
+
+      assert.deepEqual(
+        [AWC_CENTER],
+        options.map((s) => s.uuid),
+      );
+    });
+
+    /** A decision form's four shapes are different combinations, so one does not block another. */
+    it("does not let a subject-only decision row block a programme one", () => {
+      const rows = [row(STUDENT, null, null), row(STUDENT, "", null)];
+
+      const options = withoutCombinationsAlreadyUsed(programs, "programUuid", rows, 1, FormTypeEntities.Approval);
+
+      assert.equal(2, options.length, "neither programme completes the subject-only combination");
+    });
+
+    it("leaves the list alone when the row does not exist", () => {
+      assert.deepEqual(programs, withoutCombinationsAlreadyUsed(programs, "programUuid", [], 0, FormTypeEntities.Approval));
+    });
+
+    /**
+     * The callers map straight over the result, and the reference lists are undefined until
+     * operationalModules has loaded - so returning anything but an array puts a crash one render away.
+     */
+    it("always hands back an array, even before the lists have loaded", () => {
+      assert.deepEqual([], withoutCombinationsAlreadyUsed(undefined, "programUuid", [], 0, FormTypeEntities.Approval));
+      assert.deepEqual(
+        [],
+        withoutCombinationsAlreadyUsed(undefined, "subjectTypeUuid", [{ subjectTypeUuid: STUDENT }], 0, FormTypeEntities.IndividualProfile),
+      );
+    });
+  });
+
   describe("form types that define a relationship", () => {
     it("offers every programme on the form that decides which programmes a subject type enrols in", () => {
       const options = programOptions(programs, formMappings, AWC_CENTER, FormTypeEntities.ProgramEnrolment);

@@ -25,6 +25,7 @@ import {
   encounterTypeOptions,
   programLabel,
   programOptions,
+  withoutCombinationsAlreadyUsed,
 } from "../common/FormMappingNarrowing";
 import { describeDecisionMapping } from "../common/FormMappingDescription";
 import Box from "@mui/material/Box";
@@ -312,10 +313,18 @@ const FormSettings = () => {
 
   const programNameElement = (index) => {
     const subjectTypeUuid = state.formMappings[index].subjectTypeUuid;
-    const programs = programOptions(
-      state.data.programs,
-      state.data.formMappings,
-      subjectTypeUuid,
+    // Narrowed to the subject type, then stripped of anything another row on this form already uses, so a
+    // duplicate cannot be built rather than being refused on save.
+    const programs = withoutCombinationsAlreadyUsed(
+      programOptions(
+        state.data.programs,
+        state.data.formMappings,
+        subjectTypeUuid,
+        state.formTypeInfo,
+      ),
+      "programUuid",
+      state.formMappings,
+      index,
       state.formTypeInfo,
     );
     return (
@@ -396,28 +405,40 @@ const FormSettings = () => {
     </FormControl>
   );
 
-  const subjectTypeElement = (index) => (
-    <FormControl fullWidth margin="dense">
-      <AvniFormLabel
-        label="Subject Type"
-        toolTipKey="APP_DESIGNER_FORM_MAPPING_SUBJECT_TYPE"
-      />
-      <Select
-        name="subjectTypeUuid"
-        value={state.formMappings[index].subjectTypeUuid || ""}
-        onChange={(event) =>
-          handleMappingChange(index, "subjectTypeUuid", event.target.value)
-        }
-      >
-        {state.data.subjectTypes?.map((subjectType) => (
-          <MenuItem key={subjectType.uuid} value={subjectType.uuid}>
-            {subjectType.operationalSubjectTypeName}
-          </MenuItem>
-        ))}
-      </Select>
-      {renderError("subjectTypeUuid", index)}
-    </FormControl>
-  );
+  const subjectTypeElement = (index) => {
+    // On a registration form the subject type is the whole key, so one already used on another row would
+    // make this one a duplicate. On the other form types it is only part of the key and nothing is
+    // dropped until the rest of the row matches too.
+    const subjectTypes = withoutCombinationsAlreadyUsed(
+      state.data.subjectTypes,
+      "subjectTypeUuid",
+      state.formMappings,
+      index,
+      state.formTypeInfo,
+    );
+    return (
+      <FormControl fullWidth margin="dense">
+        <AvniFormLabel
+          label="Subject Type"
+          toolTipKey="APP_DESIGNER_FORM_MAPPING_SUBJECT_TYPE"
+        />
+        <Select
+          name="subjectTypeUuid"
+          value={state.formMappings[index].subjectTypeUuid || ""}
+          onChange={(event) =>
+            handleMappingChange(index, "subjectTypeUuid", event.target.value)
+          }
+        >
+          {subjectTypes.map((subjectType) => (
+            <MenuItem key={subjectType.uuid} value={subjectType.uuid}>
+              {subjectType.operationalSubjectTypeName}
+            </MenuItem>
+          ))}
+        </Select>
+        {renderError("subjectTypeUuid", index)}
+      </FormControl>
+    );
+  };
 
   const formTypes = () =>
     FormTypeEntities.getAllFormTypeInfo().map((formTypeInfo) => (
@@ -431,11 +452,17 @@ const FormSettings = () => {
     // A programme on the row switches this from the subject's own visit types to that programme's. The two
     // are different sets, and offering both is what allowed a programme's visit type onto a mapping
     // outside that programme.
-    const encounterTypes = encounterTypeOptions(
-      state.data.encounterTypes,
-      state.data.formMappings,
-      subjectTypeUuid,
-      programUuid,
+    const encounterTypes = withoutCombinationsAlreadyUsed(
+      encounterTypeOptions(
+        state.data.encounterTypes,
+        state.data.formMappings,
+        subjectTypeUuid,
+        programUuid,
+        state.formTypeInfo,
+      ),
+      "encounterTypeUuid",
+      state.formMappings,
+      index,
       state.formTypeInfo,
     );
     return (

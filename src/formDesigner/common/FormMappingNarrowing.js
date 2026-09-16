@@ -1,4 +1,5 @@
 import { FormTypeEntities } from "./constants";
+import { formMappingUniqueKey } from "./FormMappingKey";
 
 /**
  * Which programmes and visit types a form mapping may point at, given the subject type it is for.
@@ -99,6 +100,45 @@ export function encounterTypeOptions(encounterTypes, formMappings, subjectTypeUu
   return programUuid
     ? programEncounterTypesForProgram(encounterTypes, formMappings, subjectTypeUuid, programUuid)
     : generalEncounterTypesForSubjectType(encounterTypes, formMappings, subjectTypeUuid);
+}
+
+/**
+ * Drops the choices that would make this row a duplicate of another row on the same form.
+ *
+ * Saving two identical mappings is already refused - "Same mapping already exists" - but only after the
+ * administrator has filled the row in and pressed Save. Removing the choice up front means the combination
+ * cannot be built at all.
+ *
+ * It reuses formMappingUniqueKey rather than deciding for itself what counts as the same mapping. Two
+ * definitions of "duplicate" would drift, and the key already knows that a registration form is keyed on
+ * the subject type alone, an enrolment on subject type and programme, and a decision form on whatever is
+ * filled in.
+ *
+ * A row never hides its own current value. Excluding it would blank the field the moment another row
+ * happened to match, which is the same disappearing-value problem renderValue exists to prevent.
+ *
+ * Voided rows are ignored: a mapping the administrator has removed must give its combination back.
+ */
+export function withoutCombinationsAlreadyUsed(options, field, formMappings, index, formTypeInfo) {
+  const rows = formMappings || [];
+  const row = rows[index];
+  // Always an array: the callers map straight over the result, and the reference lists are undefined until
+  // operationalModules has loaded.
+  if (!row) return options || [];
+
+  const takenKeys = new Set(
+    rows
+      .filter((other, otherIndex) => otherIndex !== index && !other.voided)
+      .map((other) => formMappingUniqueKey(formTypeInfo, other))
+      .filter(Boolean),
+  );
+
+  return (options || []).filter((option) => {
+    if (row[field] === option.uuid) return true;
+    const candidate = { ...row, [field]: option.uuid };
+    const key = formMappingUniqueKey(formTypeInfo, candidate);
+    return !key || !takenKeys.has(key);
+  });
 }
 
 /**
