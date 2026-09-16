@@ -109,6 +109,18 @@ export function encounterTypeOptions(encounterTypes, formMappings, subjectTypeUu
 /**
  * Drops the choices that would make this row a duplicate of another row on the same form.
  *
+ * Two rules, because Approval and Rejection are the only form types whose shapes nest. For every other
+ * type a combination is either taken or it is not, and the key decides it. For a decision form, a mapping
+ * at (Mother) does not mean Mother is spent - (Mother, Pregnancy) and (Mother, Pregnancy, ANC) are still
+ * buildable, and hiding Mother from the Subject Type list forecloses both. So an option is hidden only
+ * once its whole branch is exhausted: the subject type when every programme under it and every general
+ * visit type is taken, a programme when every visit type under it is taken, a visit type when that exact
+ * triple is taken.
+ *
+ * referenceData carries what is buildable - the organisation's mappings and its programme and visit type
+ * lists - and is only consulted for decision forms. Without it a decision form falls back to treating a
+ * subject-only sibling as exhausting the subject type, which is the behaviour this rule exists to correct.
+ *
  * Saving two identical mappings is already refused - "Same mapping already exists" - but only after the
  * administrator has filled the row in and pressed Save. Removing the choice up front means the combination
  * cannot be built at all.
@@ -144,7 +156,40 @@ const isFullySpecified = (formTypeInfo, row) => {
   return true;
 };
 
-export function withoutCombinationsAlreadyUsed(options, field, formMappings, index, formTypeInfo) {
+const sameValue = (a, b) => (a || null) === (b || null);
+
+const hasSiblingAt = (siblings, subjectTypeUuid, programUuid, encounterTypeUuid) =>
+  siblings.some(
+    (sibling) =>
+      sameValue(sibling.subjectTypeUuid, subjectTypeUuid) &&
+      sameValue(sibling.programUuid, programUuid) &&
+      sameValue(sibling.encounterTypeUuid, encounterTypeUuid),
+  );
+
+/** Taken at the programme itself, and at every visit type that could sit under it. */
+const programmeIsExhausted = (siblings, subjectTypeUuid, programUuid, referenceData) =>
+  hasSiblingAt(siblings, subjectTypeUuid, programUuid, null) &&
+  programEncounterTypesForProgram(referenceData.encounterTypes, referenceData.orgMappings, subjectTypeUuid, programUuid).every(
+    (encounterType) => hasSiblingAt(siblings, subjectTypeUuid, programUuid, encounterType.uuid),
+  );
+
+/** Taken at the subject type itself, at every programme under it, and at every general visit type. */
+const subjectTypeIsExhausted = (siblings, subjectTypeUuid, referenceData) =>
+  hasSiblingAt(siblings, subjectTypeUuid, null, null) &&
+  programsForSubjectType(referenceData.programs, referenceData.orgMappings, subjectTypeUuid).every((programme) =>
+    programmeIsExhausted(siblings, subjectTypeUuid, programme.uuid, referenceData),
+  ) &&
+  generalEncounterTypesForSubjectType(referenceData.encounterTypes, referenceData.orgMappings, subjectTypeUuid).every((encounterType) =>
+    hasSiblingAt(siblings, subjectTypeUuid, null, encounterType.uuid),
+  );
+
+const branchIsExhausted = (field, optionUuid, row, siblings, referenceData) => {
+  if (field === "subjectTypeUuid") return subjectTypeIsExhausted(siblings, optionUuid, referenceData);
+  if (field === "programUuid") return programmeIsExhausted(siblings, row.subjectTypeUuid, optionUuid, referenceData);
+  return hasSiblingAt(siblings, row.subjectTypeUuid, row.programUuid, optionUuid);
+};
+
+export function withoutCombinationsAlreadyUsed(options, field, formMappings, index, formTypeInfo, referenceData = {}) {
   const rows = formMappings || [];
   const row = rows[index];
   // No row means nothing to compare against, so the list passes through untouched - coerced, because the
@@ -152,17 +197,28 @@ export function withoutCombinationsAlreadyUsed(options, field, formMappings, ind
   // has loaded.
   if (!row) return options || [];
 
+  const siblings = rows.filter((other, otherIndex) => otherIndex !== index && !other.voided);
+  const holdsItAlready = (option) => row[field] === option.uuid;
+
+  // A decision form's four shapes nest, so "already used" cannot be decided from the key alone: a row on
+  // its way to a deeper shape passes through the key of a shallower one. Hide an option only once nothing
+  // further can be built under it.
+  if (FormTypeEntities.isApprovalDecisionForm(formTypeInfo)) {
+    return (options || []).filter(
+      (option) => holdsItAlready(option) || !branchIsExhausted(field, option.uuid, row, siblings, referenceData),
+    );
+  }
+
   const takenKeys = new Set(
-    rows
-      .filter((other, otherIndex) => otherIndex !== index && !other.voided && isFullySpecified(formTypeInfo, other))
+    siblings
+      .filter((other) => isFullySpecified(formTypeInfo, other))
       .map((other) => formMappingUniqueKey(formTypeInfo, other))
       .filter(Boolean),
   );
 
   return (options || []).filter((option) => {
-    if (row[field] === option.uuid) return true;
-    const candidate = { ...row, [field]: option.uuid };
-    const key = formMappingUniqueKey(formTypeInfo, candidate);
+    if (holdsItAlready(option)) return true;
+    const key = formMappingUniqueKey(formTypeInfo, { ...row, [field]: option.uuid });
     return !key || !takenKeys.has(key);
   });
 }

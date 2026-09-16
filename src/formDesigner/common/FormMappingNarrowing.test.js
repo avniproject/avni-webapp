@@ -268,16 +268,81 @@ describe("FormMappingNarrowing", () => {
       assert.equal(2, options.length, "row 0 has no programme, so neither is taken");
     });
 
-    /** A decision form is valid subject-only, so two subject-only rows really are duplicates. */
-    it("still treats two subject-only decision rows as the same combination", () => {
+    /**
+     * A decision form's four shapes nest, so a mapping at the subject type alone does not spend it.
+     *
+     * This block previously asserted the opposite - that two subject-only decision rows collide - which
+     * read as correct in isolation and left the screen unable to express what the feature is for: an
+     * organisation with approval on a registration form could not then add approval of an enrolment,
+     * because its subject type had disappeared from the dropdown.
+     */
+    const referenceData = { orgMappings: formMappings, programs, encounterTypes };
+
+    it("keeps offering a subject type that only has its registration mapping so far", () => {
       const subjectTypes = [{ uuid: AWC_CENTER }, { uuid: STUDENT }];
       const rows = [row(AWC_CENTER, null, null), row("", null, null)];
 
-      const options = withoutCombinationsAlreadyUsed(subjectTypes, "subjectTypeUuid", rows, 1, FormTypeEntities.Approval);
+      const options = withoutCombinationsAlreadyUsed(subjectTypes, "subjectTypeUuid", rows, 1, FormTypeEntities.Approval, referenceData);
+
+      assert.include(
+        options.map((s) => s.uuid),
+        AWC_CENTER,
+        "its general visit type is still unmapped, so the subject type is not spent",
+      );
+    });
+
+    it("keeps offering a programme whose visit types are not all mapped yet", () => {
+      const rows = [row(STUDENT, ANGANWADI, null), row(STUDENT, "", null)];
+
+      const options = withoutCombinationsAlreadyUsed(programs, "programUuid", rows, 1, FormTypeEntities.Approval, referenceData);
+
+      assert.include(
+        options.map((p) => p.uuid),
+        ANGANWADI,
+        "(Student, Anganwadi, Monthly Visit) is still buildable",
+      );
+    });
+
+    it("hides a programme once every visit type under it is taken", () => {
+      const rows = [row(STUDENT, ANGANWADI, null), row(STUDENT, ANGANWADI, "et-visit"), row(STUDENT, "", null)];
+
+      const options = withoutCombinationsAlreadyUsed(programs, "programUuid", rows, 2, FormTypeEntities.Approval, referenceData);
 
       assert.deepEqual(
-        [STUDENT],
+        ["p-karigar"],
+        options.map((p) => p.uuid),
+      );
+    });
+
+    it("hides a subject type only once its programmes and general visits are taken too", () => {
+      const subjectTypes = [{ uuid: STUDENT }, { uuid: AWC_CENTER }];
+      const rows = [row(STUDENT, null, null), row(STUDENT, ANGANWADI, null), row(STUDENT, ANGANWADI, "et-visit"), row("", null, null)];
+
+      const options = withoutCombinationsAlreadyUsed(subjectTypes, "subjectTypeUuid", rows, 3, FormTypeEntities.Approval, referenceData);
+
+      assert.deepEqual(
+        [AWC_CENTER],
         options.map((s) => s.uuid),
+        "Student has nothing left to build",
+      );
+    });
+
+    it("still hides a visit type whose exact triple is taken", () => {
+      const rows = [row(STUDENT, ANGANWADI, "et-visit"), row(STUDENT, ANGANWADI, "")];
+
+      const options = withoutCombinationsAlreadyUsed(
+        encounterTypes,
+        "encounterTypeUuid",
+        rows,
+        1,
+        FormTypeEntities.Approval,
+        referenceData,
+      );
+
+      assert.notInclude(
+        options.map((e) => e.uuid),
+        "et-visit",
+        "nothing nests below a visit type, so the exact triple is the whole test",
       );
     });
 

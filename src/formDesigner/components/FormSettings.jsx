@@ -181,17 +181,29 @@ const FormSettings = () => {
         (state.warningFlag && window.confirm(voidedMessage))
       ) {
         try {
+          // An empty string means the field was cleared, but the server reads it as "leave unchanged" -
+          // createOrUpdateFormMapping only assigns a field when StringUtils.hasText, with no else. So a
+          // programme cleared on screen kept its old value in the database, which is how changing a
+          // subject type could manufacture the unrelated pairing this screen exists to prevent. Null is
+          // how to say cleared. The empty string has to stay in component state, because validateForm
+          // tests for exactly that to flag a required field nobody filled in.
+          const cleared = (value) => (value === "" ? null : value);
+          const normalised = state.formMappings.map((formMap) => ({
+            ...formMap,
+            programUuid: cleared(formMap.programUuid),
+            encounterTypeUuid: cleared(formMap.encounterTypeUuid),
+          }));
           // The switch is hidden for Approval and Rejection, so anything still set on those mappings is
           // a leftover from before it was hidden, or from the type having been changed. Sending false
           // clears it rather than letting a meaningless true sit in form_mapping forever.
           const mappingsToSave = FormTypeEntities.isApprovalDecisionForm(
             state.formTypeInfo,
           )
-            ? state.formMappings.map((formMap) => ({
+            ? normalised.map((formMap) => ({
                 ...formMap,
                 enableApproval: false,
               }))
-            : state.formMappings;
+            : normalised;
           const response = await http.put(`/web/forms/${state.uuid}/metadata`, {
             name: state.name,
             formType: state.formTypeInfo.formType,
@@ -296,6 +308,15 @@ const FormSettings = () => {
     }
   };
 
+  // What is still buildable. Only the decision-form branch of withoutCombinationsAlreadyUsed reads this:
+  // before hiding a subject type or a programme it has to know which programmes and visit types could
+  // still sit under it.
+  const referenceData = {
+    orgMappings: state.data.formMappings,
+    programs: state.data.programs,
+    encounterTypes: state.data.encounterTypes,
+  };
+
   const programNameElement = (index) => {
     const subjectTypeUuid = state.formMappings[index].subjectTypeUuid;
     // Narrowed to the subject type, then stripped of anything another row on this form already uses, so a
@@ -311,6 +332,7 @@ const FormSettings = () => {
       state.formMappings,
       index,
       state.formTypeInfo,
+      referenceData,
     );
     return (
       <FormControl fullWidth margin="dense">
@@ -395,13 +417,16 @@ const FormSettings = () => {
   const subjectTypeElement = (index) => {
     // On a registration form the subject type is the whole key, so one already used on another row would
     // make this one a duplicate. On the other form types it is only part of the key and nothing is
-    // dropped until the rest of the row matches too.
+    // dropped until the rest of the row matches too. On a decision form it goes only once every programme
+    // and general visit type under it is taken as well - a mapping at the subject type alone leaves the
+    // deeper shapes still buildable.
     const subjectTypes = withoutCombinationsAlreadyUsed(
       state.data.subjectTypes,
       "subjectTypeUuid",
       state.formMappings,
       index,
       state.formTypeInfo,
+      referenceData,
     );
     return (
       <FormControl fullWidth margin="dense">
@@ -451,6 +476,7 @@ const FormSettings = () => {
       state.formMappings,
       index,
       state.formTypeInfo,
+      referenceData,
     );
     return (
       <FormControl fullWidth margin="dense">
