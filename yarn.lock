@@ -11297,10 +11297,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.33.74:
-  version "1.33.74"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.33.74.tgz#19630c3db3175d03756f36843630f3dbe6917c8e"
-  integrity sha512-CTYvcP1yYckYeU4kW8qTEznir5nlvG6VS++Kvam8YMQhp7z6Gr7gSIPc0kjYY6VwZWI59GW2YL/r0MUaOqtgIA==
+openchs-models@1.33.82:
+  version "1.33.82"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.33.82.tgz#0fe2c1549ccbcb883a3178ba12b0700f7cda0c7e"
+  integrity sha512-9wOVG5rkJXN03iWDLsa2fvy16Jr2o3L7tDcgOxolINQ3BTlZsr9cNyuvYk4wWoXNB/Yt6O/fYCAIoZkKDTO3uA==
   dependencies:
     uuid "^9.0.1"
 
@@ -12835,9 +12835,9 @@ rrweb-cssom@^0.8.0:
   resolved "https://registry.yarnpkg.com/rrweb-cssom/-/rrweb-cssom-0.8.0.tgz#3021d1b4352fbf3b614aaeed0bc0d5739abe0bc2"
   integrity sha512-guoltQEx+9aMf2gDZ0s62EcV8lsXR+0w8915TC3ITdn2YueuNjdAYh/levpU9nFaoChh9RUS5ZdQMrKfVEN9tw==
 
-"rules-config@github:avniproject/rules-config#f5f651905ac26dc98b9259245a2c3802bb59f3fe":
+"rules-config@github:avniproject/rules-config#6c6a590c22ae45902cd733dbeace3861da01c249":
   version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/f5f651905ac26dc98b9259245a2c3802bb59f3fe"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/6c6a590c22ae45902cd733dbeace3861da01c249"
   dependencies:
     "@quasar/babel-preset-app" "^2.0.1"
     babel-preset-env "^1.7.0"

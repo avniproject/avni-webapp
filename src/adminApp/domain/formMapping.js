@@ -13,7 +13,9 @@ const privilegeTypes = new Map([
   [Form.formTypes.ProgramEnrolment, Privilege.PrivilegeType.EditProgram],
   [Form.formTypes.ProgramExit, Privilege.PrivilegeType.EditProgram],
   [Form.formTypes.SubjectEnrolmentEligibility, Privilege.PrivilegeType.EditSubjectType],
-  [Form.formTypes.Task, Privilege.PrivilegeType.EditTaskType]
+  [Form.formTypes.Task, Privilege.PrivilegeType.EditTaskType],
+  [Form.formTypes.Approval, Privilege.PrivilegeType.EditApproval],
+  [Form.formTypes.Rejection, Privilege.PrivilegeType.EditRejection],
 ]);
 
 export function getPrivilegeType(formType) {
@@ -22,34 +24,34 @@ export function getPrivilegeType(formType) {
 
 export const findProgramEncounterForm = (formMappings, encounterType) =>
   formMappings.find(
-    mapping =>
+    (mapping) =>
       (mapping.formType === "ProgramEncounter" || mapping.formType === "Encounter") &&
       mapping.isVoided === false &&
-      mapping.encounterTypeUUID === encounterType.uuid
+      mapping.encounterTypeUUID === encounterType.uuid,
   );
 
 export const findProgramEncounterCancellationForm = (formMappings, encounterType) =>
   formMappings.find(
-    mapping =>
+    (mapping) =>
       (mapping.formType === "ProgramEncounterCancellation" || mapping.formType === "IndividualEncounterCancellation") &&
       mapping.isVoided === false &&
-      mapping.encounterTypeUUID === encounterType.uuid
+      mapping.encounterTypeUUID === encounterType.uuid,
   );
 
 export const findProgramEnrolmentForm = (formMappings, program) =>
   formMappings.find(
-    mapping => mapping.formType === "ProgramEnrolment" && mapping.isVoided === false && mapping.programUUID === program.uuid
+    (mapping) => mapping.formType === "ProgramEnrolment" && mapping.isVoided === false && mapping.programUUID === program.uuid,
   );
 
 export const findProgramExitForm = (formMappings, program) =>
-  formMappings.find(mapping => mapping.formType === "ProgramExit" && mapping.isVoided === false && mapping.programUUID === program.uuid);
+  formMappings.find((mapping) => mapping.formType === "ProgramExit" && mapping.isVoided === false && mapping.programUUID === program.uuid);
 
 export const findRegistrationForm = (formMappings, subjectType) =>
   formMappings.find(
-    mapping => mapping.formType === "IndividualProfile" && mapping.isVoided === false && mapping.subjectTypeUUID === subjectType.uuid
+    (mapping) => mapping.formType === "IndividualProfile" && mapping.isVoided === false && mapping.subjectTypeUUID === subjectType.uuid,
   );
 
-const findFormsOfType = (formList = [], formType = "IndividualProfile") => formList.filter(form => form.formType === formType);
+const findFormsOfType = (formList = [], formType = "IndividualProfile") => formList.filter((form) => form.formType === formType);
 
 export const findRegistrationForms = (formList = []) => findFormsOfType(formList, "IndividualProfile");
 
@@ -68,5 +70,5 @@ export const findProgramExitForms = (formList = []) => findFormsOfType(formList,
 export const findFormUuidForSubjectType = (subjectType, formMappings = []) =>
   get(
     find(formMappings, ({ formType, subjectTypeUUID }) => formType === "IndividualProfile" && subjectTypeUUID === get(subjectType, "uuid")),
-    "formUUID"
+    "formUUID",
   );

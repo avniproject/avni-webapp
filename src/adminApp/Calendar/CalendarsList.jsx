@@ -15,7 +15,7 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import CalendarService from "./CalendarService";
 import CalendarFormDialog from "./CalendarFormDialog";
-import { extractServerErrorMessage } from "./utils/errorMessage";
+import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 
 function locationLabelFor(calendar) {
   if (!calendar.addressLevelUUID) return null;
