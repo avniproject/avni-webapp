@@ -21,7 +21,7 @@ import WorkingPatternEditor, {
   occurrenceMapToPattern,
 } from "./WorkingPatternEditor";
 import AddressLevelSinglePicker from "./AddressLevelSinglePicker";
-import { extractServerErrorMessage } from "./utils/errorMessage";
+import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 
 const SCOPE_GLOBAL = "GLOBAL";
 const SCOPE_PER_LOCATION = "PER_LOCATION";

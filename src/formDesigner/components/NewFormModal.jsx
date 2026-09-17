@@ -6,7 +6,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormHelperText
+  FormHelperText,
 } from "@mui/material";
 import { httpClient as http } from "common/utils/httpClient";
 import { Navigate } from "react-router-dom";
@@ -16,13 +16,14 @@ import { FormTypeEntities } from "../common/constants";
 import { default as UUID } from "uuid";
 import _ from "lodash";
 import UserInfo from "../../common/model/UserInfo";
+import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 
 const NewFormModal = ({ name = "", uuid = "", isCloneForm = false }) => {
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
 
   const [formData, setFormData] = useState({
     name: name,
-    formTypeInfo: null
+    formTypeInfo: null,
   });
 
   const [data, setData] = useState({});
@@ -43,7 +44,7 @@ const NewFormModal = ({ name = "", uuid = "", isCloneForm = false }) => {
     return Object.keys(errorsList).length === 0;
   };
 
-  const getDefaultSnackbarStatus = status => {
+  const getDefaultSnackbarStatus = (status) => {
     setDefaultSnackbarStatus(status);
   };
 
@@ -52,86 +53,97 @@ const NewFormModal = ({ name = "", uuid = "", isCloneForm = false }) => {
     if (validateFormStatus) {
       let dataSend = {
         name: formData.name,
-        formType: formData.formTypeInfo.formType
+        formType: formData.formTypeInfo.formType,
       };
 
-      http.post("/web/forms", dataSend).then(response => {
-        if (!isCloneForm) {
-          setToFormDetails(response.data.uuid);
-        } else {
-          const newUUID = response.data.uuid;
-          let editResponse;
+      http
+        .post("/web/forms", dataSend)
+        .then((response) => {
+          if (!isCloneForm) {
+            setToFormDetails(response.data.uuid);
+          } else {
+            const newUUID = response.data.uuid;
+            let editResponse;
 
-          http.get(`/forms/export?formUUID=${uuid}`).then(response => {
-            const oldParentToNewParentUUIDsMap = new Map();
-            editResponse = response.data;
-            editResponse["uuid"] = newUUID;
-            editResponse["name"] = formData.name;
-            editResponse["formType"] = formData.formTypeInfo.formType;
+            http.get(`/forms/export?formUUID=${uuid}`).then((response) => {
+              const oldParentToNewParentUUIDsMap = new Map();
+              editResponse = response.data;
+              editResponse["uuid"] = newUUID;
+              editResponse["name"] = formData.name;
+              editResponse["formType"] = formData.formTypeInfo.formType;
 
-            const promise = new Promise((resolve, reject) => {
-              _.forEach(editResponse.formElementGroups, group => {
-                group["uuid"] = UUID.v4();
-                _.forEach(group.formElements, element => {
-                  const newUuid = UUID.v4();
-                  oldParentToNewParentUUIDsMap.set(element.uuid, newUuid);
-                  element["uuid"] = newUuid;
-                  if (element.parentFormElementUuid) {
-                    element.parentFormElementUuid = oldParentToNewParentUUIDsMap.get(
-                      element.parentFormElementUuid
-                    );
-                  }
+              const promise = new Promise((resolve, reject) => {
+                _.forEach(editResponse.formElementGroups, (group) => {
+                  group["uuid"] = UUID.v4();
+                  _.forEach(group.formElements, (element) => {
+                    const newUuid = UUID.v4();
+                    oldParentToNewParentUUIDsMap.set(element.uuid, newUuid);
+                    element["uuid"] = newUuid;
+                    if (element.parentFormElementUuid) {
+                      element.parentFormElementUuid =
+                        oldParentToNewParentUUIDsMap.get(
+                          element.parentFormElementUuid,
+                        );
+                    }
+                  });
                 });
+                resolve("Promise resolved ");
               });
-              resolve("Promise resolved ");
-            });
 
-            promise.then(
-              result => {
-                http.post("/forms", editResponse).then(response => {
-                  if (response.status === 200) {
-                    setToFormDetails(newUUID);
-                  }
-                });
-              },
-              function(error) {
-                console.log(error);
-              }
-            );
-          });
-        }
-      });
+              promise.then(
+                (result) => {
+                  http.post("/forms", editResponse).then((response) => {
+                    if (response.status === 200) {
+                      setToFormDetails(newUUID);
+                    }
+                  });
+                },
+                function (error) {
+                  console.log(error);
+                },
+              );
+            });
+          }
+        })
+        .catch((error) => {
+          // The create POST had no rejection handler at all, so a refused form - a duplicate name, a
+          // missing privilege - left the dialog sitting open with nothing said. errorMsg and the red line
+          // that renders it were already here and were never set by anything.
+          setErrorMsg(
+            extractServerErrorMessage(error, "Could not create the form."),
+          );
+        });
     }
   };
 
   useEffect(() => {
-    http.get("/web/operationalModules").then(response => {
+    http.get("/web/operationalModules").then((response) => {
       let responseData = Object.assign({}, response.data);
       delete responseData["formMappings"];
       setData(responseData);
     });
   }, []);
 
-  const onChangeField = event => {
+  const onChangeField = (event) => {
     const { name, value } = event.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const formTypes = () => {
     return _.map(
-      _.filter(FormTypeEntities.getAllFormTypeInfo(), x =>
-        UserInfo.hasFormEditPrivilege(userInfo, x.formType)
+      _.filter(FormTypeEntities.getAllFormTypeInfo(), (x) =>
+        UserInfo.hasFormEditPrivilege(userInfo, x.formType),
       ),
-      formTypeInfo => {
+      (formTypeInfo) => {
         return (
           <MenuItem key={formTypeInfo} value={formTypeInfo}>
             {formTypeInfo.display}
           </MenuItem>
         );
-      }
+      },
     );
   };
 
