@@ -22,7 +22,6 @@ const SHA = "a".repeat(64);
 
 let DownloadableContentService;
 let buildContentKey;
-let buildBlobFileName;
 let isValidSha256;
 let parsePayload;
 let validateContent;
@@ -30,13 +29,19 @@ let buildContentRequest;
 let performSave;
 let SaveStepError;
 let Category;
+let GuidanceKind;
+let validateGuidancePayloadShape;
+let namespaceFor;
+let blobExtensionFor;
+let findDuplicateGuidance;
+let computeFileSha256;
+let isUnencryptedCategory;
 
 beforeAll(async () => {
   const mod = await import("./DownloadableContentService");
   DownloadableContentService = mod.default;
   ({
     buildContentKey,
-    buildBlobFileName,
     isValidSha256,
     parsePayload,
     validateContent,
@@ -44,6 +49,13 @@ beforeAll(async () => {
     performSave,
     SaveStepError,
     Category,
+    GuidanceKind,
+    validateGuidancePayloadShape,
+    namespaceFor,
+    blobExtensionFor,
+    findDuplicateGuidance,
+    computeFileSha256,
+    isUnencryptedCategory,
   } = mod);
 });
 
@@ -56,11 +68,7 @@ beforeEach(() => {
 
 describe("contentKey / blob filename", () => {
   it("builds contentKey as models/<sha256>.bin", () => {
-    expect(buildContentKey(SHA)).toBe(`models/${SHA}.bin`);
-  });
-
-  it("builds blob filename as <sha256>.bin", () => {
-    expect(buildBlobFileName(SHA)).toBe(`${SHA}.bin`);
+    expect(buildContentKey("edgeModel", SHA, "bin")).toBe(`models/${SHA}.bin`);
   });
 });
 
@@ -247,7 +255,7 @@ describe("uploadBlob", () => {
     const file = new File(["ciphertext"], "model.bin", {
       type: "application/octet-stream",
     });
-    await DownloadableContentService.uploadBlob(file, SHA);
+    await DownloadableContentService.uploadBlob(file, `models/${SHA}.bin`);
     const [url, formData] = post.mock.calls[0];
     expect(url).toBe("/web/uploadMedia");
     expect(formData.get("parentFolder")).toBe("models");
@@ -260,7 +268,7 @@ describe("uploadBlob", () => {
       type: "application/octet-stream",
     });
     const onUploadProgress = jest.fn();
-    await DownloadableContentService.uploadBlob(file, SHA, onUploadProgress);
+    await DownloadableContentService.uploadBlob(file, `models/${SHA}.bin`, onUploadProgress);
     const config = post.mock.calls[0][2];
     expect(config).toEqual({ onUploadProgress });
   });
@@ -269,7 +277,7 @@ describe("uploadBlob", () => {
     const file = new File(["ciphertext"], "model.bin", {
       type: "application/octet-stream",
     });
-    await DownloadableContentService.uploadBlob(file, SHA);
+    await DownloadableContentService.uploadBlob(file, `models/${SHA}.bin`);
     expect(post.mock.calls[0][2]).toBeUndefined();
   });
 });
@@ -426,5 +434,235 @@ describe("performSave orchestration", () => {
     await expect(performSave({ request, sha256: SHA_B, file: null, key: "", service })).rejects.toMatchObject({
       step: "save the content record",
     });
+  });
+});
+
+// --- guidance images -------------------------------------------------------
+// Guidance pictures ride the same DownloadableContent rail as edge models but are unencrypted and
+// addressed by position + type, so they validate differently.
+
+const guidancePayload = (overrides) => ({
+  sequence: 3,
+  site: "Left buccal mucosa",
+  kind: "reckoner",
+  ...overrides,
+});
+
+const guidanceContent = (overrides) => ({
+  uuid: null,
+  name: "Left buccal mucosa - reference",
+  category: "guidanceImage",
+  sha256: SHA,
+  needsKey: false,
+  payloadText: JSON.stringify(guidancePayload()),
+  blobExtension: "png",
+  ...overrides,
+});
+
+const keysOf = (errors) => errors.map((e) => e.key);
+
+describe("guidanceImage category", () => {
+  it("is offered alongside edgeModel", () => {
+    expect(Object.values(Category)).toEqual(expect.arrayContaining(["edgeModel", "guidanceImage"]));
+  });
+
+  it("is the unencrypted one — an <Image> could not decode ciphertext", () => {
+    expect(isUnencryptedCategory(Category.guidanceImage)).toBe(true);
+    expect(isUnencryptedCategory(Category.edgeModel)).toBe(false);
+  });
+
+  it("is stored under its own prefix, not the models one", () => {
+    // Guidance pictures are organisation reference data. Sharing the models prefix would route
+    // them through whichever backend the org uses for AI models.
+    expect(namespaceFor(Category.guidanceImage)).toBe("guidance");
+    expect(namespaceFor(Category.edgeModel)).toBe("models");
+  });
+
+  it("keeps a real image extension so the device does not have to sniff the content type", () => {
+    expect(blobExtensionFor(Category.guidanceImage, "site3.PNG")).toBe("png");
+    expect(blobExtensionFor(Category.guidanceImage, "site3.jpeg")).toBe("jpeg");
+    expect(blobExtensionFor(Category.edgeModel, "fold1.bin")).toBe("bin");
+  });
+
+  it("builds a content key under the guidance prefix", () => {
+    const request = buildContentRequest({
+      ...guidanceContent(),
+      payload: guidancePayload(),
+    });
+    expect(request.contentKey).toBe(`guidance/${SHA}.png`);
+    expect(request.needsKey).toBe(false);
+  });
+
+  it("uploads to the prefix its own content key names", async () => {
+    const file = new File(["x"], "site3.png", { type: "image/png" });
+    await DownloadableContentService.uploadBlob(file, `guidance/${SHA}.png`);
+    const formData = post.mock.calls[0][1];
+    expect(formData.get("parentFolder")).toBe("guidance");
+    expect(formData.get("file").name).toBe(`${SHA}.png`);
+  });
+
+  it("rejects a file that is not an image", () => {
+    const errors = validateContent(guidanceContent({ blobExtension: "gif" }), {
+      hasFile: true,
+    });
+    expect(keysOf(errors)).toContain("INVALID_IMAGE_TYPE");
+  });
+
+  it("names the two picture types the rules address them by", () => {
+    expect(Object.values(GuidanceKind)).toEqual(["reckoner", "overlay"]);
+  });
+});
+
+describe("guidance payload validation", () => {
+  it("accepts a well-formed payload", () => {
+    expect(validateGuidancePayloadShape(guidancePayload())).toBeNull();
+    expect(validateGuidancePayloadShape(guidancePayload({ kind: "overlay" }))).toBeNull();
+  });
+
+  it("rejects a missing, non-integer or zero position", () => {
+    [undefined, "3", 3.5, 0, -1].forEach((sequence) => {
+      expect(validateGuidancePayloadShape(guidancePayload({ sequence }))).toMatch(/position/);
+    });
+  });
+
+  it("rejects a missing or blank site name", () => {
+    [undefined, "", "   ", 42].forEach((site) => {
+      expect(validateGuidancePayloadShape(guidancePayload({ site }))).toMatch(/site name/);
+    });
+  });
+
+  it("rejects a picture type that is not reckoner or overlay", () => {
+    [undefined, "", "thumbnail"].forEach((kind) => {
+      expect(validateGuidancePayloadShape(guidancePayload({ kind }))).toMatch(/picture type/);
+    });
+  });
+
+  it("is applied by validateContent for guidanceImage, and not the edgeModel shape", () => {
+    const errors = validateContent(guidanceContent({ payloadText: JSON.stringify({ site: "x" }) }), { hasFile: true });
+    expect(keysOf(errors)).toContain("INVALID_PAYLOAD_SHAPE");
+    const error = errors.find((e) => e.key === "INVALID_PAYLOAD_SHAPE");
+    expect(error.message).not.toMatch(/engine/);
+  });
+
+  it("passes a complete guidance record", () => {
+    expect(validateContent(guidanceContent(), { hasFile: true })).toEqual([]);
+  });
+
+  it("does not demand an AES key for an unencrypted picture", () => {
+    const errors = validateContent(guidanceContent(), {
+      hasFile: true,
+      hasKey: false,
+    });
+    expect(keysOf(errors)).not.toContain("MISSING_KEY");
+  });
+
+  it("leaves the edgeModel shape check exactly as it was", () => {
+    const errors = validateContent(
+      {
+        name: "m",
+        category: Category.edgeModel,
+        sha256: SHA,
+        needsKey: false,
+        payloadText: JSON.stringify({ site: "x" }),
+      },
+      { hasFile: true },
+    );
+    const error = errors.find((e) => e.key === "INVALID_PAYLOAD_SHAPE");
+    expect(error.message).toMatch(/engine/);
+  });
+});
+
+describe("duplicate position + type guard", () => {
+  const existing = [
+    {
+      uuid: "existing-1",
+      category: "guidanceImage",
+      voided: false,
+      name: "Left buccal mucosa - reference",
+      payload: guidancePayload(),
+    },
+  ];
+
+  it("finds a record already holding that position and type", () => {
+    const duplicate = findDuplicateGuidance(existing, {
+      uuid: null,
+      category: "guidanceImage",
+      payload: guidancePayload(),
+    });
+    expect(duplicate.uuid).toBe("existing-1");
+  });
+
+  it("allows the same position for the other picture type", () => {
+    expect(
+      findDuplicateGuidance(existing, {
+        uuid: null,
+        category: "guidanceImage",
+        payload: guidancePayload({ kind: "overlay" }),
+      }),
+    ).toBeNull();
+  });
+
+  it("does not treat a record as its own duplicate when editing", () => {
+    expect(
+      findDuplicateGuidance(existing, {
+        uuid: "existing-1",
+        category: "guidanceImage",
+        payload: guidancePayload(),
+      }),
+    ).toBeNull();
+  });
+
+  it("ignores voided records and other categories", () => {
+    const ignorable = [
+      { ...existing[0], uuid: "v", voided: true },
+      { ...existing[0], uuid: "e", category: "edgeModel" },
+    ];
+    expect(
+      findDuplicateGuidance(ignorable, {
+        uuid: null,
+        category: "guidanceImage",
+        payload: guidancePayload(),
+      }),
+    ).toBeNull();
+  });
+
+  it("surfaces through validateContent, naming the record to edit instead", () => {
+    const errors = validateContent(guidanceContent(), {
+      hasFile: true,
+      existingContents: existing,
+    });
+    const error = errors.find((e) => e.key === "DUPLICATE_GUIDANCE");
+    expect(error.message).toContain("Left buccal mucosa - reference");
+    expect(error.message).toContain("position 3");
+  });
+
+  it("skips the check when the existing records could not be fetched", () => {
+    expect(validateContent(guidanceContent(), { hasFile: true })).toEqual([]);
+  });
+});
+
+describe("computeFileSha256", () => {
+  // Hashing the uploaded file rather than trusting a typed value is what makes the device-side
+  // corruption check meaningful — the two ends can no longer disagree by authoring error.
+  const fakeFile = (bytes) => ({
+    arrayBuffer: () => Promise.resolve(new Uint8Array(bytes).buffer),
+  });
+
+  it("returns the digest as lowercase hex", async () => {
+    const subtle = {
+      digest: jest.fn(() => Promise.resolve(new Uint8Array([0, 15, 255, 16]).buffer)),
+    };
+    expect(await computeFileSha256(fakeFile([1, 2, 3]), subtle)).toBe("000fff10");
+    expect(subtle.digest.mock.calls[0][0]).toBe("SHA-256");
+  });
+
+  it("hashes the file's own bytes", async () => {
+    const subtle = { digest: jest.fn(() => Promise.resolve(new Uint8Array([1]).buffer)) };
+    await computeFileSha256(fakeFile([7, 8]), subtle);
+    expect(new Uint8Array(subtle.digest.mock.calls[0][1])).toEqual(new Uint8Array([7, 8]));
+  });
+
+  it("explains itself when the browser has no crypto.subtle", async () => {
+    await expect(computeFileSha256(fakeFile([1]), null)).rejects.toThrow(/crypto.subtle/);
   });
 });
