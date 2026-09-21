@@ -15,6 +15,16 @@ commands:
           at: ~/artifacts
 
       - run:
+          name: Fail if deployable does not exist
+          command: |
+            for file in openchs-webapp.zip; do
+              if [ ! -s ~/artifacts/$file ]; then
+                echo "Deployable not present at ~/artifacts/$file. The workspace has probably expired, re-run the build and deploy from that workflow."
+                exit 1
+              fi
+            done
+
+      - run:
           name: Install dependencies
           command: |
             sudo apt-get -y -qq update
@@ -51,6 +61,16 @@ commands:
     steps:
       - attach_workspace:
           at: ~/artifacts
+
+      - run:
+          name: Fail if deployable does not exist
+          command: |
+            for file in avni-webapp.tgz; do
+              if [ ! -s ~/artifacts/$file ]; then
+                echo "Deployable not present at ~/artifacts/$file. The workspace has probably expired, re-run the build and deploy from that workflow."
+                exit 1
+              fi
+            done
 
       - run: sudo apt-get install make openssl
 
