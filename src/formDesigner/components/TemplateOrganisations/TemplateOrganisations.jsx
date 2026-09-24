@@ -73,6 +73,7 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
   const handleApplySuccess = () => {
     // Handle any success actions after template application
     console.log("Template applied successfully");
+    onBack(); // Navigate back to the list after successful application
   };
 
   return (
@@ -208,6 +209,7 @@ const TemplateOrganisationCard = ({ template, onViewDetails }) => {
   const handleApplySuccess = () => {
     // Handle any success actions after template application
     console.log("Template applied successfully");
+    window.location.reload();
   };
 
   const handleApplyClick = (e, templateId) => {
