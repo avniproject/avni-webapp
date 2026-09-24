@@ -167,8 +167,8 @@ export const ApplyTemplateDialog = ({
             clearInterval(newIntervalId);
             setIsSubmitting(false);
             localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
-            if (applyTemplateJob.status === "COMPLETED" && onApplySuccess) {
-              onApplySuccess();
+            if (applyTemplateJob.status === "COMPLETED") {
+              setApplyStatus("COMPLETED");
             }
           }
         })
@@ -223,6 +223,11 @@ export const ApplyTemplateDialog = ({
 
   const handleClose = () => {
     if (isSubmitting && !isTerminalStatus(applyStatus)) return;
+
+    if (applyStatus === "COMPLETED" && onApplySuccess) {
+      onApplySuccess();
+    }
+
     onClose();
   };
 
