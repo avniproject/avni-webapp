@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Title } from "react-admin";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -303,9 +303,9 @@ export const TemplateOrganisations = () => {
     setSelectedTemplate(template);
   };
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setSelectedTemplate(null);
-  };
+  }, []);
 
   return (
     <Box
@@ -329,6 +329,7 @@ export const TemplateOrganisations = () => {
         <TemplateOrganisationDetail
           template={selectedTemplate}
           onBack={handleBack}
+          onApplySuccess={handleBack}
         />
       ) : (
         <div>
