@@ -423,7 +423,10 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
       concept: savedConcept,
       error: saveError,
       conflictingConceptName,
-    } = await ConceptService.saveConcept(concept);
+    } = await ConceptService.saveConcept({
+      ...concept,
+      name: trim(concept.name),
+    });
 
     if (saveError) {
       handleSaveError(saveError, conflictingConceptName);
