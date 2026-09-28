@@ -21,6 +21,12 @@ import {
   getKeyValue,
   safeKeyValues,
 } from "../util/KeyValuesUtil";
+import { HiddenConceptCheckbox } from "../components/HiddenConcept";
+import {
+  HIDDEN_KEY,
+  isHiddenKeyValues,
+  withHiddenKeyValue,
+} from "../util/HiddenConceptUtil";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -128,6 +134,7 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     "encounterTypeUUID",
     "encounterScope",
     "encounterIdentifier",
+    HIDDEN_KEY,
   ];
 
   const onLoad = useCallback(async () => {
@@ -497,6 +504,13 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     });
   }, []);
 
+  const onHiddenChange = useCallback((hidden) => {
+    setConcept((prev) => ({
+      ...prev,
+      keyValues: withHiddenKeyValue(prev.keyValues, hidden),
+    }));
+  }, []);
+
   const handleActive = useCallback((event) => {
     setConcept((prev) => ({
       ...prev,
@@ -798,6 +812,12 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             )}
           </Grid>
           <Grid>{renderDataTypeComponent()}</Grid>
+          <Grid xs={12}>
+            <HiddenConceptCheckbox
+              checked={isHiddenKeyValues(concept.keyValues)}
+              onChange={onHiddenChange}
+            />
+          </Grid>
           <Grid xs={12}>
             <KeyValues
               keyValues={concept.keyValues || []}
