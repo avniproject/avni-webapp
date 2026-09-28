@@ -23,7 +23,6 @@ import {
 } from "../util/KeyValuesUtil";
 import { HiddenConceptCheckbox } from "../components/HiddenConcept";
 import {
-  HIDDEN_KEY,
   isHiddenKeyValues,
   withHiddenKeyValue,
 } from "../util/HiddenConceptUtil";
@@ -134,7 +133,6 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     "encounterTypeUUID",
     "encounterScope",
     "encounterIdentifier",
-    HIDDEN_KEY,
   ];
 
   const onLoad = useCallback(async () => {
