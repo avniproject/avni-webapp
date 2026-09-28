@@ -9,7 +9,7 @@ const parsedValue = (value) => {
   if (typeof value !== "string") return value;
   try {
     return JSON.parse(value);
-  } catch (e) {
+  } catch {
     return value;
   }
 };
