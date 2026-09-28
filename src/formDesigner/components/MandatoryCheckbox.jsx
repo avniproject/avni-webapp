@@ -26,7 +26,9 @@ export const MandatoryCheckbox = ({
       label="Mandatory"
     />
     {conceptHidden && (
-      <FormHelperText>{HIDDEN_MANDATORY_REASON}</FormHelperText>
+      <FormHelperText disabled={false}>
+        {HIDDEN_MANDATORY_REASON}
+      </FormHelperText>
     )}
   </AvniFormControl>
 );

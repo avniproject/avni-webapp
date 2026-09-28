@@ -42,7 +42,7 @@ describe("HiddenConceptCheckbox", () => {
     );
     expect(container.textContent).toContain("Hidden");
     expect(container.textContent).toContain(
-      "Answers are saved and reach reporting, but are never shown in the app.",
+      "Values recorded for this concept are saved and reach reporting, but are never shown in the app.",
     );
   });
 
@@ -130,7 +130,11 @@ describe("MandatoryCheckbox", () => {
       />,
     );
     expect(mandatoryInput().disabled).toBe(true);
-    expect(container.textContent).toContain(HIDDEN_MANDATORY_REASON);
+    const reason = [...container.querySelectorAll("p")].find(
+      (p) => p.textContent === HIDDEN_MANDATORY_REASON,
+    );
+    // Drawn at full contrast, not greyed out with the disabled tickbox.
+    expect(reason.classList.contains("Mui-disabled")).toBe(false);
   });
 
   it("keeps showing a mandatory setting saved before the concept was hidden, without changing it", async () => {

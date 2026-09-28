@@ -21,7 +21,8 @@ export const HiddenConceptCheckbox = ({ checked, onChange }) => (
       label="Hidden"
     />
     <FormHelperText>
-      Answers are saved and reach reporting, but are never shown in the app.
+      Values recorded for this concept are saved and reach reporting, but are
+      never shown in the app.
     </FormHelperText>
   </AvniFormControl>
 );
