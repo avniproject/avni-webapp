@@ -11,6 +11,7 @@ import {
   IndividualRelation,
   IndividualRelationship,
   IndividualRelationshipType,
+  KeyValue,
   ModelGeneral as General,
   Observation,
   Program,
@@ -69,6 +70,7 @@ export const mapConcept = (conceptJson) => {
   concept.datatype = conceptJson["dataType"];
   concept.hiNormal = conceptJson["highNormal"];
   concept.hiAbsolute = conceptJson["highAbsolute"];
+  concept.keyValues = map(conceptJson["keyValues"], KeyValue.fromResource);
   concept.answers = getAnswers(conceptJson["answers"]);
   conceptService.addConcept(concept);
   return concept;
