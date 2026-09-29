@@ -230,21 +230,18 @@ function initMediaObservations(observations) {
       if (qgObservation.valueJSON.repeatableObservations) {
         qgObservation.valueJSON.repeatableObservations.forEach((rqg) => {
           mediaObservations.push(
-            ...findMediaObservations(
-              visibleGroupObservations(rqg.groupObservations),
-            ),
+            ...findMediaObservations(rqg.groupObservations),
           );
         });
       } else {
         mediaObservations.push(
-          ...findMediaObservations(
-            visibleGroupObservations(qgObservation.valueJSON.groupObservations),
-          ),
+          ...findMediaObservations(qgObservation.valueJSON.groupObservations),
         );
       }
     });
 
-  return mediaObservations;
+  // findMediaObservations walks into question groups, so filter what it collects.
+  return visibleGroupObservations(mediaObservations);
 }
 
 const Observations = ({

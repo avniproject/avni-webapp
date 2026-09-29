@@ -246,4 +246,27 @@ describe("Observations — hidden values", () => {
 
     expect(httpClient.get).not.toHaveBeenCalled();
   });
+
+  it("does not ask for a signed link to a hidden photo inside a question group", async () => {
+    const hiddenImage = concept(
+      "c-image",
+      "Hidden photo",
+      Concept.dataType.Image,
+      HIDDEN,
+    );
+    const qg = Observation.create(
+      group,
+      new QuestionGroup([
+        obs(seen, "child-shown"),
+        obs(hiddenImage, "https://s3/hidden-in-group.jpg"),
+      ]),
+    );
+    await render(
+      <MemoryRouter>
+        <Observations observations={[qg]} />
+      </MemoryRouter>,
+    );
+
+    expect(httpClient.get).not.toHaveBeenCalled();
+  });
 });
