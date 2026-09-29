@@ -5,24 +5,25 @@ import {
   AccordionDetails,
   Typography,
   CircularProgress,
-  Grid
+  Grid,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Observations from "dataEntryApp/components/Observations";
 import { useTranslation } from "react-i18next";
 import { isEmpty } from "lodash";
+import { visibleObservations } from "dataEntryApp/utils/HiddenObservationUtil";
 
 const StyledAccordion = styled(Accordion)({
   marginBottom: "11px",
   borderRadius: "5px",
   boxShadow:
-    "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)",
 });
 
 const StyledAccordionSummary = styled(AccordionSummary)({
   "& .MuiAccordionSummary-expandIconWrapper": {
-    color: "#0e6eff"
-  }
+    color: "#0e6eff",
+  },
 });
 
 const StyledAccordionSummaryTitle = styled("p")({
@@ -30,7 +31,7 @@ const StyledAccordionSummaryTitle = styled("p")({
   flexBasis: "33.33%",
   flexShrink: 0,
   fontWeight: 500,
-  margin: 0
+  margin: 0,
 });
 
 const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => {
@@ -42,7 +43,7 @@ const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => {
 
   const renderObs = () => (
     <Grid size={{ xs: 12 }}>
-      {isEmpty(summaryObservations) ? (
+      {isEmpty(visibleObservations(summaryObservations)) ? (
         renderNotFound()
       ) : (
         <Observations observations={summaryObservations} />
