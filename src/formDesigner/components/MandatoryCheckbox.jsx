@@ -26,7 +26,19 @@ export const MandatoryCheckbox = ({
       label="Mandatory"
     />
     {conceptHidden && (
-      <FormHelperText disabled={false}>
+      // Out of the flow and on one line, so the control keeps the width it has when the concept is
+      // not hidden. In flow, the sentence widened the control, pushed its tooltip icon and the next
+      // tickbox to the right, and, because the panel is sized to its content, widened the whole panel.
+      <FormHelperText
+        disabled={false}
+        sx={{
+          position: "absolute",
+          top: "100%",
+          left: 0,
+          mt: -1,
+          whiteSpace: "nowrap",
+        }}
+      >
         {HIDDEN_MANDATORY_REASON}
       </FormHelperText>
     )}
