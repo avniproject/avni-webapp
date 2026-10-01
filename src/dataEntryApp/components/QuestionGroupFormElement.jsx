@@ -4,16 +4,17 @@ import _, { filter, map, sortBy, get } from "lodash";
 import { FormElement } from "./FormElement";
 import { Concept, QuestionGroup } from "avni-models";
 import { PrimitiveValue } from "openchs-models";
+import { isConceptHidden } from "../../formDesigner/util/HiddenConceptUtil";
 
 const StyledGridContainer = styled("div")({
-  border: "1px solid rgba(0, 0, 0, 0.12)"
+  border: "1px solid rgba(0, 0, 0, 0.12)",
 });
 
 const StyledGridLabel = styled("div")({
   color: "rgba(0, 0, 0, 0.54)",
   flex: 0.5,
   marginRight: "15px",
-  borderRight: "1px solid rgba(0, 0, 0, 0.12)"
+  borderRight: "1px solid rgba(0, 0, 0, 0.12)",
 });
 
 function getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex) {
@@ -28,18 +29,20 @@ export default function QuestionGroupFormElement({
   filteredFormElements,
   updateObs,
   isRepeatable = false,
-  questionGroupIndex
+  questionGroupIndex,
 }) {
   const allChildren = sortBy(
     filter(
       filteredFormElements,
-      ffe =>
+      (ffe) =>
         get(ffe, "group.uuid") === formElement.uuid &&
         !ffe.voided &&
+        // Never drawn, in any row of a repeating group; filteredFormElements itself is untouched.
+        !isConceptHidden(ffe.concept) &&
         (_.isNil(questionGroupIndex) ||
-          ffe.questionGroupIndex === questionGroupIndex)
+          ffe.questionGroupIndex === questionGroupIndex),
     ),
-    "displayOrder"
+    "displayOrder",
   );
   const observation = obsHolder.findObservation(formElement.concept);
   let questionGroup;
@@ -63,7 +66,7 @@ export default function QuestionGroupFormElement({
         {getQuestionGroupLabel(formElement, isRepeatable, questionGroupIndex)}
       </StyledGridLabel>
       <StyledGridContainer>
-        {map(allChildren, childFormElement => {
+        {map(allChildren, (childFormElement) => {
           let nullReplacement =
             Concept.dataType.Coded === childFormElement.concept.datatype
               ? new PrimitiveValue()
@@ -72,9 +75,9 @@ export default function QuestionGroupFormElement({
             [
               Concept.dataType.Text,
               Concept.dataType.Numeric,
-              Concept.dataType.Notes
+              Concept.dataType.Notes,
             ],
-            childFormElement.concept.datatype
+            childFormElement.concept.datatype,
           )
             ? questionGroup.getValueForConcept(childFormElement.concept)
             : getSelectedAnswer(childFormElement.concept, nullReplacement);
@@ -86,12 +89,12 @@ export default function QuestionGroupFormElement({
               value={value}
               validationResults={validationResults}
               uuid={childFormElement.uuid}
-              update={newValue => {
+              update={(newValue) => {
                 updateObs(
                   formElement,
                   newValue,
                   childFormElement,
-                  questionGroupIndex
+                  questionGroupIndex,
                 );
               }}
               feIndex={childFormElement.displayOrder}

@@ -36,6 +36,10 @@ import { Link } from "react-router-dom";
 import MediaObservations from "./MediaObservations";
 import { httpClient as http } from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
+import {
+  visibleGroupObservations,
+  visibleObservations,
+} from "../utils/HiddenObservationUtil";
 
 const StyledTable = styled(Table)(({ theme, highlight }) => ({
   borderRadius: "8px",
@@ -201,7 +205,9 @@ function renderSingleQuestionGroup(
   StyledTableRow,
   renderValue,
 ) {
-  const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
+  const groupObservations = valueWrapper
+    ? visibleGroupObservations(valueWrapper.getValue())
+    : [];
 
   return map(groupObservations, (obs, i) => (
     <StyledTableRow key={`${index}-${i}-${customKey}`}>
@@ -234,7 +240,8 @@ function initMediaObservations(observations) {
       }
     });
 
-  return mediaObservations;
+  // findMediaObservations walks into question groups, so filter what it collects.
+  return visibleGroupObservations(mediaObservations);
 }
 
 const Observations = ({
@@ -254,6 +261,8 @@ const Observations = ({
   if (isNil(observations)) {
     return <div />;
   }
+
+  const shownObservations = visibleObservations(observations);
 
   const renderText = (value, isAbnormal) => {
     return isAbnormal ? (
@@ -495,15 +504,15 @@ const Observations = ({
   const isNotAssociatedWithForm = isNil(form);
   let orderedObs;
   if (isNotAssociatedWithForm) {
-    orderedObs = observations;
+    orderedObs = shownObservations;
   } else {
-    const fegOrderedObs = form.orderObservationsPerFEG(observations);
+    const fegOrderedObs = form.orderObservationsPerFEG(shownObservations);
     const fegObsConceptUuids = new Set(
       _.flatMap(fegOrderedObs, (group) =>
         (group.sortedObservationsArray || []).map((obs) => obs.concept.uuid),
       ),
     );
-    const extraObs = observations.filter(
+    const extraObs = shownObservations.filter(
       (obs) => !fegObsConceptUuids.has(obs.concept.uuid),
     );
     orderedObs = isEmpty(extraObs)
@@ -517,7 +526,7 @@ const Observations = ({
           },
         ];
   }
-  const mediaObservations = initMediaObservations(observations);
+  const mediaObservations = initMediaObservations(shownObservations);
 
   useEffect(() => {
     refreshSignedUrlsForMedia().then((mediaDataList) =>

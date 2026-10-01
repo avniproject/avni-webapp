@@ -8,33 +8,34 @@ import { useDispatch, useSelector } from "react-redux";
 import ScheduledVisitsTable from "dataEntryApp/components/ScheduledVisitsTable";
 import {
   selectFetchingRulesResponse,
-  selectRulesResponse
+  selectRulesResponse,
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import CustomizedBackdrop from "dataEntryApp/components/CustomizedBackdrop";
+import { visibleObservations } from "dataEntryApp/utils/HiddenObservationUtil";
 
 const StyledForm = styled("div")(({ theme }) => ({
-  padding: theme.spacing(4, 3)
+  padding: theme.spacing(4, 3),
 }));
 
 const StyledTableContainer = styled(Box)(({ theme }) => ({
   maxWidth: "66.66%",
-  paddingTop: theme.spacing(1)
+  paddingTop: theme.spacing(1),
 }));
 
 const StyledSection = styled(Box)(({ theme }) => ({
-  paddingBottom: theme.spacing(6)
+  paddingBottom: theme.spacing(6),
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   display: "block",
-  marginBottom: theme.spacing(1)
+  marginBottom: theme.spacing(1),
 }));
 
 const Summary = ({
   observations,
   additionalRows,
   form,
-  fetchRulesResponse
+  fetchRulesResponse,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -53,7 +54,7 @@ const Summary = ({
 
   return (
     <StyledForm>
-      {!isEmpty(rulesResponse.decisionObservations) && (
+      {!isEmpty(visibleObservations(rulesResponse.decisionObservations)) && (
         <StyledSection>
           <StyledTypography variant="button">
             {t("systemRecommendations")}
@@ -79,7 +80,8 @@ const Summary = ({
           </StyledTableContainer>
         </StyledSection>
       )}
-      {!isEmpty(observations) && (
+      {(!isEmpty(visibleObservations(observations)) ||
+        !isEmpty(additionalRows)) && (
         <StyledSection>
           <StyledTypography variant="button">
             {t("observations")}

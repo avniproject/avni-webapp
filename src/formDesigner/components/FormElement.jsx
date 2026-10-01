@@ -33,6 +33,8 @@ import {
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
 import { ToolTip } from "../../common/components/ToolTip";
+import { HIDDEN_QUESTION_NOTE, HiddenChip } from "./HiddenConcept";
+import { isConceptHidden } from "../util/HiddenConceptUtil";
 
 const StyledAccordion = styled(Accordion)(({ error, theme }) => ({
   width: "100%",
@@ -180,6 +182,9 @@ const FormElement = (props) => {
   const elementType = props.formElementData?.type || "";
   const elementName = props.formElementData?.name || "";
   const isMandatory = props.formElementData?.mandatory || false;
+  // A hidden question is never required on the phone, so the header drops the asterisk.
+  // The stored mandatory value is left as it is; the expanded panel shows it greyed out.
+  const isHidden = isConceptHidden(props.formElementData?.concept);
 
   return (
     <StyledAccordion
@@ -266,12 +271,17 @@ const FormElement = (props) => {
             <StyledTypography sx={{ flex: 1, minWidth: 120 }}>
               <StyledInputLabel
                 name={`name${panel}`}
-                required={isMandatory}
+                required={isMandatory && !isHidden}
                 disabled={disableFormElement}
               >
                 {elementName}
               </StyledInputLabel>
             </StyledTypography>
+            {isHidden && (
+              <Tooltip title={HIDDEN_QUESTION_NOTE} describeChild>
+                <HiddenChip id={`${panel}hidden`} />
+              </Tooltip>
+            )}
           </Grid>
 
           <Grid

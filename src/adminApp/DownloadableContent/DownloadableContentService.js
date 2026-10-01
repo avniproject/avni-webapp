@@ -1,16 +1,47 @@
 import { httpClient as http } from "../../common/utils/httpClient";
 
 const ENDPOINT = "/web/downloadableContent";
-const MODELS_FOLDER = "models";
 const SHA256_PATTERN = /^[0-9a-f]{64}$/;
 
 export const Category = Object.freeze({
   edgeModel: "edgeModel",
+  guidanceImage: "guidanceImage",
 });
 
-export const buildContentKey = (sha256) => `${MODELS_FOLDER}/${sha256}.bin`;
+// The blob IS the picture: an <Image> can decode it, and the device can hash-check it.
+export const isUnencryptedCategory = (category) => category === Category.guidanceImage;
 
-export const buildBlobFileName = (sha256) => `${sha256}.bin`;
+export const GuidanceKind = Object.freeze({
+  reckoner: "reckoner",
+  overlay: "overlay",
+});
+
+export const GUIDANCE_KIND_LABELS = Object.freeze({
+  [GuidanceKind.reckoner]: "Reference photo",
+  [GuidanceKind.overlay]: "Framing outline",
+});
+
+// Mirrors the server's ManagedContentNamespace. The prefix decides the storage class, and each
+// routes independently, so sharing one would send guidance wherever the org keeps its models.
+const NAMESPACE = Object.freeze({
+  [Category.edgeModel]: "models",
+  [Category.guidanceImage]: "guidance",
+});
+
+const DEFAULT_BLOB_EXTENSION = "bin";
+export const IMAGE_EXTENSIONS = Object.freeze(["png", "jpg", "jpeg"]);
+
+export const namespaceFor = (category) => NAMESPACE[category] || NAMESPACE[Category.edgeModel];
+
+export const extensionOf = (fileName) => {
+  const match = /\.([A-Za-z0-9]+)$/.exec(fileName || "");
+  return match ? match[1].toLowerCase() : "";
+};
+
+// `.bin` is honest for opaque ciphertext; a rendered picture keeps a real image extension.
+export const blobExtensionFor = (category, fileName) => (isUnencryptedCategory(category) ? extensionOf(fileName) : DEFAULT_BLOB_EXTENSION);
+
+export const buildContentKey = (category, sha256, extension = DEFAULT_BLOB_EXTENSION) => `${namespaceFor(category)}/${sha256}.${extension}`;
 
 export const isValidSha256 = (sha256) => typeof sha256 === "string" && SHA256_PATTERN.test(sha256.trim());
 
@@ -45,9 +76,49 @@ export const validatePayloadShape = (payload) => {
   return `Payload is missing: ${missing.join(", ")}.`;
 };
 
+// A rule addresses a picture by position and kind; without both it is unreachable.
+export const validateGuidancePayloadShape = (payload) => {
+  const problems = [];
+  if (!Number.isInteger(payload.sequence) || payload.sequence < 1) {
+    problems.push("position (a whole number, 1 or more)");
+  }
+  if (typeof payload.site !== "string" || payload.site.trim() === "") {
+    problems.push("site name (a non-empty string)");
+  }
+  if (!Object.values(GuidanceKind).includes(payload.kind)) {
+    problems.push(`picture type (one of ${Object.values(GuidanceKind).join(", ")})`);
+  }
+  if (problems.length === 0) return null;
+  return `Guidance details are missing or invalid: ${problems.join(", ")}.`;
+};
+
+// Two records sharing them makes the lookup ambiguous and one of the pair unreachable.
+export const findDuplicateGuidance = (existingContents, { uuid, category, payload }) => {
+  if (category !== Category.guidanceImage || payload == null) return null;
+  return (
+    (existingContents || []).find(
+      (existing) =>
+        existing.uuid !== uuid &&
+        !existing.voided &&
+        existing.category === Category.guidanceImage &&
+        (existing.payload || {}).sequence === payload.sequence &&
+        (existing.payload || {}).kind === payload.kind,
+    ) || null
+  );
+};
+
+// Computed from the file, so an authored-wrong checksum cannot happen. Unencrypted content only.
+export const computeFileSha256 = async (file, subtle = globalThis.crypto && globalThis.crypto.subtle) => {
+  if (!subtle) throw new Error("This browser cannot compute a SHA-256 (crypto.subtle unavailable)");
+  const digest = await subtle.digest("SHA-256", await file.arrayBuffer());
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+};
+
 export const validateContent = (
-  { name, category, sha256, payloadText, needsKey },
-  { editing = false, hasFile = false, hasKey = false, originalSha256 = null } = {},
+  { uuid = null, name, category, sha256, payloadText, needsKey, blobExtension },
+  { editing = false, hasFile = false, hasKey = false, originalSha256 = null, existingContents = null } = {},
 ) => {
   const errors = [];
   if (name == null || name.trim() === "") {
@@ -67,6 +138,27 @@ export const validateContent = (
     if (shapeError) {
       errors.push({ key: "INVALID_PAYLOAD_SHAPE", message: shapeError });
     }
+  } else if (category === Category.guidanceImage) {
+    const shapeError = validateGuidancePayloadShape(payload);
+    if (shapeError) {
+      errors.push({ key: "INVALID_PAYLOAD_SHAPE", message: shapeError });
+    } else if (existingContents) {
+      const duplicate = findDuplicateGuidance(existingContents, { uuid, category, payload });
+      if (duplicate) {
+        errors.push({
+          key: "DUPLICATE_GUIDANCE",
+          message: `A ${GUIDANCE_KIND_LABELS[payload.kind]} for position ${payload.sequence} already exists ("${duplicate.name}"). Edit that record instead.`,
+        });
+      }
+    }
+  }
+
+  // Caught here rather than on upload, where the server would reject it anyway.
+  if (category === Category.guidanceImage && !IMAGE_EXTENSIONS.includes(blobExtension)) {
+    errors.push({
+      key: "INVALID_IMAGE_TYPE",
+      message: `Choose a ${IMAGE_EXTENSIONS.join(", ")} image.`,
+    });
   }
 
   const trimmedSha = typeof sha256 === "string" ? sha256.trim() : sha256;
@@ -80,7 +172,9 @@ export const validateContent = (
   if (shaChanged && !hasFile) {
     errors.push({
       key: "MISSING_BLOB",
-      message: "A new encrypted blob file is required when the SHA-256 changes",
+      message: isUnencryptedCategory(category)
+        ? "Choose the image file again when the content changes"
+        : "A new encrypted blob file is required when the SHA-256 changes",
     });
   }
   if (needsKey && dependenciesMustBeSupplied && !hasKey) {
@@ -93,13 +187,13 @@ export const validateContent = (
   return errors;
 };
 
-export const buildContentRequest = ({ uuid, name, category, sha256, needsKey, payload }) => {
+export const buildContentRequest = ({ uuid, name, category, sha256, needsKey, payload, blobExtension }) => {
   const trimmedSha = sha256.trim();
   const request = {
     name: name.trim(),
     category,
     sha256: trimmedSha,
-    contentKey: buildContentKey(trimmedSha),
+    contentKey: buildContentKey(category, trimmedSha, blobExtension || DEFAULT_BLOB_EXTENSION),
     needsKey: !!needsKey,
     payload: payload || {},
   };
@@ -123,7 +217,8 @@ export class SaveStepError extends Error {
 export const performSave = async ({ request, sha256, file, key, needsKey, service, onUploadProgress }) => {
   if (file) {
     try {
-      await service.uploadBlob(file, sha256, onUploadProgress);
+      // contentKey is the single source of truth, so the upload cannot drift from the record.
+      await service.uploadBlob(file, request.contentKey, onUploadProgress);
     } catch (error) {
       throw new SaveStepError("upload the encrypted blob", error);
     }
@@ -151,16 +246,17 @@ const DownloadableContentService = {
 
   delete: (uuid) => http.delete(`${ENDPOINT}/${uuid}`),
 
-  uploadBlob: (file, sha256, onUploadProgress) =>
-    http.post("/web/uploadMedia", uploadFormData(file, sha256), onUploadProgress ? { onUploadProgress } : undefined),
+  uploadBlob: (file, contentKey, onUploadProgress) =>
+    http.post("/web/uploadMedia", uploadFormData(file, contentKey), onUploadProgress ? { onUploadProgress } : undefined),
 
   saveModelKey: (sha256, key) => http.post("/web/modelKey", { sha256: sha256.trim(), key }),
 };
 
-const uploadFormData = (file, sha256) => {
+const uploadFormData = (file, contentKey) => {
+  const separator = contentKey.indexOf("/");
   const formData = new FormData();
-  formData.append("file", file, buildBlobFileName(sha256));
-  formData.append("parentFolder", MODELS_FOLDER);
+  formData.append("file", file, contentKey.slice(separator + 1));
+  formData.append("parentFolder", contentKey.slice(0, separator));
   return formData;
 };
 

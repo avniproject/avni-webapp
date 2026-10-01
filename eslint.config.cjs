@@ -77,6 +77,7 @@ module.exports = [
   {
     files: [
       "**/*.test.js",
+      "**/*.test.jsx",
       "**/*.spec.js",
       "**/setupTests.js",
       "**/jestGlobalsSetup.js",

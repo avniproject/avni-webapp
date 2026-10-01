@@ -18,7 +18,13 @@ import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar
 import { getErrorByKey } from "../../formDesigner/common/ErrorUtil";
 import DownloadableContentService, {
   Category,
+  GuidanceKind,
+  GUIDANCE_KIND_LABELS,
+  blobExtensionFor,
   buildContentRequest,
+  computeFileSha256,
+  extensionOf,
+  isUnencryptedCategory,
   parsePayload,
   performSave,
   validateContent,
@@ -33,6 +39,7 @@ const emptyState = {
   sha256: "",
   needsKey: true,
   payloadText: "",
+  blobExtension: "bin",
 };
 
 // The thrown SaveStepError names the failing step; its cause carries the HTTP
@@ -67,6 +74,17 @@ const CreateEditDownloadableContent = () => {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(null);
+  const [existingContents, setExistingContents] = useState(null);
+  const [hashError, setHashError] = useState(null);
+
+  const guidance = isUnencryptedCategory(content.category);
+
+  // Only for the duplicate position+type check; a failed fetch skips it rather than blocking.
+  useEffect(() => {
+    DownloadableContentService.getAll()
+      .then(setExistingContents)
+      .catch(() => setExistingContents(null));
+  }, []);
 
   useEffect(() => {
     if (!editing) return;
@@ -78,12 +96,53 @@ const CreateEditDownloadableContent = () => {
         sha256: record.sha256 || "",
         needsKey: !!record.needsKey,
         payloadText: JSON.stringify(record.payload || {}, null, 2),
+        // From the stored key, so editing without re-choosing rebuilds the same key.
+        blobExtension: extensionOf(record.contentKey) || "bin",
       });
       setOriginalSha256(record.sha256 || "");
     });
   }, [editing, params.uuid]);
 
   const update = (patch) => setContent((prev) => ({ ...prev, ...patch }));
+
+  const guidancePayload = () => {
+    const [parsed] = parsePayload(content.payloadText);
+    return parsed || {};
+  };
+
+  const updateGuidance = (patch) =>
+    update({
+      payloadText: JSON.stringify({ ...guidancePayload(), ...patch }, null, 2),
+    });
+
+  // Different fields apply per category, so start clean rather than carrying one into the other.
+  const onCategoryChange = (category) => {
+    setFile(null);
+    setAesKey("");
+    setHashError(null);
+    update({
+      category,
+      needsKey: !isUnencryptedCategory(category),
+      sha256: "",
+      payloadText: "",
+      blobExtension: blobExtensionFor(category, ""),
+    });
+  };
+
+  const onFileSelected = async (selected) => {
+    setFile(selected);
+    setHashError(null);
+    if (!selected) return;
+    update({
+      blobExtension: blobExtensionFor(content.category, selected.name),
+    });
+    if (!guidance) return;
+    try {
+      update({ sha256: await computeFileSha256(selected) });
+    } catch (error) {
+      setHashError(error.message);
+    }
+  };
 
   const onSave = async () => {
     if (saving) return;
@@ -93,6 +152,7 @@ const CreateEditDownloadableContent = () => {
       hasFile: !!file,
       hasKey: aesKey.trim() !== "",
       originalSha256,
+      existingContents,
     });
     setErrors(validationErrors);
     if (validationErrors.length > 0) return;
@@ -151,57 +211,124 @@ const CreateEditDownloadableContent = () => {
               value: c,
               label: c,
             }))}
-            onChange={(e) => update({ category: e.target.value })}
+            onChange={(e) => onCategoryChange(e.target.value)}
           />
         </Grid>
         <Grid>
           <AvniTextField
             id="sha256"
-            label="SHA-256 (plaintext hash)*"
+            label={
+              guidance
+                ? "SHA-256 (computed from the file)"
+                : "SHA-256 (plaintext hash)*"
+            }
             value={content.sha256}
             autoComplete="off"
             onChange={(e) => update({ sha256: e.target.value.trim() })}
+            disabled={guidance}
+            helperText={
+              guidance
+                ? "Worked out from the image you choose below, so it can never be typed in wrongly."
+                : undefined
+            }
             fullWidth
           />
           {getErrorByKey(errors, "INVALID_SHA256")}
+          {hashError && (
+            <Typography variant="caption" color="error" display="block">
+              {hashError}
+            </Typography>
+          )}
         </Grid>
         <Grid>
-          <AvniTextField
-            id="payload"
-            label="Payload (JSON)"
-            value={content.payloadText}
-            autoComplete="off"
-            multiline
-            minRows={6}
-            onChange={(e) => update({ payloadText: e.target.value })}
-            fullWidth
-            placeholder={
-              '{\n  "engine": "onnx",\n  "input": {},\n  "output": {}\n}'
-            }
-          />
+          {guidance ? (
+            <Grid container direction="column" spacing={2}>
+              <Typography variant="subtitle2">Guidance details</Typography>
+              <Grid>
+                <AvniTextField
+                  id="site"
+                  label="Site name*"
+                  value={guidancePayload().site || ""}
+                  autoComplete="off"
+                  onChange={(e) => updateGuidance({ site: e.target.value })}
+                  helperText="Shown to the health worker, e.g. Left buccal mucosa."
+                  fullWidth
+                />
+              </Grid>
+              <Grid>
+                <AvniTextField
+                  id="sequence"
+                  label="Position*"
+                  type="number"
+                  value={guidancePayload().sequence ?? ""}
+                  autoComplete="off"
+                  onChange={(e) =>
+                    updateGuidance({
+                      sequence:
+                        e.target.value === ""
+                          ? undefined
+                          : Number(e.target.value),
+                    })
+                  }
+                  helperText="Which photo in the protocol this picture guides."
+                  fullWidth
+                />
+              </Grid>
+              <Grid>
+                <AvniSelect
+                  label="Picture type*"
+                  value={guidancePayload().kind || ""}
+                  options={Object.values(GuidanceKind).map((kind) => ({
+                    value: kind,
+                    label: GUIDANCE_KIND_LABELS[kind],
+                  }))}
+                  onChange={(e) => updateGuidance({ kind: e.target.value })}
+                />
+              </Grid>
+            </Grid>
+          ) : (
+            <AvniTextField
+              id="payload"
+              label="Payload (JSON)"
+              value={content.payloadText}
+              autoComplete="off"
+              multiline
+              minRows={6}
+              onChange={(e) => update({ payloadText: e.target.value })}
+              fullWidth
+              placeholder={
+                '{\n  "engine": "onnx",\n  "input": {},\n  "output": {}\n}'
+              }
+            />
+          )}
           {getErrorByKey(errors, "INVALID_PAYLOAD")}
           {getErrorByKey(errors, "INVALID_PAYLOAD_SHAPE")}
+          {getErrorByKey(errors, "DUPLICATE_GUIDANCE")}
         </Grid>
+        {!guidance && (
+          <Grid>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={content.needsKey}
+                  onChange={(e) => {
+                    update({ needsKey: e.target.checked });
+                    if (!e.target.checked) setAesKey("");
+                  }}
+                />
+              }
+              label="Needs decryption key"
+            />
+          </Grid>
+        )}
         <Grid>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={content.needsKey}
-                onChange={(e) => {
-                  update({ needsKey: e.target.checked });
-                  if (!e.target.checked) setAesKey("");
-                }}
-              />
-            }
-            label="Needs decryption key"
-          />
-        </Grid>
-        <Grid>
-          <Typography variant="subtitle2">Encrypted blob (.bin)</Typography>
+          <Typography variant="subtitle2">
+            {guidance ? "Image file (.png / .jpg)" : "Encrypted blob (.bin)"}
+          </Typography>
           <input
             type="file"
-            accept=".bin"
-            onChange={(e) => setFile(e.target.files[0] || null)}
+            accept={guidance ? ".png,.jpg,.jpeg" : ".bin"}
+            onChange={(e) => onFileSelected(e.target.files[0] || null)}
           />
           {file && (
             <Typography variant="caption" display="block">
@@ -209,26 +336,29 @@ const CreateEditDownloadableContent = () => {
             </Typography>
           )}
           {getErrorByKey(errors, "MISSING_BLOB")}
+          {getErrorByKey(errors, "INVALID_IMAGE_TYPE")}
         </Grid>
-        <Grid>
-          <Typography variant="subtitle2">AES key (write-only)</Typography>
-          <AvniTextField
-            id="aesKey"
-            label="AES key"
-            type="password"
-            value={aesKey}
-            autoComplete="new-password"
-            onChange={(e) => setAesKey(e.target.value)}
-            placeholder={editing ? "Enter to replace stored key" : ""}
-            disabled={!content.needsKey}
-            fullWidth
-          />
-          <Typography variant="caption" color="textSecondary">
-            The key is sent only to the server key store and never stored on
-            this record or returned to the browser.
-          </Typography>
-          {getErrorByKey(errors, "MISSING_KEY")}
-        </Grid>
+        {!guidance && (
+          <Grid>
+            <Typography variant="subtitle2">AES key (write-only)</Typography>
+            <AvniTextField
+              id="aesKey"
+              label="AES key"
+              type="password"
+              value={aesKey}
+              autoComplete="new-password"
+              onChange={(e) => setAesKey(e.target.value)}
+              placeholder={editing ? "Enter to replace stored key" : ""}
+              disabled={!content.needsKey}
+              fullWidth
+            />
+            <Typography variant="caption" color="textSecondary">
+              The key is sent only to the server key store and never stored on
+              this record or returned to the browser.
+            </Typography>
+            {getErrorByKey(errors, "MISSING_KEY")}
+          </Grid>
+        )}
         <Grid>
           <SaveComponent name="Save" onSubmit={onSave} disabledFlag={saving} />
           <Button

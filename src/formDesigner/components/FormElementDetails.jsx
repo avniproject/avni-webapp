@@ -36,6 +36,9 @@ import { ColourStyle } from "./ColourStyle";
 import { Privilege } from "openchs-models";
 import { useSelector } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
+import { HiddenQuestionMarker } from "./HiddenConcept";
+import { MandatoryCheckbox } from "./MandatoryCheckbox";
+import { isConceptHidden } from "../util/HiddenConceptUtil";
 
 const StyledFormControl = styled(MuiFormControl)({
   paddingBottom: 10,
@@ -202,6 +205,7 @@ const FormElementDetails = ({
   const { t } = useTranslation();
   const userInfo = useSelector((state) => state.app.userInfo);
   const dataTypesToIgnore = ignoreDataTypes || [];
+  const conceptHidden = isConceptHidden(formElementData.concept);
 
   const onChangeAnswerName = (answerName, idx, flag = true) => {
     if (flag) {
@@ -460,6 +464,7 @@ const FormElementDetails = ({
                     </>
                   )}
                 </StyledFormControl>
+                {conceptHidden && <HiddenQuestionMarker />}
               </Grid>
               {formElementData.concept.dataType !== "Coded" && (
                 <Grid sx={{ flexBasis: "50%" }} />
@@ -951,29 +956,19 @@ const FormElementDetails = ({
           <Grid container spacing={4} sx={{ width: "100%" }}>
             {formElementData.concept.dataType !== "QuestionGroup" && (
               <Grid size="auto">
-                <AvniFormControl
-                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}
+                <MandatoryCheckbox
+                  mandatory={formElementData.mandatory}
                   disabled={disableFormElement}
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        id="mandatoryDetails"
-                        checked={!!formElementData.mandatory}
-                        value={formElementData.mandatory ? "yes" : "no"}
-                        onChange={(event) =>
-                          rest.handleGroupElementChange(
-                            groupIndex,
-                            "mandatory",
-                            event.target.value === "yes" ? false : true,
-                            index,
-                          )
-                        }
-                      />
-                    }
-                    label="Mandatory"
-                  />
-                </AvniFormControl>
+                  conceptHidden={conceptHidden}
+                  onChange={(mandatory) =>
+                    rest.handleGroupElementChange(
+                      groupIndex,
+                      "mandatory",
+                      mandatory,
+                      index,
+                    )
+                  }
+                />
               </Grid>
             )}
             {formElementData.concept.dataType === "Subject" && (

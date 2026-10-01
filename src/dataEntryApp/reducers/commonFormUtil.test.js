@@ -1939,3 +1939,131 @@ describe("Navigation past a non-repeatable question group", () => {
     assert.strictEqual(result.formElementGroup, formElementGroup1, "Should stay on the page with the unfilled mandatory child");
   });
 });
+
+describe("Hidden concepts", () => {
+  // A concept marked hidden (avniproject/avni-product#1905) is never drawn in the form, so it must
+  // never block the worker, and its saved answer must survive the page.
+  let group1;
+  let group2;
+  let hiddenConcept;
+  let hiddenFormElement;
+  let seenFormElement;
+  let subject;
+
+  const buildForm = ({ conceptHidden }) => {
+    const form = EntityFactory.createForm2({ uuid: "form-hidden" });
+    group1 = EntityFactory.createFormElementGroup2({ uuid: "feg-hidden-1", form, displayOrder: 1 });
+    group2 = EntityFactory.createFormElementGroup2({ uuid: "feg-hidden-2", form, displayOrder: 2 });
+    form.addFormElementGroup(group1);
+    form.addFormElementGroup(group2);
+    group1.next = () => group2;
+    group1.previous = () => null;
+    group2.next = () => null;
+    group2.previous = () => group1;
+
+    hiddenConcept = EntityFactory.createConcept2({
+      uuid: "c-hidden",
+      name: "AI verdict",
+      dataType: Concept.dataType.Text,
+      keyValues: conceptHidden ? [{ key: "hidden", value: true }] : [],
+    });
+    hiddenFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-hidden",
+      formElementGroup: group1,
+      concept: hiddenConcept,
+      displayOrder: 1,
+      mandatory: true,
+    });
+    seenFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-seen",
+      formElementGroup: group1,
+      concept: EntityFactory.createConcept2({ uuid: "c-seen", name: "Seen answer", dataType: Concept.dataType.Text }),
+      displayOrder: 2,
+      mandatory: false,
+    });
+    const nextPageFormElement = EntityFactory.createFormElement2({
+      uuid: "fe-next",
+      formElementGroup: group2,
+      concept: EntityFactory.createConcept2({ uuid: "c-next", name: "Next page", dataType: Concept.dataType.Text }),
+      displayOrder: 1,
+      mandatory: false,
+    });
+    group1.addFormElement(hiddenFormElement);
+    group1.addFormElement(seenFormElement);
+    group2.addFormElement(nextPageFormElement);
+
+    subject = EntityFactory.createSubject({});
+  };
+
+  const next = () =>
+    commonFormUtil.onNext({
+      formElementGroup: group1,
+      observations: subject.observations,
+      entity: subject,
+      filteredFormElements: [hiddenFormElement, seenFormElement],
+      validationResults: [],
+      wizard: new Wizard(2, 1, 1),
+      entityValidations: [],
+    });
+
+  const failures = (result) => _.filter(result.validationResults, (validationResult) => !validationResult.success);
+
+  it("moves to the next page when a mandatory hidden question is left empty", () => {
+    buildForm({ conceptHidden: true });
+
+    const result = next();
+
+    assert.equal(result.formElementGroup.uuid, group2.uuid);
+    assert.isEmpty(failures(result));
+  });
+
+  it("still blocks on the same empty mandatory question when its concept is not hidden", () => {
+    buildForm({ conceptHidden: false });
+
+    const result = next();
+
+    assert.equal(result.formElementGroup.uuid, group1.uuid);
+    assert.deepEqual(_.map(failures(result), "formIdentifier"), [hiddenFormElement.uuid]);
+  });
+
+  it("raises no mandatory error for a hidden question, nor for a mandatory child of a hidden group", () => {
+    buildForm({ conceptHidden: true });
+    const hiddenGroupElement = EntityFactory.createFormElement2({
+      uuid: "fe-hidden-group",
+      formElementGroup: group1,
+      concept: EntityFactory.createConcept2({
+        uuid: "c-hidden-group",
+        name: "Hidden assessment",
+        dataType: Concept.dataType.QuestionGroup,
+        keyValues: [{ key: "hidden", value: true }],
+      }),
+      displayOrder: 3,
+      mandatory: false,
+    });
+    const childOfHiddenGroup = EntityFactory.createFormElement2({
+      uuid: "fe-hidden-group-child",
+      formElementGroup: group1,
+      concept: EntityFactory.createConcept2({ uuid: "c-child", name: "Child", dataType: Concept.dataType.Text }),
+      displayOrder: 1,
+      mandatory: true,
+      group: hiddenGroupElement,
+    });
+
+    const errors = commonFormUtil.getFEDataValidationErrors(
+      [hiddenFormElement, hiddenGroupElement, childOfHiddenGroup],
+      new ObservationsHolder([]),
+    );
+
+    assert.deepEqual(errors, []);
+  });
+
+  it("keeps the hidden answer when another question on the page is answered", () => {
+    buildForm({ conceptHidden: true });
+    const observationsHolder = new ObservationsHolder(subject.observations);
+    commonFormUtil.updateObservations(hiddenFormElement, "SECRET", subject, observationsHolder, []);
+
+    commonFormUtil.updateObservations(seenFormElement, "seen", subject, observationsHolder, []);
+
+    assert.equal(observationsHolder.findObservation(hiddenConcept).getValue(), "SECRET");
+  });
+});

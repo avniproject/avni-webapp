@@ -9,7 +9,7 @@ import {
   isEmpty,
   differenceBy,
   includes,
-  filter
+  filter,
 } from "lodash";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import { SearchFieldReducer } from "./SearchFieldReducer";
@@ -17,7 +17,6 @@ import SearchResultFieldState from "./SearchResultFieldState";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import commonApi from "../../../common/service";
 import Select from "react-select";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
 import { IconButton, ListItemText, Typography } from "@mui/material";
@@ -39,10 +38,10 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 const SearchResultFields = () => {
-  const userInfo = useSelector(state => state.app.userInfo);
+  const userInfo = useSelector((state) => state.app.userInfo);
   const [state, dispatch] = useReducer(
     SearchFieldReducer,
-    new SearchResultFieldState()
+    new SearchResultFieldState(),
   );
   const orgConfigKey = "searchResultFields";
   const {
@@ -50,38 +49,44 @@ const SearchResultFields = () => {
     loadApp,
     subjectTypeMetadata,
     searchResultFields,
-    feedbackMessage
+    feedbackMessage,
   } = state;
   const selectedSubjectTypeMetadata = find(
     subjectTypeMetadata,
-    ({ subjectType }) => subjectType.uuid === selectedSubjectTypeUUID
+    ({ subjectType }) => subjectType.uuid === selectedSubjectTypeUUID,
   );
   const selectedCustomFields = state.getFieldsForSelectedSubjectType();
   const allowedDataTypes = ["Numeric", "Text", "Coded", "Id", "Date"];
   const allConcepts = filter(
     get(selectedSubjectTypeMetadata, "concepts", []),
-    ({ dataType }) => includes(allowedDataTypes, dataType)
+    ({ dataType }) => includes(allowedDataTypes, dataType),
   );
   const possibleOptions = differenceBy(
     allConcepts,
     selectedCustomFields,
-    "uuid"
+    "uuid",
   );
 
   useEffect(() => {
     http
       .fetchJson("/web/subjectTypeMetadata")
-      .then(response => response.json)
-      .then(res => {
+      .then((response) => response.json)
+      .then((res) => {
         dispatch({ type: "setMetadata", payload: res });
       });
   }, []);
 
+  // Read the stored setting, not the one served to the data entry app: that one leaves out hidden
+  // concepts, and saving from here must not drop them from the configuration.
   useEffect(() => {
-    commonApi.fetchOrganisationConfigs().then(config => {
+    http.get("/organisationConfig").then((res) => {
       dispatch({
         type: "setData",
-        payload: get(config, `organisationConfig.${orgConfigKey}`, [])
+        payload: get(
+          res,
+          `data._embedded.organisationConfig[0].settings.${orgConfigKey}`,
+          [],
+        ),
       });
     });
   }, []);
@@ -90,25 +95,25 @@ const SearchResultFields = () => {
     const payload = { settings: { [orgConfigKey]: searchResultFields } };
     return http
       .put("/organisationConfig", payload)
-      .then(response => {
+      .then((response) => {
         if (response.status === 200 || response.status === 201) {
           dispatch({ type: "saveOk" });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch({ type: "saveError" });
         console.error(error);
       });
   };
 
-  const onDragEnd = result => {
+  const onDragEnd = (result) => {
     if (!result.destination) {
       return;
     }
     const searchResultConcepts = reorder(
       selectedCustomFields,
       result.source.index,
-      result.destination.index
+      result.destination.index,
     );
 
     dispatch({ type: "changeOrder", payload: { searchResultConcepts } });
@@ -132,7 +137,7 @@ const SearchResultFields = () => {
               onChange={() =>
                 dispatch({
                   type: "subjectTypeChange",
-                  payload: { subjectTypeUUID: subjectType.uuid }
+                  payload: { subjectTypeUUID: subjectType.uuid },
                 })
               }
             />
@@ -142,7 +147,7 @@ const SearchResultFields = () => {
     </FormControl>
   );
 
-  const renderCustomField = concept => {
+  const renderCustomField = (concept) => {
     return {
       text: <ListItemText primary={concept.name} />,
       actions: (
@@ -154,7 +159,7 @@ const SearchResultFields = () => {
         >
           <DeleteIcon />
         </IconButton>
-      )
+      ),
     };
   };
 
@@ -162,8 +167,8 @@ const SearchResultFields = () => {
     <DragNDropComponent
       dataList={selectedCustomFields}
       onDragEnd={onDragEnd}
-      renderSummaryText={concept => renderCustomField(concept).text}
-      renderSummaryActions={concept => renderCustomField(concept).actions}
+      renderSummaryText={(concept) => renderCustomField(concept).text}
+      renderSummaryActions={(concept) => renderCustomField(concept).actions}
       summaryDirection={"row"}
     />
   );
@@ -181,7 +186,7 @@ const SearchResultFields = () => {
       sx={{
         boxShadow: 2,
         p: 5,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <Title title="Search Result Fields" />
@@ -193,17 +198,17 @@ const SearchResultFields = () => {
             placeholder="Select to add new custom search field"
             value={null}
             options={possibleOptions}
-            getOptionLabel={option => option.name}
-            getOptionValue={option => option.uuid}
+            getOptionLabel={(option) => option.name}
+            getOptionValue={(option) => option.uuid}
             style={{ width: "auto" }}
-            onChange={concept =>
+            onChange={(concept) =>
               dispatch({ type: "addCustomField", payload: { concept } })
             }
           />
           <Box
             sx={{
               mt: 3,
-              mb: 5
+              mb: 5,
             }}
           >
             <Typography component={"div"} variant={"h6"} sx={{ mb: 1 }}>
@@ -215,7 +220,7 @@ const SearchResultFields = () => {
           </Box>
           {UserInfo.hasPrivilege(
             userInfo,
-            Privilege.PrivilegeType.EditOfflineDashboardAndReportCard
+            Privilege.PrivilegeType.EditOfflineDashboardAndReportCard,
           ) && <SaveComponent name="Save" onSubmit={onSave} />}
         </DocumentationContainer>
       )}
