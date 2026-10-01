@@ -68,6 +68,23 @@ describe("Summary", () => {
     expect(container.textContent).not.toContain("SECRET");
   });
 
+  it("keeps the Observations section for its extra rows when every recorded value is hidden", async () => {
+    withRulesResponse({ decisionObservations: [], visitSchedules: [] });
+    await act(async () =>
+      root.render(
+        <Summary
+          observations={[obs(verdict, "SECRET")]}
+          additionalRows={[{ label: "Cancel Date", value: "01-Oct-2026" }]}
+        />,
+      ),
+    );
+
+    expect(container.textContent).toContain("observations");
+    expect(container.textContent).toContain("Cancel Date");
+    expect(container.textContent).toContain("01-Oct-2026");
+    expect(container.textContent).not.toContain("SECRET");
+  });
+
   it("still prints both headings when a value under each is not hidden", async () => {
     withRulesResponse({
       decisionObservations: [obs(seen, "decided")],

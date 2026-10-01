@@ -80,7 +80,8 @@ const Summary = ({
           </StyledTableContainer>
         </StyledSection>
       )}
-      {!isEmpty(visibleObservations(observations)) && (
+      {(!isEmpty(visibleObservations(observations)) ||
+        !isEmpty(additionalRows)) && (
         <StyledSection>
           <StyledTypography variant="button">
             {t("observations")}
