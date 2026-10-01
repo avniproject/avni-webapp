@@ -6,6 +6,7 @@ import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
 import { getNonNestedFormElements } from "../services/FormElementService";
 import { findSubjectTypeSyncSettings } from "../services/UserSyncSettingsUtil";
+import { isConceptHidden } from "../../formDesigner/util/HiddenConceptUtil";
 
 export const FormElementGroup = ({
   obsHolder,
@@ -23,7 +24,12 @@ export const FormElementGroup = ({
     () => findSubjectTypeSyncSettings(userInfo, subjectType),
     [userInfo, subjectType],
   );
-  const nonNestedFormElements = getNonNestedFormElements(filteredFormElements);
+  // A hidden concept's question is never drawn, as on the phone. Only what is drawn is
+  // filtered: filteredFormElements itself goes down unchanged, because taking an element out
+  // of that list is what deletes its saved answer.
+  const nonNestedFormElements = getNonNestedFormElements(
+    filteredFormElements,
+  ).filter((fe) => !isConceptHidden(fe.concept));
   return (
     <div>
       <LineBreak num={1} />

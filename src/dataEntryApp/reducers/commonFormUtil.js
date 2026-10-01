@@ -8,6 +8,7 @@ import { Concept, ObservationsHolder, StaticFormElementGroup, ValidationResult }
 import { getFormElementsStatuses } from "dataEntryApp/services/RuleEvaluationService";
 import Wizard from "dataEntryApp/state/Wizard";
 import WebFormElementGroup from "../../common/model/WebFormElementGroup";
+import { isConceptHidden } from "../../formDesigner/util/HiddenConceptUtil";
 
 const filterFormElementsWithStatus = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
@@ -367,6 +368,14 @@ const getFEDataValidationErrors = (filteredFormElements, obsHolder) => {
   if (isNil(filteredFormElements) || isEmpty(filteredFormElements)) {
     return [];
   }
+
+  // A hidden concept's question is never drawn, so it must never block the worker: no mandatory
+  // check for it or for a child of a hidden group, as in FormElementGroup.validate in
+  // openchs-models. It stays in filteredFormElements and is skipped only here.
+  filteredFormElements = _.reject(
+    filteredFormElements,
+    (fe) => isConceptHidden(get(fe, "concept")) || isConceptHidden(get(fe, "group.concept")),
+  );
 
   let validationResults = [];
   const formElementStatuses = [];
