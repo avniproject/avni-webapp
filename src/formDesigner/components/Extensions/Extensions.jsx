@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
-import { Title } from "react-admin";
+import { Title, useNotify } from "react-admin";
 import { LabelFileName } from "./LabelFileName";
 import {
   checkForErrors,
@@ -33,6 +33,7 @@ const initialState = {
 
 const Extensions = () => {
   const userInfo = useSelector(state => state.app.userInfo);
+  const notify = useNotify();
   const [print, dispatch] = useReducer(ExtensionReducer, initialState);
   const [value, setValue] = useState("");
   const [load, setLoad] = useState(false);
@@ -86,17 +87,19 @@ const Extensions = () => {
         .post("/extension/upload", formData)
         .then(res => {
           if (res.status === 200) {
-            setLoad(false);
+            notify("Extensions uploaded successfully", { type: "success" });
           }
         })
         .catch(error => {
-          setLoad(false);
           const errorMessage = `${get(error, "response.data") ||
             get(error, "message") ||
             "unknown error"}`;
-          alert(`Error while uploading the data\n ${errorMessage}`);
+          notify(`Error while uploading the data: ${errorMessage}`, {
+            type: "error"
+          });
           console.error(error);
-        });
+        })
+        .finally(() => setLoad(false));
     } else {
       dispatch({ type: "setErrors", payload: errors });
     }
@@ -156,7 +159,7 @@ const Extensions = () => {
               Privilege.PrivilegeType.EditExtension
             ) && (
               <Grid>
-                <Button variant="contained" color="primary" onClick={onSave}>
+                <Button variant="contained" color="primary" onClick={onSave} disabled={load}>
                   Save
                 </Button>
               </Grid>
@@ -170,3 +173,4 @@ const Extensions = () => {
 };
 
 export default Extensions;
+
