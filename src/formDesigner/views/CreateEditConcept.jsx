@@ -21,8 +21,9 @@ import {
   getKeyValue,
   safeKeyValues,
 } from "../util/KeyValuesUtil";
-import { HiddenConceptCheckbox } from "../components/HiddenConcept";
+import { HiddenConceptSwitch } from "../components/HiddenConcept";
 import {
+  HIDDEN_KEY,
   isHiddenKeyValues,
   withHiddenKeyValue,
 } from "../util/HiddenConceptUtil";
@@ -123,6 +124,10 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
   const [redirectOnDelete, setRedirectOnDelete] = useState(false);
   const [operationalModules, setOperationalModules] = useState([]);
 
+  // An NA concept is only ever an answer to a coded question, so it records no value to hide.
+  // A new concept offers Hidden once its datatype is chosen, because choosing one can drop it.
+  const canBeHidden = !isEmpty(concept.dataType) && concept.dataType !== "NA";
+
   const readOnlyKeys = [
     "isWithinCatchment",
     "lowestAddressLevelTypeUUIDs",
@@ -133,6 +138,9 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
     "encounterTypeUUID",
     "encounterScope",
     "encounterIdentifier",
+    // Set only through the Hidden switch, so locked only where the switch is offered. Elsewhere
+    // nothing could clear a locked row, and it would block Save.
+    ...(canBeHidden ? [HIDDEN_KEY] : []),
   ];
 
   const onLoad = useCallback(async () => {
@@ -810,12 +818,14 @@ const CreateEditConcept = ({ isCreatePage = false }) => {
             )}
           </Grid>
           <Grid>{renderDataTypeComponent()}</Grid>
-          <Grid xs={12}>
-            <HiddenConceptCheckbox
-              checked={isHiddenKeyValues(concept.keyValues)}
-              onChange={onHiddenChange}
-            />
-          </Grid>
+          {canBeHidden && (
+            <Grid xs={12}>
+              <HiddenConceptSwitch
+                checked={isHiddenKeyValues(concept.keyValues)}
+                onChange={onHiddenChange}
+              />
+            </Grid>
+          )}
           <Grid xs={12}>
             <KeyValues
               keyValues={concept.keyValues || []}
