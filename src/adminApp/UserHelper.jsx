@@ -5,7 +5,7 @@ import {
   regex,
   required,
   SaveButton,
-  Toolbar
+  Toolbar,
 } from "react-admin";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { StyledTextInput } from "./Util/Styles";
@@ -21,14 +21,14 @@ export const UserTitle = ({ record, titlePrefix }) => {
   );
 };
 
-export const formatRoles = roles =>
+export const formatRoles = (roles) =>
   !isEmpty(roles) && // check required thanks to optimistic rendering shenanigans
   roles
-    .map(role =>
+    .map((role) =>
       role
         .split("_")
-        .map(word => word.replace(word[0], word[0].toUpperCase()))
-        .join(" ")
+        .map((word) => word.replace(word[0], word[0].toUpperCase()))
+        .join(" "),
     )
     .join(", ");
 
@@ -57,10 +57,10 @@ export const UserFilter = [
     source="phoneNumber"
     alwaysOn
     resettable={false}
-  />
+  />,
 ];
 
-export const CustomToolbar = props => (
+export const CustomToolbar = (props) => (
   <Toolbar {...props}>
     <SaveButton />
   </Toolbar>
@@ -78,48 +78,48 @@ export const PasswordTextField = () => (
 export const isRequired = required("This field is required");
 export const doesNotHaveWhitespaces = regex(
   /^\S+$/,
-  "This field should not contain whitespaces"
+  "This field should not contain whitespaces",
 );
 export const doesNotStartOrEndWithWhitespaces = regex(
   /^\S$|^\S[\s\S]*\S$/,
-  "This field should not start or end with whitespaces"
+  "This field should not start or end with whitespaces",
 );
 
 export const validateUserName = [
   isRequired,
-  doesNotHaveWhitespaces,
-  minLength(4, "Username too small, enter at least 4 characters.")
+  doesNotHaveWhitespaces, // Reverted to strict validation for AWS Cognito compatibility
+  minLength(4, "Username too small, enter at least 4 characters."),
 ];
 
 export const validateEmail = [
   isRequired,
-  email("Please enter a valid email address")
+  email("Please enter a valid email address"),
 ];
 
 export const validateDisplayName = [
   isRequired,
-  doesNotStartOrEndWithWhitespaces
+  doesNotStartOrEndWithWhitespaces,
 ];
 
-const getValidatePhoneValidator = function(region) {
-  return value => {
+const getValidatePhoneValidator = function (region) {
+  return (value) => {
     const isValid = isValidPhoneNumber(value, region);
     return isValid ? undefined : "Invalid phone number";
   };
 };
 
-export const getPhoneValidator = function(region) {
+export const getPhoneValidator = function (region) {
   return [
     isRequired,
     doesNotStartOrEndWithWhitespaces,
-    getValidatePhoneValidator(region)
+    getValidatePhoneValidator(region),
   ];
 };
 
 export const validatePassword = [
   isRequired,
   doesNotStartOrEndWithWhitespaces,
-  minLength(8, "Password too small, enter at least 8 characters.")
+  minLength(8, "Password too small, enter at least 8 characters."),
 ];
 
 export const validatePasswords = ({ password, confirmPassword }) => {
