@@ -34,7 +34,11 @@ import { usePostHog } from "posthog-js/react";
 import _ from "lodash";
 
 const RouteErrorFallback = ({ error, resetErrorBoundary }) => (
-  <ErrorFallback error={error} onClose={resetErrorBoundary} />
+  <ErrorFallback
+    error={error}
+    onClose={resetErrorBoundary}
+    shouldShowAppBar={false}
+  />
 );
 
 const RestrictedRoute = ({ element, requiredPrivileges = [], userInfo }) => {
