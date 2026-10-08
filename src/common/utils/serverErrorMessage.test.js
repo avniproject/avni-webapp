@@ -1,5 +1,7 @@
 import { assert } from "chai";
+import { AxiosError } from "axios";
 import { extractServerErrorMessage, messageFromServerErrorBody } from "./serverErrorMessage";
+import { NETWORK_ERROR_MESSAGE } from "./networkError";
 
 /**
  * Turning what avni-server returns into something an administrator can read.
@@ -60,6 +62,12 @@ describe("serverErrorMessage", () => {
       );
       assert.equal("from axios", extractServerErrorMessage({ message: "from axios" }, "fallback"));
       assert.equal("fallback", extractServerErrorMessage({}, "fallback"));
+    });
+
+    it("says the server could not be reached when the request never got a response", () => {
+      const networkError = new AxiosError("Network Error", AxiosError.ERR_NETWORK);
+
+      assert.equal(NETWORK_ERROR_MESSAGE, extractServerErrorMessage(networkError, "fallback"));
     });
 
     it("survives a rejection that is not an axios error", () => {
