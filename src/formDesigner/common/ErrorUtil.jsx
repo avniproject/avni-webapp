@@ -20,16 +20,20 @@ const SERVER_ERROR_STACKTRACE_STARTING_PATTERN = /^org\..*: /;
 const DB_ERROR_STACKTRACE_STARTING_PATTERN = /^javax\..*: /;
 const EMPTY_STRING = "";
 const NEW_LINE_SEPARATOR = /\n|\r/;
-export const createServerError = function (serverError, defaultMessage) {
-  const formError = {};
-  formError.key = ServerErrorKey;
-  let errorMessage = isNetworkError(serverError)
+
+const rawServerErrorMessage = (serverError, defaultMessage) =>
+  isNetworkError(serverError)
     ? NETWORK_ERROR_MESSAGE
     : `${
         get(serverError, "response.data") ||
         get(serverError, "message") ||
         defaultMessage
       }`;
+
+export const createServerError = function (serverError, defaultMessage) {
+  const formError = {};
+  formError.key = ServerErrorKey;
+  const errorMessage = rawServerErrorMessage(serverError, defaultMessage);
   formError.message = split(
     replace(
       errorMessage,
@@ -57,13 +61,7 @@ export const removeServerError = function (errors) {
 export const getDBValidationError = function (serverError, defaultMessage) {
   const formError = {};
   formError.key = ServerErrorKey;
-  let errorMessage = isNetworkError(serverError)
-    ? NETWORK_ERROR_MESSAGE
-    : `${
-        get(serverError, "response.data") ||
-        get(serverError, "message") ||
-        defaultMessage
-      }`;
+  const errorMessage = rawServerErrorMessage(serverError, defaultMessage);
   return join(
     split(
       replace(errorMessage, DB_ERROR_STACKTRACE_STARTING_PATTERN, EMPTY_STRING),
