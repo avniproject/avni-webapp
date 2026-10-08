@@ -37,8 +37,7 @@ const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
           message={
             userError
               ? userError
-              : error.response?.data ||
-                extractServerErrorMessage(error, "Unexpected error occurred")
+              : extractServerErrorMessage(error, "Unexpected error occurred")
           }
           getDefaultSnackbarStatus={(snackbarStatus) => {
             setError(snackbarStatus);
