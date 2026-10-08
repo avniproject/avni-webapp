@@ -8,19 +8,22 @@ import userGroupsSagas from "../userGroups/sagas";
 import { organisationConfigWatcher } from "../i18nTranslations/TranslationSaga";
 
 import { getAdminOrgsWatcher, logoutWatcher, onSetAuthSession, userInfoWatcher } from "./saga";
+import { restartOnNetworkError } from "./restartOnNetworkError";
 
 export default function* rootSaga() {
-  yield all([
-    fork(onSetAuthSession),
-    fork(userInfoWatcher),
-    fork(getAdminOrgsWatcher),
-    fork(logoutWatcher),
-    fork(organisationConfigWatcher),
-    fork(dataEntrySaga),
-    fork(broadcastSaga),
-    fork(translationsSaga),
-    fork(uploadSagas),
-    fork(reportSagas),
-    fork(userGroupsSagas)
-  ]);
+  yield all(
+    [
+      onSetAuthSession,
+      userInfoWatcher,
+      getAdminOrgsWatcher,
+      logoutWatcher,
+      organisationConfigWatcher,
+      dataEntrySaga,
+      broadcastSaga,
+      translationsSaga,
+      uploadSagas,
+      reportSagas,
+      userGroupsSagas,
+    ].map((saga) => fork(restartOnNetworkError, saga)),
+  );
 }
