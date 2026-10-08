@@ -23,6 +23,7 @@ export const NetworkErrorSnackbar = () => {
   return (
     <Snackbar
       open={isOpen}
+      autoHideDuration={10000}
       onClose={handleClose}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
     >
