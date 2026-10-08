@@ -295,7 +295,7 @@ const EncounterTypeEdit = () => {
       .then(() => setRedirectShow(true))
       .catch((error) => {
         console.error("Failed to save encounter type:", error);
-        error.response.data.message
+        error.response?.data?.message
           ? setError(error.response.data.message)
           : setMsgError(getDBValidationError(error));
       });

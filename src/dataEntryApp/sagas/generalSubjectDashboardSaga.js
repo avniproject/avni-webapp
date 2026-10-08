@@ -1,11 +1,12 @@
-import { all, call, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, put, takeLatest } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
 import { types, setSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import api from "../api";
 import { mapGeneral } from "../../common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
 
-export default function*() {
-  yield all([subjectGeneralFetchWatcher].map(fork));
+export default function* () {
+  yield all([subjectGeneralFetchWatcher].map(forkRestartingOnNetworkError));
 }
 
 export function* subjectGeneralFetchWatcher() {
