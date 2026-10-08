@@ -1,5 +1,4 @@
-import { all, call, put, select, takeLatest } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import {
   getSubjectProfile,
   setGroupMembers,
@@ -36,7 +35,7 @@ export default function* () {
       voidProgramEncounterWatcher,
       voidGeneralEncounterWatcher,
       loadSubjectDashboardWatcher,
-    ].map(forkRestartingOnNetworkError),
+    ].map(fork),
   );
 }
 

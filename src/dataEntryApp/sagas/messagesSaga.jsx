@@ -1,20 +1,19 @@
-import { all, call, put, takeLatest } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import {
   types,
   setMsgsSent,
   setMsgsSentAvailable,
   setMsgsNotYetSent,
-  setMsgsNotYetSentAvailable,
+  setMsgsNotYetSentAvailable
 } from "../reducers/messagesReducer";
 import API from "../api";
 import { orderBy, size } from "lodash";
 
-export default function* () {
+export default function*() {
   yield all(
     [fetchMsgsForSubjectWatcher, fetchMessagesNotYetSentForSubjectWatcher].map(
-      forkRestartingOnNetworkError,
-    ),
+      fork
+    )
   );
 }
 
@@ -25,7 +24,7 @@ export function* fetchMsgsForSubjectWatcher() {
 export function* fetchMessagesNotYetSentForSubjectWatcher() {
   yield takeLatest(
     types.GET_MSGS_NOT_YET_SENT,
-    fetchMessagesNotYetSentForSubjectWorker,
+    fetchMessagesNotYetSentForSubjectWorker
   );
 }
 
@@ -36,7 +35,7 @@ export function* fetchMsgsForSubjectWorker({ subjectID }) {
   } catch (error) {
     console.log(
       "Error encountered while fetching All Messages to Subject ",
-      subjectID,
+      subjectID
     );
   }
   yield put.resolve(setMsgsSentAvailable(size(msgsForSubject) > 0));
@@ -49,21 +48,21 @@ export function* fetchMessagesNotYetSentForSubjectWorker({ subjectID }) {
   try {
     msgsNotYetSentForSubject = yield call(
       API.getAllMessagesNotYetSentForSubject,
-      subjectID,
+      subjectID
     );
   } catch (error) {
     console.log(
       "Error encountered while fetching Messages not yet sent to Subject ",
-      subjectID,
+      subjectID
     );
   }
   yield put.resolve(
-    setMsgsNotYetSentAvailable(size(msgsNotYetSentForSubject) > 0),
+    setMsgsNotYetSentAvailable(size(msgsNotYetSentForSubject) > 0)
   );
   const orderedMsgsNotYetSent = orderBy(
     msgsNotYetSentForSubject,
     "scheduledDateTime",
-    "desc",
+    "desc"
   );
   yield put(setMsgsNotYetSent(orderedMsgsNotYetSent));
 }

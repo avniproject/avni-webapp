@@ -10,7 +10,7 @@ import { programInitialState } from "../Constant";
 import { programReducer } from "../Reducers";
 import {
   findProgramEnrolmentForm,
-  findProgramExitForm,
+  findProgramExitForm
 } from "../domain/formMapping";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
@@ -20,7 +20,7 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import {
   getMessageRules,
   getMessageTemplates,
-  saveMessageRules,
+  saveMessageRules
 } from "../service/MessageService";
 import { identity } from "lodash";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
@@ -29,9 +29,7 @@ import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 const ProgramEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const organisationConfig = useSelector(
-    (state) => state.app.organisationConfig,
-  );
+  const organisationConfig = useSelector(state => state.app.organisationConfig);
 
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [errors, setErrors] = useState(new Map());
@@ -43,8 +41,8 @@ const ProgramEdit = () => {
     MessageReducer,
     {
       rules: [],
-      templates: [],
-    },
+      templates: []
+    }
   );
   const entityType = "ProgramEnrolment";
 
@@ -58,28 +56,28 @@ const ProgramEdit = () => {
     return identity;
   }, []);
 
-  const onRulesChange = (rules) => {
+  const onRulesChange = rules => {
     rulesDispatch({ type: "setRules", payload: rules });
   };
 
   useEffect(() => {
     http
       .get("/web/program/" + id)
-      .then((response) => response.data)
-      .then((result) => {
+      .then(response => response.data)
+      .then(result => {
         dispatch({ type: "setData", payload: result });
-        http.get("/web/operationalModules").then((response) => {
+        http.get("/web/operationalModules").then(response => {
           const formMap = response.data.formMappings;
-          formMap.map((l) => (l["isVoided"] = false));
+          formMap.map(l => (l["isVoided"] = false));
           setFormList(response.data.forms);
           setSubjectTypes(response.data.subjectTypes);
           const temp = response.data.formMappings.filter(
-            (l) => l.programUUID === result.uuid,
+            l => l.programUUID === result.uuid
           );
           setSubjectType(
             response.data.subjectTypes.filter(
-              (l) => l.uuid === temp[0].subjectTypeUUID,
-            )[0],
+              l => l.uuid === temp[0].subjectTypeUUID
+            )[0]
           );
 
           const enrolmentForm = findProgramEnrolmentForm(formMap, result);
@@ -94,7 +92,7 @@ const ProgramEdit = () => {
   const onSubmit = () => {
     let [errors, jsCodeEECDR, jsCodeMEECDR] = ProgramService.validateProgram(
       program,
-      subjectType,
+      subjectType
     );
     ProgramService.updateJSRules(program, errors, jsCodeEECDR, jsCodeMEECDR);
 
@@ -104,7 +102,7 @@ const ProgramEdit = () => {
     }
 
     return ProgramService.saveProgram(program, subjectType, id)
-      .then((saveResponse) => {
+      .then(saveResponse => {
         setErrors(saveResponse.errors);
         if (saveResponse.errors.size === 0) {
           setMsgError("");
@@ -112,15 +110,15 @@ const ProgramEdit = () => {
       })
       .then(() => saveMessageRules(entityType, program.programId, rules))
       .then(() => navigate(`/appDesigner/program/${id}/show`))
-      .catch((error) => {
-        !error.response?.data?.message &&
+      .catch(error => {
+        !error.response.data.message &&
           setMsgError(getDBValidationError(error));
       });
   };
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete program?")) {
-      http.delete("/web/program/" + id).then((response) => {
+      http.delete("/web/program/" + id).then(response => {
         if (response.status === 200) {
           navigate("/appDesigner/program");
         }
@@ -140,7 +138,7 @@ const ProgramEdit = () => {
         bgcolor: "background.paper",
         display: "flex",
         flexDirection: "column",
-        minHeight: "100%",
+        minHeight: "100%"
       }}
     >
       <Title title="Edit Program" />
@@ -166,7 +164,7 @@ const ProgramEdit = () => {
             <br />
             <AvniSwitch
               checked={program.active}
-              onChange={(event) =>
+              onChange={event =>
                 dispatch({ type: "active", payload: event.target.checked })
               }
               name="Active"

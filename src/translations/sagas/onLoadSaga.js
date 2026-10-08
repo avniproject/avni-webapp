@@ -1,6 +1,5 @@
 import { setDashboardData, setOrgConfig, types } from "../reducers/onLoadReducer";
-import { all, call, put, select, takeLatest } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import { isEmpty } from "lodash/core";
 import api from "../api";
 import { mapOrganisationConfig } from "../../common/adapters";
@@ -10,7 +9,9 @@ export function* onLoadWatcher() {
 }
 
 export function* onLoadWorker() {
-  const valueFromState = yield select(({ translations: { organisationConfig } }) => organisationConfig);
+  const valueFromState = yield select(
+    ({ translations: { organisationConfig } }) => organisationConfig
+  );
   if (!isEmpty(valueFromState)) {
     return;
   }
@@ -28,5 +29,5 @@ export function* fetchDashboardWorker({ platform, emptyValue }) {
 }
 
 export default function* onLoadSaga() {
-  yield all([onLoadWatcher, fetchDashboardWatcher].map(forkRestartingOnNetworkError));
+  yield all([onLoadWatcher, fetchDashboardWatcher].map(fork));
 }

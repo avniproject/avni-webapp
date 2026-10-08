@@ -1,5 +1,4 @@
-import { all, call, put, takeLatest } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import {
   removeRelationshipFailed,
   saveRelationshipFailed,
@@ -11,7 +10,7 @@ import api from "../api";
 import { getAPIErrorMessage } from "./sagaUtils";
 
 export default function* () {
-  yield all([relationshipTypeWatcher, saveRelatioshipWatcher, removeRelatioshipWatcher].map(forkRestartingOnNetworkError));
+  yield all([relationshipTypeWatcher, saveRelatioshipWatcher, removeRelatioshipWatcher].map(fork));
 }
 
 export function* relationshipTypeWatcher() {

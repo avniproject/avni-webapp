@@ -15,8 +15,7 @@ import {
 } from "../reducers/registrationReducer";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
-import { all, call, put, select, takeEvery, takeLatest } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { all, call, fork, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 import api from "../api";
 import { getGenders } from "../reducers/metadataReducer";
 import { getAPIErrorMessage } from "./sagaUtils";
@@ -330,6 +329,6 @@ export default function* subjectSaga() {
       registrationNextWatcher,
       registrationPreviousWatcher,
       saveSubjectWatcher,
-    ].map(forkRestartingOnNetworkError),
+    ].map(fork),
   );
 }

@@ -1,7 +1,14 @@
-import { all, call, put, takeLatest } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../rootApp/restartOnNetworkError";
+import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import api from "./api";
-import { setGroups, setGroupUsers, setAllUsers, setGroupPrivilegeList, types, setGroupDashboards, setAllDashboards } from "./reducers";
+import {
+  setGroups,
+  setGroupUsers,
+  setAllUsers,
+  setGroupPrivilegeList,
+  types,
+  setGroupDashboards,
+  setAllDashboards
+} from "./reducers";
 
 export function* getGroupsWatcher() {
   yield takeLatest(types.GET_GROUPS, getGroupsWorker);
@@ -71,7 +78,7 @@ export default function* main() {
       getAllUsersWatcher,
       getGroupDashboardsWatcher,
       getAllDashboardsWatcher,
-      getGroupPrivilegeListWatcher,
-    ].map(forkRestartingOnNetworkError),
+      getGroupPrivilegeListWatcher
+    ].map(fork)
   );
 }

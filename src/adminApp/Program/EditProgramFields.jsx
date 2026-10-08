@@ -8,20 +8,20 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import {
   findProgramEnrolmentForms,
-  findProgramExitForms,
+  findProgramExitForms
 } from "../domain/formMapping";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import {
   sampleEnrolmentEligibilityCheckRule,
   sampleEnrolmentSummaryRule,
-  sampleManualEnrolmentEligibilityCheckRule,
+  sampleManualEnrolmentEligibilityCheckRule
 } from "../../formDesigner/common/SampleRule";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../../formDesigner/util";
 import { JSEditor } from "../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../common/components/PopoverColorPicker";
 
-const EditProgramFields = (props) => {
+const EditProgramFields = props => {
   const {
     program,
     errors,
@@ -29,13 +29,13 @@ const EditProgramFields = (props) => {
     formList,
     dispatch,
     onSubjectTypeChange,
-    subjectType,
+    subjectType
   } = props;
   const [showGrowthChart, setShowGrowthChart] = useState(
-    !!program.showGrowthChart,
+    !!program.showGrowthChart
   );
   const isNew = _.isNil(program.uuid);
-  const isChildOrPhulwari = (programName) =>
+  const isChildOrPhulwari = programName =>
     programName &&
     (programName.toLowerCase() === "child" ||
       programName.toLowerCase() === "phulwari");
@@ -55,7 +55,7 @@ const EditProgramFields = (props) => {
         autoComplete="off"
         required
         value={program.name}
-        onChange={(event) =>
+        onChange={event =>
           dispatch({ type: "name", payload: event.target.value })
         }
         toolTipKey={"APP_DESIGNER_PROGRAM_NAME"}
@@ -70,17 +70,17 @@ const EditProgramFields = (props) => {
       <AvniSelect
         label="Select Subject Type"
         value={_.isEmpty(subjectType) ? "" : subjectType?.uuid}
-        onChange={(event) => {
+        onChange={event => {
           const selectedSubjectType = subjectTypes.find(
-            (st) => st.uuid === event.target.value,
+            st => st.uuid === event.target.value
           );
           onSubjectTypeChange(selectedSubjectType);
         }}
         style={{ width: "200px" }}
         required
-        options={subjectTypes.map((option) => ({
+        options={subjectTypes.map(option => ({
           value: option.uuid,
-          label: option.name,
+          label: option.name
         }))}
         toolTipKey={"APP_DESIGNER_PROGRAM_SUBJECT_TYPE"}
       />
@@ -99,7 +99,7 @@ const EditProgramFields = (props) => {
         id="colour"
         label="Colour"
         color={program.colour}
-        onChange={(color) => dispatch({ type: "colour", payload: color })}
+        onChange={color => dispatch({ type: "colour", payload: color })}
       />
 
       <br />
@@ -109,7 +109,7 @@ const EditProgramFields = (props) => {
         label="Program subject label"
         autoComplete="off"
         value={program.programSubjectLabel}
-        onChange={(event) =>
+        onChange={event =>
           dispatch({ type: "programSubjectLabel", payload: event.target.value })
         }
         toolTipKey={"APP_DESIGNER_PROGRAM_SUBJECT_LABEL"}
@@ -119,10 +119,10 @@ const EditProgramFields = (props) => {
       <AvniSelectForm
         label={"Select enrolment form"}
         value={_.get(program, "programEnrolmentForm.formName")}
-        onChange={(selectedForm) =>
+        onChange={selectedForm =>
           dispatch({
             type: "programEnrolmentForm",
-            payload: selectedForm,
+            payload: selectedForm
           })
         }
         formList={findProgramEnrolmentForms(formList)}
@@ -133,10 +133,10 @@ const EditProgramFields = (props) => {
       <AvniSelectForm
         label={"Select exit form"}
         value={_.get(program, "programExitForm.formName")}
-        onChange={(selectedForm) =>
+        onChange={selectedForm =>
           dispatch({
             type: "programExitForm",
-            payload: selectedForm,
+            payload: selectedForm
           })
         }
         formList={findProgramExitForms(formList)}
@@ -146,10 +146,10 @@ const EditProgramFields = (props) => {
       <br />
       <AvniSwitch
         checked={program.allowMultipleEnrolments}
-        onChange={(event) =>
+        onChange={event =>
           dispatch({
             type: "allowMultipleEnrolments",
-            payload: event.target.checked,
+            payload: event.target.checked
           })
         }
         name="Allow multiple enrolments"
@@ -158,11 +158,11 @@ const EditProgramFields = (props) => {
 
       <br />
       <AvniSwitch
-        checked={program.manualEligibilityCheckRequired}
-        onChange={(event) =>
+        checked={program.allow}
+        onChange={event =>
           dispatch({
             type: "manualEligibilityCheckRequired",
-            payload: event.target.checked,
+            payload: event.target.checked
           })
         }
         name="Manual eligibility check required"
@@ -172,7 +172,7 @@ const EditProgramFields = (props) => {
       <br />
       <AvniSwitch
         checked={showGrowthChart}
-        onChange={(event) => {
+        onChange={event => {
           setShowGrowthChart(event.target.checked);
           dispatch({ type: "showGrowthChart", payload: event.target.checked });
         }}
@@ -188,7 +188,7 @@ const EditProgramFields = (props) => {
       />
       <JSEditor
         value={program.enrolmentSummaryRule || sampleEnrolmentSummaryRule()}
-        onValueChange={(event) =>
+        onValueChange={event =>
           dispatch({ type: "enrolmentSummaryRule", payload: event })
         }
       />
@@ -202,38 +202,38 @@ const EditProgramFields = (props) => {
       {program.loaded && (
         <RuleDesigner
           rulesJson={program.enrolmentEligibilityCheckDeclarativeRule}
-          onValueChange={(jsonData) =>
+          onValueChange={jsonData =>
             dispatch({
               type: "enrolmentEligibilityCheckDeclarativeRule",
-              payload: jsonData,
+              payload: jsonData
             })
           }
-          updateJsCode={(declarativeRuleHolder) =>
+          updateJsCode={declarativeRuleHolder =>
             dispatch({
               type: "enrolmentEligibilityCheckRule",
-              payload: declarativeRuleHolder.generateEligibilityRule(),
+              payload: declarativeRuleHolder.generateEligibilityRule()
             })
           }
           jsCode={program.enrolmentEligibilityCheckRule}
           error={errors.get("EnrolmentEligibilityCheckDeclarativeRule")}
           subjectType={subjectType}
-          getApplicableActions={(state) =>
+          getApplicableActions={state =>
             state.getApplicableEnrolmentEligibilityActions()
           }
           sampleRule={sampleEnrolmentEligibilityCheckRule()}
-          onJsCodeChange={(event) => {
+          onJsCodeChange={event => {
             confirmBeforeRuleEdit(
               program.enrolmentEligibilityCheckDeclarativeRule,
               () =>
                 dispatch({
                   type: "enrolmentEligibilityCheckRule",
-                  payload: event,
+                  payload: event
                 }),
               () =>
                 dispatch({
                   type: "enrolmentEligibilityCheckDeclarativeRule",
-                  payload: null,
-                }),
+                  payload: null
+                })
             );
           }}
         />
@@ -251,10 +251,10 @@ const EditProgramFields = (props) => {
             program.manualEnrolmentEligibilityCheckRule ||
             sampleManualEnrolmentEligibilityCheckRule()
           }
-          onValueChange={(event) =>
+          onValueChange={event =>
             dispatch({
               type: "manualEnrolmentEligibilityCheckRule",
-              payload: event,
+              payload: event
             })
           }
         />
@@ -270,7 +270,7 @@ EditProgramFields.propTypes = {
   formList: PropTypes.array.isRequired,
   dispatch: PropTypes.func.isRequired,
   subjectType: PropTypes.object,
-  onSubjectTypeChange: PropTypes.func.isRequired,
+  onSubjectTypeChange: PropTypes.func.isRequired
 };
 
 export default EditProgramFields;

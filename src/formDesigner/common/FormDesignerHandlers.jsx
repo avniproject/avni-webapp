@@ -1,7 +1,6 @@
 import _, { cloneDeep, includes, isEmpty, replace, split } from "lodash";
 import { default as UUID } from "uuid";
 import { httpClient as http } from "common/utils/httpClient";
-import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 import {
   alphabeticalSort,
   MAX_CONCEPT_NAME_LENGTH,
@@ -358,10 +357,9 @@ const formDesignerOnSubmitInlineConcept = (
       }
     })
     .catch((error) => {
-      let errorMessage = error.response
-        ? "Failed to save concept. Please try again." +
-          split(replace(error.response.data, /^org\..*: /, ""), /\n|\r/, 1)
-        : `Failed to save concept. ${extractServerErrorMessage(error, "")}`;
+      let errorMessage =
+        "Failed to save concept. Please try again." +
+        split(replace(error.response.data, /^org\..*: /, ""), /\n|\r/, 1);
       if (
         error.response &&
         (error.response.status === 409 || error.response.status === 400)

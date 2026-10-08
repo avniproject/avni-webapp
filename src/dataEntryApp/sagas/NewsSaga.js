@@ -1,11 +1,10 @@
-import { all, call, put, takeLatest } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import { types, setNews, setIsNewsAvailable } from "../reducers/NewsReducer";
 import API from "../../news/api";
 import { orderBy, size } from "lodash";
 
-export default function* () {
-  yield all([fetchNewsWatcher].map(forkRestartingOnNetworkError));
+export default function*() {
+  yield all([fetchNewsWatcher].map(fork));
 }
 
 export function* fetchNewsWatcher() {

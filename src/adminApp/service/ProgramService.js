@@ -1,7 +1,6 @@
 import _ from "lodash";
 import { validateRule } from "../../formDesigner/util";
 import { httpClient as http } from "../../common/utils/httpClient";
-import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 
 class ProgramService {
   static validateProgram(program, subjectType) {
@@ -11,15 +10,15 @@ class ProgramService {
 
     if (_.isNil(subjectType)) errors.set("SubjectType", "Empty");
 
-    const { jsCodeEECDR, validationErrorEECDR } = validateRule(program.enrolmentEligibilityCheckDeclarativeRule, (holder) =>
-      holder.generateEligibilityRule(),
+    const { jsCodeEECDR, validationErrorEECDR } = validateRule(program.enrolmentEligibilityCheckDeclarativeRule, holder =>
+      holder.generateEligibilityRule()
     );
     if (!_.isEmpty(validationErrorEECDR)) {
       errors.set("EnrolmentEligibilityCheckDeclarativeRule", validationErrorEECDR);
     }
 
-    const { jsCodeMEECDR, validationErrorMEECDR } = validateRule(program.manualEnrolmentEligibilityCheckDeclarativeRule, (holder) =>
-      holder.generateEligibilityRule(),
+    const { jsCodeMEECDR, validationErrorMEECDR } = validateRule(program.manualEnrolmentEligibilityCheckDeclarativeRule, holder =>
+      holder.generateEligibilityRule()
     );
     if (!_.isEmpty(validationErrorMEECDR)) {
       errors.set("ManualEnrolmentEligibilityCheckDeclarativeRule", validationErrorMEECDR);
@@ -47,9 +46,9 @@ class ProgramService {
       allowMultipleEnrolments: program.allowMultipleEnrolments,
       manualEnrolmentEligibilityCheckRule: program.manualEnrolmentEligibilityCheckRule,
       programId: program.programId,
-      manualEnrolmentEligibilityCheckDeclarativeRule: program.manualEnrolmentEligibilityCheckDeclarativeRule,
+      manualEnrolmentEligibilityCheckDeclarativeRule: program.manualEnrolmentEligibilityCheckDeclarativeRule
     })
-      .then((response) => {
+      .then(response => {
         saveResponse.status = response.status;
         if (response.status === 200) {
           saveResponse.id = response.data.id;
@@ -57,8 +56,8 @@ class ProgramService {
         }
         return saveResponse;
       })
-      .catch((error) => {
-        saveResponse.errors.set("SaveProgram", error.response?.data?.message ?? extractServerErrorMessage(error, ""));
+      .catch(error => {
+        saveResponse.errors.set("SaveProgram", error.response.data.message);
         return saveResponse;
       });
   }

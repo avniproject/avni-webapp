@@ -1,7 +1,6 @@
 import onLoadSaga from "./onLoadSaga";
-import { all } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { all, fork } from "redux-saga/effects";
 
 export default function* rootSaga() {
-  yield all([onLoadSaga].map(forkRestartingOnNetworkError));
+  yield all([onLoadSaga].map(fork));
 }

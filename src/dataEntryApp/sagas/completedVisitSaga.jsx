@@ -1,28 +1,27 @@
-import { all, call, put, takeLatest, select } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { all, call, fork, put, takeLatest, select } from "redux-saga/effects";
 import {
   types,
   setCompletedVisits,
-  setEncounterTypes,
+  setEncounterTypes
 } from "../reducers/completedVisitsReducer";
 import { setProgramEnrolment } from "../reducers/programEncounterReducer";
 
 import api from "../api";
 import {
   selectProgramEncounterTypes,
-  selectGeneralEncounterTypes,
+  selectGeneralEncounterTypes
 } from "dataEntryApp/sagas/selectors";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile } from "./selectors";
 
-export default function* () {
+export default function*() {
   yield all(
     [
       loadProgramEncountersWatcher,
       loadEncountersWatcher,
       getCompletedEncountersWatcher,
-      getCompletedProgramEncountersWatcher,
-    ].map(forkRestartingOnNetworkError),
+      getCompletedProgramEncountersWatcher
+    ].map(fork)
   );
 }
 
@@ -32,7 +31,7 @@ export function* loadProgramEncountersWatcher() {
 
 export function* loadProgramEncountersWorker({
   enrolmentUuid,
-  filterQueryString,
+  filterQueryString
 }) {
   yield put.resolve(setLoad(false));
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
@@ -40,8 +39,8 @@ export function* loadProgramEncountersWorker({
   const encounterTypes = yield select(
     selectProgramEncounterTypes(
       subjectProfile.subjectType.uuid,
-      programEnrolment.program.uuid,
-    ),
+      programEnrolment.program.uuid
+    )
   );
   yield put(setEncounterTypes(encounterTypes));
   yield put(setProgramEnrolment(programEnrolment));
@@ -56,7 +55,7 @@ export function* loadEncountersWorker({ subjectUuid }) {
   yield put.resolve(setLoad(false));
   const subjectProfile = yield select(selectSubjectProfile);
   const encounterTypes = yield select(
-    selectGeneralEncounterTypes(subjectProfile.subjectType.uuid),
+    selectGeneralEncounterTypes(subjectProfile.subjectType.uuid)
   );
   yield put(setEncounterTypes(encounterTypes));
   yield put.resolve(setLoad(true));
@@ -65,19 +64,19 @@ export function* loadEncountersWorker({ subjectUuid }) {
 export function* getCompletedProgramEncountersWatcher() {
   yield takeLatest(
     types.GET_COMPLETED_PROGRAM_ENCOUNTERS,
-    getCompletedProgramEncountersWorker,
+    getCompletedProgramEncountersWorker
   );
 }
 
 export function* getCompletedProgramEncountersWorker({
   enrolmentUuid,
-  filterQueryString,
+  filterQueryString
 }) {
   yield put.resolve(setLoad(false));
   const completedVisits = yield call(
     api.fetchCompletedProgramEncounters,
     enrolmentUuid,
-    filterQueryString,
+    filterQueryString
   );
   yield put(setCompletedVisits(completedVisits));
   yield put.resolve(setLoad(true));
@@ -86,19 +85,19 @@ export function* getCompletedProgramEncountersWorker({
 export function* getCompletedEncountersWatcher() {
   yield takeLatest(
     types.GET_COMPLETED_ENCOUNTERS,
-    getCompletedEncountersWorker,
+    getCompletedEncountersWorker
   );
 }
 
 export function* getCompletedEncountersWorker({
   subjectUuid,
-  filterQueryString,
+  filterQueryString
 }) {
   yield put.resolve(setLoad(false));
   const completedVisits = yield call(
     api.fetchCompletedEncounters,
     subjectUuid,
-    filterQueryString,
+    filterQueryString
   );
   yield put(setCompletedVisits(completedVisits));
   yield put.resolve(setLoad(true));

@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 import _, { cloneDeep, isEmpty, replace, split } from "lodash";
 import { httpClient as http } from "common/utils/httpClient";
-import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 import { Grid, Button, FormControl } from "@mui/material";
 import FormElementGroup from "../components/FormElementGroup";
 import Tabs from "@mui/material/Tabs";
@@ -1162,16 +1161,14 @@ const FormDetails = () => {
         await getForm();
       }
     } catch (error) {
-      const errorMsg = error.response
-        ? `Server error received: ${split(
-            replace(error.response.data, /^org\..*: /, ""),
-            /\n|\r/,
-            1,
-          )}`
-        : `Could not save the form. ${extractServerErrorMessage(error, "")} Your changes are still on this page.`;
+      const errorMessage = split(
+        replace(error.response.data, /^org\..*: /, ""),
+        /\n|\r/,
+        1,
+      );
       setState((prev) => ({
         ...prev,
-        errorMsg,
+        errorMsg: `Server error received: ${errorMessage}`,
       }));
     }
   }, [state.form, state.name, state.timed, reOrderSequence, getForm]);

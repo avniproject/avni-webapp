@@ -1,5 +1,4 @@
-import { all, call, put, select, takeEvery, takeLatest } from "redux-saga/effects";
-import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { all, call, fork, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 import { find, keys } from "lodash";
 import {
   onLoadSuccess,
@@ -46,7 +45,7 @@ export default function* () {
       nextWatcher,
       previousWatcher,
       programEncounterEligibilityWatcher,
-    ].map(forkRestartingOnNetworkError),
+    ].map(fork),
   );
 }
 

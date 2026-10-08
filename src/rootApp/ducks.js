@@ -93,8 +93,6 @@ export const setIsNewImplementation = (isNewImplementation) => ({
   payload: isNewImplementation,
 });
 
-export const selectIsAppInitialised = (state) => state.app?.appInitialised === true;
-
 const initialState = {
   idpDetails: undefined,
   authSession: new NoAuthSession(),
