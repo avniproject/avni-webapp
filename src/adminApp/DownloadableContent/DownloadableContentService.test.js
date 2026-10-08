@@ -36,6 +36,8 @@ let blobExtensionFor;
 let findDuplicateGuidance;
 let computeFileSha256;
 let isUnencryptedCategory;
+let hasImageContent;
+let fetchContentsForDuplicateCheck;
 
 beforeAll(async () => {
   const mod = await import("./DownloadableContentService");
@@ -56,6 +58,8 @@ beforeAll(async () => {
     findDuplicateGuidance,
     computeFileSha256,
     isUnencryptedCategory,
+    hasImageContent,
+    fetchContentsForDuplicateCheck,
   } = mod);
 });
 
@@ -537,6 +541,13 @@ describe("guidance payload validation", () => {
     });
   });
 
+  it("names the picture types as the screen shows them, not as they are stored", () => {
+    const message = validateGuidancePayloadShape(guidancePayload({ kind: undefined }));
+    expect(message).toMatch(/Reference photo/);
+    expect(message).toMatch(/Framing outline/);
+    expect(message).not.toMatch(/reckoner|overlay/);
+  });
+
   it("is applied by validateContent for guidanceImage, and not the edgeModel shape", () => {
     const errors = validateContent(guidanceContent({ payloadText: JSON.stringify({ site: "x" }) }), { hasFile: true });
     expect(keysOf(errors)).toContain("INVALID_PAYLOAD_SHAPE");
@@ -638,6 +649,82 @@ describe("duplicate position + type guard", () => {
 
   it("skips the check when the existing records could not be fetched", () => {
     expect(validateContent(guidanceContent(), { hasFile: true })).toEqual([]);
+  });
+});
+
+// QA on webapp#1798, 8 Oct 2026: messages and the file check.
+describe("guidance picture file", () => {
+  it("asks for an image, not a checksum, when no picture has been chosen", () => {
+    const keys = keysOf(validateContent(guidanceContent({ sha256: "", blobExtension: "" })));
+    expect(keys).toContain("MISSING_IMAGE");
+    expect(keys).not.toContain("INVALID_SHA256");
+    expect(keys).not.toContain("INVALID_IMAGE_TYPE");
+  });
+
+  // Choosing a file and then cancelling the picker can leave the checksum of a file that is no longer chosen.
+  it("asks for the image itself on a new picture, even with a checksum left behind", () => {
+    const keys = keysOf(validateContent(guidanceContent(), { hasFile: false }));
+    expect(keys).toEqual(["MISSING_IMAGE"]);
+  });
+
+  it("does not ask again for the image of a picture already saved", () => {
+    expect(validateContent(guidanceContent({ uuid: "existing" }), { editing: true, originalSha256: SHA })).toEqual([]);
+  });
+
+  it("still asks an AI model for a valid SHA-256", () => {
+    const keys = keysOf(validateContent({ name: "m", category: Category.edgeModel, sha256: "", payloadText: "" }));
+    expect(keys).toContain("INVALID_SHA256");
+    expect(keys).not.toContain("MISSING_IMAGE");
+  });
+
+  it("refuses a file that is named like a picture but is not one", () => {
+    const errors = validateContent(guidanceContent(), { hasFile: true, imageContentOk: false });
+    expect(keysOf(errors)).toEqual(["INVALID_IMAGE_CONTENT"]);
+  });
+
+  it("accepts a picture, and does not block when the content could not be read", () => {
+    expect(validateContent(guidanceContent(), { hasFile: true, imageContentOk: true })).toEqual([]);
+    expect(validateContent(guidanceContent(), { hasFile: true, imageContentOk: null })).toEqual([]);
+  });
+
+  it("does not check the content of a picture already saved", () => {
+    expect(validateContent(guidanceContent(), { editing: true, originalSha256: SHA, imageContentOk: false })).toEqual([]);
+  });
+
+  const fileOf = (bytes) => ({
+    slice: (start, end) => ({
+      arrayBuffer: () => Promise.resolve(new Uint8Array(bytes.slice(start, end)).buffer),
+    }),
+  });
+
+  it("recognises PNG and JPEG by their first bytes", async () => {
+    expect(await hasImageContent(fileOf([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0]))).toBe(true);
+    expect(await hasImageContent(fileOf([0xff, 0xd8, 0xff, 0xe0, 0, 0]))).toBe(true);
+  });
+
+  it("does not take a text file or an empty file for a picture", async () => {
+    expect(await hasImageContent(fileOf(Array.from("hello, world", (c) => c.charCodeAt(0))))).toBe(false);
+    expect(await hasImageContent(fileOf([]))).toBe(false);
+  });
+});
+
+describe("existing pictures for the duplicate check", () => {
+  // Fetched at save time: a list fetched when the screen opened misses a picture saved from another tab since.
+  it("are fetched for a guidance picture", async () => {
+    const existing = [{ uuid: "x", category: "guidanceImage" }];
+    get.mockImplementationOnce(() => Promise.resolve({ data: existing }));
+    expect(await fetchContentsForDuplicateCheck(Category.guidanceImage)).toEqual(existing);
+    expect(get).toHaveBeenCalledWith("/web/downloadableContent");
+  });
+
+  it("come back empty-handed when the fetch fails, leaving the check to the server", async () => {
+    get.mockImplementationOnce(() => Promise.reject(new Error("offline")));
+    expect(await fetchContentsForDuplicateCheck(Category.guidanceImage)).toBeNull();
+  });
+
+  it("are not fetched for an AI model, which has no position", async () => {
+    expect(await fetchContentsForDuplicateCheck(Category.edgeModel)).toBeNull();
+    expect(get).not.toHaveBeenCalled();
   });
 });
 
