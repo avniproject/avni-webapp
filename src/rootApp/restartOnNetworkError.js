@@ -1,4 +1,4 @@
-import { call, select } from "redux-saga/effects";
+import { call, fork, select } from "redux-saga/effects";
 import { selectIsAppInitialised } from "./ducks";
 import { isNetworkError } from "../common/utils/networkError";
 import { networkErrorNotifier } from "../common/utils/networkErrorNotifier";
@@ -16,3 +16,5 @@ export function* restartOnNetworkError(saga) {
     }
   }
 }
+
+export const forkRestartingOnNetworkError = (saga) => fork(restartOnNetworkError, saga);

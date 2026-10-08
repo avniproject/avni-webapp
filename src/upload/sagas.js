@@ -1,5 +1,6 @@
 import { setStatuses, setUploadTypes, types } from "./reducers";
-import { all, call, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, put, takeLatest } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../rootApp/restartOnNetworkError";
 import api from "./api";
 
 export function* getImportJobStatusesWatcher() {
@@ -21,5 +22,5 @@ export function* getUploadTypesWorker() {
 }
 
 export default function* main() {
-  yield all([getImportJobStatusesWatcher, getUploadTypesWatcher].map(fork));
+  yield all([getImportJobStatusesWatcher, getUploadTypesWatcher].map(forkRestartingOnNetworkError));
 }

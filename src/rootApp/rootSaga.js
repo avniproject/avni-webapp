@@ -1,4 +1,4 @@
-import { all, fork } from "redux-saga/effects";
+import { all } from "redux-saga/effects";
 import dataEntrySaga from "../dataEntryApp/sagas";
 import broadcastSaga from "../news/sagas";
 import translationsSaga from "../translations/sagas";
@@ -8,7 +8,7 @@ import userGroupsSagas from "../userGroups/sagas";
 import { organisationConfigWatcher } from "../i18nTranslations/TranslationSaga";
 
 import { getAdminOrgsWatcher, logoutWatcher, onSetAuthSession, userInfoWatcher } from "./saga";
-import { restartOnNetworkError } from "./restartOnNetworkError";
+import { forkRestartingOnNetworkError } from "./restartOnNetworkError";
 
 export default function* rootSaga() {
   yield all(
@@ -24,6 +24,6 @@ export default function* rootSaga() {
       uploadSagas,
       reportSagas,
       userGroupsSagas,
-    ].map((saga) => fork(restartOnNetworkError, saga)),
+    ].map(forkRestartingOnNetworkError),
   );
 }

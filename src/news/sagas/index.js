@@ -1,10 +1,6 @@
-import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import {
-  setGenders,
-  setOperationalModules,
-  setOrganisationConfig,
-  types
-} from "../reducers/metadataReducer";
+import { all, call, put, takeLatest } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
+import { setGenders, setOperationalModules, setOrganisationConfig, types } from "../reducers/metadataReducer";
 import commonApi from "../../common/service";
 import { mapGender, mapOperationalModules } from "../../common/adapters";
 
@@ -33,7 +29,5 @@ function* getOrganisationConfigWorker() {
 }
 
 export default function* rootSaga() {
-  yield all(
-    [loadOperationalModulesWatcher, getGendersWatcher, getOrganisationConfigWatcher].map(fork)
-  );
+  yield all([loadOperationalModulesWatcher, getGendersWatcher, getOrganisationConfigWatcher].map(forkRestartingOnNetworkError));
 }
