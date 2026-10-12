@@ -27,9 +27,7 @@ const render = async (element) => {
 };
 
 const click = async (element) => {
-  await act(async () => {
-    element.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-  });
+  await act(async () => element.click());
 };
 
 beforeEach(() => {
@@ -174,5 +172,43 @@ describe("StorageManagementConfig - Remove action (Bug B)", () => {
     expect(container.textContent).toContain(
       "Database constraint error (Failed to void config)",
     );
+  });
+
+  it("disables Save and Remove buttons while a request is in flight", async () => {
+    let resolvePost;
+    http.get.mockReturnValue(
+      Promise.resolve({
+        data: { id: 1, sqlQuery: "SELECT id FROM individual" },
+      }),
+    );
+    http.post.mockReturnValue(
+      new Promise((resolve) => {
+        resolvePost = resolve;
+      }),
+    );
+
+    await render(<StorageManagementConfig />);
+
+    const saveButton = [...container.querySelectorAll("button")].find(
+      (btn) => btn.textContent.trim() === "Save",
+    );
+    const removeButton = [...container.querySelectorAll("button")].find(
+      (btn) => btn.textContent.trim() === "Remove",
+    );
+
+    expect(saveButton.disabled).toBe(false);
+    expect(removeButton.disabled).toBe(false);
+
+    await click(saveButton);
+
+    expect(saveButton.disabled).toBe(true);
+    expect(removeButton.disabled).toBe(true);
+
+    await act(async () => {
+      resolvePost({ data: { id: 1, sqlQuery: "SELECT id FROM individual" } });
+    });
+
+    expect(saveButton.disabled).toBe(false);
+    expect(removeButton.disabled).toBe(false);
   });
 });

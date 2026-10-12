@@ -24,6 +24,7 @@ export const StorageManagementConfig = () => {
     "Saved App Storage Config",
   );
   const [error, setError] = useState(null);
+  const [isPending, setIsPending] = useState(false);
   useEffect(() => {
     http.get("/web/storageManagementConfig").then((response) =>
       dispatch({
@@ -34,11 +35,13 @@ export const StorageManagementConfig = () => {
   }, []);
 
   const onSave = () => {
+    if (isPending) return;
     if (_.isEmpty(storageManagementConfigState.sqlQuery)) {
       setError({ message: "SQL Query cannot be empty" });
       setShowSnackbar(true);
       return;
     }
+    setIsPending(true);
     http
       .post("/web/storageManagementConfig", storageManagementConfigState)
       .then((response) => {
@@ -51,10 +54,15 @@ export const StorageManagementConfig = () => {
         setError(e);
         setShowSnackbar(true);
         console.log(e);
+      })
+      .finally(() => {
+        setIsPending(false);
       });
   };
 
   const onRemove = () => {
+    if (isPending) return;
+    setIsPending(true);
     http
       .post("/web/storageManagementConfig", {
         ...storageManagementConfigState,
@@ -70,6 +78,9 @@ export const StorageManagementConfig = () => {
         setError(e);
         setShowSnackbar(true);
         console.log(e);
+      })
+      .finally(() => {
+        setIsPending(false);
       });
   };
 
@@ -143,6 +154,7 @@ export const StorageManagementConfig = () => {
                   variant={"contained"}
                   color={"primary"}
                   onClick={onSave}
+                  disabled={isPending}
                 >
                   Save
                 </Button>
@@ -152,7 +164,7 @@ export const StorageManagementConfig = () => {
                   variant={"outlined"}
                   color={"error"}
                   onClick={onRemove}
-                  disabled={!hasSavedConfig}
+                  disabled={!hasSavedConfig || isPending}
                 >
                   Remove
                 </Button>
