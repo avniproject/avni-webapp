@@ -47,9 +47,11 @@ import EnableDisableButton from "./components/EnableDisableButton";
 import { httpClient as http } from "common/utils/httpClient";
 import {
   CustomToolbar,
+  addUsernameSuffix,
   doesNotStartOrEndWithWhitespaces,
   getPhoneValidator,
   isRequired,
+  normalizeWhitespace,
   UserFilter,
   UserTitle,
   validateDisplayName,
@@ -95,18 +97,13 @@ const StringToLabelObject = ({ children, ...props }) => {
 };
 
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => {
-  const addSuffixToUsername = (values) => ({
-    ...values,
-    username: values.username
-      ? `${values.username}@${userInfo.usernameSuffix}`
-      : values.username,
-  });
-
   return (
     <Paper>
       <DocumentationContainer filename={"User.md"}>
         <Create
-          transform={addSuffixToUsername}
+          transform={(values) =>
+            addUsernameSuffix(values, userInfo.usernameSuffix)
+          }
           redirect="show"
           mutationMode="pessimistic"
           {...props}
@@ -823,6 +820,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
         source="name"
         label="Name of the Person"
         validate={validateDisplayName}
+        parse={normalizeWhitespace}
         toolTipKey={"ADMIN_USER_NAME"}
       />
       <AvniTextInput
