@@ -1,7 +1,6 @@
 import {
   addUsernameSuffix,
   doesNotContainAt,
-  doesNotHaveWhitespaces,
   doesNotStartOrEndWithWhitespaces,
   normalizeWhitespace,
   validateDisplayName,
@@ -16,9 +15,11 @@ describe("admin user field validation", () => {
     expect(errorMessage(firstError(validateUserName, value))).toBe("This field should not start or end with whitespaces");
   });
 
-  test("rejects internal LoginID whitespace without normalizing it", () => {
-    expect(errorMessage(firstError(validateUserName, "john smith"))).toBe("This field should not contain whitespaces");
-    expect(normalizeWhitespace("john   smith")).toBe("john smith");
+  test("normalizes repeated internal LoginID whitespace before validation", () => {
+    const normalizedLoginId = normalizeWhitespace("john   smith");
+
+    expect(normalizedLoginId).toBe("john smith");
+    expect(firstError(validateUserName, normalizedLoginId)).toBeUndefined();
   });
 
   test("rejects @ in LoginID before the organization suffix is added", () => {
@@ -44,9 +45,8 @@ describe("admin user field validation", () => {
     expect(errorMessage(firstError(validateDisplayName, ""))).toBe("This field is required");
   });
 
-  test("doesNotContainAt and doesNotHaveWhitespaces remain independently strict", () => {
+  test("doesNotContainAt remains independently strict", () => {
     expect(errorMessage(doesNotContainAt("john@team"))).toBe("This field should not contain @");
-    expect(errorMessage(doesNotHaveWhitespaces("john smith"))).toBe("This field should not contain whitespaces");
     expect(doesNotStartOrEndWithWhitespaces("john")).toBeUndefined();
   });
 });

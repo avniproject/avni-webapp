@@ -94,7 +94,6 @@ export const normalizeWhitespace = (value) =>
 export const validateUserName = [
   isRequired,
   doesNotStartOrEndWithWhitespaces,
-  doesNotHaveWhitespaces,
   doesNotContainAt,
   minLength(4, "Username too small, enter at least 4 characters."),
 ];

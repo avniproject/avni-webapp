@@ -770,6 +770,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                   <Grid>
                     <AvniTextInput
                       source="username"
+                      parse={normalizeWhitespace}
                       validate={validateUserName}
                       label="Login ID (username)"
                       toolTipKey="ADMIN_USER_USER_NAME"
