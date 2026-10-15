@@ -106,12 +106,12 @@ const ProgramEdit = () => {
     return ProgramService.saveProgram(program, subjectType, id)
       .then((saveResponse) => {
         setErrors(saveResponse.errors);
-        if (saveResponse.errors.size === 0) {
-          setMsgError("");
-        }
+        if (saveResponse.errors.size !== 0) return;
+        setMsgError("");
+        return Promise.resolve(
+          saveMessageRules(entityType, program.programId, rules),
+        ).then(() => navigate(`/appDesigner/program/${id}/show`));
       })
-      .then(() => saveMessageRules(entityType, program.programId, rules))
-      .then(() => navigate(`/appDesigner/program/${id}/show`))
       .catch((error) => {
         !error.response?.data?.message &&
           setMsgError(getDBValidationError(error));

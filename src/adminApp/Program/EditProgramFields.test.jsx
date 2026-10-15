@@ -83,3 +83,22 @@ describe("Manual eligibility check required switch", () => {
     });
   });
 });
+
+describe("Save error", () => {
+  it("shows why the program could not be saved", async () => {
+    await act(async () =>
+      root.render(
+        <EditProgramFields
+          program={savedProgram(false)}
+          errors={new Map([["SaveProgram", "Unable to reach the server."]])}
+          subjectTypes={[]}
+          formList={[]}
+          dispatch={jest.fn()}
+          onSubjectTypeChange={jest.fn()}
+          subjectType={{}}
+        />,
+      ),
+    );
+    expect(container.textContent).toContain("Unable to reach the server.");
+  });
+});
