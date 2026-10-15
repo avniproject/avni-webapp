@@ -7,7 +7,7 @@ import Colors from "./Colors";
 
 const StyledAppBar = styled(AppBar)({
   position: "relative",
-  background: "white"
+  background: "white",
 });
 
 const StyledContainer = styled("div")({
@@ -16,7 +16,7 @@ const StyledContainer = styled("div")({
   marginTop: "50px",
   marginBottom: "50px",
   marginRight: "20%",
-  marginLeft: "20%"
+  marginLeft: "20%",
 });
 
 const StyledButtonContainer = styled("div")(({ theme }) => ({
@@ -26,7 +26,7 @@ const StyledButtonContainer = styled("div")(({ theme }) => ({
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "center",
-  gap: theme.spacing(2.5)
+  gap: theme.spacing(2.5),
 }));
 
 const StyledErrorContainer = styled("div")({
@@ -34,7 +34,7 @@ const StyledErrorContainer = styled("div")({
   backgroundColor: Colors.HighlightBackgroundColor,
   border: "2px solid #d1d2d2",
   borderRadius: 5,
-  marginTop: "10px"
+  marginTop: "10px",
 });
 
 function ErrorItem({ fieldName, fieldValue }) {
@@ -50,7 +50,7 @@ function ErrorItem({ fieldName, fieldValue }) {
   );
 }
 
-export function ErrorFallback({ error, onClose }) {
+export function ErrorFallback({ error, onClose, shouldShowAppBar = true }) {
   const [showError, setShowError] = useState(false);
 
   const closeDialogIfRequired = () => {
@@ -79,13 +79,15 @@ export function ErrorFallback({ error, onClose }) {
 
   return (
     <>
-      <StyledAppBar>
-        <Toolbar>
-          <Typography variant="h6" sx={{ whiteSpace: "nowrap" }}>
-            <img src={logo} alt="logo" />
-          </Typography>
-        </Toolbar>
-      </StyledAppBar>
+      {shouldShowAppBar && (
+        <StyledAppBar>
+          <Toolbar>
+            <Typography variant="h6" sx={{ whiteSpace: "nowrap" }}>
+              <img src={logo} alt="logo" />
+            </Typography>
+          </Toolbar>
+        </StyledAppBar>
+      )}
       <StyledContainer>
         <Typography variant="h1" sx={{ mb: 1 }}>
           oops!
@@ -105,8 +107,8 @@ export function ErrorFallback({ error, onClose }) {
               navigator.clipboard.writeText(
                 `Message: ${_.get(error, "message")}\n\nStack: ${_.get(
                   error,
-                  "stack"
-                )}\n\nSaga Stack: ${_.get(error, "sagaStack")}`
+                  "stack",
+                )}\n\nSaga Stack: ${_.get(error, "sagaStack")}`,
               )
             }
             variant="contained"

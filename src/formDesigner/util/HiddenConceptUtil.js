@@ -14,8 +14,8 @@ const parsedValue = (value) => {
   }
 };
 
-// Only a parsed boolean true hides, as in openchs-models Concept.isHidden(), so the tickbox
-// shows ticked exactly when the field app hides the value.
+// Only a parsed boolean true hides, as in openchs-models Concept.isHidden(), so the switch
+// shows on exactly when the field app hides the value.
 export const isHiddenKeyValues = (keyValues) => {
   const keyValue = findKeyValue(keyValues, HIDDEN_KEY);
   return keyValue !== undefined && parsedValue(keyValue.value) === true;

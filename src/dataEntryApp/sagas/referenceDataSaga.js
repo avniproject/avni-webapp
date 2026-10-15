@@ -4,9 +4,10 @@ import {
   setOrganisationConfig,
   setLegacyRulesBundle,
   setLegacyRules,
-  types
+  types,
 } from "dataEntryApp/reducers/metadataReducer";
-import { all, call, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, put, takeLatest } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
 import api from "../api";
 import commonApi from "../../common/service";
 import { mapGender, mapOperationalModules } from "../../common/adapters";
@@ -66,7 +67,7 @@ export default function* referenceDataSaga() {
       getGendersWatcher,
       getOrganisationConfigWatcher,
       legacyRulesBundleWatcher,
-      legacyRulesWatcher
-    ].map(fork)
+      legacyRulesWatcher,
+    ].map(forkRestartingOnNetworkError),
   );
 }

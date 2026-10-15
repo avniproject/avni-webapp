@@ -13,6 +13,8 @@
 // calendar-specific and it is used from the form designer as well. Named for the server rather than
 // matching ErrorMessageUtil beside it, which is a different job - that one shapes unhandled window
 // and promise rejections and never reads a response body.
+import { isNetworkError, NETWORK_ERROR_MESSAGE } from "./networkError";
+
 const EXCEPTION_FQCN_PREFIX = /^[\w.$]+(Exception|Error):\s*/;
 const STACK_FRAME_BOUNDARY = /\n|\s+at\s+[\w.$]+/;
 
@@ -34,5 +36,6 @@ export function messageFromServerErrorBody(data, fallback) {
 
 /** For callers holding the rejected axios error, which is most of them. */
 export function extractServerErrorMessage(err, fallback) {
+  if (isNetworkError(err)) return NETWORK_ERROR_MESSAGE;
   return messageFromServerErrorBody(err?.response?.data, err?.message || fallback);
 }

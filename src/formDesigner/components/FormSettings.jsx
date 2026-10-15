@@ -36,7 +36,10 @@ import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
 // This screen keeps the untouched response body so Copy to clipboard can offer it, so it wants the
 // body-taking form rather than the one that reaches into an axios error.
-import { messageFromServerErrorBody } from "../../common/utils/serverErrorMessage";
+import {
+  extractServerErrorMessage,
+  messageFromServerErrorBody,
+} from "../../common/utils/serverErrorMessage";
 
 const FormSettings = () => {
   const { id } = useParams();
@@ -221,7 +224,7 @@ const FormSettings = () => {
             errorMsg: "",
           }));
         } catch (error) {
-          if (error.response.status === 404) {
+          if (error.response?.status === 404) {
             setState((prev) => ({
               ...prev,
               showUpdateAlert: true,
@@ -231,7 +234,9 @@ const FormSettings = () => {
           } else {
             setState((prev) => ({
               ...prev,
-              errorMsg: error.response.data,
+              errorMsg: error.response
+                ? error.response.data
+                : extractServerErrorMessage(error, ""),
               showUpdateAlert: false,
             }));
           }

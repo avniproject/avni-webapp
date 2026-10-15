@@ -1,4 +1,5 @@
-import { all, call, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, put, takeLatest } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../rootApp/restartOnNetworkError";
 import { setOperationalModules, setUploadStatus, types } from "./reducers";
 import api from "./api";
 import { mapOperationalModules } from "../common/adapters";
@@ -22,5 +23,5 @@ export function* getExportJobStatusesWorker({ page }) {
 }
 
 export default function* onLoadSaga() {
-  yield all([onLoadWatcher, getExportJobStatusesWatcher].map(fork));
+  yield all([onLoadWatcher, getExportJobStatusesWatcher].map(forkRestartingOnNetworkError));
 }

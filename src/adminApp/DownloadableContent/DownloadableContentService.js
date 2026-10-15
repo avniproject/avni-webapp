@@ -86,7 +86,7 @@ export const validateGuidancePayloadShape = (payload) => {
     problems.push("site name (a non-empty string)");
   }
   if (!Object.values(GuidanceKind).includes(payload.kind)) {
-    problems.push(`picture type (one of ${Object.values(GuidanceKind).join(", ")})`);
+    problems.push(`picture type (${Object.values(GUIDANCE_KIND_LABELS).join(" or ")})`);
   }
   if (problems.length === 0) return null;
   return `Guidance details are missing or invalid: ${problems.join(", ")}.`;
@@ -107,6 +107,23 @@ export const findDuplicateGuidance = (existingContents, { uuid, category, payloa
   );
 };
 
+// Fetched when the admin saves rather than when the screen opened, so a picture saved meanwhile from another screen
+// still counts. A failed fetch returns null and skips this early check; the server refuses the duplicate as well.
+export const fetchContentsForDuplicateCheck = (category) =>
+  category === Category.guidanceImage ? DownloadableContentService.getAll().catch(() => null) : Promise.resolve(null);
+
+// PNG and JPEG files start with these bytes, whatever they are named.
+const IMAGE_SIGNATURES = Object.freeze([
+  [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+  [0xff, 0xd8, 0xff],
+]);
+
+// A file named like a picture that is not one would sync and pass the phone's checksum, then never show.
+export const hasImageContent = async (file) => {
+  const bytes = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+  return IMAGE_SIGNATURES.some((signature) => signature.every((byte, index) => bytes[index] === byte));
+};
+
 // Computed from the file, so an authored-wrong checksum cannot happen. Unencrypted content only.
 export const computeFileSha256 = async (file, subtle = globalThis.crypto && globalThis.crypto.subtle) => {
   if (!subtle) throw new Error("This browser cannot compute a SHA-256 (crypto.subtle unavailable)");
@@ -118,13 +135,30 @@ export const computeFileSha256 = async (file, subtle = globalThis.crypto && glob
 
 export const validateContent = (
   { uuid = null, name, category, sha256, payloadText, needsKey, blobExtension },
-  { editing = false, hasFile = false, hasKey = false, originalSha256 = null, existingContents = null } = {},
+  { editing = false, hasFile = false, hasKey = false, originalSha256 = null, existingContents = null, imageContentOk = null } = {},
 ) => {
   const errors = [];
   if (name == null || name.trim() === "") {
     errors.push({ key: "EMPTY_NAME", message: "Name cannot be empty" });
   }
-  if (!isValidSha256(sha256)) {
+  if (isUnencryptedCategory(category)) {
+    // A picture's checksum is worked out from the chosen file, and a new picture needs the file itself: a checksum
+    // left behind by a file chosen and then cancelled would save a record whose picture was never uploaded.
+    if (!isValidSha256(sha256) || (!editing && !hasFile)) {
+      errors.push({ key: "MISSING_IMAGE", message: "Choose an image file" });
+    } else if (!IMAGE_EXTENSIONS.includes(blobExtension)) {
+      // Caught here rather than on upload, where the server would reject it anyway.
+      errors.push({
+        key: "INVALID_IMAGE_TYPE",
+        message: `Choose a ${IMAGE_EXTENSIONS.join(", ")} image.`,
+      });
+    } else if (hasFile && imageContentOk === false) {
+      errors.push({
+        key: "INVALID_IMAGE_CONTENT",
+        message: "This file is not a PNG or JPEG picture",
+      });
+    }
+  } else if (!isValidSha256(sha256)) {
     errors.push({
       key: "INVALID_SHA256",
       message: "SHA-256 must be 64 lowercase hex characters",
@@ -151,14 +185,6 @@ export const validateContent = (
         });
       }
     }
-  }
-
-  // Caught here rather than on upload, where the server would reject it anyway.
-  if (category === Category.guidanceImage && !IMAGE_EXTENSIONS.includes(blobExtension)) {
-    errors.push({
-      key: "INVALID_IMAGE_TYPE",
-      message: `Choose a ${IMAGE_EXTENSIONS.join(", ")} image.`,
-    });
   }
 
   const trimmedSha = typeof sha256 === "string" ? sha256.trim() : sha256;

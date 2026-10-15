@@ -9,7 +9,7 @@ import {
   Typography,
   IconButton,
   Box,
-  Button
+  Button,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import ErrorMessage from "../../common/components/ErrorMessage";
@@ -20,12 +20,12 @@ export default function AddEditContactGroup({ onClose, onSave, contactGroup }) {
   const onCloseHandler = () => onClose();
   const [label, setLabel] = useState(contactGroup ? contactGroup.label : "");
   const [description, setDescription] = useState(
-    contactGroup ? contactGroup.description : ""
+    contactGroup ? contactGroup.description : "",
   );
   const [error, setError] = useState(null);
   const [displayProgress, setDisplayProgress] = useState(false);
 
-  const onNameEdit = useCallback(e => {
+  const onNameEdit = useCallback((e) => {
     setLabel(e.target.value);
     setError(null);
   }, []);
@@ -42,12 +42,12 @@ export default function AddEditContactGroup({ onClose, onSave, contactGroup }) {
         setDisplayProgress(false);
         onSave();
       })
-      .catch(error => {
-        if (error.response.statusText === "Conflict")
+      .catch((error) => {
+        if (error.response?.statusText === "Conflict")
           setError(
             new Error(
-              "Another contact group with the same name already exists."
-            )
+              "Another contact group with the same name already exists.",
+            ),
           );
         else setError(error);
         setDisplayProgress(false);
@@ -95,7 +95,7 @@ export default function AddEditContactGroup({ onClose, onSave, contactGroup }) {
             multiline
             value={description}
             style={{ width: "100%" }}
-            onChange={e => setDescription(e.target.value)}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </Box>
         {displayProgress && <LinearProgress style={{ marginTop: 40 }} />}
@@ -103,7 +103,7 @@ export default function AddEditContactGroup({ onClose, onSave, contactGroup }) {
           style={{
             marginTop: 40,
             display: "flex",
-            flexDirection: "row-reverse"
+            flexDirection: "row-reverse",
           }}
         >
           <Button color="primary" variant="contained" onClick={onSaveClick}>

@@ -2,16 +2,19 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import {
   HIDDEN_MANDATORY_REASON,
-  HiddenConceptCheckbox,
+  HiddenConceptSwitch,
   HiddenQuestionMarker,
 } from "./HiddenConcept";
 import { MandatoryCheckbox } from "./MandatoryCheckbox";
 import { ToolTip } from "../../common/components/ToolTip";
 
 // The real ToolTip imports react-markdown, an ES module Jest here cannot load, and fetches its
-// text on mount. Stubbed so the test can still check which tooltip key a control asks for.
+// text on mount. Stubbed with an empty marker so the test can still check which tooltip key a
+// control asks for, and where its help button sits.
 jest.mock("../../common/components/ToolTip", () => ({
-  ToolTip: jest.fn(() => null),
+  ToolTip: jest.fn(() =>
+    require("react").createElement("span", { "data-help-button": "" }),
+  ),
 }));
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
@@ -35,39 +38,51 @@ afterEach(async () => {
   container.remove();
 });
 
-describe("HiddenConceptCheckbox", () => {
+describe("HiddenConceptSwitch", () => {
   it("is labelled Hidden and explains what hiding does", async () => {
-    await render(
-      <HiddenConceptCheckbox checked={false} onChange={jest.fn()} />,
-    );
+    await render(<HiddenConceptSwitch checked={false} onChange={jest.fn()} />);
     expect(container.textContent).toContain("Hidden");
     expect(container.textContent).toContain(
       "Values recorded for this concept are saved and reach reporting, but are never shown in the app.",
     );
   });
 
-  it("asks for the tooltip that explains hiding", async () => {
-    await render(
-      <HiddenConceptCheckbox checked={false} onChange={jest.fn()} />,
+  it("is a switch, not a tickbox", async () => {
+    await render(<HiddenConceptSwitch checked={false} onChange={jest.fn()} />);
+    expect(container.querySelector("input#hidden").getAttribute("role")).toBe(
+      "switch",
     );
+  });
+
+  it("asks for the tooltip that explains hiding", async () => {
+    await render(<HiddenConceptSwitch checked={false} onChange={jest.fn()} />);
     expect(ToolTip).toHaveBeenCalledWith(
       expect.objectContaining({ toolTipKey: "APP_DESIGNER_CONCEPT_HIDDEN" }),
       expect.anything(),
     );
   });
 
+  it("keeps its help button beside the switch, with the explanation below that row", async () => {
+    await render(<HiddenConceptSwitch checked={false} onChange={jest.fn()} />);
+    // ToolTipContainer draws one flex row: the control, then the help button.
+    const row =
+      container.querySelector("[data-help-button]").parentElement.parentElement;
+    expect(row.contains(container.querySelector("input#hidden"))).toBe(true);
+    expect(row.textContent).not.toContain("Values recorded for this concept");
+  });
+
   it("shows the stored state", async () => {
-    await render(<HiddenConceptCheckbox checked={true} onChange={jest.fn()} />);
+    await render(<HiddenConceptSwitch checked={true} onChange={jest.fn()} />);
     expect(container.querySelector("input#hidden").checked).toBe(true);
   });
 
-  it("reports ticking and unticking", async () => {
+  it("reports switching on and off", async () => {
     const onChange = jest.fn();
-    await render(<HiddenConceptCheckbox checked={false} onChange={onChange} />);
+    await render(<HiddenConceptSwitch checked={false} onChange={onChange} />);
     await act(async () => container.querySelector("input#hidden").click());
     expect(onChange).toHaveBeenLastCalledWith(true);
 
-    await render(<HiddenConceptCheckbox checked={true} onChange={onChange} />);
+    await render(<HiddenConceptSwitch checked={true} onChange={onChange} />);
     await act(async () => container.querySelector("input#hidden").click());
     expect(onChange).toHaveBeenLastCalledWith(false);
   });

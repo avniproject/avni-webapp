@@ -1,5 +1,6 @@
 import { ObservationsHolder, ProgramEnrolment } from "avni-models";
-import { all, call, fork, put, select, takeEvery, takeLatest } from "redux-saga/effects";
+import { all, call, put, select, takeEvery, takeLatest } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
 import api from "../api";
 import { selectEnrolmentFormMappingForSubjectType, selectProgram, selectProgramEnrolment } from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
@@ -314,6 +315,6 @@ export default function* enrolmentSaga() {
       enrolmentPreviousWatcher,
       updateExitEnrolmentObsWatcher,
       undoExitProgramEnrolmentWatcher,
-    ].map(fork),
+    ].map(forkRestartingOnNetworkError),
   );
 }

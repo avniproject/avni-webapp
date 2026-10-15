@@ -24,7 +24,7 @@ import {
 } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { useSelector } from "react-redux";
-import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
+import { showSaveError } from "../service/showSaveError";
 
 const EncounterTypeEdit = () => {
   const { id } = useParams();
@@ -295,9 +295,7 @@ const EncounterTypeEdit = () => {
       .then(() => setRedirectShow(true))
       .catch((error) => {
         console.error("Failed to save encounter type:", error);
-        error.response.data.message
-          ? setError(error.response.data.message)
-          : setMsgError(getDBValidationError(error));
+        showSaveError(error, { setError, setMsgError });
       });
   };
 

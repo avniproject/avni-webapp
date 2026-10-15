@@ -1,10 +1,11 @@
-import { all, call, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, put, takeLatest } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
 import { types, setPrograms } from "../reducers/programReducer";
 import api from "../api";
 import { setLoad } from "../reducers/loadReducer";
 
-export default function*() {
-  yield all([programFetchWatcher].map(fork));
+export default function* () {
+  yield all([programFetchWatcher].map(forkRestartingOnNetworkError));
 }
 
 export function* programFetchWatcher() {

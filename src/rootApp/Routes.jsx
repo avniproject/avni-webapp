@@ -1,6 +1,14 @@
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
 import { useSelector, useDispatch } from "react-redux";
 import { AccessDenied } from "../common/components/utils";
+import { ErrorFallback } from "../dataEntryApp/ErrorFallback";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
@@ -25,9 +33,23 @@ import { Privilege } from "openchs-models";
 import { usePostHog } from "posthog-js/react";
 import _ from "lodash";
 
+const RouteErrorFallback = ({ error, resetErrorBoundary }) => (
+  <ErrorFallback
+    error={error}
+    onClose={resetErrorBoundary}
+    shouldShowAppBar={false}
+  />
+);
+
 const RestrictedRoute = ({ element, requiredPrivileges = [], userInfo }) => {
+  const location = useLocation();
   return CurrentUserService.isAllowedToAccess(userInfo, requiredPrivileges) ? (
-    element
+    <ErrorBoundary
+      FallbackComponent={RouteErrorFallback}
+      resetKeys={[location.pathname]}
+    >
+      {element}
+    </ErrorBoundary>
   ) : (
     <AccessDenied />
   );

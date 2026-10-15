@@ -21,7 +21,10 @@ import ErrorMessageUtil from "./common/utils/ErrorMessageUtil";
 import { handleStorageMigration } from "./common/utils/storageMigration";
 import { usePostHog } from "posthog-js/react";
 import ApplicationContext from "./ApplicationContext";
-import { initGenericConfig } from "./rootApp/ducks";
+import { initGenericConfig, selectIsAppInitialised } from "./rootApp/ducks";
+import { isNetworkError } from "./common/utils/networkError";
+import { networkErrorNotifier } from "./common/utils/networkErrorNotifier";
+import { NetworkErrorSnackbar } from "./common/components/NetworkErrorSnackbar";
 
 const theme = createTheme({
   palette: {
@@ -137,6 +140,15 @@ const MainApp = () => {
   }, []);
 
   window.onunhandledrejection = function (error) {
+    if (
+      selectIsAppInitialised(store.getState()) &&
+      isNetworkError(error.reason)
+    ) {
+      error.preventDefault();
+      console.warn("Network failure, keeping the page", error.reason);
+      networkErrorNotifier.notify();
+      return;
+    }
     const unhandledError = ErrorMessageUtil.fromWindowUnhandledError(
       error,
       (x) => setUnhandledError(x),
@@ -154,6 +166,7 @@ const MainApp = () => {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
+        <NetworkErrorSnackbar />
         {!unhandledRejectionError && (
           <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
             <Provider store={store}>

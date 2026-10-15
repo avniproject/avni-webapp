@@ -22,7 +22,7 @@ import {
   saveMessageRules,
 } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
+import { showSaveError } from "../service/showSaveError";
 import { SubjectTypeType } from "./Types";
 import {
   isAttendanceConfigIncompleteError,
@@ -194,9 +194,7 @@ const SubjectTypeEdit = () => {
               });
               return;
             }
-            error.response.data.message
-              ? setError(error.response.data.message)
-              : setMsgError(getDBValidationError(error));
+            showSaveError(error, { setError, setMsgError });
           });
 
       return subjectTypeSavePromise();
