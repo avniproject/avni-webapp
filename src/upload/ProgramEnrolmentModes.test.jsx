@@ -5,8 +5,10 @@ import ProgramEnrolmentModes, {
 } from "./ProgramEnrolmentModes";
 import en from "../../translations/en.json";
 
+// Translations come from the server and may not be uploaded yet, so i18next falls back to the default text.
+const mockT = jest.fn((key, defaultValue) => defaultValue ?? key);
 jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key) => key }),
+  useTranslation: () => ({ t: mockT }),
 }));
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
@@ -49,14 +51,27 @@ it("offers the three program enrolment upload modes the server accepts", async (
   ]);
 });
 
-it("labels each mode through a translation key", async () => {
+it("labels each mode through a translation key, in English when no translation is loaded", async () => {
   await render(PROGRAM_ENROLMENT_MODES.UPLOAD);
 
-  expect(labelOf("upload_enrolments")).toBe("uploadEnrolments");
+  expect(labelOf("upload_enrolments")).toBe("Upload enrolments");
   expect(labelOf("upload_exited_enrolments")).toBe(
-    "uploadHistoricalExitedEnrolments",
+    "Upload historical exited enrolments",
   );
-  expect(labelOf("exit_enrolments")).toBe("exitEnrolments");
+  expect(labelOf("exit_enrolments")).toBe("Exit enrolments");
+  expect(container.querySelector("legend").textContent).toBe(
+    "Select Enrolment Mode",
+  );
+});
+
+it("gives every translation key the same English default as en.json", async () => {
+  await render(PROGRAM_ENROLMENT_MODES.UPLOAD);
+
+  const keys = new Set(mockT.mock.calls.map(([key]) => key));
+  expect(keys.size).toBe(7);
+  mockT.mock.calls.forEach(([key, defaultValue]) =>
+    expect(defaultValue).toBe(en.translations[key]),
+  );
 });
 
 it("picks exit enrolments", async () => {

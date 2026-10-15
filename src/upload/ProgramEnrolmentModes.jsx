@@ -31,7 +31,9 @@ const ProgramEnrolmentModes = ({
 
   return (
     <StyledFormControl component="fieldset">
-      <FormLabel component="legend">{t("selectEnrolmentMode")}</FormLabel>
+      <FormLabel component="legend">
+        {t("selectEnrolmentMode", "Select Enrolment Mode")}
+      </FormLabel>
       <RadioGroup
         row
         aria-label="program-enrolment-mode"
@@ -40,36 +42,48 @@ const ProgramEnrolmentModes = ({
         onChange={handleChange}
       >
         <Tooltip
-          title={t("uploadEnrolmentsTooltip")}
+          title={t(
+            "uploadEnrolmentsTooltip",
+            "Upload program enrolments in their active state (default)",
+          )}
           placement="bottom-start"
           arrow
         >
           <FormControlLabel
             value={PROGRAM_ENROLMENT_MODES.UPLOAD}
             control={<Radio color="primary" />}
-            label={t("uploadEnrolments")}
+            label={t("uploadEnrolments", "Upload enrolments")}
           />
         </Tooltip>
         <Tooltip
-          title={t("uploadHistoricalExitedEnrolmentsTooltip")}
+          title={t(
+            "uploadHistoricalExitedEnrolmentsTooltip",
+            "Upload enrolments that began and ended in the source organisation; one row carries both enrolment and exit observations",
+          )}
           placement="bottom-start"
           arrow
         >
           <FormControlLabel
             value={PROGRAM_ENROLMENT_MODES.UPLOAD_EXITED}
             control={<Radio color="primary" />}
-            label={t("uploadHistoricalExitedEnrolments")}
+            label={t(
+              "uploadHistoricalExitedEnrolments",
+              "Upload historical exited enrolments",
+            )}
           />
         </Tooltip>
         <Tooltip
-          title={t("exitEnrolmentsTooltip")}
+          title={t(
+            "exitEnrolmentsTooltip",
+            "Exit enrolments that are already in Avni; each row names the enrolment by its Program Enrolment Id",
+          )}
           placement="bottom-start"
           arrow
         >
           <FormControlLabel
             value={PROGRAM_ENROLMENT_MODES.EXIT_ENROLMENTS}
             control={<Radio color="primary" />}
-            label={t("exitEnrolments")}
+            label={t("exitEnrolments", "Exit enrolments")}
           />
         </Tooltip>
       </RadioGroup>
