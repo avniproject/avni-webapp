@@ -1,5 +1,6 @@
 import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 import {
   FormControl,
   FormLabel,
@@ -11,7 +12,8 @@ import {
 
 export const PROGRAM_ENROLMENT_MODES = {
   UPLOAD: "upload_enrolments",
-  EXIT: "upload_exited_enrolments",
+  UPLOAD_EXITED: "upload_exited_enrolments",
+  EXIT_ENROLMENTS: "exit_enrolments",
 };
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
@@ -22,13 +24,16 @@ const ProgramEnrolmentModes = ({
   mode = PROGRAM_ENROLMENT_MODES.UPLOAD,
   setMode,
 }) => {
+  const { t } = useTranslation();
   const handleChange = (event) => {
     setMode(event.target.value);
   };
 
   return (
     <StyledFormControl component="fieldset">
-      <FormLabel component="legend">Select Enrolment Mode</FormLabel>
+      <FormLabel component="legend">
+        {t("selectEnrolmentMode", "Select Enrolment Mode")}
+      </FormLabel>
       <RadioGroup
         row
         aria-label="program-enrolment-mode"
@@ -37,25 +42,48 @@ const ProgramEnrolmentModes = ({
         onChange={handleChange}
       >
         <Tooltip
-          title="Upload program enrolments in their active state (default)"
+          title={t(
+            "uploadEnrolmentsTooltip",
+            "Upload program enrolments in their active state (default)",
+          )}
           placement="bottom-start"
           arrow
         >
           <FormControlLabel
             value={PROGRAM_ENROLMENT_MODES.UPLOAD}
             control={<Radio color="primary" />}
-            label="Upload enrolments"
+            label={t("uploadEnrolments", "Upload enrolments")}
           />
         </Tooltip>
         <Tooltip
-          title="Upload enrolments that began and ended in the source organisation; one row carries both enrolment and exit observations"
+          title={t(
+            "uploadHistoricalExitedEnrolmentsTooltip",
+            "Upload enrolments that began and ended in the source organisation; one row carries both enrolment and exit observations",
+          )}
           placement="bottom-start"
           arrow
         >
           <FormControlLabel
-            value={PROGRAM_ENROLMENT_MODES.EXIT}
+            value={PROGRAM_ENROLMENT_MODES.UPLOAD_EXITED}
             control={<Radio color="primary" />}
-            label="Upload exited enrolments"
+            label={t(
+              "uploadHistoricalExitedEnrolments",
+              "Upload historical exited enrolments",
+            )}
+          />
+        </Tooltip>
+        <Tooltip
+          title={t(
+            "exitEnrolmentsTooltip",
+            "Exit enrolments that are already in Avni; each row names the enrolment by its Program Enrolment Id",
+          )}
+          placement="bottom-start"
+          arrow
+        >
+          <FormControlLabel
+            value={PROGRAM_ENROLMENT_MODES.EXIT_ENROLMENTS}
+            control={<Radio color="primary" />}
+            label={t("exitEnrolments", "Exit enrolments")}
           />
         </Tooltip>
       </RadioGroup>

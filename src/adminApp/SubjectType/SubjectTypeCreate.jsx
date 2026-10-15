@@ -19,7 +19,7 @@ import {
 } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { useSelector } from "react-redux";
-import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
+import { showSaveError } from "../service/showSaveError";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import {
   isAttendanceConfigIncompleteError,
@@ -133,9 +133,7 @@ const SubjectTypeCreate = () => {
               });
               return;
             }
-            error.response?.data?.message
-              ? setError(error.response.data.message)
-              : setMsgError(getDBValidationError(error));
+            showSaveError(error, { setError, setMsgError });
           });
       return subjectTypeSavePromise();
     }

@@ -57,9 +57,16 @@ describe("isNetworkError", () => {
     assert.isFalse(isNetworkError(new Error("boom")));
   });
 
-  it("is true for any error while the browser reports it is offline", () => {
+  it("is false for a bug in our code even while the browser reports it is offline, so the error page still shows", () => {
     setOnLine(false);
-    assert.isTrue(isNetworkError(new TypeError("Cannot read properties of undefined (reading 'data')")));
+    assert.isFalse(isNetworkError(new Error("boom")));
+    assert.isFalse(isNetworkError(new TypeError("Cannot read properties of undefined (reading 'data')")));
+  });
+
+  it("is true for a request that failed while the browser reports it is offline", () => {
+    setOnLine(false);
+    assert.isTrue(isNetworkError(new AxiosError("Network Error", AxiosError.ERR_NETWORK)));
+    assert.isTrue(isNetworkError(new TypeError("Failed to fetch")));
   });
 
   it("is false for nothing at all", () => {

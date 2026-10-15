@@ -259,6 +259,11 @@ const EditProgramFields = (props) => {
           }
         />
       )}
+      {!_.isNil(errors.get("SaveProgram")) && (
+        <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+          {errors.get("SaveProgram")}
+        </FormLabel>
+      )}
     </>
   );
 };
