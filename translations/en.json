@@ -472,6 +472,13 @@
     "selectAllLabel": "Select All",
     "unselectAllLabel": "Unselect All",
     "alreadyEnrolledInProgram": "Already enrolled in {{programName}}",
-    "invalidDate": "Invalid Date"
+    "invalidDate": "Invalid Date",
+    "selectEnrolmentMode": "Select Enrolment Mode",
+    "uploadEnrolments": "Upload enrolments",
+    "uploadEnrolmentsTooltip": "Upload program enrolments in their active state (default)",
+    "uploadHistoricalExitedEnrolments": "Upload historical exited enrolments",
+    "uploadHistoricalExitedEnrolmentsTooltip": "Upload enrolments that began and ended in the source organisation; one row carries both enrolment and exit observations",
+    "exitEnrolments": "Exit enrolments",
+    "exitEnrolmentsTooltip": "Exit enrolments that are already in Avni; each row names the enrolment by its Program Enrolment Id"
   }
 }
