@@ -17,49 +17,91 @@ const initialState = {
 export const StorageManagementConfig = () => {
   const [storageManagementConfigState, dispatch] = useReducer(
     StorageManagementConfigReducer,
-    initialState
+    initialState,
   );
   const [showSnackbar, setShowSnackbar] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(
+    "Saved App Storage Config",
+  );
   const [error, setError] = useState(null);
+  const [isPending, setIsPending] = useState(false);
   useEffect(() => {
-    http.get("/web/storageManagementConfig").then(response =>
+    http.get("/web/storageManagementConfig").then((response) =>
       dispatch({
         type: "storageManagementConfig",
-        payload: response.data || initialState
-      })
+        payload: response.data || initialState,
+      }),
     );
   }, []);
 
   const onSave = () => {
+    if (isPending) return;
     if (_.isEmpty(storageManagementConfigState.sqlQuery)) {
       setError({ message: "SQL Query cannot be empty" });
       setShowSnackbar(true);
       return;
     }
+    setIsPending(true);
     http
       .post("/web/storageManagementConfig", storageManagementConfigState)
-      .then(response => {
+      .then((response) => {
         dispatch({ type: "storageManagementConfig", payload: response.data });
         setError(null);
+        setSuccessMessage("Saved App Storage Config");
         setShowSnackbar(true);
       })
-      .catch(e => {
+      .catch((e) => {
         setError(e);
         setShowSnackbar(true);
         console.log(e);
+      })
+      .finally(() => {
+        setIsPending(false);
       });
   };
 
-  const errorMessage = `${_.get(error, "response.data")} (${_.get(
-    error,
-    "message"
-  )})`;
+  const onRemove = () => {
+    if (isPending) return;
+    setIsPending(true);
+    http
+      .post("/web/storageManagementConfig", {
+        ...storageManagementConfigState,
+        isVoided: true,
+      })
+      .then(() => {
+        dispatch({ type: "reset" });
+        setError(null);
+        setSuccessMessage("Removed App Storage Config");
+        setShowSnackbar(true);
+      })
+      .catch((e) => {
+        setError(e);
+        setShowSnackbar(true);
+        console.log(e);
+      })
+      .finally(() => {
+        setIsPending(false);
+      });
+  };
+
+  const hasSavedConfig = Boolean(
+    (storageManagementConfigState.id || storageManagementConfigState.uuid) &&
+      !storageManagementConfigState.isVoided &&
+      !storageManagementConfigState.voided,
+  );
+
+  const responseData =
+    typeof _.get(error, "response.data") === "string"
+      ? _.get(error, "response.data")
+      : _.get(error, "response.data.message");
+  const message = _.get(error, "message");
+  const errorMessage = responseData ? `${responseData} (${message})` : message;
   return (
     <Box
       sx={{
         boxShadow: 2,
         p: 5,
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <Title title="App Storage Config" />
@@ -77,14 +119,14 @@ export const StorageManagementConfig = () => {
               <Input
                 type="text"
                 name="sqlQuery"
-                value={storageManagementConfigState.sqlQuery}
+                value={storageManagementConfigState.sqlQuery || ""}
                 placeholder={"SQL Query"}
                 style={{ width: "100%" }}
                 multiline
-                onChange={event =>
+                onChange={(event) =>
                   dispatch({
                     type: "sqlQuery",
-                    payload: { value: event.target.value }
+                    payload: { value: event.target.value },
                   })
                 }
               />
@@ -106,19 +148,36 @@ export const StorageManagementConfig = () => {
             {/*           dispatch({type: "batchSize", payload: {value: event.target.value}})*/}
             {/*         }/>*/}
             {/*</Grid>*/}
-            <Grid>
-              <Button variant={"contained"} color={"primary"} onClick={onSave}>
-                Save
-              </Button>
+            <Grid container direction={"row"} spacing={2}>
+              <Grid>
+                <Button
+                  variant={"contained"}
+                  color={"primary"}
+                  onClick={onSave}
+                  disabled={isPending}
+                >
+                  Save
+                </Button>
+              </Grid>
+              <Grid>
+                <Button
+                  variant={"outlined"}
+                  color={"error"}
+                  onClick={onRemove}
+                  disabled={!hasSavedConfig || isPending}
+                >
+                  Remove
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </div>
       </DocumentationContainer>
       {showSnackbar && (
         <CustomizedSnackbar
-          getDefaultSnackbarStatus={status => setShowSnackbar(status)}
+          getDefaultSnackbarStatus={(status) => setShowSnackbar(status)}
           variant={!_.isNil(error) ? "error" : "success"}
-          message={!_.isNil(error) ? errorMessage : "Saved App Storage Config"}
+          message={!_.isNil(error) ? errorMessage : successMessage}
         />
       )}
     </Box>
