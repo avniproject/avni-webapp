@@ -947,11 +947,6 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
           }
         />
         <AvniBooleanInput
-          source="settings.showBeneficiaryMode"
-          label="Beneficiary mode"
-          toolTipKey={"ADMIN_USER_SETTINGS_BENEFICIARY_MODE"}
-        />
-        <AvniBooleanInput
           source="settings.disableAutoRefresh"
           label="Disable dashboard auto refresh"
           toolTipKey={"ADMIN_USER_SETTINGS_DISABLE_AUTO_REFRESH"}
@@ -1022,3 +1017,4 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
     </SimpleForm>
   );
 };
+
