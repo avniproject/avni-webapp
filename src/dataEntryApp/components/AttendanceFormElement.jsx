@@ -11,6 +11,7 @@ import {
   FormHelperText,
   Grid,
   Link,
+  TextField,
 } from "@mui/material";
 import {
   mapGroupMembers,
@@ -48,8 +49,10 @@ const AttendanceFormElement = ({
     get(state, "dataEntry.subjectProfile.subjectProfile.uuid"),
   );
   const [fetchedMembers, setFetchedMembers] = useState([]);
-  const { mandatory, name, answersToShow } = formElement;
+  const { mandatory, name, answersToShow, type } = formElement;
+  const isMultiSelect = type === "MultiSelect";
   const [isSelectAll, setSelectAll] = useState(false);
+  const [searchText, setSearchText] = useState("");
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
@@ -72,12 +75,20 @@ const AttendanceFormElement = ({
       ? fetchedMembers.filter((memberSubject) => isAllowed(memberSubject.uuid))
       : fetchedMembers;
     const validSubjects = applicable.filter((s) => s && s.nameString);
-    return sortBy(validSubjects, (s) => s.nameString);
+    return sortBy(validSubjects, (s) => s.nameString.toLowerCase());
   }, [fetchedMembers, isAllowed, displayAllGroupMembers]);
   const memberUUIDs = useMemo(
     () => memberSubjects.map(({ uuid }) => uuid),
     [memberSubjects],
   );
+  const visibleMembers = useMemo(() => {
+    const searchTextLowerCase = searchText.trim().toLowerCase();
+    return searchTextLowerCase
+      ? memberSubjects.filter((s) =>
+          s.nameString.toLowerCase().includes(searchTextLowerCase),
+        )
+      : memberSubjects;
+  }, [memberSubjects, searchText]);
   const selectLabel = isSelectAll ? t("unselectAllLabel") : t("selectAllLabel");
 
   useEffect(() => {
@@ -145,8 +156,18 @@ const AttendanceFormElement = ({
         <Grid>
           <FormLabel component="legend">{label}</FormLabel>
         </Grid>
-        <Grid />
-        {memberSubjects.length > 0 && (
+        <Grid>
+          <TextField
+            type="text"
+            size="small"
+            autoComplete="off"
+            placeholder={t("search")}
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+            style={{ width: "100%" }}
+          />
+        </Grid>
+        {isMultiSelect && memberSubjects.length > 0 && (
           <StyledSelectAllGrid container>
             <Link
               underline="hover"
@@ -162,8 +183,8 @@ const AttendanceFormElement = ({
         )}
       </StyledGridContainer>
       <FormGroup>
-        {memberSubjects.length > 0
-          ? map(memberSubjects, ({ uuid, nameString }, index) => (
+        {visibleMembers.length > 0
+          ? map(visibleMembers, ({ uuid, nameString }, index) => (
               <StyledMemberGrid key={uuid} container index={index} size={4}>
                 <Grid size={11}>
                   <div>{nameString}</div>
@@ -177,7 +198,9 @@ const AttendanceFormElement = ({
                 </Grid>
               </StyledMemberGrid>
             ))
-          : null}
+          : memberSubjects.length > 0 && (
+              <FormHelperText>{t("zeroNumberOfResults")}</FormHelperText>
+            )}
       </FormGroup>
       <FormHelperText>
         {validationResult &&
