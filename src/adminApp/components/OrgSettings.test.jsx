@@ -173,3 +173,50 @@ describe("Enable clinic sharing help text", () => {
     expect(helpText.trim()).not.toBe("");
   });
 });
+
+describe("Enable ABHA switch", () => {
+  const abhaSwitch = () => container.querySelector('input[name="Enable ABHA"]');
+  const toolTips = JSON.parse(
+    fs.readFileSync(
+      path.resolve(__dirname, "../../../public/documentation/toolTip.json"),
+      "utf8",
+    ),
+  );
+
+  it("rendersEnableAbhaSwitch with its own help button", async () => {
+    await openSettings({});
+    expect(abhaSwitch()).not.toBeNull();
+    expect(abhaSwitch().checked).toBe(false);
+    const helpButton = container.querySelector(
+      '[data-tooltip-key="ENABLE_ABHA"]',
+    );
+    expect(helpButton.parentElement.parentElement.contains(abhaSwitch())).toBe(
+      true,
+    );
+    expect(toolTips.ENABLE_ABHA.trim()).not.toBe("");
+  });
+
+  it("is on for an organisation that has it on", async () => {
+    await openSettings({ enableAbha: true });
+    expect(abhaSwitch().checked).toBe(true);
+  });
+
+  it("sends only enableAbha: true when switched on", async () => {
+    httpClient.put.mockResolvedValue(
+      savedAs({ enableComments: true, enableAbha: true }),
+    );
+    await openSettings({ enableComments: true });
+    await click(abhaSwitch());
+    expect(httpClient.put).toHaveBeenCalledWith("/organisationConfig", {
+      settings: { enableAbha: true },
+    });
+    expect(abhaSwitch().checked).toBe(true);
+  });
+
+  it("abhaSwitchDisabledWithoutEditPrivilege", async () => {
+    await openSettings({}, { hasEditPrivilege: false });
+    expect(abhaSwitch().disabled).toBe(true);
+    await click(abhaSwitch());
+    expect(httpClient.put).not.toHaveBeenCalled();
+  });
+});

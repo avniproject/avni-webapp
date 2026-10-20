@@ -70,6 +70,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
     showSummaryButton: "showSummaryButton",
     useKeycloakAsIDP: "useKeycloakAsIDP",
     enableMessaging: "enableMessaging",
+    enableAbha: "enableAbha",
     useMinioForStorage: "useMinioForStorage",
     skipRuleExecution: "skipRuleExecution",
     maxAddressDisplayInlineCount: "maxAddressDisplayInlineCount",
@@ -135,6 +136,11 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
           organisationConfigSettingKeys.enableMessaging,
           "Enable Messaging",
           "ENABLE_MESSAGING_BUTTON",
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.enableAbha,
+          "Enable ABHA",
+          "ENABLE_ABHA",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.useKeycloakAsIDP,
