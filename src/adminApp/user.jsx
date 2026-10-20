@@ -61,6 +61,11 @@ import {
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
+import {
+  AbhaHipIdField,
+  AbhaHipIdInput,
+  abhaHipIdForSave,
+} from "./components/AbhaHipId";
 import { AvniBooleanInput } from "./components/AvniBooleanInput";
 import { AvniRadioButtonGroupInput } from "../common/components/AvniRadioButtonGroupInput";
 import {
@@ -95,12 +100,13 @@ const StringToLabelObject = ({ children, ...props }) => {
 };
 
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => {
-  const addSuffixToUsername = (values) => ({
-    ...values,
-    username: values.username
-      ? `${values.username}@${userInfo.usernameSuffix}`
-      : values.username,
-  });
+  const addSuffixToUsername = (values) =>
+    abhaHipIdForSave({
+      ...values,
+      username: values.username
+        ? `${values.username}@${userInfo.usernameSuffix}`
+        : values.username,
+    });
 
   return (
     <Paper>
@@ -126,6 +132,7 @@ export const UserEdit = ({ organisation, ...props }) => (
   <Edit
     {...props}
     title={<UserTitle titlePrefix="Edit" />}
+    transform={abhaHipIdForSave}
     mutationMode="pessimistic"
     redirect="show"
   >
@@ -477,6 +484,7 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
           }
         />
         <TextField label="Identifier prefix" source="settings.idPrefix" />
+        <AbhaHipIdField />
         <FunctionField label="Created" render={(user) => createdAudit(user)} />
         <FunctionField
           label="Activated"
@@ -978,6 +986,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
           label="Identifier prefix"
           toolTipKey={"ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX"}
         />
+        <AbhaHipIdInput />
         <br />
         <AvniRadioButtonGroupInput
           source="settings.datePickerMode"
