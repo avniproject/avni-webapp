@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallback } from "./ErrorFallback";
 import { useDispatch, useSelector } from "react-redux";
 import SubjectSearch from "./views/search/SubjectSearch";
 import SubjectRegister from "./views/registration/SubjectRegister";
@@ -44,6 +46,14 @@ const StyledGrid = styled(Grid)({
   justifyContent: "center",
 });
 
+const ContentErrorFallback = ({ error, resetErrorBoundary }) => (
+  <ErrorFallback
+    error={error}
+    onClose={resetErrorBoundary}
+    shouldShowAppBar={false}
+  />
+);
+
 const DataEntry = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -77,85 +87,99 @@ const DataEntry = () => {
               <AppBar />
             </Grid>
             <Grid size={12}>
-              <Routes>
-                <Route path="/" element={<SearchFilterFormContainer />} />
-                <Route
-                  path="/searchFilter"
-                  element={<SearchFilterFormContainer />}
-                />
-                <Route path="/search" element={<SubjectSearch />} />
-                <Route path="/register" element={<SubjectRegister />} />
-                <Route path="/editSubject" element={<SubjectRegister />} />
-                <Route path="/subject" element={<SubjectDashboard />} />
-                <Route
-                  path="/subject/subjectProfile"
-                  element={<SubjectDashboard tab={1} />}
-                />
-                <Route path="/subject/enrol" element={<ProgramEnrol />} />
-                <Route
-                  path="/subject/viewProgramEncounter"
-                  element={<ViewVisit />}
-                />
-                <Route path="/subject/viewEncounter" element={<ViewVisit />} />
-                <Route path="/subject/addRelative" element={<AddRelative />} />
-                <Route
-                  path="/subject/addGroupMember"
-                  element={<GroupMembershipAddEdit />}
-                />
-                <Route
-                  path="/subject/editGroupMembership"
-                  element={<GroupMembershipAddEdit />}
-                />
-                <Route
-                  path="/subject/newProgramVisit"
-                  element={<NewProgramVisit />}
-                />
-                <Route
-                  path="/subject/programEncounter"
-                  element={<ProgramEncounter />}
-                />
-                <Route
-                  path="/subject/editProgramEncounter"
-                  element={<ProgramEncounter />}
-                />
-                <Route
-                  path="/subject/cancelProgramEncounter"
-                  element={<CancelProgramEncounter />}
-                />
-                <Route
-                  path="/subject/editCancelProgramEncounter"
-                  element={<CancelProgramEncounter />}
-                />
-                <Route
-                  path="/subject/newGeneralVisit"
-                  element={<NewGeneralVisit />}
-                />
-                <Route path="/subject/encounter" element={<Encounter />} />
-                <Route path="/subject/editEncounter" element={<Encounter />} />
-                <Route
-                  path="/subject/cancelEncounter"
-                  element={<CancelEncounter />}
-                />
-                <Route
-                  path="/subject/editCancelEncounter"
-                  element={<CancelEncounter />}
-                />
-                <Route
-                  path="/subject/attendance"
-                  element={<AttendanceSheetView />}
-                />
-                <Route
-                  path="/subject/attendanceMark"
-                  element={<AttendanceMarkView />}
-                />
-                <Route
-                  path="/subject/attendanceDidntHappen"
-                  element={<AttendanceDidntHappenView />}
-                />
-                <Route path="/news" element={<NewsList />} />
-                <Route path="/news/:id/details" element={<NewsDetails />} />
-                <Route path="/audio" element={<Player />} />
-              </Routes>
+              <ErrorBoundary
+                FallbackComponent={ContentErrorFallback}
+                resetKeys={[location.pathname]}
+              >
+                <Routes>
+                  <Route path="/" element={<SearchFilterFormContainer />} />
+                  <Route
+                    path="/searchFilter"
+                    element={<SearchFilterFormContainer />}
+                  />
+                  <Route path="/search" element={<SubjectSearch />} />
+                  <Route path="/register" element={<SubjectRegister />} />
+                  <Route path="/editSubject" element={<SubjectRegister />} />
+                  <Route path="/subject" element={<SubjectDashboard />} />
+                  <Route
+                    path="/subject/subjectProfile"
+                    element={<SubjectDashboard tab={1} />}
+                  />
+                  <Route path="/subject/enrol" element={<ProgramEnrol />} />
+                  <Route
+                    path="/subject/viewProgramEncounter"
+                    element={<ViewVisit />}
+                  />
+                  <Route
+                    path="/subject/viewEncounter"
+                    element={<ViewVisit />}
+                  />
+                  <Route
+                    path="/subject/addRelative"
+                    element={<AddRelative />}
+                  />
+                  <Route
+                    path="/subject/addGroupMember"
+                    element={<GroupMembershipAddEdit />}
+                  />
+                  <Route
+                    path="/subject/editGroupMembership"
+                    element={<GroupMembershipAddEdit />}
+                  />
+                  <Route
+                    path="/subject/newProgramVisit"
+                    element={<NewProgramVisit />}
+                  />
+                  <Route
+                    path="/subject/programEncounter"
+                    element={<ProgramEncounter />}
+                  />
+                  <Route
+                    path="/subject/editProgramEncounter"
+                    element={<ProgramEncounter />}
+                  />
+                  <Route
+                    path="/subject/cancelProgramEncounter"
+                    element={<CancelProgramEncounter />}
+                  />
+                  <Route
+                    path="/subject/editCancelProgramEncounter"
+                    element={<CancelProgramEncounter />}
+                  />
+                  <Route
+                    path="/subject/newGeneralVisit"
+                    element={<NewGeneralVisit />}
+                  />
+                  <Route path="/subject/encounter" element={<Encounter />} />
+                  <Route
+                    path="/subject/editEncounter"
+                    element={<Encounter />}
+                  />
+                  <Route
+                    path="/subject/cancelEncounter"
+                    element={<CancelEncounter />}
+                  />
+                  <Route
+                    path="/subject/editCancelEncounter"
+                    element={<CancelEncounter />}
+                  />
+                  <Route
+                    path="/subject/attendance"
+                    element={<AttendanceSheetView />}
+                  />
+                  <Route
+                    path="/subject/attendanceMark"
+                    element={<AttendanceMarkView />}
+                  />
+                  <Route
+                    path="/subject/attendanceDidntHappen"
+                    element={<AttendanceDidntHappenView />}
+                  />
+                  <Route path="/news" element={<NewsList />} />
+                  <Route path="/news/:id/details" element={<NewsDetails />} />
+                  <Route path="/audio" element={<Player />} />
+                </Routes>
+              </ErrorBoundary>
             </Grid>
           </StyledGrid>
         </I18nextProvider>
