@@ -61,7 +61,16 @@ const dayOffset = (d) => {
   x.setDate(x.getDate() + d);
   return x.toISOString().slice(0, 10);
 };
-const fmt = (t) => (t ? String(t).replace("T", " ").slice(0, 19) : "");
+// Server times are UTC; shown in Indian time, to match the app and the records.
+const fmt = (t) => {
+  const d = t ? new Date(t) : null;
+  if (!d || isNaN(d.getTime())) return t ? String(t) : "";
+  return d.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "medium",
+    timeStyle: "medium",
+  });
+};
 
 // Polls fn every ms while shouldContinue(result) holds, up to maxMs (0 = no limit).
 const usePoll = () => {
