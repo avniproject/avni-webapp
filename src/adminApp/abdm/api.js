@@ -28,6 +28,8 @@ export const getConsentRequests = () => httpClient.getData(`${B}/hiu/consent-req
 export const getConsentRecords = (uuid) => httpClient.getData(`${B}/hiu/consent-requests/${uuid}/records`);
 export const approveConsent = (id) => post(`${B}/mock/consent-requests/${id}/approve`, {});
 export const denyConsent = (id) => post(`${B}/mock/consent-requests/${id}/deny`, {});
+// Eka mode: Eka's sandbox approve call, standing in for the patient approving in their ABHA app.
+export const approveConsentEka = (id) => post(`${B}/eka/consent-requests/${id}/approve`, {});
 export const searchFacilities = (body) => post(`${B}/m4/facilities/search`, body);
 export const searchProfessionals = (body) => post(`${B}/m4/professionals/search`, body);
 export const submitFacility = (body) => post(`${B}/m4/facilities/submit`, body);

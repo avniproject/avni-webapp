@@ -109,7 +109,9 @@ const StatusTab = ({ status, setStatus }) => {
           >
             {status.mode === "mock"
               ? "Consent manager: MOCK — a local stand-in for NHA's gateway"
-              : "NHA ABDM sandbox (dev.abdm.gov.in)"}
+              : status.mode === "eka"
+                ? "Eka Care ABDM Connect (sandbox) — Eka's bridge to NHA"
+                : "NHA ABDM sandbox (dev.abdm.gov.in)"}
           </Alert>
           <Table size="small" style={{ maxWidth: 700 }}>
             <TableBody>
@@ -119,6 +121,9 @@ const StatusTab = ({ status, setStatus }) => {
                 ["HIU ID", status.hiuId],
                 ["Public base URL", status.publicBaseUrl],
                 ["Gateway base URL", status.gatewayBaseUrl],
+                ...(status.webhookUrl
+                  ? [["Webhook URL (give to Eka)", status.webhookUrl]]
+                  : []),
                 [
                   "Gateway session",
                   status.session &&
@@ -374,6 +379,7 @@ const HiuTab = ({ status, onViewRecords }) => {
       .catch((e) => setErr(msg(e)));
   };
   const mock = status && status.mode === "mock";
+  const eka = status && status.mode === "eka";
   return (
     <Box>
       {err && (
@@ -478,6 +484,16 @@ const HiuTab = ({ status, onViewRecords }) => {
                       Deny
                     </Button>
                   </>
+                )}
+                {eka && r.status === "REQUESTED" && r.consentRequestId && (
+                  <Button
+                    size="small"
+                    variant="contained"
+                    onClick={act(api.approveConsentEka, r.consentRequestId)}
+                    style={{ marginRight: 4 }}
+                  >
+                    Approve in Eka sandbox
+                  </Button>
                 )}
                 <Button
                   size="small"
