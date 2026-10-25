@@ -10,6 +10,17 @@ import {
 } from "@mui/material";
 import { summariseBundle } from "./fhirRender";
 
+// FHIR dates are ISO UTC; shown in Indian time, as the health worker saw the visit.
+const displayDate = (value) => {
+  const d = value ? new Date(value) : null;
+  if (!d || isNaN(d.getTime())) return value || "-";
+  return d.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+};
+
 const FhirBundleView = ({ bundle }) => {
   const s = summariseBundle(bundle);
   return (
@@ -17,7 +28,7 @@ const FhirBundleView = ({ bundle }) => {
       <CardContent>
         <Typography variant="h6">{s.title || "Untitled document"}</Typography>
         <Typography variant="body2" color="textSecondary">
-          Date: {s.date || "-"} · Patient: {s.patientName || "-"} · HIP:{" "}
+          Date: {displayDate(s.date)} · Patient: {s.patientName || "-"} · HIP:{" "}
           {s.hipName || "-"}
         </Typography>
         <Table size="small" style={{ marginTop: 8 }}>
