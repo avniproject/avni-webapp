@@ -9,31 +9,31 @@ import {
   CatchmentCreate,
   CatchmentDetail,
   CatchmentEdit,
-  CatchmentList
+  CatchmentList,
 } from "./catchment";
 import {
   LocationTypeCreate,
   LocationTypeDetail,
   LocationTypeEdit,
-  LocationTypeList
+  LocationTypeList,
 } from "./addressLevelType";
 import {
   LocationCreate,
   LocationDetail,
   LocationEdit,
-  LocationList
+  LocationList,
 } from "./locations";
 import {
   IdentifierSourceCreate,
   IdentifierSourceDetail,
   IdentifierSourceEdit,
-  IdentifierSourceList
+  IdentifierSourceList,
 } from "./IdentifierSource";
 import {
   IdentifierUserAssignmentCreate,
   IdentifierUserAssignmentDetail,
   IdentifierUserAssignmentEdit,
-  IdentifierUserAssignmentList
+  IdentifierUserAssignmentList,
 } from "./IdentifierUserAssignment";
 import OrganisationConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
@@ -42,6 +42,7 @@ import AdminLayout from "../common/components/AdminLayout";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
 import { OrganisationDetail } from "./OrganisationDetail";
+import AbdmDemo from "./abdm/AbdmDemo";
 import Msg91Config from "../phoneNumberVerification/Msg91Config";
 import CurrentUserService from "../common/service/CurrentUserService";
 import DeploymentManager from "./DeploymentManager";
@@ -55,9 +56,9 @@ const OrgManager = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const organisation = useSelector(state => state.app.organisation);
-  const user = useSelector(state => state.app.authSession);
-  const userInfo = useSelector(state => state.app.userInfo);
+  const organisation = useSelector((state) => state.app.organisation);
+  const user = useSelector((state) => state.app.authSession);
+  const userInfo = useSelector((state) => state.app.userInfo);
 
   useEffect(() => {
     if (["#/admin", "#/admin/"].includes(window.location.hash)) {
@@ -85,7 +86,7 @@ const OrgManager = () => {
     EditOrganisationConfiguration,
     DeleteOrganisationConfiguration,
     EditLanguage,
-    PhoneVerification
+    PhoneVerification,
   } = Privilege.PrivilegeType;
 
   const { hasPrivilege, hasMultiplePrivileges } = UserInfo;
@@ -125,7 +126,7 @@ const OrgManager = () => {
           list={CatchmentList}
           show={WithProps(
             { hasEditPrivilege: canEditCatchment },
-            CatchmentDetail
+            CatchmentDetail,
           )}
           create={canEditCatchment && CatchmentCreate}
           edit={canEditCatchment && CatchmentEdit}
@@ -141,7 +142,7 @@ const OrgManager = () => {
         )}
         {hasMultiplePrivileges(userInfo, [
           EditUserGroup,
-          EditUserConfiguration
+          EditUserConfiguration,
         ]) && (
           <>
             <Resource
@@ -198,9 +199,9 @@ const OrgManager = () => {
           list={WithProps(
             {
               organisation,
-              hasEditPrivilege: hasPrivilege(userInfo, EditLanguage)
+              hasEditPrivilege: hasPrivilege(userInfo, EditLanguage),
             },
-            OrganisationConfig
+            OrganisationConfig,
           )}
         />
         <Resource
@@ -211,18 +212,18 @@ const OrgManager = () => {
               organisation,
               hasEditPrivilege: hasPrivilege(
                 userInfo,
-                EditOrganisationConfiguration
+                EditOrganisationConfiguration,
               ),
               hasOrgMetadataDeletionPrivilege: hasPrivilege(
                 userInfo,
-                UploadMetadataAndData
+                UploadMetadataAndData,
               ),
               hasOrgAdminConfigDeletionPrivilege: hasPrivilege(
                 userInfo,
-                DeleteOrganisationConfiguration
-              )
+                DeleteOrganisationConfiguration,
+              ),
             },
-            OrganisationDetail
+            OrganisationDetail,
           )}
         />
         {hasPrivilege(userInfo, PhoneVerification) && (
@@ -232,6 +233,12 @@ const OrgManager = () => {
             list={Msg91Config}
           />
         )}
+        {/* DEMO-ONLY abdm-hackathon */}
+        <Resource
+          name="abdm"
+          options={{ label: "ABDM (demo)" }}
+          list={AbdmDemo}
+        />
         <CustomRoutes>
           <Route path="/editLanguages" element={<CreateEditLanguages />} />
         </CustomRoutes>
