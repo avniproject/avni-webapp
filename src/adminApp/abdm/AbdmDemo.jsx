@@ -517,7 +517,7 @@ const HiuTab = ({ status, onViewRecords }) => {
                 ))}
               </TableCell>
               <TableCell style={{ whiteSpace: "nowrap" }}>
-                {mock && r.status === "REQUESTED" && (
+                {mock && r.status === "REQUESTED" && r.consentRequestId && (
                   <>
                     <Button
                       size="small"
