@@ -537,18 +537,23 @@ const RecordsTab = ({ request }) => {
   );
 };
 
+// The registries answer either a list or an object holding one (facilities, professionals): the list is the table.
+const resultRows = (results) => {
+  if (Array.isArray(results)) return results;
+  if (results && typeof results === "object")
+    return Object.values(results).find(Array.isArray) || null;
+  return null;
+};
+
 const SearchResult = ({ res }) => {
   if (!res) return null;
-  if (res.error && !Array.isArray(res.results))
-    return <Alert severity="error">{res.error}</Alert>;
-  if (
-    Array.isArray(res.results) &&
-    res.results.length &&
-    typeof res.results[0] === "object"
-  ) {
-    const cols = Array.from(
-      new Set(res.results.flatMap((r) => Object.keys(r))),
-    ).slice(0, 8);
+  const rows = resultRows(res.results);
+  if (res.error && !rows) return <Alert severity="error">{res.error}</Alert>;
+  if (rows && rows.length && typeof rows[0] === "object") {
+    const cols = Array.from(new Set(rows.flatMap((r) => Object.keys(r)))).slice(
+      0,
+      8,
+    );
     return (
       <Box style={{ overflow: "auto" }}>
         <Table size="small">
@@ -560,7 +565,7 @@ const SearchResult = ({ res }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {res.results.map((r, i) => (
+            {rows.map((r, i) => (
               <TableRow key={i}>
                 {cols.map((c) => (
                   <TableCell key={c}>
