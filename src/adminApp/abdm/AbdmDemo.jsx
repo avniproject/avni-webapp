@@ -97,6 +97,8 @@ const StatusTab = ({ status, setStatus }) => {
   const [err, setErr] = useState(null);
   const [bridge, setBridge] = useState(null);
   const [services, setServices] = useState(null);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [resetResult, setResetResult] = useState(null);
   useEffect(() => {
     api
       .getStatus()
@@ -167,6 +169,47 @@ const StatusTab = ({ status, setStatus }) => {
       </Box>
       {bridge && <Json value={bridge} />}
       {services && <Json value={services} />}
+      <Box style={{ marginTop: 24 }}>
+        {!confirmReset ? (
+          <Button
+            color="error"
+            variant="outlined"
+            onClick={() => {
+              setResetResult(null);
+              setConfirmReset(true);
+            }}
+          >
+            Reset demo data
+          </Button>
+        ) : (
+          <>
+            <Typography variant="body2" style={{ marginBottom: 8 }}>
+              Clears this organisation's ABDM links, consents, records received
+              and traffic. Patients and visits stay.
+            </Typography>
+            <Button
+              color="error"
+              variant="contained"
+              style={{ marginRight: 8 }}
+              onClick={() =>
+                api
+                  .resetDemo()
+                  .then((r) => setResetResult(`Cleared ${r.rowsDeleted} rows`))
+                  .catch((e) => setResetResult(msg(e)))
+                  .finally(() => setConfirmReset(false))
+              }
+            >
+              Yes, clear it
+            </Button>
+            <Button onClick={() => setConfirmReset(false)}>Cancel</Button>
+          </>
+        )}
+        {resetResult && (
+          <Typography variant="body2" style={{ marginTop: 8 }}>
+            {resetResult}
+          </Typography>
+        )}
+      </Box>
     </Box>
   );
 };

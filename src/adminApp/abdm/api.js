@@ -30,6 +30,8 @@ export const approveConsent = (id) => post(`${B}/mock/consent-requests/${id}/app
 export const denyConsent = (id) => post(`${B}/mock/consent-requests/${id}/deny`, {});
 // Eka mode: Eka's sandbox approve call, standing in for the patient approving in their ABHA app.
 export const approveConsentEka = (id) => post(`${B}/eka/consent-requests/${id}/approve`, {});
+// Clears this organisation's ABDM tables for a clean demo; patients and visits stay.
+export const resetDemo = () => post(`${B}/demo/reset`, {});
 export const searchFacilities = (body) => post(`${B}/m4/facilities/search`, body);
 export const searchProfessionals = (body) => post(`${B}/m4/professionals/search`, body);
 export const submitFacility = (body) => post(`${B}/m4/facilities/submit`, body);
