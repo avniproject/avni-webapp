@@ -268,7 +268,9 @@ const StatusTab = ({ status, setStatus }) => {
   );
 };
 
-const HipTab = () => {
+const HIP_REFRESH_MS = 10000;
+
+export const HipTab = () => {
   const [patients, setPatients] = useState([]);
   const [selected, setSelected] = useState(null);
   const [contexts, setContexts] = useState([]);
@@ -290,6 +292,24 @@ const HipTab = () => {
       .then(setConsents)
       .catch((e) => setErr(msg(e)));
   }, [loadPatients]);
+  // Saved visits are linked by the server's five-minute job (AbdmHousekeepingJob.linkQueuedVisits), not by a click
+  // here, so the tab refreshes itself to show them arrive and turn LINKED.
+  const selectedUUID = selected && selected.subjectUUID;
+  useEffect(() => {
+    let live = true;
+    const timer = window.setInterval(() => {
+      loadPatients();
+      if (selectedUUID)
+        api
+          .getCareContexts(selectedUUID)
+          .then((l) => live && setContexts(l))
+          .catch((e) => setErr(msg(e)));
+    }, HIP_REFRESH_MS);
+    return () => {
+      live = false;
+      window.clearInterval(timer);
+    };
+  }, [loadPatients, selectedUUID]);
   const pending = (list) =>
     list.some((c) => c.status === "PENDING" || c.status === "LINK_REQUESTED");
   const pollContexts = (uuid) =>
@@ -391,7 +411,16 @@ const HipTab = () => {
                   <TableCell>{c.display}</TableCell>
                   <TableCell>{c.hiType}</TableCell>
                   <TableCell>
-                    <StatusChip status={c.status} />
+                    {c.status === "PENDING" ? (
+                      <>
+                        <Chip size="small" label="Queued" />{" "}
+                        <Typography variant="caption">
+                          links on its own within 5 minutes
+                        </Typography>
+                      </>
+                    ) : (
+                      <StatusChip status={c.status} />
+                    )}
                   </TableCell>
                   <TableCell>{c.error}</TableCell>
                 </TableRow>
