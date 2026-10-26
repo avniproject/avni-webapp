@@ -4,7 +4,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const Submenu = ({ text, icon, children }) => {
@@ -15,6 +15,15 @@ const Submenu = ({ text, icon, children }) => {
       !location.pathname.startsWith("/appdesigner/templates")
     );
   });
+
+  useEffect(() => {
+    if (
+      location.pathname.startsWith("/appdesigner") &&
+      !location.pathname.startsWith("/appdesigner/templates")
+    ) {
+      setOpen(true);
+    }
+  }, [location.pathname]);
 
   const handleClick = () => {
     setOpen(!open);
