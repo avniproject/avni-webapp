@@ -42,7 +42,7 @@ import AdminLayout from "../common/components/AdminLayout";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
 import { OrganisationDetail } from "./OrganisationDetail";
-import AbdmDemo from "./abdm/AbdmDemo";
+import AbdmDemo, { canOpenAbdm } from "./abdm/AbdmDemo";
 import Msg91Config from "../phoneNumberVerification/Msg91Config";
 import CurrentUserService from "../common/service/CurrentUserService";
 import DeploymentManager from "./DeploymentManager";
@@ -234,11 +234,13 @@ const OrgManager = () => {
           />
         )}
         {/* DEMO-ONLY abdm-hackathon */}
-        <Resource
-          name="abdm"
-          options={{ label: "ABDM (demo)" }}
-          list={AbdmDemo}
-        />
+        {canOpenAbdm(userInfo) && (
+          <Resource
+            name="abdm"
+            options={{ label: "ABDM (demo)" }}
+            list={AbdmDemo}
+          />
+        )}
         <CustomRoutes>
           <Route path="/editLanguages" element={<CreateEditLanguages />} />
         </CustomRoutes>

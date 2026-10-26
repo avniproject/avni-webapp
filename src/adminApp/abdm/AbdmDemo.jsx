@@ -18,6 +18,50 @@ import {
 } from "@mui/material";
 import * as api from "./api";
 import FhirBundleView from "./FhirBundleView";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
+
+// Only a user who may edit the organisation's configuration sees the page; the server checks the same privilege.
+export const canOpenAbdm = (userInfo) =>
+  !!userInfo &&
+  UserInfo.hasPrivilege(
+    userInfo,
+    Privilege.PrivilegeType.EditOrganisationConfiguration,
+  );
+
+// NHA's pattern for an ABHA address. A bare name is allowed; the server adds the environment's suffix and checks it.
+export const isAbhaAddress = (value) =>
+  /^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9](@(sbx|abdm))?$/.test(
+    (value || "").trim(),
+  );
+
+// The purposes Eka carries (EkaHiuService.PURPOSES) and the eight record types NHA defines.
+const PURPOSES = [
+  ["CAREMGT", "Care management"],
+  ["PATRQT", "Self requested"],
+  ["PUBHLTH", "Public health"],
+  ["DSRCH", "Disease-specific research"],
+];
+const purposeText = (code) =>
+  (PURPOSES.find(([c]) => c === code) || [code, code])[1];
+const HI_TYPES = [
+  "OPConsultation",
+  "Prescription",
+  "DiagnosticReport",
+  "DischargeSummary",
+  "ImmunizationRecord",
+  "HealthDocumentRecord",
+  "WellnessRecord",
+  "Invoice",
+];
+// A consent the patient withdrew, refused or that expired: no records are shown, and those received are erased.
+const ENDED = {
+  REVOKED:
+    "No records: the patient withdrew this consent. Records received under it are erased.",
+  EXPIRED:
+    "No records: this consent has expired. Records received under it are erased.",
+  DENIED: "No records: the patient refused this consent.",
+};
 
 const msg = (e) => api.errorMessage(e);
 const Json = ({ value }) => (
@@ -62,6 +106,16 @@ const dayOffset = (d) => {
   return x.toISOString().slice(0, 10);
 };
 // Server times are UTC; shown in Indian time, to match the app and the records.
+const day = (t) => {
+  const d = t ? new Date(t) : null;
+  if (!d || isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
 const fmt = (t) => {
   const d = t ? new Date(t) : null;
   if (!d || isNaN(d.getTime())) return t ? String(t) : "";
@@ -387,12 +441,15 @@ const HipTab = () => {
   );
 };
 
-const HiuTab = ({ status, onViewRecords }) => {
+export const HiuTab = ({ status, onViewRecords }) => {
   const [form, setForm] = useState({
     abhaAddress: "",
     from: dayOffset(-365),
-    to: dayOffset(1),
+    to: dayOffset(0),
+    expiry: dayOffset(30),
     requesterName: "Dr. Demo",
+    purposeCode: "CAREMGT",
+    hiTypes: ["OPConsultation"],
   });
   const [requests, setRequests] = useState([]);
   const [err, setErr] = useState(null);
@@ -413,14 +470,18 @@ const HiuTab = ({ status, onViewRecords }) => {
     startPoll();
   }, [startPoll]);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const toggleType = (t) => () =>
+    setForm({
+      ...form,
+      hiTypes: form.hiTypes.includes(t)
+        ? form.hiTypes.filter((x) => x !== t)
+        : HI_TYPES.filter((x) => x === t || form.hiTypes.includes(x)),
+    });
+  const addressOk = isAbhaAddress(form.abhaAddress);
   const request = () => {
     setErr(null);
     api
-      .createConsentRequest({
-        ...form,
-        hiTypes: ["OPConsultation"],
-        purposeCode: "CAREMGT",
-      })
+      .createConsentRequest({ ...form, abhaAddress: form.abhaAddress.trim() })
       .then(() => load().then(startPoll))
       .catch((e) => setErr(msg(e)));
   };
@@ -442,11 +503,35 @@ const HiuTab = ({ status, onViewRecords }) => {
       <Paper variant="outlined" style={{ padding: 16, marginBottom: 16 }}>
         <TextField
           label="ABHA address"
+          name="abhaAddress"
           size="small"
           value={form.abhaAddress}
           onChange={set("abhaAddress")}
+          error={!!form.abhaAddress && !addressOk}
+          helperText={
+            form.abhaAddress && !addressOk
+              ? "Not an ABHA address: letters, digits, '.' or '_', ending in @sbx or @abdm"
+              : " "
+          }
           style={{ marginRight: 8 }}
         />
+        <TextField
+          select
+          label="Purpose"
+          name="purposeCode"
+          size="small"
+          value={form.purposeCode}
+          onChange={set("purposeCode")}
+          SelectProps={{ native: true }}
+          InputLabelProps={{ shrink: true }}
+          style={{ marginRight: 8 }}
+        >
+          {PURPOSES.map(([code, text]) => (
+            <option key={code} value={code}>
+              {text}
+            </option>
+          ))}
+        </TextField>
         <TextField
           label="From"
           type="date"
@@ -466,23 +551,43 @@ const HiuTab = ({ status, onViewRecords }) => {
           style={{ marginRight: 8 }}
         />
         <TextField
+          label="Consent expires"
+          name="expiry"
+          type="date"
+          size="small"
+          InputLabelProps={{ shrink: true }}
+          value={form.expiry}
+          onChange={set("expiry")}
+          style={{ marginRight: 8 }}
+        />
+        <TextField
           label="Requester"
           size="small"
           value={form.requesterName}
           onChange={set("requesterName")}
           style={{ marginRight: 8 }}
         />
-        <TextField
-          label="Record type"
-          size="small"
-          value="OPConsultation"
-          disabled
-          style={{ marginRight: 8 }}
-        />
+        <Box style={{ margin: "8px 0" }}>
+          <Typography variant="caption" style={{ marginRight: 8 }}>
+            Record types:
+          </Typography>
+          {HI_TYPES.map((t) => (
+            <label key={t} style={{ marginRight: 12, whiteSpace: "nowrap" }}>
+              <input
+                type="checkbox"
+                name="hiType"
+                value={t}
+                checked={form.hiTypes.includes(t)}
+                onChange={toggleType(t)}
+              />{" "}
+              {t}
+            </label>
+          ))}
+        </Box>
         <Button
           variant="contained"
           onClick={request}
-          disabled={!form.abhaAddress}
+          disabled={!addressOk || form.hiTypes.length === 0}
         >
           Request consent
         </Button>
@@ -491,7 +596,8 @@ const HiuTab = ({ status, onViewRecords }) => {
         <TableHead>
           <TableRow>
             <TableCell>Created</TableCell>
-            <TableCell>ABHA address</TableCell>
+            <TableCell>Patient</TableCell>
+            <TableCell>Asked for</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Consent request ID</TableCell>
             <TableCell>Artefacts</TableCell>
@@ -502,10 +608,27 @@ const HiuTab = ({ status, onViewRecords }) => {
           {requests.map((r) => (
             <TableRow key={r.uuid}>
               <TableCell>{fmt(r.createdAt)}</TableCell>
-              <TableCell>{r.abhaAddress}</TableCell>
+              <TableCell>
+                <div>{r.patientName || "Not registered here"}</div>
+                {r.abhaNumber && <div>{r.abhaNumber}</div>}
+                <div>{r.abhaAddress}</div>
+              </TableCell>
+              <TableCell>
+                <div>{purposeText(r.purposeCode)}</div>
+                <div>{(r.hiTypes || []).join(", ")}</div>
+                <div>
+                  {day(r.from)} to {day(r.to)}
+                </div>
+                <div>Expires {day(r.expiry)}</div>
+              </TableCell>
               <TableCell>
                 <StatusChip status={r.status} />
                 {r.error && <div style={{ color: "#c62828" }}>{r.error}</div>}
+                {(r.statusHistory || []).map((h, i) => (
+                  <div key={i} style={{ fontSize: 12 }}>
+                    {h.status} {fmt(h.at)}
+                  </div>
+                ))}
               </TableCell>
               <TableCell>{r.consentRequestId}</TableCell>
               <TableCell>
@@ -563,11 +686,12 @@ const HiuTab = ({ status, onViewRecords }) => {
   );
 };
 
-const RecordsTab = ({ request }) => {
+export const RecordsTab = ({ request }) => {
   const [records, setRecords] = useState(null);
   const [err, setErr] = useState(null);
+  const ended = request && ENDED[request.status];
   useEffect(() => {
-    if (!request) return;
+    if (!request || ENDED[request.status]) return;
     setRecords(null);
     setErr(null);
     api
@@ -587,8 +711,9 @@ const RecordsTab = ({ request }) => {
       <Typography variant="h6" gutterBottom>
         Records for {request.abhaAddress}
       </Typography>
+      {ended && <Typography>{ended}</Typography>}
       {err && <Alert severity="error">{err}</Alert>}
-      {records && records.length === 0 && (
+      {!ended && records && records.length === 0 && (
         <Typography>No records received yet.</Typography>
       )}
       {(records || []).map((r, i) => (
