@@ -126,6 +126,10 @@ const fmt = (t) => {
   });
 };
 
+// Patients approve, withdraw and link from their own app, and the server links on a schedule: tabs that show those
+// refresh themselves this often.
+const REFRESH_MS = 10000;
+
 // Polls fn every ms while shouldContinue(result) holds, up to maxMs (0 = no limit).
 const usePoll = () => {
   const timer = useRef(null);
@@ -147,7 +151,7 @@ const usePoll = () => {
   }, []);
 };
 
-const StatusTab = ({ status, setStatus }) => {
+export const StatusTab = ({ status, setStatus }) => {
   const [err, setErr] = useState(null);
   const [bridge, setBridge] = useState(null);
   const [services, setServices] = useState(null);
@@ -204,6 +208,32 @@ const StatusTab = ({ status, setStatus }) => {
               ))}
             </TableBody>
           </Table>
+          {status.autoLink !== undefined && (
+            <Box style={{ marginTop: 16 }}>
+              <Typography
+                variant="body2"
+                component="span"
+                style={{ marginRight: 8 }}
+              >
+                Linking on save: <b>{status.autoLink ? "On" : "Off"}</b>.{" "}
+                {status.autoLink
+                  ? "Saved visits link within 5 minutes."
+                  : "Saved visits wait for the patient to link them from their app."}
+              </Typography>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() =>
+                  api
+                    .setAutoLink(!status.autoLink)
+                    .then((r) => setStatus({ ...status, autoLink: r.autoLink }))
+                    .catch((e) => setErr(msg(e)))
+                }
+              >
+                {status.autoLink ? "Switch off" : "Switch on"}
+              </Button>
+            </Box>
+          )}
         </>
       )}
       <Box style={{ marginTop: 16 }}>
@@ -268,8 +298,6 @@ const StatusTab = ({ status, setStatus }) => {
   );
 };
 
-const HIP_REFRESH_MS = 10000;
-
 export const HipTab = () => {
   const [patients, setPatients] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -304,7 +332,7 @@ export const HipTab = () => {
           .getCareContexts(selectedUUID)
           .then((l) => live && setContexts(l))
           .catch((e) => setErr(msg(e)));
-    }, HIP_REFRESH_MS);
+    }, REFRESH_MS);
     return () => {
       live = false;
       window.clearInterval(timer);
@@ -411,7 +439,7 @@ export const HipTab = () => {
                   <TableCell>{c.display}</TableCell>
                   <TableCell>{c.hiType}</TableCell>
                   <TableCell>
-                    {c.status === "PENDING" ? (
+                    {c.status === "QUEUED" ? (
                       <>
                         <Chip size="small" label="Queued" />{" "}
                         <Typography variant="caption">
@@ -498,6 +526,13 @@ export const HiuTab = ({ status, onViewRecords }) => {
   useEffect(() => {
     startPoll();
   }, [startPoll]);
+  // A grant, refusal or withdrawal in the patient's app can come minutes later; the list keeps refreshing to show it.
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      load().catch(() => {});
+    }, REFRESH_MS);
+    return () => window.clearInterval(timer);
+  }, [load]);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const toggleType = (t) => () =>
     setForm({
@@ -719,14 +754,23 @@ export const RecordsTab = ({ request }) => {
   const [records, setRecords] = useState(null);
   const [err, setErr] = useState(null);
   const ended = request && ENDED[request.status];
+  // Records arrive some seconds after the grant, and go after a withdrawal: the tab keeps asking.
   useEffect(() => {
     if (!request || ENDED[request.status]) return;
+    let live = true;
+    const fetch = () =>
+      api
+        .getConsentRecords(request.uuid)
+        .then((r) => live && setRecords(r))
+        .catch((e) => live && setErr(msg(e)));
     setRecords(null);
     setErr(null);
-    api
-      .getConsentRecords(request.uuid)
-      .then(setRecords)
-      .catch((e) => setErr(msg(e)));
+    fetch();
+    const timer = window.setInterval(fetch, REFRESH_MS);
+    return () => {
+      live = false;
+      window.clearInterval(timer);
+    };
   }, [request]);
   if (!request)
     return (

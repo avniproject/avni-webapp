@@ -62,7 +62,7 @@ describe("HIP · Link records", () => {
       Promise.resolve([patient(linked)]),
     );
     api.getCareContexts.mockImplementation(() =>
-      Promise.resolve([visit(linked ? "LINKED" : "PENDING")]),
+      Promise.resolve([visit(linked ? "LINKED" : "QUEUED")]),
     );
     await act(async () => root.render(<HipTab />));
     await act(async () => container.querySelector("tbody tr").click());

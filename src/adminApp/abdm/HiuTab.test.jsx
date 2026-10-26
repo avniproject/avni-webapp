@@ -128,6 +128,75 @@ describe("HIU · Request records", () => {
   });
 });
 
+describe("Refreshing by itself", () => {
+  const later = (ms) =>
+    act(async () => {
+      jest.advanceTimersByTime(ms);
+    });
+
+  it("shows a withdrawal that comes after the grant, with no click", async () => {
+    jest.useFakeTimers();
+    try {
+      let status = "GRANTED";
+      api.getConsentRequests.mockImplementation(() =>
+        Promise.resolve([
+          {
+            uuid: "u-1",
+            abhaAddress: "ramesh.gond@sbx",
+            status,
+            statusHistory: [],
+            artefacts: [],
+          },
+        ]),
+      );
+      await render(
+        <HiuTab status={{ mode: "eka" }} onViewRecords={() => {}} />,
+      );
+      expect(container.textContent).toContain("GRANTED");
+
+      status = "REVOKED";
+      await later(10000);
+
+      expect(container.textContent).toContain("REVOKED");
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("shows records that arrive after the tab was opened", async () => {
+    jest.useFakeTimers();
+    try {
+      let records = [];
+      api.getConsentRecords.mockImplementation(() => Promise.resolve(records));
+      await render(
+        <RecordsTab
+          request={{
+            uuid: "u-1",
+            abhaAddress: "ramesh.gond@sbx",
+            status: "GRANTED",
+          }}
+        />,
+      );
+      expect(container.textContent).toContain("No records received yet.");
+
+      records = [
+        {
+          careContextReference: "visit-1",
+          hipId: "TANUH",
+          receivedAt: "2026-10-26T11:00:00.000Z",
+          checksumMatched: true,
+          bundle: { resourceType: "Bundle", entry: [] },
+        },
+      ];
+      await later(10000);
+
+      expect(container.textContent).toContain("visit-1");
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+});
+
 describe("Records", () => {
   it("shows no records for a consent the patient withdrew, and does not ask for them", async () => {
     await render(
