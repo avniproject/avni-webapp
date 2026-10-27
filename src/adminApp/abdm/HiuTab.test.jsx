@@ -58,7 +58,7 @@ const button = (text) =>
 
 describe("HIU · Request records", () => {
   it("sends the purpose, the record types and the expiry chosen", async () => {
-    await render(<HiuTab status={{ mode: "eka" }} onViewRecords={() => {}} />);
+    await render(<HiuTab onViewRecords={() => {}} />);
 
     await setValue(field("abhaAddress"), "shyam@sbx");
     await setValue(field("purposeCode"), "PUBHLTH");
@@ -79,7 +79,7 @@ describe("HIU · Request records", () => {
   });
 
   it("will not send something that is not an ABHA address", async () => {
-    await render(<HiuTab status={{ mode: "eka" }} onViewRecords={() => {}} />);
+    await render(<HiuTab onViewRecords={() => {}} />);
 
     await setValue(field("abhaAddress"), "rm -rf /");
 
@@ -114,7 +114,7 @@ describe("HIU · Request records", () => {
       },
     ]);
 
-    await render(<HiuTab status={{ mode: "eka" }} onViewRecords={() => {}} />);
+    await render(<HiuTab onViewRecords={() => {}} />);
 
     const text = container.textContent;
     expect(text).toContain("Ramesh Gond");
@@ -149,9 +149,7 @@ describe("Refreshing by itself", () => {
           },
         ]),
       );
-      await render(
-        <HiuTab status={{ mode: "eka" }} onViewRecords={() => {}} />,
-      );
+      await render(<HiuTab onViewRecords={() => {}} />);
       expect(container.textContent).toContain("GRANTED");
 
       status = "REVOKED";

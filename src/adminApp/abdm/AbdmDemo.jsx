@@ -64,18 +64,6 @@ const ENDED = {
 };
 
 const msg = (e) => api.errorMessage(e);
-const Json = ({ value }) => (
-  <pre
-    style={{
-      overflow: "auto",
-      maxHeight: 360,
-      background: "#f5f5f5",
-      padding: 8,
-    }}
-  >
-    {typeof value === "string" ? value : JSON.stringify(value, null, 2)}
-  </pre>
-);
 const statusColor = (s) =>
   s === "LINKED" ||
   s === "GRANTED" ||
@@ -153,8 +141,6 @@ const usePoll = () => {
 
 export const StatusTab = ({ status, setStatus }) => {
   const [err, setErr] = useState(null);
-  const [bridge, setBridge] = useState(null);
-  const [services, setServices] = useState(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [resetResult, setResetResult] = useState(null);
   useEffect(() => {
@@ -163,24 +149,13 @@ export const StatusTab = ({ status, setStatus }) => {
       .then(setStatus)
       .catch((e) => setErr(msg(e)));
   }, [setStatus]);
-  const run = (fn, set) => () =>
-    fn()
-      .then((r) => set(r))
-      .catch((e) => set({ error: msg(e) }));
   return (
     <Box>
       {err && <Alert severity="error">{err}</Alert>}
       {status && (
         <>
-          <Alert
-            severity={status.mode === "mock" ? "warning" : "success"}
-            style={{ marginBottom: 16 }}
-          >
-            {status.mode === "mock"
-              ? "Consent manager: MOCK — a local stand-in for NHA's gateway"
-              : status.mode === "eka"
-                ? "Eka Care ABDM Connect (sandbox) — Eka's bridge to NHA"
-                : "NHA ABDM sandbox (dev.abdm.gov.in)"}
+          <Alert severity="success" style={{ marginBottom: 16 }}>
+            Eka Care ABDM Connect — Eka's bridge to NHA
           </Alert>
           <Table size="small" style={{ maxWidth: 700 }}>
             <TableBody>
@@ -189,12 +164,10 @@ export const StatusTab = ({ status, setStatus }) => {
                 ["HIP ID", status.hipId],
                 ["HIU ID", status.hiuId],
                 ["Public base URL", status.publicBaseUrl],
-                ["Gateway base URL", status.gatewayBaseUrl],
-                ...(status.webhookUrl
-                  ? [["Webhook URL (give to Eka)", status.webhookUrl]]
-                  : []),
+                ["Eka base URL", status.ekaBaseUrl],
+                ["Webhook URL (give to Eka)", status.webhookUrl],
                 [
-                  "Gateway session",
+                  "Eka session",
                   status.session &&
                     (status.session.ok
                       ? "OK"
@@ -236,23 +209,6 @@ export const StatusTab = ({ status, setStatus }) => {
           )}
         </>
       )}
-      <Box style={{ marginTop: 16 }}>
-        <Button
-          variant="contained"
-          onClick={run(api.registerBridgeUrl, setBridge)}
-          style={{ marginRight: 8 }}
-        >
-          Register bridge URL
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={run(api.getBridgeServices, setServices)}
-        >
-          Show bridge services
-        </Button>
-      </Box>
-      {bridge && <Json value={bridge} />}
-      {services && <Json value={services} />}
       <Box style={{ marginTop: 24 }}>
         {!confirmReset ? (
           <Button
@@ -302,7 +258,6 @@ export const HipTab = () => {
   const [patients, setPatients] = useState([]);
   const [selected, setSelected] = useState(null);
   const [contexts, setContexts] = useState([]);
-  const [consents, setConsents] = useState([]);
   const [err, setErr] = useState(null);
   const poll = usePoll();
   const loadPatients = useCallback(
@@ -315,10 +270,6 @@ export const HipTab = () => {
   );
   useEffect(() => {
     loadPatients();
-    api
-      .getHipConsents()
-      .then(setConsents)
-      .catch((e) => setErr(msg(e)));
   }, [loadPatients]);
   // Saved visits are linked by the server's five-minute job (AbdmHousekeepingJob.linkQueuedVisits), not by a click
   // here, so the tab refreshes itself to show them arrive and turn LINKED.
@@ -457,48 +408,11 @@ export const HipTab = () => {
           </Table>
         </Box>
       )}
-      <Typography variant="h6" style={{ marginTop: 24 }}>
-        Consents received (as HIP)
-      </Typography>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Consent ID</TableCell>
-            <TableCell>ABHA address</TableCell>
-            <TableCell>HIU</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Types</TableCell>
-            <TableCell>From</TableCell>
-            <TableCell>To</TableCell>
-            <TableCell>Data flows</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {consents.map((c) => (
-            <TableRow key={c.consentId}>
-              <TableCell>{c.consentId}</TableCell>
-              <TableCell>{c.abhaAddress}</TableCell>
-              <TableCell>{c.hiuId}</TableCell>
-              <TableCell>
-                <StatusChip status={c.status} />
-              </TableCell>
-              <TableCell>{(c.hiTypes || []).join(", ")}</TableCell>
-              <TableCell>{c.dateFrom}</TableCell>
-              <TableCell>{c.dateTo}</TableCell>
-              <TableCell>
-                {(c.dataFlows || [])
-                  .map((f) => `${f.status} (${f.entries ?? 0})`)
-                  .join("; ")}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
     </Box>
   );
 };
 
-export const HiuTab = ({ status, onViewRecords }) => {
+export const HiuTab = ({ onViewRecords }) => {
   const [form, setForm] = useState({
     abhaAddress: "",
     from: dayOffset(-365),
@@ -555,8 +469,6 @@ export const HiuTab = ({ status, onViewRecords }) => {
       .then(() => load().then(startPoll))
       .catch((e) => setErr(msg(e)));
   };
-  const mock = status && status.mode === "mock";
-  const eka = status && status.mode === "eka";
   return (
     <Box>
       {err && (
@@ -704,27 +616,7 @@ export const HiuTab = ({ status, onViewRecords }) => {
                 ))}
               </TableCell>
               <TableCell style={{ whiteSpace: "nowrap" }}>
-                {mock && r.status === "REQUESTED" && r.consentRequestId && (
-                  <>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      onClick={act(api.approveConsent, r.consentRequestId)}
-                      style={{ marginRight: 4 }}
-                    >
-                      Approve as patient (mock PHR app)
-                    </Button>
-                    <Button
-                      size="small"
-                      color="error"
-                      onClick={act(api.denyConsent, r.consentRequestId)}
-                      style={{ marginRight: 4 }}
-                    >
-                      Deny
-                    </Button>
-                  </>
-                )}
-                {eka && r.status === "REQUESTED" && r.consentRequestId && (
+                {r.status === "REQUESTED" && r.consentRequestId && (
                   <Button
                     size="small"
                     variant="contained"
@@ -803,205 +695,6 @@ export const RecordsTab = ({ request }) => {
   );
 };
 
-// The registries answer either a list or an object holding one (facilities, professionals): the list is the table.
-const resultRows = (results) => {
-  if (Array.isArray(results)) return results;
-  if (results && typeof results === "object")
-    return Object.values(results).find(Array.isArray) || null;
-  return null;
-};
-
-const SearchResult = ({ res }) => {
-  if (!res) return null;
-  const rows = resultRows(res.results);
-  if (res.error && !rows) return <Alert severity="error">{res.error}</Alert>;
-  if (rows && rows.length && typeof rows[0] === "object") {
-    const cols = Array.from(new Set(rows.flatMap((r) => Object.keys(r)))).slice(
-      0,
-      8,
-    );
-    return (
-      <Box style={{ overflow: "auto" }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              {cols.map((c) => (
-                <TableCell key={c}>{c}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((r, i) => (
-              <TableRow key={i}>
-                {cols.map((c) => (
-                  <TableCell key={c}>
-                    {typeof r[c] === "object"
-                      ? JSON.stringify(r[c])
-                      : String(r[c] ?? "")}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
-    );
-  }
-  return <Json value={res} />;
-};
-
-const FormBox = ({ title, fields, action, submitLabel, render }) => {
-  const [vals, setVals] = useState({});
-  const [res, setRes] = useState(null);
-  const [err, setErr] = useState(null);
-  const go = () => {
-    setErr(null);
-    setRes(null);
-    const body = {};
-    fields.forEach((f) => {
-      if (vals[f]) body[f] = vals[f];
-    });
-    action(body)
-      .then(setRes)
-      .catch((e) => setErr(msg(e)));
-  };
-  return (
-    <Paper variant="outlined" style={{ padding: 16, marginBottom: 16 }}>
-      <Typography variant="h6">{title}</Typography>
-      {fields.map((f) => (
-        <TextField
-          key={f}
-          label={f}
-          size="small"
-          value={vals[f] || ""}
-          onChange={(e) => setVals({ ...vals, [f]: e.target.value })}
-          style={{ margin: "8px 8px 8px 0" }}
-        />
-      ))}
-      <Button variant="contained" onClick={go} style={{ marginTop: 8 }}>
-        {submitLabel}
-      </Button>
-      {err && (
-        <Alert severity="error" style={{ marginTop: 8 }}>
-          {err}
-        </Alert>
-      )}
-      {res && render(res)}
-    </Paper>
-  );
-};
-
-const RegistriesTab = () => (
-  <Box>
-    <FormBox
-      title="Search facilities (HFR)"
-      fields={["name", "state", "district", "facilityId"]}
-      action={api.searchFacilities}
-      submitLabel="Search"
-      render={(r) => <SearchResult res={r} />}
-    />
-    <FormBox
-      title="Search professionals (HPR)"
-      fields={["name", "hprId", "mobile"]}
-      action={api.searchProfessionals}
-      submitLabel="Search"
-      render={(r) => <SearchResult res={r} />}
-    />
-    <FormBox
-      title="Submit test facility"
-      fields={[
-        "facilityName",
-        "ownership",
-        "state",
-        "district",
-        "pincode",
-        "address",
-        "facilityType",
-      ]}
-      action={api.submitFacility}
-      submitLabel="Submit test facility"
-      render={(r) =>
-        r.error ? (
-          <Alert severity="error" style={{ marginTop: 8 }}>
-            {r.error}
-            {r.abdmCode ? ` (${r.abdmCode})` : ""}
-          </Alert>
-        ) : (
-          <Json value={r} />
-        )
-      }
-    />
-  </Box>
-);
-
-const TrafficTab = () => {
-  const [rows, setRows] = useState([]);
-  const [open, setOpen] = useState({});
-  const [err, setErr] = useState(null);
-  const load = useCallback(
-    () =>
-      api
-        .getMessages(100)
-        .then(setRows)
-        .catch((e) => setErr(msg(e))),
-    [],
-  );
-  useEffect(() => {
-    load();
-  }, [load]);
-  return (
-    <Box>
-      {err && <Alert severity="error">{err}</Alert>}
-      <Button variant="outlined" onClick={load} style={{ marginBottom: 8 }}>
-        Refresh
-      </Button>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Time</TableCell>
-            <TableCell>Dir</TableCell>
-            <TableCell>Method</TableCell>
-            <TableCell>Path</TableCell>
-            <TableCell>Request ID</TableCell>
-            <TableCell>Status</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((m) => (
-            <React.Fragment key={m.id}>
-              <TableRow
-                hover
-                onClick={() => setOpen({ ...open, [m.id]: !open[m.id] })}
-                style={{ cursor: "pointer" }}
-              >
-                <TableCell>{fmt(m.createdAt)}</TableCell>
-                <TableCell>
-                  <Chip
-                    size="small"
-                    label={m.direction}
-                    color={m.direction === "IN" ? "primary" : "secondary"}
-                  />
-                </TableCell>
-                <TableCell>{m.method}</TableCell>
-                <TableCell>{m.path}</TableCell>
-                <TableCell>{m.requestId}</TableCell>
-                <TableCell>{m.httpStatus}</TableCell>
-              </TableRow>
-              {open[m.id] && (
-                <TableRow>
-                  <TableCell colSpan={6}>
-                    <Json value={m.body} />
-                  </TableCell>
-                </TableRow>
-              )}
-            </React.Fragment>
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
-  );
-};
-
 const AbdmDemo = () => {
   const [tab, setTab] = useState(0);
   const [status, setStatus] = useState(null);
@@ -1025,16 +718,14 @@ const AbdmDemo = () => {
         <Tab label="HIP · Link records" />
         <Tab label="HIU · Request records" />
         <Tab label="Records received" />
-        <Tab label="Registries (M4)" />
         <Tab label="Traffic" />
       </Tabs>
       <Box style={{ paddingTop: 16 }}>
         {tab === 0 && <StatusTab status={status} setStatus={setStatus} />}
         {tab === 1 && <HipTab />}
-        {tab === 2 && <HiuTab status={status} onViewRecords={view} />}
+        {tab === 2 && <HiuTab onViewRecords={view} />}
         {tab === 3 && <RecordsTab request={request} />}
-        {tab === 4 && <RegistriesTab />}
-        {tab === 5 && <TrafficTab />}
+        {tab === 4 && <TrafficTab />}
       </Box>
     </Paper>
   );

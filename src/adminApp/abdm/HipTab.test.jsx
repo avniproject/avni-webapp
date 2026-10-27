@@ -8,7 +8,6 @@ import * as api from "./api";
 jest.mock("./api", () => ({
   errorMessage: (e) => String(e),
   getHipPatients: jest.fn(),
-  getHipConsents: jest.fn(() => Promise.resolve([])),
   getCareContexts: jest.fn(),
   linkSubject: jest.fn(() => Promise.resolve([])),
 }));

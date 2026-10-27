@@ -11,8 +11,6 @@ jest.mock("./api", () => ({
   errorMessage: (e) => String(e),
   getStatus: jest.fn(),
   setAutoLink: jest.fn(),
-  registerBridgeUrl: jest.fn(),
-  getBridgeServices: jest.fn(),
   resetDemo: jest.fn(),
 }));
 jest.mock("../../common/utils/httpClient", () => ({
@@ -48,7 +46,6 @@ const button = (text) =>
 describe("Status · linking on save", () => {
   it("shows linking on save and switches it off", async () => {
     api.getStatus.mockResolvedValue({
-      mode: "eka",
       session: { ok: true },
       autoLink: true,
     });
