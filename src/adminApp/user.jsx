@@ -56,7 +56,6 @@ import {
   validateEmail,
   validatePassword,
   validatePasswords,
-  validateUserName,
 } from "./UserHelper";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
@@ -94,13 +93,54 @@ const StringToLabelObject = ({ children, ...props }) => {
   return cloneElement(children, { ...props, record: labelRecord });
 };
 
+function normalizeSpaces(value) {
+  if (!value) return value;
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function hasEdgeSpaces(value) {
+  if (!value) return false;
+  return value !== value.trim();
+}
+
+function validateLoginId(loginId) {
+  if (hasEdgeSpaces(loginId)) {
+    return "This field should not start or end with whitespaces";
+  }
+
+  const regex = /^[a-zA-Z0-9@._-]+$/;
+  if (!regex.test(loginId)) {
+    return "Invalid LoginID format";
+  }
+
+  const atCount = (loginId.match(/@/g) || []).length;
+  if (atCount > 1) {
+    return "Invalid LoginID format";
+  }
+
+  return undefined;
+}
+
+function validateCreateUserForm(values) {
+  const errors = validatePasswords(values);
+  const loginError = validateLoginId(values?.username);
+  if (loginError) {
+    errors.username = loginError;
+  }
+  return errors;
+}
+
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => {
-  const addSuffixToUsername = (values) => ({
-    ...values,
-    username: values.username
-      ? `${values.username}@${userInfo.usernameSuffix}`
-      : values.username,
-  });
+  const addSuffixToUsername = (values) => {
+    const normalizedUsername = normalizeSpaces(values?.username);
+    return {
+      ...values,
+      username: normalizedUsername
+        ? `${normalizedUsername}@${userInfo.usernameSuffix}`
+        : normalizedUsername,
+      name: normalizeSpaces(values?.name),
+    };
+  };
 
   return (
     <Paper>
@@ -746,7 +786,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
       toolbar={<CustomToolbar />}
       {...sanitizeProps(props)}
       redirect="show"
-      validate={validatePasswords}
+      validate={edit ? validatePasswords : validateCreateUserForm}
     >
       {!edit && <UsernameHandler nameSuffix={nameSuffix} />}
       {edit ? (
@@ -773,7 +813,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                   <Grid>
                     <AvniTextInput
                       source="username"
-                      validate={validateUserName}
+                      validate={[isRequired, validateLoginId]}
                       label="Login ID (username)"
                       toolTipKey="ADMIN_USER_USER_NAME"
                     />
