@@ -64,6 +64,18 @@ const ENDED = {
 };
 
 const msg = (e) => api.errorMessage(e);
+const Json = ({ value }) => (
+  <pre
+    style={{
+      overflow: "auto",
+      maxHeight: 360,
+      background: "#f5f5f5",
+      padding: 8,
+    }}
+  >
+    {typeof value === "string" ? value : JSON.stringify(value, null, 2)}
+  </pre>
+);
 const statusColor = (s) =>
   s === "LINKED" ||
   s === "GRANTED" ||
@@ -691,6 +703,74 @@ export const RecordsTab = ({ request }) => {
           <FhirBundleView bundle={r.bundle} />
         </Box>
       ))}
+    </Box>
+  );
+};
+
+const TrafficTab = () => {
+  const [rows, setRows] = useState([]);
+  const [open, setOpen] = useState({});
+  const [err, setErr] = useState(null);
+  const load = useCallback(
+    () =>
+      api
+        .getMessages(100)
+        .then(setRows)
+        .catch((e) => setErr(msg(e))),
+    [],
+  );
+  useEffect(() => {
+    load();
+  }, [load]);
+  return (
+    <Box>
+      {err && <Alert severity="error">{err}</Alert>}
+      <Button variant="outlined" onClick={load} style={{ marginBottom: 8 }}>
+        Refresh
+      </Button>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell>Time</TableCell>
+            <TableCell>Dir</TableCell>
+            <TableCell>Method</TableCell>
+            <TableCell>Path</TableCell>
+            <TableCell>Request ID</TableCell>
+            <TableCell>Status</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((m) => (
+            <React.Fragment key={m.id}>
+              <TableRow
+                hover
+                onClick={() => setOpen({ ...open, [m.id]: !open[m.id] })}
+                style={{ cursor: "pointer" }}
+              >
+                <TableCell>{fmt(m.createdAt)}</TableCell>
+                <TableCell>
+                  <Chip
+                    size="small"
+                    label={m.direction}
+                    color={m.direction === "IN" ? "primary" : "secondary"}
+                  />
+                </TableCell>
+                <TableCell>{m.method}</TableCell>
+                <TableCell>{m.path}</TableCell>
+                <TableCell>{m.requestId}</TableCell>
+                <TableCell>{m.httpStatus}</TableCell>
+              </TableRow>
+              {open[m.id] && (
+                <TableRow>
+                  <TableCell colSpan={6}>
+                    <Json value={m.body} />
+                  </TableCell>
+                </TableRow>
+              )}
+            </React.Fragment>
+          ))}
+        </TableBody>
+      </Table>
     </Box>
   );
 };
