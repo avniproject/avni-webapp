@@ -206,6 +206,7 @@ const CatchmentFormContent = ({
             <StyledAutocompleteArrayInput
               optionText={optionRenderer}
               translateChoice={false}
+              filterSelectedOptions
               filterToQuery={(searchText) => ({ title: searchText })}
             />
           </ReferenceArrayInput>
@@ -223,3 +224,4 @@ const CatchmentFormContent = ({
     </>
   );
 };
+
