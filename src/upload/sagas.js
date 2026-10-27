@@ -13,7 +13,7 @@ export function* getImportJobStatusesWorker({ page }) {
 }
 
 export function* getUploadTypesWatcher() {
-  yield takeLatest(types.GET_UPLOAD_JOB_STATUSES, getUploadTypesWorker);
+  yield takeLatest(types.GET_UPLOAD_TYPES, getUploadTypesWorker);
 }
 
 export function* getUploadTypesWorker() {
