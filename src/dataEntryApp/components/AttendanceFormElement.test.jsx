@@ -2,6 +2,8 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import AttendanceFormElement from "./AttendanceFormElement";
 
+let mockMemberNames;
+
 jest.mock("react-redux", () => ({
   useSelector: (selector) =>
     selector({
@@ -14,7 +16,7 @@ jest.mock("../api", () => ({
   default: {
     fetchGroupMembers: jest.fn(() =>
       Promise.resolve(
-        ["Zoya", "asha", "Ravi"].map((name) => ({
+        mockMemberNames.map((name) => ({
           name,
           member: { subjectType: { uuid: "member-subject-type" } },
         })),
@@ -74,6 +76,7 @@ const search = async (text) => {
 };
 
 beforeEach(() => {
+  mockMemberNames = ["Zoya", "asha", "Ravi"];
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
@@ -150,5 +153,31 @@ describe("AttendanceFormElement search", () => {
     await renderAttendance({ type: "SingleSelect", value: undefined });
     expect(container.querySelector("input[type='text']")).not.toBeNull();
     expect(selectAllLink()).toBeNull();
+  });
+
+  it("matches each typed word on its own, in any order", async () => {
+    mockMemberNames = ["Asha Kumari Devi", "Asha Patil", "Jean-Paul Rao"];
+    await renderAttendance({});
+    await search("asha devi");
+    expect(shownNames()).toEqual(["Asha Kumari Devi"]);
+    await search("devi  asha");
+    expect(shownNames()).toEqual(["Asha Kumari Devi"]);
+    await search("paul-jean");
+    expect(shownNames()).toEqual(["Jean-Paul Rao"]);
+    await search("asha xyz");
+    expect(shownNames()).toEqual([]);
+  });
+
+  it("keeps the list at its full height while searching, so the page does not jump", async () => {
+    const offsetHeight = jest
+      .spyOn(window.HTMLElement.prototype, "offsetHeight", "get")
+      .mockReturnValue(300);
+    await renderAttendance({});
+    const memberList = container.querySelector(".MuiFormGroup-root");
+    await search("zo");
+    expect(memberList.style.minHeight).toBe("300px");
+    await search("");
+    expect(memberList.style.minHeight).toBe("");
+    offsetHeight.mockRestore();
   });
 });

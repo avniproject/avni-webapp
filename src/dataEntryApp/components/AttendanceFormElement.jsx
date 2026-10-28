@@ -1,7 +1,15 @@
-import { useState, useEffect, Fragment, useMemo, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  Fragment,
+  useMemo,
+  useCallback,
+} from "react";
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { find, get, map, includes, sortBy, join, size } from "lodash";
+import { find, get, map, includes, sortBy, join, size, every } from "lodash";
 import { Concept } from "openchs-models";
 import { useSelector } from "react-redux";
 import api from "../api";
@@ -53,6 +61,8 @@ const AttendanceFormElement = ({
   const isMultiSelect = type === "MultiSelect";
   const [isSelectAll, setSelectAll] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const memberListRef = useRef(null);
+  const [fullMemberListHeight, setFullMemberListHeight] = useState(0);
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
@@ -82,11 +92,15 @@ const AttendanceFormElement = ({
     [memberSubjects],
   );
   const visibleMembers = useMemo(() => {
-    const searchTextLowerCase = searchText.trim().toLowerCase();
-    return searchTextLowerCase
-      ? memberSubjects.filter((s) =>
-          s.nameString.toLowerCase().includes(searchTextLowerCase),
-        )
+    const searchWords = searchText
+      .toLowerCase()
+      .split(/[ \-:]+/)
+      .filter(Boolean);
+    return searchWords.length > 0
+      ? memberSubjects.filter((s) => {
+          const nameLowerCase = s.nameString.toLowerCase();
+          return every(searchWords, (word) => nameLowerCase.includes(word));
+        })
       : memberSubjects;
   }, [memberSubjects, searchText]);
   const selectLabel = isSelectAll ? t("unselectAllLabel") : t("selectAllLabel");
@@ -122,6 +136,12 @@ const AttendanceFormElement = ({
       cancelled = true;
     };
   }, [displayAllGroupMembers, subjectUUID, subjectTypeUUID, answersToShowKey]);
+
+  useLayoutEffect(() => {
+    if (!searchText && memberListRef.current) {
+      setFullMemberListHeight(memberListRef.current.offsetHeight);
+    }
+  }, [searchText, visibleMembers]);
 
   useEffect(() => {
     setSelectAll(size(memberUUIDs) === size(value));
@@ -182,7 +202,10 @@ const AttendanceFormElement = ({
           </StyledSelectAllGrid>
         )}
       </StyledGridContainer>
-      <FormGroup>
+      <FormGroup
+        ref={memberListRef}
+        style={{ minHeight: searchText ? fullMemberListHeight : undefined }}
+      >
         {visibleMembers.length > 0
           ? map(visibleMembers, ({ uuid, nameString }, index) => (
               <StyledMemberGrid key={uuid} container index={index} size={4}>
