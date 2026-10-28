@@ -7,20 +7,23 @@ import {
   useMemo,
   useCallback,
 } from "react";
-import { styled } from "@mui/material/styles";
+import { styled, alpha } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { find, get, map, includes, sortBy, join, size, every } from "lodash";
 import { Concept } from "openchs-models";
 import { useSelector } from "react-redux";
 import api from "../api";
 import {
+  Box,
+  Button,
+  FormControlLabel,
   FormLabel,
   FormGroup,
   FormHelperText,
   Grid,
-  Link,
   TextField,
 } from "@mui/material";
+import { DoneAll, SortByAlpha } from "@mui/icons-material";
 import {
   mapGroupMembers,
   mapIndividual,
@@ -33,16 +36,29 @@ const StyledGridContainer = styled(Grid)({
   height: "100%",
 });
 
-const StyledSelectAllGrid = styled(Grid)({
-  justifyContent: "flex-end",
+const StyledToolbar = styled(Box)({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
 });
 
-const StyledMemberGrid = styled(Grid)(({ index }) => ({
-  backgroundColor: index % 2 === 0 ? "#ececec" : "#FFF",
-  paddingLeft: 10,
-  paddingRight: 15,
-  alignItems: "center",
-  justifyContent: "center",
+const StyledPillButton = styled(Button)({
+  borderRadius: 16,
+  textTransform: "none",
+});
+
+const StyledMemberRow = styled(FormControlLabel)(({ theme }) => ({
+  justifyContent: "space-between",
+  marginLeft: 0,
+  marginRight: 0,
+  paddingLeft: 12,
+  borderBottom: "1px solid #EEE",
+  "&:hover": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  "&.isChecked": {
+    backgroundColor: alpha(theme.palette.primary.main, 0.08),
+  },
 }));
 
 const AttendanceFormElement = ({
@@ -61,6 +77,7 @@ const AttendanceFormElement = ({
   const isMultiSelect = type === "MultiSelect";
   const [isSelectAll, setSelectAll] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [isSortDescending, setSortDescending] = useState(false);
   const memberListRef = useRef(null);
   const [fullMemberListHeight, setFullMemberListHeight] = useState(0);
   const { t } = useTranslation();
@@ -96,13 +113,15 @@ const AttendanceFormElement = ({
       .toLowerCase()
       .split(/[ \-:]+/)
       .filter(Boolean);
-    return searchWords.length > 0
-      ? memberSubjects.filter((s) => {
-          const nameLowerCase = s.nameString.toLowerCase();
-          return every(searchWords, (word) => nameLowerCase.includes(word));
-        })
-      : memberSubjects;
-  }, [memberSubjects, searchText]);
+    const matchingMembers =
+      searchWords.length > 0
+        ? memberSubjects.filter((s) => {
+            const nameLowerCase = s.nameString.toLowerCase();
+            return every(searchWords, (word) => nameLowerCase.includes(word));
+          })
+        : memberSubjects;
+    return isSortDescending ? [...matchingMembers].reverse() : matchingMembers;
+  }, [memberSubjects, searchText, isSortDescending]);
   const selectLabel = isSelectAll ? t("unselectAllLabel") : t("selectAllLabel");
 
   useEffect(() => {
@@ -187,44 +206,53 @@ const AttendanceFormElement = ({
             style={{ width: "100%" }}
           />
         </Grid>
-        {isMultiSelect && memberSubjects.length > 0 && (
-          <StyledSelectAllGrid container>
-            <Link
-              underline="hover"
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                toggleSelectAll();
-              }}
+        {memberSubjects.length > 0 && (
+          <StyledToolbar>
+            <StyledPillButton
+              size="small"
+              variant="outlined"
+              startIcon={<SortByAlpha />}
+              onClick={() => setSortDescending((prev) => !prev)}
             >
-              {selectLabel}
-            </Link>
-          </StyledSelectAllGrid>
-        )}
-      </StyledGridContainer>
-      <FormGroup
-        ref={memberListRef}
-        style={{ minHeight: searchText ? fullMemberListHeight : undefined }}
-      >
-        {visibleMembers.length > 0
-          ? map(visibleMembers, ({ uuid, nameString }, index) => (
-              <StyledMemberGrid key={uuid} container index={index} size={4}>
-                <Grid size={11}>
-                  <div>{nameString}</div>
-                </Grid>
-                <Grid size={1}>
-                  <Checkbox
-                    checked={includes(value, uuid)}
-                    onChange={onsSwitchChange}
-                    value={uuid}
-                  />
-                </Grid>
-              </StyledMemberGrid>
-            ))
-          : memberSubjects.length > 0 && (
-              <FormHelperText>{t("zeroNumberOfResults")}</FormHelperText>
+              {isSortDescending ? "Z–A" : "A–Z"}
+            </StyledPillButton>
+            {isMultiSelect && (
+              <StyledPillButton
+                size="small"
+                variant={isSelectAll ? "contained" : "outlined"}
+                startIcon={<DoneAll />}
+                onClick={toggleSelectAll}
+              >
+                {selectLabel}
+              </StyledPillButton>
             )}
-      </FormGroup>
+          </StyledToolbar>
+        )}
+        <FormGroup
+          ref={memberListRef}
+          style={{ minHeight: searchText ? fullMemberListHeight : undefined }}
+        >
+          {visibleMembers.length > 0
+            ? map(visibleMembers, ({ uuid, nameString }) => (
+                <StyledMemberRow
+                  key={uuid}
+                  className={includes(value, uuid) ? "isChecked" : undefined}
+                  labelPlacement="start"
+                  label={nameString}
+                  control={
+                    <Checkbox
+                      checked={includes(value, uuid)}
+                      onChange={onsSwitchChange}
+                      value={uuid}
+                    />
+                  }
+                />
+              ))
+            : memberSubjects.length > 0 && (
+                <FormHelperText>{t("zeroNumberOfResults")}</FormHelperText>
+              )}
+        </FormGroup>
+      </StyledGridContainer>
       <FormHelperText>
         {validationResult &&
           t(validationResult.messageKey, validationResult.extra)}

@@ -57,11 +57,17 @@ const formElement = (type) => ({
 const render = async (element) => act(async () => root.render(element));
 
 const shownNames = () =>
-  [...container.querySelectorAll(".MuiFormGroup-root > div")].map(
+  [...container.querySelectorAll(".MuiFormGroup-root > label")].map(
     (row) => row.textContent,
   );
 
-const selectAllLink = () => container.querySelector("a");
+const buttonLabelled = (...labels) =>
+  [...container.querySelectorAll("button")].find((button) =>
+    labels.includes(button.textContent),
+  );
+
+const selectAllButton = () =>
+  buttonLabelled("selectAllLabel", "unselectAllLabel");
 
 const search = async (text) => {
   const input = container.querySelector("input[type='text']");
@@ -135,7 +141,7 @@ describe("AttendanceFormElement search", () => {
     const update = jest.fn();
     await renderAttendance({ update });
     await search("zo");
-    await act(async () => selectAllLink().click());
+    await act(async () => selectAllButton().click());
     expect(update.mock.calls.map(([uuid]) => uuid).sort()).toEqual([
       "Ravi",
       "Zoya",
@@ -146,13 +152,32 @@ describe("AttendanceFormElement search", () => {
   it("shows Unselect all only when the whole group is ticked, not just the names on screen", async () => {
     await renderAttendance({ value: ["Zoya"] });
     await search("zo");
-    expect(selectAllLink().textContent).toBe("selectAllLabel");
+    expect(selectAllButton().textContent).toBe("selectAllLabel");
   });
 
   it("gives a single-select question the search box but no Select all", async () => {
     await renderAttendance({ type: "SingleSelect", value: undefined });
     expect(container.querySelector("input[type='text']")).not.toBeNull();
-    expect(selectAllLink()).toBeNull();
+    expect(selectAllButton()).toBeUndefined();
+  });
+
+  it("flips the list between A to Z and Z to A", async () => {
+    await renderAttendance({});
+    await act(async () => buttonLabelled("A–Z").click());
+    expect(shownNames()).toEqual(["Zoya", "Ravi", "asha"]);
+    await search("a");
+    expect(shownNames()).toEqual(["Zoya", "Ravi", "asha"]);
+    await act(async () => buttonLabelled("Z–A").click());
+    expect(shownNames()).toEqual(["asha", "Ravi", "Zoya"]);
+  });
+
+  it("ticks a member when the name is clicked, not only the box", async () => {
+    const update = jest.fn();
+    await renderAttendance({ update });
+    await act(async () =>
+      container.querySelectorAll(".MuiFormGroup-root > label")[1].click(),
+    );
+    expect(update).toHaveBeenCalledWith("Ravi");
   });
 
   it("matches each typed word on its own, in any order", async () => {
