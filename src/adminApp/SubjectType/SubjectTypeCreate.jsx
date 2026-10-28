@@ -3,24 +3,29 @@ import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { Box, FormLabel } from "@mui/material";
 import { Title, useNotify } from "react-admin";
+import { useSelector } from "react-redux";
+import _ from "lodash";
+
 import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
 import { validateGroup } from "./GroupHandlers";
 import { useFormMappings, useLocationType } from "./effects";
-import _, { identity } from "lodash";
+
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AdvancedSettings } from "./AdvancedSettings";
 import { MediaFolder, uploadImage } from "../../common/utils/S3Client";
 import EditSubjectTypeFields from "./EditSubjectTypeFields";
+
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import {
   getMessageTemplates,
   saveMessageRules,
 } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
-import { useSelector } from "react-redux";
+
 import { showSaveError } from "../service/showSaveError";
 import { SaveComponent } from "../../common/components/SaveComponent";
+
 import {
   isAttendanceConfigIncompleteError,
   buildAttendanceConfigIncompleteMessage,
@@ -29,6 +34,7 @@ import {
 const SubjectTypeCreate = () => {
   const navigate = useNavigate();
   const notify = useNotify();
+
   const organisationConfig = useSelector(
     (state) => state.app.organisationConfig,
   );
@@ -37,17 +43,21 @@ const SubjectTypeCreate = () => {
     subjectTypeReducer,
     subjectTypeInitialState,
   );
+
   const [nameValidation, setNameValidation] = useState(false);
   const [groupValidationError, setGroupValidationError] = useState(false);
   const [error, setError] = useState("");
   const [msgError, setMsgError] = useState("");
   const [successAlert, setSuccessAlert] = useState(false);
   const [id, setId] = useState();
+
   const [formList, setFormList] = useState([]);
   const [formMappings, setFormMappings] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
+
   const [file, setFile] = useState();
   const [removeFile, setRemoveFile] = useState(false);
+
   const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(
     MessageReducer,
     {
@@ -55,11 +65,11 @@ const SubjectTypeCreate = () => {
       templates: [],
     },
   );
+
   const entityType = "Subject";
 
   useEffect(() => {
     getMessageTemplates(rulesDispatch);
-    return identity;
   }, []);
 
   useEffect(() => {
@@ -68,8 +78,11 @@ const SubjectTypeCreate = () => {
     }
   }, [successAlert, id, navigate]);
 
-  const onRulesChange = (rules) => {
-    rulesDispatch({ type: "setRules", payload: rules });
+  const onRulesChange = (updatedRules) => {
+    rulesDispatch({
+      type: "setRules",
+      payload: updatedRules,
+    });
   };
 
   const consumeFormMappingResult = (formMap, forms) => {
@@ -78,64 +91,74 @@ const SubjectTypeCreate = () => {
   };
 
   useFormMappings(consumeFormMappingResult);
-  useLocationType((types) => setLocationsTypes(types));
+
+  useLocationType((types) => {
+    setLocationsTypes(types);
+  });
 
   const onSubmit = async () => {
-    const groupValidationError = validateGroup(subjectType.groupRoles);
-    setGroupValidationError(groupValidationError);
+    const hasGroupValidationError = validateGroup(subjectType.groupRoles);
+
+    setGroupValidationError(hasGroupValidationError);
+    setError("");
+    setMsgError("");
+
     if (subjectType.name.trim() === "") {
-      setError("");
       setNameValidation(true);
       return;
     }
 
     setNameValidation(false);
 
-    if (!groupValidationError) {
-      const [s3FileKey, error] = await uploadImage(
+    if (hasGroupValidationError) {
+      return;
+    }
+
+    try {
+      const [s3FileKey, uploadError] = await uploadImage(
         subjectType.iconFileS3Key,
         file,
         MediaFolder.ICONS,
       );
-      if (error) {
-        alert(error);
+
+      if (uploadError) {
+        alert(uploadError);
         return;
       }
-      let subjectTypeSavePromise = () =>
-        http
-          .post("/web/subjectType", {
-            ...subjectType,
-            registrationFormUuid: _.get(
-              subjectType,
-              "registrationForm.formUUID",
-            ),
-            iconFileS3Key: removeFile ? null : s3FileKey,
-          })
-          .then((response) => {
-            if (response.status === 200) {
-              setError("");
-              setMsgError("");
-              setSuccessAlert(true);
-              setId(response.data.id);
-              return response;
-            }
-          })
-          .then((response) =>
-            saveMessageRules(entityType, response.data.subjectTypeId, rules),
-          )
-          .catch((error) => {
-            setSuccessAlert(false);
-            if (isAttendanceConfigIncompleteError(error)) {
-              notify(buildAttendanceConfigIncompleteMessage(error), {
-                type: "error",
-                multiLine: true,
-                autoHideDuration: 8000,
-              });
-              return;
-            }
-            showSaveError(error, { setError, setMsgError });
-          });
-      return subjectTypeSavePromise();
+
+      const response = await http.post("/web/subjectType", {
+        ...subjectType,
+        registrationFormUuid: _.get(subjectType, "registrationForm.formUUID"),
+        iconFileS3Key: removeFile ? null : s3FileKey,
+      });
+
+      if (response.status !== 200) {
+        throw new Error("Failed to save subject type.");
+      }
+
+      await saveMessageRules(entityType, response.data.subjectTypeId, rules);
+
+      setId(response.data.id);
+      setSuccessAlert(true);
+      setError("");
+      setMsgError("");
+    } catch (saveError) {
+      setSuccessAlert(false);
+
+      if (isAttendanceConfigIncompleteError(saveError)) {
+        notify(buildAttendanceConfigIncompleteMessage(saveError), {
+          type: "error",
+          multiLine: true,
+          autoHideDuration: 8000,
+        });
+
+        return;
+      }
+
+      showSaveError(saveError, {
+        setError,
+        setMsgError,
+      });
     }
   };
 
@@ -148,8 +171,9 @@ const SubjectTypeCreate = () => {
           bgcolor: "background.paper",
         }}
       >
-        <DocumentationContainer filename={"SubjectType.md"}>
-          <Title title={"Create Subject Type "} />
+        <DocumentationContainer filename="SubjectType.md">
+          <Title title="Create Subject Type" />
+
           <div className="container" style={{ float: "left" }}>
             <EditSubjectTypeFields
               subjectType={subjectType}
@@ -158,9 +182,10 @@ const SubjectTypeCreate = () => {
               formList={formList}
               groupValidationError={groupValidationError}
               dispatch={dispatch}
-              source={"create"}
+              source="create"
             />
-            {organisationConfig && organisationConfig.enableMessaging ? (
+
+            {organisationConfig?.enableMessaging ? (
               <MessageRules
                 templateFetchError={templateFetchError}
                 rules={rules}
@@ -170,32 +195,50 @@ const SubjectTypeCreate = () => {
                 entityTypeId={subjectType.subjectTypeId}
                 msgError={msgError}
               />
-            ) : (
-              <></>
-            )}
+            ) : null}
+
             <p />
+
             <AdvancedSettings
               subjectType={subjectType}
               dispatch={dispatch}
               locationTypes={locationTypes}
               formMappings={formMappings}
             />
+
             <div />
+
             {nameValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              <FormLabel
+                error
+                sx={{
+                  mt: "10px",
+                  fontSize: "12px",
+                }}
+              >
                 Empty name is not allowed.
               </FormLabel>
             )}
+
             {error !== "" && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              <FormLabel
+                error
+                sx={{
+                  mt: "10px",
+                  fontSize: "12px",
+                }}
+              >
                 {error}
               </FormLabel>
             )}
+
             <p />
+
             <SaveComponent onSubmit={onSubmit} name="Save" />
           </div>
         </DocumentationContainer>
       </Box>
+
       {successAlert && <div />}
     </>
   );
