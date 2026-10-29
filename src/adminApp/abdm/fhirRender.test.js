@@ -1,5 +1,5 @@
 // DEMO-ONLY abdm-hackathon
-import { summariseBundle } from "./fhirRender";
+import { summariseBundle, withoutAttachmentData } from "./fhirRender";
 import sample from "./__fixtures__/op-consultation-sample.json";
 
 describe("summariseBundle", () => {
@@ -50,5 +50,42 @@ describe("summariseBundle", () => {
       expect(s.rows).toEqual([]);
       expect(s.title).toBe("");
     });
+  });
+});
+
+// Every record our HIP shares carries a PDF copy as a DocumentReference (FhirBundleBuilder); on 29 Oct the Records
+// received tab showed it only as base64 inside the raw JSON (HIU_FLOW_110).
+const withPdf = {
+  resourceType: "Bundle",
+  entry: [
+    { resource: { resourceType: "Composition", title: "Visit" } },
+    {
+      resource: {
+        resourceType: "DocumentReference",
+        content: [{ attachment: { contentType: "application/pdf", title: "Visit note", data: "JVBERi0x" } }],
+      },
+    },
+  ],
+};
+
+describe("a record's PDF copy", () => {
+  it("lists a record's PDF copy", () => {
+    expect(summariseBundle(withPdf).attachments).toEqual([{ title: "Visit note", contentType: "application/pdf", data: "JVBERi0x" }]);
+  });
+
+  it("skips an attachment with no data, and never throws", () => {
+    const noData = {
+      entry: [{ resource: { resourceType: "DocumentReference", content: [{ attachment: { contentType: "application/pdf" } }] } }],
+    };
+    expect(summariseBundle(noData).attachments).toEqual([]);
+    expect(summariseBundle(null).attachments).toEqual([]);
+    expect(summariseBundle({ entry: [{ resource: { resourceType: "DocumentReference" } }] }).attachments).toEqual([]);
+  });
+
+  it("the raw view never carries the base64", () => {
+    const raw = JSON.stringify(withoutAttachmentData(withPdf));
+    expect(raw).toContain("<base64, 8 characters>");
+    expect(raw).not.toContain("JVBERi0x");
+    expect(JSON.stringify(withPdf)).toContain("JVBERi0x");
   });
 });

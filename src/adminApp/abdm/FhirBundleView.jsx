@@ -1,5 +1,6 @@
 // DEMO-ONLY abdm-hackathon
 import {
+  Button,
   Card,
   CardContent,
   Typography,
@@ -8,7 +9,7 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
-import { summariseBundle } from "./fhirRender";
+import { summariseBundle, withoutAttachmentData } from "./fhirRender";
 
 // FHIR dates are ISO UTC; shown in Indian time, as the health worker saw the visit.
 const displayDate = (value) => {
@@ -19,6 +20,16 @@ const displayDate = (value) => {
     dateStyle: "medium",
     timeStyle: "short",
   });
+};
+
+// Opens an attachment's base64 in a new tab. The address is freed a minute later, not at once, so the tab can load it.
+const openAttachment = (a) => {
+  const bytes = Uint8Array.from(window.atob(a.data), (ch) => ch.charCodeAt(0));
+  const url = URL.createObjectURL(
+    new Blob([bytes], { type: a.contentType || "application/octet-stream" }),
+  );
+  window.open(url, "_blank", "noopener");
+  window.setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
 };
 
 const FhirBundleView = ({ bundle }) => {
@@ -41,10 +52,21 @@ const FhirBundleView = ({ bundle }) => {
             ))}
           </TableBody>
         </Table>
+        {s.attachments.map((a, i) => (
+          <Button
+            key={i}
+            size="small"
+            variant="outlined"
+            style={{ marginTop: 8, marginRight: 8 }}
+            onClick={() => openAttachment(a)}
+          >
+            PDF copy{a.title ? `: ${a.title}` : ""}
+          </Button>
+        ))}
         <details style={{ marginTop: 8 }}>
           <summary>Raw FHIR JSON</summary>
           <pre style={{ overflow: "auto", maxHeight: 400 }}>
-            {JSON.stringify(bundle, null, 2)}
+            {JSON.stringify(withoutAttachmentData(bundle), null, 2)}
           </pre>
         </details>
       </CardContent>

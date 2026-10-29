@@ -16,7 +16,7 @@ const observationValue = (o) => {
 };
 
 export const summariseBundle = (bundle) => {
-  const out = { title: "", date: "", patientName: "", hipName: "", rows: [] };
+  const out = { title: "", date: "", patientName: "", hipName: "", rows: [], attachments: [] };
   try {
     const entries = (bundle && Array.isArray(bundle.entry) ? bundle.entry : []).filter((e) => e && e.resource);
     const byUrl = {};
@@ -47,8 +47,33 @@ export const summariseBundle = (bundle) => {
       label: (o.code && (o.code.text || (o.code.coding && o.code.coding[0] && o.code.coding[0].display))) || "Observation",
       value: observationValue(o),
     }));
+    // The PDF copy each record carries (FhirBundleBuilder writes it as a DocumentReference attachment).
+    ofType("DocumentReference").forEach((d) =>
+      (Array.isArray(d.content) ? d.content : []).forEach((c) => {
+        const a = c && c.attachment;
+        if (a && typeof a.data === "string" && a.data) {
+          out.attachments.push({ title: a.title || "", contentType: a.contentType || "", data: a.data });
+        }
+      }),
+    );
   } catch {
     // never throw; return what we have
   }
   return out;
+};
+
+// The bundle as the raw view shows it: every attachment's base64 replaced by its length, so a PDF copy does not fill
+// the page. The bundle given is not changed.
+export const withoutAttachmentData = (bundle) => {
+  const copy = JSON.parse(JSON.stringify(bundle === undefined ? null : bundle));
+  const strip = (node) => {
+    if (Array.isArray(node)) return node.forEach(strip);
+    if (!node || typeof node !== "object") return;
+    if (node.attachment && typeof node.attachment.data === "string") {
+      node.attachment.data = `<base64, ${node.attachment.data.length} characters>`;
+    }
+    Object.values(node).forEach(strip);
+  };
+  strip(copy);
+  return copy;
 };
