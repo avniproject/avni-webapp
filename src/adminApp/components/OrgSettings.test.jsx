@@ -5,13 +5,14 @@ import path from "path";
 import { OrgSettings } from "./OrgSettings";
 import { httpClient } from "common/utils/httpClient";
 
-// The real ToolTip imports react-markdown, an ES module Jest here cannot load, and fetches its
-// text on mount. Stubbed with a marker carrying the key it was asked for, so the test can check
-// which help text a switch's help button opens, and where that button sits.
-jest.mock("../../common/components/ToolTip", () => ({
-  ToolTip: ({ toolTipKey }) =>
-    require("react").createElement("span", { "data-tooltip-key": toolTipKey }),
+// Keep the real tooltip interaction while replacing its ESM Markdown renderer for Jest.
+jest.mock("react-markdown", () => ({
+  __esModule: true,
+  default: ({ children }) =>
+    require("react").createElement("div", null, children),
 }));
+jest.mock("rehype-raw", () => ({ __esModule: true, default: jest.fn() }));
+jest.mock("rehype-sanitize", () => ({ __esModule: true, default: jest.fn() }));
 jest.mock("common/utils/httpClient", () => ({
   httpClient: { fetchJson: jest.fn(), put: jest.fn() },
 }));
@@ -25,6 +26,14 @@ jest.mock("../../rootApp/ducks", () => ({
 jest.mock("react-redux", () => ({ useDispatch: () => jest.fn() }));
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+const toolTips = JSON.parse(
+  fs.readFileSync(
+    path.resolve(__dirname, "../../../public/documentation/toolTip.json"),
+    "utf8",
+  ),
+);
+const originalFetch = global.fetch;
 
 let container;
 let root;
@@ -63,11 +72,25 @@ const savedAs = (settings) => ({
 const clinicSharingSwitch = () =>
   container.querySelector('input[name="Enable clinic sharing"]');
 
+const disableFastSyncSwitch = () =>
+  container.querySelector('input[name="Turn off fast sync"]');
+
+const switchSettingsRow = (helpButton, settingSwitch) => {
+  let row = helpButton.parentElement;
+  while (row && !row.contains(settingSwitch)) {
+    row = row.parentElement;
+  }
+  return row;
+};
+
 const click = async (element) => {
   await act(async () => element.click());
 };
 
 beforeEach(() => {
+  global.fetch = jest.fn().mockResolvedValue({
+    json: async () => toolTips,
+  });
   httpClient.fetchJson.mockReset();
   httpClient.put.mockReset();
   container = document.createElement("div");
@@ -78,6 +101,14 @@ beforeEach(() => {
 afterEach(async () => {
   await act(async () => root.unmount());
   container.remove();
+});
+
+afterAll(() => {
+  if (originalFetch) {
+    global.fetch = originalFetch;
+  } else {
+    delete global.fetch;
+  }
 });
 
 describe("Enable clinic sharing switch", () => {
@@ -102,9 +133,8 @@ describe("Enable clinic sharing switch", () => {
     const helpButton = container.querySelector(
       '[data-tooltip-key="ADMIN_ENABLE_CLINIC_SHARING"]',
     );
-    // ToolTipContainer draws one flex row: the control, then the help button.
-    const row = helpButton.parentElement.parentElement;
-    expect(row.contains(clinicSharingSwitch())).toBe(true);
+    const row = switchSettingsRow(helpButton, clinicSharingSwitch());
+    expect(row.style.display).toBe("flex");
   });
 
   it("sends only enableClinicSharing: true when switched on", async () => {
@@ -153,7 +183,62 @@ describe("Enable clinic sharing switch", () => {
 });
 
 describe("Enable clinic sharing help text", () => {
-  // The help button fetches this file and shows "No key found" for a key it lacks.
+  it("opens and displays its help text", async () => {
+    await openSettings({});
+    const helpButton = container.querySelector(
+      '[data-tooltip-key="ADMIN_ENABLE_CLINIC_SHARING"]',
+    );
+    const row = switchSettingsRow(helpButton, clinicSharingSwitch());
+    expect(row.style.display).toBe("flex");
+    await click(helpButton);
+    expect(container.textContent).toContain(
+      "Lets staff in a mobile clinic share patient records",
+    );
+  });
+});
+
+describe("Turn off fast sync switch", () => {
+  it("is on the organisation settings page and defaults off", async () => {
+    await openSettings({});
+    expect(disableFastSyncSwitch()).not.toBeNull();
+    expect(disableFastSyncSwitch().checked).toBe(false);
+    expect(container.textContent).toContain("Turn off fast sync");
+  });
+
+  it("reflects the saved setting", async () => {
+    await openSettings({ disableFastSync: true });
+    expect(disableFastSyncSwitch().checked).toBe(true);
+  });
+
+  it("saves the setting when switched on", async () => {
+    httpClient.put.mockResolvedValue(savedAs({ disableFastSync: true }));
+    await openSettings({});
+    await click(disableFastSyncSwitch());
+    expect(httpClient.put).toHaveBeenCalledWith("/organisationConfig", {
+      settings: { disableFastSync: true },
+    });
+    expect(disableFastSyncSwitch().checked).toBe(true);
+  });
+
+  it("saves the setting when switched off", async () => {
+    httpClient.put.mockResolvedValue(savedAs({ disableFastSync: false }));
+    await openSettings({ disableFastSync: true });
+    await click(disableFastSyncSwitch());
+    expect(httpClient.put).toHaveBeenCalledWith("/organisationConfig", {
+      settings: { disableFastSync: false },
+    });
+    expect(disableFastSyncSwitch().checked).toBe(false);
+  });
+
+  it("cannot be changed by a user without permission to edit organisation settings", async () => {
+    await openSettings({}, { hasEditPrivilege: false });
+    expect(disableFastSyncSwitch().disabled).toBe(true);
+    await click(disableFastSyncSwitch());
+    expect(httpClient.put).not.toHaveBeenCalled();
+  });
+});
+
+describe("Turn off fast sync help text", () => {
   const toolTips = JSON.parse(
     fs.readFileSync(
       path.resolve(__dirname, "../../../public/documentation/toolTip.json"),
@@ -161,15 +246,25 @@ describe("Enable clinic sharing help text", () => {
     ),
   );
 
-  it("is there for the key the switch's help button asks for", async () => {
+  it("explains the effects of turning off fast sync", async () => {
     await openSettings({});
-    const helpButton = [
-      ...container.querySelectorAll("[data-tooltip-key]"),
-    ].find((button) =>
-      button.parentElement.parentElement.contains(clinicSharingSwitch()),
+    const helpButton = container.querySelector(
+      '[data-tooltip-key="ADMIN_DISABLE_FAST_SYNC"]',
     );
-    const helpText = toolTips[helpButton.getAttribute("data-tooltip-key")];
-    expect(typeof helpText).toBe("string");
-    expect(helpText.trim()).not.toBe("");
+    const row = switchSettingsRow(helpButton, disableFastSyncSwitch());
+    expect(row.style.display).toBe("flex");
+    expect(helpButton.tagName).toBe("BUTTON");
+    expect(helpButton.getAttribute("aria-label")).toBe("Show help");
+    expect(helpButton.getAttribute("aria-expanded")).toBe("false");
+
+    await click(helpButton);
+
+    expect(helpButton.getAttribute("aria-expanded")).toBe("true");
+    expect(helpButton.getAttribute("aria-describedby")).toBe(
+      helpButton.getAttribute("aria-controls"),
+    );
+    expect(container.querySelector('[role="tooltip"]').textContent).toContain(
+      "Field users will no longer see Setup fast sync. New phones will do a full first sync. Existing fast sync files are kept, and server-built snapshots are not affected.",
+    );
   });
 });

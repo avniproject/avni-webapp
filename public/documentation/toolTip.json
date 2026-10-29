@@ -184,6 +184,7 @@
   "ADMIN_HIDE_VISIT_DATE": "Hides the auto-populated Visit Date field on general and program encounter forms in the mobile app. The visit date is still captured and saved.",
   "ADMIN_ENABLE_COMMENTS": "Enable the comments feature.",
   "ADMIN_ENABLE_CLINIC_SHARING": "Lets staff in a mobile clinic share patient records between their phones without internet. Users see the Clinic sharing menu in the field app after their next sync, on phones that use SQLite.",
+  "ADMIN_DISABLE_FAST_SYNC": "Field users will no longer see Setup fast sync. New phones will do a full first sync. Existing fast sync files are kept, and server-built snapshots are not affected.",
   "ADMIN_ENABLE_MOBILE_APP_DB_ENCRYPTION": "Enables mobile app database encryption to ensure safety of data. Enabling this will not permit user to use fast sync and upload db feature in mobile app.",
   "ADMIN_ENABLE_CANNED_REPORTS": "Enable canned reporting app.",
   "ADMIN_SHOW_SUMMARY_BUTTON": "Display summary button in the forms on field app.",
