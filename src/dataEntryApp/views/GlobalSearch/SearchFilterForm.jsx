@@ -22,7 +22,7 @@ import NonConceptForm from "../GlobalSearch/NonConceptForm";
 import CodedConceptForm from "../GlobalSearch/CodedConceptForm";
 import CheckBoxSearchComponent from "./CheckBoxSearchComponent";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
-import { format, isValid, parseISO } from "date-fns";
+import { format, isValid, parse, parseISO } from "date-fns";
 import { store } from "../../../common/store";
 import { types, saveSearchRequest } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
@@ -39,12 +39,25 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const StyledTypography = styled(Typography)({ fontSize: 20 });
 
-export const toConceptPickerValue = (conceptDataType, value) =>
-  ["Date", "DateTime"].includes(conceptDataType) &&
-  _.isString(value) &&
-  isValid(parseISO(value))
-    ? parseISO(value)
-    : value;
+export const toConceptPickerValue = (conceptDataType, value) => {
+  if (!_.isString(value)) return value;
+  if (
+    ["Date", "DateTime"].includes(conceptDataType) &&
+    isValid(parseISO(value))
+  )
+    return parseISO(value);
+  if (conceptDataType === "Time" && isValid(parse(value, "HH:mm", new Date())))
+    return parse(value, "HH:mm", new Date());
+  return value;
+};
+
+export const toConceptRequestValue = (conceptDataType, value) => {
+  if (!value || !isValid(new Date(value))) return null;
+  const date = new Date(value);
+  if (conceptDataType === "DateTime") return date.toISOString();
+  if (conceptDataType === "Time") return format(date, "HH:mm");
+  return format(date, "yyyy-MM-dd");
+};
 
 const StyledButtons = styled("div")(({ theme }) => ({
   "& > *": { margin: theme.spacing(1) },
@@ -183,6 +196,7 @@ export const SearchForm = ({
           Coded: { ...c, values: [] },
           Text: { ...c, value: "" },
           Id: { ...c, value: "" },
+          Notes: { ...c, value: "" },
         };
         return def[c.conceptDataType];
       });
@@ -232,6 +246,7 @@ export const SearchForm = ({
           return c.values.length > 0;
         case "Text":
         case "Id":
+        case "Notes":
           return c.value;
         case "Numeric":
           return c.widget === "Range" ? c.minValue && c.maxValue : c.minValue;
@@ -245,14 +260,8 @@ export const SearchForm = ({
       if (["Date", "DateTime", "Time"].includes(r.conceptDataType)) {
         return {
           uuid: r.conceptUUID,
-          minValue:
-            r.minValue && isValid(new Date(r.minValue))
-              ? format(new Date(r.minValue), "yyyy-MM-dd")
-              : null,
-          maxValue:
-            r.maxValue && isValid(new Date(r.maxValue))
-              ? format(new Date(r.maxValue), "yyyy-MM-dd")
-              : null,
+          minValue: toConceptRequestValue(r.conceptDataType, r.minValue),
+          maxValue: toConceptRequestValue(r.conceptDataType, r.maxValue),
           searchScope: r.scope,
           dataType: r.conceptDataType,
           widget: r.widget,
@@ -267,7 +276,7 @@ export const SearchForm = ({
           values: r.values,
         };
       }
-      if (["Text", "Id"].includes(r.conceptDataType)) {
+      if (["Text", "Id", "Notes"].includes(r.conceptDataType)) {
         return {
           uuid: r.conceptUUID,
           searchScope: r.scope,
@@ -486,7 +495,7 @@ const searchFilterConcept = function (
               ...concept,
             };
           }
-        } else if (["Text", "Id"].includes(concept.conceptDataType)) {
+        } else if (["Text", "Id", "Notes"].includes(concept.conceptDataType)) {
           if (concept.conceptUUID === searchFilterForm.conceptUUID) {
             const selectedText = event.target.value;
             return {

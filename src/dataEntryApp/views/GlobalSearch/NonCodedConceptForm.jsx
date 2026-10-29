@@ -56,7 +56,9 @@ function NonCodedConceptForm({
           );
           return searchFilterForm.type === "Concept" &&
             searchFilterForm.conceptDataType !== "Coded" ? (
-            ["Text", "Id"].includes(searchFilterForm.conceptDataType) ? (
+            ["Text", "Id", "Notes"].includes(
+              searchFilterForm.conceptDataType,
+            ) ? (
               <Grid key={index} size={12}>
                 <StyledTypography variant="body1" sx={{ mb: 1 }}>
                   {t(searchFilterForm.titleKey)}
