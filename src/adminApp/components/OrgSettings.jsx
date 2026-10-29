@@ -80,6 +80,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
     copilotFormValidationApiKey: "copilotFormValidationApiKey",
     guideUserToRegisterButton: "guideUserToRegisterButton",
     enableSqliteSnapshotGeneration: "enableSqliteSnapshotGeneration",
+    disableFastSync: "disableFastSync",
   };
 
   const getDefaultSnackbarStatus = (defaultSnackbarStatus) => {
@@ -172,6 +173,11 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
           organisationConfigSettingKeys.enableSqliteSnapshotGeneration,
           "Enable SQLite snapshot generation",
           "ENABLE_SQLITE_SNAPSHOT_GENERATION",
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.disableFastSync,
+          "Turn off fast sync",
+          "ADMIN_DISABLE_FAST_SYNC",
         )}
         <AvniTextField
           style={{ marginLeft: 8, marginTop: 10 }}

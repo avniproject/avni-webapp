@@ -63,6 +63,9 @@ const savedAs = (settings) => ({
 const clinicSharingSwitch = () =>
   container.querySelector('input[name="Enable clinic sharing"]');
 
+const disableFastSyncSwitch = () =>
+  container.querySelector('input[name="Turn off fast sync"]');
+
 const click = async (element) => {
   await act(async () => element.click());
 };
@@ -171,5 +174,70 @@ describe("Enable clinic sharing help text", () => {
     const helpText = toolTips[helpButton.getAttribute("data-tooltip-key")];
     expect(typeof helpText).toBe("string");
     expect(helpText.trim()).not.toBe("");
+  });
+});
+
+describe("Turn off fast sync switch", () => {
+  it("is on the organisation settings page and defaults off", async () => {
+    await openSettings({});
+    expect(disableFastSyncSwitch()).not.toBeNull();
+    expect(disableFastSyncSwitch().checked).toBe(false);
+    expect(container.textContent).toContain("Turn off fast sync");
+  });
+
+  it("reflects the saved setting", async () => {
+    await openSettings({ disableFastSync: true });
+    expect(disableFastSyncSwitch().checked).toBe(true);
+  });
+
+  it("saves the setting when switched on", async () => {
+    httpClient.put.mockResolvedValue(savedAs({ disableFastSync: true }));
+    await openSettings({});
+    await click(disableFastSyncSwitch());
+    expect(httpClient.put).toHaveBeenCalledWith("/organisationConfig", {
+      settings: { disableFastSync: true },
+    });
+    expect(disableFastSyncSwitch().checked).toBe(true);
+  });
+
+  it("saves the setting when switched off", async () => {
+    httpClient.put.mockResolvedValue(savedAs({ disableFastSync: false }));
+    await openSettings({ disableFastSync: true });
+    await click(disableFastSyncSwitch());
+    expect(httpClient.put).toHaveBeenCalledWith("/organisationConfig", {
+      settings: { disableFastSync: false },
+    });
+    expect(disableFastSyncSwitch().checked).toBe(false);
+  });
+
+  it("cannot be changed by a user without permission to edit organisation settings", async () => {
+    await openSettings({}, { hasEditPrivilege: false });
+    expect(disableFastSyncSwitch().disabled).toBe(true);
+    await click(disableFastSyncSwitch());
+    expect(httpClient.put).not.toHaveBeenCalled();
+  });
+});
+
+describe("Turn off fast sync help text", () => {
+  const toolTips = JSON.parse(
+    fs.readFileSync(
+      path.resolve(__dirname, "../../../public/documentation/toolTip.json"),
+      "utf8",
+    ),
+  );
+
+  it("explains the effects of turning off fast sync", async () => {
+    await openSettings({});
+    const helpButton = container.querySelector(
+      '[data-tooltip-key="ADMIN_DISABLE_FAST_SYNC"]',
+    );
+    const helpText = toolTips[helpButton.getAttribute("data-tooltip-key")];
+    expect(
+      helpButton.parentElement.parentElement.contains(disableFastSyncSwitch()),
+    ).toBe(true);
+    expect(helpText).toContain("no longer see Setup fast sync");
+    expect(helpText).toContain("full first sync");
+    expect(helpText).toContain("Existing fast sync files are kept");
+    expect(helpText).toContain("server-built snapshots are not affected");
   });
 });
