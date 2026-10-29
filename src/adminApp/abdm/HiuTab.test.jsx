@@ -12,6 +12,7 @@ jest.mock("./api", () => ({
     Promise.resolve({ uuid: "u-1", status: "REQUESTED" }),
   ),
   getConsentRecords: jest.fn(() => Promise.resolve([])),
+  approveConsentEka: jest.fn(() => Promise.resolve({ ok: true })),
 }));
 jest.mock("../../common/utils/httpClient", () => ({
   __esModule: true,
@@ -125,6 +126,39 @@ describe("HIU · Request records", () => {
     expect(text).toContain("25 Nov 2026");
     expect(text).toContain("REQUESTED 25 Oct 2026");
     expect(text).toContain("GRANTED 25 Oct 2026");
+  });
+});
+
+describe("Approving in Eka's sandbox", () => {
+  // Eka can take more than 10 s to approve; a second press then raised a second artefact (26 Oct rehearsal).
+  it("approve is disabled while Eka answers, and enabled again after", async () => {
+    api.getConsentRequests.mockResolvedValue([
+      {
+        uuid: "u-1",
+        abhaAddress: "ramesh.gond@sbx",
+        consentRequestId: "cr-1",
+        status: "REQUESTED",
+        statusHistory: [
+          { status: "REQUESTED", at: "2026-10-29T05:24:42.000Z" },
+        ],
+        createdAt: "2026-10-29T05:24:42.000Z",
+        artefacts: [],
+      },
+    ]);
+    let answer;
+    api.approveConsentEka.mockImplementation(
+      () => new Promise((resolve) => (answer = resolve)),
+    );
+    await render(<HiuTab onViewRecords={() => {}} />);
+
+    await click(button("Approv"));
+
+    expect(button("Approv").disabled).toBe(true);
+    expect(api.approveConsentEka).toHaveBeenCalledWith("cr-1");
+
+    await act(async () => answer({ ok: true }));
+
+    expect(button("Approv").disabled).toBe(false);
   });
 });
 
