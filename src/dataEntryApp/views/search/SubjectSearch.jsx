@@ -4,20 +4,23 @@ import { Cancel } from "@mui/icons-material";
 import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { types } from "../../reducers/searchFilterReducer";
+import {
+  types,
+  SEARCH_REQUEST_SESSION_STORAGE_KEY,
+} from "../../reducers/searchFilterReducer";
 import { isEmpty } from "lodash";
 import { getOrganisationConfig } from "../../reducers/metadataReducer";
 
 const StyledPaper = styled(Paper)({
   padding: "1.5rem",
   margin: "2rem 1rem",
-  elevation: 2
+  elevation: 2,
 });
 
 const StyledGrid = styled(Grid)({
   marginBottom: "1%",
   justifyContent: "space-between",
-  alignItems: "baseline"
+  alignItems: "baseline",
 });
 
 const StyledTypography = styled(Typography)({
@@ -25,24 +28,24 @@ const StyledTypography = styled(Typography)({
   fontWeight: "500",
   float: "left",
   paddingTop: "1%",
-  paddingLeft: "4px"
+  paddingLeft: "4px",
 });
 
 const StyledButton = styled(Button)({
-  color: "#212529"
+  color: "#212529",
 });
 
 const StyledCancel = styled(Cancel)({
-  fontSize: "12px"
+  fontSize: "12px",
 });
 
 const SubjectSearch = () => {
   const dispatch = useDispatch();
   const searchRequest = useSelector(
-    state => state.dataEntry.searchFilterReducer.request
+    (state) => state.dataEntry.searchFilterReducer.request,
   );
   const organisationConfigs = useSelector(
-    state => state.dataEntry.metadata.organisationConfigs
+    (state) => state.dataEntry.metadata.organisationConfigs,
   );
 
   useEffect(() => {
@@ -53,9 +56,13 @@ const SubjectSearch = () => {
 
   const { t } = useTranslation();
   const resetClick = () => {
+    sessionStorage.removeItem(SEARCH_REQUEST_SESSION_STORAGE_KEY);
     dispatch({
       type: types.ADD_SEARCH_REQUEST,
-      value: { includeVoided: false }
+      value: {
+        includeVoided: false,
+        includeDisplayCount: false,
+      },
     });
   };
 

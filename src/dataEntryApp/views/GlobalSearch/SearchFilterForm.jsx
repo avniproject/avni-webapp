@@ -24,7 +24,10 @@ import CheckBoxSearchComponent from "./CheckBoxSearchComponent";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { format, isValid } from "date-fns";
 import { store } from "../../../common/store";
-import { types } from "../../reducers/searchFilterReducer";
+import {
+  types,
+  SEARCH_REQUEST_SESSION_STORAGE_KEY,
+} from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import SubjectTypeOptions from "./SubjectTypeOptions";
@@ -320,9 +323,19 @@ export const SearchForm = ({
       },
       searchAll: enterValue.searchAll,
     };
-
-    if (_.isFunction(onSearch)) onSearch(req);
-    else store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: req });
+    if (_.isFunction(onSearch)) {
+      onSearch(req);
+    } else {
+      try {
+        sessionStorage.setItem(
+          SEARCH_REQUEST_SESSION_STORAGE_KEY,
+          JSON.stringify(req),
+        );
+      } catch (error) {
+        console.error("Failed to save search request:", error);
+      }
+      store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: req });
+    }
   };
 
   return (

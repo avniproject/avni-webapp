@@ -19,7 +19,7 @@ import {
   createAiApi,
   SESSION_STORAGE_KEY as AI_SESSION_STORAGE_KEY,
 } from "../common/components/aiAssistant/api";
-
+import { SEARCH_REQUEST_SESSION_STORAGE_KEY } from "../dataEntryApp/reducers/searchFilterReducer";
 const api = {
   fetchUserInfo: () =>
     http.fetchJson("/web/userInfo").then((response) => response.json),
@@ -113,9 +113,9 @@ function* setAdminOrgsWorker() {
   const organisations = yield call(api.fetchAdminOrgs);
   yield put(setAdminOrgs(organisations));
 }
-
 function* logoutWorker() {
   try {
+    sessionStorage.removeItem(SEARCH_REQUEST_SESSION_STORAGE_KEY);
     yield call(invalidateAiAssistantSession);
     yield call(api.logout);
     // Preserve version key to prevent false migration messages after logout
