@@ -22,11 +22,11 @@ const displayDate = (value) => {
   });
 };
 
-// Opens an attachment's base64 in a new tab. The address is freed a minute later, not at once, so the tab can load it.
+// Opens a PDF copy's base64 in a new tab, always as a PDF whatever the record claims. The address is freed a minute later, not at once, so the tab can load it.
 const openAttachment = (a) => {
   const bytes = Uint8Array.from(window.atob(a.data), (ch) => ch.charCodeAt(0));
   const url = URL.createObjectURL(
-    new Blob([bytes], { type: a.contentType || "application/octet-stream" }),
+    new Blob([bytes], { type: "application/pdf" }),
   );
   window.open(url, "_blank", "noopener");
   window.setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);

@@ -82,6 +82,18 @@ describe("a record's PDF copy", () => {
     expect(summariseBundle({ entry: [{ resource: { resourceType: "DocumentReference" } }] }).attachments).toEqual([]);
   });
 
+  // Opened from the admin page's own address, an HTML or SVG attachment could read the admin's login: only a PDF is
+  // offered (final review, 29 Oct).
+  it("offers only a PDF, never another kind of attachment", () => {
+    const of = (contentType) => ({
+      entry: [{ resource: { resourceType: "DocumentReference", content: [{ attachment: { contentType, data: "PGh0bWw+" } }] } }],
+    });
+    expect(summariseBundle(of("text/html")).attachments).toEqual([]);
+    expect(summariseBundle(of("image/svg+xml")).attachments).toEqual([]);
+    expect(summariseBundle(of(undefined)).attachments).toEqual([]);
+    expect(summariseBundle(of("application/pdf; charset=binary")).attachments.length).toBe(1);
+  });
+
   it("the raw view never carries the base64", () => {
     const raw = JSON.stringify(withoutAttachmentData(withPdf));
     expect(raw).toContain("<base64, 8 characters>");

@@ -58,6 +58,19 @@ describe("FhirBundleView", () => {
     expect(pdfButtons().length).toBe(0);
   });
 
+  it("offers no button for an attachment that is not a PDF", async () => {
+    await render(
+      <FhirBundleView
+        bundle={record({
+          contentType: "text/html",
+          title: "Page",
+          data: "PGh0bWw+",
+        })}
+      />,
+    );
+    expect(pdfButtons().length).toBe(0);
+  });
+
   it("the raw FHIR JSON does not print the base64", async () => {
     await render(
       <FhirBundleView

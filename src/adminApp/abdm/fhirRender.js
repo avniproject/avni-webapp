@@ -47,11 +47,13 @@ export const summariseBundle = (bundle) => {
       label: (o.code && (o.code.text || (o.code.coding && o.code.coding[0] && o.code.coding[0].display))) || "Observation",
       value: observationValue(o),
     }));
-    // The PDF copy each record carries (FhirBundleBuilder writes it as a DocumentReference attachment).
+    // The PDF copy each record carries (FhirBundleBuilder writes it as a DocumentReference attachment). Only a PDF is
+    // offered: the admin page opens it under its own address, where an HTML or SVG attachment could read the login.
     ofType("DocumentReference").forEach((d) =>
       (Array.isArray(d.content) ? d.content : []).forEach((c) => {
         const a = c && c.attachment;
-        if (a && typeof a.data === "string" && a.data) {
+        const isPdf = a && typeof a.contentType === "string" && a.contentType.split(";")[0].trim().toLowerCase() === "application/pdf";
+        if (isPdf && typeof a.data === "string" && a.data) {
           out.attachments.push({ title: a.title || "", contentType: a.contentType || "", data: a.data });
         }
       }),
