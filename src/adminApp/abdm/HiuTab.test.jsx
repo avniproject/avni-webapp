@@ -130,7 +130,6 @@ describe("HIU · Request records", () => {
 });
 
 describe("Approving in Eka's sandbox", () => {
-  // Eka can take more than 10 s to approve; a second press then raised a second artefact (26 Oct rehearsal).
   it("approve is disabled while Eka answers, and enabled again after", async () => {
     api.getConsentRequests.mockResolvedValue([
       {
@@ -159,6 +158,40 @@ describe("Approving in Eka's sandbox", () => {
     await act(async () => answer({ ok: true }));
 
     expect(button("Approv").disabled).toBe(false);
+  });
+});
+
+describe("Approving two requests at once", () => {
+  it("keeps each request's Approve disabled until Eka answers for that request", async () => {
+    const row = (uuid, id) => ({
+      uuid,
+      abhaAddress: "ramesh.gond@sbx",
+      consentRequestId: id,
+      status: "REQUESTED",
+      statusHistory: [{ status: "REQUESTED", at: "2026-10-29T05:24:42.000Z" }],
+      createdAt: "2026-10-29T05:24:42.000Z",
+      artefacts: [],
+    });
+    api.getConsentRequests.mockResolvedValue([
+      row("u-1", "cr-1"),
+      row("u-2", "cr-2"),
+    ]);
+    const answers = {};
+    api.approveConsentEka.mockImplementation(
+      (id) => new Promise((resolve) => (answers[id] = resolve)),
+    );
+    await render(<HiuTab onViewRecords={() => {}} />);
+    const approveButtons = () =>
+      [...container.querySelectorAll("button")].filter((b) =>
+        b.textContent.includes("Approv"),
+      );
+
+    await click(approveButtons()[0]);
+    await click(approveButtons()[1]);
+    expect(approveButtons().map((b) => b.disabled)).toEqual([true, true]);
+
+    await act(async () => answers["cr-1"]({ ok: true }));
+    expect(approveButtons().map((b) => b.disabled)).toEqual([false, true]);
   });
 });
 

@@ -15,6 +15,17 @@ const observationValue = (o) => {
   return v === undefined ? "" : String(v);
 };
 
+const walk = (node, visit) => {
+  if (Array.isArray(node)) return node.forEach((n) => walk(n, visit));
+  if (!node || typeof node !== "object") return;
+  visit(node);
+  Object.values(node).forEach((n) => walk(n, visit));
+};
+
+const isAttachment = (n) => typeof n.data === "string" && typeof n.contentType === "string";
+
+const isPdf = (n) => n.contentType.split(";")[0].trim().toLowerCase() === "application/pdf";
+
 export const summariseBundle = (bundle) => {
   const out = { title: "", date: "", patientName: "", hipName: "", rows: [], attachments: [] };
   try {
@@ -47,16 +58,13 @@ export const summariseBundle = (bundle) => {
       label: (o.code && (o.code.text || (o.code.coding && o.code.coding[0] && o.code.coding[0].display))) || "Observation",
       value: observationValue(o),
     }));
-    // The PDF copy each record carries (FhirBundleBuilder writes it as a DocumentReference attachment). Only a PDF is
-    // offered: the admin page opens it under its own address, where an HTML or SVG attachment could read the login.
-    ofType("DocumentReference").forEach((d) =>
-      (Array.isArray(d.content) ? d.content : []).forEach((c) => {
-        const a = c && c.attachment;
-        const isPdf = a && typeof a.contentType === "string" && a.contentType.split(";")[0].trim().toLowerCase() === "application/pdf";
-        if (isPdf && typeof a.data === "string" && a.data) {
-          out.attachments.push({ title: a.title || "", contentType: a.contentType || "", data: a.data });
+    walk(
+      entries.map((e) => e.resource),
+      (n) => {
+        if (isAttachment(n) && n.data && isPdf(n)) {
+          out.attachments.push({ title: n.title || "", contentType: n.contentType, data: n.data });
         }
-      }),
+      },
     );
   } catch {
     // never throw; return what we have
@@ -64,18 +72,10 @@ export const summariseBundle = (bundle) => {
   return out;
 };
 
-// The bundle as the raw view shows it: every attachment's base64 replaced by its length, so a PDF copy does not fill
-// the page. The bundle given is not changed.
 export const withoutAttachmentData = (bundle) => {
   const copy = JSON.parse(JSON.stringify(bundle === undefined ? null : bundle));
-  const strip = (node) => {
-    if (Array.isArray(node)) return node.forEach(strip);
-    if (!node || typeof node !== "object") return;
-    if (node.attachment && typeof node.attachment.data === "string") {
-      node.attachment.data = `<base64, ${node.attachment.data.length} characters>`;
-    }
-    Object.values(node).forEach(strip);
-  };
-  strip(copy);
+  walk(copy, (n) => {
+    if (isAttachment(n)) n.data = `<base64, ${n.data.length} characters>`;
+  });
   return copy;
 };

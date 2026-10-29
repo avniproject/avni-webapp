@@ -436,8 +436,7 @@ export const HiuTab = ({ onViewRecords }) => {
   });
   const [requests, setRequests] = useState([]);
   const [err, setErr] = useState(null);
-  // The consent request Eka is approving: its button waits for Eka's answer, which can take more than 10 s.
-  const [approving, setApproving] = useState(null);
+  const [approving, setApproving] = useState(() => new Set());
   const poll = usePoll();
   const load = useCallback(
     () =>
@@ -479,10 +478,16 @@ export const HiuTab = ({ onViewRecords }) => {
   };
   const approve = (id) => () => {
     setErr(null);
-    setApproving(id);
+    setApproving((ids) => new Set(ids).add(id));
     api
       .approveConsentEka(id)
-      .finally(() => setApproving(null))
+      .finally(() =>
+        setApproving((ids) => {
+          const left = new Set(ids);
+          left.delete(id);
+          return left;
+        }),
+      )
       .then(() => load().then(startPoll))
       .catch((e) => setErr(msg(e)));
   };
@@ -637,11 +642,11 @@ export const HiuTab = ({ onViewRecords }) => {
                   <Button
                     size="small"
                     variant="contained"
-                    disabled={approving === r.consentRequestId}
+                    disabled={approving.has(r.consentRequestId)}
                     onClick={approve(r.consentRequestId)}
                     style={{ marginRight: 4 }}
                   >
-                    {approving === r.consentRequestId
+                    {approving.has(r.consentRequestId)
                       ? "Approving…"
                       : "Approve in Eka sandbox"}
                   </Button>

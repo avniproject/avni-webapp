@@ -53,8 +53,6 @@ describe("summariseBundle", () => {
   });
 });
 
-// Every record our HIP shares carries a PDF copy as a DocumentReference (FhirBundleBuilder); on 29 Oct the Records
-// received tab showed it only as base64 inside the raw JSON (HIU_FLOW_110).
 const withPdf = {
   resourceType: "Bundle",
   entry: [
@@ -82,8 +80,6 @@ describe("a record's PDF copy", () => {
     expect(summariseBundle({ entry: [{ resource: { resourceType: "DocumentReference" } }] }).attachments).toEqual([]);
   });
 
-  // Opened from the admin page's own address, an HTML or SVG attachment could read the admin's login: only a PDF is
-  // offered (final review, 29 Oct).
   it("offers only a PDF, never another kind of attachment", () => {
     const of = (contentType) => ({
       entry: [{ resource: { resourceType: "DocumentReference", content: [{ attachment: { contentType, data: "PGh0bWw+" } }] } }],
@@ -92,6 +88,36 @@ describe("a record's PDF copy", () => {
     expect(summariseBundle(of("image/svg+xml")).attachments).toEqual([]);
     expect(summariseBundle(of(undefined)).attachments).toEqual([]);
     expect(summariseBundle(of("application/pdf; charset=binary")).attachments.length).toBe(1);
+  });
+
+  it("offers a PDF from a lab report or a Binary as well", () => {
+    const b = {
+      entry: [
+        {
+          resource: {
+            resourceType: "DiagnosticReport",
+            presentedForm: [{ contentType: "application/pdf", title: "Lab report", data: "JVBERi0y" }],
+          },
+        },
+        { resource: { resourceType: "Binary", contentType: "application/pdf", data: "JVBERi0z" } },
+      ],
+    };
+    expect(summariseBundle(b).attachments).toEqual([
+      { title: "Lab report", contentType: "application/pdf", data: "JVBERi0y" },
+      { title: "", contentType: "application/pdf", data: "JVBERi0z" },
+    ]);
+  });
+
+  it("the raw view never carries base64 wherever the record keeps it", () => {
+    const b = {
+      entry: [
+        { resource: { resourceType: "DiagnosticReport", presentedForm: [{ contentType: "application/pdf", data: "JVBERi0y" }] } },
+        { resource: { resourceType: "Binary", contentType: "image/png", data: "iVBORw0K" } },
+      ],
+    };
+    const raw = JSON.stringify(withoutAttachmentData(b));
+    expect(raw).not.toContain("JVBERi0y");
+    expect(raw).not.toContain("iVBORw0K");
   });
 
   it("the raw view never carries the base64", () => {

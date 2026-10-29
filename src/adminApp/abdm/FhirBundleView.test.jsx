@@ -1,5 +1,4 @@
 // DEMO-ONLY abdm-hackathon
-// A received record on the Records received tab (HIU_FLOW_110).
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import FhirBundleView from "./FhirBundleView";
