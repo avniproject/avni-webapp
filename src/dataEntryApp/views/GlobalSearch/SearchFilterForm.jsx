@@ -22,9 +22,9 @@ import NonConceptForm from "../GlobalSearch/NonConceptForm";
 import CodedConceptForm from "../GlobalSearch/CodedConceptForm";
 import CheckBoxSearchComponent from "./CheckBoxSearchComponent";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
-import { format, isValid } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 import { store } from "../../../common/store";
-import { types } from "../../reducers/searchFilterReducer";
+import { types, saveSearchRequest } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import SubjectTypeOptions from "./SubjectTypeOptions";
@@ -38,6 +38,13 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 const StyledTypography = styled(Typography)({ fontSize: 20 });
+
+export const toConceptPickerValue = (conceptDataType, value) =>
+  ["Date", "DateTime"].includes(conceptDataType) &&
+  _.isString(value) &&
+  isValid(parseISO(value))
+    ? parseISO(value)
+    : value;
 
 const StyledButtons = styled("div")(({ theme }) => ({
   "& > *": { margin: theme.spacing(1) },
@@ -185,9 +192,23 @@ export const SearchForm = ({
   // Update selected concepts when search filter changes
   useEffect(() => {
     const initialConceptList = getInitialConceptList(selectedSearchFilter);
-    const allConceptRelated = _.map(initialConceptList, (itm) =>
-      _.merge(itm, _.find(concept, { uuid: itm.conceptUUID })),
-    );
+    const allConceptRelated = _.map(initialConceptList, (itm) => {
+      const savedConcept = _.find(concept, { uuid: itm.conceptUUID });
+      return _.merge(
+        itm,
+        savedConcept && {
+          ...savedConcept,
+          minValue: toConceptPickerValue(
+            itm.conceptDataType,
+            savedConcept.minValue,
+          ),
+          maxValue: toConceptPickerValue(
+            itm.conceptDataType,
+            savedConcept.maxValue,
+          ),
+        },
+      );
+    });
     setSelectedConcept(allConceptRelated);
   }, [selectedSearchFilter, concept]);
 
@@ -322,7 +343,10 @@ export const SearchForm = ({
     };
 
     if (_.isFunction(onSearch)) onSearch(req);
-    else store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: req });
+    else {
+      saveSearchRequest(req);
+      store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: req });
+    }
   };
 
   return (

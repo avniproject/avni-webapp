@@ -4,7 +4,10 @@ import { Cancel } from "@mui/icons-material";
 import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { types } from "../../reducers/searchFilterReducer";
+import {
+  types,
+  clearSavedSearchRequest
+} from "../../reducers/searchFilterReducer";
 import { isEmpty } from "lodash";
 import { getOrganisationConfig } from "../../reducers/metadataReducer";
 
@@ -53,6 +56,7 @@ const SubjectSearch = () => {
 
   const { t } = useTranslation();
   const resetClick = () => {
+    clearSavedSearchRequest();
     dispatch({
       type: types.ADD_SEARCH_REQUEST,
       value: { includeVoided: false }

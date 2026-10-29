@@ -14,6 +14,7 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import { get, isEmpty } from "lodash";
 import * as Auth from "aws-amplify/auth";
+import { clearSavedSearchRequest } from "../dataEntryApp/reducers/searchFilterReducer";
 import { authProvider } from "adminApp/react-admin-config/authProvider";
 import {
   createAiApi,
@@ -125,6 +126,7 @@ function* logoutWorker() {
       localStorage.setItem("avni_app_version", versionKey);
     }
     clearCookies();
+    clearSavedSearchRequest();
 
     yield call([authProvider, authProvider.logout], {});
 
