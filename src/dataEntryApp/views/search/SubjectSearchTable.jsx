@@ -136,6 +136,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
               Cell: ({ row }) => row.original.gender && t(row.original.gender),
             },
             {
+              id: "age",
               accessorKey: "dateOfBirth",
               header: t("age"),
               Cell: ({ row }) =>
