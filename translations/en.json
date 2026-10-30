@@ -479,6 +479,7 @@
     "uploadHistoricalExitedEnrolments": "Upload historical exited enrolments",
     "uploadHistoricalExitedEnrolmentsTooltip": "Upload enrolments that began and ended in the source organisation; one row carries both enrolment and exit observations",
     "exitEnrolments": "Exit enrolments",
-    "exitEnrolmentsTooltip": "Exit enrolments that are already in Avni; each row names the enrolment by its Program Enrolment Id"
+    "exitEnrolmentsTooltip": "Exit enrolments that are already in Avni; each row names the enrolment by its Program Enrolment Id",
+    "dateOfBirthTakesPrecedence": "Date of Birth takes precedence over Age"
   }
 }

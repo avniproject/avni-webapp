@@ -288,6 +288,7 @@
     "selectAllLabel": "ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ",
     "unselectAllLabel": "ಎಲ್ಲಾ ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ",
     "alreadyEnrolledInProgram": "ಈಗಾಗಲೆ {{programName}} ಗೆ ದಾಖಲಾತಿಸಲಾಗಿದೆ",
-    "invalidDate": "ಅಮಾನ್ಯವಾದ ದಿನಾಂಕ"
+    "invalidDate": "ಅಮಾನ್ಯವಾದ ದಿನಾಂಕ",
+    "dateOfBirthTakesPrecedence": "ವಯಸ್ಸಿಗಿಂತ ಜನ್ಮ ದಿನಾಂಕಕ್ಕೆ ಆದ್ಯತೆ ನೀಡಲಾಗುತ್ತದೆ"
   }
 }

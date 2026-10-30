@@ -331,6 +331,7 @@
     "selectAllLabel": "બધા સિલેક્ટ કરો",
     "unselectAllLabel": "બધા અનસિલેક્ટ કરો",
     "alreadyEnrolledInProgram": "{{programName}} માં પહેલેથી જ નોંધણી કરાવી છે",
-    "invalidDate": "અયોગ્ય તારીખ"
+    "invalidDate": "અયોગ્ય તારીખ",
+    "dateOfBirthTakesPrecedence": "ઉંમર કરતાં જન્મ તારીખને પ્રાથમિકતા આપવામાં આવે છે"
   }
 }
