@@ -16,6 +16,8 @@ import UserInfo from "../../common/model/UserInfo";
 import CalendarService from "./CalendarService";
 import CalendarFormDialog from "./CalendarFormDialog";
 import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
+import StringUtil from "../../common/utils/StringUtil";
+import ClientSideTableUtil from "../../common/utils/ClientSideTableUtil";
 
 function locationLabelFor(calendar) {
   if (!calendar.addressLevelUUID) return null;
@@ -44,11 +46,20 @@ const CalendarsList = () => {
     allCalendars?.some((c) => !c.voided && !c.addressLevelUUID) ?? false;
 
   const fetchData = useCallback(
-    () =>
+    ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
       CalendarService.list().then((rows) => {
         setAllCalendars(rows);
-        const visible = rows.filter((r) => !r.voided);
-        return { data: visible, totalCount: visible.length };
+        const visible = rows.filter(
+          (r) =>
+            !r.voided &&
+            StringUtil.anyContainsIgnoringCase(globalFilter, r.name),
+        );
+        return ClientSideTableUtil.sortAndPage(visible, {
+          page,
+          pageSize,
+          orderBy,
+          orderDirection,
+        });
       }),
     [],
   );
@@ -111,6 +122,7 @@ const CalendarsList = () => {
       {
         accessorKey: "scope",
         header: "Scope",
+        enableSorting: false,
         Cell: ({ row }) =>
           row.original.addressLevelUUID ? (
             <span>{locationLabelFor(row.original)}</span>
@@ -121,6 +133,7 @@ const CalendarsList = () => {
       {
         accessorKey: "isDefault",
         header: "Default",
+        enableSorting: false,
         Cell: ({ row }) =>
           !row.original.addressLevelUUID && row.original.isDefault ? (
             <Chip label="DEFAULT" size="small" color="success" />
@@ -211,10 +224,12 @@ const CalendarsList = () => {
         ref={tableRef}
         columns={columns}
         fetchData={fetchData}
+        enableColumnFilters={false}
         options={{
           pageSize: 10,
           pageSizeOptions: [5, 10, 20],
-          search: false,
+          sorting: true,
+          search: true,
           rowStyle: ({ original }) => ({
             backgroundColor: original.voided ? "#DBDBDB" : "#fff",
           }),

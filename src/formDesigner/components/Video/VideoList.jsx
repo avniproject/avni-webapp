@@ -10,6 +10,8 @@ import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { useSelector } from "react-redux";
 import { Edit, Delete } from "@mui/icons-material";
+import StringUtil from "../../../common/utils/StringUtil";
+import ClientSideTableUtil from "../../../common/utils/ClientSideTableUtil";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditVideo);
@@ -53,24 +55,25 @@ const VideoList = () => {
   );
 
   const fetchData = useCallback(
-    ({ page, pageSize, orderBy, orderDirection }) =>
+    ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
       new Promise((resolve) => {
-        let apiUrl = `/web/video?size=${encodeURIComponent(
-          pageSize,
-        )}&page=${encodeURIComponent(page)}`;
-        if (orderBy) {
-          apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(
-            orderDirection,
-          )}`;
-        }
         http
-          .get(apiUrl)
+          .get("/web/video")
           .then((response) => response.data)
           .then((result) => {
-            resolve({
-              data: result.filter(({ voided }) => !voided) || [],
-              totalCount: result.length || 0,
-            });
+            const matchingVideos = result.filter(
+              ({ voided, title }) =>
+                !voided &&
+                StringUtil.anyContainsIgnoringCase(globalFilter, title),
+            );
+            resolve(
+              ClientSideTableUtil.sortAndPage(matchingVideos, {
+                page,
+                pageSize,
+                orderBy,
+                orderDirection,
+              }),
+            );
           })
           .catch((error) => {
             console.error("Failed to fetch videos:", error);
@@ -145,14 +148,13 @@ const VideoList = () => {
         ref={tableRef}
         columns={columns}
         fetchData={fetchData}
-        enableGlobalFilter={false}
         enableColumnFilters={false}
         options={{
           pageSize: 10,
           pageSizeOptions: [5, 10, 20],
           sorting: true,
           debounceInterval: 500,
-          search: false,
+          search: true,
           rowStyle: ({ original }) => ({
             backgroundColor: original.voided ? "#DBDBDB" : "#fff",
           }),

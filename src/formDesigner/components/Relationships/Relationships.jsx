@@ -10,6 +10,8 @@ import { useSelector } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { Edit, Delete } from "@mui/icons-material";
+import StringUtil from "../../../common/utils/StringUtil";
+import ClientSideTableUtil from "../../../common/utils/ClientSideTableUtil";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(
@@ -93,23 +95,19 @@ const Relationships = () => {
   );
 
   const fetchData = useCallback(
-    ({ page, pageSize, orderBy, orderDirection }) =>
+    ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
       new Promise((resolve) => {
-        let sortedData = [...result];
-        if (orderBy) {
-          sortedData.sort((a, b) => {
-            const aValue = get(a, orderBy, "");
-            const bValue = get(b, orderBy, "");
-            const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-            return orderDirection === "asc" ? comparison : -comparison;
-          });
-        }
-        const start = page * pageSize;
-        const paginatedData = sortedData.slice(start, start + pageSize);
-        resolve({
-          data: paginatedData,
-          totalCount: sortedData.length,
-        });
+        const matchingRows = result.filter((item) =>
+          StringUtil.anyContainsIgnoringCase(globalFilter, item.name),
+        );
+        resolve(
+          ClientSideTableUtil.sortAndPage(matchingRows, {
+            page,
+            pageSize,
+            orderBy,
+            orderDirection,
+          }),
+        );
       }),
     [result],
   );
@@ -199,14 +197,13 @@ const Relationships = () => {
               ref={tableRef}
               columns={columns}
               fetchData={fetchData}
-              enableGlobalFilter={false}
               enableColumnFilters={false}
               options={{
                 pageSize: 10,
                 pageSizeOptions: [5, 10, 20],
                 sorting: true,
                 debounceInterval: 500,
-                search: false,
+                search: true,
                 rowStyle: ({ original }) => ({
                   backgroundColor:
                     (original?.voided ?? false) ? "#DBDBDB" : "#fff",

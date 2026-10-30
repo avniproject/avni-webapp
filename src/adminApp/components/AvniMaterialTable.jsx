@@ -53,6 +53,10 @@ const AvniMaterialTable = forwardRef(
       return query.get("search") || "";
     });
 
+    const [showGlobalFilter, setShowGlobalFilter] = useState(
+      () => !!globalFilter
+    );
+
     const [columnFilters, setColumnFilters] = useState(() => {
       const query = new URLSearchParams(location.search);
       const filters = query.get("filters");
@@ -97,6 +101,7 @@ const AvniMaterialTable = forwardRef(
       });
 
       setGlobalFilter(searchFromUrl);
+      if (searchFromUrl) setShowGlobalFilter(true);
 
       const newColumnFilters = filtersFromUrl
         ? JSON.parse(decodeURIComponent(filtersFromUrl))
@@ -355,13 +360,15 @@ const AvniMaterialTable = forwardRef(
         onSortingChange={handleSortingChange}
         onGlobalFilterChange={handleGlobalFilterChange}
         onColumnFiltersChange={handleColumnFiltersChange}
+        onShowGlobalFilterChange={setShowGlobalFilter}
         rowCount={totalRecords}
         state={{
           isLoading,
           pagination,
           sorting,
           globalFilter,
-          columnFilters
+          columnFilters,
+          showGlobalFilter
         }}
         {...tableProps}
       />

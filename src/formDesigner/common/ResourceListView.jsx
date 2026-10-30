@@ -10,6 +10,7 @@ import UserInfo from "../../common/model/UserInfo";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
 import { LinearProgress, Grid } from "@mui/material";
+import StringUtil from "../../common/utils/StringUtil";
 
 const ResourceListView = ({
   title,
@@ -27,7 +28,7 @@ const ResourceListView = ({
   const tableRef = useRef(null);
 
   const fetchData = useCallback(
-    async ({ page, pageSize, orderBy, orderDirection }) => {
+    async ({ page, pageSize, orderBy, orderDirection, globalFilter }) => {
       console.log(`[ResourceListView:${resourceName}] fetchData called`, {
         page,
         pageSize,
@@ -39,7 +40,11 @@ const ResourceListView = ({
         let data = Array.isArray(response.data) ? response.data : [];
 
         // Filter out voided entries
-        data = data.filter(item => !item.voided);
+        data = data.filter(
+          item =>
+            !item.voided &&
+            StringUtil.anyContainsIgnoringCase(globalFilter, item.name)
+        );
 
         // Apply sorting if requested
         if (orderBy) {

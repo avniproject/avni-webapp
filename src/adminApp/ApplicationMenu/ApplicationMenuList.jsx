@@ -12,6 +12,7 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { Edit, Delete } from "@mui/icons-material";
 import { Grid } from "@mui/material";
+import StringUtil from "../../common/utils/StringUtil";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(
@@ -58,13 +59,16 @@ const ApplicationMenuList = () => {
   );
 
   const fetchData = useMemo(
-    () => () =>
+    () => ({ globalFilter }) =>
       new Promise(resolve =>
         ApplicationMenuService.getMenuList().then(response => {
+          const matchingMenuItems = response.data.filter(menuItem =>
+            StringUtil.anyContainsIgnoringCase(globalFilter, menuItem.displayKey)
+          );
           resolve({
-            data: response.data,
+            data: matchingMenuItems,
             page: response.page,
-            totalCount: response.totalCount
+            totalCount: matchingMenuItems.length
           });
         })
       ),
@@ -140,12 +144,13 @@ const ApplicationMenuList = () => {
           ref={tableRef}
           columns={columns}
           fetchData={fetchData}
+          enableColumnFilters={false}
           options={{
             pageSize: 10,
             pageSizeOptions: [5, 10, 20],
             sorting: false,
             debounceInterval: 500,
-            search: false,
+            search: true,
             rowStyle: () => ({
               backgroundColor: "#fff"
             })
