@@ -1,6 +1,11 @@
 import { assert } from "chai";
 import { AxiosError } from "axios";
-import { extractServerErrorMessage, extractServerErrorMessageFromBlob, messageFromServerErrorBody } from "./serverErrorMessage";
+import {
+  extractServerErrorMessage,
+  extractServerErrorMessageFromBlob,
+  gatewayTimeoutMessage,
+  messageFromServerErrorBody,
+} from "./serverErrorMessage";
 import { NETWORK_ERROR_MESSAGE } from "./networkError";
 
 /**
@@ -108,6 +113,20 @@ describe("serverErrorMessage", () => {
 
     it("still handles a body that is not a Blob", async () => {
       assert.equal("plain", await extractServerErrorMessageFromBlob({ response: { data: "plain" } }, "fallback"));
+    });
+  });
+
+  describe("gatewayTimeoutMessage (#1639)", () => {
+    it("explains a 504 instead of showing the proxy's page", () => {
+      const message = gatewayTimeoutMessage({ response: { status: 504, data: "<html>504</html>" } });
+
+      assert.include(message, "HTTP 504");
+      assert.include(message, "may still be running");
+    });
+
+    it("leaves other errors alone", () => {
+      assert.isNull(gatewayTimeoutMessage({ response: { status: 400 } }));
+      assert.isNull(gatewayTimeoutMessage(undefined));
     });
   });
 });

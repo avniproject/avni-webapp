@@ -53,6 +53,17 @@ function readBlobAsText(blob) {
 const GATEWAY_STATUSES = [502, 503, 504];
 
 /**
+ * A 502-504 comes from the proxy in front of the server, with an HTML page as its body, when a
+ * request outlasts the proxy's limit. The work usually carries on in the server. Returns a plain
+ * sentence saying so, or null when the error is something else.
+ */
+export function gatewayTimeoutMessage(err) {
+  const status = err?.response?.status;
+  if (!GATEWAY_STATUSES.includes(status)) return null;
+  return `The server took too long to respond (HTTP ${status}). The request may still be running; check again in a few minutes before trying once more.`;
+}
+
+/**
  * For callers that asked axios for responseType "blob" (file downloads). Axios then hands the error
  * body back as a Blob too, so reading it as a string gives "[object Blob]" - which is what the bundle
  * download alert used to show. Reads the Blob as text, then treats it like any other body. A 502-504
@@ -61,9 +72,8 @@ const GATEWAY_STATUSES = [502, 503, 504];
  */
 export async function extractServerErrorMessageFromBlob(err, fallback) {
   if (isNetworkError(err)) return NETWORK_ERROR_MESSAGE;
-  if (GATEWAY_STATUSES.includes(err?.response?.status)) {
-    return `The server took too long to respond (HTTP ${err.response.status}). The request may still be running; try again in a few minutes, or with fewer items.`;
-  }
+  const gateway = gatewayTimeoutMessage(err);
+  if (gateway) return gateway;
   const data = err?.response?.data;
   if (typeof Blob !== "undefined" && data instanceof Blob) {
     let text = "";
