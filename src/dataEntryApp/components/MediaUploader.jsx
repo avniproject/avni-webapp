@@ -92,7 +92,12 @@ const isValidFile = (allowedTypes, type) => {
 const isValidType = (formElement, type, isFile) => {
   return isFile
     ? isValidFile(formElement.allowedTypes, type)
-    : includes(type, lowerCase(formElement.getType()));
+    : includes(
+        type,
+        lowerCase(
+          formElement.getType() === "ImageV2" ? "Image" : formElement.getType(),
+        ),
+      );
 };
 
 function addObsResultsToPreview(observationValue, setPreview) {
