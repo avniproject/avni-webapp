@@ -1,6 +1,8 @@
 import reducer, {
   clearSavedSearchRequest,
   getInitialState,
+  loadSearchPaging,
+  saveSearchPaging,
   saveSearchRequest,
   SEARCH_REQUEST_STORAGE_KEY,
   types,
@@ -39,9 +41,7 @@ describe("searchFilterReducer", () => {
     saveSearchRequest(searchRequest);
 
     expect(getInitialState().request).toEqual(searchRequest);
-    expect(reducer(undefined, { type: "@@INIT" }).request).toEqual(
-      searchRequest,
-    );
+    expect(reducer(undefined, { type: "@@INIT" }).request).toEqual(searchRequest);
   });
 
   it("forgets the search once it is cleared", () => {
@@ -71,5 +71,39 @@ describe("searchFilterReducer", () => {
     });
 
     expect(state.request).toEqual(searchRequest);
+  });
+
+  describe("results page (#502)", () => {
+    const paging = { pageIndex: 2, pageSize: 20 };
+    const sorting = [{ id: "fullName", desc: true }];
+
+    it("opens on page 1 when nothing was saved", () => {
+      expect(loadSearchPaging(searchRequest)).toEqual({
+        pagination: { pageIndex: 0, pageSize: 10 },
+        sorting: [],
+      });
+    });
+
+    it("brings back the same page and sort order for the same search", () => {
+      saveSearchPaging(searchRequest, paging, sorting);
+
+      expect(loadSearchPaging({ ...searchRequest })).toEqual({
+        pagination: paging,
+        sorting,
+      });
+    });
+
+    it("starts from page 1 for a different search", () => {
+      saveSearchPaging(searchRequest, paging, sorting);
+
+      expect(loadSearchPaging({ ...searchRequest, name: "Rani" }).pagination.pageIndex).toBe(0);
+    });
+
+    it("forgets the page when the search is cleared", () => {
+      saveSearchPaging(searchRequest, paging, sorting);
+      clearSavedSearchRequest();
+
+      expect(loadSearchPaging(searchRequest).pagination.pageIndex).toBe(0);
+    });
   });
 });

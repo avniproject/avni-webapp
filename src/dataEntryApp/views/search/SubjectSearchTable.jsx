@@ -22,6 +22,10 @@ import { ExtensionOption } from "../subjectDashBoard/components/extension/Extens
 import { AgeUtil } from "openchs-models";
 import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
+import {
+  loadSearchPaging,
+  saveSearchPaging,
+} from "../../reducers/searchFilterReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
@@ -62,8 +66,12 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const [data, setData] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [sorting, setSorting] = useState([]);
+  const savedPaging = useMemo(() => loadSearchPaging(searchRequest), []);
+  const [pagination, setPagination] = useState(savedPaging.pagination);
+  const [sorting, setSorting] = useState(savedPaging.sorting);
+  useEffect(() => {
+    saveSearchPaging(searchRequest, pagination, sorting);
+  }, [searchRequest, pagination, sorting]);
   const [rowSelection, setRowSelection] = useState({});
 
   // Check if there are extensions configured for search results scope
