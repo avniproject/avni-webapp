@@ -55,7 +55,7 @@ import {
   validateDisplayName,
   validateEmail,
   validatePassword,
-  validatePasswords,
+  validateConfirmPassword,
   validateUserName,
 } from "./UserHelper";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
@@ -746,7 +746,6 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
       toolbar={<CustomToolbar />}
       {...sanitizeProps(props)}
       redirect="show"
-      validate={validatePasswords}
     >
       {!edit && <UsernameHandler nameSuffix={nameSuffix} />}
       {edit ? (
@@ -809,7 +808,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                     <AvniPasswordInput
                       source="confirmPassword"
                       label="Verify password"
-                      validate={validatePassword}
+                      validate={[...validatePassword, validateConfirmPassword]}
                       toolTipKey="ADMIN_USER_CUSTOM_PASSWORD"
                     />
                   </Fragment>
