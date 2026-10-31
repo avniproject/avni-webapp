@@ -17,7 +17,10 @@ export const getErrorByKey = (errors, errorKey) => {
 const ServerErrorKey = "SERVER_ERROR";
 
 const SERVER_ERROR_STACKTRACE_STARTING_PATTERN = /^org\..*: /;
-const DB_ERROR_STACKTRACE_STARTING_PATTERN = /^javax\..*: /;
+// avni-webapp#1494: avni-server moved to Spring Boot 3 (Jakarta namespace), so DB and
+// validation exceptions are now jakarta.* rather than javax.*. Strip both, or the raw exception
+// class prefix leaks into the message the user sees on save.
+const DB_ERROR_STACKTRACE_STARTING_PATTERN = /^(javax|jakarta)\..*: /;
 const EMPTY_STRING = "";
 const NEW_LINE_SEPARATOR = /\n|\r/;
 
