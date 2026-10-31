@@ -324,6 +324,10 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       columns={columns}
       data={data}
       manualPagination
+      // The paging bar is our own (MRTPagination below). Left on, the table's pagination moves a page
+      // it thinks is out of range back to page 1 while there are no rows yet, which undid the saved page
+      // on Back from a subject (#502). The server is asked for one page at a time either way.
+      enablePagination={false}
       manualSorting
       onPaginationChange={handlePaginationChange}
       onSortingChange={setSorting}
