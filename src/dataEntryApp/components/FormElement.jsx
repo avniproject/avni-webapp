@@ -1,4 +1,5 @@
 import { styled } from "@mui/material/styles";
+import { Typography } from "@mui/material";
 import { LineBreak } from "../../common/components/utils";
 import TextFormElement from "./TextFormElement";
 import NotesFormElement from "./NotesFormElement";
@@ -98,11 +99,23 @@ export const FormElement = ({
     allowedValues,
   };
   const Element = elements[type];
+  // A type this app cannot draw used to vanish without trace, and when it was mandatory the page
+  // could never be completed and nothing said why (#1801, #1528, #1508). Say so instead.
+  const unsupportedNotice = !Element && (
+    <Typography
+      data-testid="unsupported-form-element"
+      variant="body2"
+      color={formElement.mandatory ? "error" : "textSecondary"}
+    >
+      {`${formElement.name || formElement.concept?.name}: the question type "${type}" is not supported in the Data Entry App yet. Fill it in on the mobile app.`}
+      {formElement.mandatory &&
+        " This question is mandatory, so this page cannot be completed here."}
+    </Typography>
+  );
   return (
     <StyledContainer isGrid={isGrid}>
       {!ignoreLineBreak && <LineBreak num={feIndex === 0 ? 0 : 2} />}
-      {/* This check can be removed later when DEA supports all the data types (Encounter and GroupAffiliation is not supported yet) */}
-      {Element && <Element {...props} />}
+      {Element ? <Element {...props} /> : unsupportedNotice}
     </StyledContainer>
   );
 };
