@@ -51,6 +51,7 @@ export const isTerminalStatus = (status) => {
     case "UNKNOWN":
     case "STOPPED":
     case "COMPLETED":
+    case "TIMEOUT":
       return true;
     default:
       return false;
@@ -97,7 +98,7 @@ export const ApplyTemplateDialog = ({
   const getDialogTitle = (status) => {
     switch (status) {
       case "TIMEOUT":
-        return "Template Application Timed Out";
+        return "Template is taking longer than usual";
       case "FAILED":
       case "ABANDONED":
       case "UNKNOWN":
@@ -113,7 +114,7 @@ export const ApplyTemplateDialog = ({
   const getDialogContent = (status) => {
     switch (status) {
       case "TIMEOUT":
-        return "Template application timed out. Please try again.";
+        return "Your template may still be applying in the background. Check Subject Types in App Designer in a few minutes before applying it again.";
       case "FAILED":
       case "ABANDONED":
       case "UNKNOWN":
@@ -148,9 +149,24 @@ export const ApplyTemplateDialog = ({
       // Check for timeout
       if (Date.now() - startTime > MAX_POLLING_TIME) {
         clearInterval(newIntervalId);
-        setApplyStatus("TIMEOUT");
-        setIsSubmitting(false);
         localStorage.removeItem(TEMPLATE_APPLY_PROGRESS_KEY);
+        // The job runs on the server and a large template can outlast the polling window. Ask once
+        // more before saying anything: if it has finished, that is a success, not a timeout (#1640).
+        http
+          .get("/web/templateOrganisations/apply/status")
+          .then((response) => {
+            const status = response.data?.applyTemplateJob?.status;
+            if (status === "COMPLETED") {
+              setApplyStatus("COMPLETED");
+              if (onApplySuccess) onApplySuccess();
+            } else if (isTerminalStatus(status)) {
+              setApplyStatus(status);
+            } else {
+              setApplyStatus("TIMEOUT");
+            }
+          })
+          .catch(() => setApplyStatus("TIMEOUT"))
+          .finally(() => setIsSubmitting(false));
         return;
       }
 
