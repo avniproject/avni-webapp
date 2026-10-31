@@ -8,7 +8,7 @@ export default function MediaFormElement({
   value,
   update,
   validationResults,
-  uuid
+  uuid,
 }) {
   const { t } = useTranslation();
   const { mandatory, name } = formElement;
@@ -16,14 +16,18 @@ export default function MediaFormElement({
     validationResults,
     ({ formIdentifier, questionGroupIndex }) =>
       formIdentifier === uuid &&
-      questionGroupIndex === formElement.questionGroupIndex
+      questionGroupIndex === formElement.questionGroupIndex,
   );
   const label = `${t(name)} ${mandatory ? "*" : ""}`;
 
   return (
     <div>
       <MediaUploader
-        mediaType={lowerCase(formElement.getType())}
+        mediaType={
+          formElement.getType() === "ImageV2"
+            ? "image"
+            : lowerCase(formElement.getType())
+        }
         label={label}
         obsValue={value}
         update={update}
