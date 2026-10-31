@@ -4,7 +4,6 @@ import {
   List,
   TextField,
   Create,
-  Edit,
   SimpleForm,
   ReferenceField,
   ReferenceInput,
@@ -125,20 +124,6 @@ const IdentifierUserAssignmentForm = (props) => (
     />
   </SimpleForm>
 );
-
-export const IdentifierUserAssignmentEdit = (props) => {
-  const { organisation } = useContext(OrgManagerContext);
-  return (
-    <Edit
-      title="Edit Identifier User Assignment"
-      mutationMode="pessimistic"
-      {...props}
-      redirect="show"
-    >
-      <IdentifierUserAssignmentForm organisation={organisation} />
-    </Edit>
-  );
-};
 
 export const IdentifierUserAssignmentCreate = (props) => {
   const { organisation } = useContext(OrgManagerContext);

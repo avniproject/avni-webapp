@@ -9,31 +9,30 @@ import {
   CatchmentCreate,
   CatchmentDetail,
   CatchmentEdit,
-  CatchmentList
+  CatchmentList,
 } from "./catchment";
 import {
   LocationTypeCreate,
   LocationTypeDetail,
   LocationTypeEdit,
-  LocationTypeList
+  LocationTypeList,
 } from "./addressLevelType";
 import {
   LocationCreate,
   LocationDetail,
   LocationEdit,
-  LocationList
+  LocationList,
 } from "./locations";
 import {
   IdentifierSourceCreate,
   IdentifierSourceDetail,
   IdentifierSourceEdit,
-  IdentifierSourceList
+  IdentifierSourceList,
 } from "./IdentifierSource";
 import {
   IdentifierUserAssignmentCreate,
   IdentifierUserAssignmentDetail,
-  IdentifierUserAssignmentEdit,
-  IdentifierUserAssignmentList
+  IdentifierUserAssignmentList,
 } from "./IdentifierUserAssignment";
 import OrganisationConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
@@ -55,9 +54,9 @@ const OrgManager = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const organisation = useSelector(state => state.app.organisation);
-  const user = useSelector(state => state.app.authSession);
-  const userInfo = useSelector(state => state.app.userInfo);
+  const organisation = useSelector((state) => state.app.organisation);
+  const user = useSelector((state) => state.app.authSession);
+  const userInfo = useSelector((state) => state.app.userInfo);
 
   useEffect(() => {
     if (["#/admin", "#/admin/"].includes(window.location.hash)) {
@@ -85,7 +84,7 @@ const OrgManager = () => {
     EditOrganisationConfiguration,
     DeleteOrganisationConfiguration,
     EditLanguage,
-    PhoneVerification
+    PhoneVerification,
   } = Privilege.PrivilegeType;
 
   const { hasPrivilege, hasMultiplePrivileges } = UserInfo;
@@ -125,7 +124,7 @@ const OrgManager = () => {
           list={CatchmentList}
           show={WithProps(
             { hasEditPrivilege: canEditCatchment },
-            CatchmentDetail
+            CatchmentDetail,
           )}
           create={canEditCatchment && CatchmentCreate}
           edit={canEditCatchment && CatchmentEdit}
@@ -141,7 +140,7 @@ const OrgManager = () => {
         )}
         {hasMultiplePrivileges(userInfo, [
           EditUserGroup,
-          EditUserConfiguration
+          EditUserConfiguration,
         ]) && (
           <>
             <Resource
@@ -187,10 +186,6 @@ const OrgManager = () => {
             hasPrivilege(userInfo, EditIdentifierUserAssignment) &&
             IdentifierUserAssignmentCreate
           }
-          edit={
-            hasPrivilege(userInfo, EditIdentifierUserAssignment) &&
-            IdentifierUserAssignmentEdit
-          }
         />
         <Resource
           name="language"
@@ -198,9 +193,9 @@ const OrgManager = () => {
           list={WithProps(
             {
               organisation,
-              hasEditPrivilege: hasPrivilege(userInfo, EditLanguage)
+              hasEditPrivilege: hasPrivilege(userInfo, EditLanguage),
             },
-            OrganisationConfig
+            OrganisationConfig,
           )}
         />
         <Resource
@@ -211,18 +206,18 @@ const OrgManager = () => {
               organisation,
               hasEditPrivilege: hasPrivilege(
                 userInfo,
-                EditOrganisationConfiguration
+                EditOrganisationConfiguration,
               ),
               hasOrgMetadataDeletionPrivilege: hasPrivilege(
                 userInfo,
-                UploadMetadataAndData
+                UploadMetadataAndData,
               ),
               hasOrgAdminConfigDeletionPrivilege: hasPrivilege(
                 userInfo,
-                DeleteOrganisationConfiguration
-              )
+                DeleteOrganisationConfiguration,
+              ),
             },
-            OrganisationDetail
+            OrganisationDetail,
           )}
         />
         {hasPrivilege(userInfo, PhoneVerification) && (
