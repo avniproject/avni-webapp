@@ -39,3 +39,46 @@ export function extractServerErrorMessage(err, fallback) {
   if (isNetworkError(err)) return NETWORK_ERROR_MESSAGE;
   return messageFromServerErrorBody(err?.response?.data, err?.message || fallback);
 }
+
+function readBlobAsText(blob) {
+  if (typeof blob.text === "function") return blob.text();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(blob);
+  });
+}
+
+const GATEWAY_STATUSES = [502, 503, 504];
+
+/**
+ * For callers that asked axios for responseType "blob" (file downloads). Axios then hands the error
+ * body back as a Blob too, so reading it as a string gives "[object Blob]" - which is what the bundle
+ * download alert used to show. Reads the Blob as text, then treats it like any other body. A 502-504
+ * comes from the proxy rather than the server, with an HTML page as the body, so it gets a plain
+ * sentence instead of markup.
+ */
+export async function extractServerErrorMessageFromBlob(err, fallback) {
+  if (isNetworkError(err)) return NETWORK_ERROR_MESSAGE;
+  if (GATEWAY_STATUSES.includes(err?.response?.status)) {
+    return `The server took too long to respond (HTTP ${err.response.status}). The request may still be running; try again in a few minutes, or with fewer items.`;
+  }
+  const data = err?.response?.data;
+  if (typeof Blob !== "undefined" && data instanceof Blob) {
+    let text = "";
+    try {
+      text = await readBlobAsText(data);
+    } catch (e) {
+      return err?.message || fallback;
+    }
+    let body = text;
+    try {
+      body = JSON.parse(text);
+    } catch (e) {
+      // not JSON: the text itself is the message
+    }
+    return messageFromServerErrorBody(body, err?.message || fallback);
+  }
+  return extractServerErrorMessage(err, fallback);
+}

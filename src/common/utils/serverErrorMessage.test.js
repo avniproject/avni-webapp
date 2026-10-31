@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { AxiosError } from "axios";
-import { extractServerErrorMessage, messageFromServerErrorBody } from "./serverErrorMessage";
+import { extractServerErrorMessage, extractServerErrorMessageFromBlob, messageFromServerErrorBody } from "./serverErrorMessage";
 import { NETWORK_ERROR_MESSAGE } from "./networkError";
 
 /**
@@ -73,6 +73,41 @@ describe("serverErrorMessage", () => {
     it("survives a rejection that is not an axios error", () => {
       assert.equal("fallback", extractServerErrorMessage(undefined, "fallback"));
       assert.equal("fallback", extractServerErrorMessage(null, "fallback"));
+    });
+  });
+  /**
+   * A file download asks axios for a Blob, and the error body then arrives as a Blob as well. The
+   * bundle download alert printed it as a string, giving "[object Blob]".
+   */
+  describe("extractServerErrorMessageFromBlob", () => {
+    const blobError = (body, status = 400) => ({ response: { status, data: new Blob([body]) }, message: "Request failed" });
+
+    it("reads a stack-trace body out of a Blob", async () => {
+      const message = await extractServerErrorMessageFromBlob(blobError(stackTraceBody), "fallback");
+
+      assert.equal("A form named 'Household Registration' already exists.", message);
+    });
+
+    it("reads a JSON body out of a Blob", async () => {
+      assert.equal("structured", await extractServerErrorMessageFromBlob(blobError('{"message":"structured"}'), "fallback"));
+    });
+
+    it("gives a plain sentence for a gateway timeout instead of the proxy's HTML page", async () => {
+      const message = await extractServerErrorMessageFromBlob(blobError("<html><h1>504 Gateway Time-out</h1></html>", 504), "fallback");
+
+      assert.include(message, "HTTP 504");
+      assert.notInclude(message, "<html>");
+    });
+
+    it("never returns [object Blob]", async () => {
+      const message = await extractServerErrorMessageFromBlob(blobError(""), "fallback");
+
+      assert.notInclude(message, "[object Blob]");
+      assert.equal("Request failed", message);
+    });
+
+    it("still handles a body that is not a Blob", async () => {
+      assert.equal("plain", await extractServerErrorMessageFromBlob({ response: { data: "plain" } }, "fallback"));
     });
   });
 });

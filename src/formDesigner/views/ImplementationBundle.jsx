@@ -8,7 +8,7 @@ import { Title } from "react-admin";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
-import { get } from "lodash";
+import { extractServerErrorMessageFromBlob } from "../../common/utils/serverErrorMessage";
 import ActivityIndicatorModal from "../../common/components/ActivityIndicatorModal";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
@@ -17,32 +17,29 @@ function ImplementationBundle() {
   const [loading, setLoading] = useState(false);
   const [includeLocations, setIncludeLocations] = useState(false);
 
-  const organisation = useSelector(state => state.app.organisation);
-  const userInfo = useSelector(state => state.app.userInfo);
+  const organisation = useSelector((state) => state.app.organisation);
+  const userInfo = useSelector((state) => state.app.userInfo);
 
   const hasDownloadPrivilege = UserInfo.hasPrivilege(
     userInfo,
-    Privilege.PrivilegeType.DownloadBundle
+    Privilege.PrivilegeType.DownloadBundle,
   );
 
   function onDownloadHandler() {
     setLoading(true);
     http
       .get(`/implementation/export/${includeLocations}`, {
-        responseType: "blob"
+        responseType: "blob",
       })
-      .then(response => {
+      .then((response) => {
         setLoading(false);
         if (response.status === 200) {
           fileDownload(response.data, `${organisation.name}.zip`);
         }
       })
-      .catch(error => {
+      .catch(async (error) => {
         setLoading(false);
-        const errorMessage = `${get(error, "response.data") ||
-          get(error, "message") ||
-          "unknown error"}`;
-        alert(errorMessage);
+        alert(await extractServerErrorMessageFromBlob(error, "unknown error"));
       });
   }
 
@@ -52,7 +49,7 @@ function ImplementationBundle() {
         sx={{
           boxShadow: 2,
           p: 3,
-          bgcolor: "background.paper"
+          bgcolor: "background.paper",
         }}
       >
         {hasDownloadPrivilege && (
@@ -63,7 +60,9 @@ function ImplementationBundle() {
               control={
                 <Checkbox
                   checked={includeLocations}
-                  onChange={event => setIncludeLocations(event.target.checked)}
+                  onChange={(event) =>
+                    setIncludeLocations(event.target.checked)
+                  }
                   name="location"
                 />
               }
