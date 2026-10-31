@@ -37,6 +37,7 @@ class ProgramService {
       colour: program.colour === "" ? "#ff0000" : program.colour,
       programSubjectLabel: program.programSubjectLabel,
       enrolmentSummaryRule: program.enrolmentSummaryRule,
+      active: program.active,
       subjectTypeUuid: subjectType.uuid,
       programEnrolmentFormUuid: _.get(program, "programEnrolmentForm.formUUID"),
       programExitFormUuid: _.get(program, "programExitForm.formUUID"),
