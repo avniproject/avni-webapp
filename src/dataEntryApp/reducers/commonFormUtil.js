@@ -18,23 +18,52 @@ const filterFormElementsWithStatus = (formElementGroup, entity) => {
   };
 };
 
-const fetchFilteredFormElementsAndUpdateEntityObservations = (formElementGroup, entity) => {
-  const obsHolder = new ObservationsHolder(entity.observations);
-  const { filteredFormElements, formElementStatuses } = getFormElementStatuses(entity, formElementGroup, obsHolder);
-  obsHolder.updatePrimitiveCodedObs(filteredFormElements, formElementStatuses);
-  if (hasQuestionGroupWithValueInElementStatus(formElementStatuses, formElementGroup.getFormElements())) {
-    const { filteredFormElements: filteredFormElementsLatest } = getFormElementStatuses(entity, formElementGroup, obsHolder);
-    return filteredFormElementsLatest;
+// avni-client#2182: at most this many extra status passes after rule-filled answers change.
+const MAX_RULE_VALUE_REPASSES = 2;
+
+const answersFingerprint = (observationsHolder) =>
+  JSON.stringify(
+    sortBy(
+      _.map(observationsHolder.observations, (obs) => [obs.concept.uuid, obs.getValueWrapper().toResource]),
+      0,
+    ),
+  );
+
+/**
+ * avni-client#2182: writes the values that form element rules computed, then, only if that changed an answer,
+ * runs the status pass again (via refresh) so visibility and other rule results see the new answers in the same
+ * update. Bounded by MAX_RULE_VALUE_REPASSES so a rule that changes its value every time cannot loop.
+ * Keeps the older one-off second pass for a question group that a rule pre-filled.
+ * Returns the statuses and filtered form elements from the last pass.
+ */
+const applyRuleValuesAndRefreshStatuses = (
+  formElementGroup,
+  observationsHolder,
+  { formElementStatuses, filteredFormElements },
+  refresh,
+) => {
+  const questionGroupPrefilled = hasQuestionGroupWithValueInElementStatus(formElementStatuses, formElementGroup.getFormElements());
+  let current = { formElementStatuses, filteredFormElements };
+  for (let pass = 0; ; pass++) {
+    const before = answersFingerprint(observationsHolder);
+    observationsHolder.updatePrimitiveCodedObs(current.filteredFormElements, current.formElementStatuses);
+    const answerChanged = answersFingerprint(observationsHolder) !== before;
+    if (!(answerChanged || (pass === 0 && questionGroupPrefilled)) || pass >= MAX_RULE_VALUE_REPASSES) {
+      return current;
+    }
+    current = refresh();
   }
-  return filteredFormElements;
 };
 
-const getUpdatedNextFilteredFormElements = (formElementStatuses, nextGroup, entity, nextFilteredFormElements) => {
-  if (hasQuestionGroupWithValueInElementStatus(formElementStatuses, nextGroup.getFormElements())) {
-    let { filteredFormElements: updatedNextFilteredFormElements } = filterFormElementsWithStatus(nextGroup, entity);
-    return updatedNextFilteredFormElements;
-  }
-  return nextFilteredFormElements;
+const fetchFilteredFormElementsAndUpdateEntityObservations = (formElementGroup, entity) => {
+  const obsHolder = new ObservationsHolder(entity.observations);
+  const { filteredFormElements } = applyRuleValuesAndRefreshStatuses(
+    formElementGroup,
+    obsHolder,
+    getFormElementStatuses(entity, formElementGroup, obsHolder),
+    () => getFormElementStatuses(entity, formElementGroup, obsHolder),
+  );
+  return filteredFormElements;
 };
 
 // We need to re-fetch the statuses to make sure any hidden form element due to empty values shows up this time.
@@ -540,12 +569,11 @@ const onNext = ({
     obsHolder.removeNonApplicableObs(nextGroup.getFormElements(), []);
     return onNext(nextState(nextGroup, [], allRuleValidationResults, obsHolder.observations, entity, false, wizard));
   } else {
-    obsHolder.updatePrimitiveCodedObs(nextFilteredFormElements, formElementStatuses);
-    const updatedNextFilteredFormElements = getUpdatedNextFilteredFormElements(
-      formElementStatuses,
+    const { filteredFormElements: updatedNextFilteredFormElements } = applyRuleValuesAndRefreshStatuses(
       nextGroup,
-      entity,
-      nextFilteredFormElements,
+      obsHolder,
+      { formElementStatuses, filteredFormElements: nextFilteredFormElements },
+      () => filterFormElementsWithStatus(nextGroup, entity),
     );
     return nextState(nextGroup, updatedNextFilteredFormElements, allRuleValidationResults, obsHolder.observations, entity, false, wizard);
   }
@@ -566,7 +594,12 @@ const onPrevious = ({ formElementGroup, observations, entity, filteredFormElemen
   const obsHolder = new ObservationsHolder(observations);
   if (isEmpty(previousFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), previousFilteredFormElements);
-    obsHolder.updatePrimitiveCodedObs(previousFilteredFormElements, formElementStatuses);
+    applyRuleValuesAndRefreshStatuses(
+      previousGroup,
+      obsHolder,
+      { formElementStatuses, filteredFormElements: previousFilteredFormElements },
+      () => filterFormElementsWithStatus(previousGroup, entity),
+    );
     return onPrevious(
       nextState(previousGroup, previousFilteredFormElements, validationResults, obsHolder.observations, entity, false, wizard),
     );
@@ -591,16 +624,13 @@ const handleValidationResult = (newValidationResults, existingValidationResults)
 };
 
 function postObservationsUpdate(entity, formElement, observationsHolder, obsValue, existingValidationResults, childFormElement) {
-  let { formElementStatuses, filteredFormElements } = getFormElementStatuses(entity, formElement.formElementGroup, observationsHolder);
-  observationsHolder.updatePrimitiveCodedObs(filteredFormElements, formElementStatuses);
-  if (hasQuestionGroupWithValueInElementStatus(formElementStatuses, formElement.formElementGroup.getFormElements())) {
-    const { filteredFormElements: filteredFormElementsLatest } = getFormElementStatuses(
-      entity,
-      formElement.formElementGroup,
-      observationsHolder,
-    );
-    filteredFormElements = filteredFormElementsLatest;
-  }
+  const formElementGroup = formElement.formElementGroup;
+  const { formElementStatuses, filteredFormElements } = applyRuleValuesAndRefreshStatuses(
+    formElementGroup,
+    observationsHolder,
+    getFormElementStatuses(entity, formElementGroup, observationsHolder),
+    () => getFormElementStatuses(entity, formElementGroup, observationsHolder),
+  );
 
   const validationResults = formElementService.validate(
     formElement,
@@ -690,4 +720,5 @@ export default {
   removeQuestionGroup,
   getFEDataValidationErrors,
   getIdValidationErrors,
+  fetchFilteredFormElementsAndUpdateEntityObservations,
 };
