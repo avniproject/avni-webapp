@@ -37,6 +37,14 @@ import Wizard from "dataEntryApp/state/Wizard";
 import { filterFormElements } from "dataEntryApp/services/FormElementService";
 import identifierAssignmentService from "dataEntryApp/services/IdentifierAssignmentService";
 import { MediaFolder, uploadImage } from "../../common/utils/S3Client";
+import { ModelGeneral as General } from "avni-models";
+import {
+  groupAffiliationFormElements,
+  membershipRequests,
+  observationsFromMemberships,
+  withoutGroupAffiliationObservations,
+} from "dataEntryApp/services/GroupAffiliationService";
+import { subjectService } from "dataEntryApp/services/SubjectService";
 
 export function* dataEntryLoadRegistrationFormWatcher() {
   yield takeLatest(subjectTypes.GET_REGISTRATION_FORM, dataEntryLoadRegistrationFormWorker);
@@ -78,6 +86,8 @@ export function* saveSubjectWorker() {
   }
   subject.profilePicture = removeProfilePicFile ? null : profilePicKey;
   let resource = subject.toResource;
+  const groupAffiliationElements = groupAffiliationFormElements(registrationForm.getFormElementsOfType("GroupAffiliation"));
+  resource.observations = withoutGroupAffiliationObservations(resource.observations, groupAffiliationElements);
   resource.visitSchedules = visitSchedules;
   resource.decisions = decisions;
   resource.identifierAssignmentUuids = identifierAssignmentService.getIdentifierAssignmentUuids(
@@ -89,12 +99,31 @@ export function* saveSubjectWorker() {
   try {
     const response = yield call(api.saveSubject, resource);
     if (response.success) {
+      yield call(saveGroupAffiliations, groupAffiliationElements, subject);
       yield put(saveComplete());
     } else {
       yield put(saveCompleteFalse(response.errorMessage));
     }
   } catch (e) {
     yield put(saveCompleteFalse(getAPIErrorMessage(e)));
+  }
+}
+
+// As the phone does on registration: the subject joins, or moves to, the group chosen in each
+// GroupAffiliation question once the subject itself is saved.
+export function* saveGroupAffiliations(groupAffiliationElements, subject) {
+  if (groupAffiliationElements.length === 0) return;
+  const savedProfile = yield call(api.fetchSubjectProfile, subject.uuid);
+  const requests = membershipRequests({
+    formElements: groupAffiliationElements,
+    observations: subject.observations,
+    memberships: (savedProfile && savedProfile.memberships) || [],
+    memberSubjectUUID: subject.uuid,
+    now: new Date(),
+    newUuid: () => General.randomUUID(),
+  });
+  for (const request of requests) {
+    yield call(api.addEditGroupSubject, request);
   }
 }
 
@@ -144,6 +173,11 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   if (subject.subjectType.isPerson()) {
     yield put.resolve(getGenders());
   }
+  const memberships = subjectProfileJson.memberships || [];
+  memberships.forEach((membership) =>
+    subjectService.addSubject({ uuid: membership.groupSubjectUUID, fullName: membership.groupSubjectName }),
+  );
+  subject.observations.push(...observationsFromMemberships(registrationForm.getFormElementsOfType("GroupAffiliation"), memberships));
   yield setRegistrationOnLoadState(registrationForm, subject, []);
 }
 

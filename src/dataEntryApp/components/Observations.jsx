@@ -280,6 +280,14 @@ const Observations = ({
     if (observation.concept.datatype === Concept.dataType.Encounter) {
       return <EncounterObservationValue observation={observation} />;
     }
+    if (observation.concept.datatype === Concept.dataType.GroupAffiliation) {
+      const groupUuid = observation.getValueWrapper().getValue();
+      const group = subjectService.findByUUID(groupUuid);
+      return renderText(
+        (group && (group.fullName || Individual.getFullName(group))) ||
+          groupUuid,
+      );
+    }
     const displayable = Observation.valueForDisplay({
       observation,
       conceptService,
