@@ -36,6 +36,7 @@ import { Link } from "react-router-dom";
 import MediaObservations from "./MediaObservations";
 import { httpClient as http } from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
+import { imageV2Uris } from "../utils/ImageV2Value";
 import {
   visibleGroupObservations,
   visibleObservations,
@@ -286,6 +287,11 @@ const Observations = ({
       return displayable.map((subject, index) =>
         renderSubject(subject, index < displayable.length - 1),
       );
+    } else if (observation.concept.datatype === Concept.dataType.ImageV2) {
+      return renderMedia(
+        imageV2Uris(observation.getValueWrapper().getValue()),
+        observation.concept,
+      );
     } else if (Concept.dataType.Media.includes(observation.concept.datatype)) {
       return renderMedia(displayable.displayValue, observation.concept);
     } else if (observation.concept.isPhoneNumberConcept()) {
@@ -316,20 +322,23 @@ const Observations = ({
     );
   };
 
+  const imagePreview = (signedMediaUrl) => (
+    <img
+      src={signedMediaUrl}
+      alt={MediaData.MissingSignedMediaMessage}
+      align="center"
+      width={200}
+      height={200}
+      onClick={(event) => {
+        event.preventDefault();
+        showMediaOverlay(signedMediaUrl);
+      }}
+    />
+  );
+
   const mediaPreviewMap = (signedMediaUrl) => ({
-    [Concept.dataType.Image]: (
-      <img
-        src={signedMediaUrl}
-        alt={MediaData.MissingSignedMediaMessage}
-        align="center"
-        width={200}
-        height={200}
-        onClick={(event) => {
-          event.preventDefault();
-          showMediaOverlay(signedMediaUrl);
-        }}
-      />
-    ),
+    [Concept.dataType.Image]: imagePreview(signedMediaUrl),
+    [Concept.dataType.ImageV2]: imagePreview(signedMediaUrl),
     [Concept.dataType.Video]: (
       <video
         preload="auto"
@@ -449,6 +458,7 @@ const Observations = ({
       case Concept.dataType.Audio:
         return <AudioPlayer url={unsignedMediaUrl} />;
       case Concept.dataType.Image:
+      case Concept.dataType.ImageV2:
       case Concept.dataType.Video:
         return imageVideoOptions(unsignedMediaUrl, concept);
       case Concept.dataType.File:
@@ -473,13 +483,17 @@ const Observations = ({
           const observationValue = obs.valueJSON.answer;
           const isMultiSelect =
             observationValue && _.isArrayLikeObject(observationValue);
-          const mediaUrls = isMultiSelect
-            ? observationValue
-            : [observationValue];
+          const mediaUrls =
+            obs.concept.datatype === Concept.dataType.ImageV2
+              ? imageV2Uris(observationValue)
+              : isMultiSelect
+                ? observationValue
+                : [observationValue];
           return mediaUrls.map(async (unsignedMediaUrl) => {
             const signedUrl = await getSignedUrl(unsignedMediaUrl);
             const type =
-              obs.concept.datatype === "Image"
+              obs.concept.datatype === "Image" ||
+              obs.concept.datatype === Concept.dataType.ImageV2
                 ? "photo"
                 : lowerCase(obs.concept.datatype);
             return new MediaData(

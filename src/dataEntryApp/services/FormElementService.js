@@ -1,10 +1,14 @@
-import { Concept, ValidationResult, StaticFormElementGroup } from "avni-models";
+import { Concept, ValidationResult, StaticFormElementGroup, Observation, QuestionGroup } from "avni-models";
+import { PrimitiveValue, RepeatableQuestionGroup } from "openchs-models";
 import { differenceWith, find, filter, flatMap, head, includes, isEmpty, isNil, map, remove, some } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
   updateObservations(observationsHolder, formElement, value, childFormElement, questionGroupIndex) {
-    if (!isNil(childFormElement) && !isNil(childFormElement.groupUuid)) {
+    if (!isNil(childFormElement) && !isNil(childFormElement.groupUuid) && childFormElement.concept.datatype === Concept.dataType.ImageV2) {
+      this.updateImageV2InQuestionGroup(observationsHolder, formElement, childFormElement, value, questionGroupIndex);
+      return value;
+    } else if (!isNil(childFormElement) && !isNil(childFormElement.groupUuid)) {
       if (formElement.repeatable) {
         observationsHolder.updateRepeatableGroupQuestion(questionGroupIndex, formElement, childFormElement, value);
       } else {
@@ -49,6 +53,34 @@ export default {
     } else {
       observationsHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
       return value;
+    }
+  },
+
+  // An ImageV2 answer is one JSON text listing all its photos, as the phone stores it. The models'
+  // group update treats every media type as a set of separate answers to toggle, which would
+  // split that text, so the child answer is replaced whole here.
+  updateImageV2InQuestionGroup(observationsHolder, formElement, childFormElement, value, questionGroupIndex) {
+    const replaceAnswer = (questionGroup) => {
+      questionGroup.removeExistingObs(childFormElement.concept);
+      if (!isEmpty(value)) {
+        questionGroup.addObservation(Observation.create(childFormElement.concept, new PrimitiveValue(value, Concept.dataType.ImageV2)));
+      }
+    };
+    const parentConcept = formElement.concept;
+    const parentObservation = observationsHolder.getObservation(parentConcept);
+    let wrapper;
+    if (formElement.repeatable) {
+      wrapper = isEmpty(parentObservation) ? new RepeatableQuestionGroup() : parentObservation.getValueWrapper();
+      const questionGroup = wrapper.getGroupObservationAtIndex(questionGroupIndex) || new QuestionGroup();
+      replaceAnswer(questionGroup);
+      wrapper.updateGroupObservationsAtIndex(questionGroup, questionGroupIndex);
+    } else {
+      wrapper = isEmpty(parentObservation) ? new QuestionGroup() : parentObservation.getValueWrapper();
+      replaceAnswer(wrapper);
+    }
+    observationsHolder._removeExistingObs(parentConcept);
+    if (!wrapper.isEmpty()) {
+      observationsHolder.observations.push(Observation.create(parentConcept, wrapper));
     }
   },
 
