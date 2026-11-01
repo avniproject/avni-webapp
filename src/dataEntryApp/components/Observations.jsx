@@ -37,6 +37,7 @@ import MediaObservations from "./MediaObservations";
 import { httpClient as http } from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
 import { imageV2Uris } from "../utils/ImageV2Value";
+import { EncounterObservationValue } from "./EncounterObservationValue";
 import {
   visibleGroupObservations,
   visibleObservations,
@@ -276,6 +277,9 @@ const Observations = ({
   };
 
   const renderValue = (observation) => {
+    if (observation.concept.datatype === Concept.dataType.Encounter) {
+      return <EncounterObservationValue observation={observation} />;
+    }
     const displayable = Observation.valueForDisplay({
       observation,
       conceptService,

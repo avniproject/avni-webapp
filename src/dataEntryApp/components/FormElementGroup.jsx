@@ -18,6 +18,7 @@ export const FormElementGroup = ({
   addNewQuestionGroup,
   removeQuestionGroup,
   subjectType,
+  subjectUUID,
 }) => {
   const userInfo = useSelector((state) => state.app.userInfo);
   const subjectTypeSyncSettings = useMemo(
@@ -67,6 +68,7 @@ export const FormElementGroup = ({
             removeQuestionGroup={removeQuestionGroup}
             subjectType={subjectType}
             subjectTypeSyncSettings={subjectTypeSyncSettings}
+            subjectUUID={subjectUUID}
           >
             {fe}
           </FormElement>

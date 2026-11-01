@@ -29,11 +29,11 @@ describe("FormElement with a type the Data Entry App cannot draw (#1801)", () =>
   const render = async (mandatory) => {
     const formElement = EntityFactory.createFormElement2({
       uuid: "fe-1",
-      name: "Earlier visit",
+      name: "Household link",
       concept: EntityFactory.createConcept2({
         uuid: "c-1",
-        name: "Earlier visit",
-        dataType: Concept.dataType.Encounter,
+        name: "Household link",
+        dataType: Concept.dataType.GroupAffiliation,
       }),
       displayOrder: 1,
       mandatory,
@@ -54,7 +54,7 @@ describe("FormElement with a type the Data Entry App cannot draw (#1801)", () =>
   it("names the question and says it is not supported, instead of drawing nothing", async () => {
     await render(false);
     const text = container.textContent;
-    expect(text).toContain("Earlier visit");
+    expect(text).toContain("Household link");
     expect(text).toContain("not supported in the Data Entry App");
     expect(text).not.toContain("mandatory");
   });

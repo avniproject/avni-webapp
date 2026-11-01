@@ -24,6 +24,7 @@ export default {
       formElement.isMultiSelect() &&
       (formElement.concept.datatype === Concept.dataType.Coded ||
         formElement.concept.datatype === Concept.dataType.Subject ||
+        formElement.concept.datatype === Concept.dataType.Encounter ||
         formElement.concept.datatype === Concept.dataType.Image ||
         formElement.concept.datatype === Concept.dataType.Video ||
         formElement.concept.datatype === Concept.dataType.File)
@@ -34,6 +35,7 @@ export default {
       formElement.isSingleSelect() &&
       (formElement.concept.datatype === Concept.dataType.Coded ||
         formElement.concept.datatype === Concept.dataType.Subject ||
+        formElement.concept.datatype === Concept.dataType.Encounter ||
         formElement.concept.datatype === Concept.dataType.Image ||
         formElement.concept.datatype === Concept.dataType.Video ||
         formElement.concept.datatype === Concept.dataType.File)

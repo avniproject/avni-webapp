@@ -140,6 +140,7 @@ const FormWizard = ({
                 addNewQuestionGroup={addNewQuestionGroup}
                 removeQuestionGroup={removeQuestionGroup}
                 subjectType={subject?.subjectType}
+                subjectUUID={subject?.uuid}
               >
                 {children}
               </FormElementGroupComponent>

@@ -12,6 +12,7 @@ import DurationFormElement from "./DurationFormElement";
 import { Concept, KeyValue } from "avni-models";
 import MediaFormElement from "./MediaFormElement";
 import ImageV2FormElement from "./ImageV2FormElement";
+import EncounterFormElement from "./EncounterFormElement";
 import PhoneNumberFormElement from "./PhoneNumberFormElement";
 import LocationFormElement from "./LocationFormElement";
 import LandingSubjectFormElement from "./LandingSubjectFormElement";
@@ -49,6 +50,7 @@ const elements = {
   Id: TextFormElement,
   PhoneNumber: PhoneNumberFormElement,
   Subject: LandingSubjectFormElement,
+  Encounter: EncounterFormElement,
   Location: LocationFormElement,
   QuestionGroup: QuestionGroupFormElement,
   RepeatableQuestionGroup: RepeatableQuestionGroupElement,
@@ -70,6 +72,7 @@ export const FormElement = ({
   removeQuestionGroup,
   subjectType,
   subjectTypeSyncSettings,
+  subjectUUID,
 }) => {
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
@@ -99,6 +102,7 @@ export const FormElement = ({
     addNewQuestionGroup,
     removeQuestionGroup,
     allowedValues,
+    subjectUUID,
   };
   const Element = elements[type];
   // A type this app cannot draw used to vanish without trace, and when it was mandatory the page
