@@ -9,25 +9,34 @@ import rootSaga from "../../rootApp/rootSaga";
 import { types } from "../../rootApp/SagaErrorReducer";
 import { isDevEnv } from "../constants";
 import { isTestEnv } from "common/constants";
+import {
+  SEARCH_REQUEST_LOGOUT_EVENT_KEY,
+  SEARCH_REQUEST_SESSION_STORAGE_KEY,
+  types as searchFilterTypes,
+} from "../../dataEntryApp/reducers/searchFilterReducer";
 
 export const adminHistory = createHashHistory({ basename: "/admin" });
 export const appDesignerHistory = createHashHistory({ basename: "/appdesigner" });
 
-const { createReduxHistory, routerMiddleware: reduxHistoryMiddleware, routerReducer } = createReduxHistoryContext({
+const {
+  createReduxHistory,
+  routerMiddleware: reduxHistoryMiddleware,
+  routerReducer,
+} = createReduxHistoryContext({
   history: adminHistory,
   reduxTravelling: true,
-  savePreviousLocations: true
+  savePreviousLocations: true,
 });
 
 const sagaMiddleware = createSagaMiddleware({
-  onError: error => {
+  onError: (error) => {
     console.error("configureStore", "saga unhandled error", error.message);
     const resetErrorCB = () => store.dispatch({ type: types.RESET_ERROR_RAISED });
     store.dispatch({
       type: types.SET_ERROR_RAISED,
-      payload: { error, resetErrorCB }
+      payload: { error, resetErrorCB },
     });
-  }
+  },
 });
 
 const enhancedReducer = rootReducer(routerReducer);
@@ -37,16 +46,16 @@ const composeEnhancers = (isDevEnv && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE_
 export const configureStore = (initialState = {}) => {
   const store = reduxConfigureStore({
     reducer: enhancedReducer,
-    middleware: getDefaultMiddleware =>
+    middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         thunk: false,
         // Disable serializableCheck to allow class instances
         serializableCheck: false,
         // Disable immutableCheck to fix DEA issue
-        immutableCheck: false
+        immutableCheck: false,
       }).concat(thunkMiddleware, sagaMiddleware, reduxHistoryMiddleware),
     preloadedState: initialState,
-    enhancers: getDefaultEnhancers => getDefaultEnhancers().concat(composeEnhancers)
+    enhancers: (getDefaultEnhancers) => getDefaultEnhancers().concat(composeEnhancers),
   });
 
   if (!isTestEnv) {
@@ -57,3 +66,18 @@ export const configureStore = (initialState = {}) => {
 };
 
 export const store = configureStore();
+if (!isTestEnv && typeof window !== "undefined") {
+  window.addEventListener("storage", (event) => {
+    if (event.key === SEARCH_REQUEST_LOGOUT_EVENT_KEY && event.newValue) {
+      try {
+        sessionStorage.removeItem(SEARCH_REQUEST_SESSION_STORAGE_KEY);
+      } catch (error) {
+        console.error("Failed to clear saved search request:", error);
+      }
+
+      store.dispatch({
+        type: searchFilterTypes.RESET_SEARCH_REQUEST,
+      });
+    }
+  });
+}

@@ -332,6 +332,12 @@ export const SearchForm = ({
           JSON.stringify(req),
         );
       } catch (error) {
+        try {
+          sessionStorage.removeItem(SEARCH_REQUEST_SESSION_STORAGE_KEY);
+        } catch (removeError) {
+          console.error("Failed to remove stale search request:", removeError);
+        }
+
         console.error("Failed to save search request:", error);
       }
       store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: req });

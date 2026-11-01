@@ -19,7 +19,11 @@ import {
   createAiApi,
   SESSION_STORAGE_KEY as AI_SESSION_STORAGE_KEY,
 } from "../common/components/aiAssistant/api";
-import { SEARCH_REQUEST_SESSION_STORAGE_KEY } from "../dataEntryApp/reducers/searchFilterReducer";
+import {
+  SEARCH_REQUEST_LOGOUT_EVENT_KEY,
+  SEARCH_REQUEST_SESSION_STORAGE_KEY,
+  types as searchFilterTypes,
+} from "../dataEntryApp/reducers/searchFilterReducer";
 const api = {
   fetchUserInfo: () =>
     http.fetchJson("/web/userInfo").then((response) => response.json),
@@ -116,6 +120,16 @@ function* setAdminOrgsWorker() {
 function* logoutWorker() {
   try {
     sessionStorage.removeItem(SEARCH_REQUEST_SESSION_STORAGE_KEY);
+    yield put({ type: searchFilterTypes.RESET_SEARCH_REQUEST });
+    try {
+      localStorage.setItem(
+        SEARCH_REQUEST_LOGOUT_EVENT_KEY,
+        Date.now().toString(),
+      );
+    } catch (error) {
+      console.error("Failed to notify other tabs about logout:", error);
+    }
+
     yield call(invalidateAiAssistantSession);
     yield call(api.logout);
     // Preserve version key to prevent false migration messages after logout

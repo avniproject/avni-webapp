@@ -55,8 +55,14 @@ const SubjectSearch = () => {
   }, [dispatch, organisationConfigs]);
 
   const { t } = useTranslation();
+
   const resetClick = () => {
-    sessionStorage.removeItem(SEARCH_REQUEST_SESSION_STORAGE_KEY);
+    try {
+      sessionStorage.removeItem(SEARCH_REQUEST_SESSION_STORAGE_KEY);
+    } catch (error) {
+      console.error("Failed to clear saved search request:", error);
+    }
+
     dispatch({
       type: types.ADD_SEARCH_REQUEST,
       value: {
@@ -65,7 +71,6 @@ const SubjectSearch = () => {
       },
     });
   };
-
   return (
     <StyledPaper>
       <StyledGrid container direction="row">
