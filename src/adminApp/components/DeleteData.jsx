@@ -1,4 +1,3 @@
-import { gatewayTimeoutMessage } from "../../common/utils/serverErrorMessage";
 import { styled } from "@mui/material/styles";
 import {
   Grid,
@@ -6,7 +5,7 @@ import {
   Checkbox,
   Button,
   Modal,
-  TextField,
+  TextField
 } from "@mui/material";
 import { useEffect, useState, Fragment } from "react";
 import { get } from "lodash";
@@ -23,15 +22,15 @@ const StyledModalContent = styled(Grid)(({ theme }) => ({
   boxShadow: theme.shadows[5],
   padding: theme.spacing(2, 4, 3),
   top: "25%",
-  left: "30%",
+  left: "30%"
 }));
 
 const StyledDeleteButton = styled(Button)({
-  backgroundColor: "red",
+  backgroundColor: "red"
 });
 
 const StyledWarningIcon = styled(Warning)({
-  fontSize: "40px",
+  fontSize: "40px"
 });
 
 export const DeleteData = ({
@@ -40,7 +39,7 @@ export const DeleteData = ({
   orgName,
   hasOrgMetadataDeletionPrivilege,
   hasOrgAdminConfigDeletionPrivilege,
-  setDataDeletedIndicator,
+  setDataDeletedIndicator
 }) => {
   const [deleteMetadata, setDeleteMetadata] = useState(false);
   const [deleteAdminConfig, setDeleteAdminConfig] = useState(false);
@@ -69,31 +68,27 @@ export const DeleteData = ({
     setLoading(true);
     http
       .delete(
-        `/implementation/delete?deleteMetadata=${deleteMetadata}&deleteAdminConfig=${deleteAdminConfig}`,
+        `/implementation/delete?deleteMetadata=${deleteMetadata}&deleteAdminConfig=${deleteAdminConfig}`
       )
-      .then((res) => {
+      .then(res => {
         if (res.status === 200) {
-          setDataDeletedIndicator((prevValue) => !prevValue);
+          setDataDeletedIndicator(prevValue => !prevValue);
           setLoading(false);
           setMessage({
             title: "Successfully deleted data",
-            content: deleteClientDataMessage,
+            content: deleteClientDataMessage
           });
           setShowAlert(true);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         setLoading(false);
-        const errorMessage =
-          gatewayTimeoutMessage(error) ||
-          `${
-            get(error, "response.data") ||
-            get(error, "message") ||
-            "unknown error"
-          }`;
+        const errorMessage = `${get(error, "response.data") ||
+          get(error, "message") ||
+          "unknown error"}`;
         setMessage({
           title: `Error occurred while deleting data`,
-          content: errorMessage,
+          content: errorMessage
         });
         setShowAlert(true);
       });
@@ -103,7 +98,7 @@ export const DeleteData = ({
     <Fragment>
       <Modal
         onClose={MuiComponentHelper.getDialogClosingHandler(() =>
-          setOpenModal(false),
+          setOpenModal(false)
         )}
         open={openModal}
       >
@@ -121,9 +116,7 @@ export const DeleteData = ({
                 control={
                   <Checkbox
                     checked={deleteMetadata}
-                    onChange={(event) =>
-                      setDeleteMetadata(event.target.checked)
-                    }
+                    onChange={event => setDeleteMetadata(event.target.checked)}
                     name="deleteMetadata"
                     color="primary"
                   />
@@ -138,7 +131,7 @@ export const DeleteData = ({
                 control={
                   <Checkbox
                     checked={deleteAdminConfig}
-                    onChange={(event) =>
+                    onChange={event =>
                       setDeleteAdminConfig(event.target.checked)
                     }
                     name="deleteAdminConfig"
@@ -153,7 +146,7 @@ export const DeleteData = ({
             <TextField
               fullWidth
               helperText="Please enter organisation name to proceed"
-              onChange={(event) => setConfirmText(event.target.value)}
+              onChange={event => setConfirmText(event.target.value)}
             />
           </Grid>
           <Grid container spacing={3}>
