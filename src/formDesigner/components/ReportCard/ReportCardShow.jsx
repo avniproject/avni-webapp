@@ -19,12 +19,14 @@ function RenderCard({ reportCard }) {
 
   const [iconPreviewUrl, setIconPreviewUrl] = useState("");
   const [operationalModules, setOperationalModules] = useState({});
+  const [dashboards, setDashboards] = useState(null);
   const [customCardConfigDetails, setCustomCardConfigDetails] = useState(null);
   const cardType = ReportCard.deriveCardType(reportCard);
   const isStandard = cardType === ReportCard.cardTypes.standard;
   const isNested = cardType === ReportCard.cardTypes.nested;
   const isCustomData = cardType === ReportCard.cardTypes.customData;
   const isFullyCustom = cardType === ReportCard.cardTypes.fullyCustom;
+  const isActionOpenDashboard = reportCard.isActionOpenDashboard();
 
   useEffect(() => {
     if (
@@ -44,6 +46,14 @@ function RenderCard({ reportCard }) {
       });
     }
   }, [reportCard.action]);
+
+  useEffect(() => {
+    if (isActionOpenDashboard) {
+      http.get("/web/dashboard").then((response) => {
+        setDashboards(response.data || []);
+      });
+    }
+  }, [isActionOpenDashboard]);
 
   useEffect(() => {
     const uuid = reportCard.customCardConfig?.uuid;
@@ -210,15 +220,37 @@ function RenderCard({ reportCard }) {
           )}
         </Fragment>
       )}
-      {(isNested || isCustomData) && reportCard.action && (
+      {(isNested || isCustomData || (isFullyCustom && isActionOpenDashboard)) &&
+        reportCard.action && (
+          <>
+            <p />
+            <ShowLabelValue
+              label="Action"
+              value={
+                reportCard.action === ReportCard.actionTypes.DoVisit
+                  ? "Do visit"
+                  : isActionOpenDashboard
+                    ? "Open dashboard"
+                    : "View subject profile"
+              }
+            />
+          </>
+        )}
+      {(isCustomData || isFullyCustom) && isActionOpenDashboard && (
         <>
           <p />
           <ShowLabelValue
-            label="Action"
+            label="Dashboard"
             value={
-              reportCard.action === ReportCard.actionTypes.DoVisit
-                ? "Do visit"
-                : "View subject profile"
+              _.isNil(dashboards)
+                ? null
+                : _.get(
+                    _.find(dashboards, {
+                      uuid: reportCard.actionDetailDashboardUUID,
+                    }),
+                    "name",
+                    "Not found. It may have been deleted.",
+                  )
             }
           />
         </>
