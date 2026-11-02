@@ -2,12 +2,13 @@ import _ from "lodash";
 import { validateRule } from "../../formDesigner/util";
 import { httpClient as http } from "../../common/utils/httpClient";
 import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
+import StringUtil from "../../common/utils/StringUtil";
 
 class ProgramService {
   static validateProgram(program, subjectType) {
     const errors = new Map();
 
-    if (_.isEmpty(program.name)) errors.set("Name", "Empty");
+    if (_.isEmpty(StringUtil.trimName(program.name))) errors.set("Name", "Empty");
 
     if (_.isNil(subjectType)) errors.set("SubjectType", "Empty");
 
@@ -33,7 +34,7 @@ class ProgramService {
     const endpoint = "/web/program/" + (newProgram ? "" : programId);
     const serverCall = newProgram ? http.post : http.put;
     return serverCall(endpoint, {
-      name: program.name,
+      name: StringUtil.trimName(program.name),
       colour: program.colour === "" ? "#ff0000" : program.colour,
       programSubjectLabel: program.programSubjectLabel,
       enrolmentSummaryRule: program.enrolmentSummaryRule,

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import StringUtil from "common/utils/StringUtil";
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import { Box, FormLabel } from "@mui/material";
@@ -105,6 +106,7 @@ const SubjectTypeCreate = () => {
         http
           .post("/web/subjectType", {
             ...subjectType,
+            name: StringUtil.trimName(subjectType.name),
             registrationFormUuid: _.get(
               subjectType,
               "registrationForm.formUUID",

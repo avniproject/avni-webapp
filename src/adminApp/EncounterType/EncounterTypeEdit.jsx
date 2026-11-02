@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
+import StringUtil from "common/utils/StringUtil";
 import { httpClient as http } from "common/utils/httpClient";
 import { useParams, useNavigate } from "react-router-dom";
 import { Box, Grid, Button } from "@mui/material";
@@ -269,6 +270,7 @@ const EncounterTypeEdit = () => {
     return http
       .put("/web/encounterType/" + id, {
         ...encounterType,
+        name: StringUtil.trimName(encounterType.name),
         id: id,
         subjectTypeUuid: subjectT.uuid,
         programEncounterFormUuid: _.get(

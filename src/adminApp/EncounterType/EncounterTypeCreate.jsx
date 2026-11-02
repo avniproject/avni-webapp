@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import StringUtil from "common/utils/StringUtil";
 import { useEffect, useReducer, useState } from "react";
 import { httpClient as http } from "common/utils/httpClient";
 import Box from "@mui/material/Box";
@@ -111,6 +112,7 @@ const EncounterTypeCreate = () => {
     return http
       .post("/web/encounterType", {
         ...encounterType,
+        name: StringUtil.trimName(encounterType.name),
         subjectTypeUuid: subjectT.uuid,
         programEncounterFormUuid: _.get(
           encounterType,

@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
+import StringUtil from "common/utils/StringUtil";
 import { httpClient as http } from "common/utils/httpClient";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -152,7 +153,7 @@ const SubjectTypeEdit = () => {
         http
           .put("/web/subjectType/" + id, {
             ...subjectType,
-            name: subjectType.name,
+            name: StringUtil.trimName(subjectType.name),
             id: id,
             organisationId: subjectTypeData.organisationId,
             active: subjectType.active,

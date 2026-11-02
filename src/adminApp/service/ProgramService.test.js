@@ -46,3 +46,25 @@ describe("ProgramService.saveProgram sends the Active toggle (#1749)", () => {
     expect(body.active).toBe(true);
   });
 });
+
+describe("ProgramService trims the program name (avniproject/avni-client#1635)", () => {
+  it("validate: an all-spaces name is refused as empty", () => {
+    const [errors] = ProgramService.validateProgram({ name: "   " }, subjectType);
+    expect(errors.get("Name")).toBe("Empty");
+  });
+
+  it("validate: a padded name is accepted", () => {
+    const [errors] = ProgramService.validateProgram({ name: "  Pregnancy  " }, subjectType);
+    expect(errors.has("Name")).toBe(false);
+  });
+
+  it("create: POSTs the trimmed name", async () => {
+    await ProgramService.saveProgram({ name: "  Pregnancy  ", active: true }, subjectType, null);
+    expect(http.post.mock.calls[0][1].name).toBe("Pregnancy");
+  });
+
+  it("edit: PUTs the trimmed name", async () => {
+    await ProgramService.saveProgram({ name: " Pregnancy ", active: true, programId: 7 }, subjectType, 7);
+    expect(http.put.mock.calls[0][1].name).toBe("Pregnancy");
+  });
+});
