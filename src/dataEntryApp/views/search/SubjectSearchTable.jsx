@@ -190,11 +190,20 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         requestCopy.subjectType = firstSubjectTypeUUID;
       }
 
+      let sortColumn = sorting[0]?.id || null;
+      let sortOrder = sorting[0]?.desc ? "desc" : sorting[0]?.id ? "asc" : null;
+
+      // Age is derived from dateOfBirth, so the sort order is inverted.
+      if (sortColumn === "dateOfBirth") {
+        if (sortOrder === "asc") sortOrder = "desc";
+        else if (sortOrder === "desc") sortOrder = "asc";
+      }
+
       const pageElement = {
         pageNumber: pagination.pageIndex,
         numberOfRecordPerPage: pagination.pageSize,
-        sortColumn: sorting[0]?.id || null,
-        sortOrder: sorting[0]?.desc ? "desc" : sorting[0]?.id ? "asc" : null,
+        sortColumn,
+        sortOrder,
       };
 
       requestCopy.pageElement = pageElement;
