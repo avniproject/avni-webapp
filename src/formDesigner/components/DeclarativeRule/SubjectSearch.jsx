@@ -1,6 +1,7 @@
 import { map } from "lodash";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import CommonSearch from "../../common/CommonSearch";
+import { withUserTimeZone } from "../../../common/utils/SearchRequestUtil";
 
 const SubjectSearch = ({
   value,
@@ -16,11 +17,14 @@ const SubjectSearch = ({
       return;
     }
     http
-      .post("/web/searchAPI/v2", {
-        name: input,
-        subjectType: subjectTypeUuid,
-        pageElement: { numberOfRecordPerPage: 20 },
-      })
+      .post(
+        "/web/searchAPI/v2",
+        withUserTimeZone({
+          name: input,
+          subjectType: subjectTypeUuid,
+          pageElement: { numberOfRecordPerPage: 20 },
+        }),
+      )
       .then((response) => {
         const subjects = response?.data?.listOfRecords || [];
         const options = map(subjects, ({ fullName, uuid }) => ({

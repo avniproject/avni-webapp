@@ -10,6 +10,10 @@ import {
   Button
 } from "@mui/material";
 import CurrentUserService from "../service/CurrentUserService.ts";
+import {
+  clearSavedSearchRequest,
+  resetSearchRequest
+} from "../../dataEntryApp/reducers/searchFilterReducer";
 
 const OrganisationOptions = () => {
   const dispatch = useDispatch();
@@ -27,7 +31,13 @@ const OrganisationOptions = () => {
     )
   ];
 
+  const forgetSearch = () => {
+    clearSavedSearchRequest();
+    dispatch(resetSearchRequest());
+  };
+
   const handleChange = event => {
+    forgetSearch();
     if (event.target.value !== "") {
       localStorage.setItem("ORGANISATION_UUID", event.target.value);
       navigate("/home");
@@ -38,6 +48,7 @@ const OrganisationOptions = () => {
   };
 
   const exitToAdmin = () => {
+    forgetSearch();
     CurrentUserService.exitOrganisation();
     dispatch({ type: "GET_USER_INFO" });
     navigate("/admin");

@@ -116,6 +116,7 @@ function* setAdminOrgsWorker() {
 }
 
 function* logoutWorker() {
+  clearSavedSearchRequest();
   try {
     yield call(invalidateAiAssistantSession);
     yield call(api.logout);
@@ -126,7 +127,6 @@ function* logoutWorker() {
       localStorage.setItem("avni_app_version", versionKey);
     }
     clearCookies();
-    clearSavedSearchRequest();
 
     yield call([authProvider, authProvider.logout], {});
 

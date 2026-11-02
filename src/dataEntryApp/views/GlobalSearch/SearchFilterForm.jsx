@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -24,7 +24,11 @@ import CheckBoxSearchComponent from "./CheckBoxSearchComponent";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { format, isValid, parse, parseISO } from "date-fns";
 import { store } from "../../../common/store";
-import { types, saveSearchRequest } from "../../reducers/searchFilterReducer";
+import {
+  types,
+  saveSearchRequest,
+  toUsableSearchRequest,
+} from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import SubjectTypeOptions from "./SubjectTypeOptions";
@@ -156,7 +160,7 @@ export const SearchForm = ({
     : selectedSearchFilter;
 
   const [dateOfBirth, setDateOfBirth] = useState(
-    searchRequest.dateOfBirth ? new Date(searchRequest.dateOfBirth) : null,
+    searchRequest.dateOfBirth ? parseISO(searchRequest.dateOfBirth) : null,
   );
 
   const setPrev = (d) => ({
@@ -569,6 +573,16 @@ function SearchFilterFormContainer() {
     (state) => state.dataEntry.searchFilterReducer.request,
   );
 
+  const usableSearchRequest = useMemo(
+    () =>
+      toUsableSearchRequest(
+        searchRequest,
+        operationalModules?.subjectTypes,
+        organisationConfigs?.organisationConfig?.searchFilters,
+      ),
+    [searchRequest, operationalModules, organisationConfigs],
+  );
+
   useEffect(() => {
     if (!organisationConfigs) dispatch(getOrganisationConfig());
     dispatch(getGenders());
@@ -583,7 +597,7 @@ function SearchFilterFormContainer() {
       operationalModules={operationalModules}
       genders={genders}
       organisationConfigs={organisationConfigs}
-      searchRequest={searchRequest}
+      searchRequest={usableSearchRequest}
     />
   );
 }

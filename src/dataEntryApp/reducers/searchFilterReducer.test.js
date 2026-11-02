@@ -1,8 +1,10 @@
 import reducer, {
   clearSavedSearchRequest,
   getInitialState,
+  resetSearchRequest,
   saveSearchRequest,
   SEARCH_REQUEST_STORAGE_KEY,
+  toUsableSearchRequest,
   types,
 } from "./searchFilterReducer";
 
@@ -71,5 +73,64 @@ describe("searchFilterReducer", () => {
     });
 
     expect(state.request).toEqual(searchRequest);
+  });
+
+  it("goes back to an empty search on RESET_SEARCH_REQUEST", () => {
+    const state = reducer({ request: searchRequest }, resetSearchRequest());
+
+    expect(state.request).toEqual({
+      includeVoided: false,
+      includeDisplayCount: false,
+    });
+  });
+});
+
+describe("toUsableSearchRequest", () => {
+  const subjectTypes = [{ uuid: "subject-type-uuid" }, { uuid: "other-uuid" }];
+  const conceptFilter = (conceptUUID, subjectTypeUUID = "subject-type-uuid") => ({
+    type: "Concept",
+    subjectTypeUUID,
+    conceptUUID,
+  });
+  const textConcept = { uuid: "text-concept-uuid", dataType: "Text", value: "x" };
+  const requestWithConcepts = {
+    ...searchRequest,
+    concept: [...searchRequest.concept, textConcept],
+  };
+
+  it("keeps a search whose subject type and concept filters are still there", () => {
+    const searchFilters = [conceptFilter("coded-concept-uuid"), conceptFilter("text-concept-uuid")];
+
+    expect(toUsableSearchRequest(requestWithConcepts, subjectTypes, searchFilters)).toBe(requestWithConcepts);
+  });
+
+  it("ignores a search for a subject type the user does not have, such as one from another organisation", () => {
+    expect(
+      toUsableSearchRequest({ ...searchRequest, subjectType: "org-a-subject-type" }, subjectTypes, [
+        conceptFilter("coded-concept-uuid"),
+      ])
+    ).toEqual({ includeVoided: false, includeDisplayCount: false });
+  });
+
+  it("drops concept filters that are no longer configured for the subject type", () => {
+    const usable = toUsableSearchRequest(requestWithConcepts, subjectTypes, [
+      conceptFilter("coded-concept-uuid"),
+      conceptFilter("text-concept-uuid", "other-uuid"),
+      { type: "Name", subjectTypeUUID: "subject-type-uuid" },
+    ]);
+
+    expect(usable.concept).toEqual(searchRequest.concept);
+    expect(usable.name).toBe("Asha");
+    expect(requestWithConcepts.concept).toHaveLength(2);
+  });
+
+  it("drops every concept filter when the subject type has no search filters", () => {
+    expect(toUsableSearchRequest(requestWithConcepts, subjectTypes, undefined).concept).toEqual([]);
+  });
+
+  it("leaves a search without a subject type alone", () => {
+    const empty = { includeVoided: false };
+
+    expect(toUsableSearchRequest(empty, subjectTypes, [])).toBe(empty);
   });
 });

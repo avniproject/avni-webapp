@@ -117,3 +117,75 @@ describe("SubjectSearchTable sorting", () => {
     });
   });
 });
+
+describe("SubjectSearchTable request", () => {
+  const lastRequest = () => httpClient.post.mock.calls.at(-1)[1];
+  const renderWith = async (searchRequest, organisationConfigs) => {
+    httpClient.post.mockClear();
+    await act(async () =>
+      root.render(
+        <SubjectSearchTable
+          searchRequest={searchRequest}
+          organisationConfigs={organisationConfigs}
+        />,
+      ),
+    );
+  };
+  const textConcept = (uuid) => ({
+    uuid,
+    searchScope: "registration",
+    dataType: "Text",
+    widget: "Default",
+    value: "x",
+  });
+  const configsWithConceptFilter = {
+    organisationConfig: {
+      searchFilters: [
+        {
+          type: "Concept",
+          subjectTypeUUID: "st-person",
+          conceptUUID: "still-configured",
+        },
+      ],
+    },
+  };
+
+  it("sends the user's time zone", () => {
+    expect(lastRequest().timeZone).toBe(
+      Intl.DateTimeFormat().resolvedOptions().timeZone,
+    );
+  });
+
+  it("ignores a saved search for a subject type the user does not have", async () => {
+    await renderWith(
+      { subjectType: "other-org-subject-type", name: "Asha" },
+      configsWithConceptFilter,
+    );
+
+    expect(lastRequest().subjectType).toBe("st-person");
+    expect(lastRequest().name).toBeUndefined();
+  });
+
+  it("drops saved concept filters that are no longer configured", async () => {
+    await renderWith(
+      {
+        subjectType: "st-person",
+        concept: [textConcept("still-configured"), textConcept("removed")],
+      },
+      configsWithConceptFilter,
+    );
+
+    expect(lastRequest().concept.map(({ uuid }) => uuid)).toEqual([
+      "still-configured",
+    ]);
+  });
+
+  it("waits for the search filter configuration before searching with saved concept filters", async () => {
+    await renderWith(
+      { subjectType: "st-person", concept: [textConcept("removed")] },
+      undefined,
+    );
+
+    expect(httpClient.post).not.toHaveBeenCalled();
+  });
+});

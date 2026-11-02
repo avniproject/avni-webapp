@@ -1,4 +1,5 @@
 import { httpClient } from "common/utils/httpClient";
+import { withUserTimeZone } from "common/utils/SearchRequestUtil";
 
 class SubjectSearchService {
   static search(searchRequest) {
@@ -7,7 +8,7 @@ class SubjectSearchService {
     pageElement.numberOfRecordPerPage = 20;
     searchRequest.pageElement = pageElement;
     return httpClient
-      .post(apiUrl, searchRequest)
+      .post(apiUrl, withUserTimeZone(searchRequest))
       .then(response => response.data)
       .then(result => result);
   }

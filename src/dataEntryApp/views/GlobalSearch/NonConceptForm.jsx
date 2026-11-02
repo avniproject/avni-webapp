@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { dateFormat } from "dataEntryApp/constants";
+import { parseISO } from "date-fns";
 
 const StyledGrid = styled(Grid)({
   marginTop: "1%",
@@ -67,7 +68,7 @@ function NonConceptForm({
                   format={dateFormat}
                   value={
                     selectedDate[`${searchFilterForm.type}`].minValue
-                      ? new Date(
+                      ? parseISO(
                           selectedDate[`${searchFilterForm.type}`].minValue,
                         )
                       : null
@@ -102,7 +103,7 @@ function NonConceptForm({
                   placeholder="From"
                   value={
                     selectedDate[`${searchFilterForm.type}`].minValue
-                      ? new Date(
+                      ? parseISO(
                           selectedDate[`${searchFilterForm.type}`].minValue,
                         )
                       : null
@@ -111,7 +112,7 @@ function NonConceptForm({
                     onDateChange(
                       minDate,
                       selectedDate[`${searchFilterForm.type}`].maxValue !== null
-                        ? new Date(
+                        ? parseISO(
                             selectedDate[`${searchFilterForm.type}`].maxValue,
                           )
                         : null,
@@ -133,7 +134,7 @@ function NonConceptForm({
                   placeholder="To"
                   value={
                     selectedDate[`${searchFilterForm.type}`].maxValue
-                      ? new Date(
+                      ? parseISO(
                           selectedDate[`${searchFilterForm.type}`].maxValue,
                         )
                       : null
@@ -141,7 +142,7 @@ function NonConceptForm({
                   onChange={(maxDate) =>
                     onDateChange(
                       selectedDate[`${searchFilterForm.type}`].minValue !== null
-                        ? new Date(
+                        ? parseISO(
                             selectedDate[`${searchFilterForm.type}`].minValue,
                           )
                         : null,

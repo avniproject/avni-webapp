@@ -23,10 +23,28 @@ import { AgeUtil } from "openchs-models";
 import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
+import { toUsableSearchRequest } from "../../reducers/searchFilterReducer";
+import { withUserTimeZone } from "common/utils/SearchRequestUtil";
 
-const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
+const SubjectSearchTable = ({
+  searchRequest: savedSearchRequest,
+  organisationConfigs,
+}) => {
   const { i18n, t } = useTranslation();
   const subjectTypes = useSelector(selectSubjectTypes);
+  const searchFilters = get(
+    organisationConfigs,
+    "organisationConfig.searchFilters",
+  );
+  const searchRequest = useMemo(
+    () =>
+      toUsableSearchRequest(savedSearchRequest, subjectTypes, searchFilters),
+    [savedSearchRequest, subjectTypes, searchFilters],
+  );
+  const isReadyToSearch =
+    !isEmpty(subjectTypes) &&
+    (isEmpty(get(savedSearchRequest, "concept")) ||
+      !isNil(organisationConfigs));
   const [extensions, setExtensions] = useState();
   const customSearchFields = get(
     organisationConfigs,
@@ -199,9 +217,8 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       };
 
       requestCopy.pageElement = pageElement;
-      requestCopy.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const result = await http
-        .post("/web/searchAPI/v2", requestCopy)
+        .post("/web/searchAPI/v2", withUserTimeZone(requestCopy))
         .then((res) => res.data);
 
       setData(result.listOfRecords || []);
@@ -217,10 +234,14 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   }, [pagination, sorting, searchRequest, subjectTypes]);
   useEffect(() => {
     // Only load data if we have a valid searchRequest
-    if (searchRequest && Object.keys(searchRequest).length > 0) {
+    if (
+      isReadyToSearch &&
+      searchRequest &&
+      Object.keys(searchRequest).length > 0
+    ) {
       loadData();
     }
-  }, [loadData, searchRequest]);
+  }, [loadData, searchRequest, isReadyToSearch]);
 
   // Custom pagination handler that also triggers data reload
   const handlePaginationChange = useCallback((newPagination) => {
