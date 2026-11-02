@@ -38,6 +38,7 @@ jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key) => key, i18n: { language: "en" } }),
 }));
 jest.mock("dataEntryApp/components/Breadcrumbs", () => () => null);
+jest.mock("../../common/components/ToolTip", () => ({ ToolTip: () => null }));
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
