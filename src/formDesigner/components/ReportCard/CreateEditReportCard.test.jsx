@@ -7,6 +7,7 @@ import { CreateEditReportCard } from "./CreateEditReportCard";
 import WebReportCard from "../../../common/model/WebReportCard";
 import DashboardService from "../../../common/service/DashboardService";
 import { httpClient } from "../../../common/utils/httpClient";
+import { networkErrorNotifier } from "../../../common/utils/networkErrorNotifier";
 
 // The real ToolTip imports react-markdown and fetches its text on mount. Stubbed with a marker
 // carrying the key it was asked for, so a test can check which help text a field's help button opens.
@@ -30,12 +31,21 @@ jest.mock("react-router-dom", () => ({
 }));
 
 // GET responses by URL. The Do visit pickers map over what they get, so any other URL answers [].
+// A URL in mockFailures rejects with that error instead.
 let mockResponses = {};
+let mockFailures = {};
 jest.mock("../../../common/utils/httpClient", () => ({
   httpClient: {
-    getData: jest.fn((url) => Promise.resolve(mockResponses[url] ?? [])),
+    getData: jest.fn((url) =>
+      mockFailures[url]
+        ? Promise.reject(mockFailures[url])
+        : Promise.resolve(mockResponses[url] ?? []),
+    ),
     getAllData: () => Promise.resolve([]),
   },
+}));
+jest.mock("../../../common/utils/networkErrorNotifier", () => ({
+  networkErrorNotifier: { notify: jest.fn() },
 }));
 jest.mock("../../../common/service/DashboardService", () => ({
   __esModule: true,
@@ -150,6 +160,20 @@ const DASHBOARD_REQUIRED = "Dashboard is required for Open dashboard action";
 
 // The save reads status and data.id; a bare jest.fn() leaves "Cannot read properties of undefined" on screen.
 const savedResponse = { status: 200, data: { id: 5 } };
+
+// As axios rejects when the server answers with an error status.
+const SERVER_ERROR = {
+  isAxiosError: true,
+  response: { status: 500, data: "boom" },
+  message: "Request failed with status code 500",
+};
+
+// As axios rejects when the server cannot be reached.
+const NETWORK_ERROR = {
+  isAxiosError: true,
+  code: "ERR_NETWORK",
+  message: "Network Error",
+};
 
 // The help button fetches this file and shows "No key found" for a key it lacks.
 const toolTips = JSON.parse(
@@ -269,6 +293,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockParams = {};
   mockResponses = { "/web/dashboard": dashboards };
+  mockFailures = {};
   sent = undefined;
   DashboardService.saveReportCard.mockImplementation((card) => {
     sent = card.toResource();
@@ -709,5 +734,28 @@ describe("Open dashboard in the card editor", () => {
     await save();
 
     expect(sent.actionDetailDashboardUUID).toBe("dash-b");
+  });
+
+  // In the app an unhandled rejection reaches MainApp's handler, which replaces the whole page
+  // unless it is a network failure. Jest fails a test that leaves one, so passing shows it is handled.
+  it("keeps the editor and the saved dashboard when the dashboard list fails with a server error", async () => {
+    mockFailures["/web/dashboard"] = SERVER_ERROR;
+    await openEditor(openDashboardCard("dash-02"));
+
+    expect(httpClient.getData).toHaveBeenCalledWith("/web/dashboard");
+    expect(saveButton()).toBeDefined();
+    expect(fieldValue("Dashboard")).toBe("");
+
+    await save();
+
+    expect(sent.actionDetailDashboardUUID).toBe("dash-02");
+    expect(networkErrorNotifier.notify).not.toHaveBeenCalled();
+  });
+
+  it("shows the network message when the dashboard list cannot be reached", async () => {
+    mockFailures["/web/dashboard"] = NETWORK_ERROR;
+    await openEditor(openDashboardCard("dash-02"));
+
+    expect(networkErrorNotifier.notify).toHaveBeenCalledTimes(1);
   });
 });

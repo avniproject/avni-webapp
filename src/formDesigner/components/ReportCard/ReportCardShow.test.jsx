@@ -2,6 +2,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import ReportCardShow from "./ReportCardShow";
 import { httpClient } from "../../../common/utils/httpClient";
+import { networkErrorNotifier } from "../../../common/utils/networkErrorNotifier";
 
 jest.mock("react-admin", () => ({ Title: () => null }));
 jest.mock("react-router-dom", () => ({ useParams: () => ({ id: "5" }) }));
@@ -21,10 +22,22 @@ jest.mock("../../../common/utils/httpClient", () => ({
     ),
   },
 }));
+jest.mock("../../../common/utils/networkErrorNotifier", () => ({
+  networkErrorNotifier: { notify: jest.fn() },
+}));
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 const NOT_FOUND = "Not found. It may have been deleted.";
+
+const axiosError = (message, fields) =>
+  Object.assign(new Error(message), { isAxiosError: true, ...fields });
+
+const serverError = axiosError("Request failed with status code 500", {
+  response: { status: 500, data: "boom" },
+});
+
+const networkFailure = axiosError("Network Error", { code: "ERR_NETWORK" });
 
 const dashboards = Array.from({ length: 25 }, (_, index) => {
   const number = String(index + 1).padStart(2, "0");
@@ -123,17 +136,6 @@ const rowValue = (label) =>
     .find((element) => element.textContent === label)
     ?.parentElement.querySelector(":scope > span")?.textContent;
 
-const failedRequestHandledGlobally = (error) => {
-  const request = Promise.reject(error);
-  const then = request.then.bind(request);
-  request.then = (onFulfilled, onRejected) => {
-    const next = then(onFulfilled, onRejected);
-    next.catch(() => {});
-    return next;
-  };
-  return request;
-};
-
 beforeEach(() => {
   jest.clearAllMocks();
   mockResponses = {
@@ -212,15 +214,26 @@ describe("Open dashboard on the card details page", () => {
     expect(rowValue("Dashboard")).toBe(NOT_FOUND);
   });
 
-  it("shows no not-found message when the dashboard list fails to load", async () => {
-    mockOverrides["/web/dashboard"] = () =>
-      failedRequestHandledGlobally(new Error("Network Error"));
+  it("keeps the page and leaves the row empty when the dashboard list fails with a server error", async () => {
+    mockOverrides["/web/dashboard"] = () => Promise.reject(serverError);
     await openDetails(customDataCard(openDashboard("dash-gone")));
 
     expect(requestedUrls()).toContain("/web/dashboard");
     expect(rowValue("Action")).toBe("Open dashboard");
     expect(rowValue("Dashboard")).toBe("");
     expect(container.textContent).not.toContain("Not found");
+    expect(networkErrorNotifier.notify).not.toHaveBeenCalled();
+  });
+
+  it("shows the network message when the dashboard list cannot be reached", async () => {
+    mockOverrides["/web/dashboard"] = () => Promise.reject(networkFailure);
+    await openDetails(customDataCard(openDashboard("dash-gone")));
+
+    expect(requestedUrls()).toContain("/web/dashboard");
+    expect(rowValue("Action")).toBe("Open dashboard");
+    expect(rowValue("Dashboard")).toBe("");
+    expect(container.textContent).not.toContain("Not found");
+    expect(networkErrorNotifier.notify).toHaveBeenCalledTimes(1);
   });
 
   it("shows no Action row on a Custom Design Card with an old action that is not Open dashboard", async () => {

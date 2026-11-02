@@ -7,6 +7,8 @@ import RuleDisplay from "../../../adminApp/components/RuleDisplay";
 import { useSelector } from "react-redux";
 import { Privilege, ReportCard } from "openchs-models";
 import { httpClient as http } from "../../../common/utils/httpClient";
+import { isNetworkError } from "../../../common/utils/networkError";
+import { networkErrorNotifier } from "../../../common/utils/networkErrorNotifier";
 import _ from "lodash";
 import MediaService from "../../../adminApp/service/MediaService";
 import OperationalModules from "../../../common/model/OperationalModules";
@@ -49,9 +51,14 @@ function RenderCard({ reportCard }) {
 
   useEffect(() => {
     if (isActionOpenDashboard) {
-      http.get("/web/dashboard").then((response) => {
-        setDashboards(response.data || []);
-      });
+      http
+        .get("/web/dashboard")
+        .then((response) => {
+          setDashboards(response.data || []);
+        })
+        .catch((error) => {
+          if (isNetworkError(error)) networkErrorNotifier.notify();
+        });
     }
   }, [isActionOpenDashboard]);
 

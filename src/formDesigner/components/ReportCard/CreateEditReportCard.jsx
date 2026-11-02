@@ -25,6 +25,8 @@ import {
 } from "../../common/SampleRule";
 import { AvniSelect } from "../../../common/components/AvniSelect";
 import { MediaFolder, uploadImage } from "../../../common/utils/S3Client";
+import { isNetworkError } from "../../../common/utils/networkError";
+import { networkErrorNotifier } from "../../../common/utils/networkErrorNotifier";
 import {
   createServerError,
   getErrorByKey,
@@ -205,7 +207,10 @@ export const CreateEditReportCard = () => {
     if (card.action === ReportCard.actionTypes.OpenDashboard) {
       http
         .getData("/web/dashboard")
-        .then((response) => setActionDashboards(response || []));
+        .then((response) => setActionDashboards(response || []))
+        .catch((error) => {
+          if (isNetworkError(error)) networkErrorNotifier.notify();
+        });
     }
   }, [card.action]);
 
