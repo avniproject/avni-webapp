@@ -187,7 +187,6 @@ const SubjectTypesList = () => {
           pageSizeOptions: [5, 10, 20],
           sorting: true,
           debounceInterval: 500,
-          search: true,
           rowStyle: ({ original }) => ({
             backgroundColor: original.active ? "#fff" : "#DBDBDB"
           })

@@ -13,6 +13,7 @@ import UserInfo from "../../common/model/UserInfo";
 import { Edit, Delete } from "@mui/icons-material";
 import { Grid } from "@mui/material";
 import StringUtil from "../../common/utils/StringUtil";
+import ClientSideTableUtil from "../../common/utils/ClientSideTableUtil";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(
@@ -59,17 +60,18 @@ const ApplicationMenuList = () => {
   );
 
   const fetchData = useMemo(
-    () => ({ globalFilter }) =>
+    () => ({ page, pageSize, globalFilter }) =>
       new Promise(resolve =>
         ApplicationMenuService.getMenuList().then(response => {
           const matchingMenuItems = response.data.filter(menuItem =>
             StringUtil.anyContainsIgnoringCase(globalFilter, menuItem.displayKey)
           );
-          resolve({
-            data: matchingMenuItems,
-            page: response.page,
-            totalCount: matchingMenuItems.length
-          });
+          resolve(
+            ClientSideTableUtil.sortAndPage(matchingMenuItems, {
+              page,
+              pageSize
+            })
+          );
         })
       ),
     []
@@ -150,7 +152,6 @@ const ApplicationMenuList = () => {
             pageSizeOptions: [5, 10, 20],
             sorting: false,
             debounceInterval: 500,
-            search: true,
             rowStyle: () => ({
               backgroundColor: "#fff"
             })

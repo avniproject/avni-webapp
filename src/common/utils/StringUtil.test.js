@@ -19,6 +19,11 @@ describe("StringUtil.anyContainsIgnoringCase", () => {
     assert.isTrue(StringUtil.anyContainsIgnoringCase(undefined, "Household"));
   });
 
+  it("ignores spaces around the search text", () => {
+    assert.isTrue(StringUtil.anyContainsIgnoringCase("son ", "Father", "Son"));
+    assert.isTrue(StringUtil.anyContainsIgnoringCase("  household", "Household survey"));
+  });
+
   it("skips missing values", () => {
     assert.isFalse(StringUtil.anyContainsIgnoringCase("a", null, undefined));
     assert.isTrue(StringUtil.anyContainsIgnoringCase("a", null, "Calendar"));

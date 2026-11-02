@@ -7,8 +7,9 @@ class StringUtil {
   }
 
   static anyContainsIgnoringCase(searchText, ...values) {
-    if (_.isEmpty(_.trim(searchText))) return true;
-    const lowerCaseSearchText = searchText.toLowerCase();
+    const trimmedSearchText = _.trim(searchText);
+    if (_.isEmpty(trimmedSearchText)) return true;
+    const lowerCaseSearchText = trimmedSearchText.toLowerCase();
     return values.some((value) => !_.isNil(value) && String(value).toLowerCase().includes(lowerCaseSearchText));
   }
 

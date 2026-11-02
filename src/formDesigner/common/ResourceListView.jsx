@@ -11,6 +11,7 @@ import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
 import { LinearProgress, Grid } from "@mui/material";
 import StringUtil from "../../common/utils/StringUtil";
+import ClientSideTableUtil from "../../common/utils/ClientSideTableUtil";
 
 const ResourceListView = ({
   title,
@@ -46,29 +47,12 @@ const ResourceListView = ({
             StringUtil.anyContainsIgnoringCase(globalFilter, item.name)
         );
 
-        // Apply sorting if requested
-        if (orderBy) {
-          data = [...data].sort((a, b) => {
-            const aValue = a[orderBy] ?? "";
-            const bValue = b[orderBy] ?? "";
-            const isNumeric = !isNaN(aValue) && !isNaN(bValue);
-            if (isNumeric) {
-              const comparison = Number(aValue) - Number(bValue);
-              return orderDirection === "asc" ? comparison : -comparison;
-            }
-            const comparison = String(aValue).localeCompare(String(bValue));
-            return orderDirection === "asc" ? comparison : -comparison;
-          });
-        }
-
-        // Apply client-side pagination
-        const start = page * pageSize;
-        const paginatedData = data.slice(start, start + pageSize);
-
-        return {
-          data: paginatedData,
-          totalCount: data.length
-        };
+        return ClientSideTableUtil.sortAndPage(data, {
+          page,
+          pageSize,
+          orderBy,
+          orderDirection
+        });
       } catch (error) {
         console.error(`[ResourceListView:${resourceName}] HTTP error`, {
           error: error.message,
@@ -197,9 +181,9 @@ const ResourceListView = ({
           ref={tableRef}
           columns={columns}
           fetchData={fetchData}
+          enableColumnFilters={false}
           options={{
             sorting: true,
-            enableColumnFilters: false,
             pageSizeOptions: [10, 25, 100],
             pageSize: 10,
             rowStyle: ({ original }) => ({
