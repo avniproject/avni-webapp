@@ -15,6 +15,9 @@ import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import ProgramEnrolmentForm from "./ProgramEnrolmentForm";
 import ProgramExitEnrolmentForm from "./ProgramExitEnrolmentForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import SubjectNotFound, {
+  useSubjectNotFound,
+} from "../../../components/SubjectNotFound";
 import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import { ProgramEnrolment } from "openchs-models";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
@@ -63,6 +66,7 @@ const ProgramEnrol = () => {
   const programName = searchParams.get("programName");
   const programEnrolmentUuid = searchParams.get("programEnrolmentUuid");
   const uuid = searchParams.get("uuid");
+  const subjectNotFound = useSubjectNotFound(uuid);
 
   useEffect(() => {
     dispatch(
@@ -76,6 +80,15 @@ const ProgramEnrol = () => {
     programEnrolmentUuid,
     uuid
   ]);
+
+  if (subjectNotFound) {
+    return (
+      <Fragment>
+        <Breadcrumbs path={location.pathname} />
+        <SubjectNotFound />
+      </Fragment>
+    );
+  }
 
   return load ? (
     <Fragment>

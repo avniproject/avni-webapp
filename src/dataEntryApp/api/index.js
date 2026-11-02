@@ -83,6 +83,7 @@ export default {
         return response.json;
       })
       .catch((error) => {
+        if (get(error, "status") === 404) throw error;
         return [];
       }),
 

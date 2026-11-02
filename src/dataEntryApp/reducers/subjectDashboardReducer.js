@@ -17,6 +17,7 @@ export const types = {
   VOID_GENERAL_ENCOUNTER: `${prefix}VOID_GENERAL_ENCOUNTER`,
   LOAD_SUBJECT_DASHBOARD: `${prefix}LOAD_SUBJECT_DASHBOARD`,
   SET_SUBJECT_DASHBOARD_LOADED: `${prefix}SET_SUBJECT_DASHBOARD_LOADED`,
+  SET_SUBJECT_NOT_FOUND: `${prefix}SET_SUBJECT_NOT_FOUND`,
 };
 
 export const getSubjectProfile = (subjectUUID) => ({
@@ -106,6 +107,11 @@ export const setSubjectDashboardLoaded = (loaded) => ({
   loaded,
 });
 
+export const setSubjectNotFound = (notFoundSubjectUuid) => ({
+  type: types.SET_SUBJECT_NOT_FOUND,
+  notFoundSubjectUuid,
+});
+
 export default function (state = {}, action) {
   switch (action.type) {
     case types.UN_VOID_SUBJECT_FAILED: {
@@ -150,6 +156,12 @@ export default function (state = {}, action) {
         ...state,
         dashboardLoaded: action.loaded,
         unVoidErrorKey: null,
+      };
+    }
+    case types.SET_SUBJECT_NOT_FOUND: {
+      return {
+        ...state,
+        notFoundSubjectUuid: action.notFoundSubjectUuid,
       };
     }
     default:

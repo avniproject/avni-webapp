@@ -28,6 +28,9 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import SubjectNotFound, {
+  useSubjectNotFound,
+} from "../../components/SubjectNotFound";
 import RegistrationForm from "./RegistrationForm";
 import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import TextFormElement from "dataEntryApp/components/TextFormElement";
@@ -85,6 +88,7 @@ const SubjectRegister = () => {
   const isEdit = location.pathname === "/app/editSubject";
   const subjectTypeParam = searchParams.get("type");
   const subjectUuid = searchParams.get("uuid");
+  const subjectNotFound = useSubjectNotFound(isEdit ? subjectUuid : null);
 
   useEffect(() => {
     if (isEdit) {
@@ -214,6 +218,10 @@ const SubjectRegister = () => {
         </Fragment>
       )
     );
+  }
+
+  if (subjectNotFound) {
+    return <SubjectNotFound />;
   }
 
   return loaded ? (

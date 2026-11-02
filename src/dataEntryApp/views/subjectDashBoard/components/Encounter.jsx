@@ -16,6 +16,9 @@ import {
 } from "dataEntryApp/reducers/encounterReducer";
 import EncounterForm from "./EncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import SubjectNotFound, {
+  useSubjectNotFound,
+} from "../../../components/SubjectNotFound";
 import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import { AbstractEncounter } from "openchs-models";
@@ -54,6 +57,7 @@ const Encounter = () => {
   const encounterUuid = searchParams.get("encounterUuid");
   const subjectUuid = searchParams.get("subjectUuid");
   const uuid = searchParams.get("uuid");
+  const subjectNotFound = useSubjectNotFound(subjectUuid);
 
   const editEncounterMode = isEqual(
     location.pathname,
@@ -78,6 +82,15 @@ const Encounter = () => {
   const handleSetEncounterDate = date => {
     dispatch(setEncounterDate(date));
   };
+
+  if (subjectNotFound) {
+    return (
+      <Fragment>
+        <Breadcrumbs path={location.pathname} />
+        <SubjectNotFound />
+      </Fragment>
+    );
+  }
 
   return (
     <Fragment>

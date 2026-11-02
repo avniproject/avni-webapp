@@ -20,6 +20,7 @@ import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { mapEncounter, mapObservations, mapProfile } from "../../common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
+import { callOrMarkSubjectNotFound } from "./subjectNotFoundSaga";
 import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
@@ -53,8 +54,9 @@ export function* encouterOnLoadWatcher() {
 export function* encouterOnLoadWorker({ subjectUuid }) {
   yield put.resolve(setLoad(false));
   yield put.resolve(setFilteredFormElements());
+  const subjectProfileJson = yield call(callOrMarkSubjectNotFound, api.fetchSubjectProfile, subjectUuid);
+  if (!subjectProfileJson) return;
   yield put.resolve(getSubjectGeneral(subjectUuid));
-  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const encounterFormMappings = yield select(selectFormMappingsForSubjectType(subjectProfileJson.subjectType.uuid));
   yield put.resolve(setEncounterFormMappings(encounterFormMappings));
   yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
@@ -67,7 +69,8 @@ export function* encounterEligibilityWatcher() {
 
 export function* encounterEligibilityWorker({ subjectUuid }) {
   yield put.resolve(setLoad(false));
-  const eligibleEncounters = yield call(api.fetchEligibleEncounterTypes, subjectUuid);
+  const eligibleEncounters = yield call(callOrMarkSubjectNotFound, api.fetchEligibleEncounterTypes, subjectUuid);
+  if (!eligibleEncounters) return;
   yield put.resolve(setEligibleEncounters(eligibleEncounters));
   yield put.resolve(setLoad(true));
 }
@@ -77,7 +80,8 @@ export function* createEncounterWatcher() {
 }
 
 export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
-  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
+  const subjectProfileJson = yield call(callOrMarkSubjectNotFound, api.fetchSubjectProfile, subjectUuid);
+  if (!subjectProfileJson) return;
   const encounterTypeDetails = yield call(api.fetchEncounterTypeDetails, encounterTypeUuid);
   const latestEncounter = yield call(
     api.fetchCompletedEncounters,

@@ -4,6 +4,7 @@ import {
   getSubjectProfile,
   setGroupMembers,
   setSubjectDashboardLoaded,
+  setSubjectNotFound,
   setSubjectProfile,
   setTabsStatus,
   setVoidServerError,
@@ -46,11 +47,18 @@ export function* loadSubjectDashboardWatcher() {
 
 export function* loadSubjectDashboardWorker({ subjectUUID }) {
   yield put.resolve(setSubjectDashboardLoaded(false));
-  yield all([
-    call(subjectProfileFetchWorker, { subjectUUID }),
-    call(subjectGeneralFetchWorker, { subjectGeneralUUID: subjectUUID }),
-    call(subjectProgramFetchWorker, { subjectProgramUUID: subjectUUID }),
-  ]);
+  yield put.resolve(setSubjectNotFound(null));
+  try {
+    yield all([
+      call(subjectProfileFetchWorker, { subjectUUID }),
+      call(subjectGeneralFetchWorker, { subjectGeneralUUID: subjectUUID }),
+      call(subjectProgramFetchWorker, { subjectProgramUUID: subjectUUID }),
+    ]);
+  } catch (error) {
+    if (get(error, "status") !== 404) throw error;
+    yield put.resolve(setSubjectNotFound(subjectUUID));
+    yield put.resolve(setLoad(true));
+  }
   yield put.resolve(setSubjectDashboardLoaded(true));
 }
 

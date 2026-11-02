@@ -13,6 +13,9 @@ import {
 } from "../../../reducers/encounterReducer";
 import NewVisitMenuView from "./NewVisitMenuView";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import SubjectNotFound, {
+  useSubjectNotFound,
+} from "../../../components/SubjectNotFound";
 import { getNewEligibleEncounters } from "../../../../common/mapper/EncounterMapper";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -40,11 +43,21 @@ const NewGeneralVisit = () => {
   const load = useSelector(state => state.dataEntry.loadReducer.load);
 
   const subjectUuid = searchParams.get("subjectUuid");
+  const subjectNotFound = useSubjectNotFound(subjectUuid);
 
   useEffect(() => {
     dispatch(resetState());
     dispatch(getEligibleEncounters(subjectUuid));
   }, [dispatch, subjectUuid]);
+
+  if (subjectNotFound) {
+    return (
+      <Fragment>
+        <Breadcrumbs path={location.pathname} />
+        <SubjectNotFound />
+      </Fragment>
+    );
+  }
 
   const { scheduledEncounters, unplannedEncounters } = getNewEligibleEncounters(
     operationalModules.encounterTypes,
