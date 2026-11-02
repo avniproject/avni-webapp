@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { TextField, FormLabel, FormControl } from "@mui/material";
 import { isEmpty, find } from "lodash";
@@ -6,9 +5,13 @@ import { CompositeDuration } from "avni-models";
 import { useTranslation } from "react-i18next";
 
 const StyledForm = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  gap: theme.spacing(1),
   "& > *": {
-    margin: theme.spacing(1),
-    width: "20ch",
+    margin: 0,
+    width: "auto",
   },
 }));
 
@@ -19,10 +22,9 @@ const DurationFormElement = ({
   update,
   validationResult,
 }) => {
-  const [localVal, setLocalVal] = useState(
-    (duration && duration.durationValue) || "",
-  );
   const { t } = useTranslation();
+  const hasError =
+    Boolean(validationResult && !validationResult.success) && duration.isEmpty;
 
   return (
     <TextField
@@ -35,18 +37,15 @@ const DurationFormElement = ({
           inputMode: "numeric",
         },
       }}
-      value={localVal}
+      value={duration.durationValue || ""}
       helperText={
-        validationResult &&
-        duration.isEmpty &&
-        t(validationResult.messageKey, validationResult.extra)
+        hasError && t(validationResult.messageKey, validationResult.extra)
       }
-      error={validationResult && !validationResult.success && duration.isEmpty}
+      error={hasError}
       onChange={(e) => {
         const value = e.target.value;
         if (value === "" || /^\d+$/.test(value)) {
-          isEmpty(value) ? setLocalVal("") : setLocalVal(value);
-          isEmpty(value) ? update() : update(value);
+          update(value);
         }
       }}
     />
