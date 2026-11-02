@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 const StyledForm = styled("div")(({ theme }) => ({
   display: "flex",
   flexWrap: "wrap",
-  alignItems: "center",
+  alignItems: "flex-start",
   gap: theme.spacing(1),
   "& > *": {
     margin: 0,
