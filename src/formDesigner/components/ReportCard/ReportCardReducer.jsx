@@ -17,6 +17,7 @@ export const ReportCardReducerKeys = {
   actionDetailEncounterTypeUUID: "actionDetailEncounterTypeUUID",
   actionDetailVisitType: "actionDetailVisitType",
   actionDetailAttendanceTypeUUID: "actionDetailAttendanceTypeUUID",
+  actionDetailDashboardUUID: "actionDetailDashboardUUID",
   onActionCompletion: "onActionCompletion",
   customCardConfig: "customCardConfig",
 };
@@ -62,6 +63,11 @@ export const ReportCardReducer = (reportCard, action) => {
       break;
     case ReportCardReducerKeys.action:
       reportCard.action = action.payload;
+      if (action.payload !== ReportCard.actionTypes.OpenDashboard) {
+        // Only OpenDashboard uses the target dashboard — clear it on any other
+        // action so a stale value is not sent to the server.
+        reportCard.actionDetailDashboardUUID = null;
+      }
       if (action.payload === ReportCard.actionTypes.DoVisit) {
         // Switched to DoVisit — clear MarkAttendance-only detail; subject
         // type carries over so the cascading pickers don't restart from
@@ -80,8 +86,8 @@ export const ReportCardReducer = (reportCard, action) => {
         reportCard.onActionCompletion =
           ReportCard.onActionCompletionTypes.goToSourceScreen;
       } else {
-        // ViewSubjectProfile or unset — clear every action-detail key so no
-        // stale value survives the round-trip.
+        // ViewSubjectProfile, OpenDashboard or unset — clear the Do visit and
+        // Mark attendance keys so no stale value survives the round-trip.
         reportCard.actionDetailSubjectTypeUUID = null;
         reportCard.actionDetailProgramUUID = null;
         reportCard.actionDetailEncounterTypeUUID = null;
@@ -101,6 +107,9 @@ export const ReportCardReducer = (reportCard, action) => {
       break;
     case ReportCardReducerKeys.actionDetailAttendanceTypeUUID:
       reportCard.actionDetailAttendanceTypeUUID = action.payload;
+      break;
+    case ReportCardReducerKeys.actionDetailDashboardUUID:
+      reportCard.actionDetailDashboardUUID = action.payload;
       break;
     case ReportCardReducerKeys.actionDetailProgramUUID:
       reportCard.actionDetailProgramUUID = action.payload;
