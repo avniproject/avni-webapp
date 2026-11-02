@@ -79,6 +79,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailEncounterTypeUUID = null;
     webReportCard.actionDetailVisitType = null;
     webReportCard.actionDetailAttendanceTypeUUID = null;
+    webReportCard.actionDetailDashboardUUID = null;
     webReportCard.onActionCompletion = null;
     webReportCard.customCardConfig = null;
     return webReportCard;
@@ -108,6 +109,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailEncounterTypeUUID = other.actionDetailEncounterTypeUUID;
     webReportCard.actionDetailVisitType = other.actionDetailVisitType;
     webReportCard.actionDetailAttendanceTypeUUID = other.actionDetailAttendanceTypeUUID;
+    webReportCard.actionDetailDashboardUUID = other.actionDetailDashboardUUID;
     webReportCard.onActionCompletion = other.onActionCompletion;
     webReportCard.customCardConfig = other.customCardConfig;
     return webReportCard;
@@ -138,6 +140,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailEncounterTypeUUID = resource.actionDetailEncounterTypeUUID || null;
     webReportCard.actionDetailVisitType = resource.actionDetailVisitType || null;
     webReportCard.actionDetailAttendanceTypeUUID = resource.actionDetailAttendanceTypeUUID || null;
+    webReportCard.actionDetailDashboardUUID = resource.actionDetailDashboardUUID || null;
     webReportCard.onActionCompletion = resource.onActionCompletion || ReportCard.onActionCompletionTypes.goToSubjectProfile;
     webReportCard.customCardConfig = resource.customCardConfigUUID
       ? { uuid: resource.customCardConfigUUID, name: resource.customCardConfigName }
@@ -208,6 +211,9 @@ class WebReportCard extends ReportCard {
         errors.push({ key: "MISSING_ON_ACTION_COMPLETION", message: "On action completion is required for Mark attendance action" });
       }
     }
+    if (this.action === ReportCard.actionTypes.OpenDashboard && isEmpty(this.actionDetailDashboardUUID)) {
+      errors.push({ key: "MISSING_DASHBOARD", message: "Dashboard is required for Open dashboard action" });
+    }
     return errors;
   }
 
@@ -250,6 +256,7 @@ class WebReportCard extends ReportCard {
       actionDetailEncounterTypeUUID: this.actionDetailEncounterTypeUUID,
       actionDetailVisitType: this.actionDetailVisitType,
       actionDetailAttendanceTypeUUID: this.actionDetailAttendanceTypeUUID,
+      actionDetailDashboardUUID: this.actionDetailDashboardUUID,
       onActionCompletion: this.onActionCompletion,
       customCardConfig: this.customCardConfig
         ? {
