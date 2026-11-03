@@ -30,6 +30,10 @@ import {
   toUsableSearchRequest,
 } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
+import {
+  isSupportedConceptType,
+  showableSearchFilters,
+} from "../../../common/utils/searchFilterConceptTypes";
 import { useTranslation } from "react-i18next";
 import SubjectTypeOptions from "./SubjectTypeOptions";
 import commonApi from "../../../common/service";
@@ -131,12 +135,11 @@ export const SearchForm = ({
     subjectType || _.get(operationalModules.subjectTypes[0], "uuid"),
   );
 
-  const initialSubjectTypeSearchFilter =
-    organisationConfigs?.organisationConfig?.searchFilters?.filter(
-      (sf) => sf.subjectTypeUUID === selectedSubjectTypeUUID,
-    );
-  const [selectedSearchFilter, setSelectedSearchFilter] = useState(
-    initialSubjectTypeSearchFilter || [],
+  const [selectedSearchFilter, setSelectedSearchFilter] = useState(() =>
+    showableSearchFilters(
+      organisationConfigs?.organisationConfig?.searchFilters,
+      selectedSubjectTypeUUID,
+    ),
   );
 
   const [enterValue, setEnterValue] = useState({
@@ -259,7 +262,10 @@ export const SearchForm = ({
 
   const getInitialConceptList = (filters) =>
     filters
-      .filter((f) => f.type === "Concept" && f.conceptDataType !== null)
+      .filter(
+        (f) =>
+          f.type === "Concept" && isSupportedConceptType(f.conceptDataType),
+      )
       .map((c) => {
         const def = {
           Date: { ...c, minValue: null, maxValue: null },
@@ -387,10 +393,12 @@ export const SearchForm = ({
 
   const onSubjectTypeChange = (uuid) => {
     setSelectedSubjectTypeUUID(uuid);
-    const sf = organisationConfigs?.organisationConfig?.searchFilters?.filter(
-      (s) => s.subjectTypeUUID === uuid,
+    setSelectedSearchFilter(
+      showableSearchFilters(
+        organisationConfigs?.organisationConfig?.searchFilters,
+        uuid,
+      ),
     );
-    setSelectedSearchFilter(sf || []);
     resetFilters();
   };
 

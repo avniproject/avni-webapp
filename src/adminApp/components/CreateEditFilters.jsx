@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FormControl, Box } from "@mui/material";
+import { FormControl, Box, FormHelperText } from "@mui/material";
 import Select from "react-select";
 import { omitTableData } from "../CustomFilters";
 import commonApi from "../../common/service";
@@ -31,6 +31,10 @@ import { DocumentationContainer } from "../../common/components/DocumentationCon
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
+import {
+  SUPPORTED_CONCEPT_FILTER_TYPES,
+  isSupportedConceptType,
+} from "../../common/utils/searchFilterConceptTypes";
 
 const nonSupportedTypes = [
   "Duration",
@@ -165,6 +169,15 @@ export const CreateEditFilters = ({
     }) ||
       "",
   );
+  // A search filter saved earlier, or uploaded, on a type search can't filter on (avni-webapp#965).
+  const selectedConceptType = selectedConcept?.value?.dataType;
+  const unsearchableConceptType =
+    filterType === "searchFilters" &&
+    selectedType?.value === CustomFilter.type.Concept &&
+    !isEmpty(selectedConcept) &&
+    !isSupportedConceptType(selectedConceptType)
+      ? selectedConceptType || "unknown"
+      : null;
   const [selectedScope, setScope] = useState(
     mapPreviousToOptions(scope, scopeOptions),
   );
@@ -341,8 +354,11 @@ export const CreateEditFilters = ({
       .get("/search/concept?name=" + encodeURIComponent(inputValue))
       .then((response) => {
         const concepts = response.data;
-        const filteredConcepts = concepts.filter(
-          (concept) => !includes(nonSupportedTypes, concept.dataType),
+        // Search Filters offer only what the search screen can filter on; My Dashboard filters keep their own list.
+        const filteredConcepts = concepts.filter((concept) =>
+          filterType === "searchFilters"
+            ? isSupportedConceptType(concept.dataType)
+            : !includes(nonSupportedTypes, concept.dataType),
         );
         const conceptOptions = map(
           filteredConcepts,
@@ -534,6 +550,11 @@ export const CreateEditFilters = ({
                     onChange={(value) => setConcept(value)}
                     loadOptions={loadConcept}
                   />
+                  {unsearchableConceptType && (
+                    <FormHelperText style={{ color: "#a15c00" }}>
+                      {`Search leaves this filter out, because it can't search on ${unsearchableConceptType === "unknown" ? "a concept saved without its type" : `${unsearchableConceptType} concepts`}. Choose a concept of type ${SUPPORTED_CONCEPT_FILTER_TYPES.join(", ")}, or delete this filter.`}
+                    </FormHelperText>
+                  )}
                 </div>
               )}
               <Box
