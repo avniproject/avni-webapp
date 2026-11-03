@@ -63,6 +63,25 @@ export const toConceptRequestValue = (conceptDataType, value) => {
   return format(date, "yyyy-MM-dd");
 };
 
+export const programsOfSubjectType = (operationalModules, subjectTypeUUID) => {
+  const programUUIDs = _.uniq(
+    (operationalModules?.formMappings || [])
+      .filter(
+        (fm) =>
+          fm.formType === "ProgramEnrolment" &&
+          fm.subjectTypeUUID === subjectTypeUUID &&
+          !_.isNil(fm.programUUID),
+      )
+      .map((fm) => fm.programUUID),
+  );
+  return _.sortBy(
+    (operationalModules?.programs || []).filter((p) =>
+      programUUIDs.includes(p.uuid),
+    ),
+    (p) => _.toLower(p.operationalProgramName || p.name),
+  );
+};
+
 const StyledButtons = styled("div")(({ theme }) => ({
   "& > *": { margin: theme.spacing(1) },
 }));
@@ -103,6 +122,9 @@ export const SearchForm = ({
     programEncounterDate,
     programEnrolmentDate,
     searchAll,
+    programs,
+    notEnrolledInAnyProgram,
+    includeExitedEnrolments,
   } = searchRequest;
 
   const [selectedSubjectTypeUUID, setSelectedSubjectTypeUUID] = useState(
@@ -139,6 +161,27 @@ export const SearchForm = ({
 
   const [addressLevelIds, setAddressLevelIds] = useState(addressIds || []);
 
+  const [selectedPrograms, setSelectedPrograms] = useState(programs || []);
+  // "Not enrolled" can't be combined with "Include exited": ticking one greys out the other.
+  const [notEnrolled, setNotEnrolled] = useState(
+    !!notEnrolledInAnyProgram && !includeExitedEnrolments,
+  );
+  const [includeExited, setIncludeExited] = useState(!!includeExitedEnrolments);
+  const onProgramChange = (e) => {
+    const { name, checked } = e.target;
+    setSelectedPrograms((previous) =>
+      checked ? _.uniq([...previous, name]) : _.without(previous, name),
+    );
+  };
+  const onNotEnrolledChange = (e) => {
+    setNotEnrolled(e.target.checked);
+    if (e.target.checked) setIncludeExited(false);
+  };
+  const onIncludeExitedChange = (e) => {
+    setIncludeExited(e.target.checked);
+    if (e.target.checked) setNotEnrolled(false);
+  };
+
   const [subjectTypesWithKind, setSubjectTypesWithKind] = useState([]);
   useEffect(() => {
     commonApi
@@ -155,6 +198,32 @@ export const SearchForm = ({
     selectedSubjectTypeObject && selectedSubjectTypeObject.type;
   const isNonPersonSubject =
     !!selectedSubjectTypeKind && selectedSubjectTypeKind !== "Person";
+  const subjectTypePrograms = useMemo(
+    () => programsOfSubjectType(operationalModules, selectedSubjectTypeUUID),
+    [operationalModules, selectedSubjectTypeUUID],
+  );
+  const isProgramFilterShown =
+    subjectTypePrograms.length > 0 &&
+    _.some(selectedSearchFilter, (sf) => sf.type === "Program");
+  const offeredSelectedPrograms = _.intersection(
+    selectedPrograms,
+    _.map(subjectTypePrograms, "uuid"),
+  );
+  const isNotEnrolledEnabled = !includeExited;
+  const effectiveNotEnrolled = isNotEnrolledEnabled && notEnrolled;
+  const isIncludeExitedEnabled = !effectiveNotEnrolled;
+  const programRequest = isProgramFilterShown
+    ? {
+        programs: offeredSelectedPrograms,
+        notEnrolledInAnyProgram: effectiveNotEnrolled,
+        includeExitedEnrolments: includeExited,
+      }
+    : {
+        programs: [],
+        notEnrolledInAnyProgram: false,
+        includeExitedEnrolments: false,
+      };
+
   const visibleSearchFilters = isNonPersonSubject
     ? selectedSearchFilter.filter((sf) => sf.type !== "DateOfBirth")
     : selectedSearchFilter;
@@ -310,6 +379,9 @@ export const SearchForm = ({
     setAddressLevelIds([]);
     setSelectedDate(initialStates.entityDate);
     setDateOfBirth(null);
+    setSelectedPrograms([]);
+    setNotEnrolled(false);
+    setIncludeExited(false);
     setChecked({ includeVoided: false, includeDisplayCount: false });
   };
 
@@ -353,6 +425,7 @@ export const SearchForm = ({
         maxValue: selectedDate.EnrolmentDate.maxValue,
       },
       searchAll: enterValue.searchAll,
+      ...programRequest,
     };
 
     if (_.isFunction(onSearch)) onSearch(req);
@@ -384,6 +457,15 @@ export const SearchForm = ({
               addressLevelIds={addressLevelIds}
               setAddressLevelIds={setAddressLevelIds}
               dateOfBirth={dateOfBirth}
+              programs={isProgramFilterShown ? subjectTypePrograms : []}
+              selectedPrograms={selectedPrograms}
+              onProgramChange={onProgramChange}
+              notEnrolledInAnyProgram={effectiveNotEnrolled}
+              onNotEnrolledInAnyProgramChange={onNotEnrolledChange}
+              notEnrolledInAnyProgramEnabled={isNotEnrolledEnabled}
+              includeExitedEnrolments={includeExited}
+              onIncludeExitedEnrolmentsChange={onIncludeExitedChange}
+              includeExitedEnrolmentsEnabled={isIncludeExitedEnabled}
             />
           </Grid>
 

@@ -128,6 +128,23 @@ describe("toUsableSearchRequest", () => {
     expect(toUsableSearchRequest(requestWithConcepts, subjectTypes, undefined).concept).toEqual([]);
   });
 
+  it("drops Not enrolled from a search saved with Include exited too", () => {
+    const saved = { ...searchRequest, programs: ["p1"], notEnrolledInAnyProgram: true, includeExitedEnrolments: true };
+
+    const usable = toUsableSearchRequest(saved, subjectTypes, [conceptFilter("coded-concept-uuid")]);
+
+    expect(usable.notEnrolledInAnyProgram).toBe(false);
+    expect(usable.includeExitedEnrolments).toBe(true);
+    expect(usable.programs).toEqual(["p1"]);
+    expect(saved.notEnrolledInAnyProgram).toBe(true);
+  });
+
+  it("keeps Not enrolled when Include exited is not ticked", () => {
+    const saved = { ...searchRequest, notEnrolledInAnyProgram: true, includeExitedEnrolments: false };
+
+    expect(toUsableSearchRequest(saved, subjectTypes, [conceptFilter("coded-concept-uuid")])).toBe(saved);
+  });
+
   it("leaves a search without a subject type alone", () => {
     const empty = { includeVoided: false };
 

@@ -64,6 +64,7 @@ export const CreateEditFilters = ({
             CustomFilter.type.Age,
             CustomFilter.type.SearchAll,
             CustomFilter.type.DateOfBirth,
+            CustomFilter.type.Program,
           ].includes(t),
         )
       : allTypes;

@@ -114,6 +114,7 @@
     "Yes": "Yes",
     "No": "No",
     "notEnrolledInAnyProgram": "Not enrolled in any program",
+    "includeExitedEnrolments": "Include exited",
     "vaccinations": "Vaccinations",
     "checklists": "Checklists",
     "dueOn": "Due on {{dueOn}}",

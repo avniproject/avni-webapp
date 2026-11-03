@@ -117,6 +117,9 @@ const savedSearch = {
   programEncounterDate: { minValue: null, maxValue: null },
   programEnrolmentDate: { minValue: null, maxValue: null },
   searchAll: "",
+  programs: [],
+  notEnrolledInAnyProgram: false,
+  includeExitedEnrolments: false,
 };
 
 let container;

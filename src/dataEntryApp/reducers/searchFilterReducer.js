@@ -40,8 +40,13 @@ export const getInitialState = () => ({ request: loadSavedSearchRequest() });
 
 export const resetSearchRequest = () => ({ type: types.RESET_SEARCH_REQUEST });
 
-export const toUsableSearchRequest = (request, subjectTypes, searchFilters) => {
-  if (isNil(request) || isNil(request.subjectType)) return request;
+export const toUsableSearchRequest = (savedRequest, subjectTypes, searchFilters) => {
+  if (isNil(savedRequest) || isNil(savedRequest.subjectType)) return savedRequest;
+  // "Not enrolled" and "Include exited" can't be ticked together; a search saved before that rule keeps "Include exited".
+  const request =
+    savedRequest.notEnrolledInAnyProgram && savedRequest.includeExitedEnrolments
+      ? { ...savedRequest, notEnrolledInAnyProgram: false }
+      : savedRequest;
   if (!some(subjectTypes, ({ uuid }) => uuid === request.subjectType)) return defaultRequest;
   if (isEmpty(request.concept)) return request;
   const configuredConceptUUIDs = map(
