@@ -258,6 +258,25 @@ export const CreateEditFiltersV2 = ({
     "filterConfig.presetSubjectType.uuid",
   );
 
+  // The group picker lists no option for the filter's own subject type, so a group subject
+  // type that is now ruled out would stay saved while the picker showed nothing.
+  function clearGroupSubjectTypeIfRuledOut() {
+    const groupSubjectType = _.get(
+      filterConfig.groupSubjectTypeFilter,
+      "subjectType",
+    );
+    if (_.isNil(groupSubjectType)) return;
+    const stillPossible = _.some(
+      MetaDataService.getPossibleGroupSubjectTypesFor(
+        subjectTypes,
+        filterConfig.subjectType,
+      ),
+      (x) => x.uuid === groupSubjectType.uuid,
+    );
+    if (!stillPossible)
+      filterConfig.groupSubjectTypeFilter.subjectType = undefined;
+  }
+
   function onPresetSubjectTypeChange(subjectType) {
     filterConfig.presetSubjectType = subjectType || undefined;
     const keepProgram =
@@ -273,6 +292,19 @@ export const CreateEditFiltersV2 = ({
       );
     if (!keepProgram) filterConfig.presetProgram = undefined;
     updateFilterConfig();
+  }
+
+  const programWithoutSubjectType =
+    unavailableProgram && _.isNil(savedPresetSubjectTypeUuid);
+  let presetSubjectTypeNote;
+  if (_.isNil(filterConfig.presetSubjectType)) {
+    if (unavailableSubjectType) {
+      presetSubjectTypeNote =
+        "The preset subject type saved on this filter is no longer available. Saving clears it.";
+    } else if (programWithoutSubjectType) {
+      presetSubjectTypeNote =
+        "The preset program saved on this filter has no preset subject type. Saving clears it.";
+    }
   }
 
   function onPresetProgramChange(program) {
@@ -348,6 +380,7 @@ export const CreateEditFiltersV2 = ({
                     onChange={(x) => {
                       console.log(x);
                       filterConfig.setSubjectType(x && x.value);
+                      clearGroupSubjectTypeIfRuledOut();
                       updateFilterConfig(filterConfig);
                     }}
                     toolTipKey="APP_DESIGNER_FILTER_SUBJECT_TYPE"
@@ -369,12 +402,7 @@ export const CreateEditFiltersV2 = ({
                   toolTipKey="APP_DESIGNER_FILTER_PRESET_SUBJECT_TYPE"
                   isClearable={true}
                   inputId="presetSubjectType"
-                  note={
-                    unavailableSubjectType &&
-                    _.isNil(filterConfig.presetSubjectType)
-                      ? "The preset subject type saved on this filter is no longer available. Saving clears it."
-                      : undefined
-                  }
+                  note={presetSubjectTypeNote}
                 />
               )}
               {isSubjectTypeFilter &&

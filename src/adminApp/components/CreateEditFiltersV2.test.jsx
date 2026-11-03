@@ -26,11 +26,19 @@ jest.mock("../../common/components/DocumentationContainer", () => ({
   DocumentationContainer: ({ children }) => children,
 }));
 jest.mock("react-admin", () => ({ Title: () => null }));
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key) => key,
+    i18n: { language: "en", t: (key) => key },
+  }),
+}));
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 const NOT_AVAILABLE_SUBJECT_TYPE =
   "The preset subject type saved on this filter is no longer available. Saving clears it.";
+const PROGRAM_WITHOUT_SUBJECT_TYPE =
+  "The preset program saved on this filter has no preset subject type. Saving clears it.";
 const NOT_AVAILABLE_PROGRAM =
   "The preset program saved on this filter is no longer available for this subject type. Saving clears it.";
 
@@ -132,6 +140,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  jest.restoreAllMocks();
   act(() => root.unmount());
   container.remove();
 });
@@ -369,6 +378,52 @@ describe("Subject Type filter preset pickers", () => {
     expect(document.body.textContent).not.toContain(NOT_AVAILABLE_PROGRAM);
   });
 
+  it("notes a preset program saved without a preset subject type, and saving clears it", async () => {
+    await openEditor(
+      savedFilter({ type: "SubjectType", presetProgramUUID: "P1" }),
+    );
+
+    expect(shown("presetSubjectType")).toBe("");
+    expect(noteTexts("presetSubjectType")).toContain(
+      PROGRAM_WITHOUT_SUBJECT_TYPE,
+    );
+    expect(document.body.textContent).not.toContain(NOT_AVAILABLE_SUBJECT_TYPE);
+
+    await choose("presetSubjectType", "Patient");
+    expect(document.body.textContent).not.toContain(
+      PROGRAM_WITHOUT_SUBJECT_TYPE,
+    );
+
+    await clear("presetSubjectType");
+    await save();
+    const request = saved().filterConfig.toServerRequest();
+    expect(request.presetSubjectTypeUUID ?? null).toBeNull();
+    expect(request.presetProgramUUID ?? null).toBeNull();
+  });
+
+  it("does not say the program has no subject type when the implementer clears a saved subject type", async () => {
+    await openEditor(subjectTypeFilter("ST1", "P3"));
+
+    await clear("presetSubjectType");
+
+    expect(document.body.textContent).not.toContain(
+      PROGRAM_WITHOUT_SUBJECT_TYPE,
+    );
+  });
+
+  it("offers no programs for a preset subject type that has none, and saves just the subject type", async () => {
+    await openEditor(subjectTypeFilter());
+
+    await choose("presetSubjectType", "Family");
+
+    expect(hasPicker("presetProgram")).toBe(true);
+    expect(await optionsOf("presetProgram")).toEqual([]);
+    await save();
+    const request = saved().filterConfig.toServerRequest();
+    expect(request.presetSubjectTypeUUID).toBe("GS1");
+    expect(request.presetProgramUUID ?? null).toBeNull();
+  });
+
   it("saving a filter whose preset program is no longer available clears it", async () => {
     await openEditor(subjectTypeFilter("ST1", "P3"));
 
@@ -471,6 +526,35 @@ describe("Subject Type filter preset pickers", () => {
     expect(dashboardFilterSave).not.toHaveBeenCalled();
     expect(group.groupSubjectTypeFilter).toBe(groupSubjectTypeFilter);
     expect(groupSubjectTypeFilter.subjectType).toBe(family);
+  });
+
+  it("clears a group subject type that the filter's own subject type rules out", async () => {
+    const group = new DashboardFilterConfig();
+    group.setType(CustomFilter.type.GroupSubject);
+    const family = operationalModules.subjectTypes.find(
+      (x) => x.uuid === "GS1",
+    );
+    group.groupSubjectTypeFilter.subjectType = family;
+    group.subjectType = operationalModules.subjectTypes[0];
+    await openEditor({ uuid: "F2", name: "Group filter", filterConfig: group });
+    const groupPickerShows = () =>
+      pickerInput("Group Subject Type")
+        .closest('div[style*="width: 400px"]')
+        .querySelector('[class*="singleValue"]')?.textContent ?? "";
+    expect(groupPickerShows()).toBe("Family");
+    expect(saveButton().disabled).toBe(false);
+
+    await chooseIn("Subject Type", "Family");
+
+    expect(groupPickerShows()).toBe("");
+    expect(saveButton().disabled).toBe(true);
+    await chooseIn("Group Subject Type", "Team");
+    expect(groupPickerShows()).toBe("Team");
+    expect(saveButton().disabled).toBe(false);
+    await save();
+    expect(saved().filterConfig.groupSubjectTypeFilter.subjectType.uuid).toBe(
+      "GS2",
+    );
   });
 
   it("leaves the filter's own subject type setting unset", async () => {

@@ -100,6 +100,13 @@ describe("Subject Type filter preset", function () {
     assert.deepEqual(filter.unavailablePreset, { subjectType: false, program: true });
   });
 
+  it("marks a preset program saved without a preset subject type, and drops it", function () {
+    const filter = mapFilter({ type: "SubjectType", presetProgramUUID: "P1" });
+    assert.isUndefined(filter.filterConfig.presetSubjectType);
+    assert.isUndefined(filter.filterConfig.presetProgram);
+    assert.deepEqual(filter.unavailablePreset, { subjectType: false, program: true });
+  });
+
   it("reads no preset for other filter types", function () {
     const filter = mapFilter({ type: "Gender", presetSubjectTypeUUID: "ST1" });
     assert.isUndefined(filter.filterConfig.presetSubjectType);
