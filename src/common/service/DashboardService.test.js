@@ -3,6 +3,7 @@ import OperationalModulesFactory from "../../modelTest/OperationalModulesFactory
 import SubjectTypeFactory from "../../modelTest/SubjectTypeFactory";
 import ProgramFactory from "../../modelTest/ProgramFactory";
 import DashboardService from "./DashboardService";
+import WebDashboard from "../model/reports/WebDashboard";
 
 it("should map server dashboard response", function () {
   const dashboardResponse = {
@@ -104,5 +105,48 @@ describe("Subject Type filter preset", function () {
     assert.isUndefined(filter.filterConfig.presetSubjectType);
     assert.isUndefined(filter.filterConfig.presetProgram);
     assert.notProperty(filter, "unavailablePreset");
+  });
+
+  describe("through the dashboard save", function () {
+    const dashboardWith = (filterConfig) => ({
+      uuid: "D1",
+      id: 1,
+      name: "Dash",
+      description: "",
+      sections: [],
+      filters: [{ uuid: "F1", name: "Patients", filterConfig, voided: false }],
+    });
+    const save = (filterConfig) =>
+      WebDashboard.toResource(DashboardService.mapDashboardFromResource(dashboardWith(filterConfig), operationalModules));
+
+    it("sends a Subject Type filter's presets when the dashboard is saved, and reads them back", function () {
+      const body = save({ type: "SubjectType", presetSubjectTypeUUID: "ST1", presetProgramUUID: "P1" });
+      assert.equal(body.filters[0].filterConfig.presetSubjectTypeUUID, "ST1");
+      assert.equal(body.filters[0].filterConfig.presetProgramUUID, "P1");
+
+      const reopened = DashboardService.mapDashboardFromResource(body, operationalModules).filters[0];
+      assert.equal(reopened.filterConfig.presetSubjectType.name, "Patient");
+      assert.equal(reopened.filterConfig.presetProgram.name, "Screening");
+      assert.notProperty(reopened, "unavailablePreset");
+    });
+
+    it("saves a dashboard from before the preset with no preset", function () {
+      const body = save({ type: "SubjectType" });
+      assert.isNull(body.filters[0].filterConfig.presetSubjectTypeUUID ?? null);
+      assert.isNull(body.filters[0].filterConfig.presetProgramUUID ?? null);
+    });
+
+    it("clears a preset that is no longer available when the dashboard is saved", function () {
+      const body = save({ type: "SubjectType", presetSubjectTypeUUID: "GONE", presetProgramUUID: "P1" });
+      assert.isNull(body.filters[0].filterConfig.presetSubjectTypeUUID ?? null);
+      assert.isNull(body.filters[0].filterConfig.presetProgramUUID ?? null);
+    });
+
+    it("keeps the filter's name and uuid through the save", function () {
+      const body = save({ type: "SubjectType", presetSubjectTypeUUID: "ST1" });
+      assert.equal(body.filters[0].name, "Patients");
+      assert.equal(body.filters[0].uuid, "F1");
+      assert.equal(body.filters[0].voided, false);
+    });
   });
 });
