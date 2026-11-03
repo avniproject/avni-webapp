@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FormControl } from "@mui/material";
+import { FormControl, FormHelperText } from "@mui/material";
 import Select from "react-select";
 import _, { map, startCase, values } from "lodash";
 import Box from "@mui/material/Box";
@@ -10,7 +10,7 @@ import AsyncSelect from "react-select/async";
 import {
   CustomFilter,
   DashboardFilterConfig,
-  MetaDataService
+  MetaDataService,
 } from "openchs-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
@@ -25,14 +25,14 @@ function MultipleEntitySelect({
   selectedEntities,
   options,
   onChange,
-  toolTipKey
+  toolTipKey,
 }) {
   const selectedValues = _.intersectionWith(
     options,
     selectedEntities,
     (a, b) => {
       return a.value.uuid === b.uuid;
-    }
+    },
   );
   return (
     <div style={{ width: 400 }}>
@@ -42,7 +42,7 @@ function MultipleEntitySelect({
         placeholder={placeholder}
         value={selectedValues}
         options={options}
-        onChange={newValue => onChange(_.isNil(newValue) ? [] : newValue)}
+        onChange={(newValue) => onChange(_.isNil(newValue) ? [] : newValue)}
         maxMenuHeight={200}
       />
     </div>
@@ -55,13 +55,20 @@ function SingleSelect({
   value,
   options,
   onChange,
-  toolTipKey
+  toolTipKey,
+  inputId,
 }) {
-  const selectValue = _.find(options, x => x.value === value);
+  const selectValue = _.find(options, (x) => x.value === value);
   return (
     <div style={{ width: 400 }}>
-      <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
+      <AvniFormLabel
+        label={name}
+        toolTipKey={toolTipKey}
+        position={"top"}
+        htmlFor={inputId}
+      />
       <Select
+        inputId={inputId}
         placeholder={placeholder}
         value={selectValue}
         options={options}
@@ -79,28 +86,40 @@ function SingleEntitySelect({
   options,
   onChange,
   toolTipKey,
-  isClearable = false
+  isClearable = false,
+  inputId,
+  note,
 }) {
   const selectValue = _.find(
     options,
-    x => x.value.uuid === _.get(selectedEntity, "uuid")
+    (x) => x.value.uuid === _.get(selectedEntity, "uuid"),
   );
   return (
     <div style={{ width: 400 }}>
-      <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
+      <AvniFormLabel
+        label={name}
+        toolTipKey={toolTipKey}
+        position={"top"}
+        htmlFor={inputId}
+      />
+      {/* react-select treats undefined as uncontrolled and keeps showing the last option clicked */}
       <Select
+        inputId={inputId}
         placeholder={placeholder}
-        value={selectValue}
+        value={selectValue ?? null}
         options={options}
         onChange={onChange}
         isClearable={isClearable}
       />
+      {note && (
+        <FormHelperText style={{ color: "#a15c00" }}>{note}</FormHelperText>
+      )}
     </div>
   );
 }
 
 function mapToOptions(entities) {
-  return map(entities, entity => ({ label: entity.name, value: entity }));
+  return map(entities, (entity) => ({ label: entity.name, value: entity }));
 }
 
 function isSaveDisabled(filterConfig, filterName) {
@@ -111,56 +130,56 @@ export const CreateEditFiltersV2 = ({
   selectedFilter,
   operationalModules,
   documentationFileName,
-  dashboardFilterSave
+  dashboardFilterSave,
 }) => {
   const isNew = _.isNil(_.get(selectedFilter, "uuid"));
   const { t } = useTranslation();
-  const typeOptions = values(CustomFilter.getDashboardFilterTypes()).map(s => ({
+  const typeOptions = values(CustomFilter.getDashboardFilterTypes()).map(
+    (s) => ({
+      label: startCase(s),
+      value: s,
+    }),
+  );
+  const scopeOptions = values(CustomFilter.scope).map((s) => ({
     label: startCase(s),
-    value: s
-  }));
-  const scopeOptions = values(CustomFilter.scope).map(s => ({
-    label: startCase(s),
-    value: s
+    value: s,
   }));
   const widgetOptions = values(CustomFilter.getDashboardFilterWidgets()).map(
-    s => ({
+    (s) => ({
       label: s,
-      value: s
-    })
+      value: s,
+    }),
   );
 
-  const {
-    programs,
-    subjectTypes,
-    encounterTypes,
-    formMappings
-  } = operationalModules;
+  const { programs, subjectTypes, encounterTypes, formMappings } =
+    operationalModules;
 
   const [filterName, setFilterName] = useState(
-    isNew ? "" : selectedFilter.name
+    isNew ? "" : selectedFilter.name,
   );
   const [filterConfig, setFilterConfig] = useState(
-    isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig
+    // A copy, so closing the editor without saving leaves the dashboard's filter as it was
+    () =>
+      isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig.clone(),
   );
 
   const subjectTypeOptions = mapToOptions(subjectTypes);
   const programOptions = mapToOptions(
-    MetaDataService.getProgramsForSubjectType(programs, null, formMappings)
+    MetaDataService.getProgramsForSubjectType(programs, null, formMappings),
   );
   const encounterTypeOptions = mapToOptions(
     MetaDataService.getEncounterTypes_For_SubjectTypeAndPrograms(
       encounterTypes,
       null,
       _.get(filterConfig.observationBasedFilter, "programs"),
-      formMappings
-    )
+      formMappings,
+    ),
   );
   const groupSubjectTypeOptions = mapToOptions(
     MetaDataService.getPossibleGroupSubjectTypesFor(
       subjectTypes,
-      filterConfig.subjectType
-    )
+      filterConfig.subjectType,
+    ),
   );
 
   const [messageStatus] = useState({ message: "", display: false });
@@ -173,7 +192,7 @@ export const CreateEditFiltersV2 = ({
   const saveFilter = () => {
     const dashboardFilter = {
       name: filterName,
-      filterConfig: filterConfig
+      filterConfig: filterConfig,
     };
     dashboardFilterSave(dashboardFilter);
   };
@@ -183,17 +202,65 @@ export const CreateEditFiltersV2 = ({
     if (!value) {
       callback([]);
     }
-    ConceptService.searchDashboardFilterConcepts(value).then(concepts => {
-      const conceptOptions = map(concepts, concept => ({
+    ConceptService.searchDashboardFilterConcepts(value).then((concepts) => {
+      const conceptOptions = map(concepts, (concept) => ({
         label: concept.name,
-        value: concept
+        value: concept,
       }));
       setConceptSuggestions(conceptOptions);
       callback(conceptOptions);
     });
   };
 
+  const presetSubjectTypeOptions = subjectTypeOptions;
+  const presetProgramOptions = mapToOptions(
+    _.isNil(filterConfig.presetSubjectType)
+      ? []
+      : MetaDataService.getProgramsForSubjectType(
+          programs,
+          filterConfig.presetSubjectType,
+          formMappings,
+        ),
+  );
+  const isSubjectTypeFilter =
+    filterConfig.type === CustomFilter.type.SubjectType;
+  const unavailableSubjectType =
+    _.get(selectedFilter, "unavailablePreset.subjectType") === true;
+  const unavailableProgram =
+    _.get(selectedFilter, "unavailablePreset.program") === true;
+  const savedPresetSubjectTypeUuid = _.get(
+    selectedFilter,
+    "filterConfig.presetSubjectType.uuid",
+  );
+
+  function onPresetSubjectTypeChange(subjectType) {
+    filterConfig.presetSubjectType = subjectType || undefined;
+    const keepProgram =
+      !_.isNil(subjectType) &&
+      !_.isNil(filterConfig.presetProgram) &&
+      _.some(
+        MetaDataService.getProgramsForSubjectType(
+          programs,
+          subjectType,
+          formMappings,
+        ),
+        (program) => program.uuid === filterConfig.presetProgram.uuid,
+      );
+    if (!keepProgram) filterConfig.presetProgram = undefined;
+    updateFilterConfig();
+  }
+
+  function onPresetProgramChange(program) {
+    filterConfig.presetProgram = program || undefined;
+    updateFilterConfig();
+  }
+
   function onTypeChange(type) {
+    // react-select calls onChange for the option already chosen too
+    if (isSubjectTypeFilter && type !== filterConfig.type) {
+      filterConfig.presetSubjectType = undefined;
+      filterConfig.presetProgram = undefined;
+    }
     filterConfig.setType(type);
     filterConfig.widget = null;
     updateFilterConfig();
@@ -206,7 +273,7 @@ export const CreateEditFiltersV2 = ({
         sx={{
           boxShadow: 2,
           p: 1,
-          bgcolor: "background.paper"
+          bgcolor: "background.paper",
         }}
       >
         <DocumentationContainer filename={documentationFileName}>
@@ -221,14 +288,14 @@ export const CreateEditFiltersV2 = ({
                   label="Filter Name *"
                   autoComplete="off"
                   value={filterName}
-                  onChange={event => setFilterName(event.target.value)}
+                  onChange={(event) => setFilterName(event.target.value)}
                   style={{ width: 400 }}
                   toolTipKey={"APP_DESIGNER_FILTER_NAME"}
                 />
               </FormControl>
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               <SingleSelect
@@ -236,12 +303,13 @@ export const CreateEditFiltersV2 = ({
                 placeholder="Filter Type"
                 value={filterConfig.type}
                 options={typeOptions}
-                onChange={x => onTypeChange(x.value)}
+                onChange={(x) => onTypeChange(x.value)}
+                inputId="filterType"
                 toolTipKey="APP_DESIGNER_FILTER_TYPE"
               />
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {!_.isEmpty(filterConfig.type) &&
@@ -252,7 +320,7 @@ export const CreateEditFiltersV2 = ({
                     placeholder="Select Subject Type"
                     selectedEntity={filterConfig.subjectType}
                     options={subjectTypeOptions}
-                    onChange={x => {
+                    onChange={(x) => {
                       console.log(x);
                       filterConfig.setSubjectType(x && x.value);
                       updateFilterConfig(filterConfig);
@@ -263,7 +331,52 @@ export const CreateEditFiltersV2 = ({
                 )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
+                }}
+              />
+              {isSubjectTypeFilter && subjectTypeOptions.length > 0 && (
+                <SingleEntitySelect
+                  name="Preset subject type"
+                  placeholder="Select Subject Type"
+                  selectedEntity={filterConfig.presetSubjectType}
+                  options={presetSubjectTypeOptions}
+                  onChange={(x) => onPresetSubjectTypeChange(x && x.value)}
+                  toolTipKey="APP_DESIGNER_FILTER_PRESET_SUBJECT_TYPE"
+                  isClearable={true}
+                  inputId="presetSubjectType"
+                  note={
+                    unavailableSubjectType &&
+                    _.isNil(filterConfig.presetSubjectType)
+                      ? "The preset subject type saved on this filter is no longer available. Saving clears it."
+                      : undefined
+                  }
+                />
+              )}
+              {isSubjectTypeFilter &&
+                !_.isNil(filterConfig.presetSubjectType) && (
+                  <SingleEntitySelect
+                    name="Preset program"
+                    placeholder="Select Program"
+                    selectedEntity={filterConfig.presetProgram}
+                    options={presetProgramOptions}
+                    onChange={(x) => onPresetProgramChange(x && x.value)}
+                    toolTipKey="APP_DESIGNER_FILTER_PRESET_PROGRAM"
+                    isClearable={true}
+                    inputId="presetProgram"
+                    note={
+                      unavailableProgram &&
+                      !unavailableSubjectType &&
+                      filterConfig.presetSubjectType.uuid ===
+                        savedPresetSubjectTypeUuid &&
+                      _.isNil(filterConfig.presetProgram)
+                        ? "The preset program saved on this filter is no longer available for this subject type. Saving clears it."
+                        : undefined
+                    }
+                  />
+                )}
+              <Box
+                sx={{
+                  m: 1,
                 }}
               />
               {filterConfig.isGroupSubjectTypeFilter() &&
@@ -275,7 +388,7 @@ export const CreateEditFiltersV2 = ({
                       filterConfig.groupSubjectTypeFilter.subjectType
                     }
                     options={groupSubjectTypeOptions}
-                    onChange={x => {
+                    onChange={(x) => {
                       filterConfig.groupSubjectTypeFilter.subjectType = x.value;
                       updateFilterConfig();
                     }}
@@ -284,7 +397,7 @@ export const CreateEditFiltersV2 = ({
                 )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {filterConfig.isConceptTypeFilter() && (
@@ -300,11 +413,11 @@ export const CreateEditFiltersV2 = ({
                     value={
                       !_.isNil(filterConfig.observationBasedFilter.concept) && {
                         label: filterConfig.observationBasedFilter.concept.name,
-                        value: filterConfig.observationBasedFilter.concept
+                        value: filterConfig.observationBasedFilter.concept,
                       }
                     }
                     placeholder={"Type to search"}
-                    onChange={x => {
+                    onChange={(x) => {
                       filterConfig.observationBasedFilter.concept = x.value;
                       updateFilterConfig();
                     }}
@@ -314,7 +427,7 @@ export const CreateEditFiltersV2 = ({
               )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {filterConfig.isConceptTypeFilter() && (
@@ -323,7 +436,7 @@ export const CreateEditFiltersV2 = ({
                   placeholder="Search Scope"
                   value={_.get(filterConfig.observationBasedFilter, "scope")}
                   options={scopeOptions}
-                  onChange={scope => {
+                  onChange={(scope) => {
                     filterConfig.observationBasedFilter.setScope(scope.value);
                     updateFilterConfig();
                   }}
@@ -332,7 +445,7 @@ export const CreateEditFiltersV2 = ({
               )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {filterConfig.willObservationBeInScopeOfProgramEnrolment() && (
@@ -343,9 +456,9 @@ export const CreateEditFiltersV2 = ({
                     filterConfig.observationBasedFilter.programs
                   }
                   options={programOptions}
-                  onChange={xes => {
+                  onChange={(xes) => {
                     filterConfig.observationBasedFilter.programs = xes.map(
-                      x => x.value
+                      (x) => x.value,
                     );
                     updateFilterConfig();
                   }}
@@ -354,7 +467,7 @@ export const CreateEditFiltersV2 = ({
               )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {filterConfig.willObservationBeInScopeOfEncounter() && (
@@ -365,10 +478,9 @@ export const CreateEditFiltersV2 = ({
                     filterConfig.observationBasedFilter.encounterTypes
                   }
                   options={encounterTypeOptions}
-                  onChange={xes => {
-                    filterConfig.observationBasedFilter.encounterTypes = xes.map(
-                      x => x.value
-                    );
+                  onChange={(xes) => {
+                    filterConfig.observationBasedFilter.encounterTypes =
+                      xes.map((x) => x.value);
                     updateFilterConfig();
                   }}
                   toolTipKey="APP_DESIGNER_FILTER_ENCOUNTER_TYPE"
@@ -376,7 +488,7 @@ export const CreateEditFiltersV2 = ({
               )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
               {filterConfig.isWidgetRequired() && (
@@ -385,7 +497,7 @@ export const CreateEditFiltersV2 = ({
                   placeholder="Select Widget Type"
                   value={filterConfig.widget}
                   options={widgetOptions}
-                  onChange={w => {
+                  onChange={(w) => {
                     filterConfig.widget = w.value;
                     updateFilterConfig();
                   }}
@@ -394,13 +506,13 @@ export const CreateEditFiltersV2 = ({
               )}
               <Box
                 sx={{
-                  m: 1
+                  m: 1,
                 }}
               />
             </div>
             <Box
               sx={{
-                m: 1
+                m: 1,
               }}
             >
               <SaveComponent
@@ -415,7 +527,7 @@ export const CreateEditFiltersV2 = ({
         {messageStatus.display && (
           <CustomizedSnackbar
             message={messageStatus.message}
-            getDefaultSnackbarStatus={status => setSnackBarStatus(status)}
+            getDefaultSnackbarStatus={(status) => setSnackBarStatus(status)}
             defaultSnackbarStatus={snackBarStatus}
           />
         )}

@@ -62,6 +62,8 @@
   "APP_DESIGNER_CONCEPT_ENCOUNTER_IDENTIFIER": "Specifies the unique identifier for each encounter. Supported options are 'Date' or any concept name in the encounter form. Option must be wrapped inside {}. Example: {Date}-({Order Id})",
   "APP_DESIGNER_FILTER_NAME": "Filter name",
   "APP_DESIGNER_FILTER_SUBJECT_TYPE": "Subject type for which this filter should show up",
+  "APP_DESIGNER_FILTER_PRESET_SUBJECT_TYPE": "Optional. The subject type this filter starts with, so users don't have to choose it.",
+  "APP_DESIGNER_FILTER_PRESET_PROGRAM": "Optional. The program, within the preset subject type, that this filter starts with.",
   "APP_DESIGNER_FILTER_GROUP_SUBJECT_TYPE": "Group subject to consider for this filter",
   "APP_DESIGNER_FILTER_TYPE": "To determine the field on which the filter will apply",
   "APP_DESIGNER_FILTER_CONCEPT_SEARCH": "Filter will apply on observations of this concept",
