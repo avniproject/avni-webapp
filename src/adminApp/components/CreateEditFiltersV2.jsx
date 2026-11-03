@@ -10,7 +10,9 @@ import AsyncSelect from "react-select/async";
 import {
   CustomFilter,
   DashboardFilterConfig,
+  GroupSubjectTypeFilter,
   MetaDataService,
+  ObservationBasedFilter,
 } from "openchs-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
@@ -126,6 +128,27 @@ function isSaveDisabled(filterConfig, filterName) {
   return !filterConfig.isValid() || _.isEmpty(filterName);
 }
 
+// clone() shares the nested filters with the original, and the handlers change them in place.
+function copyWithOwnNestedSettings(filterConfig) {
+  const copy = filterConfig.clone();
+  const { groupSubjectTypeFilter, observationBasedFilter } = filterConfig;
+  if (!_.isNil(groupSubjectTypeFilter)) {
+    copy.groupSubjectTypeFilter = new GroupSubjectTypeFilter();
+    copy.groupSubjectTypeFilter.subjectType =
+      groupSubjectTypeFilter.subjectType;
+  }
+  if (!_.isNil(observationBasedFilter)) {
+    copy.observationBasedFilter = new ObservationBasedFilter();
+    copy.observationBasedFilter.scope = observationBasedFilter.scope;
+    copy.observationBasedFilter.concept = observationBasedFilter.concept;
+    copy.observationBasedFilter.programs = [...observationBasedFilter.programs];
+    copy.observationBasedFilter.encounterTypes = [
+      ...observationBasedFilter.encounterTypes,
+    ];
+  }
+  return copy;
+}
+
 export const CreateEditFiltersV2 = ({
   selectedFilter,
   operationalModules,
@@ -160,7 +183,9 @@ export const CreateEditFiltersV2 = ({
   const [filterConfig, setFilterConfig] = useState(
     // A copy, so closing the editor without saving leaves the dashboard's filter as it was
     () =>
-      isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig.clone(),
+      isNew
+        ? new DashboardFilterConfig()
+        : copyWithOwnNestedSettings(selectedFilter.filterConfig),
   );
 
   const subjectTypeOptions = mapToOptions(subjectTypes);
@@ -365,7 +390,6 @@ export const CreateEditFiltersV2 = ({
                     inputId="presetProgram"
                     note={
                       unavailableProgram &&
-                      !unavailableSubjectType &&
                       filterConfig.presetSubjectType.uuid ===
                         savedPresetSubjectTypeUuid &&
                       _.isNil(filterConfig.presetProgram)

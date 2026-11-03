@@ -2,7 +2,13 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import fs from "fs";
 import path from "path";
-import { CustomFilter, DashboardFilterConfig } from "openchs-models";
+import {
+  CustomFilter,
+  DashboardFilterConfig,
+  GroupSubjectTypeFilter,
+  ObservationBasedFilter,
+} from "openchs-models";
+import ConceptService from "../../common/service/ConceptService";
 import { CreateEditFiltersV2 } from "./CreateEditFiltersV2";
 import DashboardService from "../../common/service/DashboardService";
 import OperationalModulesFactory from "../../modelTest/OperationalModulesFactory";
@@ -33,11 +39,23 @@ const enrolment = (subjectTypeUUID, programUUID) => ({
   programUUID,
   formType: "ProgramEnrolment",
 });
+const groupSubjectType = (uuid, name) => {
+  const subjectType = SubjectTypeFactory.create({ uuid, name });
+  subjectType.group = true;
+  return subjectType;
+};
+const programEncounter = (programUUID, encounterTypeUUID) => ({
+  programUUID,
+  encounterTypeUUID,
+  formType: "ProgramEncounter",
+});
 const operationalModules = OperationalModulesFactory.create({
   subjectTypes: [
     SubjectTypeFactory.create({ uuid: "ST1", name: "Patient" }),
     SubjectTypeFactory.create({ uuid: "ST2", name: "Household" }),
     SubjectTypeFactory.create({ uuid: "ST3", name: "Child" }),
+    groupSubjectType("GS1", "Family"),
+    groupSubjectType("GS2", "Team"),
   ],
   programs: [
     ProgramFactory.create({ uuid: "P1", name: "Screening" }),
@@ -49,8 +67,15 @@ const operationalModules = OperationalModulesFactory.create({
     enrolment("ST1", "P2"),
     enrolment("ST2", "P3"),
     enrolment("ST3", "P1"),
+    programEncounter("P1", "E1"),
+    programEncounter("P1", "E2"),
+    programEncounter("P2", "E2"),
   ],
 });
+operationalModules.encounterTypes = [
+  { uuid: "E1", name: "Visit" },
+  { uuid: "E2", name: "Follow up" },
+];
 
 // As the server answers for a dashboard, mapped the way the dashboard page maps it on open.
 const savedFilter = (filterConfig) =>
@@ -367,6 +392,85 @@ describe("Subject Type filter preset pickers", () => {
     expect(selectedFilter.filterConfig.type).toBe("SubjectType");
     expect(selectedFilter.filterConfig.presetSubjectType.uuid).toBe("ST1");
     expect(selectedFilter.filterConfig.presetProgram.uuid).toBe("P1");
+  });
+
+  // The nested settings of these types are objects the editor's handlers change in place.
+  const pickerInput = (text) =>
+    [...document.querySelectorAll("label")]
+      .find((element) => element.textContent.trim() === text)
+      .closest('div[style*="width: 400px"]')
+      .querySelector("input:not([type=hidden])");
+  const chooseIn = async (text, option) => {
+    const field = pickerInput(text);
+    await act(async () => {
+      field.focus();
+      pressKey(field, "ArrowDown");
+    });
+    const element = [...document.querySelectorAll('[role="option"]')].find(
+      (x) => x.textContent === option,
+    );
+    if (!element) throw new Error(`No option ${option} in ${text}`);
+    await act(async () => element.click());
+  };
+
+  it("leaves a Concept or Group Subject filter's settings as they were when the editor closes without saving", async () => {
+    const original = { uuid: "C1", name: "Weight", datatype: "Numeric" };
+    const replacement = { uuid: "C2", name: "Height", datatype: "Numeric" };
+    const [P1] = operationalModules.programs;
+    const [E1] = operationalModules.encounterTypes;
+
+    const concept = new DashboardFilterConfig();
+    concept.setType(CustomFilter.type.Concept);
+    const observationBasedFilter = concept.observationBasedFilter;
+    expect(observationBasedFilter).toBeInstanceOf(ObservationBasedFilter);
+    observationBasedFilter.scope = CustomFilter.scope.ProgramEncounter;
+    observationBasedFilter.concept = original;
+    observationBasedFilter.programs = [P1];
+    observationBasedFilter.encounterTypes = [E1];
+    const programsBefore = observationBasedFilter.programs;
+    const encounterTypesBefore = observationBasedFilter.encounterTypes;
+
+    jest
+      .spyOn(ConceptService, "searchDashboardFilterConcepts")
+      .mockResolvedValue([replacement]);
+    await openEditor({
+      uuid: "F1",
+      name: "Concept filter",
+      filterConfig: concept,
+    });
+    await typeInto(pickerInput("Select Concept"), "Hei");
+    await chooseIn("Select Concept", "Height");
+    await chooseIn("Programs", "Treatment");
+    await chooseIn("Encounter Types", "Follow up");
+    await chooseIn("Scope", "Encounter");
+
+    expect(dashboardFilterSave).not.toHaveBeenCalled();
+    expect(concept.observationBasedFilter).toBe(observationBasedFilter);
+    expect(observationBasedFilter.concept).toBe(original);
+    expect(observationBasedFilter.scope).toBe(
+      CustomFilter.scope.ProgramEncounter,
+    );
+    expect(observationBasedFilter.programs).toBe(programsBefore);
+    expect(observationBasedFilter.programs).toEqual([P1]);
+    expect(observationBasedFilter.encounterTypes).toBe(encounterTypesBefore);
+    expect(observationBasedFilter.encounterTypes).toEqual([E1]);
+
+    const group = new DashboardFilterConfig();
+    group.setType(CustomFilter.type.GroupSubject);
+    const groupSubjectTypeFilter = group.groupSubjectTypeFilter;
+    expect(groupSubjectTypeFilter).toBeInstanceOf(GroupSubjectTypeFilter);
+    const family = operationalModules.subjectTypes.find(
+      (x) => x.uuid === "GS1",
+    );
+    groupSubjectTypeFilter.subjectType = family;
+    group.subjectType = operationalModules.subjectTypes[0];
+
+    await openEditor({ uuid: "F2", name: "Group filter", filterConfig: group });
+    await chooseIn("Group Subject Type", "Team");
+
+    expect(dashboardFilterSave).not.toHaveBeenCalled();
+    expect(group.groupSubjectTypeFilter).toBe(groupSubjectTypeFilter);
+    expect(groupSubjectTypeFilter.subjectType).toBe(family);
   });
 
   it("leaves the filter's own subject type setting unset", async () => {
