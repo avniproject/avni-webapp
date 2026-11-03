@@ -3,13 +3,14 @@ import { MaterialReactTable } from "material-react-table";
 import _ from "lodash";
 import { IconButton, Box } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
+import { CustomFilter } from "openchs-models";
 import EntityService from "../../../common/service/EntityService";
 
 const ShowDashboardFilters = ({
   filters,
   editAction,
   deleteAction,
-  operationalModules
+  operationalModules,
 }) => {
   const columns = useMemo(() => {
     if (_.isNil(operationalModules?.subjectTypes)) return [];
@@ -18,26 +19,34 @@ const ShowDashboardFilters = ({
       {
         id: "name",
         header: "Name",
-        Cell: ({ row }) => row.original.name
+        Cell: ({ row }) => row.original.name,
       },
       {
         id: "subjectType",
         header: "Subject Type",
         Cell: ({ row }) => {
+          const filter = row.original;
+          if (filter.filterConfig?.type === CustomFilter.type.SubjectType) {
+            if (filter.unavailablePreset) return "Preset no longer available";
+            const { presetSubjectType, presetProgram } = filter.filterConfig;
+            if (_.isNil(presetSubjectType)) return "";
+            const names = [presetSubjectType.name, presetProgram?.name];
+            return `Preset: ${_.compact(names).join(", ")}`;
+          }
           const subjectType =
             row.original.filterConfig?.subjectType &&
             EntityService.findByUuid(
               operationalModules.subjectTypes,
-              row.original.filterConfig.subjectType.uuid
+              row.original.filterConfig.subjectType.uuid,
             );
           return subjectType ? subjectType.name : "";
-        }
+        },
       },
       {
         id: "filterType",
         header: "Filter Type",
-        Cell: ({ row }) => row.original.filterConfig?.type
-      }
+        Cell: ({ row }) => row.original.filterConfig?.type,
+      },
     ];
   }, [operationalModules]);
 
@@ -69,8 +78,8 @@ const ShowDashboardFilters = ({
       )}
       muiTableHeadCellProps={{
         sx: {
-          zIndex: 1
-        }
+          zIndex: 1,
+        },
       }}
     />
   );
