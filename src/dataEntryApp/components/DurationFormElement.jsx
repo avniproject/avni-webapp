@@ -6,9 +6,14 @@ import { CompositeDuration } from "avni-models";
 import { useTranslation } from "react-i18next";
 
 const StyledForm = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: theme.spacing(2),
+  marginTop: theme.spacing(1),
   "& > *": {
-    margin: theme.spacing(1),
-    width: "20ch",
+    flex: "1 1 20ch",
+    minWidth: 0,
+    maxWidth: "100%",
   },
 }));
 
@@ -103,3 +108,4 @@ const CompositeDurationFormElement = ({
 };
 
 export default CompositeDurationFormElement;
+
