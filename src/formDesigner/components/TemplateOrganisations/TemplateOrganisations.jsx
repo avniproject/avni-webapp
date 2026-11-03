@@ -14,6 +14,7 @@ import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import ReactMarkdown from "react-markdown";
 import { ApplyTemplateDialog, BUTTON_CONFIG } from "./ApplyTemplateDialog";
+import { useNavigate } from "react-router-dom";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   width: "100%",
@@ -67,13 +68,8 @@ const useApplyTemplateDialog = () => {
   };
 };
 
-const TemplateOrganisationDetail = ({ template, onBack }) => {
+const TemplateOrganisationDetail = ({ template, onBack, onApplySuccess }) => {
   const { isDialogOpen, openDialog, closeDialog } = useApplyTemplateDialog();
-
-  const handleApplySuccess = () => {
-    // Handle any success actions after template application
-    console.log("Template applied successfully");
-  };
 
   return (
     <Box>
@@ -196,19 +192,18 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
         open={isDialogOpen}
         onClose={closeDialog}
         templateId={template.id}
-        onApplySuccess={handleApplySuccess}
+        onApplySuccess={onApplySuccess}
       />
     </Box>
   );
 };
 
-const TemplateOrganisationCard = ({ template, onViewDetails }) => {
+const TemplateOrganisationCard = ({
+  template,
+  onViewDetails,
+  onApplySuccess,
+}) => {
   const { isDialogOpen, openDialog, closeDialog } = useApplyTemplateDialog();
-
-  const handleApplySuccess = () => {
-    // Handle any success actions after template application
-    console.log("Template applied successfully");
-  };
 
   const handleApplyClick = (e, templateId) => {
     e.stopPropagation();
@@ -282,13 +277,14 @@ const TemplateOrganisationCard = ({ template, onViewDetails }) => {
         open={isDialogOpen}
         onClose={closeDialog}
         templateId={template.id}
-        onApplySuccess={handleApplySuccess}
+        onApplySuccess={onApplySuccess}
       />
     </StyledCard>
   );
 };
 
 export const TemplateOrganisations = () => {
+  const navigate = useNavigate();
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
@@ -305,6 +301,10 @@ export const TemplateOrganisations = () => {
 
   const handleBack = () => {
     setSelectedTemplate(null);
+  };
+
+  const handleApplySuccess = () => {
+    navigate("/appdesigner/subjectType?page=0");
   };
 
   return (
@@ -329,6 +329,7 @@ export const TemplateOrganisations = () => {
         <TemplateOrganisationDetail
           template={selectedTemplate}
           onBack={handleBack}
+          onApplySuccess={handleApplySuccess}
         />
       ) : (
         <div>
@@ -341,6 +342,7 @@ export const TemplateOrganisations = () => {
                 key={template.uuid || index}
                 template={template}
                 onViewDetails={handleCardClick}
+                onApplySuccess={handleApplySuccess}
               />
             ))}
           </CardContainer>
