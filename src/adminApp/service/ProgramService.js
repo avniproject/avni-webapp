@@ -45,6 +45,7 @@ class ProgramService {
       manualEligibilityCheckRequired: program.manualEligibilityCheckRequired,
       showGrowthChart: program.showGrowthChart,
       allowMultipleEnrolments: program.allowMultipleEnrolments,
+      active: program.active,
       manualEnrolmentEligibilityCheckRule: program.manualEnrolmentEligibilityCheckRule,
       programId: program.programId,
       manualEnrolmentEligibilityCheckDeclarativeRule: program.manualEnrolmentEligibilityCheckDeclarativeRule,
@@ -74,3 +75,4 @@ class ProgramService {
 }
 
 export default ProgramService;
+
