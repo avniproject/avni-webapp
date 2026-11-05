@@ -321,3 +321,132 @@ describe("records from other systems, odd but possible", () => {
     expect(summariseBundle(b).recordType).toBe("12345");
   });
 });
+
+describe("review holds of 5 Nov", () => {
+  const bundleOf = (sections, ...resources) => ({
+    entry: [
+      { fullUrl: "urn:uuid:c", resource: { resourceType: "Composition", title: "T", section: sections } },
+      ...resources.map(([url, r]) => ({ fullUrl: url, resource: r })),
+    ],
+  });
+
+  // Hold 3: a name from the record is looked up only among our own names, never an object's built-in ones.
+  it("a type named like a built-in property reads as text and never crashes the page", () => {
+    ["__proto__", "constructor", "toString", "hasOwnProperty"].forEach((odd) => {
+      const viaCode = bundleOf([]);
+      viaCode.entry[0].resource.type = { coding: [{ code: odd }] };
+      const viaText = bundleOf([]);
+      viaText.entry[0].resource.type = { text: odd };
+      const viaProfile = bundleOf([]);
+      viaProfile.entry[0].resource.meta = { profile: [`https://example.org/StructureDefinition/${odd}`] };
+      [viaCode, viaText, viaProfile].forEach((b) => expect(typeof summariseBundle(b).recordType).toBe("string"));
+      expect(summariseBundle(viaText).recordType).toBe(odd);
+    });
+  });
+
+  // Hold 4: everything the old view listed is still on the page.
+  it("a lab report's grouped results show under their panel", () => {
+    const s = summariseBundle(
+      bundleOf(
+        [{ title: "Lab", entry: [{ reference: "urn:uuid:dr" }] }],
+        [
+          "urn:uuid:dr",
+          { resourceType: "DiagnosticReport", code: { text: "CBC" }, status: "final", result: [{ reference: "urn:uuid:panel" }] },
+        ],
+        [
+          "urn:uuid:panel",
+          {
+            resourceType: "Observation",
+            code: { text: "CBC panel" },
+            hasMember: [{ reference: "urn:uuid:hb" }, { reference: "urn:uuid:wbc" }],
+          },
+        ],
+        ["urn:uuid:hb", { resourceType: "Observation", code: { text: "Haemoglobin" }, valueQuantity: { value: 13.2, unit: "g/dL" } }],
+        ["urn:uuid:wbc", { resourceType: "Observation", code: { text: "WBC" }, valueQuantity: { value: 7000, unit: "/uL" } }],
+      ),
+    );
+    const text = JSON.stringify(s.sections);
+    expect(text).toContain("13.2 g/dL");
+    expect(text).toContain("7000 /uL");
+    expect(s.sections.map((x) => x.title)).toEqual(["Lab"]);
+  });
+
+  it("a reference written as type and id finds its entry", () => {
+    const s = summariseBundle(
+      bundleOf(
+        [{ title: "Lab", entry: [{ reference: "DiagnosticReport/dr1" }] }],
+        [
+          "urn:uuid:1",
+          { resourceType: "DiagnosticReport", id: "dr1", code: { text: "Glucose test" }, result: [{ reference: "Observation/g1" }] },
+        ],
+        ["urn:uuid:2", { resourceType: "Observation", id: "g1", code: { text: "Glucose" }, valueQuantity: { value: 110, unit: "mg/dL" } }],
+      ),
+    );
+    expect(item(s, "Glucose test").children.map((c) => c.value)).toEqual(["110 mg/dL"]);
+  });
+
+  it("a section inside a section is read, under both titles", () => {
+    const s = summariseBundle(
+      bundleOf(
+        [
+          { title: "Chief complaints", entry: [{ reference: "urn:uuid:c1" }] },
+          { title: "Examination", section: [{ title: "Vitals", entry: [{ reference: "urn:uuid:t" }] }] },
+        ],
+        ["urn:uuid:c1", { resourceType: "Condition", code: { text: "Fever" } }],
+        ["urn:uuid:t", { resourceType: "Observation", code: { text: "Temperature" }, valueQuantity: { value: 101, unit: "F" } }],
+      ),
+    );
+    expect(s.sections.map((x) => x.title)).toEqual(["Chief complaints", "Examination › Vitals"]);
+    expect(item(s, "Temperature").value).toBe("101 F");
+  });
+
+  it("a measurement no section reaches is listed at the end, not lost", () => {
+    const s = summariseBundle(
+      bundleOf(
+        [{ title: "Chief complaints", entry: [{ reference: "urn:uuid:c1" }] }],
+        ["urn:uuid:c1", { resourceType: "Condition", code: { text: "Fever" } }],
+        ["urn:uuid:p", { resourceType: "Observation", code: { text: "Pulse" }, valueQuantity: { value: 88, unit: "/min" } }],
+      ),
+    );
+    expect(s.sections.map((x) => x.title)).toEqual(["Chief complaints", "Other measurements"]);
+    expect(item(s, "Pulse").value).toBe("88 /min");
+  });
+
+  it("a panel that names itself among its members stays small", () => {
+    const s = summariseBundle(
+      bundleOf(
+        [{ title: "Lab", entry: [{ reference: "urn:uuid:loop" }] }],
+        ["urn:uuid:loop", { resourceType: "Observation", code: { text: "Loop" }, hasMember: [{ reference: "urn:uuid:loop" }] }],
+      ),
+    );
+    expect(JSON.stringify(s).length).toBeLessThan(2000);
+  });
+
+  // W6: an entry that throws while it is read costs only itself; the rest, and the PDF, still show.
+  it("an entry that throws when read costs only itself", () => {
+    const bad = { resourceType: "Condition" };
+    Object.defineProperty(bad, "code", {
+      enumerable: true,
+      get() {
+        throw new Error("odd entry");
+      },
+    });
+    const s = summariseBundle(
+      bundleOf(
+        [{ title: "S", entry: [{ reference: "urn:uuid:bad" }, { reference: "urn:uuid:ok" }, { reference: "urn:uuid:doc" }] }],
+        ["urn:uuid:bad", bad],
+        ["urn:uuid:ok", { resourceType: "Observation", code: { text: "BP" }, valueString: "120/80" }],
+        [
+          "urn:uuid:doc",
+          { resourceType: "DocumentReference", content: [{ attachment: { contentType: "application/pdf", data: "JVBERi0x" } }] },
+        ],
+      ),
+    );
+    expect(items(s).map((i) => [i.label, i.value])).toEqual([
+      ["Condition", "Could not be read"],
+      ["BP", "120/80"],
+      ["Document", "application/pdf"],
+    ]);
+    expect(s.attachments.length).toBe(1);
+  });
+});

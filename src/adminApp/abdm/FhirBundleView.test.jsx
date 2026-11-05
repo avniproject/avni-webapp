@@ -156,4 +156,20 @@ describe("FhirBundleView", () => {
     await render(<FhirBundleView bundle={odd} />);
     expect(container.textContent).toContain("Plan");
   });
+
+  it("a record whose type is named like a built-in property still renders", async () => {
+    const odd = {
+      entry: [
+        {
+          resource: {
+            resourceType: "Composition",
+            title: "Odd",
+            type: { coding: [{ code: "__proto__" }] },
+          },
+        },
+      ],
+    };
+    await render(<FhirBundleView bundle={odd} />);
+    expect(container.textContent).toContain("Odd");
+  });
 });

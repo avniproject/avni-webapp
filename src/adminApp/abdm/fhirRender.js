@@ -83,17 +83,22 @@ const RECORD_TYPE_CODES = {
 };
 const RECORD_TYPE_TEXTS = { "op consultation record": "Consultation", "wellness record": "Wellness record", "invoice record": "Invoice" };
 
+// A name taken from the record is looked up among this file's own names only: "__proto__" or "constructor" must never
+// find an object's built-in property and hand React something that is not text.
+const own = (table, key) => (Object.prototype.hasOwnProperty.call(table, key) ? table[key] : undefined);
+
 const recordType = (comp) => {
   if (!comp) return "";
   for (const p of arr(comp.meta && comp.meta.profile)) {
-    const name = text(p).split("/").pop();
-    if (RECORD_TYPES[name]) return RECORD_TYPES[name];
+    const found = own(RECORD_TYPES, text(p).split("/").pop());
+    if (found) return found;
   }
   for (const c of arr(comp.type && comp.type.coding)) {
-    if (c && RECORD_TYPE_CODES[c.code]) return RECORD_TYPE_CODES[c.code];
+    const found = c && own(RECORD_TYPE_CODES, text(c.code));
+    if (found) return found;
   }
   const t = codeText(comp.type);
-  return RECORD_TYPE_TEXTS[t.trim().toLowerCase()] || t;
+  return text(own(RECORD_TYPE_TEXTS, t.trim().toLowerCase())) || t;
 };
 
 const money = (m) => (m && typeof m === "object" ? joined([m.value, m.currency], " ") : "");
@@ -102,19 +107,38 @@ const dose = (d) => {
   return n ? `dose ${n}` : "";
 };
 
+const item = (kind, label, value, children) => {
+  const out = { kind: text(kind), label: text(label) || text(kind), value: text(value) };
+  if (children && children.length) out.children = children;
+  return out;
+};
+
+// A measurement and, for a panel such as a blood count, the measurements grouped under it (hasMember), one level deep
+// only, so a panel can never expand into itself. Each one shown is marked, so none is listed twice or lost.
+const measurement = (o, ctx, withMembers) => {
+  ctx.seen.add(o);
+  const members = withMembers
+    ? arr(o.hasMember)
+        .map(ctx.resolve)
+        .filter((m) => m && m !== o && m.resourceType === "Observation")
+    : [];
+  members.forEach((m) => ctx.seen.add(m));
+  return item(
+    "Observation",
+    codeText(o.code) || "Observation",
+    observationValue(o),
+    members.map((m) => item("Observation", codeText(m.code) || "Observation", observationValue(m))),
+  );
+};
+
 // One entry of a record, as {kind, label, value} and, for a lab report or an invoice, its parts as children. A lab
 // report's results are followed into measurements only, so a report can never expand into itself or into others.
 // A narrative (text.div) is never read: it is HTML from another system.
-const describe = (r, byUrl) => {
-  const ref = (x) => (x && typeof x === "object" && typeof x.reference === "string" ? byUrl[x.reference] : undefined);
-  const item = (kind, label, value, children) => {
-    const out = { kind: text(kind), label: text(label) || text(kind), value: text(value) };
-    if (children && children.length) out.children = children;
-    return out;
-  };
+const describe = (r, ctx) => {
+  const ref = ctx.resolve;
   switch (r.resourceType) {
     case "Observation":
-      return item("Observation", codeText(r.code) || "Observation", observationValue(r));
+      return measurement(r, ctx, true);
     case "DiagnosticReport":
       return item(
         "Report",
@@ -123,7 +147,7 @@ const describe = (r, byUrl) => {
         arr(r.result)
           .map(ref)
           .filter((o) => o && o.resourceType === "Observation")
-          .map((o) => item("Observation", codeText(o.code) || "Observation", observationValue(o))),
+          .map((o) => measurement(o, ctx, true)),
       );
     case "MedicationRequest":
     case "MedicationStatement": {
@@ -227,9 +251,9 @@ const describe = (r, byUrl) => {
 };
 
 // One entry that cannot be read costs only itself.
-const describeSafely = (r, byUrl) => {
+const describeSafely = (r, ctx) => {
   try {
-    return describe(r, byUrl);
+    return describe(r, ctx);
   } catch {
     const type = text(r && r.resourceType) || "Entry";
     return { kind: type, label: type, value: "Could not be read" };
@@ -239,12 +263,24 @@ const describeSafely = (r, byUrl) => {
 export const summariseBundle = (bundle) => {
   const out = { title: "", recordType: "", date: "", patientName: "", hipName: "", rows: [], sections: [], attachments: [], images: [] };
   let entries = [];
-  const byUrl = {};
+  // An entry is found by its full URL, or by "Type/id" as a reference may also be written. Maps, not objects, so a
+  // reference such as "__proto__" finds nothing.
+  const byUrl = new Map();
+  const byTypeId = new Map();
+  const resolve = (x) =>
+    x && typeof x === "object" && typeof x.reference === "string" ? byUrl.get(x.reference) || byTypeId.get(x.reference) : undefined;
+  const ctx = { resolve, seen: new Set() };
   let comp;
   try {
     entries = (bundle && Array.isArray(bundle.entry) ? bundle.entry : []).filter((e) => e && e.resource && typeof e.resource === "object");
     entries.forEach((e) => {
-      if (typeof e.fullUrl === "string") byUrl[e.fullUrl] = e.resource;
+      try {
+        if (typeof e.fullUrl === "string") byUrl.set(e.fullUrl, e.resource);
+        const r = e.resource;
+        if (typeof r.resourceType === "string" && typeof r.id === "string") byTypeId.set(`${r.resourceType}/${r.id}`, r);
+      } catch {
+        // an entry that cannot be read is simply not found
+      }
     });
     const ofType = (t) => entries.map((e) => e.resource).filter((r) => r.resourceType === t);
     comp = entries.length && entries[0].resource.resourceType === "Composition" ? entries[0].resource : ofType("Composition")[0];
@@ -256,7 +292,7 @@ export const summariseBundle = (bundle) => {
     out.patientName = (pn && pick(pn.text, [].concat(arr(pn.given).map(text), text(pn.family)).filter(Boolean).join(" "))) || "";
     // The HIP is the record's custodian, else an organisation that wrote it, else the first one named.
     const asOrg = (x) => {
-      const r = x && typeof x.reference === "string" && byUrl[x.reference];
+      const r = resolve(x);
       return r && r.resourceType === "Organization" ? r : undefined;
     };
     const org = first(comp && asOrg(comp.custodian), comp && arr(comp.author).map(asOrg).find(Boolean), ofType("Organization")[0]);
@@ -265,33 +301,52 @@ export const summariseBundle = (bundle) => {
     // never throw; return what we have
   }
   // The attachments first and on their own, so nothing in the sections can hide a record's PDF.
-  try {
-    walk(
-      entries.map((e) => e.resource),
-      (n) => {
+  // Entry by entry, so one that cannot be read hides no other entry's file.
+  entries.forEach((e) => {
+    try {
+      walk(e.resource, (n) => {
         if (!isAttachment(n) || !n.data) return;
         const file = { title: text(n.title), contentType: n.contentType, data: n.data, size: base64Bytes(n.data) };
         if (isPdf(n)) out.attachments.push(file);
         else if (isImage(n)) out.images.push(file);
-      },
-    );
-  } catch {
-    // never throw
-  }
+      });
+    } catch {
+      // never throw
+    }
+  });
   try {
     let observations = [];
-    if (comp && Array.isArray(comp.section)) {
-      comp.section.forEach((s) => {
+    // Sections, and the sections inside them, each under its own title and its parents'.
+    const readSections = (sections, parent, depth) => {
+      if (depth > 6) return;
+      arr(sections).forEach((s) => {
         if (!s || typeof s !== "object") return;
-        const resources = arr(s.entry)
-          .map((en) => en && typeof en.reference === "string" && byUrl[en.reference])
-          .filter(Boolean);
+        const title = pick(s.title, codeText(s.code)) || "Section";
+        const full = parent ? `${parent} › ${title}` : title;
+        const resources = arr(s.entry).map(resolve).filter(Boolean);
         resources.filter((r) => r.resourceType === "Observation").forEach((r) => observations.push(r));
-        const items = resources.map((r) => describeSafely(r, byUrl));
-        if (items.length) out.sections.push({ title: pick(s.title, codeText(s.code)) || "Section", items });
+        const items = resources.map((r) => describeSafely(r, ctx));
+        if (items.length) out.sections.push({ title: full, items });
+        readSections(s.section, full, depth + 1);
+      });
+    };
+    if (comp) readSections(comp.section, "", 0);
+    const allObservations = entries.map((e) => e.resource).filter((r) => r.resourceType === "Observation");
+    // A measurement no section reached is listed at the end rather than lost.
+    const unshown = out.sections.length ? allObservations.filter((o) => !ctx.seen.has(o)) : [];
+    if (unshown.length) {
+      out.sections.push({
+        title: "Other measurements",
+        items: unshown.map((o) => {
+          try {
+            return measurement(o, ctx, false);
+          } catch {
+            return { kind: "Observation", label: "Observation", value: "Could not be read" };
+          }
+        }),
       });
     }
-    if (observations.length === 0) observations = entries.map((e) => e.resource).filter((r) => r.resourceType === "Observation");
+    if (observations.length === 0) observations = allObservations;
     out.rows = observations.map((o) => ({
       label: codeText(o.code) || "Observation",
       value: observationValue(o),
