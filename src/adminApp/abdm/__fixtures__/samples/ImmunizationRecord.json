@@ -1,0 +1,190 @@
+{
+  "resourceType": "Bundle",
+  "id": "id-17",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2020-07-09T15:32:26.605+05:30",
+    "profile": ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle"],
+    "security": [{ "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality", "code": "V", "display": "very restricted" }]
+  },
+  "identifier": { "system": "http://hip.in", "value": "id-18" },
+  "type": "document",
+  "timestamp": "2026-11-06T05:30:00.000Z",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:5d28ad3d-4c0d-430f-9eb6-ffee24753a82",
+      "resource": {
+        "resourceType": "Composition",
+        "id": "5d28ad3d-4c0d-430f-9eb6-ffee24753a82",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-07-09T15:32:26.605+05:30",
+          "profile": ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/ImmunizationRecord"]
+        },
+        "language": "en-IN",
+        "identifier": { "system": "https://ndhm.in/phr", "value": "645bb0c3-ff7e-4123-bef5-3852a4784813" },
+        "status": "final",
+        "type": {
+          "coding": [{ "system": "http://snomed.info/sct", "code": "41000179103", "display": "Immunization record" }],
+          "text": "Immunization record"
+        },
+        "subject": { "reference": "urn:uuid:70485142-1f8e-4370-8484-08c8a570e4ae" },
+        "date": "2026-11-06T05:30:00.000Z",
+        "author": [{ "reference": "urn:uuid:42194533-0f56-453b-bb4c-52000cbcf7fd", "display": "Dr. DEF" }],
+        "title": "Sample immunisation record (test data)",
+        "custodian": { "reference": "urn:uuid:eaec0c69-7a8a-40c5-a903-d54c8e6f1e0f", "display": "UVW Hospital" },
+        "section": [
+          {
+            "title": "Immunization record",
+            "code": { "coding": [{ "system": "http://snomed.info/sct", "code": "41000179103", "display": "Immunization record" }] },
+            "entry": [
+              { "reference": "urn:uuid:2da4b48a-96e6-4995-a67b-1b40d2b8b17c", "type": "Immunization" },
+              { "reference": "urn:uuid:efa59949-0180-4841-a532-ece753cdb49d", "type": "ImmunizationRecommendation" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:42194533-0f56-453b-bb4c-52000cbcf7fd",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "42194533-0f56-453b-bb4c-52000cbcf7fd",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-07-09T15:32:26.605+05:30",
+          "profile": ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner"]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v2-0203", "code": "MD", "display": "Medical License number" }]
+            },
+            "system": "https://doctor.ndhm.gov.in",
+            "value": "21-1521-3828-3227"
+          }
+        ],
+        "name": [{ "text": "Dr. DEF" }]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:eaec0c69-7a8a-40c5-a903-d54c8e6f1e0f",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "eaec0c69-7a8a-40c5-a903-d54c8e6f1e0f",
+        "meta": { "profile": ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"] },
+        "identifier": [
+          {
+            "type": {
+              "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/v2-0203", "code": "PRN", "display": "Provider number" }],
+              "text": "Provider number"
+            },
+            "system": "https://facility.ndhm.gov.in",
+            "value": "TANUH"
+          }
+        ],
+        "name": "TANUH Health Centre"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:70485142-1f8e-4370-8484-08c8a570e4ae",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "70485142-1f8e-4370-8484-08c8a570e4ae",
+        "meta": { "profile": ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"] },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "HIN",
+                  "display": "Health ID issued by NDHM"
+                },
+                { "system": "http://terminology.hl7.org/CodeSystem/v2-0203", "code": "MR", "display": "Medical record number" }
+              ],
+              "text": "ABHA Number"
+            },
+            "system": "https://healthid.ndhm.gov.in",
+            "value": "91-1111-2222-3333"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "ABHA",
+                  "display": "Ayushman Bharat Health Account (ABHA) ID"
+                }
+              ],
+              "text": "ABHA Address"
+            },
+            "value": "test.patient@sbx"
+          }
+        ],
+        "name": [{ "text": "Test Patient" }],
+        "gender": "female",
+        "birthDate": "1990-04-02"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:2da4b48a-96e6-4995-a67b-1b40d2b8b17c",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "2da4b48a-96e6-4995-a67b-1b40d2b8b17c",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-10-10T14:58:58.181+05:30",
+          "profile": ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/Immunization"]
+        },
+        "status": "completed",
+        "vaccineCode": { "coding": [{ "system": "http://snomed.info/sct", "code": "1119305005", "display": "COVID-19 antigen vaccine" }] },
+        "patient": { "reference": "urn:uuid:70485142-1f8e-4370-8484-08c8a570e4ae" },
+        "occurrenceDateTime": "2021-02-21",
+        "primarySource": true,
+        "lotNumber": "BSCD12344SS"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:efa59949-0180-4841-a532-ece753cdb49d",
+      "resource": {
+        "resourceType": "ImmunizationRecommendation",
+        "id": "efa59949-0180-4841-a532-ece753cdb49d",
+        "meta": { "profile": ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/ImmunizationRecommendation"] },
+        "patient": { "reference": "urn:uuid:70485142-1f8e-4370-8484-08c8a570e4ae" },
+        "date": "2021-02-21T11:04:15.817-05:00",
+        "authority": { "reference": "urn:uuid:eaec0c69-7a8a-40c5-a903-d54c8e6f1e0f" },
+        "recommendation": [
+          {
+            "vaccineCode": [
+              { "coding": [{ "system": "http://snomed.info/sct", "code": "1119305005", "display": "COVID-19 antigen vaccine" }] }
+            ],
+            "forecastStatus": {
+              "coding": [
+                { "system": "http://terminology.hl7.org/CodeSystem/immunization-recommendation-status", "code": "due", "display": "Due" }
+              ]
+            },
+            "dateCriterion": [
+              {
+                "code": { "coding": [{ "system": "http://loinc.org", "code": "30980-7", "display": "Date vaccine due" }] },
+                "value": "2021-03-22T00:00:00-05:00"
+              }
+            ],
+            "description": "Second sequence in protocol",
+            "series": "Vaccination Series 2",
+            "doseNumberPositiveInt": 1,
+            "seriesDosesPositiveInt": 2,
+            "supportingImmunization": [{ "reference": "urn:uuid:2da4b48a-96e6-4995-a67b-1b40d2b8b17c", "display": "Immunization" }]
+          }
+        ]
+      }
+    }
+  ],
+  "signature": {
+    "type": [{ "system": "urn:iso-astm:E1762-95:2013", "code": "1.2.840.10065.1.12.1.1", "display": "Author's Signature" }],
+    "when": "2020-07-09T07:42:33+10:00",
+    "who": { "reference": "urn:uuid:42194533-0f56-453b-bb4c-52000cbcf7fd", "display": "Practitioner" },
+    "sigFormat": "image/jpeg",
+    "data": "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"
+  }
+}

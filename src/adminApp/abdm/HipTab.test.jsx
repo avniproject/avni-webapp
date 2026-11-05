@@ -10,6 +10,7 @@ jest.mock("./api", () => ({
   getHipPatients: jest.fn(),
   getCareContexts: jest.fn(),
   linkSubject: jest.fn(() => Promise.resolve([])),
+  addSampleRecords: jest.fn(() => Promise.resolve([])),
 }));
 jest.mock("../../common/utils/httpClient", () => ({
   __esModule: true,
@@ -89,5 +90,36 @@ describe("HIP · Link records", () => {
     await wait(10000);
 
     expect(text()).toContain("Test Patient");
+  });
+});
+
+describe("HIP · sample records (M3 test data)", () => {
+  it("adds sample records of every type for the selected patient and shows them", async () => {
+    api.getHipPatients.mockResolvedValue([patient(true)]);
+    api.getCareContexts.mockResolvedValue([visit("LINKED")]);
+    const sample = {
+      reference: "sample-Prescription-s-1",
+      display: "Sample prescription (test data)",
+      hiType: "Prescription",
+      status: "LINK_REQUESTED",
+    };
+    api.addSampleRecords.mockResolvedValue([visit("LINKED"), sample]);
+    await act(async () => root.render(<HipTab />));
+    await act(async () => container.querySelector("tbody tr").click());
+
+    const button = [...container.querySelectorAll("button")].find((b) =>
+      b.textContent.includes("Add sample records"),
+    );
+    expect(button).toBeDefined();
+    // From here the server holds the samples too, so the tab's refresh shows them.
+    api.getCareContexts.mockResolvedValue([
+      visit("LINKED"),
+      { ...sample, status: "LINKED" },
+    ]);
+    await act(async () => button.click());
+
+    expect(api.addSampleRecords).toHaveBeenCalledWith("s-1");
+    expect(api.linkSubject).not.toHaveBeenCalled();
+    expect(text()).toContain("Sample prescription (test data)");
   });
 });

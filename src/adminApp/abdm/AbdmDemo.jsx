@@ -323,6 +323,17 @@ export const HipTab = () => {
       .then(setContexts)
       .catch((e) => setErr(msg(e)));
   };
+  // M3 test data: one sample record of every other ABDM record type, so the HIU can ask for each (HIU_FLOW_107 to 114).
+  const addSamples = () => {
+    setErr(null);
+    api
+      .addSampleRecords(selected.subjectUUID)
+      .then((l) => {
+        if (Array.isArray(l)) setContexts(l);
+        pollContexts(selected.subjectUUID);
+      })
+      .catch((e) => setErr(msg(e)));
+  };
   const link = () => {
     setErr(null);
     api
@@ -384,6 +395,13 @@ export const HipTab = () => {
             style={{ margin: "8px 0" }}
           >
             Link to ABHA
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={addSamples}
+            style={{ margin: "8px 0 8px 8px" }}
+          >
+            Add sample records (test data)
           </Button>
           <Table size="small">
             <TableHead>
@@ -711,7 +729,11 @@ export const RecordsTab = ({ request }) => {
           <Typography variant="caption">
             {r.careContextReference} · HIP {r.hipId} · received{" "}
             {fmt(r.receivedAt)} · checksum{" "}
-            {r.checksumMatched ? "matched" : "NOT matched"}
+            {r.checksumMatched === true
+              ? "matched"
+              : r.checksumMatched === false
+                ? "NOT matched"
+                : "none sent"}
           </Typography>
           <FhirBundleView bundle={r.bundle} />
         </Box>

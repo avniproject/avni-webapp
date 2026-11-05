@@ -68,7 +68,9 @@ const withPdf = {
 
 describe("a record's PDF copy", () => {
   it("lists a record's PDF copy", () => {
-    expect(summariseBundle(withPdf).attachments).toEqual([{ title: "Visit note", contentType: "application/pdf", data: "JVBERi0x" }]);
+    expect(summariseBundle(withPdf).attachments).toEqual([
+      { title: "Visit note", contentType: "application/pdf", data: "JVBERi0x", size: 6 },
+    ]);
   });
 
   it("skips an attachment with no data, and never throws", () => {
@@ -103,8 +105,8 @@ describe("a record's PDF copy", () => {
       ],
     };
     expect(summariseBundle(b).attachments).toEqual([
-      { title: "Lab report", contentType: "application/pdf", data: "JVBERi0y" },
-      { title: "", contentType: "application/pdf", data: "JVBERi0z" },
+      { title: "Lab report", contentType: "application/pdf", data: "JVBERi0y", size: 6 },
+      { title: "", contentType: "application/pdf", data: "JVBERi0z", size: 6 },
     ]);
   });
 

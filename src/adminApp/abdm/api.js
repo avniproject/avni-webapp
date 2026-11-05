@@ -24,6 +24,8 @@ export const getMessages = (limit = 100) => httpClient.getData(`${B}/messages?li
 export const getHipPatients = () => httpClient.getData(`${B}/hip/patients`);
 export const getCareContexts = (uuid) => httpClient.getData(`${B}/hip/subjects/${uuid}/care-contexts`);
 export const linkSubject = (uuid) => post(`${B}/hip/subjects/${uuid}/link`, {});
+// M3 test data: a sample record of every ABDM record type for this patient, linked through Eka (avni-server SampleRecords).
+export const addSampleRecords = (uuid) => post(`${B}/hip/subjects/${uuid}/sample-records`, {});
 export const createConsentRequest = (body) => post(`${B}/hiu/consent-requests`, body);
 export const getConsentRequests = () => httpClient.getData(`${B}/hiu/consent-requests`);
 export const getConsentRecords = (uuid) => httpClient.getData(`${B}/hiu/consent-requests/${uuid}/records`);
