@@ -603,7 +603,27 @@ export const HiuTab = ({ onViewRecords }) => {
 export const RecordsTab = ({ request }) => {
   const [records, setRecords] = useState(null);
   const [err, setErr] = useState(null);
-  const ended = request && ENDED[request.status];
+  const [currentStatus, setCurrentStatus] = useState(null);
+  const ended = request && ENDED[currentStatus || request.status];
+  // The request list is small, so it refreshes on its own to catch a withdrawal; records are not fetched again.
+  useEffect(() => {
+    if (!request) return;
+    setCurrentStatus(null);
+    let live = true;
+    const timer = window.setInterval(() => {
+      api
+        .getConsentRequests()
+        .then((l) => {
+          const r = l.find((x) => x.uuid === request.uuid);
+          if (live && r) setCurrentStatus(r.status);
+        })
+        .catch(() => {});
+    }, REFRESH_MS);
+    return () => {
+      live = false;
+      window.clearInterval(timer);
+    };
+  }, [request]);
   // Records can be large, so they are fetched once and again only on request.
   const fetchRecords = useCallback(() => {
     let live = true;
@@ -647,7 +667,7 @@ export const RecordsTab = ({ request }) => {
       {!ended && records && records.length === 0 && (
         <Typography>No records received yet.</Typography>
       )}
-      {(records || []).map((r, i) => (
+      {(ended ? [] : records || []).map((r, i) => (
         <Box key={i}>
           <Typography variant="caption">
             {r.careContextReference} · HIP {r.hipId} · received{" "}

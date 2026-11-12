@@ -243,6 +243,7 @@ describe("Refreshing by itself", () => {
     try {
       let records = [];
       api.getConsentRecords.mockImplementation(() => Promise.resolve(records));
+      api.getConsentRequests.mockImplementation(() => Promise.resolve([]));
       await render(
         <RecordsTab
           request={{
@@ -345,6 +346,67 @@ describe("Consent request polling", () => {
 
       // only the 10-second refresh remains: no more than one call in 9 seconds
       expect(api.getConsentRequests.mock.calls.length).toBeLessThanOrEqual(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+});
+
+describe("Records of a consent that ends while open", () => {
+  const later = (ms) =>
+    act(async () => {
+      jest.advanceTimersByTime(ms);
+    });
+  const granted = {
+    uuid: "u-1",
+    abhaAddress: "ramesh.gond@abdm",
+    status: "GRANTED",
+  };
+  const records = [
+    {
+      careContextReference: "visit-1",
+      hipId: "hip-1",
+      receivedAt: "2026-10-26T11:00:00.000Z",
+      checksumMatched: true,
+      bundle: { resourceType: "Bundle", entry: [] },
+    },
+  ];
+  const open = async (listStatus) => {
+    api.getConsentRecords.mockImplementation(() => Promise.resolve(records));
+    api.getConsentRequests.mockImplementation(() =>
+      Promise.resolve([{ ...granted, status: listStatus() }]),
+    );
+    await render(<RecordsTab request={granted} />);
+  };
+
+  it("clears the records and shows the ended text when the request is revoked", async () => {
+    jest.useFakeTimers();
+    try {
+      let status = "GRANTED";
+      await open(() => status);
+      expect(container.textContent).toContain("visit-1");
+
+      status = "REVOKED";
+      await later(10000);
+
+      expect(container.textContent).not.toContain("visit-1");
+      expect(container.textContent).toContain(
+        "the patient withdrew this consent",
+      );
+      expect(api.getConsentRecords).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("keeps the records of a request that is still granted, with no re-fetch", async () => {
+    jest.useFakeTimers();
+    try {
+      await open(() => "GRANTED");
+      await later(10000);
+
+      expect(container.textContent).toContain("visit-1");
+      expect(api.getConsentRecords).toHaveBeenCalledTimes(1);
     } finally {
       jest.useRealTimers();
     }
