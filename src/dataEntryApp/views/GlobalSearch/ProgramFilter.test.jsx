@@ -277,6 +277,25 @@ describe("Program search filter", () => {
     expect(request.includeExitedEnrolments).toBe(false);
   });
 
+  it("draws the tick boxes once when two Program filters were saved for the subject type", async () => {
+    await renderForm(
+      configsWith(programFilter("st-person"), {
+        ...programFilter("st-person"),
+        titleKey: "Programme again",
+      }),
+    );
+
+    expect(
+      container.querySelectorAll("input[type='checkbox'][name='p-child']"),
+    ).toHaveLength(1);
+    expect(
+      container.querySelectorAll(
+        "input[type='checkbox'][name='notEnrolledInAnyProgram']",
+      ),
+    ).toHaveLength(1);
+    expect(container.textContent).not.toContain("Programme again");
+  });
+
   it("is hidden when no Program filter is configured", async () => {
     await renderForm(
       configsWith({ ...programFilter("st-person"), type: "Name" }),

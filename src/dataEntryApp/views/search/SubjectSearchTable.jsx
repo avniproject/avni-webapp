@@ -36,15 +36,27 @@ const SubjectSearchTable = ({
     organisationConfigs,
     "organisationConfig.searchFilters",
   );
+  const operationalModules = useSelector(
+    (state) => state.dataEntry.metadata.operationalModules,
+  );
   const searchRequest = useMemo(
     () =>
-      toUsableSearchRequest(savedSearchRequest, subjectTypes, searchFilters),
-    [savedSearchRequest, subjectTypes, searchFilters],
+      toUsableSearchRequest(
+        savedSearchRequest,
+        subjectTypes,
+        searchFilters,
+        operationalModules,
+      ),
+    [savedSearchRequest, subjectTypes, searchFilters, operationalModules],
   );
+  const needsSearchFilters =
+    !isEmpty(get(savedSearchRequest, "concept")) ||
+    !isEmpty(get(savedSearchRequest, "programs")) ||
+    !!get(savedSearchRequest, "notEnrolledInAnyProgram") ||
+    !!get(savedSearchRequest, "includeExitedEnrolments");
   const isReadyToSearch =
     !isEmpty(subjectTypes) &&
-    (isEmpty(get(savedSearchRequest, "concept")) ||
-      !isNil(organisationConfigs));
+    (!needsSearchFilters || !isNil(organisationConfigs));
   const [extensions, setExtensions] = useState();
   const customSearchFields = get(
     organisationConfigs,

@@ -181,3 +181,63 @@ describe("concept picker", () => {
     ]);
   });
 });
+
+describe("filter type list", () => {
+  const programFilter = (titleKey, subjectTypeUUID = "st-person") => ({
+    titleKey,
+    subjectTypeUUID,
+    type: "Program",
+  });
+
+  const offeredTypes = async (filters, selectedFilter) => {
+    await act(async () =>
+      root.render(
+        <CreateEditFilters
+          selectedFilter={selectedFilter}
+          title="Edit filter"
+          filterType="searchFilters"
+          operationalModules={operationalModules}
+          settings={{
+            uuid: "s",
+            settings: { searchFilters: filters, myDashboardFilters: [] },
+          }}
+        />,
+      ),
+    );
+    const typeInput = [...container.querySelectorAll("div")]
+      .find(
+        (d) => d.style.width === "400px" && d.textContent.includes("Type") && !d.textContent.includes("Subject Type"),
+      )
+      .querySelector("input");
+    await act(async () => {
+      typeInput.focus();
+      typeInput.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }),
+      );
+    });
+    return [...container.querySelectorAll("[class*='option']")].map(
+      (o) => o.textContent,
+    );
+  };
+
+  it("leaves out Program when the subject type already has a Program filter", async () => {
+    const existing = programFilter("Programmes");
+    const types = await offeredTypes([existing, conceptFilter("Notes")], conceptFilter("Notes"));
+
+    expect(types).toContain("Concept");
+    expect(types).not.toContain("Program");
+  });
+
+  it("offers Program when editing the subject type's own Program filter", async () => {
+    const existing = programFilter("Programmes");
+    const types = await offeredTypes([existing], existing);
+
+    expect(types).toContain("Program");
+  });
+
+  it("offers Program when only another subject type has one", async () => {
+    const types = await offeredTypes([programFilter("Programmes", "st-other"), conceptFilter("Notes")], conceptFilter("Notes"));
+
+    expect(types).toContain("Program");
+  });
+});

@@ -1,4 +1,4 @@
-import { filter, includes, isEmpty, isNil, map, some } from "lodash";
+import { filter, includes, intersection, isEmpty, isNil, map, some, sortBy, toLower, uniq } from "lodash";
 
 const prefix = "app/dataEntry/reducer/searchFilter/";
 
@@ -40,14 +40,41 @@ export const getInitialState = () => ({ request: loadSavedSearchRequest() });
 
 export const resetSearchRequest = () => ({ type: types.RESET_SEARCH_REQUEST });
 
-export const toUsableSearchRequest = (savedRequest, subjectTypes, searchFilters) => {
+export const programsOfSubjectType = (operationalModules, subjectTypeUUID) => {
+  const programUUIDs = uniq(
+    (operationalModules?.formMappings || [])
+      .filter(fm => fm.formType === "ProgramEnrolment" && fm.subjectTypeUUID === subjectTypeUUID && !isNil(fm.programUUID))
+      .map(fm => fm.programUUID)
+  );
+  return sortBy((operationalModules?.programs || []).filter(p => programUUIDs.includes(p.uuid)), p =>
+    toLower(p.operationalProgramName || p.name)
+  );
+};
+
+const hasProgramTicks = request =>
+  !isEmpty(request.programs) || !!request.notEnrolledInAnyProgram || !!request.includeExitedEnrolments;
+
+// The form shows the programme ticks only for programmes the subject type still offers, under a Program filter.
+const withOfferedPrograms = (request, searchFilters, operationalModules) => {
+  if (!hasProgramTicks(request)) return request;
+  const offeredUUIDs = map(programsOfSubjectType(operationalModules, request.subjectType), "uuid");
+  const hasProgramFilter = some(searchFilters, ({ subjectTypeUUID, type }) => subjectTypeUUID === request.subjectType && type === "Program");
+  if (!hasProgramFilter || isEmpty(offeredUUIDs)) {
+    return { ...request, programs: [], notEnrolledInAnyProgram: false, includeExitedEnrolments: false };
+  }
+  const programs = intersection(request.programs || [], offeredUUIDs);
+  return programs.length === (request.programs || []).length ? request : { ...request, programs };
+};
+
+export const toUsableSearchRequest = (savedRequest, subjectTypes, searchFilters, operationalModules) => {
   if (isNil(savedRequest) || isNil(savedRequest.subjectType)) return savedRequest;
   // "Not enrolled" and "Include exited" can't be ticked together; a search saved before that rule keeps "Include exited".
-  const request =
+  const withOneExitTick =
     savedRequest.notEnrolledInAnyProgram && savedRequest.includeExitedEnrolments
       ? { ...savedRequest, notEnrolledInAnyProgram: false }
       : savedRequest;
-  if (!some(subjectTypes, ({ uuid }) => uuid === request.subjectType)) return defaultRequest;
+  if (!some(subjectTypes, ({ uuid }) => uuid === withOneExitTick.subjectType)) return defaultRequest;
+  const request = withOfferedPrograms(withOneExitTick, searchFilters, operationalModules);
   if (isEmpty(request.concept)) return request;
   const configuredConceptUUIDs = map(
     filter(searchFilters, ({ subjectTypeUUID, type }) => subjectTypeUUID === request.subjectType && type === "Concept"),

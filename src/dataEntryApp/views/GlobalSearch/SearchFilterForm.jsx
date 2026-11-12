@@ -28,6 +28,7 @@ import {
   types,
   saveSearchRequest,
   toUsableSearchRequest,
+  programsOfSubjectType,
 } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import {
@@ -67,24 +68,7 @@ export const toConceptRequestValue = (conceptDataType, value) => {
   return format(date, "yyyy-MM-dd");
 };
 
-export const programsOfSubjectType = (operationalModules, subjectTypeUUID) => {
-  const programUUIDs = _.uniq(
-    (operationalModules?.formMappings || [])
-      .filter(
-        (fm) =>
-          fm.formType === "ProgramEnrolment" &&
-          fm.subjectTypeUUID === subjectTypeUUID &&
-          !_.isNil(fm.programUUID),
-      )
-      .map((fm) => fm.programUUID),
-  );
-  return _.sortBy(
-    (operationalModules?.programs || []).filter((p) =>
-      programUUIDs.includes(p.uuid),
-    ),
-    (p) => _.toLower(p.operationalProgramName || p.name),
-  );
-};
+export { programsOfSubjectType };
 
 const StyledButtons = styled("div")(({ theme }) => ({
   "& > *": { margin: theme.spacing(1) },
@@ -669,6 +653,7 @@ function SearchFilterFormContainer() {
         searchRequest,
         operationalModules?.subjectTypes,
         organisationConfigs?.organisationConfig?.searchFilters,
+        operationalModules,
       ),
     [searchRequest, operationalModules, organisationConfigs],
   );

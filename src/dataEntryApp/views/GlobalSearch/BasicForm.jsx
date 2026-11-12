@@ -63,6 +63,8 @@ function BasicForm({
   }
 
   const isFilterConfigured = !!find(searchFilterForms, (sff) => sff.type);
+  // An organisation may already have two Program filters on a subject type; the tick boxes are drawn once.
+  const programFilter = find(searchFilterForms, (sff) => sff.type === "Program");
 
   return isFilterConfigured ? (
     <Fragment>
@@ -168,7 +170,7 @@ function BasicForm({
       {programs.length > 0 && (
         <StyledContainer container spacing={3}>
           {searchFilterForms.map((searchFilterForm, index) =>
-            searchFilterForm.type === "Program" ? (
+            searchFilterForm === programFilter ? (
               <Grid key={index} size={12}>
                 <StyledLabel variant="body1">
                   {t(searchFilterForm.titleKey)}

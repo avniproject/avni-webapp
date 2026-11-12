@@ -17,6 +17,7 @@ import {
   map,
   pickBy,
   reject,
+  some,
   startCase,
   values,
 } from "lodash";
@@ -392,16 +393,37 @@ export const CreateEditFilters = ({
     return !!stType && stType !== "Person";
   };
 
-  const typeOptions = isNonPersonSubjectType(selectedSubject)
-    ? baseTypeOptions.filter((o) => o.value !== CustomFilter.type.DateOfBirth)
-    : baseTypeOptions;
+  const hasAnotherProgramFilter = (sub) =>
+    !!sub?.value &&
+    some(
+      get(settings, ["settings", filterType]),
+      (f) =>
+        f.type === CustomFilter.type.Program &&
+        f.subjectTypeUUID === sub.value &&
+        f.titleKey !== titleKey,
+    );
+
+  const typeOptions = baseTypeOptions.filter(
+    (o) =>
+      !(
+        o.value === CustomFilter.type.DateOfBirth &&
+        isNonPersonSubjectType(selectedSubject)
+      ) &&
+      !(
+        o.value === CustomFilter.type.Program &&
+        hasAnotherProgramFilter(selectedSubject)
+      ),
+  );
 
   const onSubjectChange = (sub) => {
     setSubject(sub);
     if (
-      isNonPersonSubjectType(sub) &&
-      selectedType &&
-      selectedType.value === CustomFilter.type.DateOfBirth
+      (isNonPersonSubjectType(sub) &&
+        selectedType &&
+        selectedType.value === CustomFilter.type.DateOfBirth) ||
+      (selectedType &&
+        selectedType.value === CustomFilter.type.Program &&
+        hasAnotherProgramFilter(sub))
     ) {
       setType("");
       resetState();

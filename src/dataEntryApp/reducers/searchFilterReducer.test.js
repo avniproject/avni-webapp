@@ -128,10 +128,18 @@ describe("toUsableSearchRequest", () => {
     expect(toUsableSearchRequest(requestWithConcepts, subjectTypes, undefined).concept).toEqual([]);
   });
 
+  const programFilter = { type: "Program", subjectTypeUUID: "subject-type-uuid" };
+  const enrolmentMapping = programUUID => ({ formType: "ProgramEnrolment", subjectTypeUUID: "subject-type-uuid", programUUID });
+  const operationalModules = {
+    programs: [{ uuid: "p1", name: "Pregnancy" }, { uuid: "p2", name: "Child" }, { uuid: "p3", name: "Other" }],
+    formMappings: [enrolmentMapping("p1"), enrolmentMapping("p2"), { formType: "ProgramEnrolment", subjectTypeUUID: "other-uuid", programUUID: "p3" }]
+  };
+  const withProgramFilter = [conceptFilter("coded-concept-uuid"), programFilter];
+
   it("drops Not enrolled from a search saved with Include exited too", () => {
     const saved = { ...searchRequest, programs: ["p1"], notEnrolledInAnyProgram: true, includeExitedEnrolments: true };
 
-    const usable = toUsableSearchRequest(saved, subjectTypes, [conceptFilter("coded-concept-uuid")]);
+    const usable = toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules);
 
     expect(usable.notEnrolledInAnyProgram).toBe(false);
     expect(usable.includeExitedEnrolments).toBe(true);
@@ -142,7 +150,38 @@ describe("toUsableSearchRequest", () => {
   it("keeps Not enrolled when Include exited is not ticked", () => {
     const saved = { ...searchRequest, notEnrolledInAnyProgram: true, includeExitedEnrolments: false };
 
-    expect(toUsableSearchRequest(saved, subjectTypes, [conceptFilter("coded-concept-uuid")])).toBe(saved);
+    expect(toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules)).toBe(saved);
+  });
+
+  it("keeps programme ticks the subject type still offers", () => {
+    const saved = { ...searchRequest, programs: ["p1", "p2"], includeExitedEnrolments: true };
+
+    expect(toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules)).toBe(saved);
+  });
+
+  it("drops a ticked programme the subject type no longer enrols into", () => {
+    const saved = { ...searchRequest, programs: ["p1", "p3", "gone"] };
+
+    const usable = toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules);
+
+    expect(usable.programs).toEqual(["p1"]);
+    expect(saved.programs).toEqual(["p1", "p3", "gone"]);
+  });
+
+  it("clears every programme tick when the Program filter was removed from the subject type", () => {
+    const saved = { ...searchRequest, programs: ["p1"], notEnrolledInAnyProgram: true };
+
+    const usable = toUsableSearchRequest(saved, subjectTypes, [conceptFilter("coded-concept-uuid")], operationalModules);
+
+    expect(usable).toMatchObject({ programs: [], notEnrolledInAnyProgram: false, includeExitedEnrolments: false });
+  });
+
+  it("clears every programme tick when the subject type enrols into no programme any more", () => {
+    const saved = { ...searchRequest, programs: ["p1"], includeExitedEnrolments: true };
+
+    const usable = toUsableSearchRequest(saved, subjectTypes, withProgramFilter, { ...operationalModules, formMappings: [] });
+
+    expect(usable).toMatchObject({ programs: [], notEnrolledInAnyProgram: false, includeExitedEnrolments: false });
   });
 
   it("leaves a search without a subject type alone", () => {
