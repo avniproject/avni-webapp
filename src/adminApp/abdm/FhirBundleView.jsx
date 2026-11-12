@@ -1,4 +1,3 @@
-// DEMO-ONLY abdm-hackathon
 import {
   Box,
   Button,

@@ -1,5 +1,4 @@
-// DEMO-ONLY abdm-hackathon
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -21,9 +20,11 @@ import FhirBundleView from "./FhirBundleView";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-// Only a user who may edit the organisation's configuration sees the page; the server checks the same privilege.
-export const canOpenAbdm = (userInfo) =>
+// The page is for organisations that switched ABHA and record sharing on, and users who may edit their configuration.
+export const canOpenAbdm = (userInfo, organisationConfig) =>
   !!userInfo &&
+  !!organisationConfig?.enableAbha &&
+  !!organisationConfig?.enableAbdmRecordSharing &&
   UserInfo.hasPrivilege(
     userInfo,
     Privilege.PrivilegeType.EditOrganisationConfiguration,
@@ -31,9 +32,7 @@ export const canOpenAbdm = (userInfo) =>
 
 // NHA's pattern for an ABHA address. A bare name is allowed; the server adds the environment's suffix and checks it.
 export const isAbhaAddress = (value) =>
-  /^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9](@(sbx|abdm))?$/.test(
-    (value || "").trim(),
-  );
+  /^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9](@[a-z]+)?$/.test((value || "").trim());
 
 // The purposes Eka carries (EkaHiuService.PURPOSES) and the eight record types NHA defines.
 const PURPOSES = [
@@ -64,18 +63,6 @@ const ENDED = {
 };
 
 const msg = (e) => api.errorMessage(e);
-const Json = ({ value }) => (
-  <pre
-    style={{
-      overflow: "auto",
-      maxHeight: 360,
-      background: "#f5f5f5",
-      padding: 8,
-    }}
-  >
-    {typeof value === "string" ? value : JSON.stringify(value, null, 2)}
-  </pre>
-);
 const statusColor = (s) =>
   s === "LINKED" ||
   s === "GRANTED" ||
@@ -86,6 +73,7 @@ const statusColor = (s) =>
     : s === "FAILED" || s === "DENIED" || s === "ERROR"
       ? "error"
       : "default";
+const yesNo = (v) => (v ? "Yes" : "No");
 const StatusChip = ({ status }) => (
   <Chip size="small" label={status || "-"} color={statusColor(status)} />
 );
@@ -151,120 +139,51 @@ const usePoll = () => {
   }, []);
 };
 
-export const StatusTab = ({ status, setStatus }) => {
-  const [err, setErr] = useState(null);
-  const [confirmReset, setConfirmReset] = useState(false);
-  const [resetResult, setResetResult] = useState(null);
-  useEffect(() => {
-    api
-      .getStatus()
-      .then(setStatus)
-      .catch((e) => setErr(msg(e)));
-  }, [setStatus]);
-  return (
-    <Box>
-      {err && <Alert severity="error">{err}</Alert>}
-      {status && (
-        <>
-          <Alert severity="success" style={{ marginBottom: 16 }}>
-            Eka Care ABDM Connect — Eka's bridge to NHA
+export const StatusTab = ({ status, error }) => (
+  <Box>
+    {error && <Alert severity="error">{error}</Alert>}
+    {status && (
+      <>
+        {!status.recordSharingOn && (
+          <Alert severity="warning" style={{ marginBottom: 16 }}>
+            ABDM record sharing is not working for this organisation yet. The
+            rows below show what is missing.
           </Alert>
-          <Table size="small" style={{ maxWidth: 700 }}>
-            <TableBody>
-              {[
-                ["Client ID", status.clientId],
-                ["HIP ID", status.hipId],
-                ["HIU ID", status.hiuId],
-                ["Public base URL", status.publicBaseUrl],
-                ["Eka base URL", status.ekaBaseUrl],
-                ["Webhook URL (give to Eka)", status.webhookUrl],
-                [
-                  "Eka session",
-                  status.session &&
-                    (status.session.ok
-                      ? "OK"
-                      : `Not OK: ${status.session.error || ""}`),
-                ],
-              ].map(([k, v]) => (
-                <TableRow key={k}>
-                  <TableCell>{k}</TableCell>
-                  <TableCell>{v}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {status.autoLink !== undefined && (
-            <Box style={{ marginTop: 16 }}>
-              <Typography
-                variant="body2"
-                component="span"
-                style={{ marginRight: 8 }}
-              >
-                Linking on save: <b>{status.autoLink ? "On" : "Off"}</b>.{" "}
-                {status.autoLink
-                  ? "Saved visits link within 5 minutes."
-                  : "Saved visits wait for the patient to link them from their app."}
-              </Typography>
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={() =>
-                  api
-                    .setAutoLink(!status.autoLink)
-                    .then((r) => setStatus({ ...status, autoLink: r.autoLink }))
-                    .catch((e) => setErr(msg(e)))
-                }
-              >
-                {status.autoLink ? "Switch off" : "Switch on"}
-              </Button>
-            </Box>
-          )}
-        </>
-      )}
-      <Box style={{ marginTop: 24 }}>
-        {!confirmReset ? (
-          <Button
-            color="error"
-            variant="outlined"
-            onClick={() => {
-              setResetResult(null);
-              setConfirmReset(true);
-            }}
-          >
-            Reset demo data
-          </Button>
-        ) : (
-          <>
-            <Typography variant="body2" style={{ marginBottom: 8 }}>
-              Clears this organisation's ABDM links, consents, records received
-              and traffic. Patients and visits stay.
-            </Typography>
-            <Button
-              color="error"
-              variant="contained"
-              style={{ marginRight: 8 }}
-              onClick={() =>
-                api
-                  .resetDemo()
-                  .then((r) => setResetResult(`Cleared ${r.rowsDeleted} rows`))
-                  .catch((e) => setResetResult(msg(e)))
-                  .finally(() => setConfirmReset(false))
-              }
-            >
-              Yes, clear it
-            </Button>
-            <Button onClick={() => setConfirmReset(false)}>Cancel</Button>
-          </>
         )}
-        {resetResult && (
-          <Typography variant="body2" style={{ marginTop: 8 }}>
-            {resetResult}
-          </Typography>
-        )}
-      </Box>
-    </Box>
-  );
-};
+        <Table size="small" style={{ maxWidth: 700 }}>
+          <TableBody>
+            {[
+              ["ABHA", yesNo(status.abhaEnabled)],
+              [
+                "Record sharing switched on",
+                yesNo(status.recordSharingEnabled),
+              ],
+              ["Record sharing working", yesNo(status.recordSharingOn)],
+              ["Receiving records (HIU)", yesNo(status.hiuOn)],
+              ["Eka environment", status.environment],
+              ["HIP IDs", (status.hipIds || []).join(", ")],
+              ["HIU ID", status.hiuId],
+              ["Sharing client set up", yesNo(status.sharingClientConfigured)],
+              ["Webhook URL (give to Eka)", status.webhookUrl],
+              [
+                "Eka session",
+                status.session &&
+                  (status.session.ok
+                    ? "OK"
+                    : `Not OK: ${status.session.error || ""}`),
+              ],
+            ].map(([k, v]) => (
+              <TableRow key={k}>
+                <TableCell>{k}</TableCell>
+                <TableCell>{v}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </>
+    )}
+  </Box>
+);
 
 export const HipTab = () => {
   const [patients, setPatients] = useState([]);
@@ -321,17 +240,6 @@ export const HipTab = () => {
     api
       .getCareContexts(p.subjectUUID)
       .then(setContexts)
-      .catch((e) => setErr(msg(e)));
-  };
-  // M3 test data: one sample record of every other ABDM record type, so the HIU can ask for each (HIU_FLOW_107 to 114).
-  const addSamples = () => {
-    setErr(null);
-    api
-      .addSampleRecords(selected.subjectUUID)
-      .then((l) => {
-        if (Array.isArray(l)) setContexts(l);
-        pollContexts(selected.subjectUUID);
-      })
       .catch((e) => setErr(msg(e)));
   };
   const link = () => {
@@ -396,13 +304,6 @@ export const HipTab = () => {
           >
             Link to ABHA
           </Button>
-          <Button
-            variant="outlined"
-            onClick={addSamples}
-            style={{ margin: "8px 0 8px 8px" }}
-          >
-            Add sample records (test data)
-          </Button>
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -448,13 +349,13 @@ export const HiuTab = ({ onViewRecords }) => {
     from: dayOffset(-365),
     to: dayOffset(0),
     expiry: dayOffset(30),
-    requesterName: "Dr. Demo",
-    purposeCode: "CAREMGT",
-    hiTypes: ["OPConsultation"],
+    requesterName: "",
+    requesterRegistrationNumber: "",
+    purposeCode: PURPOSES[0][0],
+    hiTypes: [],
   });
   const [requests, setRequests] = useState([]);
   const [err, setErr] = useState(null);
-  const [approving, setApproving] = useState(() => new Set());
   const poll = usePoll();
   const load = useCallback(
     () =>
@@ -487,25 +388,18 @@ export const HiuTab = ({ onViewRecords }) => {
         : HI_TYPES.filter((x) => x === t || form.hiTypes.includes(x)),
     });
   const addressOk = isAbhaAddress(form.abhaAddress);
+  const requesterOk =
+    form.requesterName.trim() !== "" &&
+    form.requesterRegistrationNumber.trim() !== "";
   const request = () => {
     setErr(null);
     api
-      .createConsentRequest({ ...form, abhaAddress: form.abhaAddress.trim() })
-      .then(() => load().then(startPoll))
-      .catch((e) => setErr(msg(e)));
-  };
-  const approve = (id) => () => {
-    setErr(null);
-    setApproving((ids) => new Set(ids).add(id));
-    api
-      .approveConsentEka(id)
-      .finally(() =>
-        setApproving((ids) => {
-          const left = new Set(ids);
-          left.delete(id);
-          return left;
-        }),
-      )
+      .createConsentRequest({
+        ...form,
+        abhaAddress: form.abhaAddress.trim(),
+        requesterName: form.requesterName.trim(),
+        requesterRegistrationNumber: form.requesterRegistrationNumber.trim(),
+      })
       .then(() => load().then(startPoll))
       .catch((e) => setErr(msg(e)));
   };
@@ -526,7 +420,7 @@ export const HiuTab = ({ onViewRecords }) => {
           error={!!form.abhaAddress && !addressOk}
           helperText={
             form.abhaAddress && !addressOk
-              ? "Not an ABHA address: letters, digits, '.' or '_', ending in @sbx or @abdm"
+              ? "Not an ABHA address: letters, digits, '.' or '_'"
               : " "
           }
           style={{ marginRight: 8 }}
@@ -577,10 +471,21 @@ export const HiuTab = ({ onViewRecords }) => {
           style={{ marginRight: 8 }}
         />
         <TextField
-          label="Requester"
+          label="Requester name"
+          name="requesterName"
           size="small"
+          required
           value={form.requesterName}
           onChange={set("requesterName")}
+          style={{ marginRight: 8 }}
+        />
+        <TextField
+          label="Requester registration number"
+          name="requesterRegistrationNumber"
+          size="small"
+          required
+          value={form.requesterRegistrationNumber}
+          onChange={set("requesterRegistrationNumber")}
           style={{ marginRight: 8 }}
         />
         <Box style={{ margin: "8px 0" }}>
@@ -603,7 +508,7 @@ export const HiuTab = ({ onViewRecords }) => {
         <Button
           variant="contained"
           onClick={request}
-          disabled={!addressOk || form.hiTypes.length === 0}
+          disabled={!addressOk || !requesterOk || form.hiTypes.length === 0}
         >
           Request consent
         </Button>
@@ -656,19 +561,6 @@ export const HiuTab = ({ onViewRecords }) => {
                 ))}
               </TableCell>
               <TableCell style={{ whiteSpace: "nowrap" }}>
-                {r.status === "REQUESTED" && r.consentRequestId && (
-                  <Button
-                    size="small"
-                    variant="contained"
-                    disabled={approving.has(r.consentRequestId)}
-                    onClick={approve(r.consentRequestId)}
-                    style={{ marginRight: 4 }}
-                  >
-                    {approving.has(r.consentRequestId)
-                      ? "Approving…"
-                      : "Approve in Eka sandbox"}
-                  </Button>
-                )}
                 <Button
                   size="small"
                   variant="outlined"
@@ -742,86 +634,27 @@ export const RecordsTab = ({ request }) => {
   );
 };
 
-const TrafficTab = () => {
-  const [rows, setRows] = useState([]);
-  const [open, setOpen] = useState({});
-  const [err, setErr] = useState(null);
-  const load = useCallback(
-    () =>
-      api
-        .getMessages(100)
-        .then(setRows)
-        .catch((e) => setErr(msg(e))),
-    [],
-  );
-  useEffect(() => {
-    load();
-  }, [load]);
-  return (
-    <Box>
-      {err && <Alert severity="error">{err}</Alert>}
-      <Button variant="outlined" onClick={load} style={{ marginBottom: 8 }}>
-        Refresh
-      </Button>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Time</TableCell>
-            <TableCell>Dir</TableCell>
-            <TableCell>Method</TableCell>
-            <TableCell>Path</TableCell>
-            <TableCell>Request ID</TableCell>
-            <TableCell>Status</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((m) => (
-            <React.Fragment key={m.id}>
-              <TableRow
-                hover
-                onClick={() => setOpen({ ...open, [m.id]: !open[m.id] })}
-                style={{ cursor: "pointer" }}
-              >
-                <TableCell>{fmt(m.createdAt)}</TableCell>
-                <TableCell>
-                  <Chip
-                    size="small"
-                    label={m.direction}
-                    color={m.direction === "IN" ? "primary" : "secondary"}
-                  />
-                </TableCell>
-                <TableCell>{m.method}</TableCell>
-                <TableCell>{m.path}</TableCell>
-                <TableCell>{m.requestId}</TableCell>
-                <TableCell>{m.httpStatus}</TableCell>
-              </TableRow>
-              {open[m.id] && (
-                <TableRow>
-                  <TableCell colSpan={6}>
-                    <Json value={m.body} />
-                  </TableCell>
-                </TableRow>
-              )}
-            </React.Fragment>
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
-  );
-};
-
-const AbdmDemo = () => {
-  const [tab, setTab] = useState(0);
+const Abdm = () => {
+  const [tab, setTab] = useState("status");
   const [status, setStatus] = useState(null);
+  const [error, setError] = useState(null);
   const [request, setRequest] = useState(null);
+  useEffect(() => {
+    api
+      .getStatus()
+      .then(setStatus)
+      .catch((e) => setError(msg(e)));
+  }, []);
   const view = (r) => {
     setRequest(r);
-    setTab(3);
+    setTab("records");
   };
+  const sharing = !!status?.recordSharingOn;
+  const receiving = !!status?.hiuOn;
   return (
     <Paper style={{ padding: 16 }}>
       <Typography variant="h5" gutterBottom>
-        ABDM (demo)
+        ABDM
       </Typography>
       <Tabs
         value={tab}
@@ -829,21 +662,19 @@ const AbdmDemo = () => {
         variant="scrollable"
         scrollButtons="auto"
       >
-        <Tab label="Status" />
-        <Tab label="HIP · Link records" />
-        <Tab label="HIU · Request records" />
-        <Tab label="Records received" />
-        <Tab label="Traffic" />
+        <Tab value="status" label="Status" />
+        {sharing && <Tab value="hip" label="HIP · Link records" />}
+        {receiving && <Tab value="hiu" label="HIU · Request records" />}
+        {receiving && <Tab value="records" label="Records received" />}
       </Tabs>
       <Box style={{ paddingTop: 16 }}>
-        {tab === 0 && <StatusTab status={status} setStatus={setStatus} />}
-        {tab === 1 && <HipTab />}
-        {tab === 2 && <HiuTab onViewRecords={view} />}
-        {tab === 3 && <RecordsTab request={request} />}
-        {tab === 4 && <TrafficTab />}
+        {tab === "status" && <StatusTab status={status} error={error} />}
+        {tab === "hip" && sharing && <HipTab />}
+        {tab === "hiu" && receiving && <HiuTab onViewRecords={view} />}
+        {tab === "records" && receiving && <RecordsTab request={request} />}
       </Box>
     </Paper>
   );
 };
 
-export default AbdmDemo;
+export default Abdm;

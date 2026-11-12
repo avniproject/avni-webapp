@@ -1,4 +1,3 @@
-// DEMO-ONLY abdm-hackathon
 import { summariseBundle, withoutAttachmentData } from "./fhirRender";
 import sample from "./__fixtures__/op-consultation-sample.json";
 

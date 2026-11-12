@@ -1,8 +1,7 @@
-// DEMO-ONLY abdm-hackathon
 // The HIU screens against NHA's M3 cases (HIU_FLOW_102, 104, 202, 301), from the 26 Oct 2026 compliance run.
 import { act } from "react";
 import { createRoot } from "react-dom/client";
-import { HiuTab, RecordsTab, isAbhaAddress, canOpenAbdm } from "./AbdmDemo";
+import { HiuTab, RecordsTab, isAbhaAddress } from "./Abdm";
 import * as api from "./api";
 
 jest.mock("./api", () => ({
@@ -12,7 +11,6 @@ jest.mock("./api", () => ({
     Promise.resolve({ uuid: "u-1", status: "REQUESTED" }),
   ),
   getConsentRecords: jest.fn(() => Promise.resolve([])),
-  approveConsentEka: jest.fn(() => Promise.resolve({ ok: true })),
 }));
 jest.mock("../../common/utils/httpClient", () => ({
   __esModule: true,
@@ -58,11 +56,16 @@ const button = (text) =>
   );
 
 describe("HIU · Request records", () => {
-  it("sends the purpose, the record types and the expiry chosen", async () => {
+  it("sends the requester, the purpose, the record types and the expiry chosen", async () => {
     await render(<HiuTab onViewRecords={() => {}} />);
 
-    await setValue(field("abhaAddress"), "shyam@sbx");
+    await setValue(field("abhaAddress"), "shyam@abdm");
+    await setValue(field("requesterName"), "Dr. Asha Rao");
+    await setValue(field("requesterRegistrationNumber"), "REG-1234");
     await setValue(field("purposeCode"), "PUBHLTH");
+    await click(
+      container.querySelector('input[name="hiType"][value="OPConsultation"]'),
+    );
     await click(
       container.querySelector('input[name="hiType"][value="Prescription"]'),
     );
@@ -71,12 +74,58 @@ describe("HIU · Request records", () => {
 
     expect(api.createConsentRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        abhaAddress: "shyam@sbx",
+        abhaAddress: "shyam@abdm",
+        requesterName: "Dr. Asha Rao",
+        requesterRegistrationNumber: "REG-1234",
         purposeCode: "PUBHLTH",
         hiTypes: ["OPConsultation", "Prescription"],
         expiry: "2026-12-31",
       }),
     );
+  });
+
+  it("starts with no requester and no record type chosen, and both requester fields required", async () => {
+    await render(<HiuTab onViewRecords={() => {}} />);
+
+    expect(field("requesterName").value).toBe("");
+    expect(field("requesterRegistrationNumber").value).toBe("");
+    expect(field("requesterName").required).toBe(true);
+    expect(field("requesterRegistrationNumber").required).toBe(true);
+    expect(
+      container.querySelectorAll('input[name="hiType"]:checked').length,
+    ).toBe(0);
+  });
+
+  it("will not send until both the requester's name and registration number are filled", async () => {
+    await render(<HiuTab onViewRecords={() => {}} />);
+    await setValue(field("abhaAddress"), "shyam@abdm");
+    await click(
+      container.querySelector('input[name="hiType"][value="Prescription"]'),
+    );
+    expect(button("Request consent").disabled).toBe(true);
+
+    await setValue(field("requesterName"), "Dr. Asha Rao");
+    expect(button("Request consent").disabled).toBe(true);
+
+    await setValue(field("requesterRegistrationNumber"), "  ");
+    expect(button("Request consent").disabled).toBe(true);
+
+    await setValue(field("requesterRegistrationNumber"), "REG-1234");
+    expect(button("Request consent").disabled).toBe(false);
+  });
+
+  it("offers no Eka sandbox approval", async () => {
+    api.getConsentRequests.mockResolvedValue([
+      {
+        uuid: "u-1",
+        abhaAddress: "a.b@abdm",
+        consentRequestId: "cr-1",
+        status: "REQUESTED",
+        artefacts: [],
+      },
+    ]);
+    await render(<HiuTab onViewRecords={() => {}} />);
+    expect(container.textContent).not.toMatch(/Approv|sandbox/i);
   });
 
   it("will not send something that is not an ABHA address", async () => {
@@ -88,7 +137,7 @@ describe("HIU · Request records", () => {
     expect(container.textContent).toContain("Not an ABHA address");
     expect(isAbhaAddress("Shyam Kumar")).toBe(false);
     expect(isAbhaAddress("shyam")).toBe(true);
-    expect(isAbhaAddress("shyam.k@sbx")).toBe(true);
+    expect(isAbhaAddress("shyam.k@abdm")).toBe(true);
     expect(isAbhaAddress("shyam@gmail.com")).toBe(false);
   });
 
@@ -96,7 +145,7 @@ describe("HIU · Request records", () => {
     api.getConsentRequests.mockResolvedValue([
       {
         uuid: "u-1",
-        abhaAddress: "ramesh.gond@sbx",
+        abhaAddress: "ramesh.gond@abdm",
         patientName: "Ramesh Gond",
         abhaNumber: "xx-xxxx-xxxx-9012",
         consentRequestId: "cr-1",
@@ -129,72 +178,6 @@ describe("HIU · Request records", () => {
   });
 });
 
-describe("Approving in Eka's sandbox", () => {
-  it("approve is disabled while Eka answers, and enabled again after", async () => {
-    api.getConsentRequests.mockResolvedValue([
-      {
-        uuid: "u-1",
-        abhaAddress: "ramesh.gond@sbx",
-        consentRequestId: "cr-1",
-        status: "REQUESTED",
-        statusHistory: [
-          { status: "REQUESTED", at: "2026-10-29T05:24:42.000Z" },
-        ],
-        createdAt: "2026-10-29T05:24:42.000Z",
-        artefacts: [],
-      },
-    ]);
-    let answer;
-    api.approveConsentEka.mockImplementation(
-      () => new Promise((resolve) => (answer = resolve)),
-    );
-    await render(<HiuTab onViewRecords={() => {}} />);
-
-    await click(button("Approv"));
-
-    expect(button("Approv").disabled).toBe(true);
-    expect(api.approveConsentEka).toHaveBeenCalledWith("cr-1");
-
-    await act(async () => answer({ ok: true }));
-
-    expect(button("Approv").disabled).toBe(false);
-  });
-});
-
-describe("Approving two requests at once", () => {
-  it("keeps each request's Approve disabled until Eka answers for that request", async () => {
-    const row = (uuid, id) => ({
-      uuid,
-      abhaAddress: "ramesh.gond@sbx",
-      consentRequestId: id,
-      status: "REQUESTED",
-      statusHistory: [{ status: "REQUESTED", at: "2026-10-29T05:24:42.000Z" }],
-      createdAt: "2026-10-29T05:24:42.000Z",
-      artefacts: [],
-    });
-    api.getConsentRequests.mockResolvedValue([
-      row("u-1", "cr-1"),
-      row("u-2", "cr-2"),
-    ]);
-    const answers = {};
-    api.approveConsentEka.mockImplementation(
-      (id) => new Promise((resolve) => (answers[id] = resolve)),
-    );
-    await render(<HiuTab onViewRecords={() => {}} />);
-    const approveButtons = () =>
-      [...container.querySelectorAll("button")].filter((b) =>
-        b.textContent.includes("Approv"),
-      );
-
-    await click(approveButtons()[0]);
-    await click(approveButtons()[1]);
-    expect(approveButtons().map((b) => b.disabled)).toEqual([true, true]);
-
-    await act(async () => answers["cr-1"]({ ok: true }));
-    expect(approveButtons().map((b) => b.disabled)).toEqual([false, true]);
-  });
-});
-
 describe("Refreshing by itself", () => {
   const later = (ms) =>
     act(async () => {
@@ -209,7 +192,7 @@ describe("Refreshing by itself", () => {
         Promise.resolve([
           {
             uuid: "u-1",
-            abhaAddress: "ramesh.gond@sbx",
+            abhaAddress: "ramesh.gond@abdm",
             status,
             statusHistory: [],
             artefacts: [],
@@ -237,7 +220,7 @@ describe("Refreshing by itself", () => {
         <RecordsTab
           request={{
             uuid: "u-1",
-            abhaAddress: "ramesh.gond@sbx",
+            abhaAddress: "ramesh.gond@abdm",
             status: "GRANTED",
           }}
         />,
@@ -247,7 +230,7 @@ describe("Refreshing by itself", () => {
       records = [
         {
           careContextReference: "visit-1",
-          hipId: "TANUH",
+          hipId: "hip-1",
           receivedAt: "2026-10-26T11:00:00.000Z",
           checksumMatched: true,
           bundle: { resourceType: "Bundle", entry: [] },
@@ -268,7 +251,7 @@ describe("Records", () => {
       <RecordsTab
         request={{
           uuid: "u-1",
-          abhaAddress: "ramesh.gond@sbx",
+          abhaAddress: "ramesh.gond@abdm",
           status: "REVOKED",
         }}
       />,
@@ -285,7 +268,7 @@ describe("Records", () => {
       <RecordsTab
         request={{
           uuid: "u-1",
-          abhaAddress: "ramesh.gond@sbx",
+          abhaAddress: "ramesh.gond@abdm",
           status: "EXPIRED",
         }}
       />,
@@ -293,19 +276,5 @@ describe("Records", () => {
 
     expect(container.textContent).toContain("expired");
     expect(api.getConsentRecords).not.toHaveBeenCalled();
-  });
-});
-
-describe("Who may open the ABDM page", () => {
-  it("only a user who may edit the organisation's configuration", () => {
-    expect(
-      canOpenAbdm({
-        privileges: [{ privilegeType: "EditOrganisationConfiguration" }],
-      }),
-    ).toBe(true);
-    expect(canOpenAbdm({ hasAllPrivileges: true, privileges: [] })).toBe(true);
-    expect(
-      canOpenAbdm({ privileges: [{ privilegeType: "EditSubject" }] }),
-    ).toBe(false);
   });
 });

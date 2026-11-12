@@ -220,3 +220,44 @@ describe("Enable ABHA switch", () => {
     expect(httpClient.put).not.toHaveBeenCalled();
   });
 });
+
+describe("Share health records through ABDM switch", () => {
+  const sharingSwitch = () =>
+    container.querySelector('input[name="Share health records through ABDM"]');
+  const toolTips = JSON.parse(
+    fs.readFileSync(
+      path.resolve(__dirname, "../../../public/documentation/toolTip.json"),
+      "utf8",
+    ),
+  );
+
+  it("is not shown while ABHA is off", async () => {
+    await openSettings({ enableAbdmRecordSharing: true });
+    expect(sharingSwitch()).toBeNull();
+  });
+
+  it("is shown, off, with its own help button once ABHA is on", async () => {
+    await openSettings({ enableAbha: true });
+    expect(sharingSwitch()).not.toBeNull();
+    expect(sharingSwitch().checked).toBe(false);
+    const helpButton = container.querySelector(
+      '[data-tooltip-key="ENABLE_ABDM_RECORD_SHARING"]',
+    );
+    expect(
+      helpButton.parentElement.parentElement.contains(sharingSwitch()),
+    ).toBe(true);
+    expect(toolTips.ENABLE_ABDM_RECORD_SHARING.trim()).not.toBe("");
+  });
+
+  it("sends only enableAbdmRecordSharing: true when switched on", async () => {
+    httpClient.put.mockResolvedValue(
+      savedAs({ enableAbha: true, enableAbdmRecordSharing: true }),
+    );
+    await openSettings({ enableAbha: true });
+    await click(sharingSwitch());
+    expect(httpClient.put).toHaveBeenCalledWith("/organisationConfig", {
+      settings: { enableAbdmRecordSharing: true },
+    });
+    expect(sharingSwitch().checked).toBe(true);
+  });
+});

@@ -1,4 +1,3 @@
-// DEMO-ONLY abdm-hackathon
 // Reads a FHIR document bundle received from another system for the Records received view. The bundle can carry any
 // shape, so nothing here throws and nothing it returns is other than text: a value that is not text or a number is
 // left blank, never handed to React raw.

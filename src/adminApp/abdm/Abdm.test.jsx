@@ -1,0 +1,126 @@
+import { act } from "react";
+import { createRoot } from "react-dom/client";
+import Abdm, { canOpenAbdm } from "./Abdm";
+import * as api from "./api";
+
+jest.mock("./api", () => ({
+  errorMessage: (e) => String(e),
+  getStatus: jest.fn(),
+  getHipPatients: jest.fn(() => Promise.resolve([])),
+  getConsentRequests: jest.fn(() => Promise.resolve([])),
+}));
+jest.mock("../../common/utils/httpClient", () => ({
+  __esModule: true,
+  httpClient: {},
+  default: {},
+}));
+
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+const status = (over = {}) => ({
+  abhaEnabled: true,
+  recordSharingEnabled: true,
+  recordSharingOn: true,
+  hiuOn: true,
+  environment: "sandbox",
+  hipIds: ["hip-1", "hip-2"],
+  hiuId: "hiu-1",
+  sharingClientConfigured: true,
+  webhookUrl: "https://x.example/api/v3/eka/webhook/wh-1",
+  session: { ok: true, error: null },
+  ...over,
+});
+
+let container;
+let root;
+beforeEach(() => {
+  jest.clearAllMocks();
+  container = document.createElement("div");
+  document.body.appendChild(container);
+  root = createRoot(container);
+});
+afterEach(async () => {
+  await act(async () => root.unmount());
+  container.remove();
+});
+
+const render = async (s) => {
+  api.getStatus.mockResolvedValue(s);
+  await act(async () => root.render(<Abdm />));
+};
+const tabs = () =>
+  [...container.querySelectorAll('[role="tab"]')].map((t) => t.textContent);
+const text = () => container.textContent;
+
+describe("Who may open the ABDM page", () => {
+  const editor = {
+    privileges: [{ privilegeType: "EditOrganisationConfiguration" }],
+  };
+  const on = { enableAbha: true, enableAbdmRecordSharing: true };
+
+  it("needs ABHA and record sharing both on, and the privilege to edit the organisation's configuration", () => {
+    expect(canOpenAbdm(editor, on)).toBe(true);
+    expect(canOpenAbdm({ hasAllPrivileges: true, privileges: [] }, on)).toBe(
+      true,
+    );
+    expect(canOpenAbdm(editor, { enableAbha: true })).toBe(false);
+    expect(canOpenAbdm(editor, { enableAbdmRecordSharing: true })).toBe(false);
+    expect(canOpenAbdm(editor, {})).toBe(false);
+    expect(canOpenAbdm(editor, undefined)).toBe(false);
+    expect(canOpenAbdm(undefined, on)).toBe(false);
+    expect(
+      canOpenAbdm({ privileges: [{ privilegeType: "EditSubject" }] }, on),
+    ).toBe(false);
+  });
+});
+
+describe("ABDM page", () => {
+  it("is titled ABDM and has no demo tools", async () => {
+    await render(status());
+    expect(text()).toContain("ABDM");
+    expect(text()).not.toMatch(/demo|Traffic|Reset|sample|Approve/i);
+    expect(tabs()).toEqual([
+      "Status",
+      "HIP · Link records",
+      "HIU · Request records",
+      "Records received",
+    ]);
+  });
+
+  it("shows the status the server gives, and no secret", async () => {
+    await render(status());
+    expect(text()).toContain("sandbox");
+    expect(text()).toContain("hip-1, hip-2");
+    expect(text()).toContain("hiu-1");
+    expect(text()).toContain("https://x.example/api/v3/eka/webhook/wh-1");
+    expect(text()).toContain("OK");
+    expect(text()).not.toContain("Linking on save");
+  });
+
+  it("shows why the Eka session is not OK", async () => {
+    await render(status({ session: { ok: false, error: "key lapsed" } }));
+    expect(text()).toContain("Not OK: key lapsed");
+  });
+
+  it("hides the HIU tabs when the organisation does not receive records", async () => {
+    await render(status({ hiuOn: false, hiuId: null }));
+    expect(tabs()).toEqual(["Status", "HIP · Link records"]);
+  });
+
+  it("shows only the Status tab when record sharing is not working", async () => {
+    await render(status({ recordSharingOn: false, hiuOn: false }));
+    expect(tabs()).toEqual(["Status"]);
+    expect(text()).toContain("not working for this organisation yet");
+  });
+
+  it("says plainly that record sharing is off when the server answers 404", async () => {
+    api.getStatus.mockRejectedValue(
+      "ABDM record sharing is off for this organisation",
+    );
+    await act(async () => root.render(<Abdm />));
+    expect(text()).toContain(
+      "ABDM record sharing is off for this organisation",
+    );
+    expect(tabs()).toEqual(["Status"]);
+  });
+});

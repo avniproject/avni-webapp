@@ -1,4 +1,3 @@
-// DEMO-ONLY abdm-hackathon
 // M3, HIU_FLOW_107 to 114: each ABDM record type is shown readably, structured and as a document. The fixtures are the
 // sample records Avni's clinic side serves (avni-server SampleRecords, built from NRCES's examples for a made-up
 // "Test Patient"), as they arrive at the HIU.

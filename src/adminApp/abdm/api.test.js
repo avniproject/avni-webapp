@@ -1,5 +1,5 @@
-// DEMO-ONLY abdm-hackathon
 import { errorMessage } from "./api";
+import * as api from "./api";
 
 jest.mock("../../common/utils/httpClient", () => ({
   __esModule: true,
@@ -49,5 +49,21 @@ describe("errorMessage", () => {
 
   it("reads Spring's own error body by its reason", () => {
     expect(errorMessage(failure({ timestamp: "t", status: 403, error: "Forbidden", path: "/web/abdm/x" }))).toBe("Forbidden");
+  });
+});
+
+describe("a 404", () => {
+  it("reads as record sharing being off, whatever the body says", () => {
+    expect(errorMessage({ response: { status: 404, data: { error: "Not Found", path: "/web/abdm/x" } } })).toBe(
+      "ABDM record sharing is off for this organisation",
+    );
+  });
+});
+
+describe("the calls that remain", () => {
+  it("leave out everything the demo had", () => {
+    for (const gone of ["getMessages", "addSampleRecords", "approveConsentEka", "resetDemo", "setAutoLink"]) {
+      expect(api[gone]).toBeUndefined();
+    }
   });
 });

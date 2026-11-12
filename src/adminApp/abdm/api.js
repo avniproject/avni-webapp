@@ -1,4 +1,3 @@
-// DEMO-ONLY abdm-hackathon
 import { httpClient } from "../../common/utils/httpClient";
 
 const B = "/web/abdm";
@@ -8,7 +7,10 @@ const post = (url, body) => httpClient.postJson(url, body).then((r) => r.data);
 const textOf = (v) =>
   typeof v === "string" && v ? v : v && typeof v === "object" && typeof v.message === "string" ? v.message : undefined;
 
+export const OFF_MESSAGE = "ABDM record sharing is off for this organisation";
+
 export const errorMessage = (e) => {
+  if (e && e.response && e.response.status === 404) return OFF_MESSAGE;
   const d = e && e.response && e.response.data;
   if (d && typeof d === "object") {
     const reason = textOf(d.message) || textOf(d.error) || textOf(d.code);
@@ -20,18 +22,9 @@ export const errorMessage = (e) => {
 };
 
 export const getStatus = () => httpClient.getData(`${B}/status`);
-export const getMessages = (limit = 100) => httpClient.getData(`${B}/messages?limit=${limit}`);
 export const getHipPatients = () => httpClient.getData(`${B}/hip/patients`);
 export const getCareContexts = (uuid) => httpClient.getData(`${B}/hip/subjects/${uuid}/care-contexts`);
 export const linkSubject = (uuid) => post(`${B}/hip/subjects/${uuid}/link`, {});
-// M3 test data: a sample record of every ABDM record type for this patient, linked through Eka (avni-server SampleRecords).
-export const addSampleRecords = (uuid) => post(`${B}/hip/subjects/${uuid}/sample-records`, {});
 export const createConsentRequest = (body) => post(`${B}/hiu/consent-requests`, body);
 export const getConsentRequests = () => httpClient.getData(`${B}/hiu/consent-requests`);
 export const getConsentRecords = (uuid) => httpClient.getData(`${B}/hiu/consent-requests/${uuid}/records`);
-// Eka's sandbox approve call, standing in for the patient approving in their ABHA app.
-export const approveConsentEka = (id) => post(`${B}/eka/consent-requests/${id}/approve`, {});
-// Clears this organisation's ABDM tables for a clean demo; patients and visits stay.
-export const resetDemo = () => post(`${B}/demo/reset`, {});
-// Linking on save, switched while the server runs: off, saved visits wait for the patient to link them from their app.
-export const setAutoLink = (on) => post(`${B}/auto-link`, { on });

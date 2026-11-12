@@ -1,4 +1,3 @@
-// DEMO-ONLY abdm-hackathon
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import FhirBundleView from "./FhirBundleView";

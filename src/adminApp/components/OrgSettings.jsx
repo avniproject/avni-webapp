@@ -71,6 +71,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
     useKeycloakAsIDP: "useKeycloakAsIDP",
     enableMessaging: "enableMessaging",
     enableAbha: "enableAbha",
+    enableAbdmRecordSharing: "enableAbdmRecordSharing",
     useMinioForStorage: "useMinioForStorage",
     skipRuleExecution: "skipRuleExecution",
     maxAddressDisplayInlineCount: "maxAddressDisplayInlineCount",
@@ -142,6 +143,12 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
           "Enable ABHA",
           "ENABLE_ABHA",
         )}
+        {orgSettings[organisationConfigSettingKeys.enableAbha] &&
+          renderSimpleSetting(
+            organisationConfigSettingKeys.enableAbdmRecordSharing,
+            "Share health records through ABDM",
+            "ENABLE_ABDM_RECORD_SHARING",
+          )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.useKeycloakAsIDP,
           "Use Keycloak as IDP",

@@ -42,7 +42,7 @@ import AdminLayout from "../common/components/AdminLayout";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
 import { OrganisationDetail } from "./OrganisationDetail";
-import AbdmDemo, { canOpenAbdm } from "./abdm/AbdmDemo";
+import Abdm, { canOpenAbdm } from "./abdm/Abdm";
 import Msg91Config from "../phoneNumberVerification/Msg91Config";
 import CurrentUserService from "../common/service/CurrentUserService";
 import DeploymentManager from "./DeploymentManager";
@@ -59,6 +59,9 @@ const OrgManager = () => {
   const organisation = useSelector((state) => state.app.organisation);
   const user = useSelector((state) => state.app.authSession);
   const userInfo = useSelector((state) => state.app.userInfo);
+  const organisationConfig = useSelector(
+    (state) => state.app.organisationConfig,
+  );
 
   useEffect(() => {
     if (["#/admin", "#/admin/"].includes(window.location.hash)) {
@@ -233,13 +236,8 @@ const OrgManager = () => {
             list={Msg91Config}
           />
         )}
-        {/* DEMO-ONLY abdm-hackathon */}
-        {canOpenAbdm(userInfo) && (
-          <Resource
-            name="abdm"
-            options={{ label: "ABDM (demo)" }}
-            list={AbdmDemo}
-          />
+        {canOpenAbdm(userInfo, organisationConfig) && (
+          <Resource name="abdm" options={{ label: "ABDM" }} list={Abdm} />
         )}
         <CustomRoutes>
           <Route path="/editLanguages" element={<CreateEditLanguages />} />
