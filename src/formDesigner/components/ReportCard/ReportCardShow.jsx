@@ -238,11 +238,28 @@ function RenderCard({ reportCard }) {
                   ? "Do visit"
                   : isActionOpenDashboard
                     ? "Open dashboard"
-                    : "View subject profile"
+                    : reportCard.isActionApproveReject()
+                      ? "Approve or reject"
+                      : "View subject profile"
               }
             />
           </>
         )}
+      {(isNested || isCustomData) && reportCard.isActionApproveReject() && (
+        <>
+          <p />
+          <ShowLabelValue
+            label="Approval Status"
+            value={_.get(
+              _.find(WebReportCard.approvalStatusOptions, {
+                value: reportCard.actionDetailApprovalStatus,
+              }),
+              "label",
+              "-",
+            )}
+          />
+        </>
+      )}
       {(isCustomData || isFullyCustom) && isActionOpenDashboard && (
         <>
           <p />

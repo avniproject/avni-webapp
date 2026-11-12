@@ -309,6 +309,10 @@ export const CreateEditReportCard = () => {
         value: ReportCard.actionTypes.MarkAttendance,
         label: "Mark attendance",
       },
+      {
+        value: ReportCard.actionTypes.ApproveReject,
+        label: "Approve or reject",
+      },
     ];
     return isCustomData ? [...subjectActions, openDashboard] : subjectActions;
   };
@@ -779,6 +783,28 @@ export const CreateEditReportCard = () => {
                 toolTipKey={"APP_DESIGNER_CARD_ACTION_DASHBOARD"}
               />
               {getErrorByKey(error, "MISSING_DASHBOARD")}
+            </>
+          )}
+        {showActionFields &&
+          card.action === ReportCard.actionTypes.ApproveReject && (
+            <>
+              <p />
+              <AvniSelect
+                label="Approval Status"
+                value={card.actionDetailApprovalStatus}
+                style={{ width: "15.625rem" }}
+                required
+                onChange={(event) =>
+                  onChange(
+                    ReportCardReducerKeys.actionDetailApprovalStatus,
+                    event,
+                    "MISSING_APPROVAL_STATUS",
+                  )
+                }
+                options={WebReportCard.approvalStatusOptions}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_APPROVAL_STATUS"}
+              />
+              {getErrorByKey(error, "MISSING_APPROVAL_STATUS")}
             </>
           )}
         <p />

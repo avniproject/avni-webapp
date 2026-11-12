@@ -301,3 +301,30 @@ describe("Open dashboard on the card details page", () => {
     expect(requestedUrls()).not.toContain("/web/dashboard");
   });
 });
+
+describe("Approve or reject on the card details page", () => {
+  it.each([
+    ["Pending", "Pending approval"],
+    ["Approved", "Approved"],
+    ["Rejected", "Rejected"],
+  ])("shows Approve or reject and the %s state on a Custom Data Card", async (status, label) => {
+    await openDetails(customDataCard({ action: "ApproveReject", actionDetailApprovalStatus: status }));
+
+    expect(rowValue("Action")).toBe("Approve or reject");
+    expect(rowValue("Approval Status")).toBe(label);
+    expect(rowValue("Dashboard")).toBeUndefined();
+  });
+
+  it("shows Approve or reject and its state on a nested card", async () => {
+    await openDetails(nestedCard({ action: "ApproveReject", actionDetailApprovalStatus: "Rejected" }));
+
+    expect(rowValue("Action")).toBe("Approve or reject");
+    expect(rowValue("Approval Status")).toBe("Rejected");
+  });
+
+  it("shows no Approval Status row for another action", async () => {
+    await openDetails(customDataCard(openDashboard("dash-02")));
+
+    expect(rowValue("Approval Status")).toBeUndefined();
+  });
+});

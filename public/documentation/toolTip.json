@@ -170,6 +170,7 @@
   "APP_DESIGNER_CARD_IS_NESTED": "Is this a Nested report card?",
   "APP_DESIGNER_CARD_COUNT": "The number of Nested report cards that will be generated from this one report card's query",
   "APP_DESIGNER_CARD_ACTION_DASHBOARD": "Dashboard that opens when the card is tapped in the Field App",
+  "APP_DESIGNER_CARD_ACTION_APPROVAL_STATUS": "Which records the card shows in the Field App: those pending approval, approved or rejected. Tapping the card opens the approval list for the subjects its query returns",
   "APP_DESIGNER_DASHBOARD_NAME": "Name of the dashboard",
   "APP_DESIGNER_DASHBOARD_DESCRIPTION": "Dashboard description",
   "APP_DESIGNER_DASHBOARD_CARDS": "All the cards that will be shown in this dashboard",

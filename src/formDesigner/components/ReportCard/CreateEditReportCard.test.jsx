@@ -153,6 +153,7 @@ const CUSTOM_DATA_ACTIONS = [
   "View subject profile",
   "Do visit",
   "Mark attendance",
+  "Approve or reject",
   "Open dashboard",
 ];
 
@@ -310,7 +311,7 @@ afterEach(async () => {
 });
 
 describe("Open dashboard in the card editor", () => {
-  it("offers View subject profile, Do visit, Mark attendance and Open dashboard on a Custom Data Card", async () => {
+  it("offers View subject profile, Do visit, Mark attendance, Approve or reject and Open dashboard on a Custom Data Card", async () => {
     await openEditor();
     await pickCardType("Custom Data Card");
 
@@ -325,7 +326,7 @@ describe("Open dashboard in the card editor", () => {
     expect(await optionsOf("Action")).toEqual(["No action", "Open dashboard"]);
   });
 
-  it("keeps the three actions on a nested card", async () => {
+  it("keeps the subject actions, without Open dashboard, on a nested card", async () => {
     await openEditor();
     await pickCardType("Nested Report Card");
 
@@ -333,6 +334,7 @@ describe("Open dashboard in the card editor", () => {
       "View subject profile",
       "Do visit",
       "Mark attendance",
+      "Approve or reject",
     ]);
   });
 
@@ -757,5 +759,69 @@ describe("Open dashboard in the card editor", () => {
     await openEditor(openDashboardCard("dash-02"));
 
     expect(networkErrorNotifier.notify).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("Approve or reject in the card editor", () => {
+  const approveRejectCard = (status) =>
+    customDataCard({ action: "ApproveReject", actionDetailApprovalStatus: status });
+
+  it("shows the Approval Status picker with the three states, starting at Pending approval", async () => {
+    await openEditor(customDataCard());
+    await choose("Action", "Approve or reject");
+
+    expect(fieldValue("Approval Status")).toBe("Pending approval");
+    expect(await optionsOf("Approval Status")).toEqual(["Pending approval", "Approved", "Rejected"]);
+  });
+
+  it("saves Approve or reject with the picked state", async () => {
+    await openEditor(customDataCard());
+    await choose("Action", "Approve or reject");
+    await choose("Approval Status", "Rejected");
+    await save();
+
+    expect(saved().toResource()).toMatchObject({
+      action: "ApproveReject",
+      actionDetailApprovalStatus: "Rejected",
+      actionDetailDashboardUUID: null,
+    });
+    expect(navigatedTo()).toBe("/appDesigner/reportCard/5/show");
+  });
+
+  it("shows the saved state when a saved card is reopened", async () => {
+    await openEditor(approveRejectCard("Approved"));
+
+    expect(fieldValue("Action")).toBe("Approve or reject");
+    expect(fieldValue("Approval Status")).toBe("Approved");
+  });
+
+  it("drops the state when the action changes away and the card is saved", async () => {
+    await openEditor(approveRejectCard("Approved"));
+    await choose("Action", "View subject profile");
+    await save();
+
+    expect(container.textContent).not.toContain("Approval Status");
+    expect(saved().toResource()).toMatchObject({
+      action: "ViewSubjectProfile",
+      actionDetailApprovalStatus: null,
+    });
+  });
+
+  it("does not offer Approve or reject on a Custom Design Card", async () => {
+    await openEditor();
+    await pickCardType("Custom Design Card");
+
+    expect(await optionsOf("Action")).not.toContain("Approve or reject");
+  });
+
+  it("asks for help text that exists for the Approval Status picker", async () => {
+    await openEditor(customDataCard());
+    await choose("Action", "Approve or reject");
+
+    const helpKey = helpKeyBeside("Approval Status");
+
+    expect(helpKey).toBe("APP_DESIGNER_CARD_ACTION_APPROVAL_STATUS");
+    expect(typeof toolTips[helpKey]).toBe("string");
+    expect(toolTips[helpKey].trim()).not.toBe("");
   });
 });

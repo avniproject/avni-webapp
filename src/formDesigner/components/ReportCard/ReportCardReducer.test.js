@@ -65,3 +65,57 @@ describe("ReportCardReducer", () => {
     expect(result.actionDetailDashboardUUID).toBe(DASHBOARD);
   });
 });
+
+describe("ReportCardReducer approval status", () => {
+  const approveRejectCard = (status) => {
+    const card = WebReportCard.createNewReportCard();
+    card.action = "ApproveReject";
+    card.actionDetailApprovalStatus = status;
+    return card;
+  };
+
+  it("starts at Pending when the action changes to Approve or reject", () => {
+    const result = reduce(WebReportCard.createNewReportCard(), ReportCardReducerKeys.action, "ApproveReject");
+
+    expect(result.action).toBe("ApproveReject");
+    expect(result.actionDetailApprovalStatus).toBe("Pending");
+  });
+
+  it("keeps a picked status when the action is set to Approve or reject again", () => {
+    const result = reduce(approveRejectCard("Rejected"), ReportCardReducerKeys.action, "ApproveReject");
+
+    expect(result.actionDetailApprovalStatus).toBe("Rejected");
+  });
+
+  it("stores the picked status", () => {
+    const result = reduce(approveRejectCard("Pending"), ReportCardReducerKeys.actionDetailApprovalStatus, "Approved");
+
+    expect(result.actionDetailApprovalStatus).toBe("Approved");
+  });
+
+  it.each(["ViewSubjectProfile", "DoVisit", "MarkAttendance", "OpenDashboard", null])(
+    "drops the status when the action changes to %p",
+    (actionType) => {
+      const result = reduce(approveRejectCard("Approved"), ReportCardReducerKeys.action, actionType);
+
+      expect(result.actionDetailApprovalStatus).toBeNull();
+    },
+  );
+
+  it("drops the dashboard and the Do visit details when the action changes to Approve or reject", () => {
+    const card = openDashboardCard();
+    card.actionDetailSubjectTypeUUID = "st-1";
+
+    const result = reduce(card, ReportCardReducerKeys.action, "ApproveReject");
+
+    expect(result.actionDetailDashboardUUID).toBeNull();
+    expect(result.actionDetailSubjectTypeUUID).toBeNull();
+    expect(result.onActionCompletion).toBeNull();
+  });
+
+  it("keeps the status when a loaded card is set", () => {
+    const result = reduce(WebReportCard.createNewReportCard(), ReportCardReducerKeys.setData, approveRejectCard("Rejected"));
+
+    expect(result.actionDetailApprovalStatus).toBe("Rejected");
+  });
+});

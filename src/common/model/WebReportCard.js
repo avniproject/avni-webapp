@@ -1,4 +1,4 @@
-import { CustomFilter, ReportCard, StandardReportCardType } from "openchs-models";
+import { ApprovalStatus, CustomFilter, ReportCard, StandardReportCardType } from "openchs-models";
 import _, { isEmpty, isInteger, isNil, lowerCase, toNumber } from "lodash";
 import WebStandardReportCardType from "./WebStandardReportCardType";
 import WebSubjectType from "./WebSubjectType";
@@ -35,6 +35,14 @@ function populateRecordCardFields(
 class WebReportCard extends ReportCard {
   static MinimumNumberOfNestedCards = 1;
   static MaximumNumberOfNestedCards = 9;
+
+  // The approval states an Approve or reject card can show. The values are the
+  // phone's approval status strings.
+  static approvalStatusOptions = [
+    { value: ApprovalStatus.statuses.Pending, label: "Pending approval" },
+    { value: ApprovalStatus.statuses.Approved, label: "Approved" },
+    { value: ApprovalStatus.statuses.Rejected, label: "Rejected" },
+  ];
 
   standardReportCardInputRecentDuration;
 
@@ -80,6 +88,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailVisitType = null;
     webReportCard.actionDetailAttendanceTypeUUID = null;
     webReportCard.actionDetailDashboardUUID = null;
+    webReportCard.actionDetailApprovalStatus = null;
     webReportCard.onActionCompletion = null;
     webReportCard.customCardConfig = null;
     return webReportCard;
@@ -110,6 +119,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailVisitType = other.actionDetailVisitType;
     webReportCard.actionDetailAttendanceTypeUUID = other.actionDetailAttendanceTypeUUID;
     webReportCard.actionDetailDashboardUUID = other.actionDetailDashboardUUID;
+    webReportCard.actionDetailApprovalStatus = other.actionDetailApprovalStatus;
     webReportCard.onActionCompletion = other.onActionCompletion;
     webReportCard.customCardConfig = other.customCardConfig;
     return webReportCard;
@@ -141,6 +151,7 @@ class WebReportCard extends ReportCard {
     webReportCard.actionDetailVisitType = resource.actionDetailVisitType || null;
     webReportCard.actionDetailAttendanceTypeUUID = resource.actionDetailAttendanceTypeUUID || null;
     webReportCard.actionDetailDashboardUUID = resource.actionDetailDashboardUUID || null;
+    webReportCard.actionDetailApprovalStatus = resource.actionDetailApprovalStatus || null;
     webReportCard.onActionCompletion = resource.onActionCompletion || ReportCard.onActionCompletionTypes.goToSubjectProfile;
     webReportCard.customCardConfig = resource.customCardConfigUUID
       ? { uuid: resource.customCardConfigUUID, name: resource.customCardConfigName }
@@ -214,6 +225,9 @@ class WebReportCard extends ReportCard {
     if (this.action === ReportCard.actionTypes.OpenDashboard && isEmpty(this.actionDetailDashboardUUID)) {
       errors.push({ key: "MISSING_DASHBOARD", message: "Dashboard is required for Open dashboard action" });
     }
+    if (this.action === ReportCard.actionTypes.ApproveReject && isEmpty(this.actionDetailApprovalStatus)) {
+      errors.push({ key: "MISSING_APPROVAL_STATUS", message: "Approval status is required for Approve or reject action" });
+    }
     return errors;
   }
 
@@ -257,6 +271,7 @@ class WebReportCard extends ReportCard {
       actionDetailVisitType: this.actionDetailVisitType,
       actionDetailAttendanceTypeUUID: this.actionDetailAttendanceTypeUUID,
       actionDetailDashboardUUID: this.actionDetailDashboardUUID,
+      actionDetailApprovalStatus: this.actionDetailApprovalStatus,
       onActionCompletion: this.onActionCompletion,
       customCardConfig: this.customCardConfig
         ? {

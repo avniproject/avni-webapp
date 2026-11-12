@@ -83,3 +83,46 @@ describe("WebReportCard", () => {
     });
   });
 });
+
+describe("WebReportCard approval status", () => {
+  it("starts a new card with no approval status", () => {
+    expect(WebReportCard.createNewReportCard().actionDetailApprovalStatus).toBeNull();
+  });
+
+  it("reads the approval status the server sends, keeps it on clone and sends it back", () => {
+    const card = WebReportCard.fromResource(resource({ action: "ApproveReject", actionDetailApprovalStatus: "Rejected" }));
+
+    expect(card.actionDetailApprovalStatus).toBe("Rejected");
+    expect(card.isActionApproveReject()).toBe(true);
+    expect(WebReportCard.clone(card).actionDetailApprovalStatus).toBe("Rejected");
+    expect(card.toResource().actionDetailApprovalStatus).toBe("Rejected");
+    expect(card.toResource().action).toBe("ApproveReject");
+  });
+
+  it("reads no approval status when the server sends none", () => {
+    expect(WebReportCard.fromResource(resource({ action: "ViewSubjectProfile" })).actionDetailApprovalStatus).toBeNull();
+  });
+
+  it("asks for an approval status on an Approve or reject card", () => {
+    const card = WebReportCard.fromResource(resource({ action: "ApproveReject" }));
+
+    expect(card.validateCard("customData").map((e) => e.key)).toEqual(["MISSING_APPROVAL_STATUS"]);
+  });
+
+  it.each(["Pending", "Approved", "Rejected"])("accepts Approve or reject with %s", (status) => {
+    const card = WebReportCard.fromResource(resource({ action: "ApproveReject", actionDetailApprovalStatus: status }));
+
+    expect(card.validateCard("customData")).toEqual([]);
+    expect(card.validateCard("nested")).toEqual([]);
+  });
+
+  it("does not ask for an approval status for another action", () => {
+    const card = WebReportCard.fromResource(resource({ action: "ViewSubjectProfile" }));
+
+    expect(card.validateCard("customData")).toEqual([]);
+  });
+
+  it("offers the three approval states with the phone's status strings", () => {
+    expect(WebReportCard.approvalStatusOptions.map((o) => o.value)).toEqual(["Pending", "Approved", "Rejected"]);
+  });
+});
