@@ -70,7 +70,7 @@
               ],
               "text": "ABHA Address"
             },
-            "value": "test.patient@sbx"
+            "value": "test.patient@abdm"
           }
         ],
         "name": [{ "text": "Test Patient" }],
@@ -531,10 +531,10 @@
               "text": "Provider number"
             },
             "system": "https://facility.ndhm.gov.in",
-            "value": "TANUH"
+            "value": "hip-1"
           }
         ],
-        "name": "TANUH Health Centre"
+        "name": "Test Health Centre"
       }
     }
   ]

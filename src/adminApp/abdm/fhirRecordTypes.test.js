@@ -1,6 +1,5 @@
-// M3, HIU_FLOW_107 to 114: each ABDM record type is shown readably, structured and as a document. The fixtures are the
-// sample records Avni's clinic side serves (avni-server SampleRecords, built from NRCES's examples for a made-up
-// "Test Patient"), as they arrive at the HIU.
+// M3, HIU_FLOW_107 to 114: each ABDM record type is shown readably, structured and as a document. The fixtures are
+// records of each type built from NRCES's examples for a made-up "Test Patient", as they arrive at the HIU.
 import { summariseBundle } from "./fhirRender";
 import opSample from "./__fixtures__/op-consultation-sample.json";
 import diagnostic from "./__fixtures__/samples/DiagnosticReport.json";
@@ -124,7 +123,7 @@ describe("each record type reads as itself", () => {
     expect(given.value).toContain("2021-02-21");
     expect(given.value).toContain("BSCD12344SS");
     expect(items(s).find((i) => i.kind === "Next dose").label).toBe("COVID-19 antigen vaccine");
-    expect(s.hipName).toBe("TANUH Health Centre");
+    expect(s.hipName).toBe("Test Health Centre");
   });
 
   it("HIU_FLOW_112, a health document: the document and its file", () => {

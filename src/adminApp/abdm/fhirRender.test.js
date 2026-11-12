@@ -4,9 +4,9 @@ import sample from "./__fixtures__/op-consultation-sample.json";
 describe("summariseBundle", () => {
   it("reads the sample bundle", () => {
     const s = summariseBundle(sample);
-    expect(s.title).toBe("Hypertension Screening — TANUH Health Centre");
+    expect(s.title).toBe("Hypertension Screening — Test Health Centre");
     expect(s.patientName).toBe("Anita Devi");
-    expect(s.hipName).toBe("TANUH Health Centre");
+    expect(s.hipName).toBe("Test Health Centre");
     expect(s.date).toContain("2026-10-20");
     expect(s.rows).toEqual([
       { label: "Systolic BP", value: "130 mmHg" },
