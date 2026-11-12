@@ -93,13 +93,14 @@ describe("HIP · Link records", () => {
 });
 
 describe("HIP · no sample data", () => {
-  it("offers Link to ABHA and no way to add sample records", async () => {
+  it("offers a button that sends the waiting visits, and no way to add sample records", async () => {
     api.getHipPatients.mockResolvedValue([patient(true)]);
     api.getCareContexts.mockResolvedValue([visit("LINKED")]);
     await act(async () => root.render(<HipTab />));
     await act(async () => container.querySelector("tbody tr").click());
 
-    expect(text()).toContain("Link to ABHA");
+    expect(text()).toContain("Send waiting visits now");
+    expect(text()).toContain("Sends this patient's waiting visits to ABHA now");
     expect(text()).not.toMatch(/sample|test data/i);
   });
 });
@@ -142,5 +143,54 @@ describe("HIP · visits not linked", () => {
     expect(text()).toContain(
       "Patient has no Eka ID: register or verify their ABHA through the app first",
     );
+  });
+});
+
+describe("HIP · patient list cut", () => {
+  const many = (n) =>
+    Array.from({ length: n }, (_, i) => ({
+      ...patient(true),
+      subjectUUID: `s-${i}`,
+    }));
+
+  it("says the list shows only the first 500 when it is full", async () => {
+    api.getHipPatients.mockResolvedValue(many(500));
+    await act(async () => root.render(<HipTab />));
+
+    expect(text()).toContain("Showing the first 500 patients");
+  });
+
+  it("says nothing about a cut when the list is shorter", async () => {
+    api.getHipPatients.mockResolvedValue(many(499));
+    await act(async () => root.render(<HipTab />));
+
+    expect(text()).not.toContain("Showing the first");
+  });
+});
+
+describe("HIP · polling stops", () => {
+  it("does not poll again after the tab is left while a check is in flight", async () => {
+    let resolveCtx;
+    api.getHipPatients.mockResolvedValue([patient(false)]);
+    api.getCareContexts.mockResolvedValueOnce([]);
+    api.linkSubject.mockResolvedValue([]);
+    await act(async () => root.render(<HipTab />));
+    await act(async () => container.querySelector("tbody tr").click());
+    api.getCareContexts.mockClear();
+    api.getCareContexts.mockImplementation(
+      () => new Promise((r) => (resolveCtx = r)),
+    );
+    const btn = [...container.querySelectorAll("button")].find((b) =>
+      b.textContent.includes("Send waiting visits now"),
+    );
+    await act(async () => btn.click());
+    expect(api.getCareContexts).toHaveBeenCalledTimes(1);
+
+    await act(async () => root.unmount());
+    root = createRoot(container);
+    await act(async () => resolveCtx([{ ...visit("PENDING") }]));
+    await wait(10000);
+
+    expect(api.getCareContexts).toHaveBeenCalledTimes(1);
   });
 });

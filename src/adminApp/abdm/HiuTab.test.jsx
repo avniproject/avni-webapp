@@ -238,7 +238,7 @@ describe("Refreshing by itself", () => {
     }
   });
 
-  it("shows records that arrive after the tab was opened", async () => {
+  it("fetches records once, and again only when asked", async () => {
     jest.useFakeTimers();
     try {
       let records = [];
@@ -253,6 +253,7 @@ describe("Refreshing by itself", () => {
         />,
       );
       expect(container.textContent).toContain("No records received yet.");
+      expect(api.getConsentRecords).toHaveBeenCalledTimes(1);
 
       records = [
         {
@@ -263,8 +264,16 @@ describe("Refreshing by itself", () => {
           bundle: { resourceType: "Bundle", entry: [] },
         },
       ];
-      await later(10000);
+      await later(60000);
+      expect(api.getConsentRecords).toHaveBeenCalledTimes(1);
+      expect(container.textContent).not.toContain("visit-1");
 
+      const refresh = [...container.querySelectorAll("button")].find((b) =>
+        b.textContent.includes("Refresh"),
+      );
+      await act(async () => refresh.click());
+
+      expect(api.getConsentRecords).toHaveBeenCalledTimes(2);
       expect(container.textContent).toContain("visit-1");
     } finally {
       jest.useRealTimers();
@@ -303,5 +312,41 @@ describe("Records", () => {
 
     expect(container.textContent).toContain("expired");
     expect(api.getConsentRecords).not.toHaveBeenCalled();
+  });
+});
+
+describe("Consent request polling", () => {
+  const later = (ms) =>
+    act(async () => {
+      jest.advanceTimersByTime(ms);
+    });
+  it("stops the quick poll after its time limit", async () => {
+    jest.useFakeTimers();
+    try {
+      api.getConsentRequests.mockImplementation(() =>
+        Promise.resolve([
+          {
+            uuid: "u-1",
+            abhaAddress: "a.b@abdm",
+            status: "REQUESTED",
+            statusHistory: [],
+            artefacts: [],
+          },
+        ]),
+      );
+      await render(<HiuTab onViewRecords={() => {}} />);
+      const steps = async (n) => {
+        for (let i = 0; i < n; i++) await later(1000);
+      };
+      await steps(5 * 60);
+      api.getConsentRequests.mockClear();
+
+      await steps(9);
+
+      // only the 10-second refresh remains: no more than one call in 9 seconds
+      expect(api.getConsentRequests.mock.calls.length).toBeLessThanOrEqual(1);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

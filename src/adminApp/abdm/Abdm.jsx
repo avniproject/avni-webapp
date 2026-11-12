@@ -118,10 +118,22 @@ const fmt = (t) => {
 // refresh themselves this often.
 const REFRESH_MS = 10000;
 
+// The quick poll after a consent request gives up after this long; the slow refresh carries on.
+const QUICK_POLL_MAX_MS = 2 * 60 * 1000;
+// The server's patient list stops here (AbdmHipStore).
+export const HIP_LIST_LIMIT = 500;
+
 // Polls fn every ms while shouldContinue(result) holds, up to maxMs (0 = no limit).
 const usePoll = () => {
   const timer = useRef(null);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+      window.clearTimeout(timer.current);
+    };
+  }, []);
   return useCallback((fn, ms, shouldContinue, maxMs) => {
     window.clearTimeout(timer.current);
     const start = Date.now();
@@ -132,7 +144,7 @@ const usePoll = () => {
       } catch {
         again = false;
       }
-      if (again && (!maxMs || Date.now() - start < maxMs))
+      if (alive.current && again && (!maxMs || Date.now() - start < maxMs))
         timer.current = window.setTimeout(tick, ms);
     };
     tick();
@@ -260,6 +272,12 @@ export const HipTab = () => {
         </Alert>
       )}
       <Typography variant="h6">Patients with ABHA</Typography>
+      {patients.length >= HIP_LIST_LIMIT && (
+        <Alert severity="info" style={{ margin: "8px 0" }}>
+          Showing the first {HIP_LIST_LIMIT} patients. Others are not listed
+          here.
+        </Alert>
+      )}
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -302,8 +320,12 @@ export const HipTab = () => {
             onClick={link}
             style={{ margin: "8px 0" }}
           >
-            Link to ABHA
+            Send waiting visits now
           </Button>
+          <Typography variant="caption" display="block">
+            Sends this patient's waiting visits to ABHA now, without waiting for
+            the five-minute schedule.
+          </Typography>
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -366,7 +388,8 @@ export const HiuTab = ({ onViewRecords }) => {
     [],
   );
   const startPoll = useCallback(
-    () => poll(load, 3000, (l) => l.some((r) => !isFinal(r))),
+    () =>
+      poll(load, 3000, (l) => l.some((r) => !isFinal(r)), QUICK_POLL_MAX_MS),
     [poll, load],
   );
   useEffect(() => {
@@ -581,24 +604,27 @@ export const RecordsTab = ({ request }) => {
   const [records, setRecords] = useState(null);
   const [err, setErr] = useState(null);
   const ended = request && ENDED[request.status];
-  // Records arrive some seconds after the grant, and go after a withdrawal: the tab keeps asking.
-  useEffect(() => {
-    if (!request || ENDED[request.status]) return;
+  // Records can be large, so they are fetched once and again only on request.
+  const fetchRecords = useCallback(() => {
     let live = true;
-    const fetch = () =>
-      api
-        .getConsentRecords(request.uuid)
-        .then((r) => live && setRecords(r))
-        .catch((e) => live && setErr(msg(e)));
-    setRecords(null);
-    setErr(null);
-    fetch();
-    const timer = window.setInterval(fetch, REFRESH_MS);
+    api
+      .getConsentRecords(request.uuid)
+      .then((r) => live && setRecords(r))
+      .catch((e) => live && setErr(msg(e)));
     return () => {
       live = false;
-      window.clearInterval(timer);
     };
   }, [request]);
+  useEffect(() => {
+    if (!request || ENDED[request.status]) return;
+    setRecords(null);
+    setErr(null);
+    return fetchRecords();
+  }, [request, fetchRecords]);
+  const refresh = () => {
+    setErr(null);
+    fetchRecords();
+  };
   if (!request)
     return (
       <Typography>
@@ -612,6 +638,11 @@ export const RecordsTab = ({ request }) => {
         Records for {request.abhaAddress}
       </Typography>
       {ended && <Typography>{ended}</Typography>}
+      {!ended && (
+        <Button variant="outlined" size="small" onClick={refresh}>
+          Refresh
+        </Button>
+      )}
       {err && <Alert severity="error">{err}</Alert>}
       {!ended && records && records.length === 0 && (
         <Typography>No records received yet.</Typography>
