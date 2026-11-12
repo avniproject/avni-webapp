@@ -53,10 +53,20 @@ describe("errorMessage", () => {
 });
 
 describe("a 404", () => {
-  it("reads as record sharing being off, whatever the body says", () => {
-    expect(errorMessage({ response: { status: 404, data: { error: "Not Found", path: "/web/abdm/x" } } })).toBe(
+  // The server's gate answers an organisation without record sharing (or without an HIU ID) 404 {message: "Not found"}.
+  it("from the server's gate reads as record sharing being off", () => {
+    expect(errorMessage({ response: { status: 404, data: { message: "Not found" } } })).toBe(
       "ABDM record sharing is off for this organisation",
     );
+  });
+
+  it("naming what was not found shows that, not that record sharing is off", () => {
+    expect(errorMessage({ response: { status: 404, data: { message: "Subject not found" } } })).toBe("Subject not found");
+    expect(errorMessage({ response: { status: 404, data: { message: "Consent request not found" } } })).toBe("Consent request not found");
+  });
+
+  it("from anything but the gate shows its own reason", () => {
+    expect(errorMessage({ response: { status: 404, data: { error: "Not Found", path: "/web/abdm/x" } } })).toBe("Not Found");
   });
 });
 

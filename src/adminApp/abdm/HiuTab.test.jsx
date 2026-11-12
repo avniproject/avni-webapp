@@ -178,6 +178,33 @@ describe("HIU · Request records", () => {
   });
 });
 
+describe("HIU · a request Eka gave no clear answer to", () => {
+  it("shows the request as UNKNOWN with the reason", async () => {
+    api.getConsentRequests.mockResolvedValue([
+      {
+        uuid: "u-2",
+        abhaAddress: "ramesh.gond@abdm",
+        patientName: "Ramesh Gond",
+        purposeCode: "CAREMGT",
+        hiTypes: ["OPConsultation"],
+        status: "UNKNOWN",
+        error:
+          "Eka gave no clear answer; the request may have reached the patient",
+        statusHistory: [],
+        createdAt: "2026-10-25T10:00:00.000Z",
+        artefacts: [],
+      },
+    ]);
+
+    await render(<HiuTab onViewRecords={() => {}} />);
+
+    expect(container.textContent).toContain("UNKNOWN");
+    expect(container.textContent).toContain(
+      "Eka gave no clear answer; the request may have reached the patient",
+    );
+  });
+});
+
 describe("Refreshing by itself", () => {
   const later = (ms) =>
     act(async () => {

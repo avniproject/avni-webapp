@@ -8,9 +8,12 @@ const textOf = (v) =>
   typeof v === "string" && v ? v : v && typeof v === "object" && typeof v.message === "string" ? v.message : undefined;
 
 export const OFF_MESSAGE = "ABDM record sharing is off for this organisation";
+// The server's gate (AbdmAccess) answers 404 {message: "Not found"} when record sharing is off; another 404 names what it missed.
+const isGateRefusal = (e) =>
+  e.response.status === 404 && e.response.data && typeof e.response.data === "object" && e.response.data.message === "Not found";
 
 export const errorMessage = (e) => {
-  if (e && e.response && e.response.status === 404) return OFF_MESSAGE;
+  if (e && e.response && isGateRefusal(e)) return OFF_MESSAGE;
   const d = e && e.response && e.response.data;
   if (d && typeof d === "object") {
     const reason = textOf(d.message) || textOf(d.error) || textOf(d.code);

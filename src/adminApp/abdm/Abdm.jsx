@@ -70,7 +70,7 @@ const statusColor = (s) =>
   s === "COMPLETED" ||
   s === "TRANSFERRED"
     ? "success"
-    : s === "FAILED" || s === "DENIED" || s === "ERROR"
+    : s === "FAILED" || s === "FAILED_FINAL" || s === "DENIED" || s === "ERROR"
       ? "error"
       : "default";
 const yesNo = (v) => (v ? "Yes" : "No");

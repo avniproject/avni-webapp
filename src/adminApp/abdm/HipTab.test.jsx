@@ -41,11 +41,12 @@ const patient = (linked) => ({
   encounters: 1,
   linked,
 });
-const visit = (status) => ({
+const visit = (status, error) => ({
   reference: "v-1",
   display: "Hypertension Screening",
   hiType: "OPConsultation",
   status,
+  error,
 });
 const text = () => container.textContent;
 const wait = (ms) =>
@@ -100,5 +101,46 @@ describe("HIP · no sample data", () => {
 
     expect(text()).toContain("Link to ABHA");
     expect(text()).not.toMatch(/sample|test data/i);
+  });
+});
+
+describe("HIP · visits not linked", () => {
+  const openWith = async (row) => {
+    api.getHipPatients.mockResolvedValue([patient(false)]);
+    api.getCareContexts.mockResolvedValue([row]);
+    await act(async () => root.render(<HipTab />));
+    await act(async () => container.querySelector("tbody tr").click());
+  };
+  const chip = (label) =>
+    [...container.querySelectorAll(".MuiChip-root")].find(
+      (c) => c.textContent === label,
+    );
+
+  it("shows a visit given up for good in the error colour, with the reason", async () => {
+    await openWith(
+      visit(
+        "FAILED_FINAL",
+        "Eka refused the link: care context already linked",
+      ),
+    );
+
+    expect(chip("FAILED_FINAL").className).toContain("MuiChip-colorError");
+    expect(text()).toContain(
+      "Eka refused the link: care context already linked",
+    );
+  });
+
+  it("shows a visit waiting for a verified ABHA with the reason", async () => {
+    await openWith(
+      visit(
+        "AWAITING_VERIFIED_ABHA",
+        "Patient has no Eka ID: register or verify their ABHA through the app first",
+      ),
+    );
+
+    expect(chip("AWAITING_VERIFIED_ABHA")).toBeDefined();
+    expect(text()).toContain(
+      "Patient has no Eka ID: register or verify their ABHA through the app first",
+    );
   });
 });
