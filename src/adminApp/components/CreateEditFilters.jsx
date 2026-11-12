@@ -29,6 +29,7 @@ import { Concept, CustomFilter } from "avni-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import { programsForSubjectType } from "../../formDesigner/common/FormMappingNarrowing";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
@@ -403,6 +404,22 @@ export const CreateEditFilters = ({
         f.titleKey !== titleKey,
     );
 
+  // Without form mappings loaded the programmes are unknown, so Program stays offered.
+  const enrolsIntoNoProgramme = (sub) =>
+    !!sub?.value &&
+    !isNil(operationalModules?.formMappings) &&
+    isEmpty(
+      programsForSubjectType(
+        programs,
+        operationalModules.formMappings,
+        sub.value,
+      ),
+    );
+
+  const cannotHaveProgramFilter = (sub) =>
+    hasAnotherProgramFilter(sub) ||
+    (enrolsIntoNoProgramme(sub) && type !== CustomFilter.type.Program);
+
   const typeOptions = baseTypeOptions.filter(
     (o) =>
       !(
@@ -411,7 +428,7 @@ export const CreateEditFilters = ({
       ) &&
       !(
         o.value === CustomFilter.type.Program &&
-        hasAnotherProgramFilter(selectedSubject)
+        cannotHaveProgramFilter(selectedSubject)
       ),
   );
 
@@ -423,7 +440,7 @@ export const CreateEditFilters = ({
         selectedType.value === CustomFilter.type.DateOfBirth) ||
       (selectedType &&
         selectedType.value === CustomFilter.type.Program &&
-        hasAnotherProgramFilter(sub))
+        cannotHaveProgramFilter(sub))
     ) {
       setType("");
       resetState();

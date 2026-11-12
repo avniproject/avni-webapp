@@ -189,14 +189,14 @@ describe("filter type list", () => {
     type: "Program",
   });
 
-  const offeredTypes = async (filters, selectedFilter) => {
+  const offeredTypes = async (filters, selectedFilter, modules = operationalModules) => {
     await act(async () =>
       root.render(
         <CreateEditFilters
           selectedFilter={selectedFilter}
           title="Edit filter"
           filterType="searchFilters"
-          operationalModules={operationalModules}
+          operationalModules={modules}
           settings={{
             uuid: "s",
             settings: { searchFilters: filters, myDashboardFilters: [] },
@@ -231,6 +231,39 @@ describe("filter type list", () => {
   it("offers Program when editing the subject type's own Program filter", async () => {
     const existing = programFilter("Programmes");
     const types = await offeredTypes([existing], existing);
+
+    expect(types).toContain("Program");
+  });
+
+  const withProgrammes = {
+    subjectTypes: [
+      { uuid: "st-person", name: "Person" },
+      { uuid: "st-animal", name: "Animal" },
+    ],
+    programs: [{ uuid: "p-child", name: "Child" }],
+    encounterTypes: [],
+    formMappings: [
+      { formType: "ProgramEnrolment", subjectTypeUUID: "st-person", programUUID: "p-child" },
+    ],
+  };
+  const animalFilter = { ...conceptFilter("Notes"), subjectTypeUUID: "st-animal" };
+
+  it("leaves out Program for a subject type that enrols into no programme", async () => {
+    const types = await offeredTypes([animalFilter], animalFilter, withProgrammes);
+
+    expect(types).toContain("Concept");
+    expect(types).not.toContain("Program");
+  });
+
+  it("offers Program for a subject type that enrols into a programme", async () => {
+    const types = await offeredTypes([conceptFilter("Notes")], conceptFilter("Notes"), withProgrammes);
+
+    expect(types).toContain("Program");
+  });
+
+  it("keeps Program on a saved Program filter of a subject type that enrols into no programme any more", async () => {
+    const saved = programFilter("Programmes", "st-animal");
+    const types = await offeredTypes([saved], saved, withProgrammes);
 
     expect(types).toContain("Program");
   });
