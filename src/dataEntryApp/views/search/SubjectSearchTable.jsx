@@ -15,6 +15,7 @@ import {
   join,
   map,
   size,
+  sortBy,
   uniqBy,
 } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
@@ -192,8 +193,8 @@ const SubjectSearchTable = ({
         Cell: ({ row }) => {
           const enrolments = row.original.enrolments;
           return enrolments
-            ? uniqBy(enrolments, (enr) => enr.operationalProgramName).map(
-                (p, key) => (
+            ? oneEnrolmentPerProgram(enrolments).map((p, key) =>
+                isNil(p.programExitDateTime) ? (
                   <Chip
                     key={key}
                     size="small"
@@ -203,6 +204,14 @@ const SubjectSearchTable = ({
                       backgroundColor: p.programColor,
                       color: "white",
                     }}
+                  />
+                ) : (
+                  <Chip
+                    key={key}
+                    size="small"
+                    variant="outlined"
+                    label={`${t(p.operationalProgramName)} · ${t("exitedEnrolment")}`}
+                    style={{ margin: 2, borderColor: p.programColor }}
                   />
                 ),
               )
@@ -390,3 +399,9 @@ const SubjectSearchTable = ({
   );
 };
 export default SubjectSearchTable;
+
+export const oneEnrolmentPerProgram = (enrolments) =>
+  uniqBy(
+    sortBy(enrolments, (enrolment) => !isNil(enrolment.programExitDateTime)),
+    (enrolment) => enrolment.operationalProgramName,
+  );

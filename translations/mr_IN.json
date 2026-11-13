@@ -94,6 +94,7 @@
     "Yes": "होय",
     "No": "नाही",
     "notEnrolledInAnyProgram": "कोणत्याही प्रोग्रामात इंरोल केली नाही",
+    "exitedEnrolment": "बाहेर पडले",
     "vaccinations": "लसीकरण",
     "checklists": "चेकलिस्ट",
     "completed": "पूर्ण झाले{{completedOn}}",

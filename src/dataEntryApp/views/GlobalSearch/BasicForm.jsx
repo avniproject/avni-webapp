@@ -7,6 +7,7 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  Switch,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { find } from "lodash";
@@ -193,7 +194,7 @@ function BasicForm({
                   <FormControlLabel
                     disabled={!notEnrolledInAnyProgramEnabled}
                     control={
-                      <Checkbox
+                      <Switch
                         checked={
                           notEnrolledInAnyProgramEnabled &&
                           notEnrolledInAnyProgram
@@ -208,7 +209,7 @@ function BasicForm({
                   <FormControlLabel
                     disabled={!includeExitedEnrolmentsEnabled}
                     control={
-                      <Checkbox
+                      <Switch
                         checked={
                           includeExitedEnrolmentsEnabled &&
                           includeExitedEnrolments

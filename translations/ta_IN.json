@@ -111,6 +111,7 @@
     "Yes": "ஆம்",
     "No": "இல்லை",
     "notEnrolledInAnyProgram": "எந்தத் திட்டத்திலும் சேர்க்கப்படவில்லை",
+    "exitedEnrolment": "வெளியேறியது",
     "vaccinations": "தடுப்பூசிகள்",
     "checklists": "பட்டியல்கள்",
     "completed": "{{completedOn}} நிறைவு செய்யப்பட்டது",

@@ -111,6 +111,7 @@
     "Yes": "ಹೌದು",
     "No": "ಇಲ್ಲ",
     "notEnrolledInAnyProgram": "ಯಾವುದೇ ಪ್ರೋಗ್ರಾಂಗೆ ದಾಖಲಾಗಿಲ್ಲ",
+    "exitedEnrolment": "ನಿರ್ಗಮಿಸಿದೆ",
     "vaccinations": "ರಜಾದಿನಗಳು",
     "checklists": "ಪರಿಶೀಲನಾಪಟ್ಟಿಗಳು",
     "completed": "{{completedOn}} ಪೂರ್ಣಗೊಂಡಿದೆ ",

@@ -131,6 +131,15 @@ describe("programsOfSubjectType", () => {
 });
 
 describe("Program search filter", () => {
+  it("shows not enrolled and include exited as toggles and the programmes as tick boxes", async () => {
+    await renderForm(configsWith(programFilter("st-person")));
+
+    const isToggle = (name) => checkbox(name).classList.contains("MuiSwitch-input");
+    expect(isToggle("notEnrolledInAnyProgram")).toBe(true);
+    expect(isToggle("includeExitedEnrolments")).toBe(true);
+    expect(isToggle("p-child")).toBe(false);
+  });
+
   it("shows a tick box per programme and one for not enrolled", async () => {
     await renderForm(configsWith(programFilter("st-person")));
 

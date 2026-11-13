@@ -1,7 +1,7 @@
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { httpClient } from "common/utils/httpClient";
-import SubjectSearchTable from "./SubjectSearchTable";
+import SubjectSearchTable, { oneEnrolmentPerProgram } from "./SubjectSearchTable";
 
 jest.mock("react-redux", () => {
   const subjectTypes = [
@@ -222,5 +222,47 @@ describe("SubjectSearchTable request", () => {
 
     expect(lastRequest().name).toBe("Asha");
     expect(container.textContent).not.toContain("somethingWentWrong");
+  });
+});
+
+describe("SubjectSearchTable enrolments", () => {
+  const active = (name) => ({ operationalProgramName: name, programColor: "#123456" });
+  const exited = (name) => ({
+    operationalProgramName: name,
+    programColor: "#123456",
+    programExitDateTime: "2026-11-01T10:00:00.000Z",
+  });
+
+  const showEnrolments = async (enrolments) => {
+    httpClient.post.mockResolvedValue({
+      data: {
+        listOfRecords: [{ uuid: "s2", fullName: "Bina", enrolments }],
+        totalElements: 1,
+      },
+    });
+    await act(async () =>
+      root.render(
+        <SubjectSearchTable
+          searchRequest={{ subjectType: "st-person", name: "Bina" }}
+          organisationConfigs={{}}
+        />,
+      ),
+    );
+    return [...container.querySelectorAll(".MuiChip-root")].map((chip) => chip.textContent);
+  };
+
+  it("tags an exited enrolment's programme as exited and leaves an active one as it was", async () => {
+    expect(await showEnrolments([active("Child"), exited("Pregnancy")])).toEqual([
+      "Child",
+      "Pregnancy · exitedEnrolment",
+    ]);
+  });
+
+  it("shows the active enrolment when the subject exited and enrolled again in the same programme", async () => {
+    expect(await showEnrolments([exited("Child"), active("Child")])).toEqual(["Child"]);
+  });
+
+  it("shows one exited chip for a programme exited more than once", () => {
+    expect(oneEnrolmentPerProgram([exited("Child"), exited("Child")])).toHaveLength(1);
   });
 });
