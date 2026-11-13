@@ -58,24 +58,45 @@ const tabs = () =>
 const text = () => container.textContent;
 
 describe("Who may open the ABDM page", () => {
-  const editor = {
-    privileges: [{ privilegeType: "EditOrganisationConfiguration" }],
-  };
+  const holding = (...types) => ({
+    privileges: types.map((privilegeType) => ({ privilegeType })),
+  });
+  const users = [
+    [
+      "edit the organisation's configuration",
+      holding("EditOrganisationConfiguration"),
+    ],
+    ["share ABDM records", holding("ShareAbdmRecords")],
+    ["view ABDM records", holding("ViewAbdmRecords")],
+    ["do everything", { hasAllPrivileges: true, privileges: [] }],
+  ];
   const on = { enableAbha: true, enableAbdmRecordSharing: true };
+  const offs = [
+    { enableAbha: true },
+    { enableAbdmRecordSharing: true },
+    { enableAbha: true, enableAbdmRecordSharing: false },
+    {},
+    undefined,
+  ];
 
-  it("needs ABHA and record sharing both on, and the privilege to edit the organisation's configuration", () => {
-    expect(canOpenAbdm(editor, on)).toBe(true);
-    expect(canOpenAbdm({ hasAllPrivileges: true, privileges: [] }, on)).toBe(
-      true,
-    );
-    expect(canOpenAbdm(editor, { enableAbha: true })).toBe(false);
-    expect(canOpenAbdm(editor, { enableAbdmRecordSharing: true })).toBe(false);
-    expect(canOpenAbdm(editor, {})).toBe(false);
-    expect(canOpenAbdm(editor, undefined)).toBe(false);
+  it.each(users)(
+    "opens with both switches on to a user who may %s",
+    (_, user) => {
+      expect(canOpenAbdm(user, on)).toBe(true);
+    },
+  );
+
+  it.each(users)(
+    "stays closed with a switch off, even to a user who may %s",
+    (_, user) => {
+      for (const config of offs) expect(canOpenAbdm(user, config)).toBe(false);
+    },
+  );
+
+  it("stays closed with both switches on to a user who holds none of the three", () => {
+    expect(canOpenAbdm(holding("EditSubject"), on)).toBe(false);
+    expect(canOpenAbdm(holding(), on)).toBe(false);
     expect(canOpenAbdm(undefined, on)).toBe(false);
-    expect(
-      canOpenAbdm({ privileges: [{ privilegeType: "EditSubject" }] }, on),
-    ).toBe(false);
   });
 });
 

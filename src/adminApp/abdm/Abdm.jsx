@@ -20,14 +20,20 @@ import FhirBundleView from "./FhirBundleView";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 
-// The page is for organisations that switched ABHA and record sharing on, and users who may edit their configuration.
+// The privileges the server opens the page's status to (AbdmAdminController). openchs-models does not name the ABDM two.
+const PAGE_PRIVILEGES = [
+  Privilege.PrivilegeType.EditOrganisationConfiguration,
+  "ShareAbdmRecords",
+  "ViewAbdmRecords",
+];
+
+// The page is for organisations that switched ABHA and record sharing on, and users holding any of PAGE_PRIVILEGES.
 export const canOpenAbdm = (userInfo, organisationConfig) =>
   !!userInfo &&
   !!organisationConfig?.enableAbha &&
   !!organisationConfig?.enableAbdmRecordSharing &&
-  UserInfo.hasPrivilege(
-    userInfo,
-    Privilege.PrivilegeType.EditOrganisationConfiguration,
+  PAGE_PRIVILEGES.some((privilegeType) =>
+    UserInfo.hasPrivilege(userInfo, privilegeType),
   );
 
 // NHA's pattern for an ABHA address. A bare name is allowed; the server adds the environment's suffix and checks it.
