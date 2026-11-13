@@ -249,6 +249,16 @@ describe("Status tab", () => {
     expect(button("Queue again")).toBeUndefined();
   });
 
+  // With both switches on but an Eka setting missing, the server's gate refuses the call.
+  it("does not offer Queue again while record sharing is not working, even with the share privilege", async () => {
+    await act(async () =>
+      root.render(
+        <StatusTab status={full({ recordSharingOn: false, hiuOn: false })} />,
+      ),
+    );
+    expect(button("Queue again")).toBeUndefined();
+  });
+
   it("copes with a status that carries no queue, jobs or privileges", async () => {
     await act(async () =>
       root.render(<StatusTab status={{ recordSharingOn: false }} />),

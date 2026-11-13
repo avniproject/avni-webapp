@@ -263,26 +263,29 @@ export const StatusTab = ({ status, error, onRequeued }) => {
           ) : (
             table(queue.map(([k, v]) => [QUEUE_TEXT[k] || k, v]))
           )}
-          {status.privileges && status.privileges.share && (
-            <Box style={{ marginBottom: 16 }}>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={requeue}
-                disabled={requeueing}
-              >
-                Queue again the visits given up
-              </Button>
-              {requeued !== null && (
-                <Typography>
-                  {requeued === 0
-                    ? "No visits were queued again."
-                    : `${requeued} ${requeued === 1 ? "visit" : "visits"} queued again.`}
-                </Typography>
-              )}
-              {requeueErr && <Alert severity="error">{requeueErr}</Alert>}
-            </Box>
-          )}
+          {/* The server refuses it (404) while record sharing is not working, privilege or not. */}
+          {status.recordSharingOn &&
+            status.privileges &&
+            status.privileges.share && (
+              <Box style={{ marginBottom: 16 }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={requeue}
+                  disabled={requeueing}
+                >
+                  Queue again the visits given up
+                </Button>
+                {requeued !== null && (
+                  <Typography>
+                    {requeued === 0
+                      ? "No visits were queued again."
+                      : `${requeued} ${requeued === 1 ? "visit" : "visits"} queued again.`}
+                  </Typography>
+                )}
+                {requeueErr && <Alert severity="error">{requeueErr}</Alert>}
+              </Box>
+            )}
           <Typography variant="h6">Background jobs</Typography>
           {jobs.length === 0 ? (
             <Typography style={{ marginBottom: 16 }}>
