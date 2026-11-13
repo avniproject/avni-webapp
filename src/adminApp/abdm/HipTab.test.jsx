@@ -168,6 +168,63 @@ describe("HIP · patient list cut", () => {
   });
 });
 
+describe("HIP · refresh while the browser tab is hidden", () => {
+  const setVisibility = (state) =>
+    act(async () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        get: () => state,
+      });
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+  afterEach(() => {
+    delete document.visibilityState;
+  });
+
+  it("asks for nothing while the browser tab is hidden, and refreshes again once it is shown", async () => {
+    api.getHipPatients.mockResolvedValue([patient(false)]);
+    api.getCareContexts.mockResolvedValue([visit("QUEUED")]);
+    await act(async () => root.render(<HipTab />));
+    await act(async () => container.querySelector("tbody tr").click());
+    api.getHipPatients.mockClear();
+    api.getCareContexts.mockClear();
+
+    await setVisibility("hidden");
+    await wait(60000);
+    expect(api.getHipPatients).not.toHaveBeenCalled();
+    expect(api.getCareContexts).not.toHaveBeenCalled();
+
+    await setVisibility("visible");
+    await wait(10000);
+    expect(api.getHipPatients).toHaveBeenCalledTimes(1);
+    expect(api.getCareContexts).toHaveBeenCalledTimes(1);
+  });
+
+  it("stops listening for the browser tab being shown once it is left", async () => {
+    api.getHipPatients.mockResolvedValue([]);
+    const added = jest.spyOn(document, "addEventListener");
+    const removed = jest.spyOn(document, "removeEventListener");
+    try {
+      await act(async () => root.render(<HipTab />));
+      const listeners = added.mock.calls
+        .filter(([type]) => type === "visibilitychange")
+        .map(([, listener]) => listener);
+      expect(listeners.length).toBeGreaterThan(0);
+
+      await act(async () => root.unmount());
+      root = createRoot(container);
+
+      const gone = removed.mock.calls
+        .filter(([type]) => type === "visibilitychange")
+        .map(([, listener]) => listener);
+      listeners.forEach((l) => expect(gone).toContain(l));
+    } finally {
+      added.mockRestore();
+      removed.mockRestore();
+    }
+  });
+});
+
 describe("HIP · polling stops", () => {
   it("does not poll again after the tab is left while a check is in flight", async () => {
     let resolveCtx;

@@ -157,6 +157,19 @@ const usePoll = () => {
   }, []);
 };
 
+// Whether the browser tab is in view, so a refresh nobody can see is not asked for.
+const usePageVisible = () => {
+  const [visible, setVisible] = useState(
+    () => document.visibilityState !== "hidden",
+  );
+  useEffect(() => {
+    const onChange = () => setVisible(document.visibilityState !== "hidden");
+    document.addEventListener("visibilitychange", onChange);
+    return () => document.removeEventListener("visibilitychange", onChange);
+  }, []);
+  return visible;
+};
+
 // Names for what the status counts, in the words of the people who read it, in the order a visit goes through them; an
 // unknown one shows as the server sent it, after these.
 const QUEUE_TEXT = {
@@ -323,9 +336,12 @@ export const HipTab = () => {
     loadPatients();
   }, [loadPatients]);
   // Saved visits are linked by the server's five-minute job (AbdmHousekeepingJob.linkQueuedVisits), not by a click
-  // here, so the tab refreshes itself to show them arrive and turn LINKED.
+  // here, so the tab refreshes itself to show them arrive and turn LINKED; not while the browser tab is hidden, as the
+  // patient list runs to 500.
   const selectedUUID = selected && selected.subjectUUID;
+  const visible = usePageVisible();
   useEffect(() => {
+    if (!visible) return;
     let live = true;
     const timer = window.setInterval(() => {
       loadPatients();
@@ -339,7 +355,7 @@ export const HipTab = () => {
       live = false;
       window.clearInterval(timer);
     };
-  }, [loadPatients, selectedUUID]);
+  }, [loadPatients, selectedUUID, visible]);
   const pending = (list) =>
     list.some((c) => c.status === "PENDING" || c.status === "LINK_REQUESTED");
   const pollContexts = (uuid) =>
