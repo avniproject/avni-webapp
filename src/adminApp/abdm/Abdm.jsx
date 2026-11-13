@@ -151,51 +151,124 @@ const usePoll = () => {
   }, []);
 };
 
-export const StatusTab = ({ status, error }) => (
-  <Box>
-    {error && <Alert severity="error">{error}</Alert>}
-    {status && (
-      <>
-        {!status.recordSharingOn && (
-          <Alert severity="warning" style={{ marginBottom: 16 }}>
-            ABDM record sharing is not working for this organisation yet. The
-            rows below show what is missing.
-          </Alert>
-        )}
-        <Table size="small" style={{ maxWidth: 700 }}>
-          <TableBody>
-            {[
-              ["ABHA", yesNo(status.abhaEnabled)],
-              [
-                "Record sharing switched on",
-                yesNo(status.recordSharingEnabled),
-              ],
-              ["Record sharing working", yesNo(status.recordSharingOn)],
-              ["Receiving records (HIU)", yesNo(status.hiuOn)],
-              ["Eka environment", status.environment],
-              ["HIP IDs", (status.hipIds || []).join(", ")],
-              ["HIU ID", status.hiuId],
-              ["Sharing client set up", yesNo(status.sharingClientConfigured)],
-              ["Webhook URL (give to Eka)", status.webhookUrl],
-              [
-                "Eka session",
-                status.session &&
-                  (status.session.ok
-                    ? "OK"
-                    : `Not OK: ${status.session.error || ""}`),
-              ],
-            ].map(([k, v]) => (
-              <TableRow key={k}>
-                <TableCell>{k}</TableCell>
-                <TableCell>{v}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </>
-    )}
-  </Box>
-);
+// Names for what the status counts, in the words of the people who read it; an unknown one shows as the server sent it.
+const QUEUE_TEXT = {
+  PENDING: "Being prepared",
+  QUEUED: "Waiting to be sent",
+  LINK_REQUESTED: "Sent, waiting for Eka",
+  LINKED: "Linked",
+  FAILED: "Failed, will try again",
+  AWAITING_VERIFIED_ABHA: "Waiting for the patient's ABHA to be verified",
+  FAILED_FINAL: "Given up",
+};
+const JOB_TEXT = {
+  visitLinking: "Linking visits",
+  consentExpiry: "Expiring consents",
+  consentUpdateRetry: "Retrying consent updates",
+  trafficPurge: "Clearing old traffic",
+};
+const jobText = (job) => {
+  const success = job.lastSuccessAt
+    ? `Last success ${fmt(job.lastSuccessAt)}`
+    : "Never succeeded";
+  return job.lastError ? `${success}. Last error: ${job.lastError}` : success;
+};
+
+export const StatusTab = ({ status, error }) => {
+  const [requeued, setRequeued] = useState(null);
+  const [requeueErr, setRequeueErr] = useState(null);
+  const queue = Object.entries((status && status.queue) || {});
+  const jobs = Object.entries((status && status.jobs) || {});
+  const requeue = () => {
+    setRequeued(null);
+    setRequeueErr(null);
+    api
+      .requeueFailed()
+      .then((r) => setRequeued(r.requeued))
+      .catch((e) => setRequeueErr(msg(e)));
+  };
+  const table = (list) => (
+    <Table size="small" style={{ maxWidth: 700, marginBottom: 16 }}>
+      <TableBody>
+        {list.map(([k, v]) => (
+          <TableRow key={k}>
+            <TableCell>{k}</TableCell>
+            <TableCell>{v}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+  return (
+    <Box>
+      {error && <Alert severity="error">{error}</Alert>}
+      {status && (
+        <>
+          {!status.recordSharingOn && (
+            <Alert severity="warning" style={{ marginBottom: 16 }}>
+              ABDM record sharing is not working for this organisation yet. The
+              rows below show what is missing.
+            </Alert>
+          )}
+          {table([
+            ["ABHA", yesNo(status.abhaEnabled)],
+            ["Record sharing switched on", yesNo(status.recordSharingEnabled)],
+            ["Record sharing working", yesNo(status.recordSharingOn)],
+            ["Receiving records (HIU)", yesNo(status.hiuOn)],
+            ["Eka environment", status.environment],
+            ["HIP IDs", (status.hipIds || []).join(", ")],
+            ["HIU ID", status.hiuId],
+            ["Sharing client set up", yesNo(status.sharingClientConfigured)],
+            ["Webhook URL (give to Eka)", status.webhookUrl],
+            [
+              "Eka session",
+              status.session &&
+                (status.session.ok
+                  ? "OK"
+                  : `Not OK: ${status.session.error || ""}`),
+            ],
+          ])}
+          <Typography variant="h6">Visits waiting to be linked</Typography>
+          {queue.length === 0 ? (
+            <Typography style={{ marginBottom: 16 }}>
+              No visits are queued.
+            </Typography>
+          ) : (
+            table(queue.map(([k, v]) => [QUEUE_TEXT[k] || k, v]))
+          )}
+          {status.privileges && status.privileges.share && (
+            <Box style={{ marginBottom: 16 }}>
+              <Button variant="outlined" size="small" onClick={requeue}>
+                Queue again the visits given up
+              </Button>
+              {requeued !== null && (
+                <Typography>
+                  {requeued === 0
+                    ? "No visits were queued again."
+                    : `${requeued} ${requeued === 1 ? "visit" : "visits"} queued again.`}
+                </Typography>
+              )}
+              {requeueErr && <Alert severity="error">{requeueErr}</Alert>}
+            </Box>
+          )}
+          <Typography variant="h6">Background jobs</Typography>
+          {jobs.length === 0 ? (
+            <Typography style={{ marginBottom: 16 }}>
+              No job has run yet.
+            </Typography>
+          ) : (
+            table(jobs.map(([k, v]) => [JOB_TEXT[k] || k, jobText(v)]))
+          )}
+          <Typography variant="h6">Shares</Typography>
+          {table([
+            ["Shares that failed", status.failedShares ?? 0],
+            ["Shares Eka did not answer", status.unansweredShares ?? 0],
+          ])}
+        </>
+      )}
+    </Box>
+  );
+};
 
 export const HipTab = () => {
   const [patients, setPatients] = useState([]);
@@ -605,10 +678,10 @@ export const RecordsTab = ({ request }) => {
   const [err, setErr] = useState(null);
   const [currentStatus, setCurrentStatus] = useState(null);
   const ended = request && ENDED[currentStatus || request.status];
-  // The request list is small, so it refreshes on its own to catch a withdrawal; records are not fetched again.
+  // The request list is small, so it refreshes on its own to catch a withdrawal; once the consent has ended there is
+  // nothing more to catch.
   useEffect(() => {
-    if (!request) return;
-    setCurrentStatus(null);
+    if (!request || ended) return;
     let live = true;
     const timer = window.setInterval(() => {
       api
@@ -623,24 +696,42 @@ export const RecordsTab = ({ request }) => {
       live = false;
       window.clearInterval(timer);
     };
+  }, [request, ended]);
+  useEffect(() => {
+    setCurrentStatus(null);
   }, [request]);
-  // Records can be large, so they are fetched once and again only on request.
+  // Records can be large, so they are fetched once and again only on request. The cleanup of the latest fetch is kept,
+  // so a slower earlier answer never lands over a newer one, nor after the tab is left.
+  const cancelFetch = useRef(null);
   const fetchRecords = useCallback(() => {
+    if (cancelFetch.current) cancelFetch.current();
     let live = true;
+    cancelFetch.current = () => {
+      live = false;
+    };
     api
       .getConsentRecords(request.uuid)
       .then((r) => live && setRecords(r))
       .catch((e) => live && setErr(msg(e)));
-    return () => {
-      live = false;
-    };
   }, [request]);
   useEffect(() => {
-    if (!request || ENDED[request.status]) return;
+    if (!request || ended) return;
     setRecords(null);
     setErr(null);
-    return fetchRecords();
-  }, [request, fetchRecords]);
+    fetchRecords();
+  }, [request, ended, fetchRecords]);
+  // A consent that ends drops what was received and any fetch still on its way.
+  useEffect(() => {
+    if (!ended) return;
+    if (cancelFetch.current) cancelFetch.current();
+    setRecords(null);
+  }, [ended]);
+  useEffect(
+    () => () => {
+      if (cancelFetch.current) cancelFetch.current();
+    },
+    [],
+  );
   const refresh = () => {
     setErr(null);
     fetchRecords();
@@ -700,8 +791,12 @@ const Abdm = () => {
     setRequest(r);
     setTab("records");
   };
-  const sharing = !!status?.recordSharingOn;
-  const receiving = !!status?.hiuOn;
+  const sharing = !!status?.recordSharingOn && !!status?.privileges?.share;
+  const receiving = !!status?.hiuOn && !!status?.privileges?.view;
+  const missing = [
+    status?.recordSharingOn && !sharing && "Share ABDM records",
+    status?.hiuOn && !receiving && "View ABDM records",
+  ].filter(Boolean);
   return (
     <Paper style={{ padding: 16 }}>
       <Typography variant="h5" gutterBottom>
@@ -719,7 +814,17 @@ const Abdm = () => {
         {receiving && <Tab value="records" label="Records received" />}
       </Tabs>
       <Box style={{ paddingTop: 16 }}>
-        {tab === "status" && <StatusTab status={status} error={error} />}
+        {tab === "status" && (
+          <>
+            {missing.length > 0 && (
+              <Alert severity="info" style={{ marginBottom: 16 }}>
+                Some tabs are hidden because you lack a privilege. Ask your
+                administrator for: {missing.join(", ")}.
+              </Alert>
+            )}
+            <StatusTab status={status} error={error} />
+          </>
+        )}
         {tab === "hip" && sharing && <HipTab />}
         {tab === "hiu" && receiving && <HiuTab onViewRecords={view} />}
         {tab === "records" && receiving && <RecordsTab request={request} />}

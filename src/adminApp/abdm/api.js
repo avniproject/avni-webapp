@@ -12,7 +12,10 @@ export const OFF_MESSAGE = "ABDM record sharing is off for this organisation";
 const isGateRefusal = (e) =>
   e.response.status === 404 && e.response.data && typeof e.response.data === "object" && e.response.data.message === "Not found";
 
+export const NO_PRIVILEGE_MESSAGE = "You do not have the privilege for this";
+
 export const errorMessage = (e) => {
+  if (e && e.response && e.response.status === 403) return NO_PRIVILEGE_MESSAGE;
   if (e && e.response && isGateRefusal(e)) return OFF_MESSAGE;
   const d = e && e.response && e.response.data;
   if (d && typeof d === "object") {
@@ -31,3 +34,4 @@ export const linkSubject = (uuid) => post(`${B}/hip/subjects/${uuid}/link`, {});
 export const createConsentRequest = (body) => post(`${B}/hiu/consent-requests`, body);
 export const getConsentRequests = () => httpClient.getData(`${B}/hiu/consent-requests`);
 export const getConsentRecords = (uuid) => httpClient.getData(`${B}/hiu/consent-requests/${uuid}/records`);
+export const requeueFailed = () => post(`${B}/hip/requeue-failed`, {});

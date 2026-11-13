@@ -52,6 +52,24 @@ describe("errorMessage", () => {
   });
 });
 
+describe("a 403", () => {
+  it("reads as a missing privilege, not the server's raw words", () => {
+    expect(errorMessage({ response: { status: 403, data: { message: "User does not have privilege ShareAbdmRecords" } } })).toBe(
+      "You do not have the privilege for this",
+    );
+    expect(errorMessage({ response: { status: 403, data: "Forbidden" } })).toBe("You do not have the privilege for this");
+  });
+});
+
+describe("requeueFailed", () => {
+  it("posts to the requeue endpoint and returns the count", async () => {
+    const { httpClient } = require("../../common/utils/httpClient");
+    httpClient.postJson = jest.fn(() => Promise.resolve({ data: { requeued: 3 } }));
+    await expect(api.requeueFailed()).resolves.toEqual({ requeued: 3 });
+    expect(httpClient.postJson).toHaveBeenCalledWith("/web/abdm/hip/requeue-failed", {});
+  });
+});
+
 describe("a 404", () => {
   // The server's gate answers an organisation without record sharing (or without an HIU ID) 404 {message: "Not found"}.
   it("from the server's gate reads as record sharing being off", () => {

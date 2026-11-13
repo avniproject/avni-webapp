@@ -28,6 +28,11 @@ const status = (over = {}) => ({
   sharingClientConfigured: true,
   webhookUrl: "https://x.example/api/v3/eka/webhook/wh-1",
   session: { ok: true, error: null },
+  privileges: { share: true, view: true },
+  queue: {},
+  jobs: {},
+  failedShares: 0,
+  unansweredShares: 0,
   ...over,
 });
 
@@ -111,6 +116,32 @@ describe("ABDM page", () => {
     await render(status({ recordSharingOn: false, hiuOn: false }));
     expect(tabs()).toEqual(["Status"]);
     expect(text()).toContain("not working for this organisation yet");
+  });
+
+  it("shows the HIP tab only with the share privilege", async () => {
+    await render(status({ privileges: { share: true, view: false } }));
+    expect(tabs()).toEqual(["Status", "HIP · Link records"]);
+  });
+
+  it("shows the HIU and Records tabs only with the view privilege", async () => {
+    await render(status({ privileges: { share: false, view: true } }));
+    expect(tabs()).toEqual([
+      "Status",
+      "HIU · Request records",
+      "Records received",
+    ]);
+  });
+
+  it("shows the Status tab alone, naming the privileges to ask for, when the user has neither", async () => {
+    await render(status({ privileges: { share: false, view: false } }));
+    expect(tabs()).toEqual(["Status"]);
+    expect(text()).toContain("Share ABDM records");
+    expect(text()).toContain("View ABDM records");
+  });
+
+  it("does not say a privilege is missing when the user has both", async () => {
+    await render(status());
+    expect(text()).not.toContain("Ask your administrator");
   });
 
   it("says plainly that record sharing is off when the server answers 404", async () => {

@@ -342,10 +342,12 @@ describe("Consent request polling", () => {
       await steps(5 * 60);
       api.getConsentRequests.mockClear();
 
+      // the quick poll (every 3 seconds) is over: nothing is asked in the 9 seconds before the 10-second refresh
       await steps(9);
+      expect(api.getConsentRequests).not.toHaveBeenCalled();
 
-      // only the 10-second refresh remains: no more than one call in 9 seconds
-      expect(api.getConsentRequests.mock.calls.length).toBeLessThanOrEqual(1);
+      await steps(1);
+      expect(api.getConsentRequests).toHaveBeenCalledTimes(1);
     } finally {
       jest.useRealTimers();
     }
@@ -407,6 +409,81 @@ describe("Records of a consent that ends while open", () => {
 
       expect(container.textContent).toContain("visit-1");
       expect(api.getConsentRecords).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+});
+
+describe("Records tab refresh and polling", () => {
+  const later = (ms) =>
+    act(async () => {
+      jest.advanceTimersByTime(ms);
+    });
+  const granted = {
+    uuid: "u-1",
+    abhaAddress: "ramesh.gond@abdm",
+    status: "GRANTED",
+  };
+  const rec = (ref) => ({
+    careContextReference: ref,
+    hipId: "hip-1",
+    receivedAt: "2026-10-26T11:00:00.000Z",
+    checksumMatched: true,
+    bundle: { resourceType: "Bundle", entry: [] },
+  });
+
+  it("stops asking for the request's status once the consent has ended", async () => {
+    jest.useFakeTimers();
+    try {
+      let status = "GRANTED";
+      api.getConsentRecords.mockImplementation(() => Promise.resolve([]));
+      api.getConsentRequests.mockImplementation(() =>
+        Promise.resolve([{ ...granted, status }]),
+      );
+      await render(<RecordsTab request={granted} />);
+      status = "REVOKED";
+      await later(10000);
+      expect(api.getConsentRequests).toHaveBeenCalledTimes(1);
+
+      await later(60000);
+      expect(api.getConsentRequests).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("does not poll at all for a consent that was already ended when opened", async () => {
+    jest.useFakeTimers();
+    try {
+      api.getConsentRequests.mockImplementation(() => Promise.resolve([]));
+      await render(<RecordsTab request={{ ...granted, status: "REVOKED" }} />);
+      await later(60000);
+      expect(api.getConsentRequests).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("drops the answer of an earlier fetch when Refresh starts a newer one", async () => {
+    jest.useFakeTimers();
+    try {
+      let first;
+      api.getConsentRequests.mockImplementation(() => Promise.resolve([]));
+      api.getConsentRecords
+        .mockImplementationOnce(() => new Promise((r) => (first = r)))
+        .mockImplementationOnce(() => Promise.resolve([rec("newer")]));
+      await render(<RecordsTab request={granted} />);
+
+      const refresh = [...container.querySelectorAll("button")].find((b) =>
+        b.textContent.includes("Refresh"),
+      );
+      await act(async () => refresh.click());
+      expect(container.textContent).toContain("newer");
+
+      await act(async () => first([rec("older")]));
+      expect(container.textContent).toContain("newer");
+      expect(container.textContent).not.toContain("older");
     } finally {
       jest.useRealTimers();
     }
