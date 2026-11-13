@@ -14,7 +14,11 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import { get, isEmpty } from "lodash";
 import * as Auth from "aws-amplify/auth";
-import { clearSavedSearchRequest } from "../dataEntryApp/reducers/searchFilterReducer";
+import {
+  clearSavedSearchRequest,
+  clearSearchRequestSavedByOtherUser,
+  resetSearchRequest,
+} from "../dataEntryApp/reducers/searchFilterReducer";
 import { authProvider } from "adminApp/react-admin-config/authProvider";
 import {
   createAiApi,
@@ -52,8 +56,11 @@ export function* userInfoWatcher() {
   yield takeLatest(types.GET_USER_INFO, setUserDetails);
 }
 
-function* setUserDetails() {
+export function* setUserDetails() {
   const userDetails = yield call(api.fetchUserInfo);
+  if (clearSearchRequestSavedByOtherUser(get(userDetails, "username"))) {
+    yield put(resetSearchRequest());
+  }
   const translationData = yield call(api.fetchTranslations);
 
   if (userDetails.isAdmin) {
@@ -69,7 +76,12 @@ function* setUserDetails() {
   )}; path=/; SameSite=Lax; Secure=true`;
 
   if (!isEmpty(organisationName)) {
-    const organisationConfigResponse = yield call(api.fetchOrganisationConfig);
+    let organisationConfigResponse = {};
+    try {
+      organisationConfigResponse = yield call(api.fetchOrganisationConfig);
+    } catch (error) {
+      console.error("Could not load the organisation configuration", error);
+    }
     yield put(
       setOrganisationConfig(
         get(organisationConfigResponse, "organisationConfig", {}),

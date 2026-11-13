@@ -5,13 +5,13 @@ import Grid from "@mui/material/Grid";
 import { useTranslation } from "react-i18next";
 import {
   DatePicker,
-  DateTimePicker,
   TimePicker,
   LocalizationProvider,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import _ from "lodash";
-import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
+import { isSameConceptFilter } from "../../reducers/searchFilterReducer";
+import { dateFormat } from "dataEntryApp/constants";
 
 const StyledGrid = styled(Grid)({
   marginTop: "1%",
@@ -51,7 +51,7 @@ function NonCodedConceptForm({
           const selectedValue = _.head(
             selectedConcepts.filter(
               (selectedConcept) =>
-                selectedConcept.conceptUUID === searchFilterForm.conceptUUID,
+                isSameConceptFilter(selectedConcept, searchFilterForm),
             ),
           );
           return searchFilterForm.type === "Concept" &&
@@ -72,7 +72,7 @@ function NonCodedConceptForm({
                 />
               </Grid>
             ) : searchFilterForm.widget === "Range" ? (
-              searchFilterForm.conceptDataType === "Date" ? (
+              ["Date", "DateTime"].includes(searchFilterForm.conceptDataType) ? (
                 <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <StyledTypography variant="body1" sx={{ mb: 1 }}>
@@ -106,46 +106,6 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change date",
-                          color: "primary",
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                </Grid>
-              ) : searchFilterForm.conceptDataType === "DateTime" ? (
-                <Grid key={index} size={12}>
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <StyledTypography variant="body1" sx={{ mb: 1 }}>
-                      {t(searchFilterForm.titleKey)}
-                    </StyledTypography>
-                    <DateTimePicker
-                      id={`datetime-picker-${searchFilterForm.titleKey}-min`}
-                      format={dateTimeFormat}
-                      value={selectedValue?.minValue || null}
-                      onChange={(event) =>
-                        onChange(event, searchFilterForm, "minValue")
-                      }
-                      slotProps={{
-                        textField: { placeholder: "From", variant: "outlined" },
-                        actionBar: { actions: ["clear"] },
-                        openPickerButton: {
-                          "aria-label": "change datetime",
-                          color: "primary",
-                        },
-                      }}
-                    />
-                    <DateTimePicker
-                      id={`datetime-picker-${searchFilterForm.titleKey}-max`}
-                      format={dateTimeFormat}
-                      value={selectedValue?.maxValue || null}
-                      onChange={(event) =>
-                        onChange(event, searchFilterForm, "maxValue")
-                      }
-                      slotProps={{
-                        textField: { placeholder: "To", variant: "outlined" },
-                        actionBar: { actions: ["clear"] },
-                        openPickerButton: {
-                          "aria-label": "change datetime",
                           color: "primary",
                         },
                       }}
@@ -250,7 +210,7 @@ function NonCodedConceptForm({
                     }}
                   />
                 </Grid>
-              ) : searchFilterForm.conceptDataType === "Date" ? (
+              ) : ["Date", "DateTime"].includes(searchFilterForm.conceptDataType) ? (
                 <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <StyledTypography variant="body1" sx={{ mb: 1 }}>
@@ -268,30 +228,6 @@ function NonCodedConceptForm({
                         actionBar: { actions: ["clear"] },
                         openPickerButton: {
                           "aria-label": "change date",
-                          color: "primary",
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                </Grid>
-              ) : searchFilterForm.conceptDataType === "DateTime" ? (
-                <Grid key={index} size={12}>
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <StyledTypography variant="body1" sx={{ mb: 1 }}>
-                      {t(searchFilterForm.titleKey)}
-                    </StyledTypography>
-                    <DateTimePicker
-                      id={`datetime-picker-${searchFilterForm.titleKey}`}
-                      format={dateTimeFormat}
-                      value={selectedValue?.minValue || null}
-                      onChange={(event) =>
-                        onChange(event, searchFilterForm, "minValue")
-                      }
-                      slotProps={{
-                        textField: { variant: "outlined" },
-                        actionBar: { actions: ["clear"] },
-                        openPickerButton: {
-                          "aria-label": "change datetime",
                           color: "primary",
                         },
                       }}

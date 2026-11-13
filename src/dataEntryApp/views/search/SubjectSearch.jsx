@@ -47,6 +47,9 @@ const SubjectSearch = () => {
   const organisationConfigs = useSelector(
     state => state.dataEntry.metadata.organisationConfigs
   );
+  const organisationConfigsFailed = useSelector(
+    state => state.dataEntry.metadata.organisationConfigsFailed
+  );
 
   useEffect(() => {
     if (!organisationConfigs) {
@@ -76,6 +79,7 @@ const SubjectSearch = () => {
       <SubjectSearchTable
         searchRequest={searchRequest}
         organisationConfigs={organisationConfigs}
+        organisationConfigsFailed={organisationConfigsFailed}
       />
     </StyledPaper>
   );

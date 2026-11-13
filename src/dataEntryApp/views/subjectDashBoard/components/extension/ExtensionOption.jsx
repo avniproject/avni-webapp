@@ -30,10 +30,16 @@ export const ExtensionOption = ({
 
   useEffect(() => {
     if (!configExtensions) {
-      commonApi.fetchOrganisationConfigs().then(config => {
-        const extensions = get(config, "organisationConfig.extensions", []);
-        setExtensions(extensions);
-      });
+      commonApi
+        .fetchOrganisationConfigs()
+        .then(config => {
+          const extensions = get(config, "organisationConfig.extensions", []);
+          setExtensions(extensions);
+        })
+        .catch(error => {
+          console.error("Could not load the extensions", error);
+          setExtensions([]);
+        });
     } else {
       setExtensions(configExtensions);
     }

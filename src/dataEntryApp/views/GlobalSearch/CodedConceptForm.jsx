@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
+import { isSameConceptFilter } from "../../reducers/searchFilterReducer";
 
 const StyledGrid = styled(Grid)({
   marginTop: "1%",
@@ -33,7 +34,8 @@ function CodedConceptForm({
         {searchFilterForms.map((searchFilterForm, index) => {
           const selectedValue = _.head(
             selectedConcepts.filter(
-              (c) => c.conceptUUID === searchFilterForm.conceptUUID,
+              (selectedConcept) =>
+                isSameConceptFilter(selectedConcept, searchFilterForm),
             ),
           );
           let selected = {};

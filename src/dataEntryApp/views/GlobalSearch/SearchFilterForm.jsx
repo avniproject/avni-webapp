@@ -29,6 +29,8 @@ import {
   saveSearchRequest,
   toUsableSearchRequest,
   programsOfSubjectType,
+  isSameConceptFilter,
+  savedConceptOf,
 } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import {
@@ -63,10 +65,11 @@ export const toConceptPickerValue = (conceptDataType, value) => {
 export const toConceptRequestValue = (conceptDataType, value) => {
   if (!value || !isValid(new Date(value))) return null;
   const date = new Date(value);
-  if (conceptDataType === "DateTime") return date.toISOString();
   if (conceptDataType === "Time") return format(date, "HH:mm");
   return format(date, "yyyy-MM-dd");
 };
+
+const savedConceptValueKeys = ["minValue", "maxValue", "value", "values"];
 
 export { programsOfSubjectType };
 
@@ -270,11 +273,11 @@ export const SearchForm = ({
   useEffect(() => {
     const initialConceptList = getInitialConceptList(selectedSearchFilter);
     const allConceptRelated = _.map(initialConceptList, (itm) => {
-      const savedConcept = _.find(concept, { uuid: itm.conceptUUID });
+      const savedConcept = savedConceptOf(concept, itm, initialConceptList);
       return _.merge(
         itm,
         savedConcept && {
-          ...savedConcept,
+          ..._.pick(savedConcept, savedConceptValueKeys),
           minValue: toConceptPickerValue(
             itm.conceptDataType,
             savedConcept.minValue,
@@ -422,7 +425,7 @@ export const SearchForm = ({
 
     if (_.isFunction(onSearch)) onSearch(req);
     else {
-      saveSearchRequest(req);
+      saveSearchRequest(req, _.get(store.getState(), "app.userInfo.username"));
       store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: req });
     }
   };
@@ -544,7 +547,7 @@ const searchFilterConcept = function (
       if (concept.conceptDataType === null) {
       } else {
         if (["Date", "DateTime", "Time"].includes(concept.conceptDataType)) {
-          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+          if (isSameConceptFilter(concept, searchFilterForm)) {
             return {
               ...concept,
               [fieldName]: event,
@@ -555,7 +558,7 @@ const searchFilterConcept = function (
             };
           }
         } else if (concept.conceptDataType === "Coded") {
-          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+          if (isSameConceptFilter(concept, searchFilterForm)) {
             const selectedCodedValue = {};
             concept.values.forEach((element) => {
               selectedCodedValue[element] = true;
@@ -574,7 +577,7 @@ const searchFilterConcept = function (
             };
           }
         } else if (["Text", "Id", "Notes"].includes(concept.conceptDataType)) {
-          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+          if (isSameConceptFilter(concept, searchFilterForm)) {
             const selectedText = event.target.value;
             return {
               ...concept,
@@ -586,7 +589,7 @@ const searchFilterConcept = function (
             };
           }
         } else if (concept.conceptDataType === "Numeric") {
-          if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+          if (isSameConceptFilter(concept, searchFilterForm)) {
             const selectedNumeric = event.target.value;
             return {
               ...concept,
@@ -662,6 +665,25 @@ function SearchFilterFormContainer() {
     if (!organisationConfigs) dispatch(getOrganisationConfig());
     dispatch(getGenders());
   }, [dispatch, organisationConfigs]);
+
+  const organisationConfigsFailed = useSelector(
+    (state) => state.dataEntry.metadata.organisationConfigsFailed,
+  );
+  const { t } = useTranslation();
+  const location = useLocation();
+
+  if (!organisationConfigs && organisationConfigsFailed) {
+    return (
+      <Fragment>
+        <Breadcrumbs path={location.pathname} />
+        <StyledPaper>
+          <Typography color="error" role="alert">
+            {t("somethingWentWrong")}
+          </Typography>
+        </StyledPaper>
+      </Fragment>
+    );
+  }
 
   if (!(operationalModules && genders && organisationConfigs)) {
     return <CustomizedBackdrop load={false} />;

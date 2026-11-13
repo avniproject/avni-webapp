@@ -11,6 +11,7 @@ export const types = {
   SET_GENDERS: `${prefix}SET_GENDERS`,
   GET_ORGANISATION_CONFIG: `${prefix}GET_ORGANISATION_CONFIG`,
   SET_ORGANISATION_CONFIG: `${prefix}SET_ORGANISATION_CONFIG`,
+  ORGANISATION_CONFIG_FAILED: `${prefix}ORGANISATION_CONFIG_FAILED`,
   GET_LEGACY_RULES_BUNDLE: `${prefix}GET_LEGACY_RULES_BUNDLE`,
   SET_LEGACY_RULES_BUNDLE: `${prefix}SET_LEGACY_RULES_BUNDLE`,
   GET_LEGACY_RULES: `${prefix}GET_LEGACY_RULES`,
@@ -37,6 +38,10 @@ export const setGenders = genders => ({
 
 export const getOrganisationConfig = () => ({
   type: types.GET_ORGANISATION_CONFIG
+});
+
+export const setOrganisationConfigFailed = () => ({
+  type: types.ORGANISATION_CONFIG_FAILED
 });
 
 export const setOrganisationConfig = organisationConfigs => ({
@@ -91,10 +96,23 @@ export default function(state = initialState, action) {
         genders: action.genders
       };
     }
+    case types.GET_ORGANISATION_CONFIG: {
+      return {
+        ...state,
+        organisationConfigsFailed: false
+      };
+    }
     case types.SET_ORGANISATION_CONFIG: {
       return {
         ...state,
-        organisationConfigs: action.organisationConfigs
+        organisationConfigs: action.organisationConfigs,
+        organisationConfigsFailed: false
+      };
+    }
+    case types.ORGANISATION_CONFIG_FAILED: {
+      return {
+        ...state,
+        organisationConfigsFailed: true
       };
     }
     case types.SET_LEGACY_RULES_BUNDLE: {

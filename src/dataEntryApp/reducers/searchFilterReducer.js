@@ -1,4 +1,4 @@
-import { filter, includes, intersection, isEmpty, isNil, map, some, sortBy, toLower, uniq } from "lodash";
+import { filter, find, intersection, isEmpty, isNil, map, reduce, some, sortBy, toLower, uniq } from "lodash";
 
 const prefix = "app/dataEntry/reducer/searchFilter/";
 
@@ -11,9 +11,12 @@ export const SEARCH_REQUEST_STORAGE_KEY = "avni.dataEntry.searchRequest";
 
 const defaultRequest = { includeVoided: false, includeDisplayCount: false };
 
-export const saveSearchRequest = request => {
+export const SEARCH_REQUEST_OWNER_STORAGE_KEY = "avni.dataEntry.searchRequest.username";
+
+export const saveSearchRequest = (request, username) => {
   try {
     sessionStorage.setItem(SEARCH_REQUEST_STORAGE_KEY, JSON.stringify(request));
+    sessionStorage.setItem(SEARCH_REQUEST_OWNER_STORAGE_KEY, username || "");
   } catch (e) {
     console.warn("Could not save the search request", e);
   }
@@ -22,9 +25,21 @@ export const saveSearchRequest = request => {
 export const clearSavedSearchRequest = () => {
   try {
     sessionStorage.removeItem(SEARCH_REQUEST_STORAGE_KEY);
+    sessionStorage.removeItem(SEARCH_REQUEST_OWNER_STORAGE_KEY);
   } catch (e) {
     console.warn("Could not clear the saved search request", e);
   }
+};
+
+export const clearSearchRequestSavedByOtherUser = username => {
+  try {
+    if (isNil(sessionStorage.getItem(SEARCH_REQUEST_STORAGE_KEY))) return false;
+    if (!isEmpty(username) && sessionStorage.getItem(SEARCH_REQUEST_OWNER_STORAGE_KEY) === username) return false;
+  } catch {
+    return false;
+  }
+  clearSavedSearchRequest();
+  return true;
 };
 
 const loadSavedSearchRequest = () => {
@@ -66,6 +81,16 @@ const withOfferedPrograms = (request, searchFilters, operationalModules) => {
   return programs.length === (request.programs || []).length ? request : { ...request, programs };
 };
 
+export const isSameConceptFilter = (one, other) => one.conceptUUID === other.conceptUUID && one.scope === other.scope;
+
+export const savedConceptOf = (savedConcepts, configured, configuredConcepts) => {
+  const sameConcept = filter(savedConcepts, ({ uuid }) => uuid === configured.conceptUUID);
+  const sameScope = find(sameConcept, ({ searchScope }) => searchScope === configured.scope);
+  if (!isNil(sameScope)) return sameScope;
+  const isOnlyFilterOfConcept = filter(configuredConcepts, ({ conceptUUID }) => conceptUUID === configured.conceptUUID).length === 1;
+  return isOnlyFilterOfConcept && sameConcept.length === 1 ? sameConcept[0] : undefined;
+};
+
 export const toUsableSearchRequest = (savedRequest, subjectTypes, searchFilters, operationalModules) => {
   if (isNil(savedRequest) || isNil(savedRequest.subjectType)) return savedRequest;
   // "Not enrolled" and "Include exited" can't be ticked together; a search saved before that rule keeps "Include exited".
@@ -76,12 +101,26 @@ export const toUsableSearchRequest = (savedRequest, subjectTypes, searchFilters,
   if (!some(subjectTypes, ({ uuid }) => uuid === withOneExitTick.subjectType)) return defaultRequest;
   const request = withOfferedPrograms(withOneExitTick, searchFilters, operationalModules);
   if (isEmpty(request.concept)) return request;
-  const configuredConceptUUIDs = map(
-    filter(searchFilters, ({ subjectTypeUUID, type }) => subjectTypeUUID === request.subjectType && type === "Concept"),
-    "conceptUUID"
+  const configuredConcepts = filter(
+    searchFilters,
+    ({ subjectTypeUUID, type }) => subjectTypeUUID === request.subjectType && type === "Concept"
   );
-  const concept = filter(request.concept, ({ uuid }) => includes(configuredConceptUUIDs, uuid));
-  return concept.length === request.concept.length ? request : { ...request, concept };
+  const concept = reduce(
+    configuredConcepts,
+    (usable, configured) => {
+      const savedConcept = savedConceptOf(request.concept, configured, configuredConcepts);
+      if (isNil(savedConcept)) return usable;
+      if (!isNil(configured.conceptDataType) && toLower(configured.conceptDataType) !== toLower(savedConcept.dataType)) return usable;
+      if (toLower(configured.widget || "Default") !== toLower(savedConcept.widget || "Default")) return usable;
+      usable.push(isNil(configured.scope) ? savedConcept : { ...savedConcept, searchScope: configured.scope });
+      return usable;
+    },
+    []
+  );
+  const unchanged =
+    concept.length === request.concept.length &&
+    concept.every((c, i) => c.uuid === request.concept[i].uuid && c.searchScope === request.concept[i].searchScope);
+  return unchanged ? request : { ...request, concept };
 };
 
 export default function(state = getInitialState(), action) {

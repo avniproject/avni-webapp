@@ -80,6 +80,18 @@ const clickSortOn = async (header) => {
   await act(async () => sortButton.click());
 };
 
+describe("SubjectSearchTable searching", () => {
+  it("searches once when the results page opens", () => {
+    expect(httpClient.post).toHaveBeenCalledTimes(1);
+  });
+
+  it("searches once more when sorted", async () => {
+    await clickSortOn("name");
+
+    expect(httpClient.post).toHaveBeenCalledTimes(2);
+  });
+});
+
 describe("SubjectSearchTable sorting", () => {
   it("asks the server to sort by age, not date of birth, in the direction chosen", async () => {
     await clickSortOn("age");
@@ -120,13 +132,18 @@ describe("SubjectSearchTable sorting", () => {
 
 describe("SubjectSearchTable request", () => {
   const lastRequest = () => httpClient.post.mock.calls.at(-1)[1];
-  const renderWith = async (searchRequest, organisationConfigs) => {
+  const renderWith = async (
+    searchRequest,
+    organisationConfigs,
+    organisationConfigsFailed,
+  ) => {
     httpClient.post.mockClear();
     await act(async () =>
       root.render(
         <SubjectSearchTable
           searchRequest={searchRequest}
           organisationConfigs={organisationConfigs}
+          organisationConfigsFailed={organisationConfigsFailed}
         />,
       ),
     );
@@ -187,5 +204,23 @@ describe("SubjectSearchTable request", () => {
     );
 
     expect(httpClient.post).not.toHaveBeenCalled();
+  });
+
+  it("says something went wrong when the search filter configuration fails to load", async () => {
+    await renderWith(
+      { subjectType: "st-person", concept: [textConcept("still-configured")] },
+      undefined,
+      true,
+    );
+
+    expect(httpClient.post).not.toHaveBeenCalled();
+    expect(container.textContent).toContain("somethingWentWrong");
+  });
+
+  it("still searches when the configuration fails but the saved search does not need it", async () => {
+    await renderWith({ subjectType: "st-person", name: "Asha" }, undefined, true);
+
+    expect(lastRequest().name).toBe("Asha");
+    expect(container.textContent).not.toContain("somethingWentWrong");
   });
 });

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { MRTPagination } from "../../../adminApp/Util/MRTPagination.tsx";
 import { httpClient as http } from "common/utils/httpClient";
-import { Box, Chip, Grid } from "@mui/material";
+import { Box, Chip, Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
   filter,
@@ -29,6 +29,7 @@ import { withUserTimeZone } from "common/utils/SearchRequestUtil";
 const SubjectSearchTable = ({
   searchRequest: savedSearchRequest,
   organisationConfigs,
+  organisationConfigsFailed = false,
 }) => {
   const { i18n, t } = useTranslation();
   const subjectTypes = useSelector(selectSubjectTypes);
@@ -57,6 +58,8 @@ const SubjectSearchTable = ({
   const isReadyToSearch =
     !isEmpty(subjectTypes) &&
     (!needsSearchFilters || !isNil(organisationConfigs));
+  const searchFiltersFailedToLoad =
+    needsSearchFilters && isNil(organisationConfigs) && organisationConfigsFailed;
   const [extensions, setExtensions] = useState();
   const customSearchFields = get(
     organisationConfigs,
@@ -262,7 +265,10 @@ const SubjectSearchTable = ({
         typeof newPagination === "function"
           ? newPagination(prev)
           : newPagination;
-      return updated;
+      return updated.pageIndex === prev.pageIndex &&
+        updated.pageSize === prev.pageSize
+        ? prev
+        : updated;
     });
     setRowSelection({});
   }, []);
@@ -344,6 +350,14 @@ const SubjectSearchTable = ({
     isLoading,
     handlePaginationChange,
   ]);
+
+  if (searchFiltersFailedToLoad) {
+    return (
+      <Typography color="error" role="alert" sx={{ p: 2 }}>
+        {t("somethingWentWrong")}
+      </Typography>
+    );
+  }
 
   return (
     <MaterialReactTable

@@ -44,12 +44,24 @@ describe("toConceptRequestValue", () => {
     );
   });
 
-  it("sends a date-time with its time", () => {
-    const picked = new Date(2026, 0, 1, 9, 0);
-
-    expect(toConceptRequestValue("DateTime", picked)).toBe(
-      picked.toISOString(),
+  it("sends a date-time filter as the date picked, without a time", () => {
+    expect(toConceptRequestValue("DateTime", new Date(2026, 0, 1))).toBe(
+      "2026-01-01",
     );
+    expect(toConceptRequestValue("DateTime", new Date(2026, 0, 1, 23, 45))).toBe(
+      "2026-01-01",
+    );
+  });
+
+  it("sends a date-time saved with a time, before the picker became date-only, as the user's own day", () => {
+    const savedWithTime = new Date(2026, 0, 15, 0, 30).toISOString();
+
+    expect(
+      toConceptRequestValue(
+        "DateTime",
+        toConceptPickerValue("DateTime", savedWithTime),
+      ),
+    ).toBe("2026-01-15");
   });
 
   it("sends a time as hours and minutes", () => {
@@ -68,13 +80,12 @@ describe("toConceptRequestValue", () => {
       "Time",
       toConceptRequestValue("Time", new Date(2026, 9, 29, 9, 5)),
     );
-    const picked = new Date(2026, 0, 1, 9, 0);
     const dateTime = toConceptPickerValue(
       "DateTime",
-      toConceptRequestValue("DateTime", picked),
+      toConceptRequestValue("DateTime", new Date(2026, 0, 1)),
     );
 
     expect([time.getHours(), time.getMinutes()]).toEqual([9, 5]);
-    expect(dateTime.getTime()).toBe(picked.getTime());
+    expect(dateTime.getTime()).toBe(new Date(2026, 0, 1).getTime());
   });
 });
