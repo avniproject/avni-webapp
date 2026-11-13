@@ -56,6 +56,7 @@ const EncounterTypeList = () => {
       {
         accessorKey: "subjectType",
         header: "Subject Type",
+        enableSorting: false,
         Cell: ({ row }) => (
           <ShowSubjectType
             rowDetails={row.original}
@@ -69,6 +70,7 @@ const EncounterTypeList = () => {
       {
         accessorKey: "programs",
         header: "Programs",
+        enableSorting: false,
         Cell: ({ row }) => (
           <ShowPrograms
             rowDetails={row.original}
@@ -81,6 +83,7 @@ const EncounterTypeList = () => {
       {
         accessorKey: "encounterForm",
         header: "Encounter Form",
+        enableSorting: false,
         Cell: ({ row }) => (
           <a
             href={`#/appdesigner/forms/${get(
@@ -98,6 +101,7 @@ const EncounterTypeList = () => {
       {
         accessorKey: "cancellationForm",
         header: "Cancellation Form",
+        enableSorting: false,
         Cell: ({ row }) => (
           <a
             href={`#/appdesigner/forms/${get(

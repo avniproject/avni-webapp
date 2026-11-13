@@ -58,6 +58,7 @@ const ProgramList = () => {
       {
         accessorKey: "subjectType",
         header: "Subject Type",
+        enableSorting: false,
         Cell: ({ row }) => (
           <ShowSubjectType
             rowDetails={row.original}
@@ -71,6 +72,7 @@ const ProgramList = () => {
       {
         accessorKey: "enrolmentForm",
         header: "Enrolment Form",
+        enableSorting: false,
         Cell: ({ row }) => (
           <a
             href={`#/appdesigner/forms/${get(
@@ -88,6 +90,7 @@ const ProgramList = () => {
       {
         accessorKey: "exitForm",
         header: "Exit Form",
+        enableSorting: false,
         Cell: ({ row }) => (
           <a
             href={`#/appdesigner/forms/${get(
@@ -123,13 +126,13 @@ const ProgramList = () => {
   const fetchData = useCallback(
     ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
       new Promise(resolve => {
-        const validSortFields = ["name", "colour"];
+        const serverSortFields = { name: "name", colour: "program.colour" };
         let apiUrl = `/web/program?size=${encodeURIComponent(
           pageSize
         )}&page=${encodeURIComponent(page)}`;
         if (globalFilter) apiUrl += `&name=${encodeURIComponent(globalFilter)}`;
-        if (orderBy && validSortFields.includes(orderBy)) {
-          apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(
+        if (serverSortFields[orderBy]) {
+          apiUrl += `&sort=${encodeURIComponent(serverSortFields[orderBy])},${encodeURIComponent(
             orderDirection
           )}`;
         }

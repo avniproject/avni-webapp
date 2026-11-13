@@ -54,3 +54,18 @@ describe("ClientSideTableUtil.sortAndPage", () => {
     assert.deepEqual(titles(ClientSideTableUtil.sortAndPage(videos, { page: 0, pageSize: 2 })), ["Handwashing", "Breastfeeding"]);
   });
 });
+
+describe("ClientSideTableUtil.searchSortAndPage", () => {
+  const params = { page: 0, pageSize: 2, orderBy: "title", orderDirection: "asc" };
+
+  it("keeps only rows whose searched value contains the search, ignoring case and outer spaces, then sorts and pages them", () => {
+    const result = ClientSideTableUtil.searchSortAndPage(videos, video => video.title, { ...params, globalFilter: "  ING " });
+
+    assert.deepEqual(result.data.map(video => video.title), ["Breastfeeding", "Handwashing"]);
+    assert.equal(result.totalCount, 2);
+  });
+
+  it("returns every row when there is no search", () => {
+    assert.equal(ClientSideTableUtil.searchSortAndPage(videos, video => video.title, params).totalCount, videos.length);
+  });
+});

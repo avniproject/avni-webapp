@@ -49,6 +49,7 @@ const SubjectTypesList = () => {
       {
         accessorKey: "formName",
         header: "Registration Form",
+        enableSorting: false,
         Cell: ({ row }) => {
           const formName = get(
             findRegistrationForm(formMappings, row.original),

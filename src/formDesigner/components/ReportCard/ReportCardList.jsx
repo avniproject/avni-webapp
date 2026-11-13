@@ -26,7 +26,8 @@ const ReportCardList = () => {
         ),
     },
     {
-      accessorKey: "standardReportCardType",
+      id: "standardReportCardType.name",
+      accessorFn: (card) => get(card, "standardReportCardType.name"),
       header: "Standard Report Card",
       Cell: ({ row }) => get(row.original, "standardReportCardType.name") || "",
     },

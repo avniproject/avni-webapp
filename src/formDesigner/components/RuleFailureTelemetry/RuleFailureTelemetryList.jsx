@@ -17,6 +17,18 @@ export const STATUS = {
   ALL: 3,
 };
 
+const SERVER_SORT_FIELDS = {
+  errorMessage: "errorMessage",
+  closed: "isClosed",
+  errorDateTime: "errorDateTime",
+  closedDateTime: "closedDateTime",
+  individualUuid: "individualUuid",
+  ruleUuid: "ruleUuid",
+  sourceId: "sourceId",
+  entityId: "entityId",
+  appType: "appType",
+};
+
 const RuleFailureTelemetryList = () => {
   const userInfo = useSelector((state) => state.app.userInfo);
   const isChatOpen = useSelector((state) => state.app.isChatOpen);
@@ -183,8 +195,9 @@ const RuleFailureTelemetryList = () => {
         } else if (selectedStatus === STATUS.OPEN) {
           queryParams.isClosed = false;
         }
-        if (orderBy) {
-          queryParams.sort = `${orderBy},${orderDirection}`;
+        const sortField = SERVER_SORT_FIELDS[orderBy];
+        if (sortField) {
+          queryParams.sort = `${sortField},${orderDirection}`;
         }
         http
           .get(resourceUrl, { params: queryParams })
@@ -296,6 +309,8 @@ const RuleFailureTelemetryList = () => {
           ref={tableRef}
           columns={columns}
           fetchData={fetchData}
+          enableGlobalFilter={false}
+          enableColumnFilters={false}
           options={{
             enableRowSelection: true,
             enableSelectAll: true,
@@ -303,7 +318,6 @@ const RuleFailureTelemetryList = () => {
             pageSizeOptions: [10, 20, 50],
             sorting: true,
             debounceInterval: 500,
-            search: false,
             rowStyle: ({ original }) => ({
               backgroundColor: (original?.closed ?? false) ? "#f5f5f5" : "#fff",
             }),

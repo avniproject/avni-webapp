@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Box, Grid, LinearProgress, Tooltip } from "@mui/material";
@@ -10,6 +10,7 @@ import AvniMaterialTable from "../components/AvniMaterialTable";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import UserInfo from "../../common/model/UserInfo";
 import DownloadableContentService from "./DownloadableContentService";
+import ClientSideTableUtil from "../../common/utils/ClientSideTableUtil";
 
 // ~140 characters of unbreakable content across two columns pushes the table off screen. Elide the
 // middle, not the ends: namespace, extension and enough hash to recognise a row are what matter.
@@ -68,24 +69,38 @@ const columns = [
 const DownloadableContentList = () => {
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state.app.userInfo);
-  const tableRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [items, setItems] = useState(null);
+  const isLoading = items === null;
 
   const canEdit = UserInfo.hasPrivilege(
     userInfo,
     Privilege.PrivilegeType.EditOrganisationConfiguration,
   );
 
-  const fetchData = useCallback(async () => {
-    const items = (await DownloadableContentService.getAll()).filter(
-      (item) => !item.voided,
-    );
-    return { data: items, totalCount: items.length };
-  }, []);
+  const loadItems = useCallback(
+    () =>
+      DownloadableContentService.getAll().then((all) =>
+        setItems(all.filter((item) => !item.voided)),
+      ),
+    [],
+  );
 
   useEffect(() => {
-    fetchData().finally(() => setIsLoading(false));
-  }, [fetchData]);
+    loadItems().catch((error) => {
+      console.error("Failed to fetch downloadable content", error);
+      setItems([]);
+    });
+  }, [loadItems]);
+
+  const fetchData = useCallback(
+    async (params) =>
+      ClientSideTableUtil.searchSortAndPage(
+        items || [],
+        (item) => item.name,
+        params,
+      ),
+    [items],
+  );
 
   const actions = useMemo(
     () =>
@@ -109,8 +124,16 @@ const DownloadableContentList = () => {
                   )
                 ) {
                   DownloadableContentService.delete(row.original.uuid).then(
-                    () => {
-                      if (tableRef.current) tableRef.current.refresh();
+                    () =>
+                      loadItems().catch((error) => {
+                        console.error("Failed to reload downloadable content", error);
+                        alert(
+                          `${row.original.name} was deleted, but the list could not be reloaded. Please refresh the page.`,
+                        );
+                      }),
+                    (error) => {
+                      console.error("Failed to delete downloadable content", error);
+                      alert(`Could not delete ${row.original.name}. Please try again.`);
                     },
                   );
                 }
@@ -118,7 +141,7 @@ const DownloadableContentList = () => {
             },
           ]
         : [],
-    [canEdit, navigate],
+    [canEdit, navigate, loadItems],
   );
 
   return (
@@ -140,9 +163,9 @@ const DownloadableContentList = () => {
       {!isLoading && (
         <AvniMaterialTable
           title=""
-          ref={tableRef}
           columns={columns}
           fetchData={fetchData}
+          enableColumnFilters={false}
           options={{
             sorting: true,
             pageSize: 10,

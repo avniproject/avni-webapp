@@ -20,6 +20,11 @@ class ClientSideTableUtil {
       totalCount: rows.length,
     };
   }
+
+  static searchSortAndPage(rows, searchedValue, { globalFilter, ...pageAndSort }) {
+    const matchingRows = rows.filter((row) => StringUtil.anyContainsIgnoringCase(globalFilter, searchedValue(row)));
+    return ClientSideTableUtil.sortAndPage(matchingRows, pageAndSort);
+  }
 }
 
 export default ClientSideTableUtil;

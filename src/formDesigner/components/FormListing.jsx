@@ -16,12 +16,13 @@ import NewFormModal from "../components/NewFormModal";
 import { format, isValid } from "date-fns";
 import UserInfo from "../../common/model/UserInfo";
 import { CreateComponent } from "../../common/components/CreateComponent";
-import { Title } from "react-admin";
 
 function isActionDisabled(rowData, userInfo) {
   // prettier-ignore
   return (rowData?.voided ?? false) || !UserInfo.hasFormEditPrivilege(userInfo, rowData?.formType);
 }
+
+const DEFAULT_SORTING = [{ id: "lastModifiedDateTime", desc: true }];
 
 const FormListing = ({ onNewFormClick }) => {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ const FormListing = ({ onNewFormClick }) => {
       {
         accessorKey: "formType",
         header: "Form Type",
+        enableSorting: true,
         Cell: ({ row }) => {
           const display = FormTypeEntities[row.original.formType]?.display;
           return typeof display === "string" ? display : "-";
@@ -57,18 +59,21 @@ const FormListing = ({ onNewFormClick }) => {
       {
         accessorKey: "subjectName",
         header: "Subject Name",
+        enableSorting: false,
         Cell: ({ row }) =>
           row.original.subjectName ? row.original.subjectName : "-",
       },
       {
         accessorKey: "programName",
         header: "Program Name",
+        enableSorting: false,
         Cell: ({ row }) =>
           row.original.programName ? row.original.programName : "-",
       },
       {
         accessorKey: "taskTypeName",
         header: "Task Type",
+        enableSorting: false,
         Cell: ({ row }) =>
           row.original.taskTypeName ? row.original.taskTypeName : "-",
       },
@@ -92,10 +97,7 @@ const FormListing = ({ onNewFormClick }) => {
   const fetchData = useCallback(
     ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
       new Promise((resolve) => {
-        const validSortFields = ["name", "lastModifiedDateTime"];
-
-        const defaultOrderBy = orderBy || "lastModifiedDateTime";
-        const defaultOrderDirection = orderBy ? orderDirection : "desc";
+        const validSortFields = ["name", "formType", "lastModifiedDateTime"];
 
         let apiUrl = `/web/forms?size=${encodeURIComponent(
           pageSize,
@@ -103,10 +105,10 @@ const FormListing = ({ onNewFormClick }) => {
 
         if (globalFilter) apiUrl += `&name=${encodeURIComponent(globalFilter)}`;
 
-        if (validSortFields.includes(defaultOrderBy)) {
+        if (validSortFields.includes(orderBy)) {
           apiUrl += `&sort=${encodeURIComponent(
-            defaultOrderBy,
-          )},${encodeURIComponent(defaultOrderDirection)}`;
+            orderBy,
+          )},${encodeURIComponent(orderDirection)}`;
         }
 
         http
@@ -213,7 +215,6 @@ const FormListing = ({ onNewFormClick }) => {
 
   return (
     <>
-      <Title title="Forms" color="primary" />
       <Grid container sx={{ justifyContent: "flex-end", mb: 2 }}>
         {UserInfo.hasFormEditPrivilege(userInfo) && (
           <Grid>
@@ -239,9 +240,7 @@ const FormListing = ({ onNewFormClick }) => {
         }}
         route="/appdesigner/forms"
         actions={actions}
-        initialState={{
-          sorting: [{ id: "lastModifiedDateTime", desc: true }],
-        }}
+        defaultSorting={DEFAULT_SORTING}
       />
       {cloneFormIndicator && showCloneForm()}
     </>

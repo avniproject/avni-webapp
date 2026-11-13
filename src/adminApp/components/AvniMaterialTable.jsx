@@ -7,11 +7,56 @@ import {
   useCallback,
   useMemo
 } from "react";
+import { flushSync } from "react-dom";
 import { MaterialReactTable } from "material-react-table";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IconButton, Box } from "@mui/material";
 import { MRTPagination } from "../Util/MRTPagination.tsx";
 import { useMRTPagination } from "../../common/hooks/useMRTPagination";
+import { appDesignerTableDefaults } from "./appDesignerTableDefaults";
+
+const pageIndexFrom = search => {
+  const page = Number(new URLSearchParams(search).get("page"));
+  return Number.isInteger(page) && page > 0 ? page : 0;
+};
+
+const columnFiltersFrom = search => {
+  try {
+    const filters = JSON.parse(
+      decodeURIComponent(new URLSearchParams(search).get("filters") || "[]")
+    );
+    return Array.isArray(filters) ? filters : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+const NO_SORTING = [];
+
+const columnIdOf = column =>
+  column.id ??
+  column.accessorKey ??
+  (typeof column.header === "string" ? column.header : undefined);
+
+const sortableColumnIdsOf = (columns, isSortingEnabled) =>
+  isSortingEnabled
+    ? columns
+        .filter(
+          column =>
+            column.enableSorting !== false &&
+            (column.accessorKey || column.accessorFn)
+        )
+        .map(columnIdOf)
+        .filter(Boolean)
+    : [];
+
+const sortingFrom = (search, defaultSorting, sortableColumnIds) => {
+  const query = new URLSearchParams(search);
+  const orderBy = query.get("sortBy");
+  return sortableColumnIds.includes(orderBy)
+    ? [{ id: orderBy, desc: query.get("sortDesc") === "desc" }]
+    : defaultSorting;
+};
 
 const AvniMaterialTable = forwardRef(
   (
@@ -22,6 +67,7 @@ const AvniMaterialTable = forwardRef(
       route = "",
       components = {},
       actions = [],
+      defaultSorting: defaultSortingProp = NO_SORTING,
       ...restProps
     },
     ref
@@ -34,19 +80,30 @@ const AvniMaterialTable = forwardRef(
 
     const [data, setData] = useState([]);
     const [totalRecords, setTotalRecords] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [pagination, setPagination] = useState(() => ({
-      pageIndex: Number(new URLSearchParams(location.search).get("page")) || 0,
+      pageIndex: pageIndexFrom(location.search),
       pageSize: options.pageSize || 10
     }));
 
-    const [sorting, setSorting] = useState(() => {
-      const query = new URLSearchParams(location.search);
-      const orderBy = query.get("sortBy");
-      const orderDesc = query.get("sortDesc");
-      return orderBy ? [{ id: orderBy, desc: orderDesc === "desc" }] : [];
-    });
+    const sortableColumnIdsKey = sortableColumnIdsOf(
+      columns,
+      !!options.sorting
+    ).join("\n");
+    const sortableColumnIds = useMemo(
+      () => (sortableColumnIdsKey ? sortableColumnIdsKey.split("\n") : []),
+      [sortableColumnIdsKey]
+    );
+
+    const defaultSortingKey = JSON.stringify(defaultSortingProp);
+    const defaultSorting = useMemo(() => JSON.parse(defaultSortingKey), [
+      defaultSortingKey
+    ]);
+
+    const [sorting, setSorting] = useState(() =>
+      sortingFrom(location.search, defaultSorting, sortableColumnIds)
+    );
 
     const [globalFilter, setGlobalFilter] = useState(() => {
       const query = new URLSearchParams(location.search);
@@ -57,37 +114,61 @@ const AvniMaterialTable = forwardRef(
       () => !!globalFilter
     );
 
-    const [columnFilters, setColumnFilters] = useState(() => {
-      const query = new URLSearchParams(location.search);
-      const filters = query.get("filters");
-      return filters ? JSON.parse(decodeURIComponent(filters)) : [];
-    });
+    const [columnFilters, setColumnFilters] = useState(() =>
+      columnFiltersFrom(location.search)
+    );
 
     useEffect(() => {
       const query = new URLSearchParams(location.search);
+      let isCorrected = false;
       const pageFromUrl = query.get("page");
-      const pageNumber = Number(pageFromUrl);
-      if (pageFromUrl !== null && isNaN(pageNumber)) {
-        navigate(`${currentPath}?page=0`, { replace: true });
+      if (pageFromUrl !== null) {
+        const pageIndex = pageIndexFrom(location.search);
+        if (String(pageIndex) !== pageFromUrl) {
+          if (pageIndex > 0) query.set("page", String(pageIndex));
+          else query.delete("page");
+          isCorrected = true;
+        }
       }
-    }, [currentPath, location.search, navigate]);
+      const sortByFromUrl = query.get("sortBy");
+      if (
+        sortByFromUrl !== null &&
+        columns.length > 0 &&
+        !sortableColumnIds.includes(sortByFromUrl)
+      ) {
+        query.delete("sortBy");
+        query.delete("sortDesc");
+        isCorrected = true;
+      }
+      if (!isCorrected) return;
+      const queryString = query.toString();
+      navigate(queryString ? `${currentPath}?${queryString}` : currentPath, {
+        replace: true
+      });
+    }, [
+      currentPath,
+      location.search,
+      navigate,
+      columns.length,
+      sortableColumnIds
+    ]);
 
     useEffect(() => {
       const query = new URLSearchParams(location.search);
-      const pageFromUrl = Number(query.get("page")) || 0;
-      const sortByFromUrl = query.get("sortBy");
-      const sortDescFromUrl = query.get("sortDesc");
+      const pageFromUrl = pageIndexFrom(location.search);
       const searchFromUrl = query.get("search") || "";
-      const filtersFromUrl = query.get("filters");
 
-      setPagination(prev => ({
-        ...prev,
-        pageIndex: pageFromUrl
-      }));
+      setPagination(prev =>
+        prev.pageIndex === pageFromUrl
+          ? prev
+          : { ...prev, pageIndex: pageFromUrl }
+      );
 
-      const newSorting = sortByFromUrl
-        ? [{ id: sortByFromUrl, desc: sortDescFromUrl === "desc" }]
-        : [];
+      const newSorting = sortingFrom(
+        location.search,
+        defaultSorting,
+        sortableColumnIds
+      );
 
       setSorting(prev => {
         if (
@@ -103,11 +184,15 @@ const AvniMaterialTable = forwardRef(
       setGlobalFilter(searchFromUrl);
       if (searchFromUrl) setShowGlobalFilter(true);
 
-      const newColumnFilters = filtersFromUrl
-        ? JSON.parse(decodeURIComponent(filtersFromUrl))
-        : [];
-      setColumnFilters(newColumnFilters);
-    }, [location.search]);
+      const newColumnFilters = columnFiltersFrom(location.search);
+      setColumnFilters(prev =>
+        JSON.stringify(prev) === JSON.stringify(newColumnFilters)
+          ? prev
+          : newColumnFilters
+      );
+    }, [location.search, defaultSorting, sortableColumnIds]);
+
+    const search = (globalFilter ?? "").trim();
 
     const loadData = useCallback(async () => {
       if (abortControllerRef.current) {
@@ -118,15 +203,17 @@ const AvniMaterialTable = forwardRef(
       abortControllerRef.current = controller;
       setIsLoading(true);
 
+      const isLatestRequest = () => abortControllerRef.current === controller;
+
       try {
         const fetchParams = {
           page: pagination.pageIndex,
           pageSize: pagination.pageSize,
           orderBy: sorting[0]?.id,
           orderDirection: sorting[0]?.desc ? "desc" : "asc",
-          globalFilter: globalFilter,
+          globalFilter: search,
           columnFilters: columnFilters,
-          search: globalFilter
+          search
         };
 
         const response = await fetchData(fetchParams);
@@ -135,20 +222,20 @@ const AvniMaterialTable = forwardRef(
           ? { data: response, totalRecords: response.length }
           : response || { data: [], totalRecords: 0 };
 
-        if (isMounted.current && !controller.signal.aborted) {
+        if (isMounted.current && isLatestRequest()) {
           setData(normalizedData.data || []);
           setTotalRecords(
             normalizedData.totalCount || normalizedData.totalRecords || 0
           );
         }
       } catch (err) {
-        if (err.name !== "AbortError" && isMounted.current) {
+        if (err.name !== "AbortError" && isMounted.current && isLatestRequest()) {
           console.error("Failed to fetch table data", err);
           setData([]);
           setTotalRecords(0);
         }
       } finally {
-        if (isMounted.current) {
+        if (isMounted.current && isLatestRequest()) {
           setIsLoading(false);
         }
       }
@@ -157,7 +244,7 @@ const AvniMaterialTable = forwardRef(
       pagination.pageSize,
       sorting,
       fetchData,
-      globalFilter,
+      search,
       columnFilters
     ]);
 
@@ -235,10 +322,11 @@ const AvniMaterialTable = forwardRef(
 
     const handleGlobalFilterChange = useCallback(
       filterValue => {
-        setGlobalFilter(filterValue);
+        const search = filterValue ?? "";
+        setGlobalFilter(search);
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
         updateURL({
-          globalFilter: filterValue,
+          globalFilter: search,
           pageIndex: 0
         });
       },
@@ -259,16 +347,19 @@ const AvniMaterialTable = forwardRef(
 
     const handleSortingChange = useCallback(
       sortingUpdater => {
-        setSorting(prev => {
-          const newSorting =
-            typeof sortingUpdater === "function"
-              ? sortingUpdater(prev)
-              : sortingUpdater;
-          updateURL({ sorting: newSorting });
-          return newSorting;
+        const newSorting =
+          typeof sortingUpdater === "function"
+            ? sortingUpdater(sorting)
+            : sortingUpdater;
+        flushSync(() => {
+          setSorting(newSorting);
+          setPagination(prev =>
+            prev.pageIndex === 0 ? prev : { ...prev, pageIndex: 0 }
+          );
         });
+        updateURL({ sorting: newSorting, pageIndex: 0 });
       },
-      [updateURL]
+      [sorting, updateURL]
     );
 
     const memoizedColumns = useMemo(() => columns, [columns]);
@@ -286,6 +377,9 @@ const AvniMaterialTable = forwardRef(
         enableColumnFilters: options.searching !== false,
         enableGlobalFilter: options.searching !== false,
         enableSorting: !!options.sorting,
+        ...appDesignerTableDefaults,
+        enableMultiSort: false,
+        enableSortingRemoval: defaultSorting.length === 0,
         enableRowActions: actions.some(action => !action.isFreeAction),
 
         manualFiltering: true,
@@ -330,6 +424,7 @@ const AvniMaterialTable = forwardRef(
       [
         options.searching,
         options.sorting,
+        defaultSorting,
         components.topToolbar,
         components.bottomToolbar,
         restProps,
