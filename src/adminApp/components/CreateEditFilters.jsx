@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { programsForSubjectType } from "../../formDesigner/common/FormMappingNarrowing";
+import { isSameFilter, withoutFilter } from "../Util/customFilterIdentity";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
@@ -285,7 +286,7 @@ export const CreateEditFilters = ({
     const oldFilters = setting.settings[filterType];
     const newFilters = isNil(selectedFilter)
       ? [...oldFilters, newFilter]
-      : [...oldFilters.filter((f) => f.titleKey !== titleKey), newFilter];
+      : [...withoutFilter(oldFilters, selectedFilter), newFilter];
     return {
       uuid: setting.uuid,
       worklistUpdationRule: worklistUpdationRule,
@@ -401,16 +402,17 @@ export const CreateEditFilters = ({
       (f) =>
         f.type === CustomFilter.type.Program &&
         f.subjectTypeUUID === sub.value &&
-        f.titleKey !== titleKey,
+        !isSameFilter(f, selectedFilter),
     );
 
   // Without form mappings loaded the programmes are unknown, so Program stays offered.
   const enrolsIntoNoProgramme = (sub) =>
     !!sub?.value &&
     !isNil(operationalModules?.formMappings) &&
+    !isNil(programs) &&
     isEmpty(
       programsForSubjectType(
-        programs,
+        map(programs, (program) => program.that || program),
         operationalModules.formMappings,
         sub.value,
       ),

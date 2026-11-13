@@ -17,6 +17,7 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
+import { withoutFilter } from "./Util/customFilterIdentity";
 
 export const omitTableData = (filters) =>
   _.map(filters, (f) =>
@@ -191,9 +192,7 @@ const CustomFilters = ({ organisation, filename }) => {
     onClick: (row) => {
       if (window.confirm("Do you really want to delete the filter?")) {
         const filtersOfType = settings.settings[filterType];
-        const updatedFilters = filtersOfType.filter(
-          (filter) => filter.titleKey !== row.original.titleKey,
-        );
+        const updatedFilters = withoutFilter(filtersOfType, row.original);
         const updatedSettings = {
           ...settings,
           settings: {

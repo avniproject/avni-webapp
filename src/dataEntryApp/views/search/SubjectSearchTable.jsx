@@ -146,7 +146,7 @@ const SubjectSearchTable = ({
           </Grid>
         ),
       },
-      ...flatten(customColumns).map(({ name }, index) => ({
+      ...uniqBy(flatten(customColumns), "name").map(({ name }, index) => ({
         accessorKey: name,
         id: `custom-${name}-${index}`,
         header: t(name),
@@ -360,6 +360,11 @@ const SubjectSearchTable = ({
     handlePaginationChange,
   ]);
 
+  const columnOrder = [
+    ...(hasSearchResultsExtensions ? ["mrt-row-select"] : []),
+    ...map(columns, (column) => column.id ?? column.accessorKey),
+  ];
+
   if (searchFiltersFailedToLoad) {
     return (
       <Typography color="error" role="alert" sx={{ p: 2 }}>
@@ -377,7 +382,7 @@ const SubjectSearchTable = ({
       onPaginationChange={handlePaginationChange}
       onSortingChange={setSorting}
       rowCount={totalRecords}
-      state={{ isLoading, pagination, sorting, rowSelection }}
+      state={{ isLoading, pagination, sorting, rowSelection, columnOrder }}
       onRowSelectionChange={setRowSelection}
       enableRowSelection={hasSearchResultsExtensions}
       enableGlobalFilter={false}

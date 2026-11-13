@@ -2,6 +2,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { httpClient } from "common/utils/httpClient";
 import SubjectSearchTable, { oneEnrolmentPerProgram } from "./SubjectSearchTable";
+import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 
 jest.mock("react-redux", () => {
   const subjectTypes = [
@@ -264,5 +265,51 @@ describe("SubjectSearchTable enrolments", () => {
 
   it("shows one exited chip for a programme exited more than once", () => {
     expect(oneEnrolmentPerProgram([exited("Child"), exited("Child")])).toHaveLength(1);
+  });
+});
+
+describe("SubjectSearchTable result columns", () => {
+  const createdByName = (subjectTypeUUID) => ({
+    subjectTypeUUID,
+    searchResultConcepts: [{ name: "Created By Name" }],
+  });
+  const headers = () =>
+    [...container.querySelectorAll("th")].map((th) => th.textContent.trim()).filter((text) => text);
+  const renderWith = async (searchRequest, organisationConfigs) =>
+    act(async () =>
+      root.render(
+        <SubjectSearchTable searchRequest={searchRequest} organisationConfigs={organisationConfigs} />,
+      ),
+    );
+
+  it("shows a result field set on more than one subject type once before a subject type is chosen", async () => {
+    await renderWith(
+      { name: "Asha" },
+      { organisationConfig: { searchResultFields: [createdByName("st-person"), createdByName("st-group")] } },
+    );
+    expect(headers().filter((header) => header.startsWith("Created By Name"))).toHaveLength(1);
+  });
+
+  it("keeps a result field next to the name when the organisation settings arrive after the table is shown", async () => {
+    await renderWith({ subjectType: "st-person" }, {});
+    await renderWith(
+      { subjectType: "st-person" },
+      { organisationConfig: { searchResultFields: [createdByName("st-person")] } },
+    );
+    expect(headers()[0]).toMatch(/^name/);
+    expect(headers()[1]).toMatch(/^Created By Name/);
+  });
+
+  it("keeps the selection tick box first when search result extensions are configured", async () => {
+    const extensions = [{ extensionScope: { scopeType: extensionScopeTypes.searchResults } }];
+    await renderWith({ subjectType: "st-person" }, { organisationConfig: { extensions } });
+    await renderWith(
+      { subjectType: "st-person" },
+      { organisationConfig: { extensions, searchResultFields: [createdByName("st-person")] } },
+    );
+    const headerCells = [...container.querySelectorAll("th")];
+    expect(headerCells[0].querySelector("input[type='checkbox']")).not.toBeNull();
+    expect(headerCells[1].textContent).toMatch(/^name/);
+    expect(headerCells[2].textContent).toMatch(/^Created By Name/);
   });
 });

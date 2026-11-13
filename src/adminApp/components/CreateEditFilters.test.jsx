@@ -261,6 +261,28 @@ describe("filter type list", () => {
     expect(types).toContain("Program");
   });
 
+  const wrapped = { ...withProgrammes, programs: [{ that: { uuid: "p-child", name: "Child" } }] };
+
+  it("offers Program when the programmes arrive wrapped, as they do through the router's location state", async () => {
+    expect(await offeredTypes([conceptFilter("Notes")], conceptFilter("Notes"), wrapped)).toContain("Program");
+  });
+
+  it("still leaves out Program for a subject type with no programme when the programmes arrive wrapped", async () => {
+    expect(await offeredTypes([animalFilter], animalFilter, wrapped)).not.toContain("Program");
+  });
+
+  it("offers Program while the programme list has not loaded", async () => {
+    const withoutProgrammeList = { ...withProgrammes, programs: undefined };
+
+    expect(await offeredTypes([conceptFilter("Notes")], conceptFilter("Notes"), withoutProgrammeList)).toContain("Program");
+  });
+
+  it("leaves out Program for a subject type whose only enrolment form is for a programme that has been deleted", async () => {
+    const onlyDeletedProgramme = { ...withProgrammes, programs: [] };
+
+    expect(await offeredTypes([conceptFilter("Notes")], conceptFilter("Notes"), onlyDeletedProgramme)).not.toContain("Program");
+  });
+
   it("keeps Program on a saved Program filter of a subject type that enrols into no programme any more", async () => {
     const saved = programFilter("Programmes", "st-animal");
     const types = await offeredTypes([saved], saved, withProgrammes);
