@@ -157,16 +157,22 @@ const usePoll = () => {
   }, []);
 };
 
-// Names for what the status counts, in the words of the people who read it; an unknown one shows as the server sent it.
+// Names for what the status counts, in the words of the people who read it, in the order a visit goes through them; an
+// unknown one shows as the server sent it, after these.
 const QUEUE_TEXT = {
   PENDING: "Being prepared",
   QUEUED: "Waiting to be sent",
   LINK_REQUESTED: "Sent, waiting for Eka",
-  LINKED: "Linked",
   FAILED: "Failed, will try again",
   AWAITING_VERIFIED_ABHA: "Waiting for the patient's ABHA to be verified",
   FAILED_FINAL: "Given up",
+  LINKED: "Linked",
 };
+const QUEUE_ORDER = Object.keys(QUEUE_TEXT);
+const queueRank = (status) =>
+  QUEUE_ORDER.includes(status)
+    ? QUEUE_ORDER.indexOf(status)
+    : QUEUE_ORDER.length;
 const JOB_TEXT = {
   visitLinking: "Linking visits",
   consentExpiry: "Expiring consents",
@@ -186,7 +192,9 @@ export const StatusTab = ({ status, error, onRequeued }) => {
   const [requeueing, setRequeueing] = useState(false);
   // Read at the click, so a second click before the button greys out sends nothing.
   const requeueOut = useRef(false);
-  const queue = Object.entries((status && status.queue) || {});
+  const queue = Object.entries((status && status.queue) || {}).sort(
+    ([a], [b]) => queueRank(a) - queueRank(b),
+  );
   const jobs = Object.entries((status && status.jobs) || {});
   const requeue = () => {
     if (requeueOut.current) return;
@@ -247,7 +255,7 @@ export const StatusTab = ({ status, error, onRequeued }) => {
                   : `Not OK: ${status.session.error || ""}`),
             ],
           ])}
-          <Typography variant="h6">Visits waiting to be linked</Typography>
+          <Typography variant="h6">Visits by link status</Typography>
           {queue.length === 0 ? (
             <Typography style={{ marginBottom: 16 }}>
               No visits are queued.

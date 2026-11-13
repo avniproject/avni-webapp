@@ -112,6 +112,45 @@ describe("Status tab", () => {
     expect(text()).not.toContain("FAILED_FINAL");
   });
 
+  it("heads the queue Visits by link status and lists it in the order a visit goes through, unknown statuses last", async () => {
+    await act(async () =>
+      root.render(
+        <StatusTab
+          status={full({
+            queue: {
+              LINKED: 10,
+              SOMETHING_NEW: 7,
+              FAILED_FINAL: 2,
+              QUEUED: 4,
+              AWAITING_VERIFIED_ABHA: 3,
+              FAILED: 5,
+              PENDING: 1,
+              LINK_REQUESTED: 6,
+            },
+          })}
+        />,
+      ),
+    );
+    const heading = [...container.querySelectorAll("h6")].find((h) =>
+      h.textContent.includes("Visits by link status"),
+    );
+    expect(heading).toBeDefined();
+    const table = heading.nextElementSibling;
+    expect(
+      [...table.querySelectorAll("tr")].map((r) => r.cells[0].textContent),
+    ).toEqual([
+      "Being prepared",
+      "Waiting to be sent",
+      "Sent, waiting for Eka",
+      "Failed, will try again",
+      "Waiting for the patient's ABHA to be verified",
+      "Given up",
+      "Linked",
+      "SOMETHING_NEW",
+    ]);
+    expect(text()).not.toContain("Visits waiting to be linked");
+  });
+
   it("shows each job's last success and last error", async () => {
     await act(async () => root.render(<StatusTab status={full()} />));
     expect(rows()["Linking visits"]).toContain("Last success");
