@@ -180,18 +180,31 @@ const jobText = (job) => {
   return job.lastError ? `${success}. Last error: ${job.lastError}` : success;
 };
 
-export const StatusTab = ({ status, error }) => {
+export const StatusTab = ({ status, error, onRequeued }) => {
   const [requeued, setRequeued] = useState(null);
   const [requeueErr, setRequeueErr] = useState(null);
+  const [requeueing, setRequeueing] = useState(false);
+  // Read at the click, so a second click before the button greys out sends nothing.
+  const requeueOut = useRef(false);
   const queue = Object.entries((status && status.queue) || {});
   const jobs = Object.entries((status && status.jobs) || {});
   const requeue = () => {
+    if (requeueOut.current) return;
+    requeueOut.current = true;
+    setRequeueing(true);
     setRequeued(null);
     setRequeueErr(null);
     api
       .requeueFailed()
-      .then((r) => setRequeued(r.requeued))
-      .catch((e) => setRequeueErr(msg(e)));
+      .then((r) => {
+        setRequeued(r.requeued);
+        if (onRequeued) onRequeued();
+      })
+      .catch((e) => setRequeueErr(msg(e)))
+      .finally(() => {
+        requeueOut.current = false;
+        setRequeueing(false);
+      });
   };
   const table = (list) => (
     <Table size="small" style={{ maxWidth: 700, marginBottom: 16 }}>
@@ -244,7 +257,12 @@ export const StatusTab = ({ status, error }) => {
           )}
           {status.privileges && status.privileges.share && (
             <Box style={{ marginBottom: 16 }}>
-              <Button variant="outlined" size="small" onClick={requeue}>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={requeue}
+                disabled={requeueing}
+              >
                 Queue again the visits given up
               </Button>
               {requeued !== null && (
@@ -787,12 +805,17 @@ const Abdm = () => {
   const [status, setStatus] = useState(null);
   const [error, setError] = useState(null);
   const [request, setRequest] = useState(null);
+  const loadStatus = useCallback(
+    () =>
+      api
+        .getStatus()
+        .then(setStatus)
+        .catch((e) => setError(msg(e))),
+    [],
+  );
   useEffect(() => {
-    api
-      .getStatus()
-      .then(setStatus)
-      .catch((e) => setError(msg(e)));
-  }, []);
+    loadStatus();
+  }, [loadStatus]);
   const view = (r) => {
     setRequest(r);
     setTab("records");
@@ -828,7 +851,7 @@ const Abdm = () => {
                 administrator for: {missing.join(", ")}.
               </Alert>
             )}
-            <StatusTab status={status} error={error} />
+            <StatusTab status={status} error={error} onRequeued={loadStatus} />
           </>
         )}
         {tab === "hip" && sharing && <HipTab />}

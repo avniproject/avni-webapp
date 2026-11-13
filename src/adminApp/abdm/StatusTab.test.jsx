@@ -159,6 +159,46 @@ describe("Status tab", () => {
     expect(text()).toContain("You do not have the privilege for this");
   });
 
+  it("holds Queue again while its call is out, so a second click sends nothing", async () => {
+    let answer;
+    api.requeueFailed.mockImplementation(
+      () => new Promise((resolve) => (answer = resolve)),
+    );
+    await act(async () => root.render(<StatusTab status={full()} />));
+
+    await act(async () => {
+      button("Queue again").click();
+      button("Queue again").click();
+    });
+    expect(button("Queue again").disabled).toBe(true);
+    await act(async () => button("Queue again").click());
+    expect(api.requeueFailed).toHaveBeenCalledTimes(1);
+
+    await act(async () => answer({ requeued: 2 }));
+    expect(button("Queue again").disabled).toBe(false);
+  });
+
+  it("lets Queue again be pressed again after a failure", async () => {
+    api.requeueFailed.mockRejectedValue("refused");
+    await act(async () => root.render(<StatusTab status={full()} />));
+    await act(async () => button("Queue again").click());
+    expect(button("Queue again").disabled).toBe(false);
+  });
+
+  it("asks for the status again once visits are queued again, and not after a failure", async () => {
+    const onRequeued = jest.fn();
+    api.requeueFailed.mockResolvedValueOnce({ requeued: 2 });
+    await act(async () =>
+      root.render(<StatusTab status={full()} onRequeued={onRequeued} />),
+    );
+    await act(async () => button("Queue again").click());
+    expect(onRequeued).toHaveBeenCalledTimes(1);
+
+    api.requeueFailed.mockRejectedValueOnce("refused");
+    await act(async () => button("Queue again").click());
+    expect(onRequeued).toHaveBeenCalledTimes(1);
+  });
+
   it("offers Queue again only with the share privilege", async () => {
     await act(async () =>
       root.render(

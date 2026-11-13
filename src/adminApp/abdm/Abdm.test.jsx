@@ -8,6 +8,7 @@ jest.mock("./api", () => ({
   getStatus: jest.fn(),
   getHipPatients: jest.fn(() => Promise.resolve([])),
   getConsentRequests: jest.fn(() => Promise.resolve([])),
+  requeueFailed: jest.fn(),
 }));
 jest.mock("../../common/utils/httpClient", () => ({
   __esModule: true,
@@ -174,5 +175,24 @@ describe("ABDM page", () => {
       "ABDM record sharing is off for this organisation",
     );
     expect(tabs()).toEqual(["Status"]);
+  });
+
+  it("shows the new counts after the given-up visits are queued again", async () => {
+    api.getStatus
+      .mockResolvedValueOnce(status({ queue: { FAILED_FINAL: 2 } }))
+      .mockResolvedValueOnce(status({ queue: { QUEUED: 2 } }));
+    api.requeueFailed.mockResolvedValue({ requeued: 2 });
+    await act(async () => root.render(<Abdm />));
+    expect(text()).toContain("Given up");
+
+    const queueAgain = [...container.querySelectorAll("button")].find((b) =>
+      b.textContent.includes("Queue again"),
+    );
+    await act(async () => queueAgain.click());
+
+    expect(api.getStatus).toHaveBeenCalledTimes(2);
+    expect(text()).toContain("Waiting to be sent");
+    expect(text()).not.toContain("Given up");
+    expect(text()).toContain("2 visits queued again");
   });
 });
