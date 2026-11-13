@@ -8,6 +8,8 @@ jest.mock("./api", () => ({
   getStatus: jest.fn(),
   getHipPatients: jest.fn(() => Promise.resolve([])),
   getConsentRequests: jest.fn(() => Promise.resolve([])),
+  getCareContexts: jest.fn(() => Promise.resolve([])),
+  getConsentRecords: jest.fn(() => Promise.resolve([])),
   requeueFailed: jest.fn(),
 }));
 jest.mock("../../common/utils/httpClient", () => ({
@@ -175,6 +177,52 @@ describe("ABDM page", () => {
       "ABDM record sharing is off for this organisation",
     );
     expect(tabs()).toEqual(["Status"]);
+  });
+
+  describe("a tab it hides asks the server nothing", () => {
+    const tabCalls = () =>
+      [
+        api.getHipPatients,
+        api.getCareContexts,
+        api.getConsentRequests,
+        api.getConsentRecords,
+      ].reduce((n, f) => n + f.mock.calls.length, 0);
+    const waitAMinute = () =>
+      act(async () => {
+        jest.advanceTimersByTime(60000);
+      });
+
+    it.each([
+      ["neither privilege", { privileges: { share: false, view: false } }],
+      ["record sharing not working", { recordSharingOn: false, hiuOn: false }],
+    ])("with %s", async (_, over) => {
+      jest.useFakeTimers();
+      try {
+        await render(status(over));
+        await waitAMinute();
+        expect(tabs()).toEqual(["Status"]);
+        expect(tabCalls()).toBe(0);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it("while a tab it shows asks only once opened", async () => {
+      jest.useFakeTimers();
+      try {
+        await render(status());
+        await waitAMinute();
+        expect(tabCalls()).toBe(0);
+
+        const hip = [...container.querySelectorAll('[role="tab"]')].find((t) =>
+          t.textContent.includes("HIP"),
+        );
+        await act(async () => hip.click());
+        expect(api.getHipPatients).toHaveBeenCalled();
+      } finally {
+        jest.useRealTimers();
+      }
+    });
   });
 
   it("shows the new counts after the given-up visits are queued again", async () => {

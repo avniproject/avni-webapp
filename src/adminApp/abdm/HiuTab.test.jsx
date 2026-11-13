@@ -401,6 +401,39 @@ describe("Records of a consent that ends while open", () => {
     }
   });
 
+  // The records are dropped when the consent ends, not just hidden: opened again as granted, they do not come back
+  // before a new fetch answers.
+  it("drops the records when the request is revoked, so they do not come back when it is opened again as granted", async () => {
+    jest.useFakeTimers();
+    try {
+      let status = "GRANTED";
+      await open(() => status);
+      expect(container.textContent).toContain("visit-1");
+      status = "REVOKED";
+      await later(10000);
+
+      api.getConsentRecords.mockImplementation(() => new Promise(() => {}));
+      const shown = [];
+      const observer = new MutationObserver((changes) =>
+        changes.forEach((c) =>
+          c.addedNodes.forEach((n) => shown.push(n.textContent)),
+        ),
+      );
+      observer.observe(container, { childList: true, subtree: true });
+      await render(<RecordsTab request={{ ...granted }} />);
+      observer
+        .takeRecords()
+        .forEach((c) => c.addedNodes.forEach((n) => shown.push(n.textContent)));
+      observer.disconnect();
+
+      expect(api.getConsentRecords).toHaveBeenCalledTimes(2);
+      expect(shown.filter((t) => t.includes("visit-1"))).toEqual([]);
+      expect(container.textContent).not.toContain("visit-1");
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it("keeps the records of a request that is still granted, with no re-fetch", async () => {
     jest.useFakeTimers();
     try {
