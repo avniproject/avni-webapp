@@ -836,7 +836,10 @@ const Abdm = () => {
     () =>
       api
         .getStatus()
-        .then(setStatus)
+        .then((s) => {
+          setStatus(s);
+          setError(null);
+        })
         .catch((e) => setError(msg(e))),
     [],
   );

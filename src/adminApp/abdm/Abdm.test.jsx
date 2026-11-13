@@ -243,4 +243,25 @@ describe("ABDM page", () => {
     expect(text()).not.toContain("Given up");
     expect(text()).toContain("2 visits queued again");
   });
+
+  it("drops the error of a status load once a later load succeeds", async () => {
+    api.getStatus
+      .mockResolvedValueOnce(status({ queue: { FAILED_FINAL: 2 } }))
+      .mockRejectedValueOnce("The status could not be read")
+      .mockResolvedValueOnce(status({ queue: { QUEUED: 2 } }));
+    api.requeueFailed.mockResolvedValue({ requeued: 2 });
+    await act(async () => root.render(<Abdm />));
+    const queueAgain = () =>
+      [...container.querySelectorAll("button")].find((b) =>
+        b.textContent.includes("Queue again"),
+      );
+
+    await act(async () => queueAgain().click());
+    expect(text()).toContain("The status could not be read");
+
+    await act(async () => queueAgain().click());
+    expect(api.getStatus).toHaveBeenCalledTimes(3);
+    expect(text()).not.toContain("The status could not be read");
+    expect(text()).toContain("Waiting to be sent");
+  });
 });
