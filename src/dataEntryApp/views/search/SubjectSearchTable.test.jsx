@@ -313,3 +313,117 @@ describe("SubjectSearchTable result columns", () => {
     expect(headerCells[2].textContent).toMatch(/^Created By Name/);
   });
 });
+
+describe("SubjectSearchTable page and sort after a refresh", () => {
+  const tableKey = "avni.dataEntry.searchRequest.resultsTable";
+  const savedTable = () => JSON.parse(sessionStorage.getItem(tableKey));
+  const refreshWith = async (table) => {
+    await act(async () => root.unmount());
+    sessionStorage.setItem("avni.dataEntry.searchRequest", JSON.stringify({ subjectType: "st-person" }));
+    if (table) sessionStorage.setItem(tableKey, JSON.stringify(table));
+    httpClient.post.mockClear();
+    root = createRoot(container);
+    await act(async () =>
+      root.render(<SubjectSearchTable searchRequest={{ subjectType: "st-person" }} organisationConfigs={{}} />),
+    );
+  };
+
+  afterEach(() => sessionStorage.clear());
+
+  it("searches with the saved page, rows per page and sort", async () => {
+    await refreshWith({ pagination: { pageIndex: 1, pageSize: 20 }, sorting: [{ id: "fullName", desc: true }] });
+
+    expect(httpClient.post).toHaveBeenCalledTimes(1);
+    expect(lastPageElement()).toEqual({
+      pageNumber: 1,
+      numberOfRecordPerPage: 20,
+      sortColumn: "fullName",
+      sortOrder: "desc",
+    });
+  });
+
+  it("shows the saved sort on the column", async () => {
+    await refreshWith({ pagination: { pageIndex: 0, pageSize: 10 }, sorting: [{ id: "fullName", desc: true }] });
+
+    const nameHeader = [...container.querySelectorAll("th")].find((th) => th.textContent.includes("name"));
+    expect(nameHeader.querySelector(".MuiTableSortLabel-root").getAttribute("aria-label")).toBe(
+      "Sorted by name descending",
+    );
+  });
+
+  it("saves the sort chosen so a refresh keeps it", async () => {
+    await refreshWith();
+    await clickSortOn("age");
+
+    expect(savedTable().sorting).toEqual([{ id: "age", desc: false }]);
+  });
+
+  it("goes back to page 1 when the saved page has no results any more", async () => {
+    httpClient.post.mockImplementation((url, request) =>
+      Promise.resolve({
+        data: {
+          listOfRecords: request.pageElement.pageNumber > 0 ? [] : [{ uuid: "s1", fullName: "Asha" }],
+          totalElements: 1,
+        },
+      }),
+    );
+    await refreshWith({ pagination: { pageIndex: 3, pageSize: 10 }, sorting: [] });
+
+    expect(lastPageElement().pageNumber).toBe(0);
+    expect(container.textContent).toContain("Asha");
+    expect(savedTable().pagination.pageIndex).toBe(0);
+  });
+});
+
+describe("SubjectSearchTable without Display Count", () => {
+  const pageOf = (pageNumber) =>
+    pageNumber > 1
+      ? []
+      : Array.from({ length: 10 }, (_, i) => ({ uuid: `s${pageNumber}-${i}`, fullName: `Person ${pageNumber * 10 + i + 1}` }));
+  const pagesAsked = () => httpClient.post.mock.calls.map((call) => call[1].pageElement.pageNumber);
+  const goToNextPage = async () => {
+    const next = container.querySelector("[aria-label='Go to next page']");
+    await act(async () => next.click());
+  };
+  const label = () =>
+    [...container.querySelectorAll(".MuiTypography-root")].map((el) => el.textContent).find((text) => / of /.test(text));
+
+  beforeEach(async () => {
+    await act(async () => root.unmount());
+    httpClient.post.mockReset();
+    httpClient.post.mockImplementation((url, request) =>
+      Promise.resolve({ data: { listOfRecords: pageOf(request.pageElement.pageNumber), totalElements: -1 } }),
+    );
+    root = createRoot(container);
+    await act(async () =>
+      root.render(<SubjectSearchTable searchRequest={{ subjectType: "st-person" }} organisationConfigs={{}} />),
+    );
+  });
+
+  it("stays on the last page and stops offering Next when Next finds no more results", async () => {
+    await goToNextPage();
+    expect(label()).toBe("11-20 of more than 20");
+
+    await goToNextPage();
+
+    expect(pagesAsked()).toEqual([0, 1, 2, 1]);
+    expect(label()).toBe("11-20 of 20");
+    expect(container.textContent).toContain("Person 20");
+    expect(container.querySelector("[aria-label='Go to page 3']")).toBeNull();
+  });
+
+  it("offers Next again after the rows per page change", async () => {
+    await goToNextPage();
+    await goToNextPage();
+    expect(label()).toBe("11-20 of 20");
+
+    const select = container.querySelector(".MuiSelect-select");
+    await act(async () => {
+      select.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    });
+    const option15 = [...document.querySelectorAll("li[role='option']")].find((li) => li.textContent === "15");
+    await act(async () => option15.click());
+
+    expect(httpClient.post.mock.calls.at(-1)[1].pageElement).toMatchObject({ pageNumber: 0, numberOfRecordPerPage: 15 });
+  });
+});

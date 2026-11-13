@@ -1,10 +1,15 @@
 import reducer, {
   clearSavedSearchRequest,
   clearSearchRequestSavedByOtherUser,
+  defaultSearchResultsTable,
+  loadSearchResultsTable,
+  saveSearchResultsTable,
+  SEARCH_RESULTS_TABLE_STORAGE_KEY,
   SEARCH_REQUEST_OWNER_STORAGE_KEY,
   getInitialState,
   resetSearchRequest,
   saveSearchRequest,
+  searchRequestAfterReset,
   SEARCH_REQUEST_STORAGE_KEY,
   toUsableSearchRequest,
   types,
@@ -288,5 +293,113 @@ describe("clearSearchRequestSavedByOtherUser", () => {
 
   it("does nothing when no search was saved", () => {
     expect(clearSearchRequestSavedByOtherUser("asha@org")).toBe(false);
+  });
+});
+
+describe("search results page and sort", () => {
+  const sortedPageTwo = { pagination: { pageIndex: 1, pageSize: 20 }, sorting: [{ id: "fullName", desc: true }] };
+  const saveTable = table => sessionStorage.setItem(SEARCH_RESULTS_TABLE_STORAGE_KEY, JSON.stringify(table));
+
+  beforeEach(() => {
+    sessionStorage.clear();
+    saveSearchRequest(searchRequest, "asha@org");
+  });
+
+  it("restores the page, rows per page and sort after a refresh", () => {
+    saveSearchResultsTable(sortedPageTwo);
+
+    expect(loadSearchResultsTable()).toEqual(sortedPageTwo);
+  });
+
+  it("starts on page 1 with no sort when nothing was saved", () => {
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
+  });
+
+  it("starts on page 1 with no sort for a new search", () => {
+    saveSearchResultsTable(sortedPageTwo);
+    saveSearchRequest({ ...searchRequest, name: "Bina" }, "asha@org");
+
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
+  });
+
+  it("forgets the page and sort when the search is cleared", () => {
+    saveSearchResultsTable(sortedPageTwo);
+    clearSavedSearchRequest();
+
+    expect(sessionStorage.getItem(SEARCH_RESULTS_TABLE_STORAGE_KEY)).toBeNull();
+  });
+
+  it("forgets the page and sort of a search saved by another user", () => {
+    saveSearchResultsTable(sortedPageTwo);
+    clearSearchRequestSavedByOtherUser("bina@org");
+
+    expect(sessionStorage.getItem(SEARCH_RESULTS_TABLE_STORAGE_KEY)).toBeNull();
+  });
+
+  it("does not save the page and sort when there is no saved search", () => {
+    clearSavedSearchRequest();
+    saveSearchResultsTable(sortedPageTwo);
+
+    expect(sessionStorage.getItem(SEARCH_RESULTS_TABLE_STORAGE_KEY)).toBeNull();
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
+  });
+
+  it("ignores a sort on a column that cannot be sorted", () => {
+    saveTable({ ...sortedPageTwo, sorting: [{ id: "addressLevel", desc: false }] });
+
+    expect(loadSearchResultsTable().sorting).toEqual([]);
+  });
+
+  it("keeps the sort direction only when it is a real true or false", () => {
+    saveTable({ ...sortedPageTwo, sorting: [{ id: "age", desc: "yes" }] });
+
+    expect(loadSearchResultsTable().sorting).toEqual([{ id: "age", desc: false }]);
+  });
+
+  it("goes back to page 1 and 10 rows when the saved values are not valid", () => {
+    saveTable({ pagination: { pageIndex: -2, pageSize: 7 }, sorting: [] });
+
+    expect(loadSearchResultsTable().pagination).toEqual({ pageIndex: 0, pageSize: 10 });
+  });
+
+  it("starts on page 1 with no sort when the saved value is unreadable", () => {
+    sessionStorage.setItem(SEARCH_RESULTS_TABLE_STORAGE_KEY, "{not json");
+
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
+  });
+});
+
+describe("searchRequestAfterReset", () => {
+  const subjectTypes = [{ uuid: "subject-type-uuid" }, { uuid: "other-subject-type" }];
+
+  it("keeps the subject type and clears every filter", () => {
+    expect(searchRequestAfterReset(searchRequest, subjectTypes)).toEqual({
+      subjectType: "subject-type-uuid",
+      includeVoided: false,
+      includeDisplayCount: false
+    });
+  });
+
+  it("clears the whole search when no subject type was chosen", () => {
+    expect(searchRequestAfterReset({ name: "Asha" }, subjectTypes)).toBeUndefined();
+  });
+
+  it("clears the whole search when the subject type is not one the user has", () => {
+    expect(searchRequestAfterReset({ ...searchRequest, subjectType: "gone" }, subjectTypes)).toBeUndefined();
+  });
+
+  it("saves the reset search so a refresh keeps the subject type, on page 1 with no sort", () => {
+    sessionStorage.clear();
+    saveSearchRequest(searchRequest, "asha@org");
+    saveSearchResultsTable({ pagination: { pageIndex: 2, pageSize: 15 }, sorting: [{ id: "age", desc: true }] });
+
+    saveSearchRequest(searchRequestAfterReset(searchRequest, subjectTypes), "asha@org");
+
+    expect(getInitialState().request).toEqual({
+      subjectType: "subject-type-uuid",
+      includeVoided: false,
+      includeDisplayCount: false
+    });
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
   });
 });

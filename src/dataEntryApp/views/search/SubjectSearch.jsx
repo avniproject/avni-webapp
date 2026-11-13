@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Paper, Typography, Grid, Button, styled } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
 import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
@@ -6,10 +6,12 @@ import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import {
   types,
-  clearSavedSearchRequest
+  clearSavedSearchRequest,
+  saveSearchRequest,
+  searchRequestAfterReset
 } from "../../reducers/searchFilterReducer";
-import { isEmpty } from "lodash";
-import { getOrganisationConfig } from "../../reducers/metadataReducer";
+import { get, isEmpty, isNil } from "lodash";
+import { getOrganisationConfig, selectSubjectTypes } from "../../reducers/metadataReducer";
 
 const StyledPaper = styled(Paper)({
   padding: "1.5rem",
@@ -58,11 +60,17 @@ const SubjectSearch = () => {
   }, [dispatch, organisationConfigs]);
 
   const { t } = useTranslation();
+  const [resetCount, setResetCount] = useState(0);
+  const subjectTypes = useSelector(selectSubjectTypes);
+  const username = useSelector(state => get(state, "app.userInfo.username"));
   const resetClick = () => {
-    clearSavedSearchRequest();
+    const requestAfterReset = searchRequestAfterReset(searchRequest, subjectTypes);
+    if (isNil(requestAfterReset)) clearSavedSearchRequest();
+    else saveSearchRequest(requestAfterReset, username);
+    setResetCount(count => count + 1);
     dispatch({
       type: types.ADD_SEARCH_REQUEST,
-      value: { includeVoided: false }
+      value: requestAfterReset ?? { includeVoided: false }
     });
   };
 
@@ -77,6 +85,7 @@ const SubjectSearch = () => {
         </StyledButton>
       </StyledGrid>
       <SubjectSearchTable
+        key={resetCount}
         searchRequest={searchRequest}
         organisationConfigs={organisationConfigs}
         organisationConfigsFailed={organisationConfigsFailed}

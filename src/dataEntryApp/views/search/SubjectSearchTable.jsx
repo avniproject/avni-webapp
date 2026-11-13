@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { MRTPagination } from "../../../adminApp/Util/MRTPagination.tsx";
 import { httpClient as http } from "common/utils/httpClient";
@@ -24,7 +24,11 @@ import { AgeUtil } from "openchs-models";
 import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
-import { toUsableSearchRequest } from "../../reducers/searchFilterReducer";
+import {
+  loadSearchResultsTable,
+  saveSearchResultsTable,
+  toUsableSearchRequest,
+} from "../../reducers/searchFilterReducer";
 import { withUserTimeZone } from "common/utils/SearchRequestUtil";
 
 const SubjectSearchTable = ({
@@ -96,8 +100,11 @@ const SubjectSearchTable = ({
   const [data, setData] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [sorting, setSorting] = useState([]);
+  const [savedTable] = useState(loadSearchResultsTable);
+  const [pagination, setPagination] = useState(savedTable.pagination);
+  const [sorting, setSorting] = useState(savedTable.sorting);
+  const isFirstLoadRef = useRef(true);
+  const [lastPageIndex, setLastPageIndex] = useState(null);
   const [rowSelection, setRowSelection] = useState({});
 
   // Check if there are extensions configured for search results scope
@@ -245,7 +252,16 @@ const SubjectSearchTable = ({
         .post("/web/searchAPI/v2", withUserTimeZone(requestCopy))
         .then((res) => res.data);
 
-      setData(result.listOfRecords || []);
+      const records = result.listOfRecords || [];
+      const isFirstLoad = isFirstLoadRef.current;
+      isFirstLoadRef.current = false;
+      if (isEmpty(records) && pagination.pageIndex > 0) {
+        const pageIndex = isFirstLoad ? 0 : pagination.pageIndex - 1;
+        if (!isFirstLoad) setLastPageIndex(pageIndex);
+        setPagination((prev) => ({ ...prev, pageIndex }));
+        return;
+      }
+      setData(records);
       const totalElements = result.totalElements ?? 0;
       setTotalRecords(totalElements);
     } catch (error) {
@@ -267,6 +283,14 @@ const SubjectSearchTable = ({
     }
   }, [loadData, searchRequest, isReadyToSearch]);
 
+  useEffect(() => {
+    saveSearchResultsTable({ pagination, sorting });
+  }, [pagination, sorting]);
+
+  useEffect(() => {
+    setLastPageIndex(null);
+  }, [pagination.pageSize]);
+
   // Custom pagination handler that also triggers data reload
   const handlePaginationChange = useCallback((newPagination) => {
     setPagination((prev) => {
@@ -284,7 +308,9 @@ const SubjectSearchTable = ({
 
   const paginationProps = useMemo(() => {
     if (totalRecords === -1) {
-      const reachedEnd = data.length < pagination.pageSize;
+      const reachedEnd =
+        data.length < pagination.pageSize ||
+        (!isNil(lastPageIndex) && pagination.pageIndex >= lastPageIndex);
 
       // Handle the case when no records exist
       if (data.length === 0 && pagination.pageIndex === 0) {
@@ -358,6 +384,7 @@ const SubjectSearchTable = ({
     data.length,
     isLoading,
     handlePaginationChange,
+    lastPageIndex,
   ]);
 
   const columnOrder = [
@@ -378,6 +405,7 @@ const SubjectSearchTable = ({
       columns={columns}
       data={data}
       manualPagination
+      enablePagination={false}
       manualSorting
       onPaginationChange={handlePaginationChange}
       onSortingChange={setSorting}

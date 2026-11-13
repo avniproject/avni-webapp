@@ -1,4 +1,4 @@
-import { filter, find, intersection, isEmpty, isNil, map, reduce, some, sortBy, toLower, uniq } from "lodash";
+import { filter, find, get, includes, intersection, isEmpty, isNil, map, reduce, some, sortBy, toLower, uniq } from "lodash";
 
 const prefix = "app/dataEntry/reducer/searchFilter/";
 
@@ -13,12 +13,56 @@ const defaultRequest = { includeVoided: false, includeDisplayCount: false };
 
 export const SEARCH_REQUEST_OWNER_STORAGE_KEY = "avni.dataEntry.searchRequest.username";
 
+export const SEARCH_RESULTS_TABLE_STORAGE_KEY = "avni.dataEntry.searchRequest.resultsTable";
+
+export const SEARCH_RESULTS_PAGE_SIZES = [10, 15, 20];
+
+export const SORTABLE_SEARCH_RESULT_COLUMNS = ["fullName", "subjectType", "gender", "age"];
+
+export const defaultSearchResultsTable = { pagination: { pageIndex: 0, pageSize: 10 }, sorting: [] };
+
 export const saveSearchRequest = (request, username) => {
   try {
     sessionStorage.setItem(SEARCH_REQUEST_STORAGE_KEY, JSON.stringify(request));
     sessionStorage.setItem(SEARCH_REQUEST_OWNER_STORAGE_KEY, username || "");
+    sessionStorage.removeItem(SEARCH_RESULTS_TABLE_STORAGE_KEY);
   } catch (e) {
     console.warn("Could not save the search request", e);
+  }
+};
+
+const toUsablePagination = pagination => {
+  const pageIndex = get(pagination, "pageIndex");
+  const pageSize = get(pagination, "pageSize");
+  return {
+    pageIndex: Number.isInteger(pageIndex) && pageIndex >= 0 ? pageIndex : 0,
+    pageSize: includes(SEARCH_RESULTS_PAGE_SIZES, pageSize) ? pageSize : defaultSearchResultsTable.pagination.pageSize
+  };
+};
+
+const toUsableSorting = sorting => {
+  const first = Array.isArray(sorting) ? sorting[0] : undefined;
+  if (isNil(first) || !includes(SORTABLE_SEARCH_RESULT_COLUMNS, first.id)) return [];
+  return [{ id: first.id, desc: first.desc === true }];
+};
+
+export const loadSearchResultsTable = () => {
+  try {
+    if (isNil(sessionStorage.getItem(SEARCH_REQUEST_STORAGE_KEY))) return defaultSearchResultsTable;
+    const saved = JSON.parse(sessionStorage.getItem(SEARCH_RESULTS_TABLE_STORAGE_KEY));
+    if (!saved || typeof saved !== "object") return defaultSearchResultsTable;
+    return { pagination: toUsablePagination(saved.pagination), sorting: toUsableSorting(saved.sorting) };
+  } catch (e) {
+    return defaultSearchResultsTable;
+  }
+};
+
+export const saveSearchResultsTable = ({ pagination, sorting }) => {
+  try {
+    if (isNil(sessionStorage.getItem(SEARCH_REQUEST_STORAGE_KEY))) return;
+    sessionStorage.setItem(SEARCH_RESULTS_TABLE_STORAGE_KEY, JSON.stringify({ pagination, sorting }));
+  } catch (e) {
+    console.warn("Could not save the search results page and sort", e);
   }
 };
 
@@ -26,6 +70,7 @@ export const clearSavedSearchRequest = () => {
   try {
     sessionStorage.removeItem(SEARCH_REQUEST_STORAGE_KEY);
     sessionStorage.removeItem(SEARCH_REQUEST_OWNER_STORAGE_KEY);
+    sessionStorage.removeItem(SEARCH_RESULTS_TABLE_STORAGE_KEY);
   } catch (e) {
     console.warn("Could not clear the saved search request", e);
   }
@@ -54,6 +99,12 @@ const loadSavedSearchRequest = () => {
 export const getInitialState = () => ({ request: loadSavedSearchRequest() });
 
 export const resetSearchRequest = () => ({ type: types.RESET_SEARCH_REQUEST });
+
+export const searchRequestAfterReset = (request, subjectTypes) => {
+  const subjectType = get(request, "subjectType");
+  if (isNil(subjectType) || !some(subjectTypes, ({ uuid }) => uuid === subjectType)) return undefined;
+  return { ...defaultRequest, subjectType };
+};
 
 export const programsOfSubjectType = (operationalModules, subjectTypeUUID) => {
   const programUUIDs = uniq(
