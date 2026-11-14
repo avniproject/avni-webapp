@@ -376,6 +376,7 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
                     btnHandleClose={close}
                   />
                 ) : (
+                  !profileDetails.voided &&
                   !isEmpty(programs) && (
                     <Link
                       to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${

@@ -290,6 +290,7 @@
     "unselectAllLabel": "ಎಲ್ಲಾ ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ",
     "alreadyEnrolledInProgram": "ಈಗಾಗಲೆ {{programName}} ಗೆ ದಾಖಲಾತಿಸಲಾಗಿದೆ",
     "invalidDate": "ಅಮಾನ್ಯವಾದ ದಿನಾಂಕ",
-    "dateOfBirthTakesPrecedence": "ವಯಸ್ಸಿಗಿಂತ ಜನ್ಮ ದಿನಾಂಕಕ್ಕೆ ಆದ್ಯತೆ ನೀಡಲಾಗುತ್ತದೆ"
+    "dateOfBirthTakesPrecedence": "ವಯಸ್ಸಿಗಿಂತ ಜನ್ಮ ದಿನಾಂಕಕ್ಕೆ ಆದ್ಯತೆ ನೀಡಲಾಗುತ್ತದೆ",
+  "subjectNotFound": "ದಾಖಲೆ ಕಂಡುಬಂದಿಲ್ಲ"
   }
 }

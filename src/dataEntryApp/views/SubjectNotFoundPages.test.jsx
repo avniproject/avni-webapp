@@ -37,7 +37,7 @@ jest.mock("react-redux", () => ({
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key) => key, i18n: { language: "en" } }),
 }));
-jest.mock("dataEntryApp/components/Breadcrumbs", () => () => null);
+jest.mock("dataEntryApp/components/Breadcrumbs", () => () => <nav data-testid="breadcrumbs" />);
 jest.mock("../../common/components/ToolTip", () => ({ ToolTip: () => null }));
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
@@ -90,6 +90,16 @@ describe.each(pages)("%s", (name, Page, url) => {
     expect(
       container.querySelector("[data-testid='subject-not-found']")?.textContent,
     ).toBe("subjectNotFound");
+  });
+
+  it("shows the breadcrumb strip above the message, so the message is not under the top bar", async () => {
+    mockState.dataEntry.subjectProfile = { notFoundSubjectUuid: unknown };
+    await render();
+
+    const breadcrumbs = container.querySelector("[data-testid='breadcrumbs']");
+    const message = container.querySelector("[data-testid='subject-not-found']");
+    expect(breadcrumbs).not.toBeNull();
+    expect(breadcrumbs.compareDocumentPosition(message) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("does not say so because a different subject was not found earlier", async () => {

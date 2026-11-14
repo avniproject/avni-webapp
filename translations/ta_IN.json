@@ -290,6 +290,7 @@
     "unselectAllLabel": "அனைத்தையும் தேர்வுநீக்கவும்",
     "alreadyEnrolledInProgram": "ஏற்கனவே {{programName}} இல் சேர்ந்துள்ளார்",
     "invalidDate": "தவறான தேதி",
-    "dateOfBirthTakesPrecedence": "வயதை விட பிறந்த தேதிக்கு முன்னுரிமை அளிக்கப்படும்"
+    "dateOfBirthTakesPrecedence": "வயதை விட பிறந்த தேதிக்கு முன்னுரிமை அளிக்கப்படும்",
+  "subjectNotFound": "பதிவு கிடைக்கவில்லை"
   }
 }

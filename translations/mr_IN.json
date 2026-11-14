@@ -341,6 +341,7 @@
     "unselectAllLabel": "सर्व निवड रद्द करा",
     "alreadyEnrolledInProgram": "{{programName}} मध्ये आधीच इंरोलमेंट केली आहे",
     "invalidDate": "अवैध तारीख",
-    "dateOfBirthTakesPrecedence": "वयापेक्षा जन्मतारखेला प्राधान्य दिले जाते"
+    "dateOfBirthTakesPrecedence": "वयापेक्षा जन्मतारखेला प्राधान्य दिले जाते",
+  "subjectNotFound": "विषय सापडला नाही"
   }
 }

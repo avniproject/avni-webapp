@@ -221,7 +221,12 @@ const SubjectRegister = () => {
   }
 
   if (subjectNotFound) {
-    return <SubjectNotFound />;
+    return (
+      <Fragment>
+        <Breadcrumbs path={location.pathname} />
+        <SubjectNotFound />
+      </Fragment>
+    );
   }
 
   return loaded ? (
