@@ -10,7 +10,12 @@ import {
   CircularProgress,
   Tooltip,
 } from "@mui/material";
-import { CloudUpload, Download, CheckCircle } from "@mui/icons-material";
+import {
+  CloudUpload,
+  Download,
+  CheckCircle,
+  ErrorOutline,
+} from "@mui/icons-material";
 
 /**
  * Inline message rendering one `bundle.ready` event: summary counts +
@@ -28,6 +33,8 @@ import { CloudUpload, Download, CheckCircle } from "@mui/icons-material";
  * forms, concepts, and form_mappings are kept out of view as either
  * internal plumbing or noisy for non-Avni audiences.
  */
+const BUNDLE_ERRORS_BLOCKED_MESSAGE =
+  "Fix the errors in this build before uploading to the organisation.";
 const RESTRICTED_UPLOAD_BLOCKED_MESSAGE =
   "Uploading to a Production or UAT organisation is disabled. Download the bundle and import it through a review process instead.";
 
@@ -36,6 +43,7 @@ const BundleSummary = ({
   downloadBundleUrl,
   onUploadToAvni,
   isUploadRestrictedOrg,
+  isLatestBundle = true,
 }) => {
   const [uploading, setUploading] = useState(false);
   const summary = msg.summary || {};
@@ -53,6 +61,7 @@ const BundleSummary = ({
   // INFO level and they remain on the `bundle.ready` SSE payload for any
   // tooling that wants to consume them.
   const errors = summary.errors || [];
+  const hasErrors = errors.length > 0;
 
   const upload = async () => {
     setUploading(true);
@@ -65,16 +74,24 @@ const BundleSummary = ({
       sx={{
         p: 2,
         mb: 1.5,
-        background: "linear-gradient(180deg, #e8f5e9 0%, #d6efd9 100%)",
+        background: hasErrors
+          ? "linear-gradient(180deg, #fdecea 0%, #f9dcd8 100%)"
+          : "linear-gradient(180deg, #e8f5e9 0%, #d6efd9 100%)",
         border: "1px solid",
-        borderColor: "success.main",
+        borderColor: hasErrors ? "error.main" : "success.main",
         borderRadius: 2,
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.25 }}>
-        <CheckCircle color="success" />
+        {hasErrors ? (
+          <ErrorOutline color="error" />
+        ) : (
+          <CheckCircle color="success" />
+        )}
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-          Your app is ready
+          {hasErrors
+            ? "Your app has errors — fix them before uploading to the organisation"
+            : "Your app is ready"}
         </Typography>
       </Box>
 
@@ -113,53 +130,72 @@ const BundleSummary = ({
         </Alert>
       )}
 
-      <Stack direction="row" spacing={2} sx={{ mt: 0.5 }}>
-        {/* Tooltip needs a non-disabled wrapper to receive hover events, so
+      {!isLatestBundle ? (
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          {msg.uploaded
+            ? "Uploaded to the organisation. A later build replaced this one."
+            : "A later build replaced this one."}
+        </Typography>
+      ) : (
+        <Stack direction="row" spacing={2} sx={{ mt: 0.5 }}>
+          {/* Tooltip needs a non-disabled wrapper to receive hover events, so
             the reason stays discoverable while the button itself is disabled. */}
-        <Tooltip
-          title={isUploadRestrictedOrg ? RESTRICTED_UPLOAD_BLOCKED_MESSAGE : ""}
-          sx={{ flex: 1 }}
-        >
-          <Box sx={{ flex: 1 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={
-                uploading ? <CircularProgress size={16} /> : <CloudUpload />
-              }
-              onClick={upload}
-              disabled={uploading || msg.uploaded || isUploadRestrictedOrg}
-              fullWidth
-              sx={{
-                py: 1.1,
-                borderRadius: 2,
-                fontWeight: 600,
-                letterSpacing: 0.3,
-                boxShadow: 2,
-              }}
-            >
-              {msg.uploaded ? "Uploaded" : "Upload to org"}
-            </Button>
-          </Box>
-        </Tooltip>
-        <Button
-          variant="outlined"
-          startIcon={<Download />}
-          component="a"
-          href={downloadBundleUrl}
-          download
-          sx={{
-            py: 1.1,
-            px: 2.5,
-            borderRadius: 2,
-            fontWeight: 600,
-            flexShrink: 0,
-            minWidth: 130,
-          }}
-        >
-          Download
-        </Button>
-      </Stack>
+          <Tooltip
+            title={
+              hasErrors
+                ? BUNDLE_ERRORS_BLOCKED_MESSAGE
+                : isUploadRestrictedOrg
+                  ? RESTRICTED_UPLOAD_BLOCKED_MESSAGE
+                  : ""
+            }
+            sx={{ flex: 1 }}
+          >
+            <Box sx={{ flex: 1 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={
+                  uploading ? <CircularProgress size={16} /> : <CloudUpload />
+                }
+                onClick={upload}
+                disabled={
+                  uploading ||
+                  msg.uploaded ||
+                  hasErrors ||
+                  isUploadRestrictedOrg
+                }
+                fullWidth
+                sx={{
+                  py: 1.1,
+                  borderRadius: 2,
+                  fontWeight: 600,
+                  letterSpacing: 0.3,
+                  boxShadow: 2,
+                }}
+              >
+                {msg.uploaded ? "Uploaded" : "Upload to org"}
+              </Button>
+            </Box>
+          </Tooltip>
+          <Button
+            variant="outlined"
+            startIcon={<Download />}
+            component="a"
+            href={downloadBundleUrl}
+            download
+            sx={{
+              py: 1.1,
+              px: 2.5,
+              borderRadius: 2,
+              fontWeight: 600,
+              flexShrink: 0,
+              minWidth: 130,
+            }}
+          >
+            Download
+          </Button>
+        </Stack>
+      )}
     </Box>
   );
 };

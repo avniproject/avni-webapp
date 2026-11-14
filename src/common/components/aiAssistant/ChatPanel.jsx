@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   TextField,
@@ -9,6 +9,7 @@ import {
 import { Send, AutoAwesome, Person } from "@mui/icons-material";
 import ReactMarkdown from "react-markdown";
 import ConfirmationCard from "./ConfirmationCard";
+import { findLast } from "lodash";
 import BundleSummary from "./BundleSummary";
 import UploadResultCard from "./UploadResultCard";
 
@@ -47,6 +48,10 @@ const ChatPanel = ({
 }) => {
   const [draft, setDraft] = useState("");
   const scrollerRef = useRef(null);
+  const latestBundle = useMemo(
+    () => findLast(messages, (msg) => msg.type === "bundle"),
+    [messages],
+  );
 
   // Auto-scroll to bottom on every new message.
   useEffect(() => {
@@ -107,6 +112,7 @@ const ChatPanel = ({
                   downloadBundleUrl={downloadBundleUrl}
                   onUploadToAvni={onUploadToAvni}
                   isUploadRestrictedOrg={isUploadRestrictedOrg}
+                  isLatestBundle={msg === latestBundle}
                 />
               );
             case "upload":
