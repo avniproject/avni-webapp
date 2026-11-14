@@ -13,8 +13,9 @@ const mockState = {
   },
 };
 
+const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
-  useDispatch: () => jest.fn(),
+  useDispatch: () => mockDispatch,
   useSelector: (selector) => {
     try {
       return selector(mockState);
@@ -72,8 +73,10 @@ describe("Enrol button with one eligible program", () => {
     expect(container.querySelector("[id='QA Program']")).not.toBeNull();
   });
 
-  it("is not shown for a voided subject", async () => {
+  it("is not shown for a voided subject, and its eligible programs are not asked for", async () => {
+    mockDispatch.mockClear();
     await render(true);
+    expect(mockDispatch).not.toHaveBeenCalled();
     expect(container.querySelector("[id='QA Program']")).toBeNull();
     expect(container.querySelector("[data-testid='enrol-modal']")).toBeNull();
   });

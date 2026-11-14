@@ -225,8 +225,8 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
   const { i18n, t } = useTranslation();
 
   useEffect(() => {
-    dispatch(getPrograms(subjectUuid));
-  }, [dispatch, subjectUuid]);
+    if (!profileDetails.voided) dispatch(getPrograms(subjectUuid));
+  }, [dispatch, subjectUuid, profileDetails.voided]);
 
   const close = () => {
     return true;
