@@ -369,6 +369,6 @@
     "alreadyEnrolledInProgram": "{{programName}} में पहले से ही  एनरोल है",
     "invalidDate": "अमान्य तारीख",
     "dateOfBirthTakesPrecedence": "आयु की तुलना में जन्म तिथि को प्राथमिकता दी जाती है",
-  "subjectNotFound": "विषय नहीं मिला"
+    "subjectNotFound": "विषय नहीं मिला"
   }
 }

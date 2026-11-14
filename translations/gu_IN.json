@@ -334,6 +334,6 @@
     "alreadyEnrolledInProgram": "{{programName}} માં પહેલેથી જ નોંધણી કરાવી છે",
     "invalidDate": "અયોગ્ય તારીખ",
     "dateOfBirthTakesPrecedence": "ઉંમર કરતાં જન્મ તારીખને પ્રાથમિકતા આપવામાં આવે છે",
-  "subjectNotFound": "વિષય મળ્યો નથી"
+    "subjectNotFound": "વિષય મળ્યો નથી"
   }
 }

@@ -161,6 +161,7 @@ export default function (state = {}, action) {
     case types.SET_SUBJECT_NOT_FOUND: {
       return {
         ...state,
+        subjectProfile: undefined,
         notFoundSubjectUuid: action.notFoundSubjectUuid,
       };
     }

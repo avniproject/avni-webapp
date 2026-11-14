@@ -274,10 +274,7 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
   );
 
   const allowEnrolment =
-    tabsStatus &&
-    tabsStatus.showProgramTab &&
-    !profileDetails.voided &&
-    isMultipleProgramEligible;
+    tabsStatus && tabsStatus.showProgramTab && isMultipleProgramEligible;
 
   return (
     <StyledTableView>
@@ -346,56 +343,56 @@ const ProfileDetails = ({ profileDetails, subjectUuid }) => {
                   </Grid>
                 )}
               <Grid>
-                {allowEnrolment ? (
-                  <Modal
-                    content={content}
-                    handleError={handleError}
-                    buttonsSet={[
-                      {
-                        buttonType: "openButton",
-                        label: t("enrolInProgram"),
-                        sx: sxEnrollButton,
-                      },
-                      {
-                        buttonType: "saveButton",
-                        label: t("Enrol"),
-                        sx: sxSaveButton,
-                        redirectTo: `/app/subject/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
+                {!profileDetails.voided &&
+                  (allowEnrolment ? (
+                    <Modal
+                      content={content}
+                      handleError={handleError}
+                      buttonsSet={[
+                        {
+                          buttonType: "openButton",
+                          label: t("enrolInProgram"),
+                          sx: sxEnrollButton,
+                        },
+                        {
+                          buttonType: "saveButton",
+                          label: t("Enrol"),
+                          sx: sxSaveButton,
+                          redirectTo: `/app/subject/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
+                            profileDetails.subjectType.name
+                          }`,
+                          requiredField: selectedProgram,
+                          handleError: handleError,
+                        },
+                        {
+                          buttonType: "cancelButton",
+                          label: t("Cancel"),
+                          sx: sxCancelButton,
+                        },
+                      ]}
+                      title={t("Enrol in program")}
+                      btnHandleClose={close}
+                    />
+                  ) : (
+                    !isEmpty(programs) && (
+                      <Link
+                        to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
+                          programs[0].name
+                        }&formType=ProgramEnrolment&subjectTypeName=${
                           profileDetails.subjectType.name
-                        }`,
-                        requiredField: selectedProgram,
-                        handleError: handleError,
-                      },
-                      {
-                        buttonType: "cancelButton",
-                        label: t("Cancel"),
-                        sx: sxCancelButton,
-                      },
-                    ]}
-                    title={t("Enrol in program")}
-                    btnHandleClose={close}
-                  />
-                ) : (
-                  !profileDetails.voided &&
-                  !isEmpty(programs) && (
-                    <Link
-                      to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
-                        programs[0].name
-                      }&formType=ProgramEnrolment&subjectTypeName=${
-                        profileDetails.subjectType.name
-                      }`}
-                    >
-                      <StyledEnrollButton
-                        id={programs[0].name}
-                        variant="extended"
-                        color="primary"
-                        aria-label="add"
+                        }`}
                       >
-                        {t(`Enrol in ${programs[0].name}`)}
-                      </StyledEnrollButton>
-                    </Link>
-                  )
-                )}
+                        <StyledEnrollButton
+                          id={programs[0].name}
+                          variant="extended"
+                          color="primary"
+                          aria-label="add"
+                        >
+                          {t(`Enrol in ${programs[0].name}`)}
+                        </StyledEnrollButton>
+                      </Link>
+                    )
+                  ))}
               </Grid>
             </StyledRightStack>
           </Grid>
