@@ -14,13 +14,11 @@ const UploadDropzone = ({ onFiles, disabled }) => {
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef(null);
 
+  // Every dropped file goes to the backend, which accepts only .xlsx and
+  // explains any rejection in the chat's error banner.
   const handle = async (files) => {
     if (!files || !files.length || disabled) return;
-    const xlsxOnly = [...files].filter((f) =>
-      f.name.toLowerCase().match(/\.(xlsx|xls)$/),
-    );
-    if (xlsxOnly.length === 0) return;
-    await onFiles(xlsxOnly);
+    await onFiles([...files]);
   };
 
   return (
@@ -59,7 +57,7 @@ const UploadDropzone = ({ onFiles, disabled }) => {
       <input
         ref={inputRef}
         type="file"
-        accept=".xlsx,.xls"
+        accept=".xlsx"
         multiple
         style={{ display: "none" }}
         onChange={(e) => handle(e.target.files)}
