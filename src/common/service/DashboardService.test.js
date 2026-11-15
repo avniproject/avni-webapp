@@ -157,3 +157,75 @@ describe("Subject Type filter preset", function () {
     });
   });
 });
+
+describe("Full page section", function () {
+  const ONE_SECTION_MESSAGE = "A Full page dashboard has only one section. Remove the other sections, or choose Tile or List.";
+  const ONE_DESIGN_CARD_MESSAGE = "Full page needs exactly one Custom Design Card in its section.";
+  const designCard = (uuid) => ({ uuid, name: `Design ${uuid}`, customCardConfigUUID: `config-${uuid}` });
+  const dataCard = { uuid: "data", name: "Data card", customCardConfigUUID: null };
+  const mapping = (card, displayOrder = 1, voided = false) => ({ card, voided, displayOrder });
+  const section = (name, viewType, mappings, voided = false) => ({
+    name,
+    viewType,
+    voided,
+    displayOrder: 1,
+    dashboardSectionCardMappings: mappings,
+  });
+  const messagesOf = (...sections) => DashboardService.validate({ name: "Home", filters: [], sections }).map((x) => x.message);
+
+  it("saves one section holding one Custom Design Card", function () {
+    assert.deepEqual(messagesOf(section("Page", "FullPage", [mapping(designCard("A"))])), []);
+  });
+
+  it("refuses a second section", function () {
+    const messages = messagesOf(section("Page", "FullPage", [mapping(designCard("A"))]), section("Other", "Tile", [mapping(dataCard)]));
+    assert.include(messages, ONE_SECTION_MESSAGE);
+  });
+
+  it("refuses two Full page sections", function () {
+    const messages = messagesOf(
+      section("Page", "FullPage", [mapping(designCard("A"))]),
+      section("Page 2", "FullPage", [mapping(designCard("B"))]),
+    );
+    assert.include(messages, ONE_SECTION_MESSAGE);
+  });
+
+  it("refuses two Custom Design Cards", function () {
+    assert.include(
+      messagesOf(section("Page", "FullPage", [mapping(designCard("A")), mapping(designCard("B"), 2)])),
+      ONE_DESIGN_CARD_MESSAGE,
+    );
+  });
+
+  it("refuses a card that is not a Custom Design Card", function () {
+    assert.include(messagesOf(section("Page", "FullPage", [mapping(dataCard)])), ONE_DESIGN_CARD_MESSAGE);
+  });
+
+  it("asks for cards first when the section has none", function () {
+    const messages = messagesOf(section("Page", "FullPage", []));
+    assert.isAbove(messages.indexOf(ONE_DESIGN_CARD_MESSAGE), messages.indexOf("Please add cards to the section."));
+    assert.equal(messages.indexOf("Please add cards to the section."), 0);
+  });
+
+  it("ignores a deleted section saved earlier", function () {
+    const deleted = section("Old", "Tile", [mapping(dataCard)], true);
+    assert.deepEqual(messagesOf(section("Page", "FullPage", [mapping(designCard("A"))]), deleted), []);
+  });
+
+  it("ignores a card removed from the section", function () {
+    assert.deepEqual(messagesOf(section("Page", "FullPage", [mapping(designCard("A"), -1, true), mapping(designCard("B"), 2)])), []);
+  });
+
+  it("gives no Full page message to Tile and Default sections", function () {
+    const messages = messagesOf(
+      section("Tiles", "Tile", [mapping(designCard("A")), mapping(designCard("B"), 2)]),
+      section("Old", "Default", [mapping(dataCard)]),
+    );
+    assert.deepEqual(messages, []);
+  });
+
+  it("saves a section switched from Full page back to Tile", function () {
+    const switched = { ...section("Page", "FullPage", [mapping(designCard("A")), mapping(dataCard, 2)]), viewType: "Tile" };
+    assert.deepEqual(messagesOf(switched), []);
+  });
+});

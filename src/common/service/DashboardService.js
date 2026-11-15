@@ -42,6 +42,20 @@ class DashboardService {
         message: `Standard report cards of types related to Approval, Comments, Tasks and Checklist currently doesn't support any filter other than Address. Incompatible "Card <=> Filter" combinations are as follows: ${message}`,
       });
     }
+    const liveSections = WebDashboard.getSections(dashboard);
+    if (some(liveSections, ({ viewType }) => viewType === "FullPage")) {
+      if (liveSections.length > 1) {
+        errors.push({
+          key: "EMPTY_SECTIONS",
+          message: "A Full page dashboard has only one section. Remove the other sections, or choose Tile or List.",
+        });
+      } else {
+        const cards = WebDashboardSection.getReportCards(liveSections[0]);
+        if (cards.length !== 1 || isEmpty(cards[0].customCardConfigUUID)) {
+          errors.push({ key: "EMPTY_SECTIONS", message: "Full page needs exactly one Custom Design Card in its section." });
+        }
+      }
+    }
     this.validateForMissingSubjectTypeFilter(dashboard.filters, errors);
     return errors;
   }

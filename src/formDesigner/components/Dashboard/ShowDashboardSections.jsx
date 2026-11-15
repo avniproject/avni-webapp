@@ -166,7 +166,9 @@ const ShowDashboardSections = ({ sections }) => {
                     <Grid size={12}>
                       <ShowLabelValue
                         label="View Type"
-                        value={section.viewType}
+                        value={WebDashboardSection.viewTypeLabel(
+                          section.viewType
+                        )}
                       />
                     </Grid>
                     <Grid size={12}>
