@@ -20,12 +20,12 @@ const LocationSpy = () => {
   return null;
 };
 
-const renderTable = async (fetchData, initialEntry = "/list") => {
+const renderTable = async (fetchData, initialEntry = "/list", tableProps = {}) => {
   await act(async () =>
     root.render(
       <MemoryRouter initialEntries={[initialEntry]}>
         <LocationSpy />
-        <AvniMaterialTable columns={columns} fetchData={fetchData} options={{ sorting: true, pageSize: 10 }} />
+        <AvniMaterialTable columns={columns} fetchData={fetchData} options={{ sorting: true, pageSize: 10 }} {...tableProps} />
       </MemoryRouter>
     )
   );
@@ -446,5 +446,24 @@ describe("AvniMaterialTable default sort", () => {
 
     fetchData.mock.calls.forEach(([params]) => expect(params.orderBy).toBeUndefined());
     expect(currentSearch).toBe("");
+  });
+});
+
+describe("AvniMaterialTable column filters", () => {
+  const filtersButton = () => container.querySelector("button[aria-label='Show/Hide filters']");
+
+  it("shows no column filter boxes when the list does not turn them on, and keeps the search", async () => {
+    const fetchData = jest.fn().mockResolvedValue({ data: [{ name: "B" }], totalCount: 1 });
+    await renderTable(fetchData);
+
+    expect(filtersButton()).toBeNull();
+    expect(container.querySelector("button[aria-label='Show/Hide search']")).not.toBeNull();
+  });
+
+  it("shows the column filter boxes when the list turns them on", async () => {
+    const fetchData = jest.fn().mockResolvedValue({ data: [{ name: "B" }], totalCount: 1 });
+    await renderTable(fetchData, "/list", { enableColumnFilters: true });
+
+    expect(filtersButton()).not.toBeNull();
   });
 });

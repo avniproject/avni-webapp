@@ -374,7 +374,7 @@ const AvniMaterialTable = forwardRef(
 
     const tableProps = useMemo(
       () => ({
-        enableColumnFilters: options.searching !== false,
+        enableColumnFilters: false,
         enableGlobalFilter: options.searching !== false,
         enableSorting: !!options.sorting,
         ...appDesignerTableDefaults,
