@@ -10,12 +10,12 @@ import {
   Switch,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { find } from "lodash";
+import { find, some } from "lodash";
 import AddressLevelsByType from "../../../common/components/AddressLevelsByType";
 
 const StyledContainer = styled(Grid)({
-  marginTop: "1%",
-  marginBottom: "1%",
+  marginTop: 8,
+  marginBottom: 8,
 });
 
 const StyledLabel = styled(Typography)({
@@ -65,108 +65,117 @@ function BasicForm({
 
   const isFilterConfigured = !!find(searchFilterForms, (sff) => sff.type);
   // An organisation may already have two Program filters on a subject type; the tick boxes are drawn once.
-  const programFilter = find(searchFilterForms, (sff) => sff.type === "Program");
+  const programFilter = find(
+    searchFilterForms,
+    (sff) => sff.type === "Program",
+  );
+  const hasFilterOfType = (...types) =>
+    some(searchFilterForms, (sff) => types.includes(sff.type));
 
   return isFilterConfigured ? (
     <Fragment>
-      <StyledContainer container spacing={3}>
-        {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "Name" ? (
-            <Grid key={index}>
-              <StyledLabel variant="body1">
-                {t(searchFilterForm.titleKey)}
-              </StyledLabel>
-              <TextField
-                id={searchFilterForm.titleKey}
-                key={index}
-                name="name"
-                autoComplete="off"
-                type="text"
-                style={{ width: "100%" }}
-                onChange={onChange}
-                value={enterValue.name}
-              />
-            </Grid>
-          ) : (
-            ""
-          ),
-        )}
+      {hasFilterOfType("Name", "Age", "SearchAll") && (
+        <StyledContainer container spacing={3}>
+          {searchFilterForms.map((searchFilterForm, index) =>
+            searchFilterForm.type === "Name" ? (
+              <Grid key={index}>
+                <StyledLabel variant="body1">
+                  {t(searchFilterForm.titleKey)}
+                </StyledLabel>
+                <TextField
+                  id={searchFilterForm.titleKey}
+                  key={index}
+                  name="name"
+                  autoComplete="off"
+                  type="text"
+                  style={{ width: "100%" }}
+                  onChange={onChange}
+                  value={enterValue.name}
+                />
+              </Grid>
+            ) : (
+              ""
+            ),
+          )}
 
-        {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "Age" ? (
-            <Grid key={index}>
-              <StyledLabel variant="body1">
-                {t(searchFilterForm.titleKey)}
-              </StyledLabel>
-              <TextField
-                id={searchFilterForm.titleKey}
-                key={index}
-                autoComplete="off"
-                name="age"
-                type="number"
-                style={{ width: "100%" }}
-                onChange={onChange}
-                value={enterValue.age}
-                slotProps={{
-                  htmlInput: {
-                    onWheel: (e) => e.target.blur(),
-                  },
-                }}
-              />
-              {dateOfBirth && enterValue.age ? (
-                <Typography
-                  variant="caption"
-                  color="textSecondary"
-                  sx={{ display: "block", mt: 0.5 }}
-                >
-                  {t("dateOfBirthTakesPrecedence")}
-                </Typography>
-              ) : null}
-            </Grid>
-          ) : (
-            ""
-          ),
-        )}
+          {searchFilterForms.map((searchFilterForm, index) =>
+            searchFilterForm.type === "Age" ? (
+              <Grid key={index}>
+                <StyledLabel variant="body1">
+                  {t(searchFilterForm.titleKey)}
+                </StyledLabel>
+                <TextField
+                  id={searchFilterForm.titleKey}
+                  key={index}
+                  autoComplete="off"
+                  name="age"
+                  type="number"
+                  style={{ width: "100%" }}
+                  onChange={onChange}
+                  value={enterValue.age}
+                  slotProps={{
+                    htmlInput: {
+                      onWheel: (e) => e.target.blur(),
+                    },
+                  }}
+                />
+                {dateOfBirth && enterValue.age ? (
+                  <Typography
+                    variant="caption"
+                    color="textSecondary"
+                    sx={{ display: "block", mt: 0.5 }}
+                  >
+                    {t("dateOfBirthTakesPrecedence")}
+                  </Typography>
+                ) : null}
+              </Grid>
+            ) : (
+              ""
+            ),
+          )}
 
-        {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "SearchAll"
-            ? renderSearchAll(index, searchFilterForm.titleKey)
-            : "",
-        )}
-      </StyledContainer>
-      <StyledContainer container spacing={3}>
-        {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "Gender" ? (
-            <Grid key={index} size={12}>
-              <StyledLabel variant="body1">
-                {t(searchFilterForm.titleKey)}
-              </StyledLabel>
-              <FormGroup row>
-                {genders.map((gender, index) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={
-                          selectedGender != null
-                            ? selectedGender[gender.uuid]
-                            : false
-                        }
-                        onChange={onGenderChange}
-                        name={gender.uuid}
-                        color="primary"
-                      />
-                    }
-                    label={t(gender.name)}
-                    key={index}
-                  />
-                ))}
-              </FormGroup>
-            </Grid>
-          ) : (
-            ""
-          ),
-        )}
-      </StyledContainer>
+          {searchFilterForms.map((searchFilterForm, index) =>
+            searchFilterForm.type === "SearchAll"
+              ? renderSearchAll(index, searchFilterForm.titleKey)
+              : "",
+          )}
+        </StyledContainer>
+      )}
+      {hasFilterOfType("Gender") && (
+        <StyledContainer container spacing={3}>
+          {searchFilterForms.map((searchFilterForm, index) =>
+            searchFilterForm.type === "Gender" ? (
+              <Grid key={index} size={12}>
+                <StyledLabel variant="body1">
+                  {t(searchFilterForm.titleKey)}
+                </StyledLabel>
+                <FormGroup row>
+                  {genders.map((gender, index) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={
+                            selectedGender != null
+                              ? selectedGender[gender.uuid]
+                              : false
+                          }
+                          onChange={onGenderChange}
+                          name={gender.uuid}
+                          color="primary"
+                        />
+                      }
+                      label={t(gender.name)}
+                      key={index}
+                    />
+                  ))}
+                </FormGroup>
+              </Grid>
+            ) : (
+              ""
+            ),
+          )}
+        </StyledContainer>
+      )}
 
       {programs.length > 0 && (
         <StyledContainer container spacing={3}>
@@ -191,6 +200,8 @@ function BasicForm({
                       key={program.uuid}
                     />
                   ))}
+                </FormGroup>
+                <FormGroup row sx={{ mt: 0.5 }}>
                   <FormControlLabel
                     disabled={!notEnrolledInAnyProgramEnabled}
                     control={
@@ -230,21 +241,23 @@ function BasicForm({
         </StyledContainer>
       )}
 
-      <StyledContainer container spacing={3}>
-        {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "Address" ? (
-            <Grid key={index} size={12}>
-              <AddressLevelsByType
-                label={t(searchFilterForm.titleKey)}
-                addressLevelsIds={addressLevelIds}
-                setAddressLevelsIds={setAddressLevelIds}
-              />
-            </Grid>
-          ) : (
-            ""
-          ),
-        )}
-      </StyledContainer>
+      {hasFilterOfType("Address") && (
+        <StyledContainer container spacing={3}>
+          {searchFilterForms.map((searchFilterForm, index) =>
+            searchFilterForm.type === "Address" ? (
+              <Grid key={index} size={12}>
+                <AddressLevelsByType
+                  label={t(searchFilterForm.titleKey)}
+                  addressLevelsIds={addressLevelIds}
+                  setAddressLevelsIds={setAddressLevelIds}
+                />
+              </Grid>
+            ) : (
+              ""
+            ),
+          )}
+        </StyledContainer>
+      )}
     </Fragment>
   ) : (
     <StyledContainer container spacing={3}>

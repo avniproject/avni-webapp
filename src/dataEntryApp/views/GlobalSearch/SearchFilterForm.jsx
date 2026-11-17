@@ -2,7 +2,6 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { LineBreak } from "../../../common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   Paper,
@@ -20,7 +19,7 @@ import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
 import NonConceptForm from "../GlobalSearch/NonConceptForm";
 import CodedConceptForm from "../GlobalSearch/CodedConceptForm";
-import CheckBoxSearchComponent from "./CheckBoxSearchComponent";
+import SwitchSearchComponent from "./SwitchSearchComponent";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { format, isValid, parse, parseISO } from "date-fns";
 import { store } from "../../../common/store";
@@ -48,7 +47,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   backgroundColor: "white",
 }));
 
-const StyledTypography = styled(Typography)({ fontSize: 20 });
+const StyledTypography = styled(Typography)({ fontSize: 20, marginBottom: 8 });
 
 export const toConceptPickerValue = (conceptDataType, value) => {
   if (!_.isString(value)) return value;
@@ -497,14 +496,14 @@ export const SearchForm = ({
 
           <Grid container spacing={3} direction="row">
             <Grid>
-              <CheckBoxSearchComponent
-                label="Include Voided"
+              <SwitchSearchComponent
+                label="includeVoided"
                 checked={includeVoided}
                 onChange={(e) => onChecked("includeVoided", e.target.checked)}
               />
             </Grid>
             <Grid>
-              <CheckBoxSearchComponent
+              <SwitchSearchComponent
                 label="Display Count"
                 checked={includeDisplayCount}
                 onChange={(e) =>
@@ -619,10 +618,9 @@ export const SearchFilterForm = ({
     <Fragment>
       <Breadcrumbs path={location.pathname} />
       <StyledPaper>
-        <StyledTypography component="span">
+        <StyledTypography component="h1">
           {useTranslation().t("search")}
         </StyledTypography>
-        <LineBreak num={1} />
 
         <SearchForm
           operationalModules={operationalModules}

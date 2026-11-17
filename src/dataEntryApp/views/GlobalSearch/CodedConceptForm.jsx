@@ -12,8 +12,8 @@ import _ from "lodash";
 import { isSameConceptFilter } from "../../reducers/searchFilterReducer";
 
 const StyledGrid = styled(Grid)({
-  marginTop: "1%",
-  marginBottom: "1%",
+  marginTop: 8,
+  marginBottom: 8,
 });
 
 const StyledLabel = styled(Typography)({
@@ -28,14 +28,17 @@ function CodedConceptForm({
   selectedConcepts,
 }) {
   const { t } = useTranslation();
-  return searchFilterForms ? (
+  const hasCodedConceptFilter = _.some(
+    searchFilterForms,
+    (sff) => sff.type === "Concept" && sff.conceptDataType === "Coded",
+  );
+  return hasCodedConceptFilter ? (
     <Fragment key={searchFilterForms.uuid}>
       <StyledGrid container spacing={3}>
         {searchFilterForms.map((searchFilterForm, index) => {
           const selectedValue = _.head(
-            selectedConcepts.filter(
-              (selectedConcept) =>
-                isSameConceptFilter(selectedConcept, searchFilterForm),
+            selectedConcepts.filter((selectedConcept) =>
+              isSameConceptFilter(selectedConcept, searchFilterForm),
             ),
           );
           let selected = {};

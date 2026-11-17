@@ -5,31 +5,30 @@ import SubjectTypeIcon from "../../components/SubjectTypeIcon";
 import { sortBy } from "lodash";
 
 const StyledGridContainer = styled(Grid)({
-  alignItems: "center"
+  alignItems: "center",
 });
 
 const StyledGridItem = styled(Grid)({
-  alignItems: "center"
+  alignItems: "center",
 });
 
 const StyledButton = styled(Button, {
-  shouldForwardProp: prop => prop !== "isSelected"
+  shouldForwardProp: (prop) => prop !== "isSelected",
 })(({ theme, isSelected }) => ({
-  margin: theme.spacing(1),
   color: theme.palette.getContrastText(
-    isSelected ? "rgba(0,108,235,0.85)" : "rgb(252,252,252)"
+    isSelected ? "rgba(0,108,235,0.85)" : "rgb(252,252,252)",
   ),
   background: isSelected ? "rgba(0,108,235,0.85)" : "rgb(252,252,252)",
   "&:hover": {
-    backgroundColor: "rgb(0,108,235)"
-  }
+    backgroundColor: "rgb(0,108,235)",
+  },
 }));
 
 const SubjectTypeOptions = ({
   t,
   operationalModules,
   onSubjectTypeChange,
-  selectedSubjectTypeUUID
+  selectedSubjectTypeUUID,
 }) => {
   return (
     <Fragment>
@@ -51,7 +50,7 @@ const SubjectTypeOptions = ({
                     </StyledGridContainer>
                   </StyledButton>
                 </StyledGridItem>
-              )
+              ),
             )
           : ""}
       </StyledGridContainer>

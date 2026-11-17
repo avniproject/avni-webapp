@@ -14,8 +14,8 @@ import { isSameConceptFilter } from "../../reducers/searchFilterReducer";
 import { dateFormat } from "dataEntryApp/constants";
 
 const StyledGrid = styled(Grid)({
-  marginTop: "1%",
-  marginBottom: "1%",
+  marginTop: 8,
+  marginBottom: 8,
 });
 
 const StyledTypography = styled(Typography)({
@@ -44,14 +44,18 @@ function NonCodedConceptForm({
 }) {
   const { t } = useTranslation();
 
-  return searchFilterForms ? (
+  const hasNonCodedConceptFilter = _.some(
+    searchFilterForms,
+    (sff) => sff.type === "Concept" && sff.conceptDataType !== "Coded",
+  );
+
+  return hasNonCodedConceptFilter ? (
     <Fragment key={searchFilterForms.uuid}>
       <StyledGrid container spacing={3}>
         {searchFilterForms.map((searchFilterForm, index) => {
           const selectedValue = _.head(
-            selectedConcepts.filter(
-              (selectedConcept) =>
-                isSameConceptFilter(selectedConcept, searchFilterForm),
+            selectedConcepts.filter((selectedConcept) =>
+              isSameConceptFilter(selectedConcept, searchFilterForm),
             ),
           );
           return searchFilterForm.type === "Concept" &&
@@ -72,7 +76,9 @@ function NonCodedConceptForm({
                 />
               </Grid>
             ) : searchFilterForm.widget === "Range" ? (
-              ["Date", "DateTime"].includes(searchFilterForm.conceptDataType) ? (
+              ["Date", "DateTime"].includes(
+                searchFilterForm.conceptDataType,
+              ) ? (
                 <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <StyledTypography variant="body1" sx={{ mb: 1 }}>
@@ -210,7 +216,9 @@ function NonCodedConceptForm({
                     }}
                   />
                 </Grid>
-              ) : ["Date", "DateTime"].includes(searchFilterForm.conceptDataType) ? (
+              ) : ["Date", "DateTime"].includes(
+                  searchFilterForm.conceptDataType,
+                ) ? (
                 <Grid key={index} size={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <StyledTypography variant="body1" sx={{ mb: 1 }}>

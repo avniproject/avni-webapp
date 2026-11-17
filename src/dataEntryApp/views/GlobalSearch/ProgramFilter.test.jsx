@@ -134,10 +134,42 @@ describe("Program search filter", () => {
   it("shows not enrolled and include exited as toggles and the programmes as tick boxes", async () => {
     await renderForm(configsWith(programFilter("st-person")));
 
-    const isToggle = (name) => checkbox(name).classList.contains("MuiSwitch-input");
+    const isToggle = (name) =>
+      checkbox(name).classList.contains("MuiSwitch-input");
     expect(isToggle("notEnrolledInAnyProgram")).toBe(true);
     expect(isToggle("includeExitedEnrolments")).toBe(true);
     expect(isToggle("p-child")).toBe(false);
+  });
+
+  it("puts the two toggles on their own row below the programmes", async () => {
+    await renderForm(configsWith(programFilter("st-person")));
+
+    const rowOf = (name) => checkbox(name).closest(".MuiFormGroup-root");
+    expect(rowOf("notEnrolledInAnyProgram")).toBe(
+      rowOf("includeExitedEnrolments"),
+    );
+    expect(rowOf("notEnrolledInAnyProgram")).not.toBe(rowOf("p-child"));
+    expect(rowOf("p-child")).toBe(rowOf("p-anc"));
+  });
+
+  it("shows Include voided and Display Count as toggles", async () => {
+    await renderForm(configsWith(programFilter("st-person")));
+
+    const toggleLabelled = (text) =>
+      [...container.querySelectorAll("label")]
+        .find((label) => label.textContent === text)
+        ?.querySelector("input.MuiSwitch-input");
+    expect(toggleLabelled("includeVoided")).toBeTruthy();
+    expect(toggleLabelled("Display Count")).toBeTruthy();
+  });
+
+  it("draws no empty sections for filter types that aren't configured", async () => {
+    await renderForm(configsWith(programFilter("st-person")));
+
+    const sections = [...container.querySelectorAll(".MuiGrid-container")];
+    expect(sections.every((section) => section.childElementCount > 0)).toBe(
+      true,
+    );
   });
 
   it("shows a tick box per programme and one for not enrolled", async () => {

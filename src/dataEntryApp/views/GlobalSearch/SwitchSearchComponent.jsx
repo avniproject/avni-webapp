@@ -1,14 +1,14 @@
 import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
-import { FormControl, FormControlLabel, Checkbox, Grid } from "@mui/material";
+import { FormControl, FormControlLabel, Switch, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 const StyledGrid = styled(Grid)({
-  marginTop: "1%",
-  marginBottom: "1%"
+  marginTop: 8,
+  marginBottom: 8,
 });
 
-function CheckBoxSearchComponent({ label, checked, onChange }) {
+function SwitchSearchComponent({ label, checked, onChange }) {
   const { t } = useTranslation();
   return (
     <Fragment>
@@ -17,11 +17,7 @@ function CheckBoxSearchComponent({ label, checked, onChange }) {
           <FormControl component="fieldset">
             <FormControlLabel
               control={
-                <Checkbox
-                  checked={checked}
-                  onChange={onChange}
-                  color="primary"
-                />
+                <Switch checked={checked} onChange={onChange} color="primary" />
               }
               label={t(label)}
               labelPlacement="end"
@@ -33,4 +29,4 @@ function CheckBoxSearchComponent({ label, checked, onChange }) {
   );
 }
 
-export default CheckBoxSearchComponent;
+export default SwitchSearchComponent;
