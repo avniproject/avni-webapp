@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import SearchFilterFormContainer from "./SearchFilterForm";
 
+// The real ToolTip imports react-markdown, an ES module Jest here cannot load.
+jest.mock("../../../common/components/ToolTip", () => ({
+  ToolTip: () => null,
+}));
+
 const mockState = {
   dataEntry: {
     metadata: {
@@ -61,7 +66,9 @@ describe("SearchFilterFormContainer when the organisation configuration fails to
 
     const alert = container.querySelector("[role='alert']");
     expect(alert.textContent).toBe("somethingWentWrong");
-    expect(container.querySelector("[data-testid='breadcrumbs']")).not.toBeNull();
+    expect(
+      container.querySelector("[data-testid='breadcrumbs']"),
+    ).not.toBeNull();
     expect(alert.closest(".MuiPaper-root")).not.toBeNull();
   });
 });

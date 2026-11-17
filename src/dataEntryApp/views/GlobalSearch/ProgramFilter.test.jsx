@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import { SearchForm, programsOfSubjectType } from "./SearchFilterForm";
 
+// The real ToolTip imports react-markdown, an ES module Jest here cannot load.
+jest.mock("../../../common/components/ToolTip", () => ({
+  ToolTip: ({ message }) => <span data-testid="tooltip">{message}</span>,
+}));
+
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key) => key,
@@ -233,17 +238,16 @@ describe("Program search filter", () => {
     expect(request.includeExitedEnrolments).toBe(true);
   });
 
-  it("explains each toggle in a tooltip, with no note under them", async () => {
+  it("explains each toggle in a question-mark tooltip, with no note under them", async () => {
     await renderForm(configsWith(programFilter("st-person")));
 
-    const tooltipOf = (name) =>
-      checkbox(name).closest("label").getAttribute("aria-label");
-    expect(tooltipOf("notEnrolledInAnyProgram")).toBe(
+    const tooltips = [
+      ...container.querySelectorAll("[data-testid='tooltip']"),
+    ].map((tooltip) => tooltip.textContent);
+    expect(tooltips).toEqual([
       "notEnrolledInAnyProgramTooltip",
-    );
-    expect(tooltipOf("includeExitedEnrolments")).toBe(
       "includeExitedEnrolmentsTooltip",
-    );
+    ]);
     expect(container.textContent).not.toContain("includeExitedEnrolmentsHelp");
   });
 

@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import { SearchForm } from "./SearchFilterForm";
 
+// The real ToolTip imports react-markdown, an ES module Jest here cannot load.
+jest.mock("../../../common/components/ToolTip", () => ({
+  ToolTip: () => null,
+}));
+
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key) => key,

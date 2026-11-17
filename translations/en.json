@@ -116,7 +116,7 @@
     "notEnrolledInAnyProgram": "Not enrolled in any program",
     "exitedEnrolment": "Exited",
     "includeExitedEnrolments": "Include exited",
-    "notEnrolledInAnyProgramTooltip": "Turn this on if you want the search results to include subjects not enrolled in any program",
+    "notEnrolledInAnyProgramTooltip": "Turn this on to show only subjects not enrolled in any program. If you also tick programs, subjects in those programs are shown as well.",
     "includeExitedEnrolmentsTooltip": "Turn this on if you also want to include exited enrolments in the search results",
     "vaccinations": "Vaccinations",
     "checklists": "Checklists",

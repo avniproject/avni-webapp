@@ -4,6 +4,11 @@ import {
   toConceptRequestValue,
 } from "./SearchFilterForm";
 
+// The real ToolTip imports react-markdown, an ES module Jest here cannot load.
+jest.mock("../../../common/components/ToolTip", () => ({
+  ToolTip: () => null,
+}));
+
 describe("toConceptPickerValue", () => {
   it("turns a saved date back into a local date for the date picker", () => {
     const value = toConceptPickerValue("Date", "2026-01-15");
@@ -48,9 +53,9 @@ describe("toConceptRequestValue", () => {
     expect(toConceptRequestValue("DateTime", new Date(2026, 0, 1))).toBe(
       "2026-01-01",
     );
-    expect(toConceptRequestValue("DateTime", new Date(2026, 0, 1, 23, 45))).toBe(
-      "2026-01-01",
-    );
+    expect(
+      toConceptRequestValue("DateTime", new Date(2026, 0, 1, 23, 45)),
+    ).toBe("2026-01-01");
   });
 
   it("sends a date-time saved with a time, before the picker became date-only, as the user's own day", () => {

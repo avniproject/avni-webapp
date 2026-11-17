@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import { SearchForm } from "./SearchFilterForm";
 
+// The real ToolTip imports react-markdown, an ES module Jest here cannot load.
+jest.mock("../../../common/components/ToolTip", () => ({
+  ToolTip: () => null,
+}));
+
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key) => key,
@@ -247,7 +252,10 @@ describe("SearchForm date-time filter", () => {
     const sent = onSearch.mock.calls[0][0].concept.find(
       (c) => c.uuid === "datetime-uuid",
     );
-    expect([sent.minValue, sent.maxValue]).toEqual(["2026-02-05", "2026-02-05"]);
+    expect([sent.minValue, sent.maxValue]).toEqual([
+      "2026-02-05",
+      "2026-02-05",
+    ]);
   });
 });
 
@@ -294,7 +302,8 @@ describe("SearchForm with one concept set up as two filters with different scope
     },
     conceptList: [],
   };
-  const textBox = (titleKey) => container.querySelector(`input[id='${titleKey}']`);
+  const textBox = (titleKey) =>
+    container.querySelector(`input[id='${titleKey}']`);
   const typeInto = async (input, value) => {
     const setValue = Object.getOwnPropertyDescriptor(
       window.HTMLInputElement.prototype,
@@ -333,8 +342,20 @@ describe("SearchForm with one concept set up as two filters with different scope
       {
         ...emptySearch,
         concept: [
-          { uuid: "text-uuid", searchScope: "programEnrolment", dataType: "Text", widget: "Default", value: "enrolled" },
-          { uuid: "text-uuid", searchScope: "registration", dataType: "Text", widget: "Default", value: "registered" },
+          {
+            uuid: "text-uuid",
+            searchScope: "programEnrolment",
+            dataType: "Text",
+            widget: "Default",
+            value: "enrolled",
+          },
+          {
+            uuid: "text-uuid",
+            searchScope: "registration",
+            dataType: "Text",
+            widget: "Default",
+            value: "registered",
+          },
         ],
       },
       twoScopes,

@@ -96,7 +96,7 @@
     "notEnrolledInAnyProgram": "કોઈ પણ પ્રોગ્રામમાં પ્રવેશ નથી",
     "exitedEnrolment": "બહાર નીકળ્યા",
     "includeExitedEnrolments": "બહાર નીકળેલાને પણ સામેલ કરો",
-    "notEnrolledInAnyProgramTooltip": "કોઈ પણ પ્રોગ્રામમાં પ્રવેશ ન હોય તેવી વ્યક્તિઓને પણ શોધ પરિણામોમાં સામેલ કરવી હોય, તો આ ચાલુ કરો",
+    "notEnrolledInAnyProgramTooltip": "કોઈ પણ પ્રોગ્રામમાં પ્રવેશ ન હોય તેવી વ્યક્તિઓ જ બતાવવા માટે આ ચાલુ કરો. જો તમે પ્રોગ્રામ પણ પસંદ કરો, તો તે પ્રોગ્રામની વ્યક્તિઓ પણ બતાવવામાં આવશે.",
     "includeExitedEnrolmentsTooltip": "શોધ પરિણામોમાં બહાર નીકળેલા પ્રવેશ પણ સામેલ કરવા હોય, તો આ ચાલુ કરો",
     "vaccinations": "રસીકરણ",
     "checklists": "ચેકલિસ્ટ્સ",
