@@ -48,9 +48,7 @@ describe("searchFilterReducer", () => {
     saveSearchRequest(searchRequest);
 
     expect(getInitialState().request).toEqual(searchRequest);
-    expect(reducer(undefined, { type: "@@INIT" }).request).toEqual(
-      searchRequest,
-    );
+    expect(reducer(undefined, { type: "@@INIT" }).request).toEqual(searchRequest);
   });
 
   it("forgets the search once it is cleared", () => {
@@ -113,9 +111,7 @@ describe("toUsableSearchRequest", () => {
 
   it("ignores a search for a subject type the user does not have, such as one from another organisation", () => {
     expect(
-      toUsableSearchRequest({ ...searchRequest, subjectType: "org-a-subject-type" }, subjectTypes, [
-        conceptFilter("coded-concept-uuid"),
-      ])
+      toUsableSearchRequest({ ...searchRequest, subjectType: "org-a-subject-type" }, subjectTypes, [conceptFilter("coded-concept-uuid")]),
     ).toEqual({ includeVoided: false, includeDisplayCount: false });
   });
 
@@ -133,7 +129,14 @@ describe("toUsableSearchRequest", () => {
 
   describe("a concept filter changed in App Designer after the search was saved", () => {
     const configured = (extra) => ({ ...conceptFilter("numeric-uuid"), conceptDataType: "Numeric", scope: "registration", ...extra });
-    const savedNumeric = { uuid: "numeric-uuid", dataType: "Numeric", searchScope: "registration", widget: "Range", minValue: "10", maxValue: "20" };
+    const savedNumeric = {
+      uuid: "numeric-uuid",
+      dataType: "Numeric",
+      searchScope: "registration",
+      widget: "Range",
+      minValue: "10",
+      maxValue: "20",
+    };
     const request = { ...searchRequest, concept: [savedNumeric] };
 
     it("keeps it while its widget, type and scope are unchanged", () => {
@@ -147,33 +150,31 @@ describe("toUsableSearchRequest", () => {
     it("drops it when its widget changed from Default to Range", () => {
       const savedDefault = { ...savedNumeric, widget: "Default", maxValue: null };
       expect(
-        toUsableSearchRequest({ ...request, concept: [savedDefault] }, subjectTypes, [configured({ widget: "Range" })]).concept
+        toUsableSearchRequest({ ...request, concept: [savedDefault] }, subjectTypes, [configured({ widget: "Range" })]).concept,
       ).toEqual([]);
     });
 
     it("drops it when the concept's data type no longer matches", () => {
-      expect(
-        toUsableSearchRequest(request, subjectTypes, [configured({ widget: "Range", conceptDataType: "Date" })]).concept
-      ).toEqual([]);
+      expect(toUsableSearchRequest(request, subjectTypes, [configured({ widget: "Range", conceptDataType: "Date" })]).concept).toEqual([]);
     });
 
     it("searches with the configured scope", () => {
-      expect(
-        toUsableSearchRequest(request, subjectTypes, [configured({ widget: "Range", scope: "programEnrolment" })]).concept
-      ).toEqual([{ ...savedNumeric, searchScope: "programEnrolment" }]);
+      expect(toUsableSearchRequest(request, subjectTypes, [configured({ widget: "Range", scope: "programEnrolment" })]).concept).toEqual([
+        { ...savedNumeric, searchScope: "programEnrolment" },
+      ]);
     });
 
     it("treats a filter with no widget, such as Text or Coded, as Default", () => {
       const savedText = { uuid: "numeric-uuid", dataType: "Text", searchScope: "registration", widget: null, value: "x" };
       const textRequest = { ...searchRequest, concept: [savedText] };
-      expect(
-        toUsableSearchRequest(textRequest, subjectTypes, [configured({ conceptDataType: "Text", widget: "Default" })])
-      ).toBe(textRequest);
+      expect(toUsableSearchRequest(textRequest, subjectTypes, [configured({ conceptDataType: "Text", widget: "Default" })])).toBe(
+        textRequest,
+      );
     });
   });
 
   describe("one concept set up as two filters with different scopes", () => {
-    const filterAt = scope => ({ ...conceptFilter("text-concept-uuid"), conceptDataType: "Text", scope });
+    const filterAt = (scope) => ({ ...conceptFilter("text-concept-uuid"), conceptDataType: "Text", scope });
     const savedAt = (searchScope, value) => ({ uuid: "text-concept-uuid", dataType: "Text", widget: "Default", searchScope, value });
 
     it("keeps each saved value with its own scope", () => {
@@ -185,16 +186,14 @@ describe("toUsableSearchRequest", () => {
     it("drops a saved value whose scope matches neither filter", () => {
       const request = { ...searchRequest, concept: [savedAt("encounter", "a")] };
 
-      expect(
-        toUsableSearchRequest(request, subjectTypes, [filterAt("registration"), filterAt("programEnrolment")]).concept
-      ).toEqual([]);
+      expect(toUsableSearchRequest(request, subjectTypes, [filterAt("registration"), filterAt("programEnrolment")]).concept).toEqual([]);
     });
 
     it("keeps the other value when one of the two filters is removed", () => {
       const request = { ...searchRequest, concept: [savedAt("registration", "a"), savedAt("programEnrolment", "b")] };
 
       expect(toUsableSearchRequest(request, subjectTypes, [filterAt("programEnrolment")]).concept).toEqual([
-        savedAt("programEnrolment", "b")
+        savedAt("programEnrolment", "b"),
       ]);
     });
   });
@@ -204,22 +203,25 @@ describe("toUsableSearchRequest", () => {
   });
 
   const programFilter = { type: "Program", subjectTypeUUID: "subject-type-uuid" };
-  const enrolmentMapping = programUUID => ({ formType: "ProgramEnrolment", subjectTypeUUID: "subject-type-uuid", programUUID });
+  const enrolmentMapping = (programUUID) => ({ formType: "ProgramEnrolment", subjectTypeUUID: "subject-type-uuid", programUUID });
   const operationalModules = {
-    programs: [{ uuid: "p1", name: "Pregnancy" }, { uuid: "p2", name: "Child" }, { uuid: "p3", name: "Other" }],
-    formMappings: [enrolmentMapping("p1"), enrolmentMapping("p2"), { formType: "ProgramEnrolment", subjectTypeUUID: "other-uuid", programUUID: "p3" }]
+    programs: [
+      { uuid: "p1", name: "Pregnancy" },
+      { uuid: "p2", name: "Child" },
+      { uuid: "p3", name: "Other" },
+    ],
+    formMappings: [
+      enrolmentMapping("p1"),
+      enrolmentMapping("p2"),
+      { formType: "ProgramEnrolment", subjectTypeUUID: "other-uuid", programUUID: "p3" },
+    ],
   };
   const withProgramFilter = [conceptFilter("coded-concept-uuid"), programFilter];
 
-  it("drops Not enrolled from a search saved with Include exited too", () => {
+  it("keeps Not enrolled and Include exited together", () => {
     const saved = { ...searchRequest, programs: ["p1"], notEnrolledInAnyProgram: true, includeExitedEnrolments: true };
 
-    const usable = toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules);
-
-    expect(usable.notEnrolledInAnyProgram).toBe(false);
-    expect(usable.includeExitedEnrolments).toBe(true);
-    expect(usable.programs).toEqual(["p1"]);
-    expect(saved.notEnrolledInAnyProgram).toBe(true);
+    expect(toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules)).toBe(saved);
   });
 
   it("keeps Not enrolled when Include exited is not ticked", () => {
@@ -298,7 +300,7 @@ describe("clearSearchRequestSavedByOtherUser", () => {
 
 describe("search results page and sort", () => {
   const sortedPageTwo = { pagination: { pageIndex: 1, pageSize: 20 }, sorting: [{ id: "fullName", desc: true }] };
-  const saveTable = table => sessionStorage.setItem(SEARCH_RESULTS_TABLE_STORAGE_KEY, JSON.stringify(table));
+  const saveTable = (table) => sessionStorage.setItem(SEARCH_RESULTS_TABLE_STORAGE_KEY, JSON.stringify(table));
 
   beforeEach(() => {
     sessionStorage.clear();
@@ -376,7 +378,7 @@ describe("searchRequestAfterReset", () => {
     expect(searchRequestAfterReset(searchRequest, subjectTypes)).toEqual({
       subjectType: "subject-type-uuid",
       includeVoided: false,
-      includeDisplayCount: false
+      includeDisplayCount: false,
     });
   });
 
@@ -398,7 +400,7 @@ describe("searchRequestAfterReset", () => {
     expect(getInitialState().request).toEqual({
       subjectType: "subject-type-uuid",
       includeVoided: false,
-      includeDisplayCount: false
+      includeDisplayCount: false,
     });
     expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
   });

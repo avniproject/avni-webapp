@@ -95,10 +95,6 @@ const renderForm = async (organisationConfigs, searchRequest = {}) => {
 const checkbox = (name) =>
   container.querySelector(`input[type='checkbox'][name='${name}']`);
 const click = async (name) => act(async () => checkbox(name).click());
-const greyedOut = (name) => {
-  const box = checkbox(name);
-  return !!box && box.disabled && !box.checked;
-};
 const boxOrder = () =>
   [...container.querySelectorAll("input[type='checkbox']")].map((c) => c.name);
 const search = async () => {
@@ -225,26 +221,22 @@ describe("Program search filter", () => {
     expect(request.notEnrolledInAnyProgram).toBe(true);
   });
 
-  it("greys out Include exited while Not enrolled is ticked", async () => {
+  it("lets Not enrolled and Include exited be on together and sends both", async () => {
     await renderForm(configsWith(programFilter("st-person")));
     await click("notEnrolledInAnyProgram");
+    await click("includeExitedEnrolments");
 
-    expect(greyedOut("includeExitedEnrolments")).toBe(true);
-    await click("notEnrolledInAnyProgram");
-    expect(checkbox("includeExitedEnrolments").checked).toBe(false);
+    expect(checkbox("notEnrolledInAnyProgram").disabled).toBe(false);
+    expect(checkbox("includeExitedEnrolments").disabled).toBe(false);
+    const request = await search();
+    expect(request.notEnrolledInAnyProgram).toBe(true);
+    expect(request.includeExitedEnrolments).toBe(true);
   });
 
-  it("greys out Not enrolled while Include exited is ticked", async () => {
+  it("explains Include exited under the toggles", async () => {
     await renderForm(configsWith(programFilter("st-person")));
-    await click("includeExitedEnrolments");
 
-    expect(greyedOut("notEnrolledInAnyProgram")).toBe(true);
-    const request = await search();
-    expect(request.notEnrolledInAnyProgram).toBe(false);
-    expect(request.includeExitedEnrolments).toBe(true);
-
-    await click("includeExitedEnrolments");
-    expect(checkbox("notEnrolledInAnyProgram").checked).toBe(false);
+    expect(container.textContent).toContain("includeExitedEnrolmentsHelp");
   });
 
   it("leaves exited enrolments out unless Include exited is ticked", async () => {
@@ -289,18 +281,6 @@ describe("Program search filter", () => {
       expect(checkbox("includeExitedEnrolments").checked).toBe(false);
       expect(checkbox("notEnrolledInAnyProgram").disabled).toBe(false);
     }
-  });
-
-  it("ignores a click on the greyed-out box", async () => {
-    await renderForm(configsWith(programFilter("st-person")));
-    await click("includeExitedEnrolments");
-    await click("notEnrolledInAnyProgram");
-
-    expect(checkbox("includeExitedEnrolments").checked).toBe(true);
-    expect(greyedOut("notEnrolledInAnyProgram")).toBe(true);
-    const request = await search();
-    expect(request.includeExitedEnrolments).toBe(true);
-    expect(request.notEnrolledInAnyProgram).toBe(false);
   });
 
   it("is hidden and not sent when the subject type has no programmes", async () => {
@@ -355,7 +335,7 @@ describe("Program search filter", () => {
 
     expect(checkbox("p-anc").checked).toBe(true);
     expect(checkbox("p-child").checked).toBe(false);
-    expect(greyedOut("notEnrolledInAnyProgram")).toBe(true);
+    expect(checkbox("notEnrolledInAnyProgram").checked).toBe(false);
     expect(checkbox("includeExitedEnrolments").checked).toBe(true);
     const request = await search();
     expect(request.programs).toEqual(["p-anc"]);
@@ -363,7 +343,7 @@ describe("Program search filter", () => {
     expect(request.includeExitedEnrolments).toBe(true);
   });
 
-  it("restores Not enrolled with a programme and keeps Include exited greyed out", async () => {
+  it("restores Not enrolled with a programme", async () => {
     await renderForm(configsWith(programFilter("st-person")), {
       programs: ["p-anc", "p-gone"],
       notEnrolledInAnyProgram: true,
@@ -371,23 +351,24 @@ describe("Program search filter", () => {
 
     expect(checkbox("p-anc").checked).toBe(true);
     expect(checkbox("notEnrolledInAnyProgram").checked).toBe(true);
-    expect(greyedOut("includeExitedEnrolments")).toBe(true);
+    expect(checkbox("includeExitedEnrolments").checked).toBe(false);
     const request = await search();
     expect(request.programs).toEqual(["p-anc"]);
     expect(request.notEnrolledInAnyProgram).toBe(true);
   });
 
-  it("never sends Not enrolled with Include exited from an older saved search", async () => {
+  it("restores Not enrolled and Include exited together from a saved search", async () => {
     await renderForm(configsWith(programFilter("st-person")), {
       programs: ["p-anc"],
       notEnrolledInAnyProgram: true,
       includeExitedEnrolments: true,
     });
 
-    expect(greyedOut("notEnrolledInAnyProgram")).toBe(true);
+    expect(checkbox("notEnrolledInAnyProgram").checked).toBe(true);
+    expect(checkbox("includeExitedEnrolments").checked).toBe(true);
     const request = await search();
     expect(request.programs).toEqual(["p-anc"]);
-    expect(request.notEnrolledInAnyProgram).toBe(false);
+    expect(request.notEnrolledInAnyProgram).toBe(true);
     expect(request.includeExitedEnrolments).toBe(true);
   });
 });

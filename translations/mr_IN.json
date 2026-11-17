@@ -95,6 +95,8 @@
     "No": "नाही",
     "notEnrolledInAnyProgram": "कोणत्याही प्रोग्रामात इंरोल केली नाही",
     "exitedEnrolment": "बाहेर पडले",
+    "includeExitedEnrolments": "बाहेर पडलेलेही समाविष्ट करा",
+    "includeExitedEnrolmentsHelp": "ज्यांचे इंरोलमेंट संपले आहे तेही दिसतील. 'कोणत्याही प्रोग्रामात इंरोल केली नाही' सोबत, ज्यांचे सध्या कोणतेही इंरोलमेंट नाही ते दिसतील.",
     "vaccinations": "लसीकरण",
     "checklists": "चेकलिस्ट",
     "completed": "पूर्ण झाले{{completedOn}}",

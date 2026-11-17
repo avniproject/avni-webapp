@@ -39,8 +39,6 @@ function BasicForm({
   notEnrolledInAnyProgram = false,
   onNotEnrolledInAnyProgramChange,
   includeExitedEnrolments = false,
-  notEnrolledInAnyProgramEnabled = true,
-  includeExitedEnrolmentsEnabled = true,
   onIncludeExitedEnrolmentsChange,
 }) {
   const { t } = useTranslation();
@@ -203,13 +201,9 @@ function BasicForm({
                 </FormGroup>
                 <FormGroup row sx={{ mt: 0.5 }}>
                   <FormControlLabel
-                    disabled={!notEnrolledInAnyProgramEnabled}
                     control={
                       <Switch
-                        checked={
-                          notEnrolledInAnyProgramEnabled &&
-                          notEnrolledInAnyProgram
-                        }
+                        checked={notEnrolledInAnyProgram}
                         onChange={onNotEnrolledInAnyProgramChange}
                         name="notEnrolledInAnyProgram"
                         color="primary"
@@ -218,13 +212,9 @@ function BasicForm({
                     label={t("notEnrolledInAnyProgram")}
                   />
                   <FormControlLabel
-                    disabled={!includeExitedEnrolmentsEnabled}
                     control={
                       <Switch
-                        checked={
-                          includeExitedEnrolmentsEnabled &&
-                          includeExitedEnrolments
-                        }
+                        checked={includeExitedEnrolments}
                         onChange={onIncludeExitedEnrolmentsChange}
                         name="includeExitedEnrolments"
                         color="primary"
@@ -233,6 +223,9 @@ function BasicForm({
                     label={t("includeExitedEnrolments")}
                   />
                 </FormGroup>
+                <Typography variant="caption" color="textSecondary">
+                  {t("includeExitedEnrolmentsHelp")}
+                </Typography>
               </Grid>
             ) : (
               ""

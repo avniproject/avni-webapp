@@ -116,6 +116,7 @@
     "notEnrolledInAnyProgram": "Not enrolled in any program",
     "exitedEnrolment": "Exited",
     "includeExitedEnrolments": "Include exited",
+    "includeExitedEnrolmentsHelp": "Include exited also shows subjects whose enrolment has ended. With Not enrolled, it shows subjects with no current enrolment.",
     "vaccinations": "Vaccinations",
     "checklists": "Checklists",
     "dueOn": "Due on {{dueOn}}",

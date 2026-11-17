@@ -93,6 +93,8 @@
     "Yes": "हाँ",
     "notEnrolledInAnyProgram": "किसी प्रोग्राम में एनरोल नहीं",
     "exitedEnrolment": "बाहर हुए",
+    "includeExitedEnrolments": "बाहर हुए भी शामिल करें",
+    "includeExitedEnrolmentsHelp": "इससे वे लोग भी दिखेंगे जिनका एनरोलमेंट समाप्त हो गया है। 'किसी प्रोग्राम में एनरोल नहीं' के साथ, वे लोग दिखेंगे जिनका अभी कोई एनरोलमेंट नहीं है।",
     "vaccinations": "टीकाकरण",
     "checklists": "चेकलिस्ट",
     "userId": "यूज़र आईडी",

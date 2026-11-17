@@ -151,10 +151,7 @@ export const SearchForm = ({
   const [addressLevelIds, setAddressLevelIds] = useState(addressIds || []);
 
   const [selectedPrograms, setSelectedPrograms] = useState(programs || []);
-  // "Not enrolled" can't be combined with "Include exited": ticking one greys out the other.
-  const [notEnrolled, setNotEnrolled] = useState(
-    !!notEnrolledInAnyProgram && !includeExitedEnrolments,
-  );
+  const [notEnrolled, setNotEnrolled] = useState(!!notEnrolledInAnyProgram);
   const [includeExited, setIncludeExited] = useState(!!includeExitedEnrolments);
   const onProgramChange = (e) => {
     const { name, checked } = e.target;
@@ -162,14 +159,8 @@ export const SearchForm = ({
       checked ? _.uniq([...previous, name]) : _.without(previous, name),
     );
   };
-  const onNotEnrolledChange = (e) => {
-    setNotEnrolled(e.target.checked);
-    if (e.target.checked) setIncludeExited(false);
-  };
-  const onIncludeExitedChange = (e) => {
-    setIncludeExited(e.target.checked);
-    if (e.target.checked) setNotEnrolled(false);
-  };
+  const onNotEnrolledChange = (e) => setNotEnrolled(e.target.checked);
+  const onIncludeExitedChange = (e) => setIncludeExited(e.target.checked);
 
   const [subjectTypesWithKind, setSubjectTypesWithKind] = useState([]);
   useEffect(() => {
@@ -198,13 +189,10 @@ export const SearchForm = ({
     selectedPrograms,
     _.map(subjectTypePrograms, "uuid"),
   );
-  const isNotEnrolledEnabled = !includeExited;
-  const effectiveNotEnrolled = isNotEnrolledEnabled && notEnrolled;
-  const isIncludeExitedEnabled = !effectiveNotEnrolled;
   const programRequest = isProgramFilterShown
     ? {
         programs: offeredSelectedPrograms,
-        notEnrolledInAnyProgram: effectiveNotEnrolled,
+        notEnrolledInAnyProgram: notEnrolled,
         includeExitedEnrolments: includeExited,
       }
     : {
@@ -454,12 +442,10 @@ export const SearchForm = ({
               programs={isProgramFilterShown ? subjectTypePrograms : []}
               selectedPrograms={selectedPrograms}
               onProgramChange={onProgramChange}
-              notEnrolledInAnyProgram={effectiveNotEnrolled}
+              notEnrolledInAnyProgram={notEnrolled}
               onNotEnrolledInAnyProgramChange={onNotEnrolledChange}
-              notEnrolledInAnyProgramEnabled={isNotEnrolledEnabled}
               includeExitedEnrolments={includeExited}
               onIncludeExitedEnrolmentsChange={onIncludeExitedChange}
-              includeExitedEnrolmentsEnabled={isIncludeExitedEnabled}
             />
           </Grid>
 
