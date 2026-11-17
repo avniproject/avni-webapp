@@ -28,6 +28,7 @@ import {
   saveSearchRequest,
   toUsableSearchRequest,
   programsOfSubjectType,
+  chosenProgramsAndEncounterTypes,
   isSameConceptFilter,
   savedConceptOf,
 } from "../../reducers/searchFilterReducer";
@@ -309,47 +310,52 @@ export const SearchForm = ({
     });
 
   const getConceptRequests = (list) =>
-    getSelectedConceptApi(list).map((r) => {
-      if (["Date", "DateTime", "Time"].includes(r.conceptDataType)) {
-        return {
-          uuid: r.conceptUUID,
-          minValue: toConceptRequestValue(r.conceptDataType, r.minValue),
-          maxValue: toConceptRequestValue(r.conceptDataType, r.maxValue),
-          searchScope: r.scope,
-          dataType: r.conceptDataType,
-          widget: r.widget,
-        };
-      }
-      if (r.conceptDataType === "Coded") {
-        return {
-          uuid: r.conceptUUID,
-          searchScope: r.scope,
-          dataType: r.conceptDataType,
-          widget: r.widget,
-          values: r.values,
-        };
-      }
-      if (["Text", "Id", "Notes"].includes(r.conceptDataType)) {
-        return {
-          uuid: r.conceptUUID,
-          searchScope: r.scope,
-          dataType: r.conceptDataType,
-          widget: r.widget,
-          value: r.value,
-        };
-      }
-      if (r.conceptDataType === "Numeric") {
-        return {
-          uuid: r.conceptUUID,
-          minValue: r.minValue,
-          maxValue: r.maxValue,
-          searchScope: r.scope,
-          dataType: r.conceptDataType,
-          widget: r.widget,
-        };
-      }
-      return null;
-    });
+    getSelectedConceptApi(list).map((r) => ({
+      ...conceptRequestOf(r),
+      ...chosenProgramsAndEncounterTypes(r),
+    }));
+
+  const conceptRequestOf = (r) => {
+    if (["Date", "DateTime", "Time"].includes(r.conceptDataType)) {
+      return {
+        uuid: r.conceptUUID,
+        minValue: toConceptRequestValue(r.conceptDataType, r.minValue),
+        maxValue: toConceptRequestValue(r.conceptDataType, r.maxValue),
+        searchScope: r.scope,
+        dataType: r.conceptDataType,
+        widget: r.widget,
+      };
+    }
+    if (r.conceptDataType === "Coded") {
+      return {
+        uuid: r.conceptUUID,
+        searchScope: r.scope,
+        dataType: r.conceptDataType,
+        widget: r.widget,
+        values: r.values,
+      };
+    }
+    if (["Text", "Id", "Notes"].includes(r.conceptDataType)) {
+      return {
+        uuid: r.conceptUUID,
+        searchScope: r.scope,
+        dataType: r.conceptDataType,
+        widget: r.widget,
+        value: r.value,
+      };
+    }
+    if (r.conceptDataType === "Numeric") {
+      return {
+        uuid: r.conceptUUID,
+        minValue: r.minValue,
+        maxValue: r.maxValue,
+        searchScope: r.scope,
+        dataType: r.conceptDataType,
+        widget: r.widget,
+      };
+    }
+    return null;
+  };
 
   const conceptRequests = getConceptRequests(selectedConcepts);
 

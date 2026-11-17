@@ -164,6 +164,16 @@ describe("toUsableSearchRequest", () => {
       ]);
     });
 
+    it("searches with the programmes and encounter types now chosen on the filter", () => {
+      const scopeParameters = { programUUIDs: ["p-1"], encounterTypeUUIDs: ["et-1"] };
+      const stale = { ...request, concept: [{ ...savedNumeric, programUUIDs: ["p-old"], encounterTypeUUIDs: ["et-old"] }] };
+
+      expect(toUsableSearchRequest(stale, subjectTypes, [configured({ widget: "Range", scopeParameters })]).concept).toEqual([
+        { ...savedNumeric, programUUIDs: ["p-1"], encounterTypeUUIDs: ["et-1"] },
+      ]);
+      expect(toUsableSearchRequest(stale, subjectTypes, [configured({ widget: "Range" })]).concept).toEqual([savedNumeric]);
+    });
+
     it("treats a filter with no widget, such as Text or Coded, as Default", () => {
       const savedText = { uuid: "numeric-uuid", dataType: "Text", searchScope: "registration", widget: null, value: "x" };
       const textRequest = { ...searchRequest, concept: [savedText] };

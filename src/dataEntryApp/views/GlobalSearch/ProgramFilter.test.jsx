@@ -251,6 +251,36 @@ describe("Program search filter", () => {
     expect(container.textContent).not.toContain("includeExitedEnrolmentsHelp");
   });
 
+  it("sends a concept filter's chosen programmes and encounter types", async () => {
+    await renderForm(
+      configsWith({
+        type: "Concept",
+        titleKey: "Remarks",
+        subjectTypeUUID: "st-person",
+        conceptUUID: "c-remarks",
+        conceptDataType: "Text",
+        scope: "programEncounter",
+        scopeParameters: {
+          programUUIDs: ["p-child"],
+          encounterTypeUUIDs: ["et-visit"],
+        },
+      }),
+    );
+    const input = container.querySelector("input#Remarks");
+    const setValue = Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value",
+    ).set;
+    await act(async () => {
+      setValue.call(input, "well");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+
+    const [remarks] = (await search()).concept;
+    expect(remarks.programUUIDs).toEqual(["p-child"]);
+    expect(remarks.encounterTypeUUIDs).toEqual(["et-visit"]);
+  });
+
   it("leaves exited enrolments out unless Include exited is ticked", async () => {
     await renderForm(configsWith(programFilter("st-person")));
     expect(checkbox("includeExitedEnrolments").checked).toBe(false);

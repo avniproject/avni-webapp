@@ -1,4 +1,21 @@
-import { filter, find, get, includes, intersection, isEmpty, isNil, map, reduce, some, sortBy, toLower, uniq } from "lodash";
+import {
+  filter,
+  find,
+  get,
+  includes,
+  intersection,
+  isEmpty,
+  isEqual,
+  isNil,
+  map,
+  omit,
+  pickBy,
+  reduce,
+  some,
+  sortBy,
+  toLower,
+  uniq,
+} from "lodash";
 
 const prefix = "app/dataEntry/reducer/searchFilter/";
 
@@ -145,6 +162,15 @@ export const savedConceptOf = (savedConcepts, configured, configuredConcepts) =>
   return isOnlyFilterOfConcept && sameConcept.length === 1 ? sameConcept[0] : undefined;
 };
 
+export const chosenProgramsAndEncounterTypes = (configuredFilter) =>
+  pickBy(
+    {
+      programUUIDs: configuredFilter?.scopeParameters?.programUUIDs,
+      encounterTypeUUIDs: configuredFilter?.scopeParameters?.encounterTypeUUIDs,
+    },
+    (uuids) => !isEmpty(uuids),
+  );
+
 export const toUsableSearchRequest = (savedRequest, subjectTypes, searchFilters, operationalModules) => {
   if (isNil(savedRequest) || isNil(savedRequest.subjectType)) return savedRequest;
   if (!some(subjectTypes, ({ uuid }) => uuid === savedRequest.subjectType)) return defaultRequest;
@@ -161,14 +187,16 @@ export const toUsableSearchRequest = (savedRequest, subjectTypes, searchFilters,
       if (isNil(savedConcept)) return usable;
       if (!isNil(configured.conceptDataType) && toLower(configured.conceptDataType) !== toLower(savedConcept.dataType)) return usable;
       if (toLower(configured.widget || "Default") !== toLower(savedConcept.widget || "Default")) return usable;
-      usable.push(isNil(configured.scope) ? savedConcept : { ...savedConcept, searchScope: configured.scope });
+      usable.push({
+        ...omit(savedConcept, ["programUUIDs", "encounterTypeUUIDs"]),
+        ...(isNil(configured.scope) ? {} : { searchScope: configured.scope }),
+        ...chosenProgramsAndEncounterTypes(configured),
+      });
       return usable;
     },
     [],
   );
-  const unchanged =
-    concept.length === request.concept.length &&
-    concept.every((c, i) => c.uuid === request.concept[i].uuid && c.searchScope === request.concept[i].searchScope);
+  const unchanged = concept.length === request.concept.length && concept.every((c, i) => isEqual(c, request.concept[i]));
   return unchanged ? request : { ...request, concept };
 };
 
