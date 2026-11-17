@@ -8,6 +8,7 @@ import {
   FormControlLabel,
   Checkbox,
   Switch,
+  Tooltip,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { find, some } from "lodash";
@@ -200,32 +201,41 @@ function BasicForm({
                   ))}
                 </FormGroup>
                 <FormGroup row sx={{ mt: 0.5 }}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={notEnrolledInAnyProgram}
-                        onChange={onNotEnrolledInAnyProgramChange}
-                        name="notEnrolledInAnyProgram"
-                        color="primary"
-                      />
-                    }
-                    label={t("notEnrolledInAnyProgram")}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={includeExitedEnrolments}
-                        onChange={onIncludeExitedEnrolmentsChange}
-                        name="includeExitedEnrolments"
-                        color="primary"
-                      />
-                    }
-                    label={t("includeExitedEnrolments")}
-                  />
+                  <Tooltip
+                    title={t("notEnrolledInAnyProgramTooltip")}
+                    placement="top"
+                    arrow
+                  >
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={notEnrolledInAnyProgram}
+                          onChange={onNotEnrolledInAnyProgramChange}
+                          name="notEnrolledInAnyProgram"
+                          color="primary"
+                        />
+                      }
+                      label={t("notEnrolledInAnyProgram")}
+                    />
+                  </Tooltip>
+                  <Tooltip
+                    title={t("includeExitedEnrolmentsTooltip")}
+                    placement="top"
+                    arrow
+                  >
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={includeExitedEnrolments}
+                          onChange={onIncludeExitedEnrolmentsChange}
+                          name="includeExitedEnrolments"
+                          color="primary"
+                        />
+                      }
+                      label={t("includeExitedEnrolments")}
+                    />
+                  </Tooltip>
                 </FormGroup>
-                <Typography variant="caption" color="textSecondary">
-                  {t("includeExitedEnrolmentsHelp")}
-                </Typography>
               </Grid>
             ) : (
               ""

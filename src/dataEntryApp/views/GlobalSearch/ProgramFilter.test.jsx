@@ -233,10 +233,18 @@ describe("Program search filter", () => {
     expect(request.includeExitedEnrolments).toBe(true);
   });
 
-  it("explains Include exited under the toggles", async () => {
+  it("explains each toggle in a tooltip, with no note under them", async () => {
     await renderForm(configsWith(programFilter("st-person")));
 
-    expect(container.textContent).toContain("includeExitedEnrolmentsHelp");
+    const tooltipOf = (name) =>
+      checkbox(name).closest("label").getAttribute("aria-label");
+    expect(tooltipOf("notEnrolledInAnyProgram")).toBe(
+      "notEnrolledInAnyProgramTooltip",
+    );
+    expect(tooltipOf("includeExitedEnrolments")).toBe(
+      "includeExitedEnrolmentsTooltip",
+    );
+    expect(container.textContent).not.toContain("includeExitedEnrolmentsHelp");
   });
 
   it("leaves exited enrolments out unless Include exited is ticked", async () => {
