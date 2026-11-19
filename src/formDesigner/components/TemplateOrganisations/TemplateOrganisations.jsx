@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Title } from "react-admin";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -69,10 +70,13 @@ const useApplyTemplateDialog = () => {
 
 const TemplateOrganisationDetail = ({ template, onBack }) => {
   const { isDialogOpen, openDialog, closeDialog } = useApplyTemplateDialog();
+  const navigate = useNavigate();
 
   const handleApplySuccess = () => {
     // Handle any success actions after template application
     console.log("Template applied successfully");
+    closeDialog();
+    navigate("/appdesigner/subjectType?page=0");
   };
 
   return (
@@ -204,10 +208,12 @@ const TemplateOrganisationDetail = ({ template, onBack }) => {
 
 const TemplateOrganisationCard = ({ template, onViewDetails }) => {
   const { isDialogOpen, openDialog, closeDialog } = useApplyTemplateDialog();
+  const navigate = useNavigate();
 
   const handleApplySuccess = () => {
     // Handle any success actions after template application
     console.log("Template applied successfully");
+    navigate("/appdesigner/subjectType?page=0");
   };
 
   const handleApplyClick = (e, templateId) => {
