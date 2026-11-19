@@ -86,8 +86,8 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=http://localhost:8021 vite",
-    "start-with-staging": "NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=https://staging.avniproject.org vite",
+    "start": "vite",
+    "start-with-staging": "vite",
     "start-with-prerelease": "NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=https://prerelease.avniproject.org vite",
     "start-with-prod": "NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=https://app.avniproject.org vite",
     "start-with-rwb-prod": "NODE_OPTIONS=--max_old_space_size=4096 BACKEND_URL=https://app.rwb.avniproject.org vite",

@@ -16,7 +16,7 @@ import {
   TextField,
   required,
   useRecordContext,
-  useResourceContext
+  useResourceContext,
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
 import CardActions from "@mui/material/CardActions";
@@ -29,7 +29,7 @@ import {
   PasswordTextField,
   UserFilter,
   UserTitle,
-  validateEmail
+  validateEmail,
 } from "./UserHelper";
 import { TitleChip } from "./components/TitleChip";
 import OrganisationService from "../common/service/OrganisationService";
@@ -40,12 +40,12 @@ import {
   datagridStyles,
   StyledAutocompleteArrayInput,
   StyledShow,
-  StyledSimpleShowLayout
+  StyledSimpleShowLayout,
 } from "./Util/Styles";
 import { PrettyPagination } from "./Util/PrettyPagination.tsx";
 
 export const AccountOrgAdminUserCreate = ({ user, region, ...props }) => (
-  <Create {...props}>
+  <Create {...props} transform={transformCreateAdminPayload}>
     <UserForm user={user} region={region} />
   </Create>
 );
@@ -63,7 +63,7 @@ export const AccountOrgAdminUserEdit = ({ user, region, ...props }) => (
   </Edit>
 );
 
-export const AccountOrgAdminUserList = props => (
+export const AccountOrgAdminUserList = (props) => (
   <StyledBox>
     <List
       {...props}
@@ -81,12 +81,12 @@ export const AccountOrgAdminUserList = props => (
         <TextField source="phoneNumber" label="Phone Number" />
         <FunctionField
           label="Status"
-          render={user =>
+          render={(user) =>
             user.voided === true
               ? "Deleted"
               : user.disabledInCognito === true
-              ? "Disabled"
-              : "Active"
+                ? "Disabled"
+                : "Active"
           }
         />
       </Datagrid>
@@ -116,7 +116,7 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
       <TextField source="name" label="Name of the Person" />
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
-      <FunctionField label="Role" render={user => formatRoles(user.roles)} />
+      <FunctionField label="Role" render={(user) => formatRoles(user.roles)} />
       <ReferenceField
         label="Organisation"
         source="organisationId"
@@ -138,9 +138,72 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
   </StyledShow>
 );
 
+function normalizeSpaces(value) {
+  if (!value) return value;
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function hasEdgeSpaces(value) {
+  if (!value) return false;
+  return value !== value.trim();
+}
+
+function validateLoginId(loginId) {
+  if (hasEdgeSpaces(loginId)) {
+    return "This field should not start or end with whitespaces";
+  }
+
+  const regex = /^[a-zA-Z0-9@._-]+$/;
+  if (!regex.test(loginId)) {
+    return "Invalid LoginID format";
+  }
+
+  const atCount = (loginId.match(/@/g) || []).length;
+  if (atCount > 1) {
+    return "Invalid LoginID format";
+  }
+
+  return undefined;
+}
+
+function validateName(name) {
+  if (hasEdgeSpaces(name)) {
+    return "This field should not start or end with whitespaces";
+  }
+  return undefined;
+}
+
+function transformCreateAdminPayload(data) {
+  return {
+    ...data,
+    username: normalizeSpaces(data?.username),
+    name: normalizeSpaces(data?.name),
+  };
+}
+
+function validateCreateAdminForm(values) {
+  const errors = {};
+
+  const loginError = validateLoginId(values?.username);
+  if (loginError) {
+    errors.username = loginError;
+  }
+
+  const nameError = validateName(values?.name);
+  if (nameError) {
+    errors.name = nameError;
+  }
+
+  return errors;
+}
+
 const UserForm = ({ edit = false, region }) => {
   return (
-    <SimpleForm toolbar={<CustomToolbar />} redirect="list">
+    <SimpleForm
+      toolbar={<CustomToolbar />}
+      redirect="list"
+      validate={edit ? undefined : validateCreateAdminForm}
+    >
       <UserFormFields edit={edit} region={region} />
     </SimpleForm>
   );
@@ -159,7 +222,7 @@ const UserFormFields = ({ edit = false, region }) => {
 
   useEffect(() => {
     if (organisationId) {
-      OrganisationService.getOrganisation(organisationId).then(data => {
+      OrganisationService.getOrganisation(organisationId).then((data) => {
         setNameSuffix(data?.usernameSuffix || "");
       });
     }
@@ -179,7 +242,7 @@ const UserFormFields = ({ edit = false, region }) => {
         perPage={1000}
         label="Accounts"
         validate={required("Please select one or more accounts")}
-        filterToQuery={searchText => ({ name: searchText })}
+        filterToQuery={(searchText) => ({ name: searchText })}
       >
         <StyledAutocompleteArrayInput />
       </ReferenceArrayInput>
@@ -198,11 +261,10 @@ const UserFormFields = ({ edit = false, region }) => {
         <>
           <StyledTextInput
             source="username"
-            validate={isRequired}
+            validate={[isRequired, validateLoginId]}
             label="Login ID (username)"
           />
           {nameSuffix && <span>@{nameSuffix}</span>}
-          <StyledTextInput source="username" style={{ display: "none" }} />
         </>
       )}
 
@@ -210,7 +272,7 @@ const UserFormFields = ({ edit = false, region }) => {
       <StyledTextInput
         source="name"
         label="Name of the Person"
-        validate={isRequired}
+        validate={[isRequired, validateName]}
         autoComplete={autoComplete}
       />
       <StyledTextInput
