@@ -34,17 +34,19 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  width: "100%",
   maxWidth: "100%",
   overflowX: "auto",
   marginTop: theme.spacing(1),
+  boxSizing: "border-box",
 }));
 
 const StyledFileNameCell = styled(TableCell)({
-  maxWidth: 150,
+  maxWidth: 300,
   minWidth: 120,
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
+  whiteSpace: "normal",
+  wordBreak: "break-word",
+  hyphens: "auto",
 });
 
 const StyledDateCell = styled(TableCell)({
@@ -62,7 +64,10 @@ const StyledCompactCell = styled(TableCell)({
 
 const StyledStatusCell = styled(TableCell)({
   minWidth: 120,
-  maxWidth: 150,
+  maxWidth: 200,
+  whiteSpace: "normal",
+  wordBreak: "break-word",
+  hyphens: "auto",
 });
 
 const UploadStatus = () => {

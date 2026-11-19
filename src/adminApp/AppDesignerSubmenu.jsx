@@ -9,17 +9,14 @@ import { useLocation } from "react-router-dom";
 
 const Submenu = ({ text, icon, children }) => {
   const location = useLocation();
-  const [open, setOpen] = useState(() => {
-    return (
+  const [open, setOpen] = useState(
+    () =>
       location.pathname.startsWith("/appdesigner") &&
-      !location.pathname.startsWith("/appdesigner/templates")
-    );
-  });
-
+      !location.pathname.startsWith("/appdesigner/templates"),
+  );
   const handleClick = () => {
     setOpen(!open);
   };
-
   return (
     <>
       <MenuItem
@@ -27,9 +24,18 @@ const Submenu = ({ text, icon, children }) => {
         sx={{
           "& .MuiListItemText-primary": {
             fontWeight: open ? "bold" : "normal",
+            wordBreak: "break-word",
+            whiteSpace: "normal",
+            overflowWrap: "anywhere",
+            maxWidth: 180,
           },
           border: "1px solid #E5E5E5",
           backgroundColor: "background.paper",
+          wordBreak: "break-word",
+          whiteSpace: "normal",
+          overflowWrap: "anywhere",
+          maxWidth: 220,
+          minWidth: 120,
         }}
       >
         <ListItemText primary={text} />
@@ -46,6 +52,9 @@ const Submenu = ({ text, icon, children }) => {
             paddingLeft: 1,
           },
           paddingLeft: "1rem",
+          wordBreak: "break-word",
+          whiteSpace: "normal",
+          overflowWrap: "anywhere",
         }}
       >
         {children}
