@@ -1,0 +1,417 @@
+import reducer, {
+  clearSavedSearchRequest,
+  clearSearchRequestSavedByOtherUser,
+  defaultSearchResultsTable,
+  loadSearchResultsTable,
+  saveSearchResultsTable,
+  SEARCH_RESULTS_TABLE_STORAGE_KEY,
+  SEARCH_REQUEST_OWNER_STORAGE_KEY,
+  getInitialState,
+  resetSearchRequest,
+  saveSearchRequest,
+  searchRequestAfterReset,
+  SEARCH_REQUEST_STORAGE_KEY,
+  toUsableSearchRequest,
+  types,
+} from "./searchFilterReducer";
+
+const searchRequest = {
+  subjectType: "subject-type-uuid",
+  name: "Asha",
+  age: { minValue: "30", maxValue: null },
+  includeVoided: true,
+  includeDisplayCount: true,
+  addressIds: [11, 12],
+  gender: ["gender-uuid"],
+  concept: [
+    {
+      uuid: "coded-concept-uuid",
+      searchScope: "registration",
+      dataType: "Coded",
+      widget: "Default",
+      values: ["answer-uuid"],
+    },
+  ],
+  registrationDate: { minValue: "2026-01-01", maxValue: "2026-10-29" },
+};
+
+describe("searchFilterReducer", () => {
+  beforeEach(() => sessionStorage.clear());
+
+  it("starts with an empty search when nothing was saved", () => {
+    expect(getInitialState()).toEqual({
+      request: { includeVoided: false, includeDisplayCount: false },
+    });
+  });
+
+  it("restores the saved search after a refresh", () => {
+    saveSearchRequest(searchRequest);
+
+    expect(getInitialState().request).toEqual(searchRequest);
+    expect(reducer(undefined, { type: "@@INIT" }).request).toEqual(searchRequest);
+  });
+
+  it("forgets the search once it is cleared", () => {
+    saveSearchRequest(searchRequest);
+    clearSavedSearchRequest();
+
+    expect(sessionStorage.getItem(SEARCH_REQUEST_STORAGE_KEY)).toBeNull();
+    expect(getInitialState().request).toEqual({
+      includeVoided: false,
+      includeDisplayCount: false,
+    });
+  });
+
+  it("falls back to an empty search when the saved value is unreadable", () => {
+    sessionStorage.setItem(SEARCH_REQUEST_STORAGE_KEY, "{not json");
+
+    expect(getInitialState().request).toEqual({
+      includeVoided: false,
+      includeDisplayCount: false,
+    });
+  });
+
+  it("stores the request on ADD_SEARCH_REQUEST", () => {
+    const state = reducer(getInitialState(), {
+      type: types.ADD_SEARCH_REQUEST,
+      value: searchRequest,
+    });
+
+    expect(state.request).toEqual(searchRequest);
+  });
+
+  it("goes back to an empty search on RESET_SEARCH_REQUEST", () => {
+    const state = reducer({ request: searchRequest }, resetSearchRequest());
+
+    expect(state.request).toEqual({
+      includeVoided: false,
+      includeDisplayCount: false,
+    });
+  });
+});
+
+describe("toUsableSearchRequest", () => {
+  const subjectTypes = [{ uuid: "subject-type-uuid" }, { uuid: "other-uuid" }];
+  const conceptFilter = (conceptUUID, subjectTypeUUID = "subject-type-uuid") => ({
+    type: "Concept",
+    subjectTypeUUID,
+    conceptUUID,
+  });
+  const textConcept = { uuid: "text-concept-uuid", dataType: "Text", value: "x" };
+  const requestWithConcepts = {
+    ...searchRequest,
+    concept: [...searchRequest.concept, textConcept],
+  };
+
+  it("keeps a search whose subject type and concept filters are still there", () => {
+    const searchFilters = [conceptFilter("coded-concept-uuid"), conceptFilter("text-concept-uuid")];
+
+    expect(toUsableSearchRequest(requestWithConcepts, subjectTypes, searchFilters)).toBe(requestWithConcepts);
+  });
+
+  it("ignores a search for a subject type the user does not have, such as one from another organisation", () => {
+    expect(
+      toUsableSearchRequest({ ...searchRequest, subjectType: "org-a-subject-type" }, subjectTypes, [conceptFilter("coded-concept-uuid")]),
+    ).toEqual({ includeVoided: false, includeDisplayCount: false });
+  });
+
+  it("drops concept filters that are no longer configured for the subject type", () => {
+    const usable = toUsableSearchRequest(requestWithConcepts, subjectTypes, [
+      conceptFilter("coded-concept-uuid"),
+      conceptFilter("text-concept-uuid", "other-uuid"),
+      { type: "Name", subjectTypeUUID: "subject-type-uuid" },
+    ]);
+
+    expect(usable.concept).toEqual(searchRequest.concept);
+    expect(usable.name).toBe("Asha");
+    expect(requestWithConcepts.concept).toHaveLength(2);
+  });
+
+  describe("a concept filter changed in App Designer after the search was saved", () => {
+    const configured = (extra) => ({ ...conceptFilter("numeric-uuid"), conceptDataType: "Numeric", scope: "registration", ...extra });
+    const savedNumeric = {
+      uuid: "numeric-uuid",
+      dataType: "Numeric",
+      searchScope: "registration",
+      widget: "Range",
+      minValue: "10",
+      maxValue: "20",
+    };
+    const request = { ...searchRequest, concept: [savedNumeric] };
+
+    it("keeps it while its widget, type and scope are unchanged", () => {
+      expect(toUsableSearchRequest(request, subjectTypes, [configured({ widget: "Range" })])).toBe(request);
+    });
+
+    it("drops it when its widget changed from Range to Default", () => {
+      expect(toUsableSearchRequest(request, subjectTypes, [configured({ widget: "Default" })]).concept).toEqual([]);
+    });
+
+    it("drops it when its widget changed from Default to Range", () => {
+      const savedDefault = { ...savedNumeric, widget: "Default", maxValue: null };
+      expect(
+        toUsableSearchRequest({ ...request, concept: [savedDefault] }, subjectTypes, [configured({ widget: "Range" })]).concept,
+      ).toEqual([]);
+    });
+
+    it("drops it when the concept's data type no longer matches", () => {
+      expect(toUsableSearchRequest(request, subjectTypes, [configured({ widget: "Range", conceptDataType: "Date" })]).concept).toEqual([]);
+    });
+
+    it("searches with the configured scope", () => {
+      expect(toUsableSearchRequest(request, subjectTypes, [configured({ widget: "Range", scope: "programEnrolment" })]).concept).toEqual([
+        { ...savedNumeric, searchScope: "programEnrolment" },
+      ]);
+    });
+
+    it("searches with the programmes and encounter types now chosen on the filter", () => {
+      const scopeParameters = { programUUIDs: ["p-1"], encounterTypeUUIDs: ["et-1"] };
+      const stale = { ...request, concept: [{ ...savedNumeric, programUUIDs: ["p-old"], encounterTypeUUIDs: ["et-old"] }] };
+
+      expect(toUsableSearchRequest(stale, subjectTypes, [configured({ widget: "Range", scopeParameters })]).concept).toEqual([
+        { ...savedNumeric, programUUIDs: ["p-1"], encounterTypeUUIDs: ["et-1"] },
+      ]);
+      expect(toUsableSearchRequest(stale, subjectTypes, [configured({ widget: "Range" })]).concept).toEqual([savedNumeric]);
+    });
+
+    it("treats a filter with no widget, such as Text or Coded, as Default", () => {
+      const savedText = { uuid: "numeric-uuid", dataType: "Text", searchScope: "registration", widget: null, value: "x" };
+      const textRequest = { ...searchRequest, concept: [savedText] };
+      expect(toUsableSearchRequest(textRequest, subjectTypes, [configured({ conceptDataType: "Text", widget: "Default" })])).toBe(
+        textRequest,
+      );
+    });
+  });
+
+  describe("one concept set up as two filters with different scopes", () => {
+    const filterAt = (scope) => ({ ...conceptFilter("text-concept-uuid"), conceptDataType: "Text", scope });
+    const savedAt = (searchScope, value) => ({ uuid: "text-concept-uuid", dataType: "Text", widget: "Default", searchScope, value });
+
+    it("keeps each saved value with its own scope", () => {
+      const request = { ...searchRequest, concept: [savedAt("registration", "a"), savedAt("programEnrolment", "b")] };
+
+      expect(toUsableSearchRequest(request, subjectTypes, [filterAt("registration"), filterAt("programEnrolment")])).toBe(request);
+    });
+
+    it("drops a saved value whose scope matches neither filter", () => {
+      const request = { ...searchRequest, concept: [savedAt("encounter", "a")] };
+
+      expect(toUsableSearchRequest(request, subjectTypes, [filterAt("registration"), filterAt("programEnrolment")]).concept).toEqual([]);
+    });
+
+    it("keeps the other value when one of the two filters is removed", () => {
+      const request = { ...searchRequest, concept: [savedAt("registration", "a"), savedAt("programEnrolment", "b")] };
+
+      expect(toUsableSearchRequest(request, subjectTypes, [filterAt("programEnrolment")]).concept).toEqual([
+        savedAt("programEnrolment", "b"),
+      ]);
+    });
+  });
+
+  it("drops every concept filter when the subject type has no search filters", () => {
+    expect(toUsableSearchRequest(requestWithConcepts, subjectTypes, undefined).concept).toEqual([]);
+  });
+
+  const programFilter = { type: "Program", subjectTypeUUID: "subject-type-uuid" };
+  const enrolmentMapping = (programUUID) => ({ formType: "ProgramEnrolment", subjectTypeUUID: "subject-type-uuid", programUUID });
+  const operationalModules = {
+    programs: [
+      { uuid: "p1", name: "Pregnancy" },
+      { uuid: "p2", name: "Child" },
+      { uuid: "p3", name: "Other" },
+    ],
+    formMappings: [
+      enrolmentMapping("p1"),
+      enrolmentMapping("p2"),
+      { formType: "ProgramEnrolment", subjectTypeUUID: "other-uuid", programUUID: "p3" },
+    ],
+  };
+  const withProgramFilter = [conceptFilter("coded-concept-uuid"), programFilter];
+
+  it("keeps Not enrolled and Include exited together", () => {
+    const saved = { ...searchRequest, programs: ["p1"], notEnrolledInAnyProgram: true, includeExitedEnrolments: true };
+
+    expect(toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules)).toBe(saved);
+  });
+
+  it("keeps Not enrolled when Include exited is not ticked", () => {
+    const saved = { ...searchRequest, notEnrolledInAnyProgram: true, includeExitedEnrolments: false };
+
+    expect(toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules)).toBe(saved);
+  });
+
+  it("keeps programme ticks the subject type still offers", () => {
+    const saved = { ...searchRequest, programs: ["p1", "p2"], includeExitedEnrolments: true };
+
+    expect(toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules)).toBe(saved);
+  });
+
+  it("drops a ticked programme the subject type no longer enrols into", () => {
+    const saved = { ...searchRequest, programs: ["p1", "p3", "gone"] };
+
+    const usable = toUsableSearchRequest(saved, subjectTypes, withProgramFilter, operationalModules);
+
+    expect(usable.programs).toEqual(["p1"]);
+    expect(saved.programs).toEqual(["p1", "p3", "gone"]);
+  });
+
+  it("clears every programme tick when the Program filter was removed from the subject type", () => {
+    const saved = { ...searchRequest, programs: ["p1"], notEnrolledInAnyProgram: true };
+
+    const usable = toUsableSearchRequest(saved, subjectTypes, [conceptFilter("coded-concept-uuid")], operationalModules);
+
+    expect(usable).toMatchObject({ programs: [], notEnrolledInAnyProgram: false, includeExitedEnrolments: false });
+  });
+
+  it("clears every programme tick when the subject type enrols into no programme any more", () => {
+    const saved = { ...searchRequest, programs: ["p1"], includeExitedEnrolments: true };
+
+    const usable = toUsableSearchRequest(saved, subjectTypes, withProgramFilter, { ...operationalModules, formMappings: [] });
+
+    expect(usable).toMatchObject({ programs: [], notEnrolledInAnyProgram: false, includeExitedEnrolments: false });
+  });
+
+  it("leaves a search without a subject type alone", () => {
+    const empty = { includeVoided: false };
+
+    expect(toUsableSearchRequest(empty, subjectTypes, [])).toBe(empty);
+  });
+});
+
+describe("clearSearchRequestSavedByOtherUser", () => {
+  beforeEach(() => sessionStorage.clear());
+
+  it("keeps the search saved by the same user", () => {
+    saveSearchRequest(searchRequest, "asha@org");
+
+    expect(clearSearchRequestSavedByOtherUser("asha@org")).toBe(false);
+    expect(getInitialState().request).toEqual(searchRequest);
+  });
+
+  it("forgets the search saved by another user in the same tab", () => {
+    saveSearchRequest(searchRequest, "asha@org");
+
+    expect(clearSearchRequestSavedByOtherUser("ravi@org")).toBe(true);
+    expect(sessionStorage.getItem(SEARCH_REQUEST_STORAGE_KEY)).toBeNull();
+    expect(sessionStorage.getItem(SEARCH_REQUEST_OWNER_STORAGE_KEY)).toBeNull();
+  });
+
+  it("forgets a search saved without a user, as before this change", () => {
+    sessionStorage.setItem(SEARCH_REQUEST_STORAGE_KEY, JSON.stringify(searchRequest));
+
+    expect(clearSearchRequestSavedByOtherUser("asha@org")).toBe(true);
+    expect(sessionStorage.getItem(SEARCH_REQUEST_STORAGE_KEY)).toBeNull();
+  });
+
+  it("does nothing when no search was saved", () => {
+    expect(clearSearchRequestSavedByOtherUser("asha@org")).toBe(false);
+  });
+});
+
+describe("search results page and sort", () => {
+  const sortedPageTwo = { pagination: { pageIndex: 1, pageSize: 20 }, sorting: [{ id: "fullName", desc: true }] };
+  const saveTable = (table) => sessionStorage.setItem(SEARCH_RESULTS_TABLE_STORAGE_KEY, JSON.stringify(table));
+
+  beforeEach(() => {
+    sessionStorage.clear();
+    saveSearchRequest(searchRequest, "asha@org");
+  });
+
+  it("restores the page, rows per page and sort after a refresh", () => {
+    saveSearchResultsTable(sortedPageTwo);
+
+    expect(loadSearchResultsTable()).toEqual(sortedPageTwo);
+  });
+
+  it("starts on page 1 with no sort when nothing was saved", () => {
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
+  });
+
+  it("starts on page 1 with no sort for a new search", () => {
+    saveSearchResultsTable(sortedPageTwo);
+    saveSearchRequest({ ...searchRequest, name: "Bina" }, "asha@org");
+
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
+  });
+
+  it("forgets the page and sort when the search is cleared", () => {
+    saveSearchResultsTable(sortedPageTwo);
+    clearSavedSearchRequest();
+
+    expect(sessionStorage.getItem(SEARCH_RESULTS_TABLE_STORAGE_KEY)).toBeNull();
+  });
+
+  it("forgets the page and sort of a search saved by another user", () => {
+    saveSearchResultsTable(sortedPageTwo);
+    clearSearchRequestSavedByOtherUser("bina@org");
+
+    expect(sessionStorage.getItem(SEARCH_RESULTS_TABLE_STORAGE_KEY)).toBeNull();
+  });
+
+  it("does not save the page and sort when there is no saved search", () => {
+    clearSavedSearchRequest();
+    saveSearchResultsTable(sortedPageTwo);
+
+    expect(sessionStorage.getItem(SEARCH_RESULTS_TABLE_STORAGE_KEY)).toBeNull();
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
+  });
+
+  it("ignores a sort on a column that cannot be sorted", () => {
+    saveTable({ ...sortedPageTwo, sorting: [{ id: "addressLevel", desc: false }] });
+
+    expect(loadSearchResultsTable().sorting).toEqual([]);
+  });
+
+  it("keeps the sort direction only when it is a real true or false", () => {
+    saveTable({ ...sortedPageTwo, sorting: [{ id: "age", desc: "yes" }] });
+
+    expect(loadSearchResultsTable().sorting).toEqual([{ id: "age", desc: false }]);
+  });
+
+  it("goes back to page 1 and 10 rows when the saved values are not valid", () => {
+    saveTable({ pagination: { pageIndex: -2, pageSize: 7 }, sorting: [] });
+
+    expect(loadSearchResultsTable().pagination).toEqual({ pageIndex: 0, pageSize: 10 });
+  });
+
+  it("starts on page 1 with no sort when the saved value is unreadable", () => {
+    sessionStorage.setItem(SEARCH_RESULTS_TABLE_STORAGE_KEY, "{not json");
+
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
+  });
+});
+
+describe("searchRequestAfterReset", () => {
+  const subjectTypes = [{ uuid: "subject-type-uuid" }, { uuid: "other-subject-type" }];
+
+  it("keeps the subject type and clears every filter", () => {
+    expect(searchRequestAfterReset(searchRequest, subjectTypes)).toEqual({
+      subjectType: "subject-type-uuid",
+      includeVoided: false,
+      includeDisplayCount: false,
+    });
+  });
+
+  it("clears the whole search when no subject type was chosen", () => {
+    expect(searchRequestAfterReset({ name: "Asha" }, subjectTypes)).toBeUndefined();
+  });
+
+  it("clears the whole search when the subject type is not one the user has", () => {
+    expect(searchRequestAfterReset({ ...searchRequest, subjectType: "gone" }, subjectTypes)).toBeUndefined();
+  });
+
+  it("saves the reset search so a refresh keeps the subject type, on page 1 with no sort", () => {
+    sessionStorage.clear();
+    saveSearchRequest(searchRequest, "asha@org");
+    saveSearchResultsTable({ pagination: { pageIndex: 2, pageSize: 15 }, sorting: [{ id: "age", desc: true }] });
+
+    saveSearchRequest(searchRequestAfterReset(searchRequest, subjectTypes), "asha@org");
+
+    expect(getInitialState().request).toEqual({
+      subjectType: "subject-type-uuid",
+      includeVoided: false,
+      includeDisplayCount: false,
+    });
+    expect(loadSearchResultsTable()).toEqual(defaultSearchResultsTable);
+  });
+});

@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { MRTPagination } from "../../../adminApp/Util/MRTPagination.tsx";
 import { httpClient as http } from "common/utils/httpClient";
-import { Box, Chip, Grid } from "@mui/material";
+import { Box, Chip, Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
   filter,
@@ -15,6 +15,7 @@ import {
   join,
   map,
   size,
+  sortBy,
   uniqBy,
 } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
@@ -23,10 +24,47 @@ import { AgeUtil } from "openchs-models";
 import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
+import {
+  loadSearchResultsTable,
+  saveSearchResultsTable,
+  toUsableSearchRequest,
+} from "../../reducers/searchFilterReducer";
+import { withUserTimeZone } from "common/utils/SearchRequestUtil";
 
-const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
+const SubjectSearchTable = ({
+  searchRequest: savedSearchRequest,
+  organisationConfigs,
+  organisationConfigsFailed = false,
+}) => {
   const { i18n, t } = useTranslation();
   const subjectTypes = useSelector(selectSubjectTypes);
+  const searchFilters = get(
+    organisationConfigs,
+    "organisationConfig.searchFilters",
+  );
+  const operationalModules = useSelector(
+    (state) => state.dataEntry.metadata.operationalModules,
+  );
+  const searchRequest = useMemo(
+    () =>
+      toUsableSearchRequest(
+        savedSearchRequest,
+        subjectTypes,
+        searchFilters,
+        operationalModules,
+      ),
+    [savedSearchRequest, subjectTypes, searchFilters, operationalModules],
+  );
+  const needsSearchFilters =
+    !isEmpty(get(savedSearchRequest, "concept")) ||
+    !isEmpty(get(savedSearchRequest, "programs")) ||
+    !!get(savedSearchRequest, "notEnrolledInAnyProgram") ||
+    !!get(savedSearchRequest, "includeExitedEnrolments");
+  const isReadyToSearch =
+    !isEmpty(subjectTypes) &&
+    (!needsSearchFilters || !isNil(organisationConfigs));
+  const searchFiltersFailedToLoad =
+    needsSearchFilters && isNil(organisationConfigs) && organisationConfigsFailed;
   const [extensions, setExtensions] = useState();
   const customSearchFields = get(
     organisationConfigs,
@@ -62,8 +100,11 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const [data, setData] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [sorting, setSorting] = useState([]);
+  const [savedTable] = useState(loadSearchResultsTable);
+  const [pagination, setPagination] = useState(savedTable.pagination);
+  const [sorting, setSorting] = useState(savedTable.sorting);
+  const isFirstLoadRef = useRef(true);
+  const [lastPageIndex, setLastPageIndex] = useState(null);
   const [rowSelection, setRowSelection] = useState({});
 
   // Check if there are extensions configured for search results scope
@@ -112,7 +153,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
           </Grid>
         ),
       },
-      ...flatten(customColumns).map(({ name }, index) => ({
+      ...uniqBy(flatten(customColumns), "name").map(({ name }, index) => ({
         accessorKey: name,
         id: `custom-${name}-${index}`,
         header: t(name),
@@ -136,6 +177,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
               Cell: ({ row }) => row.original.gender && t(row.original.gender),
             },
             {
+              id: "age",
               accessorKey: "dateOfBirth",
               header: t("age"),
               Cell: ({ row }) =>
@@ -158,8 +200,8 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         Cell: ({ row }) => {
           const enrolments = row.original.enrolments;
           return enrolments
-            ? uniqBy(enrolments, (enr) => enr.operationalProgramName).map(
-                (p, key) => (
+            ? oneEnrolmentPerProgram(enrolments).map((p, key) =>
+                isNil(p.programExitDateTime) ? (
                   <Chip
                     key={key}
                     size="small"
@@ -169,6 +211,14 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
                       backgroundColor: p.programColor,
                       color: "white",
                     }}
+                  />
+                ) : (
+                  <Chip
+                    key={key}
+                    size="small"
+                    variant="outlined"
+                    label={`${t(p.operationalProgramName)} · ${t("exitedEnrolment")}`}
+                    style={{ margin: 2, borderColor: p.programColor }}
                   />
                 ),
               )
@@ -199,10 +249,19 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
 
       requestCopy.pageElement = pageElement;
       const result = await http
-        .post("/web/searchAPI/v2", requestCopy)
+        .post("/web/searchAPI/v2", withUserTimeZone(requestCopy))
         .then((res) => res.data);
 
-      setData(result.listOfRecords || []);
+      const records = result.listOfRecords || [];
+      const isFirstLoad = isFirstLoadRef.current;
+      isFirstLoadRef.current = false;
+      if (isEmpty(records) && pagination.pageIndex > 0) {
+        const pageIndex = isFirstLoad ? 0 : pagination.pageIndex - 1;
+        if (!isFirstLoad) setLastPageIndex(pageIndex);
+        setPagination((prev) => ({ ...prev, pageIndex }));
+        return;
+      }
+      setData(records);
       const totalElements = result.totalElements ?? 0;
       setTotalRecords(totalElements);
     } catch (error) {
@@ -215,10 +274,22 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   }, [pagination, sorting, searchRequest, subjectTypes]);
   useEffect(() => {
     // Only load data if we have a valid searchRequest
-    if (searchRequest && Object.keys(searchRequest).length > 0) {
+    if (
+      isReadyToSearch &&
+      searchRequest &&
+      Object.keys(searchRequest).length > 0
+    ) {
       loadData();
     }
-  }, [loadData, searchRequest]);
+  }, [loadData, searchRequest, isReadyToSearch]);
+
+  useEffect(() => {
+    saveSearchResultsTable({ pagination, sorting });
+  }, [pagination, sorting]);
+
+  useEffect(() => {
+    setLastPageIndex(null);
+  }, [pagination.pageSize]);
 
   // Custom pagination handler that also triggers data reload
   const handlePaginationChange = useCallback((newPagination) => {
@@ -227,14 +298,19 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         typeof newPagination === "function"
           ? newPagination(prev)
           : newPagination;
-      return updated;
+      return updated.pageIndex === prev.pageIndex &&
+        updated.pageSize === prev.pageSize
+        ? prev
+        : updated;
     });
     setRowSelection({});
   }, []);
 
   const paginationProps = useMemo(() => {
     if (totalRecords === -1) {
-      const reachedEnd = data.length < pagination.pageSize;
+      const reachedEnd =
+        data.length < pagination.pageSize ||
+        (!isNil(lastPageIndex) && pagination.pageIndex >= lastPageIndex);
 
       // Handle the case when no records exist
       if (data.length === 0 && pagination.pageIndex === 0) {
@@ -308,18 +384,33 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     data.length,
     isLoading,
     handlePaginationChange,
+    lastPageIndex,
   ]);
+
+  const columnOrder = [
+    ...(hasSearchResultsExtensions ? ["mrt-row-select"] : []),
+    ...map(columns, (column) => column.id ?? column.accessorKey),
+  ];
+
+  if (searchFiltersFailedToLoad) {
+    return (
+      <Typography color="error" role="alert" sx={{ p: 2 }}>
+        {t("somethingWentWrong")}
+      </Typography>
+    );
+  }
 
   return (
     <MaterialReactTable
       columns={columns}
       data={data}
       manualPagination
+      enablePagination={false}
       manualSorting
       onPaginationChange={handlePaginationChange}
       onSortingChange={setSorting}
       rowCount={totalRecords}
-      state={{ isLoading, pagination, sorting, rowSelection }}
+      state={{ isLoading, pagination, sorting, rowSelection, columnOrder }}
       onRowSelectionChange={setRowSelection}
       enableRowSelection={hasSearchResultsExtensions}
       enableGlobalFilter={false}
@@ -341,3 +432,9 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   );
 };
 export default SubjectSearchTable;
+
+export const oneEnrolmentPerProgram = (enrolments) =>
+  uniqBy(
+    sortBy(enrolments, (enrolment) => !isNil(enrolment.programExitDateTime)),
+    (enrolment) => enrolment.operationalProgramName,
+  );

@@ -3,6 +3,10 @@ import { Link } from "@mui/material";
 import { getUserInfo } from "../../rootApp/ducks";
 import { useNavigate } from "react-router-dom";
 import { useRecordContext } from "react-admin";
+import {
+  clearSavedSearchRequest,
+  resetSearchRequest
+} from "../../dataEntryApp/reducers/searchFilterReducer";
 
 const OpenOrganisation = () => {
   const dispatch = useDispatch();
@@ -14,6 +18,8 @@ const OpenOrganisation = () => {
     event.stopPropagation();
     event.preventDefault();
 
+    clearSavedSearchRequest();
+    dispatch(resetSearchRequest());
     localStorage.setItem("ORGANISATION_UUID", organisationUUID);
     dispatch(getUserInfo());
     navigate("/home");

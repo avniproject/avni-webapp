@@ -7,7 +7,12 @@ import rehypeSanitize from "rehype-sanitize";
 import _ from "lodash";
 import { LinkRenderer } from "./PlatformDocumentation";
 
-export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
+export const ToolTip = ({
+  toolTipKey,
+  onHover,
+  displayPosition,
+  message: givenMessage,
+}) => {
   const styles = {
     root: {
       position: "relative",
@@ -34,9 +39,11 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
     },
   };
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
+  const [fetchedMessage, setMessage] = useState("");
+  const message = givenMessage ?? fetchedMessage;
 
   useEffect(() => {
+    if (givenMessage != null) return;
     fetch(`/documentation/toolTip.json`)
       .then((res) => res.json())
       .then((data) => setMessage(data[toolTipKey] || "No key found"));

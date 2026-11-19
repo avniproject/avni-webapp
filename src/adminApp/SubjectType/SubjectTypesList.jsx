@@ -49,6 +49,7 @@ const SubjectTypesList = () => {
       {
         accessorKey: "formName",
         header: "Registration Form",
+        enableSorting: false,
         Cell: ({ row }) => {
           const formName = get(
             findRegistrationForm(formMappings, row.original),
@@ -82,12 +83,13 @@ const SubjectTypesList = () => {
   );
 
   const fetchData = useCallback(
-    ({ page, pageSize, orderBy, orderDirection }) =>
+    ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
       new Promise(resolve => {
         const validSortFields = ["name", "type", "organisationId"];
         let apiUrl = `/web/subjectType?size=${encodeURIComponent(
           pageSize
         )}&page=${encodeURIComponent(page)}`;
+        if (globalFilter) apiUrl += `&name=${encodeURIComponent(globalFilter)}`;
         if (orderBy && validSortFields.includes(orderBy)) {
           const sortBy = orderBy === "type" ? "subjectTypeType" : orderBy;
           apiUrl += `&sort=${encodeURIComponent(sortBy)},${encodeURIComponent(
@@ -180,14 +182,12 @@ const SubjectTypesList = () => {
         ref={tableRef}
         columns={columns}
         fetchData={fetchData}
-        enableGlobalFilter={false}
         enableColumnFilters={false}
         options={{
           pageSize: 10,
           pageSizeOptions: [5, 10, 20],
           sorting: true,
           debounceInterval: 500,
-          search: false,
           rowStyle: ({ original }) => ({
             backgroundColor: original.active ? "#fff" : "#DBDBDB"
           })

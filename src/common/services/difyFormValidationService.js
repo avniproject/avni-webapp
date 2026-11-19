@@ -22,12 +22,8 @@ class DifyFormValidationService {
     return this.apiKey;
   }
 
-  formatQuestionForDify(formElement, formType = "", formContext = {}, requestType = "FormValidation") {
+  formatQuestionForDify(formElement, formType = "", formContext = {}) {
     try {
-      if (requestType === "VisitSchedule") {
-        return this.formatVisitScheduleQuestion(formElement);
-      }
-
       // Defensive: ensure formElement exists
       if (!formElement) {
         return "Question Text: Unknown\nOptions: None\nContext: No context available\n\nPlease validate this form element.";
@@ -284,14 +280,6 @@ Please validate this form element.`;
     }
   }
 
-  formatVisitScheduleQuestion(formElement) {
-    try {
-      return `${formElement?.requirements || "Requirements not specified"}`;
-    } catch {
-      return "Requirements not specified";
-    }
-  }
-
   async validateSingleFormElement(formElement, formType = "", _formContext = {}, requestType = "FormValidation") {
     if (!this.apiKey) {
       console.warn("Dify API key not configured");
@@ -299,24 +287,10 @@ Please validate this form element.`;
     }
 
     try {
-      const question = this.formatQuestionForDify(formElement, formType, _formContext, requestType);
-
-      // Prepare inputs object for VisitSchedule requests
-      const inputs =
-        requestType === "VisitSchedule"
-          ? {
-              auth_token: null,
-              org_name: null,
-              org_type: "trial",
-              user_name: null,
-              avni_mcp_server_url: "https://staging-mcp.avniproject.org",
-              requestType: "VisitSchedule",
-              form_context: JSON.stringify(formElement.form_context || {}),
-            }
-          : {};
+      const question = this.formatQuestionForDify(formElement, formType, _formContext);
 
       const payload = {
-        inputs,
+        inputs: {},
         query: question,
         response_mode: "blocking",
         user: "avni-form-designer",
@@ -332,7 +306,7 @@ Please validate this form element.`;
           "Content-Type": "application/json",
         },
         withCredentials: false,
-        timeout: requestType === "VisitSchedule" ? 30000 : 10000, // 30s for VisitSchedule, 10s for FormValidation
+        timeout: 10000,
       });
 
       const validationResults = this.parseDifyResponse(response, requestType);
@@ -396,38 +370,6 @@ Please validate this form element.`;
       }
 
       if (answer) {
-        // For VisitSchedule, detect if it's scenarios or code
-        if (requestType === "VisitSchedule") {
-          // Check if response contains JavaScript code (function signature)
-          const hasJavaScriptCode =
-            answer.includes('"use strict";') ||
-            answer.includes("({params, imports}) =>") ||
-            answer.includes("```javascript") ||
-            answer.includes("```js");
-
-          if (hasJavaScriptCode) {
-            // This is final code - extract and return it
-            let cleanCode = answer.trim();
-            const codeBlockMatch = cleanCode.match(/```(?:javascript|js)?\s*\n?([\s\S]*?)\n?```/i);
-            if (codeBlockMatch) {
-              cleanCode = codeBlockMatch[1].trim();
-            }
-
-            return {
-              type: "code",
-              content: cleanCode,
-              conversationId,
-            };
-          } else {
-            // This is scenarios text - return as-is
-            return {
-              type: "scenarios",
-              content: answer.trim(),
-              conversationId,
-            };
-          }
-        }
-
         // For FormValidation, parse as JSON (existing behavior)
         let cleanAnswer = answer.trim();
         const codeBlockMatch = cleanAnswer.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/i);

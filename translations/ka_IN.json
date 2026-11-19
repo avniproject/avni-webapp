@@ -111,6 +111,10 @@
     "Yes": "ಹೌದು",
     "No": "ಇಲ್ಲ",
     "notEnrolledInAnyProgram": "ಯಾವುದೇ ಪ್ರೋಗ್ರಾಂಗೆ ದಾಖಲಾಗಿಲ್ಲ",
+    "exitedEnrolment": "ನಿರ್ಗಮಿಸಿದೆ",
+    "includeExitedEnrolments": "ನಿರ್ಗಮಿಸಿದವರನ್ನೂ ಸೇರಿಸಿ",
+    "notEnrolledInAnyProgramTooltip": "ಯಾವುದೇ ಪ್ರೋಗ್ರಾಂಗೆ ದಾಖಲಾಗದವರನ್ನು ಮಾತ್ರ ತೋರಿಸಲು ಇದನ್ನು ಆನ್ ಮಾಡಿ. ನೀವು ಪ್ರೋಗ್ರಾಂಗಳನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿದರೆ, ಆ ಪ್ರೋಗ್ರಾಂಗಳಲ್ಲಿರುವವರನ್ನೂ ತೋರಿಸಲಾಗುತ್ತದೆ.",
+    "includeExitedEnrolmentsTooltip": "ನಿರ್ಗಮಿಸಿದ ದಾಖಲಾತಿಗಳನ್ನೂ ಹುಡುಕಾಟದ ಫಲಿತಾಂಶಗಳಲ್ಲಿ ಸೇರಿಸಲು ಬಯಸಿದರೆ, ಇದನ್ನು ಆನ್ ಮಾಡಿ",
     "vaccinations": "ರಜಾದಿನಗಳು",
     "checklists": "ಪರಿಶೀಲನಾಪಟ್ಟಿಗಳು",
     "completed": "{{completedOn}} ಪೂರ್ಣಗೊಂಡಿದೆ ",
@@ -288,6 +292,8 @@
     "selectAllLabel": "ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ",
     "unselectAllLabel": "ಎಲ್ಲಾ ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ",
     "alreadyEnrolledInProgram": "ಈಗಾಗಲೆ {{programName}} ಗೆ ದಾಖಲಾತಿಸಲಾಗಿದೆ",
-    "invalidDate": "ಅಮಾನ್ಯವಾದ ದಿನಾಂಕ"
+    "invalidDate": "ಅಮಾನ್ಯವಾದ ದಿನಾಂಕ",
+    "dateOfBirthTakesPrecedence": "ವಯಸ್ಸಿಗಿಂತ ಜನ್ಮ ದಿನಾಂಕಕ್ಕೆ ಆದ್ಯತೆ ನೀಡಲಾಗುತ್ತದೆ",
+    "subjectNotFound": "ದಾಖಲೆ ಕಂಡುಬಂದಿಲ್ಲ"
   }
 }

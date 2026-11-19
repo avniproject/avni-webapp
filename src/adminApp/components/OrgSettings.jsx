@@ -118,7 +118,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.enableClinicSharing,
-          "Enable clinic sharing",
+          "Enable camp mode",
           "ADMIN_ENABLE_CLINIC_SHARING",
         )}
         {renderSimpleSetting(

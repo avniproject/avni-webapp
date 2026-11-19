@@ -17,6 +17,8 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/DeleteOutline";
+import { withoutFilter } from "./Util/customFilterIdentity";
+import { appDesignerTableDefaults } from "./components/appDesignerTableDefaults";
 
 export const omitTableData = (filters) =>
   _.map(filters, (f) =>
@@ -113,7 +115,7 @@ const CustomFilters = ({ organisation, filename }) => {
     () => [
       {
         accessorKey: "titleKey",
-        header: "Task Assignment Filter Name",
+        header: "Filter Name",
         enableSorting: true,
         enableColumnFilter: true,
       },
@@ -191,9 +193,7 @@ const CustomFilters = ({ organisation, filename }) => {
     onClick: (row) => {
       if (window.confirm("Do you really want to delete the filter?")) {
         const filtersOfType = settings.settings[filterType];
-        const updatedFilters = filtersOfType.filter(
-          (filter) => filter.titleKey !== row.original.titleKey,
-        );
+        const updatedFilters = withoutFilter(filtersOfType, row.original);
         const updatedSettings = {
           ...settings,
           settings: {
@@ -247,6 +247,7 @@ const CustomFilters = ({ organisation, filename }) => {
   const table = useMaterialReactTable({
     columns,
     data: settings.settings[typeOfFilter] || [],
+    ...appDesignerTableDefaults,
     enableRowActions: hasEditPrivilege(userInfo),
     renderRowActions: ({ row, table }) => (
       <StyledButtonContainer>

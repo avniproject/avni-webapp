@@ -1,6 +1,9 @@
 import { Fragment, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Paper } from "@mui/material";
+import SubjectNotFound, {
+  useSubjectNotFound,
+} from "../../components/SubjectNotFound";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ProfileDetails from "./components/ProfileDetails";
@@ -62,6 +65,7 @@ const SubjectDashboard = ({ tab }) => {
     (state) => state.dataEntry.subjectProfile.voidErrorType,
   );
   const msgs = useSelector((state) => state.dataEntry.msgs);
+  const subjectNotFound = useSubjectNotFound(uuid);
 
   let paperInfo;
 
@@ -73,7 +77,9 @@ const SubjectDashboard = ({ tab }) => {
     })();
   };
 
-  if (subjectProfile !== undefined) {
+  if (subjectNotFound) {
+    paperInfo = <SubjectNotFound />;
+  } else if (subjectProfile !== undefined) {
     paperInfo = (
       <StyledPaper elevation={2}>
         <ProfileDetails profileDetails={subjectProfile} subjectUuid={uuid} />

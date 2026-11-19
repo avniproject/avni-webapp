@@ -6,10 +6,19 @@ import { useTranslation } from "react-i18next";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { dateFormat } from "dataEntryApp/constants";
+import { parseISO } from "date-fns";
+import { some } from "lodash";
+
+const dateFilterTypes = [
+  "RegistrationDate",
+  "EnrolmentDate",
+  "ProgramEncounterDate",
+  "EncounterDate",
+];
 
 const StyledGrid = styled(Grid)({
-  marginTop: "1%",
-  marginBottom: "1%",
+  marginTop: 8,
+  marginBottom: 8,
 });
 
 const StyledTypography = styled(Typography)({
@@ -25,8 +34,15 @@ function NonConceptForm({
   onDateOfBirthChange,
 }) {
   const { t } = useTranslation();
+  const hasDateFilter = some(
+    searchFilterForms,
+    (sff) =>
+      sff.type === "DateOfBirth" ||
+      (dateFilterTypes.includes(sff.type) &&
+        ["Default", "Range"].includes(sff.widget)),
+  );
 
-  return searchFilterForms ? (
+  return hasDateFilter ? (
     <Fragment key={searchFilterForms.uuid}>
       <StyledGrid container spacing={3}>
         {searchFilterForms.map((searchFilterForm, index) =>
@@ -67,7 +83,7 @@ function NonConceptForm({
                   format={dateFormat}
                   value={
                     selectedDate[`${searchFilterForm.type}`].minValue
-                      ? new Date(
+                      ? parseISO(
                           selectedDate[`${searchFilterForm.type}`].minValue,
                         )
                       : null
@@ -102,7 +118,7 @@ function NonConceptForm({
                   placeholder="From"
                   value={
                     selectedDate[`${searchFilterForm.type}`].minValue
-                      ? new Date(
+                      ? parseISO(
                           selectedDate[`${searchFilterForm.type}`].minValue,
                         )
                       : null
@@ -111,7 +127,7 @@ function NonConceptForm({
                     onDateChange(
                       minDate,
                       selectedDate[`${searchFilterForm.type}`].maxValue !== null
-                        ? new Date(
+                        ? parseISO(
                             selectedDate[`${searchFilterForm.type}`].maxValue,
                           )
                         : null,
@@ -133,7 +149,7 @@ function NonConceptForm({
                   placeholder="To"
                   value={
                     selectedDate[`${searchFilterForm.type}`].maxValue
-                      ? new Date(
+                      ? parseISO(
                           selectedDate[`${searchFilterForm.type}`].maxValue,
                         )
                       : null
@@ -141,7 +157,7 @@ function NonConceptForm({
                   onChange={(maxDate) =>
                     onDateChange(
                       selectedDate[`${searchFilterForm.type}`].minValue !== null
-                        ? new Date(
+                        ? parseISO(
                             selectedDate[`${searchFilterForm.type}`].minValue,
                           )
                         : null,

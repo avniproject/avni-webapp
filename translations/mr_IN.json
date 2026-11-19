@@ -94,6 +94,10 @@
     "Yes": "होय",
     "No": "नाही",
     "notEnrolledInAnyProgram": "कोणत्याही प्रोग्रामात इंरोल केली नाही",
+    "exitedEnrolment": "बाहेर पडले",
+    "includeExitedEnrolments": "बाहेर पडलेलेही समाविष्ट करा",
+    "notEnrolledInAnyProgramTooltip": "कोणत्याही प्रोग्रामात इंरोल नसलेल्या व्यक्तीच दाखवण्यासाठी हे चालू करा. तुम्ही प्रोग्रामही निवडल्यास, त्या प्रोग्राममधील व्यक्तीही दाखवल्या जातील.",
+    "includeExitedEnrolmentsTooltip": "शोध निकालांमध्ये बाहेर पडलेली इंरोलमेंटही हवी असतील, तर हे चालू करा",
     "vaccinations": "लसीकरण",
     "checklists": "चेकलिस्ट",
     "completed": "पूर्ण झाले{{completedOn}}",
@@ -339,6 +343,8 @@
     "selectAllLabel": "सर्व निवडा",
     "unselectAllLabel": "सर्व निवड रद्द करा",
     "alreadyEnrolledInProgram": "{{programName}} मध्ये आधीच इंरोलमेंट केली आहे",
-    "invalidDate": "अवैध तारीख"
+    "invalidDate": "अवैध तारीख",
+    "dateOfBirthTakesPrecedence": "वयापेक्षा जन्मतारखेला प्राधान्य दिले जाते",
+    "subjectNotFound": "विषय सापडला नाही"
   }
 }

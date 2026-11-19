@@ -2,6 +2,7 @@ import {
   setGenders,
   setOperationalModules,
   setOrganisationConfig,
+  setOrganisationConfigFailed,
   setLegacyRulesBundle,
   setLegacyRules,
   types,
@@ -53,8 +54,15 @@ function* getGendersWorker() {
 function* getOrganisationConfigWatcher() {
   yield takeLatest(types.GET_ORGANISATION_CONFIG, getOrganisationConfigWorker);
 }
-function* getOrganisationConfigWorker() {
-  const organisationConfigs = yield call(commonApi.fetchOrganisationConfigs);
+export function* getOrganisationConfigWorker() {
+  let organisationConfigs;
+  try {
+    organisationConfigs = yield call(commonApi.fetchOrganisationConfigs);
+  } catch (error) {
+    console.error("Could not load the organisation configuration", error);
+    yield put(setOrganisationConfigFailed());
+    return;
+  }
   yield put.resolve(setLoad(false));
   yield put(setOrganisationConfig(organisationConfigs));
   yield put.resolve(setLoad(true));

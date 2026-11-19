@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogTitle,
   Box,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { CreateEditFiltersV2 } from "../../../adminApp/components/CreateEditFiltersV2";
@@ -15,20 +15,27 @@ export const CreateEditFilterDialog = ({
   operationalModules,
   dashboardDispatch,
   dashboard,
-  setShowAddFilterModal
+  setShowAddFilterModal,
 }) => {
   return (
-    <Dialog open={showAddFilterModal} onClose={handleModalClose}>
+    <Dialog
+      open={showAddFilterModal}
+      onClose={(event, reason) => {
+        // react-select calls preventDefault on the Escape it handles, such as closing its list
+        if (reason === "escapeKeyDown" && event?.defaultPrevented) return;
+        handleModalClose(event, reason);
+      }}
+    >
       <DialogTitle id="id">
         <Box
           sx={{
             display: "flex",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <Box
             sx={{
-              flexGrow: 1
+              flexGrow: 1,
             }}
           >
             {selectedFilter ? "Edit Filter" : "Create Filter"}
@@ -45,10 +52,10 @@ export const CreateEditFilterDialog = ({
           selectedFilter={selectedFilter}
           operationalModules={operationalModules}
           documentationFileName={null}
-          dashboardFilterSave={modifiedFilter => {
+          dashboardFilterSave={(modifiedFilter) => {
             dashboardDispatch({
               type: selectedFilter ? "editFilter" : "addFilter",
-              payload: { dashboard, modifiedFilter, selectedFilter }
+              payload: { dashboard, modifiedFilter, selectedFilter },
             });
             setShowAddFilterModal(false);
           }}

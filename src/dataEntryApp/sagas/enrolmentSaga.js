@@ -20,6 +20,7 @@ import { assign, keys } from "lodash";
 import { getAPIErrorMessage } from "./sagaUtils";
 import { mapProfile, mapProgramEnrolment } from "../../common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
+import { callOrMarkSubjectNotFound } from "./subjectNotFoundSaga";
 import { selectChecklists, selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
@@ -31,12 +32,13 @@ export function* enrolmentOnLoadWatcher() {
   yield takeLatest(enrolmentTypes.ON_LOAD, setupNewEnrolmentWorker);
 }
 
-function* setupNewEnrolmentWorker({ subjectTypeName, programName, formType, programEnrolmentUuid, subjectUuid }) {
+export function* setupNewEnrolmentWorker({ subjectTypeName, programName, formType, programEnrolmentUuid, subjectUuid }) {
   yield put.resolve(setInitialState());
   yield put.resolve(setFilteredFormElementsEnrolment());
 
   yield put.resolve(setSubjectProfile());
-  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
+  const subjectProfileJson = yield call(callOrMarkSubjectNotFound, api.fetchSubjectProfile, subjectUuid);
+  if (!subjectProfileJson) return;
   const subjectProfile = mapProfile(subjectProfileJson);
   yield put.resolve(setSubjectProfile(subjectProfile));
 

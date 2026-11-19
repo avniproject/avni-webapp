@@ -1,9 +1,10 @@
 class OperationalModulesFactory {
-  static create({ subjectTypes = [] }) {
+  static create({ subjectTypes = [], programs = [], formMappings = [] }) {
     return {
       subjectTypes: subjectTypes,
-      programs: [],
-      encounterTypes: []
+      programs: programs,
+      encounterTypes: [],
+      formMappings: formMappings,
     };
   }
 }

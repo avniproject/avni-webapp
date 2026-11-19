@@ -12,6 +12,8 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { Edit, Delete } from "@mui/icons-material";
 import { Grid } from "@mui/material";
+import StringUtil from "../../common/utils/StringUtil";
+import ClientSideTableUtil from "../../common/utils/ClientSideTableUtil";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(
@@ -58,14 +60,18 @@ const ApplicationMenuList = () => {
   );
 
   const fetchData = useMemo(
-    () => () =>
+    () => ({ page, pageSize, globalFilter }) =>
       new Promise(resolve =>
         ApplicationMenuService.getMenuList().then(response => {
-          resolve({
-            data: response.data,
-            page: response.page,
-            totalCount: response.totalCount
-          });
+          const matchingMenuItems = response.data.filter(menuItem =>
+            StringUtil.anyContainsIgnoringCase(globalFilter, menuItem.displayKey)
+          );
+          resolve(
+            ClientSideTableUtil.sortAndPage(matchingMenuItems, {
+              page,
+              pageSize
+            })
+          );
         })
       ),
     []
@@ -140,12 +146,12 @@ const ApplicationMenuList = () => {
           ref={tableRef}
           columns={columns}
           fetchData={fetchData}
+          enableColumnFilters={false}
           options={{
             pageSize: 10,
             pageSizeOptions: [5, 10, 20],
             sorting: false,
             debounceInterval: 500,
-            search: false,
             rowStyle: () => ({
               backgroundColor: "#fff"
             })

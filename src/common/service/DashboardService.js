@@ -1,6 +1,6 @@
 import { every, find, isEmpty, some } from "lodash";
 import { httpClient as http } from "../utils/httpClient";
-import { CustomFilter, DashboardFilterConfig, GroupSubjectTypeFilter, ObservationBasedFilter } from "openchs-models";
+import { CustomFilter, DashboardFilterConfig, GroupSubjectTypeFilter, MetaDataService, ObservationBasedFilter } from "openchs-models";
 import EntityService from "./EntityService";
 import WebReportCard from "../model/WebReportCard";
 import WebStandardReportCardType from "../model/WebStandardReportCardType";
@@ -22,16 +22,16 @@ class DashboardService {
     if (find(sections, ({ name }) => isEmpty(name))) {
       errors.push({
         key: "EMPTY_SECTIONS",
-        message: "Section name cannot be left blank. Please specify it for all sections."
+        message: "Section name cannot be left blank. Please specify it for all sections.",
       });
     }
     if (find(sections, ({ viewType }) => isEmpty(viewType))) {
       errors.push({
         key: "EMPTY_SECTIONS",
-        message: "Section view type cannot be blank. Please select a view type"
+        message: "Section view type cannot be blank. Please select a view type",
       });
     }
-    if (find(sections, section => isEmpty(WebDashboardSection.getReportCards(section)))) {
+    if (find(sections, (section) => isEmpty(WebDashboardSection.getReportCards(section)))) {
       errors.push({ key: "EMPTY_SECTIONS", message: "Please add cards to the section." });
     }
     const incompatibleCardsAndFilters = WebDashboard.getIncompatibleCardsAndFilters(dashboard);
@@ -39,7 +39,7 @@ class DashboardService {
       const message = incompatibleCardsAndFilters.map(({ card, filter }) => `{Card: ${card.name}, Filter: ${filter.name}}`).join(". ");
       errors.push({
         key: "INCOMPATIBLE_FILTER_AND_CARD",
-        message: `Standard report cards of types related to Approval, Comments, Tasks and Checklist currently doesn't support any filter other than Address. Incompatible "Card <=> Filter" combinations are as follows: ${message}`
+        message: `Standard report cards of types related to Approval, Comments, Tasks and Checklist currently doesn't support any filter other than Address. Incompatible "Card <=> Filter" combinations are as follows: ${message}`,
       });
     }
     this.validateForMissingSubjectTypeFilter(dashboard.filters, errors);
@@ -48,12 +48,12 @@ class DashboardService {
 
   static validateForMissingSubjectTypeFilter(dashboardFilters, errors) {
     if (
-      some(dashboardFilters, x => x.filterConfig.subjectType) &&
-      every(dashboardFilters, x => x.filterConfig.type !== CustomFilter.type.SubjectType)
+      some(dashboardFilters, (x) => x.filterConfig.subjectType) &&
+      every(dashboardFilters, (x) => x.filterConfig.type !== CustomFilter.type.SubjectType)
     ) {
       errors.push({
         key: "MISSING_SUBJECT_TYPE_FILTER",
-        message: "One or more filters configured are dependent on the SubjectType filter."
+        message: "One or more filters configured are dependent on the SubjectType filter.",
       });
     }
   }
@@ -62,7 +62,7 @@ class DashboardService {
     const url = edit ? `${dashboardEndpoint}/${id}` : "/web/dashboard";
     const methodName = edit ? "put" : "post";
     const payload = WebDashboard.toResource(dashboard);
-    return http[methodName](url, payload).then(res => {
+    return http[methodName](url, payload).then((res) => {
       if (res.status === 200) {
         return res.data;
       }
@@ -71,11 +71,11 @@ class DashboardService {
 
   static mapDashboardFromResource(dashboardResponse, operationalModules) {
     const dashboard = { ...dashboardResponse };
-    dashboard.filters = dashboardResponse.filters.map(x => {
+    dashboard.filters = dashboardResponse.filters.map((x) => {
       const filter = { ...x };
       const filterConfig = new DashboardFilterConfig();
 
-      const { subjectTypes, programs, encounterTypes } = operationalModules;
+      const { subjectTypes, programs, encounterTypes, formMappings } = operationalModules;
       const filterConfigInResponse = x.filterConfig;
       filterConfig.subjectType =
         filterConfigInResponse.subjectTypeUUID && EntityService.findByUuid(subjectTypes, filterConfigInResponse.subjectTypeUUID);
@@ -85,20 +85,34 @@ class DashboardService {
         const groupSubjectTypeFilter = new GroupSubjectTypeFilter();
         groupSubjectTypeFilter.subjectType = EntityService.findByUuid(
           subjectTypes,
-          filterConfigInResponse.groupSubjectTypeFilter.subjectTypeUUID
+          filterConfigInResponse.groupSubjectTypeFilter.subjectTypeUUID,
         );
         filterConfig.groupSubjectTypeFilter = groupSubjectTypeFilter;
       } else if (filterConfigInResponse.type === CustomFilter.type.Concept) {
         const observationBasedFilter = new ObservationBasedFilter();
         observationBasedFilter.scope = filterConfigInResponse.observationBasedFilter.scope;
         observationBasedFilter.concept = filterConfigInResponse.observationBasedFilter.concept;
-        observationBasedFilter.programs = filterConfigInResponse.observationBasedFilter.programUUIDs.map(p =>
-          EntityService.findByUuid(programs, p)
+        observationBasedFilter.programs = filterConfigInResponse.observationBasedFilter.programUUIDs.map((p) =>
+          EntityService.findByUuid(programs, p),
         );
-        observationBasedFilter.encounterTypes = filterConfigInResponse.observationBasedFilter.encounterTypeUUIDs.map(e =>
-          EntityService.findByUuid(encounterTypes, e)
+        observationBasedFilter.encounterTypes = filterConfigInResponse.observationBasedFilter.encounterTypeUUIDs.map((e) =>
+          EntityService.findByUuid(encounterTypes, e),
         );
         filterConfig.observationBasedFilter = observationBasedFilter;
+      } else if (filterConfigInResponse.type === CustomFilter.type.SubjectType) {
+        const { presetSubjectTypeUUID, presetProgramUUID } = filterConfigInResponse;
+        const presetSubjectType = presetSubjectTypeUUID && EntityService.findByUuid(subjectTypes, presetSubjectTypeUUID);
+        const presetProgram =
+          presetSubjectType &&
+          presetProgramUUID &&
+          EntityService.findByUuid(MetaDataService.getProgramsForSubjectType(programs, presetSubjectType, formMappings), presetProgramUUID);
+        filterConfig.presetSubjectType = presetSubjectType || undefined;
+        filterConfig.presetProgram = presetProgram || undefined;
+        const subjectTypeDropped = !!presetSubjectTypeUUID && !presetSubjectType;
+        const programDropped = !!presetProgramUUID && !presetProgram;
+        if (subjectTypeDropped || programDropped) {
+          filter.unavailablePreset = { subjectType: subjectTypeDropped, program: programDropped };
+        }
       }
       filter.filterConfig = filterConfig;
       return filter;
@@ -109,19 +123,19 @@ class DashboardService {
   static getDashboard(id, operationalModules) {
     return http
       .get(`${dashboardEndpoint}/${id}`)
-      .then(res => res.data)
-      .then(dashboardResponse => DashboardService.mapDashboardFromResource(dashboardResponse, operationalModules));
+      .then((res) => res.data)
+      .then((dashboardResponse) => DashboardService.mapDashboardFromResource(dashboardResponse, operationalModules));
   }
 
   static getStandardReportCardTypes() {
     return http
       .get("/web/standardReportCardType")
-      .then(res => res.data)
-      .then(standardReportCardTypes => standardReportCardTypes.map(x => WebStandardReportCardType.fromResource(x)));
+      .then((res) => res.data)
+      .then((standardReportCardTypes) => standardReportCardTypes.map((x) => WebStandardReportCardType.fromResource(x)));
   }
 
   static getReportCard(id) {
-    return http.get(`/web/reportCard/${id}`).then(res => WebReportCard.fromResource(res.data));
+    return http.get(`/web/reportCard/${id}`).then((res) => WebReportCard.fromResource(res.data));
   }
 
   static saveReportCard(card) {
@@ -131,7 +145,7 @@ class DashboardService {
   }
 
   static getAllReportCards() {
-    return http.get(`/web/reportCard`).then(res => res.data);
+    return http.get(`/web/reportCard`).then((res) => res.data);
   }
 }
 

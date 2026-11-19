@@ -29,6 +29,7 @@ import {
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
+import { callOrMarkSubjectNotFound } from "./subjectNotFoundSaga";
 import { find, isNil, keys, sortBy } from "lodash";
 import { mapProfile } from "common/subjectModelMapper";
 import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
@@ -130,7 +131,8 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   yield put.resolve(setInitialSubjectState());
   yield put.resolve(setFilteredFormElements());
 
-  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
+  const subjectProfileJson = yield call(callOrMarkSubjectNotFound, api.fetchSubjectProfile, subjectUuid);
+  if (!subjectProfileJson) return;
   const subject = mapProfile(subjectProfileJson);
   const selectedAddressLevelType = subjectProfileJson.addressLevelTypeName
     ? { name: subjectProfileJson.addressLevelTypeName, id: subjectProfileJson.addressLevelTypeId }

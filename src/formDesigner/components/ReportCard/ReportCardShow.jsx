@@ -7,6 +7,8 @@ import RuleDisplay from "../../../adminApp/components/RuleDisplay";
 import { useSelector } from "react-redux";
 import { Privilege, ReportCard } from "openchs-models";
 import { httpClient as http } from "../../../common/utils/httpClient";
+import { isNetworkError } from "../../../common/utils/networkError";
+import { networkErrorNotifier } from "../../../common/utils/networkErrorNotifier";
 import _ from "lodash";
 import MediaService from "../../../adminApp/service/MediaService";
 import OperationalModules from "../../../common/model/OperationalModules";
@@ -19,12 +21,14 @@ function RenderCard({ reportCard }) {
 
   const [iconPreviewUrl, setIconPreviewUrl] = useState("");
   const [operationalModules, setOperationalModules] = useState({});
+  const [dashboards, setDashboards] = useState(null);
   const [customCardConfigDetails, setCustomCardConfigDetails] = useState(null);
   const cardType = ReportCard.deriveCardType(reportCard);
   const isStandard = cardType === ReportCard.cardTypes.standard;
   const isNested = cardType === ReportCard.cardTypes.nested;
   const isCustomData = cardType === ReportCard.cardTypes.customData;
   const isFullyCustom = cardType === ReportCard.cardTypes.fullyCustom;
+  const isActionOpenDashboard = reportCard.isActionOpenDashboard();
 
   useEffect(() => {
     if (
@@ -44,6 +48,19 @@ function RenderCard({ reportCard }) {
       });
     }
   }, [reportCard.action]);
+
+  useEffect(() => {
+    if (isActionOpenDashboard) {
+      http
+        .get("/web/dashboard")
+        .then((response) => {
+          setDashboards(response.data || []);
+        })
+        .catch((error) => {
+          if (isNetworkError(error)) networkErrorNotifier.notify();
+        });
+    }
+  }, [isActionOpenDashboard]);
 
   useEffect(() => {
     const uuid = reportCard.customCardConfig?.uuid;
@@ -210,15 +227,54 @@ function RenderCard({ reportCard }) {
           )}
         </Fragment>
       )}
-      {(isNested || isCustomData) && reportCard.action && (
+      {(isNested || isCustomData || (isFullyCustom && isActionOpenDashboard)) &&
+        reportCard.action && (
+          <>
+            <p />
+            <ShowLabelValue
+              label="Action"
+              value={
+                reportCard.action === ReportCard.actionTypes.DoVisit
+                  ? "Do visit"
+                  : isActionOpenDashboard
+                    ? "Open dashboard"
+                    : reportCard.isActionApproveReject()
+                      ? "Approve or reject"
+                      : "View subject profile"
+              }
+            />
+          </>
+        )}
+      {(isNested || isCustomData) && reportCard.isActionApproveReject() && (
         <>
           <p />
           <ShowLabelValue
-            label="Action"
+            label="Approval Status"
+            value={_.get(
+              _.find(WebReportCard.approvalStatusOptions, {
+                value: reportCard.actionDetailApprovalStatus,
+              }),
+              "label",
+              "-",
+            )}
+          />
+        </>
+      )}
+      {(isCustomData || isFullyCustom) && isActionOpenDashboard && (
+        <>
+          <p />
+          <ShowLabelValue
+            label="Dashboard"
             value={
-              reportCard.action === ReportCard.actionTypes.DoVisit
-                ? "Do visit"
-                : "View subject profile"
+              _.isNil(dashboards)
+                ? null
+                : _.get(
+                    _.find(dashboards, {
+                      uuid: reportCard.actionDetailDashboardUUID,
+                    }),
+                    "name",
+                    "Not found. It may have been deleted.",
+                  )
             }
           />
         </>

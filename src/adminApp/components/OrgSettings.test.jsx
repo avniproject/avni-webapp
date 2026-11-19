@@ -61,7 +61,7 @@ const savedAs = (settings) => ({
 });
 
 const clinicSharingSwitch = () =>
-  container.querySelector('input[name="Enable clinic sharing"]');
+  container.querySelector('input[name="Enable camp mode"]');
 
 const click = async (element) => {
   await act(async () => element.click());
@@ -80,11 +80,11 @@ afterEach(async () => {
   container.remove();
 });
 
-describe("Enable clinic sharing switch", () => {
+describe("Enable camp mode switch", () => {
   it("is on the organisation settings page", async () => {
     await openSettings({});
     expect(clinicSharingSwitch()).not.toBeNull();
-    expect(container.textContent).toContain("Enable clinic sharing");
+    expect(container.textContent).toContain("Enable camp mode");
   });
 
   it("is off for an organisation that has never set it", async () => {
@@ -97,7 +97,7 @@ describe("Enable clinic sharing switch", () => {
     expect(clinicSharingSwitch().checked).toBe(true);
   });
 
-  it("has its own help button, which opens the clinic sharing help text", async () => {
+  it("has its own help button, which opens the camp mode help text", async () => {
     await openSettings({});
     const helpButton = container.querySelector(
       '[data-tooltip-key="ADMIN_ENABLE_CLINIC_SHARING"]',
@@ -152,7 +152,7 @@ describe("Enable clinic sharing switch", () => {
   });
 });
 
-describe("Enable clinic sharing help text", () => {
+describe("Enable camp mode help text", () => {
   // The help button fetches this file and shows "No key found" for a key it lacks.
   const toolTips = JSON.parse(
     fs.readFileSync(

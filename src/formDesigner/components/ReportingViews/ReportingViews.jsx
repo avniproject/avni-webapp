@@ -1,10 +1,11 @@
-import { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { useSelector } from "react-redux";
 import { Title } from "react-admin";
 import { httpClient as http } from "../../../common/utils/httpClient";
 import { get } from "lodash";
+import ClientSideTableUtil from "../../../common/utils/ClientSideTableUtil";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import Modal from "@mui/material/Modal";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -17,7 +18,7 @@ import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MuiComponentHelper from "../../../common/utils/MuiComponentHelper";
 import { Delete } from "@mui/icons-material";
-import { Grid } from "@mui/material";
+import { Grid, LinearProgress } from "@mui/material";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[2],
@@ -47,35 +48,37 @@ const StyledCircularProgress = styled(CircularProgress)({
   zIndex: 1
 });
 
+const toViewRows = views =>
+  (views || []).map(view => ({
+    ...view,
+    legacyView: view.legacyView ?? false
+  }));
+
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Report);
 }
 
 const ReportingViews = () => {
-  const tableRef = useRef(null);
   const userInfo = useSelector(state => state.app.userInfo);
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [message, setMessage] = useState();
 
+  const loadViews = useCallback(
+    () =>
+      http
+        .get("/viewsInDb")
+        .then(response => setResult(toViewRows(response.data))),
+    []
+  );
+
   useEffect(() => {
-    http
-      .get("/viewsInDb")
-      .then(response => {
-        console.log("ReportingViews fetchData response:", response.data);
-        setResult(
-          (response.data || []).map(view => ({
-            ...view,
-            legacyView: view.legacyView ?? false
-          }))
-        );
-      })
-      .catch(error => {
-        console.error("Failed to fetch views:", error);
-        setResult([]);
-      });
-  }, []);
+    loadViews().catch(error => {
+      console.error("Failed to fetch views:", error);
+      setResult([]);
+    });
+  }, [loadViews]);
 
   const renderWarning = useCallback(
     (viewName, isLegacy) => (
@@ -101,29 +104,12 @@ const ReportingViews = () => {
   );
 
   const fetchData = useCallback(
-    ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
-      new Promise(resolve => {
-        let filteredData = [...result];
-        if (globalFilter) {
-          filteredData = filteredData.filter(view =>
-            view.viewName.toLowerCase().includes(globalFilter.toLowerCase())
-          );
-        }
-        if (orderBy) {
-          filteredData.sort((a, b) => {
-            const aValue = get(a, orderBy, "");
-            const bValue = get(b, orderBy, "");
-            const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-            return orderDirection === "asc" ? comparison : -comparison;
-          });
-        }
-        const start = page * pageSize;
-        const paginatedData = filteredData.slice(start, start + pageSize);
-        resolve({
-          data: paginatedData,
-          totalCount: filteredData.length
-        });
-      }),
+    params =>
+      ClientSideTableUtil.searchSortAndPage(
+        result || [],
+        view => view.viewName,
+        params
+      ),
     [result]
   );
 
@@ -140,23 +126,26 @@ const ReportingViews = () => {
                   row.original.viewName
                 }?`;
                 if (window.confirm(voidedMessage)) {
-                  http
-                    .delete(`/reportingView/${row.original.viewName}`)
-                    .then(response => {
-                      if (response.status === 200 && tableRef.current) {
-                        tableRef.current.refresh();
-                      }
-                    })
-                    .catch(error => {
+                  http.delete(`/reportingView/${row.original.viewName}`).then(
+                    response =>
+                      response.status === 200 &&
+                      loadViews().catch(error => {
+                        console.error("Failed to reload views:", error);
+                        alert(
+                          "The view was deleted, but the list could not be reloaded. Please refresh the page."
+                        );
+                      }),
+                    error => {
                       console.error("Failed to delete view:", error);
                       alert("Failed to delete view. Please try again.");
-                    });
+                    }
+                  );
                 }
               }
             }
           ]
         : [],
-    [userInfo]
+    [userInfo, loadViews]
   );
 
   const confirmViewCreation = useCallback(() => {
@@ -170,12 +159,7 @@ const ReportingViews = () => {
         .post("/createReportingViews")
         .then(res => {
           if (res.status === 200) {
-            setResult(
-              (res.data || []).map(view => ({
-                ...view,
-                legacyView: view.legacyView ?? false
-              }))
-            );
+            setResult(toViewRows(res.data));
             setLoading(false);
             setMessage("Successfully created the views");
             setShowAlert(true);
@@ -183,9 +167,11 @@ const ReportingViews = () => {
         })
         .catch(error => {
           setLoading(false);
-          const errorMessage = `${get(error, "response.data") ||
+          const errorMessage = `${
+            get(error, "response.data") ||
             get(error, "message") ||
-            "unknown error"}`;
+            "unknown error"
+          }`;
           alert(errorMessage);
         });
     }
@@ -205,29 +191,32 @@ const ReportingViews = () => {
             </Grid>
           )}
         </Grid>
-        <AvniMaterialTable
-          title=""
-          ref={tableRef}
-          columns={columns}
-          fetchData={fetchData}
-          options={{
-            pageSize: 10,
-            pageSizeOptions: [10, 15, 20],
-            sorting: true,
-            debounceInterval: 500,
-            search: true,
-            rowStyle: ({ original }) => ({
-              backgroundColor: original.legacyView ? "#DBDBDB" : "#FFF"
-            })
-          }}
-          renderDetailPanel={({ row }) => (
-            <StyledDetailPanel>
-              <JSEditor readOnly value={row.original.viewDefinition} />
-            </StyledDetailPanel>
-          )}
-          actions={actions}
-          route="/appdesigner/reportingViews"
-        />
+        {result === null && <LinearProgress />}
+        {result !== null && (
+          <AvniMaterialTable
+            title=""
+            columns={columns}
+            fetchData={fetchData}
+            enableColumnFilters={false}
+            options={{
+              pageSize: 10,
+              pageSizeOptions: [10, 15, 20],
+              sorting: true,
+              debounceInterval: 500,
+              search: true,
+              rowStyle: ({ original }) => ({
+                backgroundColor: original.legacyView ? "#DBDBDB" : "#FFF"
+              })
+            }}
+            renderDetailPanel={({ row }) => (
+              <StyledDetailPanel>
+                <JSEditor readOnly value={row.original.viewDefinition} />
+              </StyledDetailPanel>
+            )}
+            actions={actions}
+            route="/appdesigner/reportingViews"
+          />
+        )}
         <Modal
           onClose={MuiComponentHelper.getDialogClosingHandler()}
           open={loading}

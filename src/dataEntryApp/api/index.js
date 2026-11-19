@@ -1,4 +1,5 @@
 import { httpClient } from "common/utils/httpClient";
+import { withUserTimeZone } from "common/utils/SearchRequestUtil";
 import { get } from "lodash";
 import MessageService from "../../common/service/MessageService";
 
@@ -24,7 +25,7 @@ export default {
   searchResult: (searchData) =>
     httpClient.fetchJson("/web/searchAPI/v2", {
       method: "POST",
-      body: JSON.stringify(searchData),
+      body: JSON.stringify(withUserTimeZone(searchData)),
     }),
 
   saveProgramEncouter: (programEncounter) =>
@@ -82,6 +83,7 @@ export default {
         return response.json;
       })
       .catch((error) => {
+        if (get(error, "status") === 404) throw error;
         return [];
       }),
 

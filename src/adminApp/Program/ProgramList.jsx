@@ -58,6 +58,7 @@ const ProgramList = () => {
       {
         accessorKey: "subjectType",
         header: "Subject Type",
+        enableSorting: false,
         Cell: ({ row }) => (
           <ShowSubjectType
             rowDetails={row.original}
@@ -71,6 +72,7 @@ const ProgramList = () => {
       {
         accessorKey: "enrolmentForm",
         header: "Enrolment Form",
+        enableSorting: false,
         Cell: ({ row }) => (
           <a
             href={`#/appdesigner/forms/${get(
@@ -88,6 +90,7 @@ const ProgramList = () => {
       {
         accessorKey: "exitForm",
         header: "Exit Form",
+        enableSorting: false,
         Cell: ({ row }) => (
           <a
             href={`#/appdesigner/forms/${get(
@@ -121,14 +124,15 @@ const ProgramList = () => {
   );
 
   const fetchData = useCallback(
-    ({ page, pageSize, orderBy, orderDirection }) =>
+    ({ page, pageSize, orderBy, orderDirection, globalFilter }) =>
       new Promise(resolve => {
-        const validSortFields = ["name", "colour"];
+        const serverSortFields = { name: "name", colour: "program.colour" };
         let apiUrl = `/web/program?size=${encodeURIComponent(
           pageSize
         )}&page=${encodeURIComponent(page)}`;
-        if (orderBy && validSortFields.includes(orderBy)) {
-          apiUrl += `&sort=${encodeURIComponent(orderBy)},${encodeURIComponent(
+        if (globalFilter) apiUrl += `&name=${encodeURIComponent(globalFilter)}`;
+        if (serverSortFields[orderBy]) {
+          apiUrl += `&sort=${encodeURIComponent(serverSortFields[orderBy])},${encodeURIComponent(
             orderDirection
           )}`;
         }
@@ -217,14 +221,12 @@ const ProgramList = () => {
         ref={tableRef}
         columns={columns}
         fetchData={fetchData}
-        enableGlobalFilter={false}
         enableColumnFilters={false}
         options={{
           pageSize: 10,
           pageSizeOptions: [5, 10, 20],
           sorting: true,
           debounceInterval: 500,
-          search: false,
           rowStyle: ({ original }) => ({
             backgroundColor: original.voided ? "#DBDBDB" : "#fff"
           })

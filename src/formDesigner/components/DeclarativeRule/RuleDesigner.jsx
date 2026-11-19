@@ -18,8 +18,6 @@ const RuleDesigner = ({
   parentConceptUuid,
   parentConceptDataType,
   parentSubjectTypeUuid,
-  onOpenAiRuleModal,
-  ruleType,
 }) => {
   return (
     <>
@@ -37,8 +35,6 @@ const RuleDesigner = ({
           parentConceptUuid={parentConceptUuid}
           parentConceptDataType={parentConceptDataType}
           parentSubjectTypeUuid={parentSubjectTypeUuid}
-          onOpenAiRuleModal={onOpenAiRuleModal}
-          ruleType={ruleType}
         />
       </Box>
       <JSEditor

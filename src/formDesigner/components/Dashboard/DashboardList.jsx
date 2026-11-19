@@ -9,7 +9,6 @@ const DashboardList = () => {
     {
       accessorKey: "name",
       header: "Name",
-      enableSorting: false,
       Cell: ({ row }) =>
         !row.original.voided && (
           <a href={`#/appDesigner/dashboard/${row.original.id}/show`}>
@@ -27,7 +26,6 @@ const DashboardList = () => {
     {
       accessorKey: "description",
       header: "Description",
-      enableSorting: false,
       Cell: ({ row }) => row.original.description || ""
     }
   ];

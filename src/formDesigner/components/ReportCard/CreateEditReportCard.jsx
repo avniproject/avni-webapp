@@ -25,6 +25,8 @@ import {
 } from "../../common/SampleRule";
 import { AvniSelect } from "../../../common/components/AvniSelect";
 import { MediaFolder, uploadImage } from "../../../common/utils/S3Client";
+import { isNetworkError } from "../../../common/utils/networkError";
+import { networkErrorNotifier } from "../../../common/utils/networkErrorNotifier";
 import {
   createServerError,
   getErrorByKey,
@@ -67,6 +69,7 @@ export const CreateEditReportCard = () => {
   const [actionPrograms, setActionPrograms] = useState([]);
   const [actionEncounterTypes, setActionEncounterTypes] = useState([]);
   const [actionAttendanceTypes, setActionAttendanceTypes] = useState([]);
+  const [actionDashboards, setActionDashboards] = useState([]);
 
   useEffect(() => {
     DashboardService.getStandardReportCardTypes().then(
@@ -163,9 +166,13 @@ export const CreateEditReportCard = () => {
           count: WebReportCard.MinimumNumberOfNestedCards,
         },
       });
+      // A Custom Design Card's Open dashboard, and its dashboard, carry over.
       dispatch({
         type: ReportCardReducerKeys.action,
-        payload: ReportCard.actionTypes.ViewSubjectProfile,
+        payload:
+          card.action === ReportCard.actionTypes.OpenDashboard
+            ? ReportCard.actionTypes.OpenDashboard
+            : ReportCard.actionTypes.ViewSubjectProfile,
       });
       dispatch({ type: ReportCardReducerKeys.customCardConfig, payload: null });
     } else if (nextType === fullyCustom) {
@@ -193,6 +200,17 @@ export const CreateEditReportCard = () => {
       http
         .getAllData("subjectType", "/web/subjectType")
         .then((response) => setActionSubjectTypes(response));
+    }
+  }, [card.action]);
+
+  useEffect(() => {
+    if (card.action === ReportCard.actionTypes.OpenDashboard) {
+      http
+        .getData("/web/dashboard")
+        .then((response) => setActionDashboards(response || []))
+        .catch((error) => {
+          if (isNetworkError(error)) networkErrorNotifier.notify();
+        });
     }
   }, [card.action]);
 
@@ -269,6 +287,35 @@ export const CreateEditReportCard = () => {
   const isFullyCustom = cardType === ReportCard.cardTypes.fullyCustom;
   const showQueryEditor = isNested || isCustomData;
   const showActionFields = isNested || isCustomData;
+  // Custom Design Cards offer only Open dashboard, so the Do visit and Mark
+  // attendance fields stay behind showActionFields.
+  const showActionSelect = showActionFields || isFullyCustom;
+
+  const actionOptions = () => {
+    const openDashboard = {
+      value: ReportCard.actionTypes.OpenDashboard,
+      label: "Open dashboard",
+    };
+    if (isFullyCustom) {
+      return [{ value: null, label: "No action" }, openDashboard];
+    }
+    const subjectActions = [
+      {
+        value: ReportCard.actionTypes.ViewSubjectProfile,
+        label: "View subject profile",
+      },
+      { value: ReportCard.actionTypes.DoVisit, label: "Do visit" },
+      {
+        value: ReportCard.actionTypes.MarkAttendance,
+        label: "Mark attendance",
+      },
+      {
+        value: ReportCard.actionTypes.ApproveReject,
+        label: "Approve or reject",
+      },
+    ];
+    return isCustomData ? [...subjectActions, openDashboard] : subjectActions;
+  };
 
   const validateRequest = () => {
     const errors = card.validateCard(cardType);
@@ -507,7 +554,7 @@ export const CreateEditReportCard = () => {
           />
         )}
         <p />
-        {showActionFields && (
+        {showActionSelect && (
           <AvniSelect
             label="Action"
             value={card.action}
@@ -518,17 +565,7 @@ export const CreateEditReportCard = () => {
                 payload: event.target.value,
               })
             }
-            options={[
-              {
-                value: ReportCard.actionTypes.ViewSubjectProfile,
-                label: "View subject profile",
-              },
-              { value: ReportCard.actionTypes.DoVisit, label: "Do visit" },
-              {
-                value: ReportCard.actionTypes.MarkAttendance,
-                label: "Mark attendance",
-              },
-            ]}
+            options={actionOptions()}
             toolTipKey={"APP_DESIGNER_CARD_ACTION"}
           />
         )}
@@ -721,6 +758,53 @@ export const CreateEditReportCard = () => {
                 toolTipKey={"APP_DESIGNER_CARD_ACTION_ON_ACTION_COMPLETION"}
               />
               {getErrorByKey(error, "MISSING_ON_ACTION_COMPLETION")}
+            </>
+          )}
+        {showActionSelect &&
+          card.action === ReportCard.actionTypes.OpenDashboard && (
+            <>
+              <p />
+              <AvniSelect
+                label="Dashboard*"
+                value={card.actionDetailDashboardUUID}
+                style={{ width: "15.625rem" }}
+                required
+                onChange={(event) =>
+                  onChange(
+                    ReportCardReducerKeys.actionDetailDashboardUUID,
+                    event,
+                    "MISSING_DASHBOARD",
+                  )
+                }
+                options={actionDashboards.map((dashboard) => ({
+                  value: dashboard.uuid,
+                  label: dashboard.name,
+                }))}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_DASHBOARD"}
+              />
+              {getErrorByKey(error, "MISSING_DASHBOARD")}
+            </>
+          )}
+        {showActionFields &&
+          card.action === ReportCard.actionTypes.ApproveReject && (
+            <>
+              <p />
+              <AvniSelect
+                label="Approval Status"
+                value={card.actionDetailApprovalStatus}
+                style={{ width: "15.625rem" }}
+                required
+                onChange={(event) =>
+                  onChange(
+                    ReportCardReducerKeys.actionDetailApprovalStatus,
+                    event,
+                    "MISSING_APPROVAL_STATUS",
+                  )
+                }
+                options={WebReportCard.approvalStatusOptions}
+                toolTipKey={"APP_DESIGNER_CARD_ACTION_APPROVAL_STATUS"}
+              />
+              {getErrorByKey(error, "MISSING_APPROVAL_STATUS")}
             </>
           )}
         <p />

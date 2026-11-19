@@ -92,6 +92,10 @@
     "registrationDate": "रजिस्ट्रेशन तारीख",
     "Yes": "हाँ",
     "notEnrolledInAnyProgram": "किसी प्रोग्राम में एनरोल नहीं",
+    "exitedEnrolment": "बाहर हुए",
+    "includeExitedEnrolments": "बाहर हुए भी शामिल करें",
+    "notEnrolledInAnyProgramTooltip": "केवल उन लोगों को दिखाने के लिए इसे चालू करें जो किसी प्रोग्राम में एनरोल नहीं हैं। अगर आप प्रोग्राम भी चुनते हैं, तो उन प्रोग्राम के लोग भी दिखेंगे।",
+    "includeExitedEnrolmentsTooltip": "अगर आप खोज परिणामों में बाहर हुए एनरोलमेंट भी शामिल करना चाहते हैं, तो इसे चालू करें",
     "vaccinations": "टीकाकरण",
     "checklists": "चेकलिस्ट",
     "userId": "यूज़र आईडी",
@@ -366,6 +370,8 @@
     "selectAllLabel": "सबका चयन करें",
     "unselectAllLabel": "सभी को अचयनित करें",
     "alreadyEnrolledInProgram": "{{programName}} में पहले से ही  एनरोल है",
-    "invalidDate": "अमान्य तारीख"
+    "invalidDate": "अमान्य तारीख",
+    "dateOfBirthTakesPrecedence": "आयु की तुलना में जन्म तिथि को प्राथमिकता दी जाती है",
+    "subjectNotFound": "विषय नहीं मिला"
   }
 }

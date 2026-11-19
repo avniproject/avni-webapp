@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FormControl, Box } from "@mui/material";
+import { FormControl, Box, FormHelperText } from "@mui/material";
 import Select from "react-select";
 import { omitTableData } from "../CustomFilters";
 import commonApi from "../../common/service";
@@ -17,6 +17,7 @@ import {
   map,
   pickBy,
   reject,
+  some,
   startCase,
   values,
 } from "lodash";
@@ -28,9 +29,15 @@ import { Concept, CustomFilter } from "avni-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import { programsForSubjectType } from "../../formDesigner/common/FormMappingNarrowing";
+import { isSameFilter, withoutFilter } from "../Util/customFilterIdentity";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
+import {
+  SUPPORTED_CONCEPT_FILTER_TYPES,
+  isSupportedConceptType,
+} from "../../common/utils/searchFilterConceptTypes";
 
 const nonSupportedTypes = [
   "Duration",
@@ -64,6 +71,7 @@ export const CreateEditFilters = ({
             CustomFilter.type.Age,
             CustomFilter.type.SearchAll,
             CustomFilter.type.DateOfBirth,
+            CustomFilter.type.Program,
           ].includes(t),
         )
       : allTypes;
@@ -164,6 +172,15 @@ export const CreateEditFilters = ({
     }) ||
       "",
   );
+  // A search filter saved earlier, or uploaded, on a type search can't filter on (avni-webapp#965).
+  const selectedConceptType = selectedConcept?.value?.dataType;
+  const unsearchableConceptType =
+    filterType === "searchFilters" &&
+    selectedType?.value === CustomFilter.type.Concept &&
+    !isEmpty(selectedConcept) &&
+    !isSupportedConceptType(selectedConceptType)
+      ? selectedConceptType || "unknown"
+      : null;
   const [selectedScope, setScope] = useState(
     mapPreviousToOptions(scope, scopeOptions),
   );
@@ -269,7 +286,7 @@ export const CreateEditFilters = ({
     const oldFilters = setting.settings[filterType];
     const newFilters = isNil(selectedFilter)
       ? [...oldFilters, newFilter]
-      : [...oldFilters.filter((f) => f.titleKey !== titleKey), newFilter];
+      : [...withoutFilter(oldFilters, selectedFilter), newFilter];
     return {
       uuid: setting.uuid,
       worklistUpdationRule: worklistUpdationRule,
@@ -340,8 +357,11 @@ export const CreateEditFilters = ({
       .get("/search/concept?name=" + encodeURIComponent(inputValue))
       .then((response) => {
         const concepts = response.data;
-        const filteredConcepts = concepts.filter(
-          (concept) => !includes(nonSupportedTypes, concept.dataType),
+        // Search Filters offer only what the search screen can filter on; My Dashboard filters keep their own list.
+        const filteredConcepts = concepts.filter((concept) =>
+          filterType === "searchFilters"
+            ? isSupportedConceptType(concept.dataType)
+            : !includes(nonSupportedTypes, concept.dataType),
         );
         const conceptOptions = map(
           filteredConcepts,
@@ -375,16 +395,54 @@ export const CreateEditFilters = ({
     return !!stType && stType !== "Person";
   };
 
-  const typeOptions = isNonPersonSubjectType(selectedSubject)
-    ? baseTypeOptions.filter((o) => o.value !== CustomFilter.type.DateOfBirth)
-    : baseTypeOptions;
+  const hasAnotherProgramFilter = (sub) =>
+    !!sub?.value &&
+    some(
+      get(settings, ["settings", filterType]),
+      (f) =>
+        f.type === CustomFilter.type.Program &&
+        f.subjectTypeUUID === sub.value &&
+        !isSameFilter(f, selectedFilter),
+    );
+
+  // Without form mappings loaded the programmes are unknown, so Program stays offered.
+  const enrolsIntoNoProgramme = (sub) =>
+    !!sub?.value &&
+    !isNil(operationalModules?.formMappings) &&
+    !isNil(programs) &&
+    isEmpty(
+      programsForSubjectType(
+        map(programs, (program) => program.that || program),
+        operationalModules.formMappings,
+        sub.value,
+      ),
+    );
+
+  const cannotHaveProgramFilter = (sub) =>
+    hasAnotherProgramFilter(sub) ||
+    (enrolsIntoNoProgramme(sub) && type !== CustomFilter.type.Program);
+
+  const typeOptions = baseTypeOptions.filter(
+    (o) =>
+      !(
+        o.value === CustomFilter.type.DateOfBirth &&
+        isNonPersonSubjectType(selectedSubject)
+      ) &&
+      !(
+        o.value === CustomFilter.type.Program &&
+        cannotHaveProgramFilter(selectedSubject)
+      ),
+  );
 
   const onSubjectChange = (sub) => {
     setSubject(sub);
     if (
-      isNonPersonSubjectType(sub) &&
-      selectedType &&
-      selectedType.value === CustomFilter.type.DateOfBirth
+      (isNonPersonSubjectType(sub) &&
+        selectedType &&
+        selectedType.value === CustomFilter.type.DateOfBirth) ||
+      (selectedType &&
+        selectedType.value === CustomFilter.type.Program &&
+        cannotHaveProgramFilter(sub))
     ) {
       setType("");
       resetState();
@@ -533,6 +591,11 @@ export const CreateEditFilters = ({
                     onChange={(value) => setConcept(value)}
                     loadOptions={loadConcept}
                   />
+                  {unsearchableConceptType && (
+                    <FormHelperText style={{ color: "#a15c00" }}>
+                      {`Search leaves this filter out, because it can't search on ${unsearchableConceptType === "unknown" ? "a concept saved without its type" : `${unsearchableConceptType} concepts`}. Choose a concept of type ${SUPPORTED_CONCEPT_FILTER_TYPES.join(", ")}, or delete this filter.`}
+                    </FormHelperText>
+                  )}
                 </div>
               )}
               <Box

@@ -77,6 +77,17 @@ const buildDecisionsSummary = (changes, resolutions) => {
 const markHitlResolved = (messages, interruptId) =>
   messages.map((m) => (m.type === "hitl" && m.interrupt_id === interruptId ? { ...m, resolved: true } : m));
 
+/** Undo `markHitlResolved` when the resolve request fails. */
+const markHitlUnresolved = (messages, interruptId) =>
+  messages.map((m) => (m.type === "hitl" && m.interrupt_id === interruptId ? { ...m, resolved: false } : m));
+
+let localMessageCounter = 0;
+/** Id of a message added before its request, so a failed request can take it back out. */
+const nextLocalId = () => `local-${++localMessageCounter}`;
+
+/** The messages without the one added for a request that failed. */
+export const withoutLocalMessage = (messages, localId) => messages.filter((m) => m.localId !== localId);
+
 /**
  * Flip `uploaded: true` on the most recent bundle message. Called on a
  * successful upload.done so the inline BundleSummary's Upload button
@@ -101,6 +112,18 @@ const safeParseDetail = (body) => {
   } catch {
     return null;
   }
+};
+
+/**
+ * `setError` updater that drops the banner only when it came from the same
+ * action, so a later success clears its own failure without hiding others.
+ */
+export const clearErrorWithCode = (code) => (prev) => (prev?.code === code ? null : prev);
+
+/** The backend's own error text (`detail.error`) when it sent one, else the raw HTTP error. */
+export const backendErrorMessage = (err) => {
+  const detail = err?.body ? safeParseDetail(err.body) : null;
+  return typeof detail?.error === "string" && detail.error ? detail.error : err.message;
 };
 
 /**
@@ -274,7 +297,7 @@ export const useChatSession = () => {
         // Clear the transient "stream interrupted; retrying…" banner once
         // the browser's auto-reconnect succeeds. Without this it lingers
         // even though the connection has healed.
-        setError((prev) => (prev?.code === "E_SSE" ? null : prev));
+        setError(clearErrorWithCode("E_SSE"));
       };
       es.onerror = () => {
         // Browser will auto-retry; surface a transient error banner but
@@ -348,11 +371,19 @@ export const useChatSession = () => {
   const send = useCallback(
     async (text) => {
       if (!aiApi || !sessionId || !text.trim()) return;
+      // A card's restatement belongs to the turn that showed the card. When
+      // that turn ended without one, the flag must not hide this turn's reply.
+      suppressNextAssistantRef.current = false;
+      // Shown before the request: the reply streams over SSE and can arrive
+      // before the POST returns, so adding it afterwards puts it below the reply.
+      const localId = nextLocalId();
+      setMessages((prev) => [...prev, { type: "text", role: "user", content: text, ts: nowTs(), localId }]);
       try {
         await aiApi.sendMessage(sessionId, text);
-        setMessages((prev) => [...prev, { type: "text", role: "user", content: text, ts: nowTs() }]);
+        setError(clearErrorWithCode("E_SEND"));
         setAwaitingReply(true);
       } catch (err) {
+        setMessages((prev) => withoutLocalMessage(prev, localId));
         setError({
           code: "E_SEND",
           message: err.message,
@@ -366,17 +397,22 @@ export const useChatSession = () => {
   const resolveChanges = useCallback(
     async (interruptId, resolutions) => {
       if (!aiApi || !sessionId || !interruptId) return false;
+      suppressNextAssistantRef.current = false;
+      // Applied before the request, for the same reason as `send`.
+      const localId = nextLocalId();
+      setMessages((prev) => {
+        const target = prev.find((m) => m.type === "hitl" && m.interrupt_id === interruptId);
+        const summary = target ? buildDecisionsSummary(target.changes, resolutions) : null;
+        const flagged = markHitlResolved(prev, interruptId);
+        return summary ? [...flagged, { ...summary, localId }] : flagged;
+      });
       try {
         await aiApi.resolve(sessionId, interruptId, resolutions);
-        setMessages((prev) => {
-          const target = prev.find((m) => m.type === "hitl" && m.interrupt_id === interruptId);
-          const summary = target ? buildDecisionsSummary(target.changes, resolutions) : null;
-          const flagged = markHitlResolved(prev, interruptId);
-          return summary ? [...flagged, summary] : flagged;
-        });
+        setError(clearErrorWithCode("E_RESOLVE"));
         setAwaitingReply(true);
         return true;
       } catch (err) {
+        setMessages((prev) => markHitlUnresolved(withoutLocalMessage(prev, localId), interruptId));
         setError({
           code: "E_RESOLVE",
           message: err.message,
@@ -393,6 +429,7 @@ export const useChatSession = () => {
       if (!aiApi || !sessionId || !files?.length) return;
       try {
         await aiApi.uploadFiles(sessionId, files);
+        setError(clearErrorWithCode("E_UPLOAD"));
         setMessages((prev) => [
           ...prev,
           {
@@ -405,7 +442,7 @@ export const useChatSession = () => {
       } catch (err) {
         setError({
           code: "E_UPLOAD",
-          message: err.message,
+          message: backendErrorMessage(err),
           recoverable: true,
         });
       }

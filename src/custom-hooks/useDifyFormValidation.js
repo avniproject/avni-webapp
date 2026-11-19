@@ -34,21 +34,14 @@ export const useDifyFormValidation = (formType, apiKey, subjectTypeType) => {
           requestType,
         );
 
-        // Handle different response formats based on requestType
-        if (requestType === "VisitSchedule") {
-          // For VisitSchedule, pass the structured response directly
-          safeOnSuccess(validationResult);
+        if (validationResult && Array.isArray(validationResult) && validationResult.length > 0) {
+          const warningMessages = validationResult
+            .filter((v) => v && v.message) // Filter out invalid entries
+            .map((v) => v.message)
+            .join("\n\n");
+          safeOnSuccess(warningMessages || null);
         } else {
-          // For FormValidation, handle array of validation results with defensive checks
-          if (validationResult && Array.isArray(validationResult) && validationResult.length > 0) {
-            const warningMessages = validationResult
-              .filter((v) => v && v.message) // Filter out invalid entries
-              .map((v) => v.message)
-              .join("\n\n");
-            safeOnSuccess(warningMessages || null);
-          } else {
-            safeOnSuccess(null); // Clear warning if no validation issues
-          }
+          safeOnSuccess(null); // Clear warning if no validation issues
         }
       } catch (err) {
         // Silent failure - log but don't break the app

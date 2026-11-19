@@ -76,9 +76,6 @@ const DeclarativeFormRule = ({
   sampleRule,
   onJsCodeChange,
   encounterTypes,
-  onAiRuleCreation,
-  onOpenAiRuleModal,
-  ruleType,
 }) => {
   return (
     <RulePanel
@@ -95,12 +92,9 @@ const DeclarativeFormRule = ({
             form={form}
             getApplicableActions={getApplicableActions}
             sampleRule={sampleRule}
-            onAiRuleCreation={onAiRuleCreation}
             onJsCodeChange={onJsCodeChange}
             disableEditor={disabled}
             encounterTypes={encounterTypes}
-            onOpenAiRuleModal={onOpenAiRuleModal}
-            ruleType={ruleType}
           />
           <div>{children}</div>
         </Fragment>
@@ -114,7 +108,6 @@ const FormLevelRules = ({
   disabled,
   onDeclarativeRuleUpdate,
   encounterTypes,
-  onAiRuleCreation,
   ...props
 }) => {
   const commonProps = {
@@ -122,8 +115,6 @@ const FormLevelRules = ({
     subjectType: form.subjectType,
     form,
     disabled,
-    onAiRuleCreation,
-    onOpenAiRuleModal: props.onOpenAiRuleModal,
   };
   return (
     <div>
@@ -242,7 +233,6 @@ const FormLevelRules = ({
             () => onDeclarativeRuleUpdate("visitScheduleDeclarativeRule", null),
           )
         }
-        ruleType="visitSchedule"
         {...commonProps}
       />
       <DeclarativeFormRule
