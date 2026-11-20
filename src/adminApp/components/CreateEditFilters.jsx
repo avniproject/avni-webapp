@@ -6,7 +6,6 @@ import { omitTableData } from "../CustomFilters";
 import commonApi from "../../common/service";
 import {
   deburr,
-  filter,
   find,
   get,
   head,
@@ -26,6 +25,7 @@ import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar
 import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";
 import { Concept, CustomFilter } from "avni-models";
+import { MetaDataService } from "openchs-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
@@ -148,19 +148,21 @@ export const CreateEditFilters = ({
   const [selectedSubject, setSubject] = useState(
     mapPreviousToOptions(subjectTypeUUID, subjectTypeOptions),
   );
-  const groupSubjectTypeOptions = mapToOptions(
-    filter(
-      subjectTypes,
-      ({ group }) =>
-        !!group &&
-        !get(
-          find(subjectTypes, ({ uuid }) => uuid === selectedSubject.value),
-          "group",
-        ),
-    ),
+  const plainSubjectTypes = map(
+    subjectTypes,
+    (subjectType) => subjectType.that || subjectType,
   );
+  const possibleGroupSubjectTypeOptions = (subject) =>
+    mapToOptions(
+      MetaDataService.getPossibleGroupSubjectTypesFor(
+        plainSubjectTypes,
+        find(plainSubjectTypes, ({ uuid }) => uuid === subject?.value),
+      ),
+    );
+  const groupSubjectTypeOptions =
+    possibleGroupSubjectTypeOptions(selectedSubject);
   const [selectedGroupSubject, setGroupSubjectType] = useState(
-    mapPreviousToOptions(groupSubjectTypeUUID, subjectTypeOptions),
+    mapPreviousToOptions(groupSubjectTypeUUID, groupSubjectTypeOptions),
   );
   const [selectedType, setType] = useState(
     mapPreviousToOptions(type, baseTypeOptions),
@@ -247,7 +249,10 @@ export const CreateEditFilters = ({
     const newFilter = {
       titleKey: filterName,
       subjectTypeUUID: selectedSubject.value,
-      groupSubjectTypeUUID: selectedGroupSubject.value,
+      groupSubjectTypeUUID:
+        selectedType.value === CustomFilter.type.GroupSubject
+          ? selectedGroupSubject.value
+          : null,
       type: selectedType.value,
       scope: (!isEmpty(selectedScope) && selectedScope.value) || null,
       conceptName: (!isEmpty(selectedConcept) && selectedConcept.label) || null,
@@ -268,7 +273,7 @@ export const CreateEditFilters = ({
         .then((response) => {
           if (response.status === 200 || response.status === 201) {
             setMessageStatus({
-              message: "TaskAssignmentFilter updated",
+              message: "Filter updated",
               display: true,
             });
             setSnackBarStatus(true);
@@ -437,6 +442,15 @@ export const CreateEditFilters = ({
   const onSubjectChange = (sub) => {
     setSubject(sub);
     if (
+      !isEmpty(selectedGroupSubject) &&
+      !some(
+        possibleGroupSubjectTypeOptions(sub),
+        ({ value }) => value === selectedGroupSubject.value,
+      )
+    ) {
+      setGroupSubjectType("");
+    }
+    if (
       (isNonPersonSubjectType(sub) &&
         selectedType &&
         selectedType.value === CustomFilter.type.DateOfBirth) ||
@@ -495,7 +509,7 @@ export const CreateEditFilters = ({
 
   return (
     <div>
-      <Title title="TaskAssignmentFilter Config" />
+      <Title title="Filter Config" />
       <Box
         sx={{
           boxShadow: 2,
@@ -523,7 +537,7 @@ export const CreateEditFilters = ({
               <FormControl fullWidth>
                 <AvniTextField
                   id="Filter Name"
-                  label="TaskAssignmentFilter Name *"
+                  label="Filter Name *"
                   autoComplete="off"
                   value={filterName}
                   onChange={(event) => setFilterName(event.target.value)}

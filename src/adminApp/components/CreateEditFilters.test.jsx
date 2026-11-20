@@ -3,7 +3,9 @@ import { createRoot } from "react-dom/client";
 import { CreateEditFilters } from "./CreateEditFilters";
 import { httpClient } from "common/utils/httpClient";
 
-jest.mock("react-admin", () => ({ Title: () => null }));
+jest.mock("react-admin", () => ({
+  Title: ({ title }) => <span data-title>{title}</span>,
+}));
 jest.mock("../../common/components/DocumentationContainer", () => ({
   DocumentationContainer: ({ children }) => children,
 }));
@@ -14,7 +16,7 @@ jest.mock("../../common/service", () => ({
   default: { fetchSubjectTypes: () => Promise.resolve([]) },
 }));
 jest.mock("common/utils/httpClient", () => ({
-  httpClient: { get: jest.fn(), post: jest.fn() },
+  httpClient: { get: jest.fn(), post: jest.fn(), put: jest.fn() },
 }));
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -294,5 +296,175 @@ describe("filter type list", () => {
     const types = await offeredTypes([programFilter("Programmes", "st-other"), conceptFilter("Notes")], conceptFilter("Notes"));
 
     expect(types).toContain("Program");
+  });
+});
+
+describe("Group Subject filter", () => {
+  beforeEach(() => {
+    httpClient.put.mockReset();
+    httpClient.put.mockResolvedValue({ status: 200 });
+  });
+
+  const wrappedSubjectTypes = {
+    subjectTypes: [
+      { that: { uuid: "st-person", name: "Person", group: false } },
+      { that: { uuid: "st-child", name: "Child", group: false } },
+      { that: { uuid: "st-phulwari", name: "Phulwari", group: true } },
+      { that: { uuid: "st-house", name: "House", group: true, household: true } },
+    ],
+    programs: [],
+    encounterTypes: [],
+  };
+  const groupSubjectFilter = (subjectTypeUUID, groupSubjectTypeUUID) => ({
+    titleKey: "Group",
+    subjectTypeUUID,
+    type: "GroupSubject",
+    groupSubjectTypeUUID,
+  });
+
+  const renderFilter = async (selectedFilter, filterType = "searchFilters") => {
+    await act(async () =>
+      root.render(
+        <CreateEditFilters
+          selectedFilter={selectedFilter}
+          title="Edit filter"
+          filterType={filterType}
+          operationalModules={wrappedSubjectTypes}
+          settings={{
+            uuid: "s",
+            settings: { searchFilters: [], myDashboardFilters: [] },
+          }}
+        />,
+      ),
+    );
+  };
+
+  const selectBox = (label) =>
+    [...container.querySelectorAll("div")].find(
+      (d) =>
+        d.style.width === "400px" &&
+        d.querySelector("label")?.textContent.trim().startsWith(label),
+    );
+
+  const openOptions = async (label) => {
+    const input = selectBox(label).querySelector("input");
+    await act(async () => {
+      input.focus();
+      input.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }),
+      );
+    });
+    return [...selectBox(label).querySelectorAll("[class*='option']")];
+  };
+
+  const offeredNames = async (label) =>
+    (await openOptions(label)).map((o) => o.textContent);
+
+  const choose = async (label, name) => {
+    const option = (await openOptions(label)).find(
+      (o) => o.textContent === name,
+    );
+    await act(async () => option.click());
+  };
+
+  const chosen = (label) =>
+    selectBox(label)?.querySelector("[class*='singleValue']")?.textContent ||
+    "";
+
+  it("lists every group subject type when the subject types arrive wrapped, as they do through the router's location state", async () => {
+    await renderFilter(groupSubjectFilter("st-person"));
+
+    expect(await offeredNames("Group Subject Type")).toEqual([
+      "Phulwari",
+      "House",
+    ]);
+  });
+
+  it("lists the group subject types on a My Dashboard filter too", async () => {
+    await renderFilter(groupSubjectFilter("st-person"), "myDashboardFilters");
+
+    expect(await offeredNames("Group Subject Type")).toEqual([
+      "Phulwari",
+      "House",
+    ]);
+  });
+
+  it("lists every other group subject type, but not itself, when the filter's subject type is a group", async () => {
+    await renderFilter(groupSubjectFilter("st-phulwari"));
+
+    expect(await offeredNames("Group Subject Type")).toEqual(["House"]);
+  });
+
+  it("clears the chosen group subject type when the subject type changes to that same group", async () => {
+    await renderFilter(groupSubjectFilter("st-person", "st-house"));
+    expect(chosen("Group Subject Type")).toBe("House");
+
+    await choose("Subject Type", "House");
+
+    expect(chosen("Group Subject Type")).toBe("");
+  });
+
+  it("keeps the chosen group subject type when the subject type changes to another non-group type", async () => {
+    await renderFilter(groupSubjectFilter("st-person", "st-house"));
+
+    await choose("Subject Type", "Child");
+
+    expect(chosen("Group Subject Type")).toBe("House");
+  });
+
+  it("keeps the chosen group subject type when the subject type changes to a different group", async () => {
+    await renderFilter(groupSubjectFilter("st-person", "st-house"));
+
+    await choose("Subject Type", "Phulwari");
+
+    expect(chosen("Group Subject Type")).toBe("House");
+  });
+
+  it("opens a saved filter whose group subject type is its own subject type with none chosen", async () => {
+    await renderFilter(groupSubjectFilter("st-house", "st-house"));
+
+    expect(chosen("Group Subject Type")).toBe("");
+  });
+
+  it("does not save a group subject type once the filter type is no longer Group Subject", async () => {
+    await renderFilter(groupSubjectFilter("st-person", "st-house"));
+
+    await choose("Type", "Gender");
+    const save = [...container.querySelectorAll("button")].find((b) =>
+      /save/i.test(b.textContent),
+    );
+    await act(async () => save.click());
+
+    expect(httpClient.put.mock.calls[0][1].settings.searchFilters).toEqual([
+      { titleKey: "Group", subjectTypeUUID: "st-person", type: "Gender" },
+    ]);
+  });
+
+  it("saves the chosen group subject type", async () => {
+    await renderFilter(groupSubjectFilter("st-person"));
+
+    await choose("Group Subject Type", "Phulwari");
+    const save = [...container.querySelectorAll("button")].find((b) =>
+      /save/i.test(b.textContent),
+    );
+    await act(async () => save.click());
+
+    expect(httpClient.put.mock.calls[0][1].settings.searchFilters).toEqual([
+      groupSubjectFilter("st-person", "st-phulwari"),
+    ]);
+    expect(document.body.textContent).toContain("Filter updated");
+  });
+
+  it("labels the screen as a filter screen", async () => {
+    await renderFilter(null);
+
+    expect(container.querySelector("[data-title]").textContent).toBe(
+      "Filter Config",
+    );
+    expect(
+      [...container.querySelectorAll("label")].map((l) =>
+        l.textContent.trim(),
+      ),
+    ).toContain("Filter Name *");
   });
 });
