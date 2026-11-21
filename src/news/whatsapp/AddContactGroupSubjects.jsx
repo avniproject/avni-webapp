@@ -3,6 +3,7 @@ import { Dialog, DialogActions, DialogTitle, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import ChooseSubject from "./ChooseSubject";
 import ContactService from "../api/ContactService";
+import { extractServerErrorMessage } from "../../common/utils/serverErrorMessage";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
 const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
@@ -36,11 +37,9 @@ const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
           message={
             userError
               ? userError
-              : error.response.data
-              ? error.response.data
-              : "Unexpected error occurred"
+              : extractServerErrorMessage(error, "Unexpected error occurred")
           }
-          getDefaultSnackbarStatus={snackbarStatus => {
+          getDefaultSnackbarStatus={(snackbarStatus) => {
             setError(snackbarStatus);
             setUserError(snackbarStatus);
           }}
@@ -51,19 +50,19 @@ const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
         onCancel={() => onCloseHandler()}
         confirmActionLabel="Add"
         busy={isBusy}
-        onSubjectChosen={subject => {
+        onSubjectChosen={(subject) => {
           ContactService.addSubjectToContactGroup(contactGroupId, subject)
-            .then(x => {
+            .then((x) => {
               if (x.status === 204) {
                 setUserError(
-                  "Subject doesn't have phone number or has incorrect phone number."
+                  "Subject doesn't have phone number or has incorrect phone number.",
                 );
                 setBusy(false);
                 return;
               }
               onSubjectAdd(x);
             })
-            .catch(error => {
+            .catch((error) => {
               setError(error);
               setBusy(false);
             });

@@ -1,4 +1,5 @@
-import { all, call, fork, put, takeLatest, select } from "redux-saga/effects";
+import { all, call, put, takeLatest, select } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
 import { types, setEncounter } from "../reducers/viewVisitReducer";
 import { mapEncounter, mapProfile, mapProgramEncounter } from "../../common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
@@ -8,8 +9,8 @@ import { mapForm } from "common/adapters";
 import { setForm } from "dataEntryApp/reducers/viewVisitReducer";
 import { selectFormMappingForProgramEncounter } from "dataEntryApp/sagas/programEncounterSelector";
 
-export default function*() {
-  yield all([programEncounterFetchWatcher, encounterFetchWatcher].map(fork));
+export default function* () {
+  yield all([programEncounterFetchWatcher, encounterFetchWatcher].map(forkRestartingOnNetworkError));
 }
 
 export function* programEncounterFetchWatcher() {
@@ -23,17 +24,14 @@ export function* programEncounterFetchWorker({ encounterUuid }) {
   const programEncounter = mapProgramEncounter(programEncounterJson);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, programEncounterJson.subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
-  const programEnrolmentJson = yield call(
-    api.fetchProgramEnrolments,
-    programEncounterJson.enrolmentUUID
-  );
+  const programEnrolmentJson = yield call(api.fetchProgramEnrolments, programEncounterJson.enrolmentUUID);
 
   const formMapping = yield select(
     selectFormMappingForProgramEncounter(
       programEncounter.encounterType.uuid,
       programEnrolmentJson.programUuid,
-      subjectProfileJson.subjectType.uuid
-    )
+      subjectProfileJson.subjectType.uuid,
+    ),
   );
   const programEncounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const programEncounterForm = mapForm(programEncounterFormJson);
@@ -55,9 +53,7 @@ export function* encounterFetchWorker({ encounterUuid }) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
 
-  const formMapping = yield select(
-    selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
-  );
+  const formMapping = yield select(selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid));
   const encounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const encounterForm = mapForm(encounterFormJson);
 

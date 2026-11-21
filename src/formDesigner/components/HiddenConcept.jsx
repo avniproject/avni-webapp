@@ -1,31 +1,24 @@
 import { forwardRef } from "react";
-import {
-  Checkbox,
-  Chip,
-  FormControlLabel,
-  FormHelperText,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { AvniFormControl } from "../../common/components/AvniFormControl";
+import { Chip, FormHelperText, Stack, Typography } from "@mui/material";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
 
-export const HiddenConceptCheckbox = ({ checked, onChange }) => (
-  <AvniFormControl toolTipKey={"APP_DESIGNER_CONCEPT_HIDDEN"}>
-    <FormControlLabel
-      control={
-        <Checkbox
-          id="hidden"
-          checked={checked}
-          onChange={(event) => onChange(event.target.checked)}
-        />
-      }
-      label="Hidden"
+// Laid out as PhoneNumberConcept lays out Switch on Verification, so the help button sits beside
+// the switch. The explanation goes below that row: inside it, its width pushed the help button
+// to the far end of the line.
+export const HiddenConceptSwitch = ({ checked, onChange }) => (
+  <div style={{ marginTop: 10, marginBottom: 10 }}>
+    <AvniSwitch
+      id="hidden"
+      checked={checked}
+      onChange={(event) => onChange(event.target.checked)}
+      name="Hidden"
+      toolTipKey={"APP_DESIGNER_CONCEPT_HIDDEN"}
     />
-    <FormHelperText>
+    <FormHelperText sx={{ ml: 1 }}>
       Values recorded for this concept are saved and reach reporting, but are
       never shown in the app.
     </FormHelperText>
-  </AvniFormControl>
+  </div>
 );
 
 export const HIDDEN_MANDATORY_REASON =

@@ -19,7 +19,7 @@ import {
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { useSelector } from "react-redux";
 
-import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
+import { showSaveError } from "../service/showSaveError";
 
 const EncounterTypeCreate = () => {
   const navigate = useNavigate();
@@ -135,9 +135,7 @@ const EncounterTypeCreate = () => {
         saveMessageRules(entityType, encounterType.encounterTypeId, rules),
       )
       .catch((error) => {
-        error.response.data.message
-          ? setError(error.response.data.message)
-          : setMsgError(getDBValidationError(error));
+        showSaveError(error, { setError, setMsgError });
       });
   };
 

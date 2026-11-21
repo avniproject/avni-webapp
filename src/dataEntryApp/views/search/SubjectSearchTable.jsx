@@ -198,6 +198,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       };
 
       requestCopy.pageElement = pageElement;
+      requestCopy.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const result = await http
         .post("/web/searchAPI/v2", requestCopy)
         .then((res) => res.data);

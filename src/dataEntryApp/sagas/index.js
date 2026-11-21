@@ -1,7 +1,8 @@
 import referenceDataSaga from "./referenceDataSaga";
 import subjectSaga from "./subjectSaga";
 import enrolmentSaga from "./enrolmentSaga";
-import { all, fork } from "redux-saga/effects";
+import { all } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
 import subjectDashboardSaga from "./subjectDashboardSaga";
 import generalSubjectDashboardSaga from "./generalSubjectDashboardSaga";
 import programSubjectDashboardSaga from "./programSubjectDashboardSaga";
@@ -34,7 +35,7 @@ export default function* rootSaga() {
       encounterSaga,
       NewsSaga,
       messagesSaga,
-      CommentSaga
-    ].map(fork)
+      CommentSaga,
+    ].map(forkRestartingOnNetworkError),
   );
 }

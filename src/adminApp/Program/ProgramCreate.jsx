@@ -89,7 +89,7 @@ const ProgramCreate = () => {
       })
       .then((programId) => saveMessageRules(entityType, programId, rules))
       .catch((error) => {
-        !error.response.data.message &&
+        !error.response?.data?.message &&
           setMsgError(getDBValidationError(error));
       });
   };

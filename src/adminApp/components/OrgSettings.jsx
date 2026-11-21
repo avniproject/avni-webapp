@@ -66,6 +66,7 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
     hideDateOfBirth: "hideDateOfBirth",
     hideVisitDate: "hideVisitDate",
     enableComments: "enableComments",
+    enableClinicSharing: "enableClinicSharing",
     showSummaryButton: "showSummaryButton",
     useKeycloakAsIDP: "useKeycloakAsIDP",
     enableMessaging: "enableMessaging",
@@ -112,6 +113,11 @@ export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
           organisationConfigSettingKeys.enableComments,
           "Enable comments",
           "ADMIN_ENABLE_COMMENTS",
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.enableClinicSharing,
+          "Enable clinic sharing",
+          "ADMIN_ENABLE_CLINIC_SHARING",
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.enableMobileAppDbEncryption,

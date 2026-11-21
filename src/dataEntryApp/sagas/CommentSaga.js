@@ -1,4 +1,5 @@
-import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
+import { all, call, put, select, takeLatest } from "redux-saga/effects";
+import { forkRestartingOnNetworkError } from "../../rootApp/restartOnNetworkError";
 import {
   selectCommentState,
   setActiveThread,
@@ -24,7 +25,7 @@ export default function* () {
       newCommentWatcher,
       commentDeleteWatcher,
       commentEditWatcher,
-    ].map(fork),
+    ].map(forkRestartingOnNetworkError),
   );
 }
 

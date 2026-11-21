@@ -24,6 +24,8 @@ import DownloadableContentService, {
   buildContentRequest,
   computeFileSha256,
   extensionOf,
+  fetchContentsForDuplicateCheck,
+  hasImageContent,
   isUnencryptedCategory,
   parsePayload,
   performSave,
@@ -74,17 +76,28 @@ const CreateEditDownloadableContent = () => {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(null);
+  // The records fetched at the last save, for the duplicate position + type check.
   const [existingContents, setExistingContents] = useState(null);
   const [hashError, setHashError] = useState(null);
+  const [imageContentOk, setImageContentOk] = useState(null);
+  const [saveAttempted, setSaveAttempted] = useState(false);
 
   const guidance = isUnencryptedCategory(content.category);
 
-  // Only for the duplicate position+type check; a failed fetch skips it rather than blocking.
+  const validate = (contents) =>
+    validateContent(content, {
+      editing,
+      hasFile: !!file,
+      hasKey: aesKey.trim() !== "",
+      originalSha256,
+      existingContents: contents,
+      imageContentOk,
+    });
+
+  // Once a save has shown errors, check again on every change, so each error goes as soon as it is fixed.
   useEffect(() => {
-    DownloadableContentService.getAll()
-      .then(setExistingContents)
-      .catch(() => setExistingContents(null));
-  }, []);
+    if (saveAttempted) setErrors(validate(existingContents));
+  }, [saveAttempted, content, file, aesKey, imageContentOk, existingContents]);
 
   useEffect(() => {
     if (!editing) return;
@@ -120,6 +133,9 @@ const CreateEditDownloadableContent = () => {
     setFile(null);
     setAesKey("");
     setHashError(null);
+    setImageContentOk(null);
+    setSaveAttempted(false);
+    setErrors([]);
     update({
       category,
       needsKey: !isUnencryptedCategory(category),
@@ -132,6 +148,7 @@ const CreateEditDownloadableContent = () => {
   const onFileSelected = async (selected) => {
     setFile(selected);
     setHashError(null);
+    setImageContentOk(null);
     if (!selected) return;
     update({
       blobExtension: blobExtensionFor(content.category, selected.name),
@@ -142,28 +159,30 @@ const CreateEditDownloadableContent = () => {
     } catch (error) {
       setHashError(error.message);
     }
+    // Left unknown if the file cannot be read here; the check then does not block the save.
+    try {
+      setImageContentOk(await hasImageContent(selected));
+    } catch {
+      setImageContentOk(null);
+    }
   };
 
   const onSave = async () => {
     if (saving) return;
 
-    const validationErrors = validateContent(content, {
-      editing,
-      hasFile: !!file,
-      hasKey: aesKey.trim() !== "",
-      originalSha256,
-      existingContents,
-    });
-    setErrors(validationErrors);
-    if (validationErrors.length > 0) return;
-
-    const [payload] = parsePayload(content.payloadText);
-    const request = buildContentRequest({ ...content, payload });
-
     setSaving(true);
     setSaveError(null);
     setUploadProgress(null);
     try {
+      const contents = await fetchContentsForDuplicateCheck(content.category);
+      setExistingContents(contents);
+      setSaveAttempted(true);
+      const validationErrors = validate(contents);
+      setErrors(validationErrors);
+      if (validationErrors.length > 0) return;
+
+      const [payload] = parsePayload(content.payloadText);
+      const request = buildContentRequest({ ...content, payload });
       await performSave({
         request,
         sha256: content.sha256,
@@ -335,8 +354,10 @@ const CreateEditDownloadableContent = () => {
               {file.name} — {(file.size / (1024 * 1024)).toFixed(1)} MB
             </Typography>
           )}
+          {getErrorByKey(errors, "MISSING_IMAGE")}
           {getErrorByKey(errors, "MISSING_BLOB")}
           {getErrorByKey(errors, "INVALID_IMAGE_TYPE")}
+          {getErrorByKey(errors, "INVALID_IMAGE_CONTENT")}
         </Grid>
         {!guidance && (
           <Grid>
