@@ -6,6 +6,10 @@ import CollectionUtil from "../../utils/CollectionUtil";
 class WebDashboardSection {
   dashboardSectionCardMappings;
 
+  static viewTypeLabel(viewType) {
+    return viewType === "FullPage" ? "Full page" : viewType;
+  }
+
   static getReportCardMappings(section) {
     return _.sortBy(section.dashboardSectionCardMappings.filter(x => !x.voided), "displayOrder");
   }

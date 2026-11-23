@@ -42,8 +42,8 @@ function EditSection({ section, index, dispatch }) {
   const navigate = useNavigate();
   const viewTypes =
     section.viewType === "Default"
-      ? ["Default", "Tile", "List"]
-      : ["Tile", "List"];
+      ? ["Default", "Tile", "List", "FullPage"]
+      : ["Tile", "List", "FullPage"];
   console.log("EditSection: Rendering", {
     section: {
       uuid: section.uuid,
@@ -80,7 +80,7 @@ function EditSection({ section, index, dispatch }) {
           }
           options={viewTypes.map(viewType => ({
             value: viewType,
-            label: viewType
+            label: WebDashboardSection.viewTypeLabel(viewType)
           }))}
           value={section.viewType}
           label="Section View Type"
