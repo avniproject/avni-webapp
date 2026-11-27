@@ -1,4 +1,5 @@
 import { assert } from "chai";
+import axios from "axios";
 import { httpClient } from "common/utils/httpClient";
 import NoAuthSession from "../../rootApp/security/NoAuthSession";
 import IdpFactory from "../../rootApp/security/IdpFactory";
@@ -20,6 +21,15 @@ describe("httpClient", () => {
         "user-name": "abcd",
       }),
     );
+  });
+
+  it("sends user-name on axios requests too", async () => {
+    const noAuthSession = new NoAuthSession();
+    noAuthSession.userInfoUpdate([], "abcd", "ABCD");
+    httpClient.initAuthSession(noAuthSession);
+    httpClient.setIdp(IdpFactory.createIdp(IdpDetails.none, {}));
+    await httpClient.setTokenAndOrgUuidHeaders();
+    assert.equal(axios.defaults.headers.common["user-name"], "abcd");
   });
 
   describe("fetchJson error body", () => {

@@ -180,6 +180,19 @@ class HttpClient {
   async setTokenAndOrgUuidHeaders(options) {
     await this.idp.updateRequestWithSession(options, axios);
     this.setOrgUuidHeader();
+    this.setUserNameHeader();
+  }
+
+  // fetchJson already sends user-name; axios calls (media, attendance, comment edits, voids) did not.
+  // The prod web firewall log reads it to count use per organisation (avni-product-ops#331).
+  setUserNameHeader() {
+    if (devEnvUserName) return;
+    const username = !isEmpty(this.authSession) && this.authSession.username;
+    if (username) {
+      axios.defaults.headers.common["user-name"] = username;
+    } else {
+      delete axios.defaults.headers.common["user-name"];
+    }
   }
 
   _wrapAxiosMethod(methodName) {
